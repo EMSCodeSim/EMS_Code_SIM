@@ -1,0 +1,17 @@
+{
+  "name": "ems-code-sim-functions",
+  "version": "1.0.0",
+  "description": "Netlify Functions for EMS Code Sim",
+  "main": "index.js",
+  "scripts": {
+    "start": "netlify dev"
+  },
+  "dependencies": {
+    "firebase": "^9.23.0",
+    "openai": "^4.21.0"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "license": "MIT"
+}
