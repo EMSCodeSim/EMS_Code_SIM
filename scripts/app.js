@@ -1,23 +1,97 @@
+// scripts/app.js
+
 import { loadHardcodedResponses, routeUserInput } from './router.js';
-import { initializeScoreTracker, gradeActionBySkillID, gradeScenario } from './grading.js';
-import { startVoiceRecognition, stopVoiceRecognition } from './mic.js';
+import { initializeScoreTracker, gradeActionBySkillID } from './grading.js';
+
+if (!window.scoreTracker) window.scoreTracker = {};
 
 const scenarioPath = 'scenarios/chest_pain_002/';
 let patientContext = "";
 let gradingTemplate = {};
 window.scenarioStarted = false;
-let chatLog = [];
 
-// Display a message in the chat window
-function displayChatResponse(message, userMessage, role, ttsAudio, source, original, hasAudio) {
+// Display just the user bubble + response bubble, clearing old ones
+// Also display trigger image/audio if present
+function displayChatPair(userMsg, replyMsg, replyRole, ttsAudio, trigger) {
   const chatBox = document.getElementById('chat-box');
   if (!chatBox) return;
-  const div = document.createElement('div');
-  div.innerHTML = `<b>${role ? role + ": " : ""}</b>${message}`;
-  chatBox.appendChild(div);
+
+  // Store scenario image if present (scene1.PNG)
+  let scenarioImg = null;
+  if (chatBox.firstChild && chatBox.firstChild.tagName === "IMG" && chatBox.firstChild.src.includes("scene1.PNG")) {
+    scenarioImg = chatBox.firstChild.cloneNode(true);
+  }
+  chatBox.innerHTML = "";
+  if (scenarioImg) chatBox.appendChild(scenarioImg);
+
+  // --- TRIGGER IMAGE/AUDIO (if present and not already scenario image) ---
+  if (trigger && typeof trigger === "string" && trigger.trim() !== "") {
+    const triggerLower = trigger.toLowerCase();
+    // Prevent duplicate scenario image
+    if (!triggerLower.includes("scene1.png")) {
+      if (triggerLower.match(/\.(jpe?g|png|gif|webp)$/)) {
+        const img = document.createElement('img');
+        img.src = `${scenarioPath}${trigger}`;
+        img.alt = "Response Image";
+        img.style.maxWidth = "100%";
+        img.style.borderRadius = "10px";
+        img.style.marginBottom = "14px";
+        img.onerror = function() {
+          this.style.display = "none";
+          const warn = document.createElement('div');
+          warn.textContent = "Image not found: " + img.src;
+          warn.style.color = "red";
+          chatBox.insertBefore(warn, chatBox.children[scenarioImg ? 1 : 0] || null);
+        };
+        chatBox.appendChild(img);
+      }
+      if (triggerLower.match(/\.(mp3|wav|m4a|ogg)$/)) {
+        const audio = document.createElement('audio');
+        audio.src = `${scenarioPath}${trigger}`;
+        audio.controls = true;
+        audio.style.display = "block";
+        audio.style.margin = "10px 0 14px 0";
+        chatBox.appendChild(audio);
+      }
+    }
+  }
+
+  // User bubble
+  if (userMsg && userMsg.trim()) {
+    const userDiv = document.createElement('div');
+    userDiv.className = "chat-bubble user-bubble";
+    userDiv.innerHTML = `<b>You:</b> ${userMsg}`;
+    chatBox.appendChild(userDiv);
+  }
+
+  // Response bubble
+  if (replyMsg && replyMsg.trim()) {
+    let bubbleClass = "chat-bubble system-bubble";
+    let label = "";
+    if (replyRole === "patient") {
+      bubbleClass = "chat-bubble patient-bubble";
+      label = "Patient";
+    } else if (replyRole === "proctor") {
+      bubbleClass = "chat-bubble proctor-bubble";
+      label = "Proctor";
+    } else if (replyRole === "dispatch") {
+      bubbleClass = "chat-bubble dispatch-bubble";
+      label = "Dispatch";
+    } else if (replyRole === "system") {
+      bubbleClass = "chat-bubble system-bubble";
+      label = "System";
+    }
+
+    const replyDiv = document.createElement('div');
+    replyDiv.className = bubbleClass;
+    replyDiv.innerHTML = label ? `<b>${label}:</b> ${replyMsg}` : replyMsg;
+    chatBox.appendChild(replyDiv);
+
+    // Optionally play TTS
+    if (ttsAudio) playAudio(ttsAudio);
+  }
+
   chatBox.scrollTop = chatBox.scrollHeight;
-  // Play TTS if provided
-  if (ttsAudio) playAudio(ttsAudio);
 }
 
 // Play TTS audio from base64 or URL
@@ -52,7 +126,7 @@ function speakOnce(text, voiceName = "", rate = 1.0, callback) {
   window.speechSynthesis.speak(utter);
 }
 
-// Only for error logging (not used for scenario data)
+// Error logging (console only)
 function logErrorToDatabase(errorInfo) {
   console.error("🔴", errorInfo);
 }
@@ -62,91 +136,109 @@ window.startScenario = async function () {
   const spinner = document.getElementById('loading-spinner');
   try {
     if (spinner) spinner.style.display = "block";
-    console.log("startScenario: called.");
-
-    // 1. Load hardcoded responses from static JSON files
     await loadHardcodedResponses();
-    console.log("startScenario: responses loaded:", window.hardcodedResponsesArray?.length);
 
-    // 2. Load config.json
     const configRes = await fetch(`${scenarioPath}config.json`);
-    console.log("startScenario: config fetch response:", configRes.status);
     if (!configRes.ok) throw new Error("Missing config.json");
     const config = await configRes.json();
-    console.log("startScenario: config loaded", config);
 
-    // 3. Load grading template
-    if (config.grading) {
-      await loadGradingTemplate(config.grading || "medical");
+    try {
+      let gradingType = config.grading || "medical";
+      await loadGradingTemplate(gradingType);
+      if (window.updateSkillChecklistUI) window.updateSkillChecklistUI();
+    } catch (err) {
+      await loadGradingTemplate("medical");
+      if (window.updateSkillChecklistUI) window.updateSkillChecklistUI();
     }
 
-    // 4. Load dispatch info
     const dispatchRes = await fetch(`${scenarioPath}dispatch.txt`);
-    console.log("startScenario: dispatch fetch response:", dispatchRes.status);
     if (!dispatchRes.ok) throw new Error("Missing dispatch.txt");
     const dispatch = await dispatchRes.text();
-    console.log("startScenario: dispatch loaded", dispatch);
 
-    // 5. Load patient info
     const patientRes = await fetch(`${scenarioPath}patient.txt`);
-    console.log("startScenario: patient fetch response:", patientRes.status);
     if (!patientRes.ok) throw new Error("Missing patient.txt");
     patientContext = await patientRes.text();
-    console.log("startScenario: patient context loaded", patientContext);
 
-    // 6. Show dispatch in chat
-    displayChatResponse(`🚑 Dispatch: ${dispatch}`, "", "Dispatch", null, "", "", false);
+    if (window.resetSkillChecklistUI) window.resetSkillChecklistUI();
+
+    // --- Show scenario image (scene1.PNG) at the top ---
+    const chatBox = document.getElementById('chat-box');
+    if (chatBox) {
+      chatBox.innerHTML = ""; // clear previous content
+      const img = document.createElement("img");
+      img.src = `${scenarioPath}scene1.PNG`;
+      img.alt = "Scene Image";
+      img.style.maxWidth = "100%";
+      img.style.borderRadius = "10px";
+      img.style.marginBottom = "14px";
+      chatBox.appendChild(img);
+    }
+
+    // Show dispatch info as the next bubble (system response only)
+    displayChatPair("", `🚑 ${dispatch}`, "dispatch");
     speakOnce(dispatch, "", 1.0);
 
     window.scenarioStarted = true;
   } catch (err) {
     console.error("startScenario ERROR:", err);
-    displayChatResponse(
-      "❌ Failed to load scenario: " + err.message,
-      "", "System", null, "", "", false
-    );
+    displayChatPair("", "❌ Failed to load scenario: " + err.message, "system");
     window.scenarioStarted = false;
   } finally {
     if (typeof window.hideLoadingSpinner === "function") window.hideLoadingSpinner();
-    console.log("startScenario: done, spinner hidden");
   }
 };
 
-// Load the grading template file (JSON) and initialize the tracker
 async function loadGradingTemplate(type = "medical") {
   const file = `grading_templates/${type}_assessment.json`;
   const res = await fetch(file);
+  if (!res.ok) throw new Error(`Grading template not found: ${file}`);
   gradingTemplate = await res.json();
+  let firstVal = gradingTemplate[Object.keys(gradingTemplate)[0]];
+  if (typeof firstVal === "object" && firstVal !== null) {
+    let newTemplate = {};
+    for (let key of Object.keys(gradingTemplate)) newTemplate[key] = false;
+    gradingTemplate = newTemplate;
+  }
   initializeScoreTracker(gradingTemplate);
+  if (window.updateSkillChecklistUI) window.updateSkillChecklistUI();
 }
 
 // --- Send message logic ---
 async function processUserMessage(message) {
   if (!message) return;
-  const chatBox = document.getElementById('chat-box');
-  // Display the user's message
-  const userDiv = document.createElement('div');
-  userDiv.innerHTML = `<b>You:</b> ${message}`;
-  chatBox.appendChild(userDiv);
-  chatBox.scrollTop = chatBox.scrollHeight;
 
-  // Route to AI/hardcoded/patient/proctor
   try {
     const { response, source, matchedEntry } = await routeUserInput(message, {
       scenarioId: scenarioPath,
       role: "user"
     });
-    // Display AI/patient/proctor reply
-    const replyDiv = document.createElement('div');
-    replyDiv.innerHTML = `<b>Patient:</b> ${response}`;
-    chatBox.appendChild(replyDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-    // Optionally: play audio, grade, etc.
+
+    let replyRole = "patient";
+    if (matchedEntry && matchedEntry.role) {
+      if (matchedEntry.role.toLowerCase().includes("proctor")) replyRole = "proctor";
+      else if (matchedEntry.role.toLowerCase().includes("patient")) replyRole = "patient";
+    } else if (source && source.toLowerCase().includes("proctor")) {
+      replyRole = "proctor";
+    }
+
+    displayChatPair(
+      message,
+      response,
+      replyRole,
+      null,
+      matchedEntry && matchedEntry.trigger
+    );
+
+    if (matchedEntry && matchedEntry.scoreCategory) {
+      gradeActionBySkillID(matchedEntry.scoreCategory);
+      if (window.updateSkillChecklistUI) window.updateSkillChecklistUI();
+    }
+
+    // Optionally: play audio if needed
+    // if (matchedEntry && matchedEntry.ttsAudio) playAudio(matchedEntry.ttsAudio);
+
   } catch (err) {
-    const errDiv = document.createElement('div');
-    errDiv.innerHTML = `<b>System:</b> ❌ AI processing error: ${err.message}`;
-    chatBox.appendChild(errDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    displayChatPair(message, `❌ AI processing error: ${err.message}`, "system");
   }
 }
 
@@ -173,5 +265,4 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Optional: expose for testing
 window.processUserMessage = processUserMessage;
