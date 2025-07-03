@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EMS Training Tools</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    header {
+      background-color: #007B8A;
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+      width: 100%;
+    }
+    h1 {
+      margin: 0;
+    }
+    .description {
+      margin: 1rem;
+      text-align: center;
+      max-width: 600px;
+    }
+    .projects {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      padding: 1rem;
+      max-width: 900px;
+    }
+    .card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 220px;
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card a {
+      text-decoration: none;
+      color: #007B8A;
+      font-weight: bold;
+    }
+    footer {
+      margin-top: auto;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>EMS Training Hub</h1>
+  </header>
+  <div class="description">
+    <p>Welcome! Access all your EMS simulation tools, quizzes, and calculators from one central page.</p>
+  </div>
+  <div class="projects">
+    <div class="card">
+      <h3>EMS Simulator</h3>
+      <a href="simulator/index.html">Launch</a>
+    </div>
+    <div class="card">
+      <h3>Daily Quiz</h3>
+      <a href="quiz/index.html">Take Quiz</a>
+    </div>
+    <div class="card">
+      <h3>Pediatric Drug Calculator</h3>
+      <a href="drugs/index.html">Open Tool</a>
+    </div>
+    <div class="card">
+      <h3>Scenario Builder</h3>
+      <a href="builder/index.html">Create Scenario</a>
+    </div>
+  </div>
+  <footer>
+    &copy; 2025 EMS Training. All rights reserved.
+  </footer>
+</body>
+</html>
