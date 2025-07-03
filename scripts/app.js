@@ -1,53 +1,67 @@
-// scripts/app.js
+// app.js
 
-import { loadHardcodedResponses, routeUserInput } from './router.js';
+import { loadHardcodedResponses, routeUserInput, loadVectorDb } from './router.js';
 import { initializeScoreTracker, gradeActionBySkillID } from './grading.js';
+import { comboMic } from './mic.js';
 
 if (!window.scoreTracker) window.scoreTracker = {};
 
-const scenarioPath = 'scenarios/chest_pain_002/';
 let patientContext = "";
 let gradingTemplate = {};
 window.scenarioStarted = false;
 
-// Display just the user bubble + response bubble, clearing old ones
-// Also display trigger image/audio if present
+let currentScenarioId = 'chest_pain_002'; // Default scenario
+let currentScenarioPath = getCurrentScenarioPath();
+
+function getCurrentScenarioPath() {
+  return `scenarios/${currentScenarioId}/`;
+}
+
+function showScenarioPicker(show) {
+  // For desktop: expects #scenario-select-container
+  const pickerRow = document.getElementById('scenario-select-container');
+  if (pickerRow) pickerRow.hidden = !show;
+  // For mobile: expects #landing (phone.html landing screen)
+  const landing = document.getElementById('landing');
+  if (landing) landing.style.display = show ? '' : 'none';
+}
+
+// --- Display chat bubbles with TTS and triggers ---
 function displayChatPair(userMsg, replyMsg, replyRole, ttsAudio, trigger) {
-  const chatBox = document.getElementById('chat-box');
+  // Use #chat-box (desktop) or #chat (mobile)
+  const chatBox = document.getElementById('chat-box') || document.getElementById('chat');
   if (!chatBox) return;
 
-  // Store scenario image if present (scene1.PNG)
+  // On desktop, preserve scene image
   let scenarioImg = null;
   if (chatBox.firstChild && chatBox.firstChild.tagName === "IMG" && chatBox.firstChild.src.includes("scene1.PNG")) {
     scenarioImg = chatBox.firstChild.cloneNode(true);
   }
-  chatBox.innerHTML = "";
-  if (scenarioImg) chatBox.appendChild(scenarioImg);
+  // For mobile: do not clear history!
+  if (chatBox.id === 'chat-box') {
+    chatBox.innerHTML = "";
+    if (scenarioImg) chatBox.appendChild(scenarioImg);
+  }
 
-  // --- TRIGGER IMAGE/AUDIO (if present and not already scenario image) ---
+  // TRIGGER IMAGE/AUDIO (if present)
   if (trigger && typeof trigger === "string" && trigger.trim() !== "") {
     const triggerLower = trigger.toLowerCase();
-    // Prevent duplicate scenario image
     if (!triggerLower.includes("scene1.png")) {
       if (triggerLower.match(/\.(jpe?g|png|gif|webp)$/)) {
         const img = document.createElement('img');
-        img.src = `${scenarioPath}${trigger}`;
+        img.src = `${getCurrentScenarioPath()}${trigger}`;
         img.alt = "Response Image";
         img.style.maxWidth = "100%";
         img.style.borderRadius = "10px";
         img.style.marginBottom = "14px";
         img.onerror = function() {
           this.style.display = "none";
-          const warn = document.createElement('div');
-          warn.textContent = "Image not found: " + img.src;
-          warn.style.color = "red";
-          chatBox.insertBefore(warn, chatBox.children[scenarioImg ? 1 : 0] || null);
         };
         chatBox.appendChild(img);
       }
       if (triggerLower.match(/\.(mp3|wav|m4a|ogg)$/)) {
         const audio = document.createElement('audio');
-        audio.src = `${scenarioPath}${trigger}`;
+        audio.src = `${getCurrentScenarioPath()}${trigger}`;
         audio.controls = true;
         audio.style.display = "block";
         audio.style.margin = "10px 0 14px 0";
@@ -56,51 +70,71 @@ function displayChatPair(userMsg, replyMsg, replyRole, ttsAudio, trigger) {
     }
   }
 
-  // User bubble
+  // USER bubble
   if (userMsg && userMsg.trim()) {
     const userDiv = document.createElement('div');
-    userDiv.className = "chat-bubble user-bubble";
-    userDiv.innerHTML = `<b>You:</b> ${userMsg}`;
+    userDiv.className = "bubble user";
+    userDiv.innerHTML = userMsg;
     chatBox.appendChild(userDiv);
   }
 
-  // Response bubble
-  if (replyMsg && replyMsg.trim()) {
-    let bubbleClass = "chat-bubble system-bubble";
-    let label = "";
-    if (replyRole === "patient") {
-      bubbleClass = "chat-bubble patient-bubble";
-      label = "Patient";
-    } else if (replyRole === "proctor") {
-      bubbleClass = "chat-bubble proctor-bubble";
-      label = "Proctor";
-    } else if (replyRole === "dispatch") {
-      bubbleClass = "chat-bubble dispatch-bubble";
-      label = "Dispatch";
-    } else if (replyRole === "system") {
-      bubbleClass = "chat-bubble system-bubble";
-      label = "System";
+  // RESPONSE bubble: play audio first, then show text
+  function showReplyBubble() {
+    if (replyMsg && replyMsg.trim()) {
+      let bubbleClass = "bubble system";
+      if (replyRole === "patient") bubbleClass = "bubble patient";
+      else if (replyRole === "proctor") bubbleClass = "bubble proctor";
+      else if (replyRole === "dispatch") bubbleClass = "bubble dispatch";
+      else if (replyRole === "system") bubbleClass = "bubble system";
+      const replyDiv = document.createElement('div');
+      replyDiv.className = bubbleClass;
+      replyDiv.innerHTML = replyMsg;
+      chatBox.appendChild(replyDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
+  }
 
-    const replyDiv = document.createElement('div');
-    replyDiv.className = bubbleClass;
-    replyDiv.innerHTML = label ? `<b>${label}:</b> ${replyMsg}` : replyMsg;
-    chatBox.appendChild(replyDiv);
+  // --- Play TTS audio before showing text ---
+  if (ttsAudio) {
+    let audioSrc = ttsAudio.startsWith("data:") ? ttsAudio : "data:audio/mp3;base64," + ttsAudio;
+    document.querySelectorAll("audio#scenarioTTS").forEach(audio => {
+      try { audio.pause(); } catch (e) {}
+      audio.remove();
+    });
 
-    // Optionally play TTS
-    if (ttsAudio) playAudio(ttsAudio);
+    const audioElement = document.createElement("audio");
+    audioElement.id = "scenarioTTS";
+    audioElement.src = audioSrc;
+    audioElement.autoplay = true;
+    audioElement.style.display = "none";
+    chatBox.appendChild(audioElement);
+
+    audioElement.onended = () => {
+      showReplyBubble();
+      audioElement.remove();
+    };
+    audioElement.onerror = () => {
+      showReplyBubble();
+      audioElement.remove();
+    };
+
+    audioElement.play().catch(() => {
+      setTimeout(showReplyBubble, 500);
+    });
+  } else {
+    showReplyBubble();
   }
 
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Play TTS audio from base64 or URL
+// --- Play audio utility ---
 function playAudio(src) {
   document.querySelectorAll("audio#scenarioTTS").forEach(audio => {
     try { audio.pause(); } catch (e) {}
     audio.remove();
   });
-  const chatBox = document.getElementById("chat-box");
+  const chatBox = document.getElementById("chat-box") || document.getElementById("chat");
   const audioElement = document.createElement("audio");
   audioElement.id = "scenarioTTS";
   audioElement.src = src;
@@ -112,7 +146,6 @@ function playAudio(src) {
   audioElement.play().catch(() => {});
 }
 
-// Speak text using browser speech synthesis
 function speakOnce(text, voiceName = "", rate = 1.0, callback) {
   if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
@@ -126,19 +159,34 @@ function speakOnce(text, voiceName = "", rate = 1.0, callback) {
   window.speechSynthesis.speak(utter);
 }
 
-// Error logging (console only)
 function logErrorToDatabase(errorInfo) {
   console.error("🔴", errorInfo);
 }
 
-window.startScenario = async function () {
+// --- MAIN: Start Scenario ---
+async function startScenario(selectedId) {
   if (window.scenarioStarted) return;
+  window.scenarioStarted = true;
+  if (selectedId) {
+    currentScenarioId = selectedId;
+    currentScenarioPath = getCurrentScenarioPath();
+  }
+  showScenarioPicker(false);
+
+  // Show scenario title (both layouts)
+  const scenarioTitle = document.getElementById('scenario-title');
+  if (scenarioTitle) scenarioTitle.innerText = currentScenarioId.replace(/_/g, ' ').replace(/\d+$/, '').toUpperCase();
+
   const spinner = document.getElementById('loading-spinner');
   try {
     if (spinner) spinner.style.display = "block";
-    await loadHardcodedResponses();
 
-    const configRes = await fetch(`${scenarioPath}config.json`);
+    // Load hardcoded and vector DB
+    await loadHardcodedResponses(currentScenarioPath);
+    await loadVectorDb(currentScenarioPath);
+
+    // Load config
+    const configRes = await fetch(`${currentScenarioPath}config.json`);
     if (!configRes.ok) throw new Error("Missing config.json");
     const config = await configRes.json();
 
@@ -151,22 +199,23 @@ window.startScenario = async function () {
       if (window.updateSkillChecklistUI) window.updateSkillChecklistUI();
     }
 
-    const dispatchRes = await fetch(`${scenarioPath}dispatch.txt`);
+    // Load dispatch and patient files from config
+    const dispatchRes = await fetch(config.dispatchFile);
     if (!dispatchRes.ok) throw new Error("Missing dispatch.txt");
     const dispatch = await dispatchRes.text();
 
-    const patientRes = await fetch(`${scenarioPath}patient.txt`);
+    const patientRes = await fetch(config.patientFile);
     if (!patientRes.ok) throw new Error("Missing patient.txt");
     patientContext = await patientRes.text();
 
     if (window.resetSkillChecklistUI) window.resetSkillChecklistUI();
 
     // --- Show scenario image (scene1.PNG) at the top ---
-    const chatBox = document.getElementById('chat-box');
+    const chatBox = document.getElementById('chat-box') || document.getElementById('chat');
     if (chatBox) {
-      chatBox.innerHTML = ""; // clear previous content
+      chatBox.innerHTML = "";
       const img = document.createElement("img");
-      img.src = `${scenarioPath}scene1.PNG`;
+      img.src = `${currentScenarioPath}scene1.PNG`;
       img.alt = "Scene Image";
       img.style.maxWidth = "100%";
       img.style.borderRadius = "10px";
@@ -178,16 +227,25 @@ window.startScenario = async function () {
     displayChatPair("", `🚑 ${dispatch}`, "dispatch");
     speakOnce(dispatch, "", 1.0);
 
-    window.scenarioStarted = true;
   } catch (err) {
     console.error("startScenario ERROR:", err);
     displayChatPair("", "❌ Failed to load scenario: " + err.message, "system");
     window.scenarioStarted = false;
+    showScenarioPicker(true);
   } finally {
-    if (typeof window.hideLoadingSpinner === "function") window.hideLoadingSpinner();
+    if (spinner) spinner.style.display = "none";
   }
-};
+}
 
+// --- End Scenario handler ---
+function endScenario() {
+  window.scenarioStarted = false;
+  const chatBox = document.getElementById('chat-box') || document.getElementById('chat');
+  if (chatBox) chatBox.innerHTML += `<div class="bubble system">Scenario ended.</div>`;
+  showScenarioPicker(true);
+}
+
+// --- Grading template loader ---
 async function loadGradingTemplate(type = "medical") {
   const file = `grading_templates/${type}_assessment.json`;
   const res = await fetch(file);
@@ -208,10 +266,13 @@ async function processUserMessage(message) {
   if (!message) return;
 
   try {
+    const scenarioPath = getCurrentScenarioPath();
     const { response, source, matchedEntry } = await routeUserInput(message, {
-      scenarioId: scenarioPath,
+      scenarioId: scenarioPath, // <-- Full path, as expected by your router!
       role: "user"
     });
+
+    console.log("Answer source:", source, matchedEntry);
 
     let replyRole = "patient";
     if (matchedEntry && matchedEntry.role) {
@@ -221,32 +282,86 @@ async function processUserMessage(message) {
       replyRole = "proctor";
     }
 
+    let ttsAudio = null;
+    if (matchedEntry && matchedEntry.ttsAudio) {
+      ttsAudio = matchedEntry.ttsAudio.startsWith("data:")
+        ? matchedEntry.ttsAudio
+        : "data:audio/mp3;base64," + matchedEntry.ttsAudio;
+    }
+
     displayChatPair(
       message,
-      response,
+      `[${source}] ${response}`,
       replyRole,
-      null,
+      ttsAudio,
       matchedEntry && matchedEntry.trigger
     );
 
-    if (matchedEntry && matchedEntry.scoreCategory) {
-      gradeActionBySkillID(matchedEntry.scoreCategory);
+    // Skill Sheet Grading
+    if (matchedEntry && (matchedEntry.skillSheetID || matchedEntry["Skill Sheet ID"])) {
+      let skillKey = matchedEntry.skillSheetID || matchedEntry["Skill Sheet ID"];
+      gradeActionBySkillID(skillKey);
       if (window.updateSkillChecklistUI) window.updateSkillChecklistUI();
     }
-
-    // Optionally: play audio if needed
-    // if (matchedEntry && matchedEntry.ttsAudio) playAudio(matchedEntry.ttsAudio);
 
   } catch (err) {
     displayChatPair(message, `❌ AI processing error: ${err.message}`, "system");
   }
 }
 
-// Attach event listeners for Send button and Enter key
-document.addEventListener('DOMContentLoaded', () => {
+// --- Picker and UI logic ---
+window.addEventListener('DOMContentLoaded', () => {
+  // Desktop picker
+  const picker = document.getElementById('scenario-picker');
+  if (picker) {
+    picker.addEventListener('change', (e) => {
+      currentScenarioId = e.target.value;
+      currentScenarioPath = getCurrentScenarioPath();
+    });
+  }
+  const startBtn = document.getElementById('start-scenario-btn');
+  if (startBtn) {
+    startBtn.addEventListener('click', () => {
+      currentScenarioId = picker.value;
+      currentScenarioPath = getCurrentScenarioPath();
+      startScenario();
+    });
+  }
+  // Mobile picker (phone.html)
+  const landingSelect = document.getElementById('scenario-select');
+  const landingStartBtn = document.getElementById('start-btn');
+  if (landingSelect && landingStartBtn) {
+    landingSelect.addEventListener('change', function() {
+      currentScenarioId = this.value;
+      currentScenarioPath = getCurrentScenarioPath();
+      landingStartBtn.disabled = !currentScenarioId;
+    });
+    landingStartBtn.addEventListener('click', function() {
+      if (currentScenarioId) startScenario(currentScenarioId);
+    });
+  }
+
+  // End Scenario button
+  const endBtn = document.getElementById('end-button');
+  if (endBtn) {
+    endBtn.addEventListener('click', () => {
+      endScenario();
+    });
+  }
+
+  // Show picker on initial load
+  showScenarioPicker(true);
+
+  // Mic button: Use combo mic (browser STT or Whisper fallback)
+  const micBtn = document.getElementById('mic-button') || document.getElementById('mic-btn');
+  if (micBtn) {
+    micBtn.onclick = comboMic;
+  }
+
+  // Send/Enter logic (desktop)
   const sendBtn = document.getElementById('send-button');
   const input = document.getElementById('user-input');
-  if (sendBtn) {
+  if (sendBtn && input) {
     sendBtn.addEventListener('click', () => {
       const message = input.value.trim();
       if (message) {
@@ -254,15 +369,30 @@ document.addEventListener('DOMContentLoaded', () => {
         input.value = '';
       }
     });
-  }
-  if (input) {
     input.addEventListener('keypress', e => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        if (sendBtn) sendBtn.click();
+        sendBtn.click();
+      }
+    });
+  }
+  // Send/Enter logic (mobile)
+  if (input && !sendBtn) {
+    input.addEventListener('keypress', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        processUserMessage(input.value.trim());
+        input.value = '';
       }
     });
   }
 });
 
+// --- Attach to window for global use ---
+window.startScenario = startScenario;
+window.endScenario = endScenario;
 window.processUserMessage = processUserMessage;
+window.displayChatPair = displayChatPair;
+window.handleUserInput = processUserMessage; // For phone.html
+window.startScenarioLogic = startScenario; // For phone.html
+window.handleMicInput = comboMic; // For phone.html
