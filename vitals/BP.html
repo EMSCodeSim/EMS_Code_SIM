@@ -50,7 +50,10 @@
   <button id="pump">Pump</button>
   <button id="release">Release Pressure</button>
 
-  <audio id="heartbeat" src="https://actions.google.com/sounds/v1/health/heart_monitor_beep.ogg" preload="auto"></audio>
+  <audio id="heartbeat" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/health/heart_monitor_beep.ogg" type="audio/ogg">
+    Your browser does not support the audio element.
+  </audio>
 
   <script>
     const needle = document.getElementById("needle");
@@ -63,18 +66,18 @@
     let pumpInterval;
     let releasing = false;
     let beatInterval;
+    let audioAllowed = false;
 
     function getRandomBP() {
       systolic = Math.floor(Math.random() * (222 - 100 + 1)) + 100;
       let minDiastolic = Math.max(40, systolic - 80);
       let maxDiastolic = Math.min(100, systolic - 20);
       diastolic = Math.floor(Math.random() * (maxDiastolic - minDiastolic + 1)) + minDiastolic;
-      console.log(`BP: ${systolic}/${diastolic}`);
     }
 
     function updateNeedle() {
       const degreesPerMMHg = 360 / 280;
-      const angle = (pressure * degreesPerMMHg) + 180; // 0 at bottom
+      const angle = (pressure * degreesPerMMHg) + 180;
       needle.style.transform = `rotate(${angle}deg)`;
       pressureDisplay.textContent = `Pressure: ${Math.round(pressure)} mmHg`;
     }
@@ -95,6 +98,22 @@
     }
 
     function releasePressure() {
+      if (!audioAllowed) {
+        // Unlock audio on first click
+        heartbeat.play().then(() => {
+          heartbeat.pause();
+          heartbeat.currentTime = 0;
+          audioAllowed = true;
+          actuallyReleasePressure();
+        }).catch(err => {
+          alert("Click the page once to enable audio playback.");
+        });
+      } else {
+        actuallyReleasePressure();
+      }
+    }
+
+    function actuallyReleasePressure() {
       if (releasing) return;
       releasing = true;
       let releaseInterval = setInterval(() => {
@@ -118,7 +137,7 @@
           beatInterval = setInterval(() => {
             heartbeat.pause();
             heartbeat.currentTime = 0;
-            heartbeat.play().catch(err => console.log("Sound error:", err));
+            heartbeat.play().catch(err => console.log("Playback error:", err));
           }, 667);
         }
       } else {
