@@ -44,7 +44,7 @@
       height: 120px;
       background-color: red;
       transform-origin: bottom center;
-      transform: translate(-50%, -100%) rotate(0deg);
+      transform: translate(-50%, -100%) rotate(180deg);
       transition: transform 0.05s linear;
     }
   </style>
@@ -88,7 +88,7 @@
   }
 
   function bpToAngle(bp) {
-    return ((bp / 280) * 360);
+    return ((bp / 280) * 360) + 180;
   }
 
   function updateNeedle(bp) {
@@ -157,7 +157,6 @@
     }, 100);
   }
 
-  // Initialize needle position at 0
   updateNeedle(0);
 </script>
 
