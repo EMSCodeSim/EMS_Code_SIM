@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>BP Simulator with Custom Dial</title>
   <style>
     body {
@@ -10,116 +10,124 @@
       background: #eef6fb;
       padding: 20px;
     }
+
     button {
       padding: 10px 20px;
       font-size: 16px;
       margin: 10px;
       cursor: pointer;
     }
+
     #pressureDisplay {
       font-size: 20px;
       margin: 10px 0;
       font-weight: bold;
     }
-    #needle {
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 4px; height: 140px;
-      background-color: red;
-      transform-origin: bottom;
-      transform: rotate(-135deg);
-      transition: transform 0.05s linear;
-    }
+
     .dial-container {
       position: relative;
       width: 300px;
       height: 300px;
       margin: 20px auto;
     }
+
     .dial-container img {
       width: 100%;
       height: 100%;
+    }
+
+    #needle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 4px;
+      height: 140px;
+      background-color: red;
+      transform-origin: bottom center;
+      transform: translate(-50%, -100%) rotate(-135deg);
+      transition: transform 0.05s linear;
     }
   </style>
 </head>
 <body>
 
-  <h1>Blood Pressure Simulator</h1>
+<h1>Blood Pressure Simulator</h1>
 
-  <label>Systolic:
-    <input type="number" id="sys" value="120" min="50" max="250">
-  </label>
-  <label>Diastolic:
-    <input type="number" id="dia" value="80" min="30" max="200">
-  </label>
+<label>Systolic:
+  <input type="number" id="sys" value="120" min="50" max="250">
+</label>
+<label>Diastolic:
+  <input type="number" id="dia" value="80" min="30" max="200">
+</label>
 
-  <div id="pressureDisplay">Current Pressure: 0 mmHg</div>
+<div id="pressureDisplay">Current Pressure: 0 mmHg</div>
 
-  <button id="pumpBtn" onmousedown="startPumping()" onmouseup="stopPumping()" onmouseleave="stopPumping()" ontouchstart="startPumping()" ontouchend="stopPumping()">Pump Cuff</button>
-  <button onclick="startRelease()">Release Pressure</button>
+<button id="pumpBtn" onmousedown="startPumping()" onmouseup="stopPumping()" onmouseleave="stopPumping()" ontouchstart="startPumping()" ontouchend="stopPumping()">Pump Cuff</button>
+<button onclick="startRelease()">Release Pressure</button>
 
-  <div class="dial-container">
-    <img src="bp_dial.png" alt="BP Dial" />
-    <div id="needle"></div>
-  </div>
+<div class="dial-container">
+  <img src="bp_dial.png" alt="BP Dial">
+  <div id="needle"></div>
+</div>
 
-  <script>
-    let currentPressure = 0;
-    let releaseInterval;
-    let pumpInterval;
+<script>
+  let currentPressure = 0;
+  let releaseInterval;
+  let pumpInterval;
 
-    function bpToAngle(bp) {
-      return ((bp / 280) * 270) - 135;
-    }
+  function bpToAngle(bp) {
+    return ((bp / 280) * 270) - 135;
+  }
 
-    function updateNeedle(bp) {
-      const angle = bpToAngle(bp);
-      document.getElementById("needle").style.transform = `rotate(${angle}deg)`;
-      document.getElementById("pressureDisplay").innerText = `Current Pressure: ${bp} mmHg`;
-    }
+  function updateNeedle(bp) {
+    const angle = bpToAngle(bp);
+    document.getElementById("needle").style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
+    document.getElementById("pressureDisplay").innerText = `Current Pressure: ${bp} mmHg`;
+  }
 
-    function startPumping() {
-      clearInterval(releaseInterval);
-      pumpInterval = setInterval(() => {
-        if (currentPressure < 280) {
-          currentPressure += 10;
-          if (currentPressure > 280) currentPressure = 280;
-          updateNeedle(currentPressure);
-        }
-      }, 200);
-    }
-
-    function stopPumping() {
-      clearInterval(pumpInterval);
-    }
-
-    function startRelease() {
-      const sys = parseInt(document.getElementById("sys").value);
-      const dia = parseInt(document.getElementById("dia").value);
-
-      clearInterval(pumpInterval);
-
-      releaseInterval = setInterval(() => {
-        if (currentPressure <= 0) {
-          clearInterval(releaseInterval);
-          currentPressure = 0;
-          updateNeedle(currentPressure);
-          return;
-        }
-
-        currentPressure--;
+  function startPumping() {
+    clearInterval(releaseInterval);
+    pumpInterval = setInterval(() => {
+      if (currentPressure < 280) {
+        currentPressure += 10;
+        if (currentPressure > 280) currentPressure = 280;
         updateNeedle(currentPressure);
+      }
+    }, 200);
+  }
 
-        // You can integrate your heartbeat sound logic here
-        if (currentPressure === sys) {
-          // Start heartbeat sound
-        }
-        if (currentPressure === dia) {
-          // Stop heartbeat sound
-        }
+  function stopPumping() {
+    clearInterval(pumpInterval);
+  }
 
-      }, 100); // Slowed release
-    }
-  </script>
+  function startRelease() {
+    const sys = parseInt(document.getElementById("sys").value);
+    const dia = parseInt(document.getElementById("dia").value);
+
+    clearInterval(pumpInterval);
+
+    releaseInterval = setInterval(() => {
+      if (currentPressure <= 0) {
+        clearInterval(releaseInterval);
+        currentPressure = 0;
+        updateNeedle(currentPressure);
+        return;
+      }
+
+      currentPressure--;
+      updateNeedle(currentPressure);
+
+      // Heartbeat sound integration could go here
+      if (currentPressure === sys) {
+        // Start heartbeat
+      }
+      if (currentPressure === dia) {
+        // Stop heartbeat
+      }
+
+    }, 100); // Slow release for realism
+  }
+</script>
+
 </body>
 </html>
