@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>BP Simulator with Custom Dial</title>
+  <title>BP Simulator with Sound and Custom Dial</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -41,7 +41,7 @@
       top: 50%;
       left: 50%;
       width: 4px;
-      height: 140px;
+      height: 120px; /* Slightly shorter needle */
       background-color: red;
       transform-origin: bottom center;
       transform: translate(-50%, -100%) rotate(-135deg);
@@ -74,6 +74,18 @@
   let currentPressure = 0;
   let releaseInterval;
   let pumpInterval;
+  let heartbeatInterval;
+  let audioCtx;
+
+  function unlockAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const dummy = audioCtx.createOscillator();
+      dummy.connect(audioCtx.destination);
+      dummy.start();
+      dummy.stop();
+    }
+  }
 
   function bpToAngle(bp) {
     return ((bp / 280) * 270) - 135;
@@ -85,12 +97,32 @@
     document.getElementById("pressureDisplay").innerText = `Current Pressure: ${bp} mmHg`;
   }
 
+  function playBeat() {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.frequency.value = 660;
+    gain.gain.setValueAtTime(1, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + 0.1);
+  }
+
+  function startHeartbeat() {
+    heartbeatInterval = setInterval(playBeat, 800);
+  }
+
+  function stopHeartbeat() {
+    clearInterval(heartbeatInterval);
+  }
+
   function startPumping() {
+    unlockAudio();
     clearInterval(releaseInterval);
     pumpInterval = setInterval(() => {
       if (currentPressure < 280) {
         currentPressure += 10;
-        if (currentPressure > 280) currentPressure = 280;
         updateNeedle(currentPressure);
       }
     }, 200);
@@ -101,6 +133,7 @@
   }
 
   function startRelease() {
+    unlockAudio();
     const sys = parseInt(document.getElementById("sys").value);
     const dia = parseInt(document.getElementById("dia").value);
 
@@ -109,6 +142,7 @@
     releaseInterval = setInterval(() => {
       if (currentPressure <= 0) {
         clearInterval(releaseInterval);
+        stopHeartbeat();
         currentPressure = 0;
         updateNeedle(currentPressure);
         return;
@@ -117,15 +151,10 @@
       currentPressure--;
       updateNeedle(currentPressure);
 
-      // Heartbeat sound integration could go here
-      if (currentPressure === sys) {
-        // Start heartbeat
-      }
-      if (currentPressure === dia) {
-        // Stop heartbeat
-      }
+      if (currentPressure === sys) startHeartbeat();
+      if (currentPressure === dia) stopHeartbeat();
 
-    }, 100); // Slow release for realism
+    }, 100);
   }
 </script>
 
