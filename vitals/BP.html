@@ -28,7 +28,7 @@
       left: 198px;
       transform-origin: bottom center;
       transform: rotate(0deg);
-      transition: transform 0.1s linear;
+      transition: transform 0.05s linear;
     }
     button {
       margin: 10px;
@@ -61,6 +61,7 @@
     let heartbeat = document.getElementById("heartbeat");
     let pumpInterval;
     let releasing = false;
+    let beatInterval;
 
     function getRandomBP() {
       systolic = Math.floor(Math.random() * (222 - 100 + 1)) + 100;
@@ -71,19 +72,10 @@
     }
 
     function updateNeedle() {
-      const angle = (pressure / 280) * 360; // 0 to 280 mmHg mapped to full circle
+      const degreesPerMMHg = 360 / 280;
+      const angle = (pressure * degreesPerMMHg) + 180; // 0 at bottom, 140 at top
       needle.style.transform = `rotate(${angle}deg)`;
       pressureDisplay.textContent = `Pressure: ${Math.round(pressure)} mmHg`;
-
-      if (pressure >= diastolic && pressure <= systolic) {
-        if (heartbeat.paused) {
-          heartbeat.currentTime = 0;
-          heartbeat.play();
-        }
-      } else {
-        heartbeat.pause();
-        heartbeat.currentTime = 0;
-      }
     }
 
     function startPump() {
@@ -103,26 +95,44 @@
     function releasePressure() {
       if (releasing) return;
       releasing = true;
+      clearInterval(beatInterval);
+      beatInterval = null;
       const releaseInterval = setInterval(() => {
         if (pressure > 0) {
           pressure -= 0.3;
           updateNeedle();
+          checkHeartbeat();
         } else {
           clearInterval(releaseInterval);
           releasing = false;
           pressure = 0;
           updateNeedle();
+          stopHeartbeat();
         }
       }, 30);
     }
 
-    // Simulate 90 bpm heartbeat
-    setInterval(() => {
-      if (!heartbeat.paused && pressure >= diastolic && pressure <= systolic) {
-        heartbeat.currentTime = 0;
-        heartbeat.play();
+    function checkHeartbeat() {
+      if (pressure >= diastolic && pressure <= systolic) {
+        if (!beatInterval) {
+          beatInterval = setInterval(() => {
+            heartbeat.currentTime = 0;
+            heartbeat.play();
+          }, 667); // ~90 bpm
+        }
+      } else {
+        stopHeartbeat();
       }
-    }, 666); // 90 beats per minute
+    }
+
+    function stopHeartbeat() {
+      if (beatInterval) {
+        clearInterval(beatInterval);
+        beatInterval = null;
+      }
+      heartbeat.pause();
+      heartbeat.currentTime = 0;
+    }
 
     document.getElementById("pump").addEventListener("mousedown", startPump);
     document.getElementById("pump").addEventListener("mouseup", stopPump);
