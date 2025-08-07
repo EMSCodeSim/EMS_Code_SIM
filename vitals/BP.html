@@ -33,7 +33,7 @@
       margin-top: -140px;
       transform-origin: bottom center;
       z-index: 10;
-      transform: rotate(180deg);
+      transform: rotate(-180deg);
       transition: transform 0.1s linear;
     }
 
@@ -92,8 +92,8 @@
     const audioCtx = new AudioContext();
 
     function updateNeedle() {
-      // Clockwise mapping from 0 mmHg (180°) to 280 mmHg (-180°)
-      const angle = 180 - (currentPressure / 280) * 360;
+      // New correct clockwise rotation
+      const angle = (currentPressure / 280) * 360 - 180;
       needle.style.transform = `rotate(${angle}deg)`;
       pressureDisplay.textContent = `Pressure: ${Math.round(currentPressure)} mmHg`;
     }
