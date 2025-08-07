@@ -22,13 +22,13 @@
     }
     #needle {
       position: absolute;
-      width: 6px;
-      height: 140px;
+      width: 4px;
+      height: 130px;
       background: red;
-      top: 10px;
+      top: 20px;
       left: 50%;
       transform-origin: bottom center;
-      transform: rotate(-135deg); /* Start at 0 (bottom) */
+      transform: rotate(270deg); /* Start pointing down */
     }
     #controls {
       margin-top: 20px;
@@ -65,18 +65,67 @@
     let systolic = 120;
     let diastolic = 80;
     let releasing = false;
+    let audioCtx = null;
+    let beatTimer = null;
 
-    // Web Audio API
     const bpm = 90;
     const beatInterval = 60000 / bpm;
-    let audioCtx;
-    let beatTimer;
+
+    function updateNeedle(pressure) {
+      // 0 pressure = 270deg (down), 280 = (270+270)=540deg → rotate max 270deg
+      const angle = (pressure / 280) * 270 + 270;
+      needle.style.transform = `rotate(${angle % 360}deg)`;
+    }
+
+    function pump() {
+      stopSound();
+      releasing = false;
+      if (currentPressure < 280) {
+        currentPressure += 10;
+        updateNeedle(currentPressure);
+        bpDisplay.textContent = `Pressure: ${Math.round(currentPressure)} mmHg`;
+      }
+    }
+
+    function release() {
+      // Generate realistic BP
+      systolic = Math.floor(Math.random() * (222 - 80 + 1)) + 80;
+      const minDia = Math.floor(systolic * 0.5);
+      const maxDia = Math.floor(systolic * 0.75);
+      diastolic = Math.floor(Math.random() * (maxDia - minDia + 1)) + minDia;
+
+      bpDisplay.textContent = `BP: ${systolic}/${diastolic}`;
+      releasing = true;
+
+      stopSound(); // In case it's still running
+      if (interval) clearInterval(interval);
+
+      interval = setInterval(() => {
+        if (!releasing) return;
+
+        currentPressure -= 0.5;
+        if (currentPressure <= 0) {
+          currentPressure = 0;
+          clearInterval(interval);
+          stopSound();
+        }
+
+        updateNeedle(currentPressure);
+
+        if (currentPressure <= systolic && currentPressure >= diastolic) {
+          startSound();
+        } else {
+          stopSound();
+        }
+      }, 25);
+    }
 
     function startSound() {
-      if (!audioCtx) {
+      if (!audioCtx || audioCtx.state === "closed") {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       }
-      stopSound();
+      if (beatTimer) return; // already running
+
       beatTimer = setInterval(() => {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -92,52 +141,7 @@
 
     function stopSound() {
       clearInterval(beatTimer);
-    }
-
-    function updateNeedle(pressure) {
-      const angle = (pressure / 280) * 270 - 135;
-      needle.style.transform = `rotate(${angle}deg)`;
-    }
-
-    function pump() {
-      stopSound();
-      releasing = false;
-      if (currentPressure < 280) {
-        currentPressure += 10;
-        updateNeedle(currentPressure);
-        bpDisplay.textContent = `Pressure: ${currentPressure} mmHg`;
-      }
-    }
-
-    function release() {
-      // Generate BP
-      systolic = Math.floor(Math.random() * (222 - 80 + 1)) + 80;
-      const minDia = Math.floor(systolic * 0.5);
-      const maxDia = Math.floor(systolic * 0.75);
-      diastolic = Math.floor(Math.random() * (maxDia - minDia + 1)) + minDia;
-
-      bpDisplay.textContent = `BP: ${systolic}/${diastolic}`;
-      releasing = true;
-
-      if (interval) clearInterval(interval);
-      interval = setInterval(() => {
-        if (!releasing) return;
-        currentPressure -= 0.5;
-        if (currentPressure < 0) {
-          currentPressure = 0;
-          clearInterval(interval);
-          stopSound();
-        }
-
-        updateNeedle(currentPressure);
-
-        if (currentPressure <= systolic && currentPressure >= diastolic) {
-          if (!beatTimer) startSound();
-        } else {
-          stopSound();
-        }
-
-      }, 25);
+      beatTimer = null;
     }
   </script>
 </body>
