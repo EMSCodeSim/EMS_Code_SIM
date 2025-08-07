@@ -1,148 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>BP Simulator</title>
   <style>
     body {
       text-align: center;
-      font-family: Arial;
-      background: #f0f0f0;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
     }
-    #dial {
+    #dial-container {
       position: relative;
       width: 300px;
       height: 300px;
       margin: 20px auto;
     }
-    #dial img {
+    #dial {
       width: 100%;
       height: 100%;
     }
     #needle {
       position: absolute;
-      width: 4px;
-      height: 130px;
-      background: red;
-      top: 20px;
+      width: 6px;
+      height: 140px;
+      background-color: red;
+      top: 10px;
       left: 50%;
       transform-origin: bottom center;
-      transform: rotate(270deg); /* Start pointing down */
-    }
-    #controls {
-      margin-top: 20px;
+      transform: rotate(180deg);
+      z-index: 10;
     }
     button {
-      font-size: 18px;
+      margin: 10px;
       padding: 10px 20px;
-      margin: 5px;
+      font-size: 16px;
     }
-    #bpDisplay {
+    #pressureDisplay {
       font-size: 24px;
       margin-top: 10px;
     }
   </style>
 </head>
 <body>
+
   <h1>Blood Pressure Simulator</h1>
-  <div id="dial">
-    <img src="bp_dial.png" alt="Dial">
+
+  <div id="dial-container">
+    <img id="dial" src="bp_dial.png" alt="BP Dial">
     <div id="needle"></div>
   </div>
-  <div id="controls">
-    <button onclick="pump()">Pump</button>
-    <button onclick="release()">Release Pressure</button>
-  </div>
-  <div id="bpDisplay"></div>
+
+  <button onclick="pump()">Pump</button>
+  <button onclick="release()">Release</button>
+  <div id="pressureDisplay">Current Pressure: 0 mmHg</div>
 
   <script>
-    const needle = document.getElementById("needle");
-    const bpDisplay = document.getElementById("bpDisplay");
-
-    let currentPressure = 0;
-    let interval;
-    let systolic = 120;
-    let diastolic = 80;
+    let pressure = 0;
     let releasing = false;
-    let audioCtx = null;
-    let beatTimer = null;
+    let systolic = 0;
+    let diastolic = 0;
+    let beatInterval;
+    let audioCtx;
+    let nextBeatTime = 0;
 
-    const bpm = 90;
-    const beatInterval = 60000 / bpm;
+    const needle = document.getElementById('needle');
+    const pressureDisplay = document.getElementById('pressureDisplay');
 
-    function updateNeedle(pressure) {
-      // 0 pressure = 270deg (down), 280 = (270+270)=540deg → rotate max 270deg
-      const angle = (pressure / 280) * 270 + 270;
+    function updateNeedle(p) {
+      const angle = (p / 280) * 360 + 180;
       needle.style.transform = `rotate(${angle % 360}deg)`;
+      pressureDisplay.innerText = `Current Pressure: ${Math.round(p)} mmHg`;
     }
 
     function pump() {
-      stopSound();
-      releasing = false;
-      if (currentPressure < 280) {
-        currentPressure += 10;
-        updateNeedle(currentPressure);
-        bpDisplay.textContent = `Pressure: ${Math.round(currentPressure)} mmHg`;
-      }
+      if (releasing) return;
+      pressure += 10;
+      if (pressure > 280) pressure = 280;
+      updateNeedle(pressure);
     }
 
     function release() {
-      // Generate realistic BP
-      systolic = Math.floor(Math.random() * (222 - 80 + 1)) + 80;
-      const minDia = Math.floor(systolic * 0.5);
-      const maxDia = Math.floor(systolic * 0.75);
-      diastolic = Math.floor(Math.random() * (maxDia - minDia + 1)) + minDia;
-
-      bpDisplay.textContent = `BP: ${systolic}/${diastolic}`;
+      if (releasing) return;
       releasing = true;
 
-      stopSound(); // In case it's still running
-      if (interval) clearInterval(interval);
+      // Set random BP between 80/40 and 222/100
+      systolic = Math.floor(Math.random() * (222 - 80 + 1)) + 80;
+      diastolic = Math.floor(systolic * 0.6);
+      console.log(`Systolic: ${systolic}, Diastolic: ${diastolic}`);
 
-      interval = setInterval(() => {
-        if (!releasing) return;
-
-        currentPressure -= 0.5;
-        if (currentPressure <= 0) {
-          currentPressure = 0;
-          clearInterval(interval);
-          stopSound();
-        }
-
-        updateNeedle(currentPressure);
-
-        if (currentPressure <= systolic && currentPressure >= diastolic) {
-          startSound();
-        } else {
-          stopSound();
-        }
-      }, 25);
+      playHeartbeat();
+      releaseLoop();
     }
 
-    function startSound() {
-      if (!audioCtx || audioCtx.state === "closed") {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function releaseLoop() {
+      if (!releasing) return;
+      pressure -= 1;
+      if (pressure < 0) {
+        pressure = 0;
+        releasing = false;
+        stopHeartbeat();
+        return;
       }
-      if (beatTimer) return; // already running
 
-      beatTimer = setInterval(() => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(200, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.1);
-      }, beatInterval);
+      updateNeedle(pressure);
+
+      if (Math.round(pressure) === systolic || Math.round(pressure) === diastolic) {
+        triggerBeat();
+      }
+
+      setTimeout(releaseLoop, 50); // slower release
     }
 
-    function stopSound() {
-      clearInterval(beatTimer);
-      beatTimer = null;
+    function playHeartbeat() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      beatInterval = setInterval(() => {
+        triggerBeat();
+      }, 667); // 90 bpm = 667 ms
+    }
+
+    function stopHeartbeat() {
+      clearInterval(beatInterval);
+    }
+
+    function triggerBeat() {
+      if (!audioCtx) return;
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
+      gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+      oscillator.connect(gainNode).connect(audioCtx.destination);
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.1);
     }
   </script>
+
 </body>
 </html>
