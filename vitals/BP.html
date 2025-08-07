@@ -14,6 +14,7 @@
     #gauge-container {
       position: relative;
       width: 300px;
+      height: 300px;
       margin: 20px auto;
     }
 
@@ -23,18 +24,18 @@
 
     #needle {
       position: absolute;
-      width: 6px;
+      width: 4px;
       height: 140px;
       background: red;
       top: 30px;
-      left: 147px;
+      left: 148px;
       transform-origin: bottom center;
-      transform: rotate(180deg); /* Start at 0 (pointing down) */
+      transform: rotate(180deg);
       transition: transform 0.2s linear;
       z-index: 2;
     }
 
-    button {
+    button, input[type="range"] {
       margin: 10px;
       padding: 10px 20px;
       font-size: 1rem;
@@ -49,6 +50,11 @@
       margin-top: 5px;
       font-weight: bold;
       font-size: 1rem;
+    }
+
+    #deflationSpeedLabel {
+      margin-top: 15px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -66,20 +72,27 @@
   <button onclick="pump()">Pump</button>
   <button onclick="release()">Release Pressure</button>
 
+  <div>
+    <label id="deflationSpeedLabel">Deflation Speed: <span id="speedValue">1.5</span> mmHg/step</label><br/>
+    <input type="range" id="speedSlider" min="0.5" max="5" step="0.1" value="1.5" oninput="updateSpeedDisplay(this.value)">
+  </div>
+
   <script>
     let currentPressure = 0;
+    let systolic = 120;
+    let diastolic = 80;
     let needle = document.getElementById("needle");
     let pressureDisplay = document.getElementById("pressureDisplay");
     let bpReading = document.getElementById("bpReading");
+    let speedValueText = document.getElementById("speedValue");
+    let speedSlider = document.getElementById("speedSlider");
+
     let releaseInterval;
-    let systolic = 120;
-    let diastolic = 80;
     let beatInterval;
-    let beatAudio = new AudioContext();
     let beatStarted = false;
+    let beatAudio = new AudioContext();
 
     function updateNeedle() {
-      // Map 0–280 mmHg to 0–360 degrees starting at 180 degrees (bottom)
       let angle = 180 - (currentPressure / 280) * 360;
       needle.style.transform = `rotate(${angle}deg)`;
       pressureDisplay.textContent = `Pressure: ${Math.round(currentPressure)} mmHg`;
@@ -99,22 +112,36 @@
       diastolic = Math.floor(systolic * 0.65);
       bpReading.textContent = `Set BP: ${systolic}/${diastolic}`;
 
+      const deflationSpeed = parseFloat(speedSlider.value);
+
       releaseInterval = setInterval(() => {
         if (currentPressure <= 0) {
           clearInterval(releaseInterval);
           stopHeartbeat();
           bpReading.textContent = '';
         } else {
-          currentPressure -= 0.5;
+          currentPressure -= deflationSpeed;
           updateNeedle();
+
           if (Math.round(currentPressure) === systolic && !beatStarted) {
             startHeartbeat();
           }
+
           if (Math.round(currentPressure) === diastolic && beatStarted) {
             stopHeartbeat();
           }
         }
       }, 20);
+    }
+
+    function startHeartbeat() {
+      beatStarted = true;
+      beatInterval = setInterval(playBeat, 666); // 90 bpm
+    }
+
+    function stopHeartbeat() {
+      clearInterval(beatInterval);
+      beatStarted = false;
     }
 
     function playBeat() {
@@ -128,17 +155,11 @@
       osc.stop(beatAudio.currentTime + 0.1);
     }
 
-    function startHeartbeat() {
-      beatStarted = true;
-      beatInterval = setInterval(playBeat, 666); // 90 bpm = 666ms
+    function updateSpeedDisplay(val) {
+      speedValueText.textContent = val;
     }
 
-    function stopHeartbeat() {
-      clearInterval(beatInterval);
-      beatStarted = false;
-    }
-
-    updateNeedle(); // initialize position
+    updateNeedle(); // Initialize
   </script>
 </body>
 </html>
