@@ -22,13 +22,13 @@
     }
     #needle {
       position: absolute;
-      width: 8px;
-      height: 150px;
+      width: 6px;
+      height: 140px;
       background: red;
-      top: 0;
+      top: 10px;
       left: 50%;
       transform-origin: bottom center;
-      transform: rotate(0deg);
+      transform: rotate(-135deg); /* Start at 0 (bottom) */
     }
     #controls {
       margin-top: 20px;
@@ -66,7 +66,7 @@
     let diastolic = 80;
     let releasing = false;
 
-    // Web Audio heartbeat at 90 BPM
+    // Web Audio API
     const bpm = 90;
     const beatInterval = 60000 / bpm;
     let audioCtx;
@@ -76,7 +76,7 @@
       if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       }
-      stopSound(); // clear existing interval
+      stopSound();
       beatTimer = setInterval(() => {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -95,21 +95,22 @@
     }
 
     function updateNeedle(pressure) {
-      // Map pressure to angle: 0 (bottom) to 280 (almost full circle)
-      const angle = (pressure / 280) * 270 - 135; // 0 at bottom, 140 at top
+      const angle = (pressure / 280) * 270 - 135;
       needle.style.transform = `rotate(${angle}deg)`;
     }
 
     function pump() {
       stopSound();
       releasing = false;
-      currentPressure = 200;
-      updateNeedle(currentPressure);
-      bpDisplay.textContent = "Set pressure. Click release to begin.";
+      if (currentPressure < 280) {
+        currentPressure += 10;
+        updateNeedle(currentPressure);
+        bpDisplay.textContent = `Pressure: ${currentPressure} mmHg`;
+      }
     }
 
     function release() {
-      // Generate realistic systolic/diastolic pair
+      // Generate BP
       systolic = Math.floor(Math.random() * (222 - 80 + 1)) + 80;
       const minDia = Math.floor(systolic * 0.5);
       const maxDia = Math.floor(systolic * 0.75);
@@ -136,7 +137,7 @@
           stopSound();
         }
 
-      }, 25); // Slow release speed
+      }, 25);
     }
   </script>
 </body>
