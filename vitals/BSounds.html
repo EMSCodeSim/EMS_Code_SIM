@@ -36,8 +36,22 @@
                 <label for="volume">Volume: </label>
                 <input type="range" id="volume" min="0" max="100" value="50">
 
-                <button id="playSoundBtn">Play Sound</button>
-                <button id="pauseSoundBtn">Pause Sound</button>
+                <div class="audio-player">
+                    <!-- Media Player -->
+                    <audio id="audioPlayer" preload="auto">
+                        <source id="audioSource" src="normal_sound.mp3" type="audio/mp3">
+                        Your browser does not support the audio element.
+                    </audio>
+
+                    <button id="playSoundBtn">Play</button>
+                    <button id="pauseSoundBtn">Pause</button>
+                    <button id="stopSoundBtn">Stop</button>
+
+                    <div class="progress-container">
+                        <input type="range" id="audioProgress" value="0" max="100" step="1">
+                        <span id="currentTime">0:00</span> / <span id="totalTime">0:00</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
