@@ -63,14 +63,13 @@
     let diastolic = 0;
     let audioCtx;
     let beatInterval = null;
-    let soundActive = false;
 
     const needle = document.getElementById('needle');
     const pressureDisplay = document.getElementById('pressureDisplay');
     const bpReadout = document.getElementById('bpReadout');
 
     function updateNeedle(p) {
-      const angle = (p / 280) * 360 + 180; // 0 = 180deg, 280 = 540deg
+      const angle = (p / 280) * 360 + 180; // 0 = 180deg (bottom), 280 = 540deg
       needle.style.transform = `rotate(${angle % 360}deg)`;
       pressureDisplay.innerText = `Current Pressure: ${Math.round(p)} mmHg`;
     }
@@ -137,7 +136,7 @@
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+      gain.gain.setValueAtTime(1.0, audioCtx.currentTime); // Louder heartbeat
       osc.connect(gain).connect(audioCtx.destination);
       osc.start();
       osc.stop(audioCtx.currentTime + 0.1);
