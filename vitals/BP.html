@@ -35,8 +35,8 @@
       padding: 10px 20px;
       font-size: 16px;
     }
-    #pressureDisplay {
-      font-size: 24px;
+    #pressureDisplay, #bpReadout {
+      font-size: 20px;
       margin-top: 10px;
     }
   </style>
@@ -52,22 +52,25 @@
 
   <button onclick="pump()">Pump</button>
   <button onclick="release()">Release</button>
+
   <div id="pressureDisplay">Current Pressure: 0 mmHg</div>
+  <div id="bpReadout">Systolic/Diastolic: --/--</div>
 
   <script>
     let pressure = 0;
     let releasing = false;
     let systolic = 0;
     let diastolic = 0;
-    let beatInterval;
     let audioCtx;
-    let nextBeatTime = 0;
+    let beatInterval = null;
+    let soundActive = false;
 
     const needle = document.getElementById('needle');
     const pressureDisplay = document.getElementById('pressureDisplay');
+    const bpReadout = document.getElementById('bpReadout');
 
     function updateNeedle(p) {
-      const angle = (p / 280) * 360 + 180;
+      const angle = (p / 280) * 360 + 180; // 0 = 180deg, 280 = 540deg
       needle.style.transform = `rotate(${angle % 360}deg)`;
       pressureDisplay.innerText = `Current Pressure: ${Math.round(p)} mmHg`;
     }
@@ -83,17 +86,17 @@
       if (releasing) return;
       releasing = true;
 
-      // Set random BP between 80/40 and 222/100
-      systolic = Math.floor(Math.random() * (222 - 80 + 1)) + 80;
+      systolic = Math.floor(Math.random() * (222 - 100 + 1)) + 100;
       diastolic = Math.floor(systolic * 0.6);
-      console.log(`Systolic: ${systolic}, Diastolic: ${diastolic}`);
+      bpReadout.innerText = `Systolic/Diastolic: ${systolic}/${diastolic}`;
 
-      playHeartbeat();
+      console.log(`BP: ${systolic}/${diastolic}`);
       releaseLoop();
     }
 
     function releaseLoop() {
       if (!releasing) return;
+
       pressure -= 1;
       if (pressure < 0) {
         pressure = 0;
@@ -104,34 +107,40 @@
 
       updateNeedle(pressure);
 
-      if (Math.round(pressure) === systolic || Math.round(pressure) === diastolic) {
-        triggerBeat();
+      if (Math.round(pressure) === systolic) {
+        startHeartbeat();
       }
 
-      setTimeout(releaseLoop, 50); // slower release
+      if (Math.round(pressure) === diastolic) {
+        stopHeartbeat();
+      }
+
+      setTimeout(releaseLoop, 50);
     }
 
-    function playHeartbeat() {
+    function startHeartbeat() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (beatInterval) return; // already playing
+
       beatInterval = setInterval(() => {
-        triggerBeat();
-      }, 667); // 90 bpm = 667 ms
+        playBeat();
+      }, 667); // 90 bpm
     }
 
     function stopHeartbeat() {
       clearInterval(beatInterval);
+      beatInterval = null;
     }
 
-    function triggerBeat() {
+    function playBeat() {
       if (!audioCtx) return;
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
-      gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-      oscillator.connect(gainNode).connect(audioCtx.destination);
-      oscillator.start();
-      oscillator.stop(audioCtx.currentTime + 0.1);
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.1);
     }
   </script>
 
