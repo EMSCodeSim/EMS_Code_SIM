@@ -35,8 +35,9 @@
       padding: 10px 20px;
       font-size: 16px;
     }
-    #pressure-display {
+    #pressure-display, #bp-display {
       font-size: 20px;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -47,6 +48,7 @@
     <div id="needle"></div>
   </div>
   <div id="pressure-display">Pressure: 0 mmHg</div>
+  <div id="bp-display">Systolic/Diastolic: -- / --</div>
   <button id="pump">Pump</button>
   <button id="release">Release Pressure</button>
 
@@ -58,6 +60,7 @@
   <script>
     const needle = document.getElementById("needle");
     const pressureDisplay = document.getElementById("pressure-display");
+    const bpDisplay = document.getElementById("bp-display");
     const heartbeat = document.getElementById("heartbeat");
 
     let pressure = 0;
@@ -73,6 +76,7 @@
       const minDiastolic = Math.max(40, systolic - 80);
       const maxDiastolic = Math.min(100, systolic - 20);
       diastolic = Math.floor(Math.random() * (maxDiastolic - minDiastolic + 1)) + minDiastolic;
+      bpDisplay.textContent = `Systolic/Diastolic: ${systolic} / ${diastolic}`;
     }
 
     function updateNeedle() {
@@ -90,7 +94,7 @@
           audioUnlocked = true;
           console.log("🔓 Sound unlocked");
         }).catch(err => {
-          console.warn("Audio unlock failed (browser may block autoplay until interaction)", err);
+          console.warn("Audio unlock failed", err);
         });
       }
     }
@@ -128,7 +132,7 @@
           updateNeedle();
           stopHeartbeat();
         }
-      }, 25);
+      }, 30);
     }
 
     function checkHeartbeat() {
@@ -137,7 +141,7 @@
           beatInterval = setInterval(() => {
             heartbeat.pause();
             heartbeat.currentTime = 0;
-            heartbeat.play().catch(err => console.log("⛔ Heartbeat play error:", err));
+            heartbeat.play().catch(err => console.log("⛔ Heartbeat error:", err));
           }, 667); // 90 bpm
         }
       } else {
@@ -159,8 +163,6 @@
     document.getElementById("pump").addEventListener("mouseup", stopPump);
     document.getElementById("pump").addEventListener("mouseleave", stopPump);
     document.getElementById("release").addEventListener("click", releasePressure);
-
-    // Optional fallback to unlock audio on any click
     document.body.addEventListener("click", unlockAudio, { once: true });
   </script>
 </body>
