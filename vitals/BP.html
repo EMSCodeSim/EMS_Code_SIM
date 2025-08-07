@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Blood Pressure Simulator</title>
   <style>
     body {
-      text-align: center;
       font-family: Arial, sans-serif;
-      background-color: #f3f3f3;
+      text-align: center;
+      background-color: #f9f9f9;
     }
 
     #gauge-container {
@@ -26,15 +26,15 @@
       position: absolute;
       width: 4px;
       height: 140px;
-      background: red;
+      background-color: red;
       top: 50%;
       left: 50%;
-      transform-origin: bottom center;
-      transform: rotate(180deg);
-      transition: transform 0.1s linear;
-      z-index: 2;
       margin-left: -2px;
       margin-top: -140px;
+      transform-origin: bottom center;
+      z-index: 10;
+      transform: rotate(180deg);
+      transition: transform 0.1s linear;
     }
 
     button, input[type="range"] {
@@ -44,13 +44,12 @@
     }
 
     #pressureDisplay {
-      font-size: 1.2rem;
       margin-top: 10px;
+      font-size: 1.2rem;
     }
 
     #bpReading {
       font-weight: bold;
-      font-size: 1rem;
     }
 
     #deflationSpeedLabel {
@@ -62,7 +61,7 @@
   <h1>Blood Pressure Simulator</h1>
 
   <div id="gauge-container">
-    <img id="dial" src="bp_dial.png" alt="Gauge Dial">
+    <img id="dial" src="bp_dial.png" alt="Dial Background" />
     <div id="needle"></div>
   </div>
 
@@ -81,20 +80,19 @@
     let currentPressure = 0;
     let systolic = 120;
     let diastolic = 80;
+    let beatStarted = false;
+    let releaseInterval, beatInterval;
+
     const needle = document.getElementById("needle");
     const pressureDisplay = document.getElementById("pressureDisplay");
     const bpReading = document.getElementById("bpReading");
     const speedValueText = document.getElementById("speedValue");
     const speedSlider = document.getElementById("speedSlider");
 
-    let releaseInterval;
-    let beatInterval;
-    let beatStarted = false;
-    const beatAudio = new AudioContext();
+    const audioCtx = new AudioContext();
 
     function updateNeedle() {
-      // Correct clockwise mapping:
-      // 0 mmHg => 180°, 140 mmHg => 0°, 280 mmHg => -180°
+      // Clockwise mapping from 0 mmHg (180°) to 280 mmHg (-180°)
       const angle = 180 - (currentPressure / 280) * 360;
       needle.style.transform = `rotate(${angle}deg)`;
       pressureDisplay.textContent = `Pressure: ${Math.round(currentPressure)} mmHg`;
@@ -119,6 +117,7 @@
 
       releaseInterval = setInterval(() => {
         if (currentPressure <= 0) {
+          currentPressure = 0;
           clearInterval(releaseInterval);
           stopHeartbeat();
           bpReading.textContent = '';
@@ -140,7 +139,7 @@
 
     function startHeartbeat() {
       beatStarted = true;
-      beatInterval = setInterval(playBeat, 666); // 90 bpm
+      beatInterval = setInterval(playBeat, 666); // ~90 bpm
     }
 
     function stopHeartbeat() {
@@ -149,14 +148,15 @@
     }
 
     function playBeat() {
-      let osc = beatAudio.createOscillator();
-      let gain = beatAudio.createGain();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
       osc.connect(gain);
-      gain.connect(beatAudio.destination);
-      osc.frequency.setValueAtTime(1000, beatAudio.currentTime);
-      gain.gain.setValueAtTime(1, beatAudio.currentTime);
+      gain.connect(audioCtx.destination);
+
+      osc.frequency.value = 1000;
+      gain.gain.setValueAtTime(1, audioCtx.currentTime);
       osc.start();
-      osc.stop(beatAudio.currentTime + 0.15); // louder and longer pulse
+      osc.stop(audioCtx.currentTime + 0.15);
     }
 
     function updateSpeedDisplay(val) {
