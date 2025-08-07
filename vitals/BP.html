@@ -24,7 +24,7 @@
       top: 30px;
       left: 147px;
       transform-origin: bottom center;
-      transform: rotate(0deg);
+      transform: rotate(180deg);
     }
     button {
       padding: 10px 20px;
@@ -57,9 +57,10 @@
     let beatInterval = null;
     let audioCtx = null;
 
+    // Map pressure (0–260) to needle rotation based on custom dial:
+    // 0 mmHg = 180 deg (bottom), 140 mmHg = 0 deg (top), 260 mmHg = 90 deg (right)
     function rotateNeedle(pressure) {
-      // Convert pressure (0–260) to degrees (0–360)
-      const angle = (pressure / 260) * 360;
+      const angle = 180 - (pressure * 180 / 140);
       needle.style.transform = `rotate(${angle}deg)`;
     }
 
@@ -74,10 +75,10 @@
       if (releasing) return;
       releasing = true;
 
-      // Generate random BP
+      // Generate random BP values
       systolic = Math.floor(Math.random() * (222 - 80 + 1)) + 80;
-      const systolicRange = systolic - 40;
-      diastolic = Math.floor(Math.random() * (systolicRange - 40 + 1)) + 40;
+      const minDiastolic = Math.max(40, systolic - 60);
+      diastolic = Math.floor(Math.random() * (systolic - minDiastolic)) + minDiastolic;
 
       bpDisplay.textContent = `Blood Pressure: ${systolic}/${diastolic}`;
 
@@ -93,23 +94,17 @@
           releasing = false;
           stopBeats();
         }
+
         rotateNeedle(currentPressure);
 
-        // Start heartbeat sound at systolic
-        if (currentPressure === systolic) {
-          startBeats();
-        }
-
-        // Stop at diastolic
-        if (currentPressure === diastolic) {
-          stopBeats();
-        }
+        if (currentPressure === systolic) startBeats();
+        if (currentPressure === diastolic) stopBeats();
       }, 30);
     }
 
     function startBeats() {
       if (beatInterval) return;
-      beatInterval = setInterval(playBeat, 666); // ~90 bpm
+      beatInterval = setInterval(playBeat, 666); // 90 BPM
     }
 
     function stopBeats() {
@@ -123,14 +118,14 @@
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
 
-      osc.frequency.setValueAtTime(120, audioCtx.currentTime); // Deeper heartbeat
+      osc.frequency.setValueAtTime(100, audioCtx.currentTime);
       gain.gain.setValueAtTime(0, audioCtx.currentTime);
       gain.gain.linearRampToValueAtTime(1.0, audioCtx.currentTime + 0.01);
       gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
 
       osc.connect(gain).connect(audioCtx.destination);
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.15);
+      osc.stop(audioCtx.currentTime + 0.2);
     }
   </script>
 </body>
