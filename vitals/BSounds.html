@@ -3,73 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vitals Simulator</title>
+    <title>Breath Sound Simulator</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="tab-container">
-        <h1>Vitals Simulator</h1>
+    <div class="simulator-container">
+        <h1>Breath Sound Simulator</h1>
 
-        <!-- Tab navigation -->
-        <div class="tabs">
-            <button class="tab-btn" id="bpTabBtn">Blood Pressure Simulator</button>
-            <button class="tab-btn" id="breathSoundTabBtn">Breath Sound Simulator</button>
+        <!-- View toggle for Anterior and Posterior -->
+        <div class="view-toggle">
+            <button id="anteriorBtn">Anterior View</button>
+            <button id="posteriorBtn">Posterior View</button>
         </div>
 
-        <!-- Blood Pressure Simulator Tab -->
-        <div id="bpTab" class="tab-content active">
-            <h2>Blood Pressure Simulator</h2>
-            <div class="bp-simulator">
-                <label for="bpInput">Blood Pressure: </label>
-                <input type="number" id="bpInput" min="60" max="200" value="120">
-                <button id="bpSetBtn">Set BP</button>
-                <p id="bpOutput">Current BP: 120/80</p>
-                <p>Adjust the systolic and diastolic values to simulate blood pressure readings.</p>
-            </div>
+        <!-- Diagram container where images will be shown -->
+        <div class="diagram-container">
+            <img id="chestImage" src="front.jpg" alt="Anterior Chest View" class="chest-img" />
         </div>
 
-        <!-- Breath Sound Simulator Tab -->
-        <div id="breathSoundTab" class="tab-content">
-            <h2>Breath Sound Simulator</h2>
-            <div class="breath-sound-simulator">
-                <div class="view-toggle">
-                    <button id="anteriorBtn">Anterior View</button>
-                    <button id="posteriorBtn">Posterior View</button>
-                </div>
+        <!-- Sound Controls -->
+        <div class="controls">
+            <div class="sound-controls">
+                <label for="soundType">Select Sound: </label>
+                <select id="soundType">
+                    <option value="normal">Normal</option>
+                    <option value="stridor">Stridor</option>
+                    <option value="wheezing">Wheezing</option>
+                    <!-- Add more sound options as needed -->
+                </select>
 
-                <div class="diagram-container">
-                    <!-- SVG content for chest diagram will go here -->
-                    <svg id="chestDiagram" width="400" height="600" viewBox="0 0 400 600">
-                        <!-- Example clickable areas for auscultation -->
-                        <circle cx="100" cy="150" r="30" fill="lightblue" id="RUL" />
-                        <circle cx="300" cy="150" r="30" fill="lightblue" id="LUL" />
-                        <circle cx="100" cy="400" r="30" fill="lightblue" id="RLL" />
-                        <circle cx="300" cy="400" r="30" fill="lightblue" id="LLL" />
-                    </svg>
-                </div>
+                <label for="volume">Volume: </label>
+                <input type="range" id="volume" min="0" max="100" value="50">
 
-                <div class="controls">
-                    <div class="sound-controls">
-                        <label for="soundType">Select Sound: </label>
-                        <select id="soundType">
-                            <option value="normal">Normal</option>
-                            <option value="stridor">Stridor</option>
-                            <option value="wheezing">Wheezing</option>
-                        </select>
-
-                        <label for="volume">Volume: </label>
-                        <input type="range" id="volume" min="0" max="100" value="50">
-
-                        <button id="playSoundBtn">Play Sound</button>
-                        <button id="pauseSoundBtn">Pause Sound</button>
-                    </div>
-                </div>
+                <button id="playSoundBtn">Play Sound</button>
+                <button id="pauseSoundBtn">Pause Sound</button>
             </div>
         </div>
     </div>
 
     <footer>
-        <p>Instructions: Click on a lung area to listen to breath sounds. Adjust BP to simulate different readings.</p>
+        <p>Instructions: Click on a lung area to listen to breath sounds.</p>
         <button id="resetBtn">Reset Simulation</button>
     </footer>
 
