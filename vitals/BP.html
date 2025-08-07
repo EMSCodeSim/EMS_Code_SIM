@@ -1,148 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>BP Simulator</title>
+  <meta charset="UTF-8" />
+  <title>Blood Pressure Simulator</title>
   <style>
     body {
+      background: #eef;
       text-align: center;
-      background-color: #f0f0f0;
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
     }
-    #dial-container {
+    #gauge {
       position: relative;
       width: 300px;
       height: 300px;
       margin: 20px auto;
-    }
-    #dial {
-      width: 100%;
-      height: 100%;
+      background: url("bp_dial.png") no-repeat center/contain;
     }
     #needle {
       position: absolute;
       width: 6px;
       height: 140px;
-      background-color: red;
-      top: 10px;
-      left: 50%;
+      background: red;
+      top: 30px;
+      left: 147px;
       transform-origin: bottom center;
-      transform: rotate(180deg);
-      z-index: 10;
+      transform: rotate(0deg);
     }
     button {
-      margin: 10px;
       padding: 10px 20px;
+      margin: 10px;
       font-size: 16px;
     }
-    #pressureDisplay, #bpReadout {
+    #bpReading {
       font-size: 20px;
       margin-top: 10px;
     }
   </style>
 </head>
 <body>
-
   <h1>Blood Pressure Simulator</h1>
-
-  <div id="dial-container">
-    <img id="dial" src="bp_dial.png" alt="BP Dial">
+  <div id="gauge">
     <div id="needle"></div>
   </div>
-
   <button onclick="pump()">Pump</button>
-  <button onclick="release()">Release</button>
-
-  <div id="pressureDisplay">Current Pressure: 0 mmHg</div>
-  <div id="bpReadout">Systolic/Diastolic: --/--</div>
+  <button onclick="release()">Release Pressure</button>
+  <div id="bpReading">Blood Pressure: ???/???</div>
 
   <script>
-    let pressure = 0;
-    let releasing = false;
+    const needle = document.getElementById('needle');
+    const bpDisplay = document.getElementById('bpReading');
+
+    let currentPressure = 0;
     let systolic = 0;
     let diastolic = 0;
-    let audioCtx;
+    let releasing = false;
     let beatInterval = null;
-    let soundActive = false;
+    let audioCtx = null;
 
-    const needle = document.getElementById('needle');
-    const pressureDisplay = document.getElementById('pressureDisplay');
-    const bpReadout = document.getElementById('bpReadout');
-
-    function updateNeedle(p) {
-      const angle = (p / 280) * 360 + 180; // 0 = 180deg, 280 = 540deg
-      needle.style.transform = `rotate(${angle % 360}deg)`;
-      pressureDisplay.innerText = `Current Pressure: ${Math.round(p)} mmHg`;
+    function rotateNeedle(pressure) {
+      // Convert pressure (0–260) to degrees (0–360)
+      const angle = (pressure / 260) * 360;
+      needle.style.transform = `rotate(${angle}deg)`;
     }
 
     function pump() {
       if (releasing) return;
-      pressure += 10;
-      if (pressure > 280) pressure = 280;
-      updateNeedle(pressure);
+      currentPressure += 10;
+      if (currentPressure > 260) currentPressure = 260;
+      rotateNeedle(currentPressure);
     }
 
     function release() {
       if (releasing) return;
       releasing = true;
 
-      systolic = Math.floor(Math.random() * (222 - 100 + 1)) + 100;
-      diastolic = Math.floor(systolic * 0.6);
-      bpReadout.innerText = `Systolic/Diastolic: ${systolic}/${diastolic}`;
+      // Generate random BP
+      systolic = Math.floor(Math.random() * (222 - 80 + 1)) + 80;
+      const systolicRange = systolic - 40;
+      diastolic = Math.floor(Math.random() * (systolicRange - 40 + 1)) + 40;
 
-      console.log(`BP: ${systolic}/${diastolic}`);
-      releaseLoop();
-    }
+      bpDisplay.textContent = `Blood Pressure: ${systolic}/${diastolic}`;
 
-    function releaseLoop() {
-      if (!releasing) return;
-
-      pressure -= 1;
-      if (pressure < 0) {
-        pressure = 0;
-        releasing = false;
-        stopHeartbeat();
-        return;
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       }
 
-      updateNeedle(pressure);
+      const releaseInterval = setInterval(() => {
+        currentPressure -= 1;
+        if (currentPressure <= 0) {
+          currentPressure = 0;
+          clearInterval(releaseInterval);
+          releasing = false;
+          stopBeats();
+        }
+        rotateNeedle(currentPressure);
 
-      if (Math.round(pressure) === systolic) {
-        startHeartbeat();
-      }
+        // Start heartbeat sound at systolic
+        if (currentPressure === systolic) {
+          startBeats();
+        }
 
-      if (Math.round(pressure) === diastolic) {
-        stopHeartbeat();
-      }
-
-      setTimeout(releaseLoop, 50);
+        // Stop at diastolic
+        if (currentPressure === diastolic) {
+          stopBeats();
+        }
+      }, 30);
     }
 
-    function startHeartbeat() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (beatInterval) return; // already playing
-
-      beatInterval = setInterval(() => {
-        playBeat();
-      }, 667); // 90 bpm
+    function startBeats() {
+      if (beatInterval) return;
+      beatInterval = setInterval(playBeat, 666); // ~90 bpm
     }
 
-    function stopHeartbeat() {
+    function stopBeats() {
       clearInterval(beatInterval);
       beatInterval = null;
     }
 
     function playBeat() {
       if (!audioCtx) return;
+
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-      osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+
+      osc.frequency.setValueAtTime(120, audioCtx.currentTime); // Deeper heartbeat
+      gain.gain.setValueAtTime(0, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(1.0, audioCtx.currentTime + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+
       osc.connect(gain).connect(audioCtx.destination);
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.1);
+      osc.stop(audioCtx.currentTime + 0.15);
     }
   </script>
-
 </body>
 </html>
