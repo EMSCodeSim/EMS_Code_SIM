@@ -81,20 +81,21 @@
     let currentPressure = 0;
     let systolic = 120;
     let diastolic = 80;
-    let needle = document.getElementById("needle");
-    let pressureDisplay = document.getElementById("pressureDisplay");
-    let bpReading = document.getElementById("bpReading");
-    let speedValueText = document.getElementById("speedValue");
-    let speedSlider = document.getElementById("speedSlider");
+    const needle = document.getElementById("needle");
+    const pressureDisplay = document.getElementById("pressureDisplay");
+    const bpReading = document.getElementById("bpReading");
+    const speedValueText = document.getElementById("speedValue");
+    const speedSlider = document.getElementById("speedSlider");
 
     let releaseInterval;
     let beatInterval;
     let beatStarted = false;
-    let beatAudio = new AudioContext();
+    const beatAudio = new AudioContext();
 
     function updateNeedle() {
-      // 0 mmHg = 180deg (bottom), 280 mmHg = -180deg (top left)
-      let angle = 180 - (currentPressure / 280) * 360;
+      // Correct clockwise mapping:
+      // 0 mmHg => 180°, 140 mmHg => 0°, 280 mmHg => -180°
+      const angle = 180 - (currentPressure / 280) * 360;
       needle.style.transform = `rotate(${angle}deg)`;
       pressureDisplay.textContent = `Pressure: ${Math.round(currentPressure)} mmHg`;
     }
@@ -103,6 +104,7 @@
       clearInterval(releaseInterval);
       if (currentPressure < 280) {
         currentPressure += 10;
+        if (currentPressure > 280) currentPressure = 280;
         updateNeedle();
       }
     }
@@ -133,7 +135,7 @@
             stopHeartbeat();
           }
         }
-      }, 100); // Slower deflation — lower number = faster
+      }, 100);
     }
 
     function startHeartbeat() {
