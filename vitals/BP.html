@@ -7,143 +7,161 @@
     body {
       text-align: center;
       font-family: Arial, sans-serif;
+      background-color: #f3f3f3;
     }
 
-    canvas {
-      background-color: #f0f0f0;
-      margin-top: 20px;
+    #gauge-container {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin: 20px auto;
     }
 
-    #controls {
-      margin-top: 20px;
+    #dial {
+      width: 100%;
+      display: block;
     }
 
-    label, input, button {
-      margin: 5px;
+    #needle {
+      position: absolute;
+      width: 4px;
+      height: 140px;
+      background: red;
+      top: 50%;
+      left: 50%;
+      transform-origin: bottom center;
+      transform: rotate(180deg);
+      transition: transform 0.1s linear;
+      z-index: 2;
+      margin-left: -2px;
+      margin-top: -140px;
+    }
+
+    button, input[type="range"] {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
+
+    #pressureDisplay {
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+
+    #bpReading {
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    #deflationSpeedLabel {
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1>Blood Pressure Cuff Simulator</h1>
-  <canvas id="dialCanvas" width="400" height="400"></canvas>
+  <h1>Blood Pressure Simulator</h1>
 
-  <div id="controls">
-    <label for="deflateRate">Deflation Rate (0.1–1.0):</label>
-    <input type="number" id="deflateRate" value="0.5" step="0.1" min="0.1" max="1">
-    <br>
-    <button onclick="startInflation()">Start Inflation</button>
-    <button onclick="startDeflation()">Start Deflation</button>
-    <button onclick="stopSimulation()">Stop</button>
+  <div id="gauge-container">
+    <img id="dial" src="bp_dial.png" alt="Gauge Dial">
+    <div id="needle"></div>
   </div>
 
-  <audio id="heartbeat" src="https://www.soundjay.com/button/sounds/beep-07.mp3" preload="auto"></audio>
+  <div id="pressureDisplay">Pressure: 0 mmHg</div>
+  <div id="bpReading"></div>
+
+  <button onclick="pump()">Pump</button>
+  <button onclick="release()">Release Pressure</button>
+
+  <div>
+    <label id="deflationSpeedLabel">Deflation Speed: <span id="speedValue">0.5</span> mmHg/step</label><br/>
+    <input type="range" id="speedSlider" min="0.2" max="5" step="0.1" value="0.5" oninput="updateSpeedDisplay(this.value)">
+  </div>
 
   <script>
-    const canvas = document.getElementById('dialCanvas');
-    const ctx = canvas.getContext('2d');
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const radius = 150;
+    let currentPressure = 0;
+    let systolic = 120;
+    let diastolic = 80;
+    let needle = document.getElementById("needle");
+    let pressureDisplay = document.getElementById("pressureDisplay");
+    let bpReading = document.getElementById("bpReading");
+    let speedValueText = document.getElementById("speedValue");
+    let speedSlider = document.getElementById("speedSlider");
 
-    const minPressure = 70;
-    const maxPressure = 210;
+    let releaseInterval;
+    let beatInterval;
+    let beatStarted = false;
+    let beatAudio = new AudioContext();
 
-    let currentPressure = 70;
-    let inflating = false;
-    let deflating = false;
-    let intervalId;
-    let heartbeat = document.getElementById("heartbeat");
+    function updateNeedle() {
+      // 0 mmHg = 180deg (bottom), 280 mmHg = -180deg (top left)
+      let angle = 180 - (currentPressure / 280) * 360;
+      needle.style.transform = `rotate(${angle}deg)`;
+      pressureDisplay.textContent = `Pressure: ${Math.round(currentPressure)} mmHg`;
+    }
 
-    function drawDial(pressure) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw outer circle
-      ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-      ctx.stroke();
-
-      // Draw ticks and numbers
-      for (let p = minPressure; p <= maxPressure; p += 10) {
-        const angle = pressureToAngle(p);
-        const x1 = centerX + Math.cos(angle) * (radius - 10);
-        const y1 = centerY + Math.sin(angle) * (radius - 10);
-        const x2 = centerX + Math.cos(angle) * radius;
-        const y2 = centerY + Math.sin(angle) * radius;
-
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.stroke();
-
-        const labelX = centerX + Math.cos(angle) * (radius - 30);
-        const labelY = centerY + Math.sin(angle) * (radius - 30);
-        ctx.font = "12px Arial";
-        ctx.fillText(p, labelX - 10, labelY + 4);
+    function pump() {
+      clearInterval(releaseInterval);
+      if (currentPressure < 280) {
+        currentPressure += 10;
+        updateNeedle();
       }
-
-      // Draw needle
-      const angle = pressureToAngle(pressure);
-      const needleX = centerX + Math.cos(angle) * (radius - 40);
-      const needleY = centerY + Math.sin(angle) * (radius - 40);
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-      ctx.lineTo(needleX, needleY);
-      ctx.strokeStyle = "red";
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = "black";
     }
 
-    function pressureToAngle(pressure) {
-      // Maps 70 (270°) to 210 (90°)
-      const pressureRange = maxPressure - minPressure;
-      const angleRange = Math.PI * 1.5; // 270° to 90° in radians (clockwise)
-      const ratio = (pressure - minPressure) / pressureRange;
-      return (Math.PI * 1.5) - ratio * angleRange;
-    }
+    function release() {
+      clearInterval(releaseInterval);
+      systolic = Math.floor(Math.random() * (222 - 80 + 1)) + 80;
+      diastolic = Math.floor(systolic * 0.65);
+      bpReading.textContent = `Set BP: ${systolic}/${diastolic}`;
 
-    function startInflation() {
-      stopSimulation();
-      inflating = true;
-      intervalId = setInterval(() => {
-        if (currentPressure < 220) {
-          currentPressure += 1;
-          drawDial(currentPressure);
-          playHeartbeat();
+      const deflationSpeed = parseFloat(speedSlider.value);
+
+      releaseInterval = setInterval(() => {
+        if (currentPressure <= 0) {
+          clearInterval(releaseInterval);
+          stopHeartbeat();
+          bpReading.textContent = '';
         } else {
-          stopSimulation();
+          currentPressure -= deflationSpeed;
+          if (currentPressure < 0) currentPressure = 0;
+          updateNeedle();
+
+          if (Math.round(currentPressure) === systolic && !beatStarted) {
+            startHeartbeat();
+          }
+
+          if (Math.round(currentPressure) <= diastolic && beatStarted) {
+            stopHeartbeat();
+          }
         }
-      }, 50);
+      }, 100); // Slower deflation — lower number = faster
     }
 
-    function startDeflation() {
-      stopSimulation();
-      deflating = true;
-      const rate = parseFloat(document.getElementById("deflateRate").value);
-      const intervalMs = 200 / rate;
-      intervalId = setInterval(() => {
-        if (currentPressure > 70) {
-          currentPressure -= 1;
-          drawDial(currentPressure);
-        } else {
-          stopSimulation();
-        }
-      }, intervalMs);
+    function startHeartbeat() {
+      beatStarted = true;
+      beatInterval = setInterval(playBeat, 666); // 90 bpm
     }
 
-    function stopSimulation() {
-      clearInterval(intervalId);
-      inflating = false;
-      deflating = false;
+    function stopHeartbeat() {
+      clearInterval(beatInterval);
+      beatStarted = false;
     }
 
-    function playHeartbeat() {
-      heartbeat.currentTime = 0;
-      heartbeat.play();
+    function playBeat() {
+      let osc = beatAudio.createOscillator();
+      let gain = beatAudio.createGain();
+      osc.connect(gain);
+      gain.connect(beatAudio.destination);
+      osc.frequency.setValueAtTime(1000, beatAudio.currentTime);
+      gain.gain.setValueAtTime(1, beatAudio.currentTime);
+      osc.start();
+      osc.stop(beatAudio.currentTime + 0.15); // louder and longer pulse
     }
 
-    drawDial(currentPressure);
+    function updateSpeedDisplay(val) {
+      speedValueText.textContent = val;
+    }
+
+    updateNeedle(); // Initialize
   </script>
 </body>
 </html>
