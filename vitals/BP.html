@@ -1,134 +1,143 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Blood Pressure Simulator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BP Simulator</title>
   <style>
     body {
-      font-family: Arial;
       text-align: center;
-      background-color: #eef5f9;
+      font-family: Arial;
+      background: #f0f0f0;
     }
-    #gauge {
+    #dial {
+      position: relative;
       width: 300px;
       height: 300px;
-      background: url('bp_dial.png') no-repeat center center;
-      background-size: contain;
-      position: relative;
       margin: 20px auto;
     }
+    #dial img {
+      width: 100%;
+      height: 100%;
+    }
     #needle {
-      width: 6px;
-      height: 140px;
-      background: red;
       position: absolute;
-      top: 30px;
-      left: 147px;
+      width: 8px;
+      height: 150px;
+      background: red;
+      top: 0;
+      left: 50%;
       transform-origin: bottom center;
       transform: rotate(0deg);
-      border-radius: 3px;
     }
-    .button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin: 10px;
-    }
-    #readings {
-      font-size: 20px;
+    #controls {
       margin-top: 20px;
+    }
+    button {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin: 5px;
+    }
+    #bpDisplay {
+      font-size: 24px;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-
-  <h2>Manual Blood Pressure Simulator</h2>
-
-  <div id="gauge">
+  <h1>Blood Pressure Simulator</h1>
+  <div id="dial">
+    <img src="bp_dial.png" alt="Dial">
     <div id="needle"></div>
   </div>
-
-  <div>
-    <button class="button" onclick="pumpCuff()">Pump Cuff</button>
-    <button class="button" onclick="releasePressure()">Release Pressure</button>
+  <div id="controls">
+    <button onclick="pump()">Pump</button>
+    <button onclick="release()">Release Pressure</button>
   </div>
-
-  <div id="readings">Set Pressure: -- / --</div>
+  <div id="bpDisplay"></div>
 
   <script>
+    const needle = document.getElementById("needle");
+    const bpDisplay = document.getElementById("bpDisplay");
+
     let currentPressure = 0;
-    let targetPressure = 200;
     let interval;
-    let heartbeatInterval;
-    let systolic = 0;
-    let diastolic = 0;
-    let playing = false;
+    let systolic = 120;
+    let diastolic = 80;
+    let releasing = false;
+
+    // Web Audio heartbeat at 90 BPM
     const bpm = 90;
     const beatInterval = 60000 / bpm;
+    let audioCtx;
+    let beatTimer;
 
-    const context = new (window.AudioContext || window.webkitAudioContext)();
+    function startSound() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      stopSound(); // clear existing interval
+      beatTimer = setInterval(() => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+      }, beatInterval);
+    }
 
-    function playHeartbeat() {
-      const osc = context.createOscillator();
-      const gain = context.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(150, context.currentTime);
-      gain.gain.setValueAtTime(1, context.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.1);
-      osc.connect(gain);
-      gain.connect(context.destination);
-      osc.start();
-      osc.stop(context.currentTime + 0.1);
+    function stopSound() {
+      clearInterval(beatTimer);
     }
 
     function updateNeedle(pressure) {
-      const rotation = (pressure / 280) * 180;
-      document.getElementById("needle").style.transform = `rotate(${rotation}deg)`;
+      // Map pressure to angle: 0 (bottom) to 280 (almost full circle)
+      const angle = (pressure / 280) * 270 - 135; // 0 at bottom, 140 at top
+      needle.style.transform = `rotate(${angle}deg)`;
     }
 
-    function pumpCuff() {
+    function pump() {
+      stopSound();
+      releasing = false;
       currentPressure = 200;
       updateNeedle(currentPressure);
-      document.getElementById("readings").innerText = "Set Pressure: -- / --";
-      clearInterval(interval);
-      clearInterval(heartbeatInterval);
-      playing = false;
+      bpDisplay.textContent = "Set pressure. Click release to begin.";
     }
 
-    function releasePressure() {
+    function release() {
+      // Generate realistic systolic/diastolic pair
       systolic = Math.floor(Math.random() * (222 - 80 + 1)) + 80;
-      diastolic = Math.floor(systolic * 0.55 + Math.random() * 10);
+      const minDia = Math.floor(systolic * 0.5);
+      const maxDia = Math.floor(systolic * 0.75);
+      diastolic = Math.floor(Math.random() * (maxDia - minDia + 1)) + minDia;
 
-      document.getElementById("readings").innerText = `Set Pressure: ${systolic} / ${diastolic}`;
+      bpDisplay.textContent = `BP: ${systolic}/${diastolic}`;
+      releasing = true;
 
-      clearInterval(interval);
-      clearInterval(heartbeatInterval);
-      playing = false;
-
+      if (interval) clearInterval(interval);
       interval = setInterval(() => {
-        if (currentPressure <= 0) {
+        if (!releasing) return;
+        currentPressure -= 0.5;
+        if (currentPressure < 0) {
+          currentPressure = 0;
           clearInterval(interval);
-          clearInterval(heartbeatInterval);
-          updateNeedle(0);
-          return;
+          stopSound();
         }
 
-        currentPressure -= 1;
         updateNeedle(currentPressure);
 
-        if (currentPressure <= systolic && currentPressure >= diastolic && !playing) {
-          heartbeatInterval = setInterval(() => {
-            playHeartbeat();
-          }, beatInterval);
-          playing = true;
+        if (currentPressure <= systolic && currentPressure >= diastolic) {
+          if (!beatTimer) startSound();
+        } else {
+          stopSound();
         }
 
-        if (currentPressure < diastolic && playing) {
-          clearInterval(heartbeatInterval);
-          playing = false;
-        }
-
-      }, 100); // Slower release
+      }, 25); // Slow release speed
     }
   </script>
-
 </body>
 </html>
