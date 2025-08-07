@@ -1,146 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Blood Pressure Simulator</title>
   <style>
     body {
       text-align: center;
-      background-color: #f0f0f0;
       font-family: Arial, sans-serif;
+      background-color: #eef2f3;
     }
-    canvas {
-      background-color: white;
-      border-radius: 50%;
-      margin-top: 20px;
+
+    #gauge-container {
+      position: relative;
+      width: 300px;
+      margin: 20px auto;
     }
-    #controls {
-      margin-top: 20px;
+
+    #dial {
+      width: 100%;
     }
+
+    #needle {
+      position: absolute;
+      width: 6px;
+      height: 140px;
+      background: red;
+      top: 30px;
+      left: 147px;
+      transform-origin: bottom center;
+      transform: rotate(180deg); /* Start at 0 (pointing down) */
+      transition: transform 0.2s linear;
+      z-index: 2;
+    }
+
     button {
+      margin: 10px;
       padding: 10px 20px;
-      margin: 5px;
-      font-size: 16px;
+      font-size: 1rem;
+    }
+
+    #pressureDisplay {
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+
+    #bpReading {
+      margin-top: 5px;
+      font-weight: bold;
+      font-size: 1rem;
     }
   </style>
 </head>
 <body>
   <h1>Blood Pressure Simulator</h1>
-  <canvas id="gauge" width="400" height="400"></canvas>
-  <div id="pressureDisplay"></div>
-  <div id="controls">
-    <button onclick="pump()">Pump</button>
-    <button onclick="release()">Release</button>
+
+  <div id="gauge-container">
+    <img id="dial" src="bp_dial.png" alt="Gauge Dial">
+    <div id="needle"></div>
   </div>
 
-  <script>
-    const canvas = document.getElementById("gauge");
-    const ctx = canvas.getContext("2d");
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const radius = 180;
+  <div id="pressureDisplay">Pressure: 0 mmHg</div>
+  <div id="bpReading"></div>
 
-    let pressure = 0;
-    let interval;
+  <button onclick="pump()">Pump</button>
+  <button onclick="release()">Release Pressure</button>
+
+  <script>
+    let currentPressure = 0;
+    let needle = document.getElementById("needle");
+    let pressureDisplay = document.getElementById("pressureDisplay");
+    let bpReading = document.getElementById("bpReading");
+    let releaseInterval;
     let systolic = 120;
     let diastolic = 80;
-    let bpm = 90;
-    let beatInterval = 60 / bpm;
-    let ctxAudio;
+    let beatInterval;
+    let beatAudio = new AudioContext();
+    let beatStarted = false;
 
-    function drawGauge() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Tick marks
-      for (let i = 0; i <= 280; i += 2) {
-        const angle = ((i - 140) / 280) * 2 * Math.PI;
-        const tickLength = i % 10 === 0 ? 10 : 5;
-        const startX = centerX + (radius - tickLength) * Math.cos(angle);
-        const startY = centerY + (radius - tickLength) * Math.sin(angle);
-        const endX = centerX + radius * Math.cos(angle);
-        const endY = centerY + radius * Math.sin(angle);
-
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(endX, endY);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = "black";
-        ctx.stroke();
-
-        if (i % 20 === 0) {
-          const labelX = centerX + (radius - 30) * Math.cos(angle);
-          const labelY = centerY + (radius - 30) * Math.sin(angle);
-          ctx.font = "16px Arial";
-          ctx.fillStyle = "black";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(i.toString(), labelX, labelY);
-        }
-      }
-
-      // Needle
-      const angle = ((pressure - 140) / 280) * 2 * Math.PI;
-      const needleLength = 140;
-      const needleX = centerX + needleLength * Math.cos(angle);
-      const needleY = centerY + needleLength * Math.sin(angle);
-
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-      ctx.lineTo(needleX, needleY);
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = "red";
-      ctx.stroke();
+    function updateNeedle() {
+      // Map 0–280 mmHg to 0–360 degrees starting at 180 degrees (bottom)
+      let angle = 180 - (currentPressure / 280) * 360;
+      needle.style.transform = `rotate(${angle}deg)`;
+      pressureDisplay.textContent = `Pressure: ${Math.round(currentPressure)} mmHg`;
     }
 
     function pump() {
-      pressure += 10;
-      if (pressure > 300) pressure = 300;
-      drawGauge();
+      clearInterval(releaseInterval);
+      if (currentPressure < 280) {
+        currentPressure += 10;
+        updateNeedle();
+      }
     }
 
     function release() {
-      systolic = Math.floor(Math.random() * 142) + 80;  // 80 to 222
-      diastolic = Math.floor(systolic * 0.5 + Math.random() * 20); // ~ realistic ratio
-      bpm = 90;
-      beatInterval = 60 / bpm;
-      document.getElementById("pressureDisplay").innerText = `Set BP: ${systolic}/${diastolic}`;
+      clearInterval(releaseInterval);
+      systolic = Math.floor(Math.random() * (222 - 80 + 1)) + 80;
+      diastolic = Math.floor(systolic * 0.65);
+      bpReading.textContent = `Set BP: ${systolic}/${diastolic}`;
 
-      if (interval) clearInterval(interval);
-
-      interval = setInterval(() => {
-        pressure -= 1;
-        if (pressure < 0) {
-          pressure = 0;
-          clearInterval(interval);
+      releaseInterval = setInterval(() => {
+        if (currentPressure <= 0) {
+          clearInterval(releaseInterval);
+          stopHeartbeat();
+          bpReading.textContent = '';
+        } else {
+          currentPressure -= 0.5;
+          updateNeedle();
+          if (Math.round(currentPressure) === systolic && !beatStarted) {
+            startHeartbeat();
+          }
+          if (Math.round(currentPressure) === diastolic && beatStarted) {
+            stopHeartbeat();
+          }
         }
-
-        if (pressure <= systolic && pressure >= diastolic) {
-          playTone();
-        }
-
-        drawGauge();
-      }, 50);
+      }, 20);
     }
 
-    function playTone() {
-      if (!ctxAudio) {
-        ctxAudio = new (window.AudioContext || window.webkitAudioContext)();
-      }
-
-      const now = ctxAudio.currentTime;
-      const osc = ctxAudio.createOscillator();
-      const gain = ctxAudio.createGain();
-
-      osc.frequency.value = 660;
-      gain.gain.setValueAtTime(1, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-
-      osc.connect(gain).connect(ctxAudio.destination);
-      osc.start(now);
-      osc.stop(now + 0.1);
+    function playBeat() {
+      let osc = beatAudio.createOscillator();
+      let gain = beatAudio.createGain();
+      osc.connect(gain);
+      gain.connect(beatAudio.destination);
+      osc.frequency.setValueAtTime(1000, beatAudio.currentTime);
+      gain.gain.setValueAtTime(1, beatAudio.currentTime);
+      osc.start();
+      osc.stop(beatAudio.currentTime + 0.1);
     }
 
-    drawGauge();
+    function startHeartbeat() {
+      beatStarted = true;
+      beatInterval = setInterval(playBeat, 666); // 90 bpm = 666ms
+    }
+
+    function stopHeartbeat() {
+      clearInterval(beatInterval);
+      beatStarted = false;
+    }
+
+    updateNeedle(); // initialize position
   </script>
 </body>
 </html>
