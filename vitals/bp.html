@@ -6,21 +6,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
   <style>
     :root{
-      --bg:#0f172a; --card:#111827; --muted:#94a3b8; --text:#e5e7eb;
+      --bg:#e2e8f0; /* lighter background for readability */
+      --card:#111827; --muted:#94a3b8; --text:#e5e7eb;
       --accent:#22d3ee; --accent-2:#ef4444; --ring: rgba(34, 211, 238, .35);
     }
     *{box-sizing:border-box}
     html,body{height:100%; touch-action: manipulation;}
     body{
       margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      background:linear-gradient(180deg, #0b1220 0%, var(--bg) 60%); color:var(--text);
+      background:var(--bg); color:var(--text);
       -webkit-tap-highlight-color: transparent;
     }
     .app{max-width:480px;margin:0 auto;padding:env(safe-area-inset-top)16px env(safe-area-inset-bottom);
       display:flex;flex-direction:column;min-height:100dvh;gap:16px;}
-    .header{text-align:center;padding-top:8px;}
+    .header{text-align:center;padding-top:8px;color:#1e293b;}
     .title{margin:6px 0 0;font-weight:700;font-size:1.15rem;letter-spacing:.2px;}
-    .subtitle{margin-top:4px;color:var(--muted);font-size:.9rem;}
+    .subtitle{margin-top:4px;color:#334155;font-size:.9rem;}
     .card{background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
       border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:14px;
       box-shadow:0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);}
@@ -42,11 +43,10 @@
       background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
       color:var(--text);border-radius:14px;padding:12px 12px;font-weight:700;font-size:1rem;letter-spacing:.2px;
       box-shadow:0 8px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
-      transition:transform .04s ease, box-shadow .2s ease, border-color .2s ease;
+      transition:transform .04s ease;
       touch-action: manipulation; -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color: transparent;
     }
     .btn:active{transform:translateY(1px) scale(.99);}
-    .btn:focus-visible{outline:2px solid var(--ring); outline-offset:2px;}
     .btn-primary{border-color:rgba(34,211,238,.5);}
     .btn-danger{border-color:rgba(239,68,68,.45);}
     .btn-ghost{border-color:rgba(255,255,255,.12);}
@@ -58,7 +58,7 @@
     input[type="range"]::-webkit-slider-thumb{appearance:none;width:28px;height:28px;border-radius:50%;
       background:radial-gradient(circle at 35% 35%, #fff, #e5e7eb 55%, #94a3b8 100%);
       border:1px solid rgba(0,0,0,.25);box-shadow:0 6px 14px rgba(0,0,0,.45);margin-top:-7px;}
-    .footer{margin-top:auto;text-align:center;color:var(--muted);font-size:.8rem;opacity:.8;padding-bottom:4px;}
+    .footer{margin-top:auto;text-align:center;color:#334155;font-size:.8rem;opacity:.8;padding-bottom:4px;}
   </style>
 </head>
 <body>
@@ -95,19 +95,12 @@
       </div>
     </div>
 
-    <div class="footer">v1.2 • Scenario persists • Mobile optimized • Low-latency beat</div>
+    <div class="footer">v1.3 • Mid-pump beats • High contrast background</div>
   </div>
 
   <script>
-    // --- State ---
-    let currentPressure = 0;
-    let systolic = 120;
-    let diastolic = 80;
-    let scenarioActive = false; // set when Release is first pressed, cleared at 0 or reset
-    let releasing = false;
-    let beatStarted = false;
-
-    // --- Elements ---
+    let currentPressure = 0, systolic = 120, diastolic = 80;
+    let scenarioActive = false, releasing = false, beatStarted = false;
     const needle = document.getElementById("needle");
     const pressureDisplay = document.getElementById("pressureDisplay");
     const bpReading = document.getElementById("bpReading");
@@ -116,10 +109,7 @@
     const pumpBtn = document.getElementById("pumpBtn");
     const releaseBtn = document.getElementById("releaseBtn");
     const resetBtn = document.getElementById("resetBtn");
-
-    // --- Audio (prebuilt buffer for instant playback) ---
-    let audioCtx = null;
-    let beatBuffer = null;
+    let audioCtx = null, beatBuffer = null, beatTimer = null;
 
     function ensureAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -128,23 +118,15 @@
         const duration = 0.18, sr = audioCtx.sampleRate;
         const length = Math.floor(duration * sr);
         beatBuffer = audioCtx.createBuffer(1, length, sr);
-        const ch = beatBuffer.getChannelData(0);
-        const freq = 1000;
-        const attack = Math.floor(0.01 * sr);
-        const release = Math.floor(0.16 * sr);
+        const ch = beatBuffer.getChannelData(0), freq = 1000;
+        const attack = Math.floor(0.01 * sr), release = Math.floor(0.16 * sr);
         for (let i = 0; i < length; i++) {
           const t = i / sr;
-          let env = 0.001;
-          if (i < attack) env = i / attack;
-          else {
-            const k = (i - attack) / release;
-            env = Math.max(0.0008, Math.exp(-4 * k));
-          }
+          let env = i < attack ? i / attack : Math.exp(-4 * (i - attack) / release);
           ch[i] = Math.sin(2 * Math.PI * freq * t) * 0.9 * env;
         }
       }
     }
-
     function playBeat() {
       if (!audioCtx || !beatBuffer) return;
       const src = audioCtx.createBufferSource();
@@ -152,118 +134,90 @@
       src.connect(audioCtx.destination);
       src.start();
     }
-
     function startHeartbeat() {
       if (beatStarted) return;
       beatStarted = true;
-      playBeat(); // immediate first beat
-      beatTimer = setInterval(playBeat, 666); // ~90 bpm
+      playBeat();
+      beatTimer = setInterval(playBeat, 666);
     }
     function stopHeartbeat() {
       beatStarted = false;
       clearInterval(beatTimer);
       beatTimer = null;
     }
-    let beatTimer = null;
-
-    // --- Dial math (clockwise full circle, 0–280 mmHg) ---
-    // 0→-180° (bottom), 140→0° (top), 280→180° (bottom again)
     function pressureToAngle(p) {
       return (p / 280) * 360 - 180;
     }
-
     function updateNeedle() {
       const angle = pressureToAngle(currentPressure);
       needle.style.transform = `rotate(${angle}deg)`;
       pressureDisplay.textContent = Math.round(currentPressure);
     }
-
     function updateSpeedDisplay(val) { speedValueText.textContent = val; }
     speedSlider.addEventListener("input", e => updateSpeedDisplay(e.target.value));
 
-    // --- Controls ---
     pumpBtn.addEventListener("click", () => {
       ensureAudio();
-      // Pump can happen in any state; do not reset scenario.
       currentPressure = Math.min(280, currentPressure + 10);
       updateNeedle();
-
-      // If we pumped above systolic again, stop sounds until we cross down again
-      if (scenarioActive && beatStarted && currentPressure > systolic) {
-        stopHeartbeat();
+      if (scenarioActive) {
+        // New logic: play beat if within range even while pumping
+        if (currentPressure <= systolic && currentPressure >= diastolic) {
+          startHeartbeat();
+        } else {
+          stopHeartbeat();
+        }
       }
     });
 
     releaseBtn.addEventListener("click", () => {
       ensureAudio();
-
-      // First time: start a scenario and begin releasing
       if (!scenarioActive) {
         scenarioActive = true;
-        // Random realistic BP
-        systolic = Math.floor(Math.random() * (222 - 100 + 1)) + 100;  // 100–222
-        diastolic = Math.max(40, Math.floor(systolic * 0.6));          // ~60–70% of SYS
+        systolic = Math.floor(Math.random() * (222 - 100 + 1)) + 100;
+        diastolic = Math.max(40, Math.floor(systolic * 0.6));
         if (diastolic >= systolic) diastolic = systolic - 10;
         bpReading.textContent = `${systolic}/${diastolic}`;
         releasing = true;
         releaseBtn.textContent = "Pause Release";
-        return; // loop will take care of movement
+        return;
       }
-
-      // Otherwise: toggle valve
       releasing = !releasing;
       releaseBtn.textContent = releasing ? "Pause Release" : "Resume Release";
     });
 
     resetBtn.addEventListener("click", () => {
-      // Full reset of scenario
       stopHeartbeat();
-      scenarioActive = false;
-      releasing = false;
-      currentPressure = 0;
-      updateNeedle();
-      bpReading.textContent = "—/—";
+      scenarioActive = false; releasing = false; currentPressure = 0;
+      updateNeedle(); bpReading.textContent = "—/—";
       releaseBtn.textContent = "Release";
     });
 
-    // --- Single loop that drives deflation & heartbeat windows ---
     const TICK_MS = 90;
     setInterval(() => {
       if (!releasing) return;
       if (currentPressure <= 0) {
-        currentPressure = 0;
-        updateNeedle();
-        // End scenario cleanly
-        releasing = false;
-        scenarioActive = false;
-        stopHeartbeat();
-        bpReading.textContent = "—/—";
-        releaseBtn.textContent = "Release";
-        return;
+        currentPressure = 0; updateNeedle();
+        releasing = false; scenarioActive = false;
+        stopHeartbeat(); bpReading.textContent = "—/—";
+        releaseBtn.textContent = "Release"; return;
       }
-
       const step = parseFloat(speedSlider.value) || 0.5;
       const prev = currentPressure;
       currentPressure = Math.max(0, currentPressure - step);
       updateNeedle();
-
       if (scenarioActive) {
-        // Start beat when crossing systolic downward
         if (!beatStarted && prev >= systolic && currentPressure <= systolic) {
           startHeartbeat();
         }
-        // Stop when below/equal diastolic
         if (beatStarted && currentPressure <= diastolic) {
           stopHeartbeat();
         }
       }
     }, TICK_MS);
 
-    // Initialize UI
     updateNeedle();
     updateSpeedDisplay(speedSlider.value);
-
-    // Prime audio on first touch/click (iOS/Android policies)
     ["touchstart","mousedown"].forEach(evt=>{
       pumpBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
       releaseBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
