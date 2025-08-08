@@ -17,36 +17,34 @@
     }
 
     .image-container {
-      display: flex;
-      justify-content: center;
-      gap: 50px;
-      margin: 30px 0;
-    }
-
-    .image-box {
       position: relative;
       display: inline-block;
+      margin-top: 20px;
     }
 
-    .image-box img {
+    .image-container img {
       width: 300px;
-      border: 2px solid #ccc;
       border-radius: 10px;
+      border: 2px solid #ccc;
     }
 
     .button-overlay {
       position: absolute;
-      background-color: rgba(0, 123, 255, 0.7);
+      background-color: rgba(0, 123, 255, 0.8);
       color: white;
       border: none;
       padding: 5px 10px;
-      cursor: pointer;
       border-radius: 5px;
+      cursor: pointer;
       font-size: 14px;
     }
 
     .button-overlay:hover {
       background-color: rgba(0, 123, 255, 1);
+    }
+
+    #controls {
+      margin: 20px;
     }
 
     #audio-player {
@@ -58,33 +56,74 @@
 
   <h1>Breath Sound Simulator</h1>
 
-  <div class="image-container">
-    <div class="image-box">
-      <img src="front.png" alt="Front View">
-      <button class="button-overlay" style="top: 20%; left: 40%;" onclick="playSound('normal_sound.mp3')">Front Left</button>
-      <button class="button-overlay" style="top: 20%; right: 40%;" onclick="playSound('normal_sound.mp3')">Front Right</button>
-    </div>
+  <div id="controls">
+    <button onclick="rotateView()">Rotate Body</button>
+  </div>
 
-    <div class="image-box">
-      <img src="back.png" alt="Back View">
-      <button class="button-overlay" style="top: 20%; left: 40%;" onclick="playSound('normal_sound.mp3')">Back Left</button>
-      <button class="button-overlay" style="top: 20%; right: 40%;" onclick="playSound('normal_sound.mp3')">Back Right</button>
-    </div>
+  <div class="image-container" id="view-container">
+    <img id="currentImage" src="front_labeled.png" alt="Front View">
+
+    <!-- Buttons for Front View -->
+    <button class="button-overlay" style="top: 30%; left: 35%;" data-view="front" onclick="playSound('front_url.mp3')">URL</button>
+    <button class="button-overlay" style="top: 30%; right: 35%;" data-view="front" onclick="playSound('front_ull.mp3')">ULL</button>
+    <button class="button-overlay" style="top: 65%; left: 35%;" data-view="front" onclick="playSound('front_lrl.mp3')">LRL</button>
+    <button class="button-overlay" style="top: 65%; right: 35%;" data-view="front" onclick="playSound('front_lll.mp3')">LLL</button>
+
+    <!-- Buttons for Back View -->
+    <button class="button-overlay" style="top: 30%; left: 35%;" data-view="back" onclick="playSound('back_url.mp3')">URL</button>
+    <button class="button-overlay" style="top: 30%; right: 35%;" data-view="back" onclick="playSound('back_ull.mp3')">ULL</button>
+    <button class="button-overlay" style="top: 65%; left: 35%;" data-view="back" onclick="playSound('back_lrl.mp3')">LRL</button>
+    <button class="button-overlay" style="top: 65%; right: 35%;" data-view="back" onclick="playSound('back_lll.mp3')">LLL</button>
+
+    <!-- Buttons for Right View -->
+    <button class="button-overlay" style="top: 25%; left: 40%;" data-view="right" onclick="playSound('right_stridor.mp3')">Stridor</button>
+    <button class="button-overlay" style="top: 65%; left: 40%;" data-view="right" onclick="playSound('right_midaxillary.mp3')">Midaxillary</button>
+
+    <!-- Buttons for Left View -->
+    <button class="button-overlay" style="top: 25%; left: 40%;" data-view="left" onclick="playSound('left_stridor.mp3')">Stridor</button>
+    <button class="button-overlay" style="top: 65%; left: 40%;" data-view="left" onclick="playSound('left_midaxillary.mp3')">Midaxillary</button>
   </div>
 
   <div id="audio-player">
     <audio id="breathAudio" controls>
-      <source src="normal_sound.mp3" type="audio/mpeg">
+      <source src="" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
   </div>
 
   <script>
-    function playSound(src) {
+    const views = ["front", "right", "back", "left"];
+    const images = {
+      front: "front_labeled.png",
+      right: "right_view.png",
+      back: "back_labeled.png",
+      left: "left_view.png"
+    };
+
+    let currentViewIndex = 0;
+
+    function rotateView() {
+      currentViewIndex = (currentViewIndex + 1) % views.length;
+      const view = views[currentViewIndex];
+      document.getElementById("currentImage").src = images[view];
+      updateButtons(view);
+    }
+
+    function updateButtons(view) {
+      const allButtons = document.querySelectorAll(".button-overlay");
+      allButtons.forEach(btn => {
+        btn.style.display = btn.dataset.view === view ? "block" : "none";
+      });
+    }
+
+    function playSound(file) {
       const audio = document.getElementById('breathAudio');
-      audio.src = src;
+      audio.src = file;
       audio.play();
     }
+
+    // Initialize view
+    updateButtons("front");
   </script>
 
 </body>
