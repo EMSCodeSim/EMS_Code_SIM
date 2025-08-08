@@ -11,6 +11,10 @@
       text-align: center;
     }
 
+    h1 {
+      color: #333;
+    }
+
     .image-container {
       position: relative;
       display: inline-block;
@@ -39,16 +43,20 @@
     }
 
     #controls {
-      margin-bottom: 20px;
+      margin: 20px;
     }
 
     #audio-player {
       margin-top: 30px;
     }
 
+    #selector-panel {
+      margin-top: 20px;
+    }
+
     select {
-      margin-left: 5px;
-      font-size: 12px;
+      margin: 0 5px;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -61,58 +69,45 @@
   </div>
 
   <div class="image-container" id="view-container">
-    <img id="currentImage" src="front.png" alt="Front View">
+    <img id="currentImage" src="front.png" alt="View">
 
-    <!-- Example Button with Selector -->
-    <div class="button-overlay" style="top: 30%; left: 30%;" data-view="front">
-      URL
-      <select onchange="playSound(this, 'front_url')">
-        <option value="">--Sound--</option>
-        <option value="normal">Normal</option>
-        <option value="wheeze">Wheeze</option>
-        <option value="crackles">Crackles</option>
-        <option value="rhonchi">Rhonchi</option>
-        <option value="stridor">Stridor</option>
-      </select>
-    </div>
+    <!-- Front View Buttons -->
+    <button class="button-overlay" style="top: 30%; left: 30%;" data-view="front" onclick="play('left')">ULL</button>
+    <button class="button-overlay" style="top: 30%; right: 30%;" data-view="front" onclick="play('right')">URL</button>
+    <button class="button-overlay" style="top: 65%; left: 30%;" data-view="front" onclick="play('left')">LLL</button>
+    <button class="button-overlay" style="top: 65%; right: 30%;" data-view="front" onclick="play('right')">LRL</button>
 
-    <div class="button-overlay" style="top: 30%; right: 30%;" data-view="front">
-      ULL
-      <select onchange="playSound(this, 'front_ull')">
-        <option value="">--Sound--</option>
-        <option value="normal">Normal</option>
-        <option value="wheeze">Wheeze</option>
-        <option value="crackles">Crackles</option>
-        <option value="rhonchi">Rhonchi</option>
-        <option value="stridor">Stridor</option>
-      </select>
-    </div>
+    <!-- Back View Buttons -->
+    <button class="button-overlay" style="top: 30%; left: 30%;" data-view="back" onclick="play('left')">ULL</button>
+    <button class="button-overlay" style="top: 30%; right: 30%;" data-view="back" onclick="play('right')">URL</button>
+    <button class="button-overlay" style="top: 65%; left: 30%;" data-view="back" onclick="play('left')">LLL</button>
+    <button class="button-overlay" style="top: 65%; right: 30%;" data-view="back" onclick="play('right')">LRL</button>
 
-    <div class="button-overlay" style="top: 65%; left: 30%;" data-view="front">
-      LRL
-      <select onchange="playSound(this, 'front_lrl')">
-        <option value="">--Sound--</option>
-        <option value="normal">Normal</option>
-        <option value="wheeze">Wheeze</option>
-        <option value="crackles">Crackles</option>
-        <option value="rhonchi">Rhonchi</option>
-        <option value="stridor">Stridor</option>
-      </select>
-    </div>
+    <!-- Right View -->
+    <button class="button-overlay" style="top: 25%; left: 40%;" data-view="right" onclick="play('right')">Stridor</button>
+    <button class="button-overlay" style="top: 65%; left: 40%;" data-view="right" onclick="play('right')">Midaxillary</button>
 
-    <div class="button-overlay" style="top: 65%; right: 30%;" data-view="front">
-      LLL
-      <select onchange="playSound(this, 'front_lll')">
-        <option value="">--Sound--</option>
-        <option value="normal">Normal</option>
-        <option value="wheeze">Wheeze</option>
-        <option value="crackles">Crackles</option>
-        <option value="rhonchi">Rhonchi</option>
-        <option value="stridor">Stridor</option>
-      </select>
-    </div>
+    <!-- Left View -->
+    <button class="button-overlay" style="top: 25%; left: 40%;" data-view="left" onclick="play('left')">Stridor</button>
+    <button class="button-overlay" style="top: 65%; left: 40%;" data-view="left" onclick="play('left')">Midaxillary</button>
+  </div>
 
-    <!-- Add similar blocks for 'back', 'left', and 'right' if needed -->
+  <!-- Breath Sound Selector -->
+  <div id="selector-panel">
+    <label for="side">Side:</label>
+    <select id="side">
+      <option value="left">Left</option>
+      <option value="right">Right</option>
+    </select>
+
+    <label for="sound">Breath Sound:</label>
+    <select id="sound">
+      <option value="normal">Normal</option>
+      <option value="wheeze">Wheeze</option>
+      <option value="crackles">Crackles</option>
+      <option value="rhonchi">Rhonchi</option>
+      <option value="stridor">Stridor</option>
+    </select>
   </div>
 
   <div id="audio-player">
@@ -141,23 +136,23 @@
     }
 
     function updateButtons(view) {
-      const all = document.querySelectorAll(".button-overlay");
-      all.forEach(el => {
-        el.style.display = el.dataset.view === view ? "block" : "none";
+      const allButtons = document.querySelectorAll(".button-overlay");
+      allButtons.forEach(btn => {
+        btn.style.display = btn.dataset.view === view ? "block" : "none";
       });
     }
 
-    function playSound(selectElem, baseName) {
-      const type = selectElem.value;
-      if (!type) return;
+    function play(side) {
+      const sound = document.getElementById("sound").value;
+      if (!sound) return;
 
-      const file = `${baseName}_${type}.mp3`;
-      const audio = document.getElementById('breathAudio');
-      audio.src = file;
+      const filename = `${side}_${sound}.mp3`;  // e.g., left_wheeze.mp3
+      const audio = document.getElementById("breathAudio");
+      audio.src = filename;
       audio.play();
     }
 
-    // Init
+    // Initialize
     updateButtons("front");
   </script>
 
