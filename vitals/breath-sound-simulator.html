@@ -1,173 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Breath Sound Simulator</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <title>Breath Sound Simulator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .image-container {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      margin: 30px 0;
+    }
+
+    .image-box {
+      position: relative;
+      display: inline-block;
+    }
+
+    .image-box img {
+      width: 300px;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+    }
+
+    .button-overlay {
+      position: absolute;
+      background-color: rgba(0, 123, 255, 0.7);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .button-overlay:hover {
+      background-color: rgba(0, 123, 255, 1);
+    }
+
+    #audio-player {
+      margin-top: 30px;
+    }
+  </style>
 </head>
 <body>
-    <div class="simulator-container">
-        <header>
-            <h1>Breath Sound Simulator</h1>
-        </header>
 
-        <!-- View toggle buttons for Anterior and Posterior -->
-        <div class="view-toggle">
-            <button id="anteriorBtn">Anterior View</button>
-            <button id="posteriorBtn">Posterior View</button>
-        </div>
+  <h1>Breath Sound Simulator</h1>
 
-        <!-- Image container for chest diagram with clickable points -->
-        <div class="diagram-container">
-            <img id="chestImage" src="/front.png" alt="Anterior Chest View" class="chest-img" />
-            <!-- Add buttons for each auscultation point -->
-            <button class="auscultation-point" id="RUL" style="top: 20%; left: 25%;">Right Upper Lung</button>
-            <button class="auscultation-point" id="LUL" style="top: 20%; left: 55%;">Left Upper Lung</button>
-            <button class="auscultation-point" id="RLL" style="top: 60%; left: 25%;">Right Lower Lung</button>
-            <button class="auscultation-point" id="LLL" style="top: 60%; left: 55%;">Left Lower Lung</button>
-        </div>
-
-        <!-- Sound Controls -->
-        <div class="controls">
-            <div class="sound-controls">
-                <label for="soundType">Select Breath Sound: </label>
-                <select id="soundType">
-                    <option value="normal">Normal</option>
-                    <option value="stridor">Stridor</option>
-                    <option value="wheezing">Wheezing</option>
-                </select>
-
-                <label for="volume">Volume: </label>
-                <input type="range" id="volume" min="0" max="100" value="50">
-
-                <div class="audio-player">
-                    <!-- Media Player -->
-                    <audio id="audioPlayer" preload="auto">
-                        <source id="audioSource" src="/normal_sound.mp3" type="audio/mp3">
-                        Your browser does not support the audio element.
-                    </audio>
-
-                    <button id="playSoundBtn">Play</button>
-                    <button id="pauseSoundBtn">Pause</button>
-                    <button id="stopSoundBtn">Stop</button>
-
-                    <div class="progress-container">
-                        <input type="range" id="audioProgress" value="0" max="100" step="1">
-                        <span id="currentTime">0:00</span> / <span id="totalTime">0:00</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div class="image-container">
+    <div class="image-box">
+      <img src="front.png" alt="Front View">
+      <button class="button-overlay" style="top: 20%; left: 40%;" onclick="playSound('normal_sound.mp3')">Front Left</button>
+      <button class="button-overlay" style="top: 20%; right: 40%;" onclick="playSound('normal_sound.mp3')">Front Right</button>
     </div>
 
-    <footer>
-        <p>Instructions: Click on a lung area to listen to breath sounds.</p>
-        <button id="resetBtn">Reset Simulation</button>
-    </footer>
+    <div class="image-box">
+      <img src="back.png" alt="Back View">
+      <button class="button-overlay" style="top: 20%; left: 40%;" onclick="playSound('normal_sound.mp3')">Back Left</button>
+      <button class="button-overlay" style="top: 20%; right: 40%;" onclick="playSound('normal_sound.mp3')">Back Right</button>
+    </div>
+  </div>
 
-    <!-- Place JavaScript here instead of linking to app.js -->
-    <script>
-        // Initialize audio files (ensure these files are in your project folder)
-        const sounds = {
-            normal: new Audio('vitals/normal_sound.mp3'),  // Path to normal sound
-            stridor: new Audio('vitals/stridor_sound.mp3'), // Path to stridor sound
-            wheezing: new Audio('/wheezing_sound.mp3') // Path to wheezing sound
-        };
+  <div id="audio-player">
+    <audio id="breathAudio" controls>
+      <source src="normal_sound.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
 
-        let currentSound = sounds.normal; // Default sound is normal
-        let currentVolume = 0.5; // Default volume level
+  <script>
+    function playSound(src) {
+      const audio = document.getElementById('breathAudio');
+      audio.src = src;
+      audio.play();
+    }
+  </script>
 
-        // Get the audio player element and related controls
-        const audioPlayer = document.getElementById('audioPlayer');
-        const audioProgress = document.getElementById('audioProgress');
-        const currentTimeSpan = document.getElementById('currentTime');
-        const totalTimeSpan = document.getElementById('totalTime');
-        const playButton = document.getElementById('playSoundBtn');
-        const pauseButton = document.getElementById('pauseSoundBtn');
-        const stopButton = document.getElementById('stopSoundBtn');
-
-        // Event listener for the "Play" button
-        playButton.addEventListener('click', () => {
-            currentSound.volume = currentVolume;  // Set volume based on slider
-            currentSound.play();  // Play the selected sound
-        });
-
-        // Event listener for the "Pause" button
-        pauseButton.addEventListener('click', () => {
-            currentSound.pause();  // Pause the current sound
-        });
-
-        // Event listener for the "Stop" button
-        stopButton.addEventListener('click', () => {
-            currentSound.pause();  // Pause the current sound
-            currentSound.currentTime = 0;  // Reset the sound to the beginning
-        });
-
-        // Event listener for lung area buttons (simulate auscultation)
-        document.getElementById('RUL').addEventListener('click', () => {
-            playSoundForLung('normal');
-        });
-
-        document.getElementById('LUL').addEventListener('click', () => {
-            playSoundForLung('wheezing');
-        });
-
-        document.getElementById('RLL').addEventListener('click', () => {
-            playSoundForLung('stridor');
-        });
-
-        document.getElementById('LLL').addEventListener('click', () => {
-            playSoundForLung('normal');
-        });
-
-        // Function to play sound based on lung area
-        function playSoundForLung(lung) {
-            currentSound.pause();
-            currentSound = sounds[lung];  // Set the new sound based on the lung area
-            currentSound.play();  // Play the selected sound
-        }
-
-        // Update the progress bar as the audio plays
-        audioPlayer.addEventListener('timeupdate', () => {
-            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-            audioProgress.value = progress;
-
-            // Update current time and total time display
-            const currentMinutes = Math.floor(audioPlayer.currentTime / 60);
-            const currentSeconds = Math.floor(audioPlayer.currentTime % 60);
-            const totalMinutes = Math.floor(audioPlayer.duration / 60);
-            const totalSeconds = Math.floor(audioPlayer.duration % 60);
-
-            currentTimeSpan.textContent = `${currentMinutes}:${currentSeconds < 10 ? '0' : ''}${currentSeconds}`;
-            totalTimeSpan.textContent = `${totalMinutes}:${totalSeconds < 10 ? '0' : ''}${totalSeconds}`;
-        });
-
-        // Volume control
-        document.getElementById('volume').addEventListener('input', (event) => {
-            currentVolume = event.target.value / 100;  // Update volume value based on the slider
-            currentSound.volume = currentVolume;  // Apply new volume to the sound
-        });
-
-        // Event listeners for Anterior and Posterior view buttons
-        document.getElementById('anteriorBtn').addEventListener('click', () => {
-            document.getElementById('chestImage').src = 'vitals/front.png'; // Update with front image path
-        });
-
-        document.getElementById('posteriorBtn').addEventListener('click', () => {
-            document.getElementById('chestImage').src = 'vitals/back.png'; // Update with back image path
-        });
-
-        // Reset button functionality
-        document.getElementById('resetBtn').addEventListener('click', () => {
-            document.getElementById('chestImage').src = 'vitals/front.png'; // Reset image
-            document.getElementById('soundType').value = 'normal'; // Reset sound selection
-            document.getElementById('volume').value = 50; // Reset volume to 50%
-            currentVolume = 0.5;
-            currentSound.pause();
-            currentSound.currentTime = 0;
-            audioProgress.value = 0;
-        });
-    </script>
 </body>
 </html>
