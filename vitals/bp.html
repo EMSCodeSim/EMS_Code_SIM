@@ -36,11 +36,11 @@
       top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 2px 6px rgba(0,0,0,.5);z-index:3;}
     .readouts{display:flex;justify-content:space-between;gap:10px;margin-top:10px;color:var(--muted);font-size:.95rem;}
     .readouts b{color:var(--text);}
-    .controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;}
+    .controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px;}
     .btn{
       appearance:none;border:1px solid rgba(255,255,255,.08);
       background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
-      color:var(--text);border-radius:14px;padding:14px 16px;font-weight:700;font-size:1.05rem;letter-spacing:.2px;
+      color:var(--text);border-radius:14px;padding:12px 12px;font-weight:700;font-size:1rem;letter-spacing:.2px;
       box-shadow:0 8px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
       transition:transform .04s ease, box-shadow .2s ease, border-color .2s ease;
       touch-action: manipulation; -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color: transparent;
@@ -49,7 +49,8 @@
     .btn:focus-visible{outline:2px solid var(--ring); outline-offset:2px;}
     .btn-primary{border-color:rgba(34,211,238,.5);}
     .btn-danger{border-color:rgba(239,68,68,.45);}
-    .slider-wrap{margin-top:8px;}
+    .btn-ghost{border-color:rgba(255,255,255,.12);}
+    .slider-wrap{margin-top:10px;}
     .slider-label{display:flex;justify-content:space-between;align-items:center;font-size:.92rem;color:var(--muted);margin-bottom:8px;}
     input[type="range"]{width:100%;appearance:none;height:14px;
       background:linear-gradient(90deg, rgba(34,211,238,.35), rgba(34,211,238,.15));
@@ -64,7 +65,7 @@
   <div class="app">
     <div class="header">
       <div class="title">Blood Pressure Simulator</div>
-      <div class="subtitle">Pump to inflate • Release to deflate • Beat plays between SYS→DIA</div>
+      <div class="subtitle">Pump to inflate • Toggle release • Beat plays between SYS→DIA</div>
     </div>
 
     <div class="card">
@@ -82,6 +83,7 @@
       <div class="controls">
         <button class="btn btn-primary" id="pumpBtn">Pump +10</button>
         <button class="btn btn-danger" id="releaseBtn">Release</button>
+        <button class="btn btn-ghost" id="resetBtn">Reset</button>
       </div>
 
       <div class="slider-wrap">
@@ -93,7 +95,7 @@
       </div>
     </div>
 
-    <div class="footer">v1.1 • Mobile optimized • Low-latency beat</div>
+    <div class="footer">v1.2 • Scenario persists • Mobile optimized • Low-latency beat</div>
   </div>
 
   <script>
@@ -101,9 +103,9 @@
     let currentPressure = 0;
     let systolic = 120;
     let diastolic = 80;
+    let scenarioActive = false; // set when Release is first pressed, cleared at 0 or reset
+    let releasing = false;
     let beatStarted = false;
-    let releaseInterval = null;
-    let beatInterval = null;
 
     // --- Elements ---
     const needle = document.getElementById("needle");
@@ -113,21 +115,17 @@
     const speedValueText = document.getElementById("speedValue");
     const pumpBtn = document.getElementById("pumpBtn");
     const releaseBtn = document.getElementById("releaseBtn");
+    const resetBtn = document.getElementById("resetBtn");
 
     // --- Audio (prebuilt buffer for instant playback) ---
     let audioCtx = null;
     let beatBuffer = null;
 
     function ensureAudio() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === "suspended") {
-        audioCtx.resume();
-      }
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
       if (!beatBuffer) {
-        const duration = 0.18;
-        const sr = audioCtx.sampleRate;
+        const duration = 0.18, sr = audioCtx.sampleRate;
         const length = Math.floor(duration * sr);
         beatBuffer = audioCtx.createBuffer(1, length, sr);
         const ch = beatBuffer.getChannelData(0);
@@ -147,29 +145,29 @@
       }
     }
 
-    function playBeat(atTime = 0) {
+    function playBeat() {
       if (!audioCtx || !beatBuffer) return;
       const src = audioCtx.createBufferSource();
       src.buffer = beatBuffer;
       src.connect(audioCtx.destination);
-      if (atTime) src.start(atTime); else src.start();
+      src.start();
     }
 
     function startHeartbeat() {
       if (beatStarted) return;
       beatStarted = true;
-      playBeat();                 // immediate first beat (no delay)
-      beatInterval = setInterval(() => playBeat(), 666); // ≈90 bpm
+      playBeat(); // immediate first beat
+      beatTimer = setInterval(playBeat, 666); // ~90 bpm
     }
-
     function stopHeartbeat() {
       beatStarted = false;
-      clearInterval(beatInterval);
-      beatInterval = null;
+      clearInterval(beatTimer);
+      beatTimer = null;
     }
+    let beatTimer = null;
 
     // --- Dial math (clockwise full circle, 0–280 mmHg) ---
-    // Mapping: 0→-180° (bottom), 140→0° (top), 280→180° (bottom again)
+    // 0→-180° (bottom), 140→0° (top), 280→180° (bottom again)
     function pressureToAngle(p) {
       return (p / 280) * 360 - 180;
     }
@@ -180,55 +178,86 @@
       pressureDisplay.textContent = Math.round(currentPressure);
     }
 
-    function updateSpeedDisplay(val) {
-      speedValueText.textContent = val;
-    }
+    function updateSpeedDisplay(val) { speedValueText.textContent = val; }
     speedSlider.addEventListener("input", e => updateSpeedDisplay(e.target.value));
 
     // --- Controls ---
     pumpBtn.addEventListener("click", () => {
       ensureAudio();
-      clearInterval(releaseInterval);
+      // Pump can happen in any state; do not reset scenario.
       currentPressure = Math.min(280, currentPressure + 10);
       updateNeedle();
+
+      // If we pumped above systolic again, stop sounds until we cross down again
+      if (scenarioActive && beatStarted && currentPressure > systolic) {
+        stopHeartbeat();
+      }
     });
 
     releaseBtn.addEventListener("click", () => {
       ensureAudio();
-      clearInterval(releaseInterval);
 
-      // Random realistic BP each release
-      systolic = Math.floor(Math.random() * (222 - 100 + 1)) + 100; // 100–222
-      diastolic = Math.max(40, Math.floor(systolic * 0.6));        // ~60–70% of SYS
-      if (diastolic >= systolic) diastolic = systolic - 10;
-      bpReading.textContent = `${systolic}/${diastolic}`;
+      // First time: start a scenario and begin releasing
+      if (!scenarioActive) {
+        scenarioActive = true;
+        // Random realistic BP
+        systolic = Math.floor(Math.random() * (222 - 100 + 1)) + 100;  // 100–222
+        diastolic = Math.max(40, Math.floor(systolic * 0.6));          // ~60–70% of SYS
+        if (diastolic >= systolic) diastolic = systolic - 10;
+        bpReading.textContent = `${systolic}/${diastolic}`;
+        releasing = true;
+        releaseBtn.textContent = "Pause Release";
+        return; // loop will take care of movement
+      }
 
-      const step = parseFloat(speedSlider.value); // mmHg per tick
-      const tickMs = 90;                          // smooth-ish deflate
+      // Otherwise: toggle valve
+      releasing = !releasing;
+      releaseBtn.textContent = releasing ? "Pause Release" : "Resume Release";
+    });
 
-      releaseInterval = setInterval(() => {
-        if (currentPressure <= 0) {
-          currentPressure = 0;
-          updateNeedle();
-          clearInterval(releaseInterval);
-          stopHeartbeat();
-          bpReading.textContent = "—/—";
-          return;
-        }
+    resetBtn.addEventListener("click", () => {
+      // Full reset of scenario
+      stopHeartbeat();
+      scenarioActive = false;
+      releasing = false;
+      currentPressure = 0;
+      updateNeedle();
+      bpReading.textContent = "—/—";
+      releaseBtn.textContent = "Release";
+    });
 
-        const prev = currentPressure;
-        currentPressure = Math.max(0, currentPressure - step);
+    // --- Single loop that drives deflation & heartbeat windows ---
+    const TICK_MS = 90;
+    setInterval(() => {
+      if (!releasing) return;
+      if (currentPressure <= 0) {
+        currentPressure = 0;
         updateNeedle();
+        // End scenario cleanly
+        releasing = false;
+        scenarioActive = false;
+        stopHeartbeat();
+        bpReading.textContent = "—/—";
+        releaseBtn.textContent = "Release";
+        return;
+      }
 
-        // Crossing detection for precise beat start/stop
+      const step = parseFloat(speedSlider.value) || 0.5;
+      const prev = currentPressure;
+      currentPressure = Math.max(0, currentPressure - step);
+      updateNeedle();
+
+      if (scenarioActive) {
+        // Start beat when crossing systolic downward
         if (!beatStarted && prev >= systolic && currentPressure <= systolic) {
           startHeartbeat();
         }
+        // Stop when below/equal diastolic
         if (beatStarted && currentPressure <= diastolic) {
           stopHeartbeat();
         }
-      }, tickMs);
-    });
+      }
+    }, TICK_MS);
 
     // Initialize UI
     updateNeedle();
@@ -238,6 +267,7 @@
     ["touchstart","mousedown"].forEach(evt=>{
       pumpBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
       releaseBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
+      resetBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
     });
   </script>
 </body>
