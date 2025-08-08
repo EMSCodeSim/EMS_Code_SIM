@@ -9,9 +9,9 @@ const stopButton = document.getElementById('stopSoundBtn');
 
 // Set initial sound file (ensure the path is correct)
 const sounds = {
-    normal: new Audio('main/vitals/normal_sound.mp3'),
-    stridor: new Audio('main/vitals/stridor_sound.mp3'),
-    wheezing: new Audio('main/vitals/wheezing_sound.mp3'),
+    normal: new Audio('vitals/normal_sound.mp3'),
+    stridor: new Audio('vitals/stridor_sound.mp3'),
+    wheezing: new Audio('vitals/wheezing_sound.mp3')
 };
 
 let currentSound = sounds.normal; // Default sound is normal
@@ -54,8 +54,8 @@ document.getElementById('LLL').addEventListener('click', () => {
 // Function to play sound based on lung area
 function playSoundForLung(lung) {
     currentSound.pause();
-    currentSound = sounds[lung];
-    currentSound.play();
+    currentSound = sounds[lung]; // Set the new sound based on the lung area
+    currentSound.play(); // Play the selected sound
 }
 
 // Update the progress bar as the audio plays
@@ -81,16 +81,16 @@ document.getElementById('volume').addEventListener('input', (event) => {
 
 // Event listeners for Anterior and Posterior view buttons
 document.getElementById('anteriorBtn').addEventListener('click', () => {
-    document.getElementById('chestImage').src = 'main/vitals/front.jpg';
+    document.getElementById('chestImage').src = 'vitals/front.png';
 });
 
 document.getElementById('posteriorBtn').addEventListener('click', () => {
-    document.getElementById('chestImage').src = 'main/vitals/back.jpg';
+    document.getElementById('chestImage').src = 'vitals/back.png';
 });
 
 // Reset button functionality
 document.getElementById('resetBtn').addEventListener('click', () => {
-    document.getElementById('chestImage').src = 'main/vitals/front.jpg';
+    document.getElementById('chestImage').src = 'vitals/front.png';
     document.getElementById('soundType').value = 'normal';
     document.getElementById('volume').value = 50;
     currentVolume = 0.5;
