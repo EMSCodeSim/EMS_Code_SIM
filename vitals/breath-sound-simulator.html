@@ -44,7 +44,7 @@
                 <div class="audio-player">
                     <!-- Media Player -->
                     <audio id="audioPlayer" preload="auto">
-                        <source id="audioSource" src="vitals/normal_sound.mp3" type="audio/mp3">
+                        <source id="audioSource" src="/normal_sound.mp3" type="audio/mp3">
                         Your browser does not support the audio element.
                     </audio>
 
@@ -72,7 +72,7 @@
         const sounds = {
             normal: new Audio('vitals/normal_sound.mp3'),  // Path to normal sound
             stridor: new Audio('vitals/stridor_sound.mp3'), // Path to stridor sound
-            wheezing: new Audio('vitals/wheezing_sound.mp3') // Path to wheezing sound
+            wheezing: new Audio('/wheezing_sound.mp3') // Path to wheezing sound
         };
 
         let currentSound = sounds.normal; // Default sound is normal
