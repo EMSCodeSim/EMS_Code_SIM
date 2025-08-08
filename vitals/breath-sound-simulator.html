@@ -1,113 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Breath Sound Simulator</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
-      padding: 20px;
-      text-align: center;
+    body { font-family: Arial, sans-serif; background:#f0f0f0; margin:0; padding:20px; text-align:center; }
+    h1 { margin:0 0 10px; }
+    #controls { margin: 10px 0 20px; }
+    .image-container { position: relative; display: inline-block; }
+    .image-container img { width: 320px; border-radius: 10px; border: 2px solid #ccc; background:#fff; }
+    .point {
+      position: absolute; background: rgba(0,123,255,.9); color:#fff; border:none;
+      padding:6px 10px; border-radius:6px; font-size:12px; cursor:pointer;
     }
-
-    h1 {
-      color: #333;
-    }
-
-    .image-container {
-      position: relative;
-      display: inline-block;
-      margin-top: 20px;
-    }
-
-    .image-container img {
-      width: 300px;
-      border-radius: 10px;
-      border: 2px solid #ccc;
-    }
-
-    .button-overlay {
-      position: absolute;
-      background-color: rgba(0, 123, 255, 0.85);
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-
-    .button-overlay:hover {
-      background-color: rgba(0, 123, 255, 1);
-    }
-
-    #controls {
-      margin: 20px;
-    }
-
-    #audio-player {
-      margin-top: 30px;
-    }
-
-    #selector-panel {
-      margin-top: 20px;
-    }
-
-    select {
-      margin: 0 5px;
-      font-size: 14px;
-    }
+    .point:hover { background: rgba(0,123,255,1); }
+    #selectors { margin:16px 0; display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+    #selectors label { font-weight:bold; margin-right:6px; }
+    #audio-player { margin-top: 20px; }
   </style>
 </head>
 <body>
-
   <h1>Breath Sound Simulator</h1>
 
   <div id="controls">
     <button onclick="rotateView()">Rotate Body</button>
+    <span id="viewLabel" style="margin-left:10px; color:#555;"></span>
   </div>
 
-  <div class="image-container" id="view-container">
-    <img id="currentImage" src="front.png" alt="View">
+  <div class="image-container">
+    <img id="currentImage" src="front.png" alt="Front">
 
-    <!-- Front View Buttons -->
-    <button class="button-overlay" style="top: 30%; left: 30%;" data-view="front" onclick="play('left')">ULL</button>
-    <button class="button-overlay" style="top: 30%; right: 30%;" data-view="front" onclick="play('right')">URL</button>
-    <button class="button-overlay" style="top: 65%; left: 30%;" data-view="front" onclick="play('left')">LLL</button>
-    <button class="button-overlay" style="top: 65%; right: 30%;" data-view="front" onclick="play('right')">LRL</button>
+    <!-- FRONT (URL, ULL, LRL, LLL) -->
+    <button class="point" data-view="front" style="top:28%; left:30%;"  onclick="play('left')">ULL</button>
+    <button class="point" data-view="front" style="top:28%; right:30%;" onclick="play('right')">URL</button>
+    <button class="point" data-view="front" style="top:64%; left:30%;"  onclick="play('left')">LLL</button>
+    <button class="point" data-view="front" style="top:64%; right:30%;" onclick="play('right')">LRL</button>
 
-    <!-- Back View Buttons -->
-    <button class="button-overlay" style="top: 30%; left: 30%;" data-view="back" onclick="play('left')">ULL</button>
-    <button class="button-overlay" style="top: 30%; right: 30%;" data-view="back" onclick="play('right')">URL</button>
-    <button class="button-overlay" style="top: 65%; left: 30%;" data-view="back" onclick="play('left')">LLL</button>
-    <button class="button-overlay" style="top: 65%; right: 30%;" data-view="back" onclick="play('right')">LRL</button>
+    <!-- BACK (URL, ULL, LRL, LLL) -->
+    <button class="point" data-view="back" style="top:28%; left:30%;"  onclick="play('left')">ULL</button>
+    <button class="point" data-view="back" style="top:28%; right:30%;" onclick="play('right')">URL</button>
+    <button class="point" data-view="back" style="top:64%; left:30%;"  onclick="play('left')">LLL</button>
+    <button class="point" data-view="back" style="top:64%; right:30%;" onclick="play('right')">LRL</button>
 
-    <!-- Right View -->
-    <button class="button-overlay" style="top: 25%; left: 40%;" data-view="right" onclick="play('right')">Stridor</button>
-    <button class="button-overlay" style="top: 65%; left: 40%;" data-view="right" onclick="play('right')">Midaxillary</button>
+    <!-- RIGHT (Neck/Stridor + Midaxillary) -->
+    <button class="point" data-view="right" style="top:24%; left:42%;" onclick="play('right')">Neck</button>
+    <button class="point" data-view="right" style="top:62%; left:42%;" onclick="play('right')">Midaxillary</button>
 
-    <!-- Left View -->
-    <button class="button-overlay" style="top: 25%; left: 40%;" data-view="left" onclick="play('left')">Stridor</button>
-    <button class="button-overlay" style="top: 65%; left: 40%;" data-view="left" onclick="play('left')">Midaxillary</button>
+    <!-- LEFT (Neck/Stridor + Midaxillary) -->
+    <button class="point" data-view="left" style="top:24%; left:42%;" onclick="play('left')">Neck</button>
+    <button class="point" data-view="left" style="top:62%; left:42%;" onclick="play('left')">Midaxillary</button>
   </div>
 
-  <!-- Breath Sound Selector -->
-  <div id="selector-panel">
-    <label for="side">Side:</label>
-    <select id="side">
-      <option value="left">Left</option>
-      <option value="right">Right</option>
-    </select>
-
-    <label for="sound">Breath Sound:</label>
-    <select id="sound">
-      <option value="normal">Normal</option>
-      <option value="wheeze">Wheeze</option>
-      <option value="crackles">Crackles</option>
-      <option value="rhonchi">Rhonchi</option>
-      <option value="stridor">Stridor</option>
-    </select>
+  <!-- Choose sounds for each side (maps to your two files) -->
+  <div id="selectors">
+    <div>
+      <label for="leftSound">Left sound:</label>
+      <select id="leftSound" onchange="setSide('left', this.value)">
+        <option value="normal">Normal</option>
+        <option value="wheeze">Wheeze</option>
+      </select>
+    </div>
+    <div>
+      <label for="rightSound">Right sound:</label>
+      <select id="rightSound" onchange="setSide('right', this.value)">
+        <option value="normal">Normal</option>
+        <option value="wheeze">Wheeze</option>
+      </select>
+    </div>
   </div>
 
   <div id="audio-player">
@@ -118,13 +78,35 @@
   </div>
 
   <script>
+    // Available views and images (same folder as this HTML)
     const views = ["front", "right", "back", "left"];
     const images = {
       front: "front.png",
       right: "right.png",
-      back: "back.png",
-      left: "left.png"
+      back:  "back.png",
+      left:  "left.png"
     };
+
+    // Map our two sound types to your actual files
+    const SOUND_FILES = {
+      normal: "normal_sound.mp3",
+      wheeze: "wheezing_sound.mp3"
+    };
+
+    // Current per-side sound choices
+    let sideSound = { left: "normal", right: "normal" };
+
+    function setSide(side, soundType) {
+      sideSound[side] = soundType;
+    }
+
+    function play(side) {
+      const type = sideSound[side];                   // "normal" or "wheeze"
+      const file = SOUND_FILES[type];                 // -> "normal_sound.mp3" or "wheezing_sound.mp3"
+      const audio = document.getElementById("breathAudio");
+      audio.src = file;
+      audio.play();
+    }
 
     let currentViewIndex = 0;
 
@@ -132,29 +114,20 @@
       currentViewIndex = (currentViewIndex + 1) % views.length;
       const view = views[currentViewIndex];
       document.getElementById("currentImage").src = images[view];
-      updateButtons(view);
+      document.getElementById("currentImage").alt = view.charAt(0).toUpperCase() + view.slice(1);
+      document.getElementById("viewLabel").textContent = `View: ${view.toUpperCase()}`;
+      togglePoints(view);
     }
 
-    function updateButtons(view) {
-      const allButtons = document.querySelectorAll(".button-overlay");
-      allButtons.forEach(btn => {
-        btn.style.display = btn.dataset.view === view ? "block" : "none";
+    function togglePoints(view) {
+      document.querySelectorAll(".point").forEach(btn => {
+        btn.style.display = (btn.dataset.view === view) ? "inline-block" : "none";
       });
     }
 
-    function play(side) {
-      const sound = document.getElementById("sound").value;
-      if (!sound) return;
-
-      const filename = `${side}_${sound}.mp3`;  // e.g., left_wheeze.mp3
-      const audio = document.getElementById("breathAudio");
-      audio.src = filename;
-      audio.play();
-    }
-
-    // Initialize
-    updateButtons("front");
+    // Init to front view
+    document.getElementById("viewLabel").textContent = "View: FRONT";
+    togglePoints("front");
   </script>
-
 </body>
 </html>
