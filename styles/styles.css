@@ -1,0 +1,150 @@
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body and container styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+}
+
+.simulator-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 800px;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+}
+
+/* View toggle buttons */
+.view-toggle button {
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 10px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.view-toggle button:hover {
+    background-color: #0056b3;
+}
+
+/* Chest diagram styles */
+.diagram-container {
+    position: relative;
+    margin: 20px 0;
+}
+
+.chest-img {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Position buttons for lung areas */
+.auscultation-point {
+    position: absolute;
+    padding: 10px;
+    font-size: 14px;
+    background-color: rgba(0, 123, 255, 0.6);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.auscultation-point:hover {
+    background-color: rgba(0, 123, 255, 0.9);
+}
+
+/* Sound controls */
+.controls {
+    margin-top: 30px;
+}
+
+.sound-controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+}
+
+.sound-controls select, .sound-controls input {
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.sound-controls button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.sound-controls button:hover {
+    background-color: #218838;
+}
+
+/* Audio player */
+.audio-player {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.progress-container {
+    margin-top: 10px;
+}
+
+#audioProgress {
+    width: 100%;
+    margin-top: 5px;
+}
+
+footer {
+    margin-top: 40px;
+    font-size: 14px;
+    color: #777;
+}
+
+footer button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+footer button:hover {
+    background-color: #c82333;
+}
