@@ -3,167 +3,322 @@
 <head>
   <meta charset="UTF-8" />
   <title>Blood Pressure Simulator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #f9f9f9;
+    :root{
+      --bg:#0f172a;         /* slate-900 */
+      --card:#111827;       /* gray-900 */
+      --muted:#94a3b8;      /* slate-400 */
+      --text:#e5e7eb;       /* gray-200 */
+      --accent:#22d3ee;     /* cyan-400 */
+      --accent-2:#ef4444;   /* red-500 */
+      --ring: rgba(34, 211, 238, .35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background:linear-gradient(180deg, #0b1220 0%, var(--bg) 60%);
+      color:var(--text);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .app{
+      max-width: 480px;
+      margin: 0 auto;
+      padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+      display:flex;
+      flex-direction:column;
+      min-height:100dvh;
+      gap:16px;
+    }
+    .header{
+      text-align:center;
+      padding-top:8px;
+    }
+    .title{
+      margin:6px 0 0;
+      font-weight:700;
+      font-size:1.15rem;
+      letter-spacing:.2px;
+    }
+    .subtitle{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:18px;
+      padding:14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
     }
 
-    #gauge-container {
-      position: relative;
-      width: 300px;
-      height: 300px;
-      margin: 20px auto;
+    /* Gauge */
+    #gauge-container{
+      position:relative;
+      width: min(92vw, 360px);
+      height: min(92vw, 360px);
+      margin: 0 auto;
     }
-
-    #dial {
-      width: 100%;
-      display: block;
+    #dial{
+      width:100%;
+      height:100%;
+      display:block;
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,.35));
+      border-radius:50%;
+      user-select:none;
+      -webkit-user-drag:none;
     }
-
-    #needle {
-      position: absolute;
-      width: 4px;
-      height: 140px;
-      background-color: red;
-      top: 50%;
-      left: 50%;
-      margin-left: -2px;
-      margin-top: -140px;
+    #needle{
+      position:absolute;
+      width:4px;
+      height:44%;
+      background: linear-gradient(180deg, #fecaca 0%, #ef4444 60%, #7f1d1d 100%);
+      top:50%;
+      left:50%;
       transform-origin: bottom center;
-      z-index: 10;
-      transform: rotate(-180deg);
-      transition: transform 0.1s linear;
+      transform: rotate(-180deg); /* 0 mmHg at bottom */
+      transition: transform .08s linear;
+      z-index:2;
+      /* center pivot */
+      margin-left:-2px;
+      margin-top: calc(-44%);
+    }
+    .hub{
+      position:absolute;
+      width:18px;height:18px;border-radius:50%;
+      background: radial-gradient(circle at 35% 35%, #ffffff, #c7c7c7 45%, #444 65%, #111 100%);
+      top:50%;left:50%;transform:translate(-50%,-50%);
+      box-shadow: 0 2px 6px rgba(0,0,0,.5);
+      z-index:3;
     }
 
-    button, input[type="range"] {
-      margin: 10px;
-      padding: 10px 20px;
-      font-size: 1rem;
+    /* Readouts */
+    .readouts{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:10px;
+      color:var(--muted);
+      font-size:.95rem;
     }
+    .readouts b{ color: var(--text); }
 
-    #pressureDisplay {
-      margin-top: 10px;
-      font-size: 1.2rem;
+    /* Controls */
+    .controls{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      margin-top:10px;
     }
-
-    #bpReading {
-      font-weight: bold;
+    .btn{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      color:var(--text);
+      border-radius:14px;
+      padding:14px 16px;
+      font-weight:700;
+      font-size:1.05rem;
+      letter-spacing:.2px;
+      box-shadow: 0 8px 18px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
+      transition: transform .04s ease, box-shadow .2s ease, border-color .2s ease;
     }
+    .btn:active{ transform: translateY(1px) scale(.99); }
+    .btn:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; }
+    .btn-primary{ border-color: rgba(34,211,238,.5); }
+    .btn-danger{ border-color: rgba(239,68,68,.45); }
 
-    #deflationSpeedLabel {
-      font-weight: bold;
+    .slider-wrap{
+      margin-top:8px;
+    }
+    .slider-label{
+      display:flex;justify-content:space-between;align-items:center;
+      font-size:.92rem;color:var(--muted);margin-bottom:8px;
+    }
+    input[type="range"]{
+      width:100%;
+      appearance:none;
+      height:14px;
+      background: linear-gradient(90deg, rgba(34,211,238,.35), rgba(34,211,238,.15));
+      border-radius:999px;
+      outline:none;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    input[type="range"]::-webkit-slider-thumb{
+      appearance:none;
+      width:28px;height:28px;border-radius:50%;
+      background: radial-gradient(circle at 35% 35%, #fff, #e5e7eb 55%, #94a3b8 100%);
+      border:1px solid rgba(0,0,0,.25);
+      box-shadow: 0 6px 14px rgba(0,0,0,.45);
+      margin-top:-7px;
+    }
+    .footer{
+      margin-top:auto;
+      text-align:center;
+      color:var(--muted);
+      font-size:.8rem;
+      opacity:.8;
+      padding-bottom:4px;
     }
   </style>
 </head>
 <body>
-  <h1>Blood Pressure Simulator</h1>
+  <div class="app">
+    <div class="header">
+      <div class="title">Blood Pressure Simulator</div>
+      <div class="subtitle">Pump to inflate • Release to deflate • Hear the beat between SYS→DIA</div>
+    </div>
 
-  <div id="gauge-container">
-    <img id="dial" src="bp_dial.png" alt="Dial Background" />
-    <div id="needle"></div>
-  </div>
+    <div class="card">
+      <div id="gauge-container">
+        <img id="dial" src="bp_dial.png" alt="Gauge Dial" />
+        <div id="needle"></div>
+        <div class="hub"></div>
+      </div>
 
-  <div id="pressureDisplay">Pressure: 0 mmHg</div>
-  <div id="bpReading"></div>
+      <div class="readouts">
+        <div>Pressure: <b id="pressureDisplay">0</b> mmHg</div>
+        <div>BP: <b id="bpReading">—/—</b></div>
+      </div>
 
-  <button onclick="pump()">Pump</button>
-  <button onclick="release()">Release Pressure</button>
+      <div class="controls">
+        <button class="btn btn-primary" id="pumpBtn">Pump +10</button>
+        <button class="btn btn-danger" id="releaseBtn">Release</button>
+      </div>
 
-  <div>
-    <label id="deflationSpeedLabel">Deflation Speed: <span id="speedValue">0.5</span> mmHg/step</label><br/>
-    <input type="range" id="speedSlider" min="0.2" max="5" step="0.1" value="0.5" oninput="updateSpeedDisplay(this.value)">
+      <div class="slider-wrap">
+        <div class="slider-label">
+          <span>Deflation speed</span>
+          <span><b id="speedValue">0.5</b> mmHg/step</span>
+        </div>
+        <input type="range" id="speedSlider" min="0.2" max="5" step="0.1" value="0.5">
+      </div>
+    </div>
+
+    <div class="footer">v1 • Mobile optimized UI</div>
   </div>
 
   <script>
+    // --- State ---
     let currentPressure = 0;
     let systolic = 120;
     let diastolic = 80;
     let beatStarted = false;
-    let releaseInterval, beatInterval;
+    let releaseInterval = null;
+    let beatInterval = null;
 
+    // --- Elements ---
     const needle = document.getElementById("needle");
     const pressureDisplay = document.getElementById("pressureDisplay");
     const bpReading = document.getElementById("bpReading");
-    const speedValueText = document.getElementById("speedValue");
     const speedSlider = document.getElementById("speedSlider");
+    const speedValueText = document.getElementById("speedValue");
+    const pumpBtn = document.getElementById("pumpBtn");
+    const releaseBtn = document.getElementById("releaseBtn");
 
-    const audioCtx = new AudioContext();
-
-    function updateNeedle() {
-      // New correct clockwise rotation
-      const angle = (currentPressure / 280) * 360 - 180;
-      needle.style.transform = `rotate(${angle}deg)`;
-      pressureDisplay.textContent = `Pressure: ${Math.round(currentPressure)} mmHg`;
-    }
-
-    function pump() {
-      clearInterval(releaseInterval);
-      if (currentPressure < 280) {
-        currentPressure += 10;
-        if (currentPressure > 280) currentPressure = 280;
-        updateNeedle();
-      }
-    }
-
-    function release() {
-      clearInterval(releaseInterval);
-      systolic = Math.floor(Math.random() * (222 - 80 + 1)) + 80;
-      diastolic = Math.floor(systolic * 0.65);
-      bpReading.textContent = `Set BP: ${systolic}/${diastolic}`;
-
-      const deflationSpeed = parseFloat(speedSlider.value);
-
-      releaseInterval = setInterval(() => {
-        if (currentPressure <= 0) {
-          currentPressure = 0;
-          clearInterval(releaseInterval);
-          stopHeartbeat();
-          bpReading.textContent = '';
-        } else {
-          currentPressure -= deflationSpeed;
-          if (currentPressure < 0) currentPressure = 0;
-          updateNeedle();
-
-          if (Math.round(currentPressure) === systolic && !beatStarted) {
-            startHeartbeat();
-          }
-
-          if (Math.round(currentPressure) <= diastolic && beatStarted) {
-            stopHeartbeat();
-          }
-        }
-      }, 100);
-    }
-
-    function startHeartbeat() {
-      beatStarted = true;
-      beatInterval = setInterval(playBeat, 666); // ~90 bpm
-    }
-
-    function stopHeartbeat() {
-      clearInterval(beatInterval);
-      beatStarted = false;
+    // --- Audio ---
+    let audioCtx = null;
+    function ensureAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
     }
 
     function playBeat() {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(1000, now);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.exponentialRampToValueAtTime(0.7, now + 0.01);  // quick swell (louder)
+      gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.16); // decay
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.18);
+    }
 
-      osc.frequency.value = 1000;
-      gain.gain.setValueAtTime(1, audioCtx.currentTime);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.15);
+    function startHeartbeat() {
+      if (beatStarted) return;
+      beatStarted = true;
+      // 90 bpm ≈ 666 ms
+      beatInterval = setInterval(playBeat, 666);
+    }
+    function stopHeartbeat() {
+      beatStarted = false;
+      clearInterval(beatInterval);
+      beatInterval = null;
+    }
+
+    // --- Dial math (clockwise full circle, 0–280 mmHg) ---
+    // Mapping: 0→-180° (bottom), 140→0° (top), 280→180° (bottom again)
+    function pressureToAngle(p) {
+      return (p / 280) * 360 - 180;
+    }
+
+    function updateNeedle() {
+      const angle = pressureToAngle(currentPressure);
+      needle.style.transform = `rotate(${angle}deg)`;
+      pressureDisplay.textContent = Math.round(currentPressure);
     }
 
     function updateSpeedDisplay(val) {
       speedValueText.textContent = val;
     }
+    speedSlider.addEventListener("input", e => updateSpeedDisplay(e.target.value));
 
-    updateNeedle(); // Initialize
+    // --- Controls ---
+    pumpBtn.addEventListener("click", () => {
+      ensureAudio();
+      clearInterval(releaseInterval);
+      currentPressure = Math.min(280, currentPressure + 10);
+      updateNeedle();
+    });
+
+    releaseBtn.addEventListener("click", () => {
+      ensureAudio();
+      clearInterval(releaseInterval);
+
+      // Random realistic BP each release
+      systolic = Math.floor(Math.random() * (222 - 100 + 1)) + 100; // 100–222
+      diastolic = Math.max(40, Math.floor(systolic * 0.6));        // ~60–70% of SYS
+      if (diastolic >= systolic) diastolic = systolic - 10;
+      bpReading.textContent = `${systolic}/${diastolic}`;
+
+      const step = parseFloat(speedSlider.value); // mmHg per tick
+      const tickMs = 100;                          // slower needle movement
+
+      releaseInterval = setInterval(() => {
+        if (currentPressure <= 0) {
+          currentPressure = 0;
+          updateNeedle();
+          clearInterval(releaseInterval);
+          stopHeartbeat();
+          bpReading.textContent = "—/—";
+          return;
+        }
+
+        currentPressure = Math.max(0, currentPressure - step);
+        updateNeedle();
+
+        const rounded = Math.round(currentPressure);
+        if (!beatStarted && rounded === systolic) startHeartbeat();
+        if (beatStarted && rounded <= diastolic) stopHeartbeat();
+      }, tickMs);
+    });
+
+    // Initialize UI
+    updateNeedle();
+    updateSpeedDisplay(speedSlider.value);
+
+    // Make buttons feel snappier on mobile
+    ["touchstart","mousedown"].forEach(evt=>{
+      pumpBtn.addEventListener(evt, ensureAudio, {passive:true});
+      releaseBtn.addEventListener(evt, ensureAudio, {passive:true});
+    });
   </script>
 </body>
 </html>
