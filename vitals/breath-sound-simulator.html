@@ -2,92 +2,240 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Breath Sound Simulator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
   <style>
-    body { font-family: Arial, sans-serif; background:#f0f0f0; margin:0; padding:20px; text-align:center; }
-    h1 { margin:0 0 10px; }
-    #controls { margin: 10px 0 20px; }
-    .image-container { position: relative; display: inline-block; }
-    .image-container img { width: 320px; border-radius: 10px; border: 2px solid #ccc; background:#fff; }
-    .point {
-      position: absolute; background: rgba(0,123,255,.9); color:#fff; border:none;
-      padding:6px 10px; border-radius:6px; font-size:12px; cursor:pointer;
+    :root{
+      /* Match BP sim’s easy-to-read theme */
+      --bg:#f7fafc;           /* page background */
+      --card:#ffffff;         /* card background */
+      --text:#0f172a;         /* headings/labels (slate-900) */
+      --muted:#334155;        /* secondary text (slate-700) */
+      --accent:#0284c7;       /* primary (sky-700) */
+      --accent-light:#06b6d4; /* sky-500 */
+      --ring: rgba(2,132,199,.35);
+      --shadow: 0 10px 28px rgba(15,23,42,.12);
+      --border: rgba(15,23,42,.10);
+      --green:#16a34a;
+      --blue:#0ea5e9;
     }
-    .point:hover { background: rgba(0,123,255,1); }
-    #selectors { margin:16px 0; display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
-    #selectors label { font-weight:bold; margin-right:6px; }
-    #audio-player { margin-top: 20px; }
+    *{box-sizing:border-box}
+    html,body{height:100%; touch-action: manipulation;}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app{
+      max-width: 640px;
+      margin: 0 auto;
+      padding: env(safe-area-inset-top) 18px env(safe-area-inset-bottom);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    header{ text-align:center; padding-top:8px; }
+    .title{ margin:0; font-weight:800; font-size:1.35rem; letter-spacing:.2px; }
+    .subtitle{ margin:6px 0 0; color:var(--muted); font-size:1rem; }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    /* View + diagram */
+    .view-row{
+      display:flex; flex-direction:column; gap:12px; align-items:center;
+    }
+    .view-actions{
+      display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
+    }
+
+    .btn{
+      appearance:none;
+      border-radius:12px;
+      padding:12px 14px;
+      font-weight:800;
+      font-size:1rem;
+      letter-spacing:.2px;
+      border:1px solid var(--border);
+      color:var(--text);
+      background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+      box-shadow: 0 6px 16px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.8);
+      transition: transform .04s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+      -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .btn:active{ transform: translateY(1px) scale(.99); }
+    .btn:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; }
+    .btn-primary{
+      color:#fff;
+      border-color: rgba(2,132,199,.55);
+      background: linear-gradient(180deg, var(--accent-light) 0%, var(--accent) 100%);
+    }
+
+    .image-container{
+      position:relative;
+      width:min(94vw, 420px);
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid var(--border);
+      box-shadow: 0 6px 16px rgba(15,23,42,.08);
+      background:#fff;
+    }
+    .image-container img{
+      display:block; width:100%; height:auto;
+      user-select:none; -webkit-user-drag:none;
+    }
+
+    /* Tap points */
+    .point{
+      position:absolute;
+      border:none;
+      border-radius:10px;
+      padding:10px 12px;
+      font-size:.9rem;
+      font-weight:800;
+      color:#fff;
+      background: linear-gradient(180deg, #38bdf8 0%, #0ea5e9 100%);
+      box-shadow: 0 6px 16px rgba(14,165,233,.25), inset 0 1px 0 rgba(255,255,255,.7);
+      cursor:pointer;
+      transition: transform .04s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .point:active{ transform: translateY(1px) scale(.985); }
+
+    /* Selectors */
+    .selectors{
+      display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:14px;
+    }
+    @media (max-width: 440px){ .selectors{ grid-template-columns: 1fr; } }
+
+    .select-block{
+      background: linear-gradient(180deg, #ffffff 0%, #f3f6fb 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 6px 16px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.8);
+    }
+    .select-block label{ display:block; font-weight:800; margin-bottom:8px; color:var(--muted); }
+    select{
+      width:100%;
+      padding:10px 12px;
+      font-size:1rem;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+    }
+
+    /* Audio player */
+    .audio-card{
+      margin-top:14px;
+      background: linear-gradient(180deg, #ffffff 0%, #f3f6fb 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 6px 16px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.8);
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .audio-row{
+      display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;
+    }
+    .audio-row strong{ color:var(--muted); }
+    audio{ width:100%; }
+
+    footer{
+      margin-top:auto; text-align:center; color:var(--muted); font-size:.85rem; opacity:.9; padding:8px 0 6px;
+    }
   </style>
 </head>
 <body>
-  <h1>Breath Sound Simulator</h1>
+  <div class="app">
+    <header>
+      <h1 class="title">Breath Sound Simulator</h1>
+      <p class="subtitle">Tap a region • Choose left/right sounds • Rotate the body</p>
+    </header>
 
-  <div id="controls">
-    <button onclick="rotateView()">Rotate Body</button>
-    <span id="viewLabel" style="margin-left:10px; color:#555;"></span>
-  </div>
+    <section class="card">
+      <div class="view-row">
+        <div class="view-actions">
+          <button class="btn btn-primary" onclick="rotateView()">Rotate Body</button>
+          <span id="viewLabel" class="subtitle" style="align-self:center;">View: FRONT</span>
+        </div>
 
-  <div class="image-container">
-    <img id="currentImage" src="front.png" alt="Front">
+        <div class="image-container">
+          <img id="currentImage" src="front.png" alt="Front">
 
-    <!-- FRONT (URL, ULL, LRL, LLL) -->
-    <button class="point" data-view="front" style="top:28%; left:30%;"  onclick="play('left')">ULL</button>
-    <button class="point" data-view="front" style="top:28%; right:30%;" onclick="play('right')">URL</button>
-    <button class="point" data-view="front" style="top:64%; left:30%;"  onclick="play('left')">LLL</button>
-    <button class="point" data-view="front" style="top:64%; right:30%;" onclick="play('right')">LRL</button>
+          <!-- FRONT (URL, ULL, LRL, LLL) -->
+          <button class="point" data-view="front" style="top:26%; left:24%;"  onclick="play('left')">ULL</button>
+          <button class="point" data-view="front" style="top:26%; right:24%;" onclick="play('right')">URL</button>
+          <button class="point" data-view="front" style="top:64%; left:24%;"  onclick="play('left')">LLL</button>
+          <button class="point" data-view="front" style="top:64%; right:24%;" onclick="play('right')">LRL</button>
 
-    <!-- BACK (URL, ULL, LRL, LLL) -->
-    <button class="point" data-view="back" style="top:28%; left:30%;"  onclick="play('left')">ULL</button>
-    <button class="point" data-view="back" style="top:28%; right:30%;" onclick="play('right')">URL</button>
-    <button class="point" data-view="back" style="top:64%; left:30%;"  onclick="play('left')">LLL</button>
-    <button class="point" data-view="back" style="top:64%; right:30%;" onclick="play('right')">LRL</button>
+          <!-- BACK (URL, ULL, LRL, LLL) -->
+          <button class="point" data-view="back" style="top:26%; left:24%;"  onclick="play('left')">ULL</button>
+          <button class="point" data-view="back" style="top:26%; right:24%;" onclick="play('right')">URL</button>
+          <button class="point" data-view="back" style="top:64%; left:24%;"  onclick="play('left')">LLL</button>
+          <button class="point" data-view="back" style="top:64%; right:24%;" onclick="play('right')">LRL</button>
 
-    <!-- RIGHT (Neck/Stridor + Midaxillary) -->
-    <button class="point" data-view="right" style="top:24%; left:42%;" onclick="play('right')">Neck</button>
-    <button class="point" data-view="right" style="top:62%; left:42%;" onclick="play('right')">Midaxillary</button>
+          <!-- RIGHT (Neck/Stridor + Midaxillary) -->
+          <button class="point" data-view="right" style="top:22%; left:40%;" onclick="play('right')">Neck</button>
+          <button class="point" data-view="right" style="top:62%; left:40%;" onclick="play('right')">Midaxillary</button>
 
-    <!-- LEFT (Neck/Stridor + Midaxillary) -->
-    <button class="point" data-view="left" style="top:24%; left:42%;" onclick="play('left')">Neck</button>
-    <button class="point" data-view="left" style="top:62%; left:42%;" onclick="play('left')">Midaxillary</button>
-  </div>
+          <!-- LEFT (Neck/Stridor + Midaxillary) -->
+          <button class="point" data-view="left" style="top:22%; left:40%;" onclick="play('left')">Neck</button>
+          <button class="point" data-view="left" style="top:62%; left:40%;" onclick="play('left')">Midaxillary</button>
+        </div>
+      </div>
 
-  <!-- Choose sounds for each side (maps to your two files) -->
-  <div id="selectors">
-    <div>
-      <label for="leftSound">Left sound:</label>
-      <select id="leftSound" onchange="setSide('left', this.value)">
-        <option value="normal">Normal</option>
-        <option value="wheeze">Wheeze</option>
-      </select>
-    </div>
-    <div>
-      <label for="rightSound">Right sound:</label>
-      <select id="rightSound" onchange="setSide('right', this.value)">
-        <option value="normal">Normal</option>
-        <option value="wheeze">Wheeze</option>
-      </select>
-    </div>
-  </div>
+      <div class="selectors">
+        <div class="select-block">
+          <label for="leftSound">Left sound</label>
+          <select id="leftSound" onchange="setSide('left', this.value)">
+            <option value="normal">Normal</option>
+            <option value="wheeze">Wheeze</option>
+          </select>
+        </div>
 
-  <div id="audio-player">
-    <audio id="breathAudio" controls>
-      <source src="" type="audio/mpeg">
-      Your browser does not support the audio element.
-    </audio>
+        <div class="select-block">
+          <label for="rightSound">Right sound</label>
+          <select id="rightSound" onchange="setSide('right', this.value)">
+            <option value="normal">Normal</option>
+            <option value="wheeze">Wheeze</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="audio-card">
+        <div class="audio-row">
+          <strong>Audio</strong>
+          <button class="btn" onclick="document.getElementById('breathAudio').pause()">Pause</button>
+        </div>
+        <audio id="breathAudio" controls>
+          <source src="" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+    </section>
+
+    <footer>&copy; 2025 EMS CODE SIM • Phone friendly</footer>
   </div>
 
   <script>
-    // Available views and images (same folder as this HTML)
+    // Views/images (place images in same folder: front.png/right.png/back.png/left.png)
     const views = ["front", "right", "back", "left"];
-    const images = {
-      front: "front.png",
-      right: "right.png",
-      back:  "back.png",
-      left:  "left.png"
-    };
+    const images = { front:"front.png", right:"right.png", back:"back.png", left:"left.png" };
 
-    // Map our two sound types to your actual files
+    // Map your sound types to files (put mp3s next to this HTML)
     const SOUND_FILES = {
       normal: "normal_sound.mp3",
       wheeze: "wheezing_sound.mp3"
@@ -96,13 +244,11 @@
     // Current per-side sound choices
     let sideSound = { left: "normal", right: "normal" };
 
-    function setSide(side, soundType) {
-      sideSound[side] = soundType;
-    }
+    function setSide(side, soundType) { sideSound[side] = soundType; }
 
     function play(side) {
-      const type = sideSound[side];                   // "normal" or "wheeze"
-      const file = SOUND_FILES[type];                 // -> "normal_sound.mp3" or "wheezing_sound.mp3"
+      const type = sideSound[side];
+      const file = SOUND_FILES[type];
       const audio = document.getElementById("breathAudio");
       audio.src = file;
       audio.play();
