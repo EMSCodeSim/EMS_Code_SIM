@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Prevent pinch/double-tap zoom so taps don't zoom the page on phones -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Daily Beat | DailyEMSQuiz</title>
+  <style>
+    :root{
+      --bg:#f0f8ff;
+      --brand:#007B8A;
+      --brand-dk:#00606a;
+      --text:#073642;
+      --card:#ffffff;
+      --muted:#355a5f22;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      padding:0;
+      height:100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      -webkit-text-size-adjust:100%;
+    }
+    body{ display:flex; flex-direction:column; align-items:center; }
+    header{
+      width:100%;
+      background: var(--brand);
+      color:#fff;
+      padding: 14px 16px;
+      text-align:center;
+      position:sticky; top:0; z-index:5;
+      box-shadow: 0 2px 8px #0001;
+    }
+    header h1{ margin:0; font-size: clamp(1.1rem, 2.5vw, 1.4rem); font-weight:700; letter-spacing:.3px;}
+    .container{
+      width:100%;
+      max-width: 520px;
+      margin: 16px;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 8px 28px #00000014;
+      padding: 18px;
+    }
+    .lead{
+      margin: 0 0 12px 0;
+      text-align:center;
+      color:#224;
+      font-size: clamp(0.95rem, 2.3vw, 1.05rem);
+    }
+    .heart-wrap{
+      display:flex; align-items:center; justify-content:center;
+      margin: 10px 0 4px 0;
+      height: 140px;
+    }
+    #heart{
+      font-size: 96px;
+      line-height:1;
+      filter: drop-shadow(0 6px 10px #ff000033);
+      transform-origin:center;
+      visibility: hidden;
+      user-select:none;
+    }
+    @keyframes beat {
+      0%   { transform: scale(1); }
+      20%  { transform: scale(1.28); }
+      40%  { transform: scale(1); }
+      100% { transform: scale(1); }
+    }
+
+    .controls{ display:grid; gap:12px; margin-top:12px; }
+    .btn{
+      appearance:none; border:0; outline:0;
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 1rem; font-weight:600;
+      background: var(--brand);
+      color:#fff;
+      cursor:pointer;
+      width:100%;
+      box-shadow: 0 4px 14px #007b8a33;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn.secondary{
+      background: #fff; color: var(--brand);
+      border: 2px solid var(--brand);
+      box-shadow:none;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .grid-2{
+      display:grid; gap:10px;
+      grid-template-columns: repeat(2,1fr);
+    }
+    @media (max-width:420px){ .grid-2{ grid-template-columns: 1fr; } }
+
+    .slider-wrap{
+      background: #f7fbfc;
+      border: 1px solid var(--muted);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .label-row{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom: 6px;
+      font-weight:600;
+    }
+    #slider{
+      width: 100%;
+      accent-color: var(--brand);
+      touch-action: pan-y;
+    }
+    .pill{
+      display:inline-block;
+      background: #e8f3f4;
+      color: var(--brand);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight:700;
+      font-variant-numeric: tabular-nums;
+      min-width:64px; text-align:center;
+    }
+    #result{
+      margin-top: 10px;
+      font-size: 1.05rem;
+      text-align:center;
+      min-height: 1.4em;
+    }
+    .footer-link{
+      display:block; text-align:center; margin: 10px auto 0;
+      color: var(--brand); text-decoration:none; font-weight:600;
+    }
+
+    /* Reduce accidental text selection on mobile */
+    button, input, a, #heart{ -webkit-user-select: none; user-select: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>❤️ The Daily Beat</h1>
+  </header>
+
+  <main class="container">
+    <p class="lead">Tap <strong>Start</strong> to hear a brand-new rhythm. Guess the rate!</p>
+
+    <div class="heart-wrap">
+      <div id="heart" aria-hidden="true">❤️</div>
+    </div>
+
+    <div class="slider-wrap" id="guessUI" style="display:none;">
+      <div class="label-row">
+        <span>BPM Guess</span>
+        <span class="pill"><span id="bpmValue">75</span> BPM</span>
+      </div>
+      <input id="slider" type="range" min="30" max="200" value="75" />
+      <div class="label-row" style="font-size:.9rem; opacity:.8;">
+        <span>30</span><span>200</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="startBtn">▶️ Start</button>
+      <div class="grid-2">
+        <button class="btn secondary" id="checkBtn" style="display:none;">Check Answer</button>
+        <button class="btn secondary" id="newBtn" style="display:none;">🔁 New Rhythm</button>
+      </div>
+      <div id="result" role="status" aria-live="polite"></div>
+    </div>
+
+    <a href="index.html" class="footer-link">← Back to DailyEMSQuiz</a>
+  </main>
+
+  <script>
+    // Elements
+    const heart = document.getElementById('heart');
+    const slider = document.getElementById('slider');
+    const bpmDisplay = document.getElementById('bpmValue');
+    const result = document.getElementById('result');
+    const startBtn = document.getElementById('startBtn');
+    const checkBtn = document.getElementById('checkBtn');
+    const newBtn   = document.getElementById('newBtn');
+    const guessUI  = document.getElementById('guessUI');
+
+    // Audio
+    let audioCtx = null;
+    let beatTimer = null;
+
+    function ensureAudioContext(){
+      if(!audioCtx){
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new Ctx();
+        if(audioCtx.state === 'suspended'){ audioCtx.resume(); }
+      }
+      return audioCtx;
+    }
+
+    function clickSound(ctx){
+      const t = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(660, t);
+      gain.gain.setValueAtTime(0.001, t);
+      gain.gain.exponentialRampToValueAtTime(0.25, t+0.005);
+      gain.gain.exponentialRampToValueAtTime(0.001, t+0.08);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t+0.09);
+    }
+
+    // Game state
+    let actualBPM = null;
+    let beatIntervalMs = null;
+
+    // Random BPM each time Start is pressed (30–200 inclusive)
+    function getRandomBPM(){
+      return Math.floor(Math.random() * 171) + 30;
+    }
+
+    function startBeat(){
+      // Init audio on user gesture
+      const ctx = ensureAudioContext();
+
+      // Pick a fresh random BPM and set up UI
+      actualBPM = getRandomBPM();
+      beatIntervalMs = (60 / actualBPM) * 1000;
+
+      startBtn.style.display = 'none';
+      heart.style.visibility = 'visible';
+      guessUI.style.display  = 'block';
+      checkBtn.style.display = 'block';
+      newBtn.style.display   = 'block';
+      result.textContent = '';
+
+      // Set heart animation speed
+      heart.style.animation = `beat ${60/actualBPM}s infinite ease-in-out`;
+
+      // Color cue on slider by range
+      updateSliderAccent(actualBPM);
+      // Trigger beeps repeatedly until a new rhythm is started
+      if(beatTimer){ clearInterval(beatTimer); }
+      // Fire the first beat immediately for faster feedback
+      clickSound(ctx);
+      beatTimer = setInterval(()=> clickSound(ctx), beatIntervalMs);
+    }
+
+    function stopBeat(){
+      if(beatTimer){ clearInterval(beatTimer); beatTimer = null; }
+      heart.style.animation = 'none';
+    }
+
+    function newRhythm(){
+      stopBeat();
+      startBeat(); // picks a new random BPM again
+    }
+
+    function checkAnswer(){
+      const guess = parseInt(slider.value,10);
+      const diff = Math.abs(guess - actualBPM);
+      if(Number.isNaN(guess) || actualBPM == null){
+        result.textContent = 'Start the rhythm first.';
+        return;
+      }
+      if(diff <= 3){
+        result.innerHTML = `✅ Nice! It was <strong>${actualBPM} BPM</strong>.`;
+      }else{
+        result.innerHTML = `❌ It was <strong>${actualBPM} BPM</strong>.`;
+      }
+    }
+
+    function updateSliderAccent(bpm){
+      let color = 'var(--brand)';
+      if(bpm < 60) color = '#2a62ff';
+      else if(bpm > 100) color = '#e17c1a';
+      slider.style.accentColor = color;
+    }
+
+    // Listeners
+    startBtn.addEventListener('click', startBeat, {passive:true});
+    newBtn.addEventListener('click', newRhythm, {passive:true});
+    checkBtn.addEventListener('click', checkAnswer, {passive:true});
+
+    slider.addEventListener('input', () => {
+      const bpm = parseInt(slider.value,10);
+      bpmDisplay.textContent = bpm;
+      updateSliderAccent(bpm);
+    }, {passive:true});
+
+    // Clean up on page hide to save battery
+    document.addEventListener('visibilitychange', () => {
+      if(document.hidden){ stopBeat(); }
+    });
+
+    // Optional: resume audio context on user interaction (iOS Safari)
+    ['touchstart','mousedown'].forEach(evt=>{
+      window.addEventListener(evt, ()=> {
+        if(audioCtx && audioCtx.state === 'suspended'){ audioCtx.resume(); }
+      }, {passive:true, once:true});
+    });
+  </script>
+</body>
+</html>
