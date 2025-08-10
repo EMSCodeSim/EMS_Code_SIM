@@ -6,17 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
   <style>
     :root{
-      /* Match BP sim’s high-contrast, easy-to-read vibe */
-      --bg:#f7fafc;           /* page background */
-      --card:#ffffff;         /* card background */
-      --text:#0f172a;         /* headings/labels (slate-900) */
-      --muted:#334155;        /* secondary text (slate-700) */
-      --accent:#0284c7;       /* primary (sky-700) */
-      --accent-light:#06b6d4; /* sky-500 */
-      --danger:#dc2626;       /* red-600 */
+      /* High-contrast, easy-to-read (matches BP sim tone) */
+      --bg:#f7fafc;
+      --card:#ffffff;
+      --text:#0f172a;      /* slate-900 */
+      --muted:#334155;     /* slate-700 */
+      --accent:#0284c7;    /* sky-700 */
+      --accent-light:#06b6d4;
+      --danger:#dc2626;
       --ring: rgba(2,132,199,.35);
       --shadow: 0 10px 28px rgba(15,23,42,.12);
       --border: rgba(15,23,42,.10);
+      --tile-grad: linear-gradient(180deg, #ffffff 0%, #f3f6fb 100%);
+      --btn-grad:  linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
     }
     *{box-sizing:border-box}
     html,body{height:100%; touch-action: manipulation;}
@@ -74,16 +76,23 @@
       .grid{ grid-template-columns: 1fr; }
     }
 
-    /* Individual tool tiles */
+    /* Tool tile */
     .tool{
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-      background: linear-gradient(180deg, #ffffff 0%, #f3f6fb 100%);
+      gap: 12px;
+      align-items: flex-start;
+      background: var(--tile-grad);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 14px;
       box-shadow: 0 6px 16px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.8);
+    }
+    .tool .icon{
+      width: 36px; height: 36px; flex: 0 0 36px;
+      display:flex; align-items:center; justify-content:center;
+      border-radius: 10px;
+      background: #e0f2fe; /* light sky */
+      border: 1px solid rgba(2,132,199,.25);
     }
     .tool h3{
       margin: 0;
@@ -92,7 +101,7 @@
       color: var(--text);
     }
     .tool p{
-      margin: 0;
+      margin: 2px 0 10px 0;
       font-size: .92rem;
       color: var(--muted);
     }
@@ -111,7 +120,7 @@
       letter-spacing: .2px;
       border: 1px solid var(--border);
       color: var(--text);
-      background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+      background: var(--btn-grad);
       box-shadow: 0 6px 16px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.8);
       transition: transform .04s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
       -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
@@ -125,11 +134,6 @@
       border-color: rgba(2,132,199,.55);
       background: linear-gradient(180deg, var(--accent-light) 0%, var(--accent) 100%);
     }
-    .btn-danger{
-      color: #fff;
-      border-color: rgba(220,38,38,.55);
-      background: linear-gradient(180deg, #ef4444 0%, var(--danger) 100%);
-    }
 
     /* Footer */
     footer{
@@ -139,6 +143,64 @@
       font-size: .85rem;
       padding: 8px 0 6px;
       opacity: .9;
+    }
+
+    /* Vitals bottom sheet */
+    .sheet-backdrop{
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.28);
+      display:none;
+      z-index: 20;
+    }
+    .sheet{
+      position: fixed; left: 0; right: 0; bottom: -100%;
+      margin: 0 auto;
+      max-width: 640px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-bottom: 0;
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+      box-shadow: 0 -12px 28px rgba(15,23,42,.18);
+      padding: 14px 14px 18px;
+      z-index: 21;
+      transition: bottom .22s ease;
+    }
+    .sheet.active{ bottom: 0; }
+    .sheet-header{
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      padding-top: 4px; padding-bottom: 8px;
+    }
+    .sheet-handle{
+      width: 44px; height: 4px; border-radius: 999px; background: #e5e7eb; margin: 4px auto 10px;
+    }
+    .sheet-title{
+      margin:0; font-weight:800; font-size:1.05rem;
+    }
+    .sheet-grid{
+      display:grid; gap:10px; grid-template-columns: 1fr 1fr 1fr;
+    }
+    @media (max-width: 520px){
+      .sheet-grid{ grid-template-columns: 1fr; }
+    }
+    .sheet-btn{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      border:1px solid var(--border); border-radius:12px; padding:12px 14px;
+      background: var(--btn-grad);
+      box-shadow: 0 6px 16px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.8);
+      text-decoration:none; color:var(--text); font-weight:800;
+    }
+    .sheet-btn .sicon{
+      width:28px; height:28px; flex:0 0 28px;
+      display:inline-flex; align-items:center; justify-content:center;
+      border-radius:8px; background:#eef6ff; border:1px solid rgba(2,132,199,.25);
+    }
+    .close-row{ margin-top: 8px; display:flex; gap:10px; }
+    .btn-ghost{
+      background:#fff;
+      border:1px solid var(--border);
+      color: var(--accent);
+      font-weight:800;
     }
   </style>
 </head>
@@ -151,41 +213,89 @@
 
     <section class="card">
       <div class="grid">
+
+        <!-- Medical Assessment -->
         <div class="tool">
-          <h3>Medical Assessment</h3>
-          <p>Interactive patient assessment trainer.</p>
-          <a class="btn btn-primary" href="https://emscodesim3.netlify.app/" target="_blank" rel="noopener">Launch</a>
+          <div class="icon" aria-hidden="true">
+            <!-- Clipboard icon -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M9 4h6a2 2 0 0 1 2 2v1h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1V6a2 2 0 0 1 2-2Z" stroke="#0369a1" stroke-width="1.6"/>
+              <path d="M9 6h6" stroke="#0369a1" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div style="flex:1">
+            <h3>Medical Assessment</h3>
+            <p>Interactive patient assessment trainer.</p>
+            <a class="btn btn-primary" href="https://emscodesim3.netlify.app/" target="_blank" rel="noopener">Launch</a>
+          </div>
         </div>
 
+        <!-- Daily EMS Quiz -->
         <div class="tool">
-          <h3>Daily EMS Quiz</h3>
-          <p>Short, daily knowledge checks.</p>
-          <a class="btn" href="https://dailyemsquiz.com" target="_blank" rel="noopener">Take Quiz</a>
+          <div class="icon" aria-hidden="true">
+            <!-- Quiz/check icon -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M4 6h16M4 12h10M4 18h6" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="m15.5 17 2 2 3.5-3.5" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div style="flex:1">
+            <h3>Daily EMS Quiz</h3>
+            <p>Short, daily knowledge checks.</p>
+            <a class="btn" href="https://dailyemsquiz.com" target="_blank" rel="noopener">Take Quiz</a>
+          </div>
         </div>
 
+        <!-- Scene Size-Up -->
         <div class="tool">
-          <h3>Scene Size-Up</h3>
-          <p>Practice safe scene approaches.</p>
-          <a class="btn" href="https://fireopssim.com/sizeup/scene_sizeup" target="_blank" rel="noopener">Start</a>
+          <div class="icon" aria-hidden="true">
+            <!-- Triangles/warning icon -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="m12 3 9 16H3l9-16Z" stroke="#0369a1" stroke-width="1.6"/>
+              <path d="M12 9v4" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round"/>
+              <circle cx="12" cy="16.5" r="1.2" fill="#0369a1"/>
+            </svg>
+          </div>
+          <div style="flex:1">
+            <h3>Scene Size-Up</h3>
+            <p>Practice safe scene approaches.</p>
+            <a class="btn" href="https://fireopssim.com/sizeup/scene_sizeup" target="_blank" rel="noopener">Start</a>
+          </div>
         </div>
 
+        <!-- Handoff Report -->
         <div class="tool">
-          <h3>Handoff Report</h3>
-          <p>SBAR-style hospital handoff builder.</p>
-          <a class="btn" href="https://fireopssim.com/handoff/handoff" target="_blank" rel="noopener">Open</a>
+          <div class="icon" aria-hidden="true">
+            <!-- Arrow doc icon -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="#0369a1" stroke-width="1.6"/>
+              <path d="M14 3v6h6" stroke="#0369a1" stroke-width="1.6"/>
+              <path d="M8 14h8M8 18h5" stroke="#0369a1" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div style="flex:1">
+            <h3>Handoff Report</h3>
+            <p>SBAR-style hospital handoff builder.</p>
+            <a class="btn" href="https://fireopssim.com/handoff/handoff" target="_blank" rel="noopener">Open</a>
+          </div>
         </div>
 
-        <div class="tool">
-          <h3>Vitals — BP Simulator</h3>
-          <p>Manual cuff with audible beats.</p>
-          <a class="btn btn-primary" href="vitals/BP.html" target="_blank" rel="noopener">Open</a>
+        <!-- VITALS (single button opens bottom sheet) -->
+        <div class="tool" style="grid-column: 1 / -1;">
+          <div class="icon" aria-hidden="true">
+            <!-- Heart pulse icon -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M3.5 11c0-3 2.2-5 5-5 2.1 0 3.5 1.2 4.5 2.7C14 7.2 15.4 6 17.5 6c2.8 0 5 2 5 5 0 6.5-10.5 10.5-10.5 10.5S3.5 17.5 3.5 11Z" stroke="#0369a1" stroke-width="1.6"/>
+              <path d="M4 11h4l2 4 2-8 2 4h6" stroke="#0369a1" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div style="flex:1">
+            <h3>Vitals</h3>
+            <p>Open blood pressure, pulse, and breath sounds.</p>
+            <button id="openVitals" class="btn btn-primary" type="button" aria-haspopup="dialog" aria-controls="vitalsSheet">Open Vitals Menu</button>
+          </div>
         </div>
 
-        <div class="tool">
-          <h3>Breath Sound Simulator</h3>
-          <p>Common lung sounds & patterns.</p>
-          <a class="btn" href="https://emscodesim.com/vitals/breath-sound-simulator" target="_blank" rel="noopener">Listen</a>
-        </div>
       </div>
     </section>
 
@@ -193,5 +303,97 @@
       &copy; 2025 EMS CODE SIM • All rights reserved
     </footer>
   </div>
+
+  <!-- Bottom sheet: Vitals menu -->
+  <div class="sheet-backdrop" id="backdrop" hidden></div>
+  <div class="sheet" id="vitalsSheet" role="dialog" aria-modal="true" aria-labelledby="vitalsTitle" aria-hidden="true">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h2 class="sheet-title" id="vitalsTitle">Vitals</h2>
+    </div>
+    <div class="sheet-grid" role="menu">
+      <!-- Blood Pressure -->
+      <a class="sheet-btn" role="menuitem" href="vitals/BP.html" target="_blank" rel="noopener">
+        <span style="display:flex; align-items:center; gap:10px;">
+          <span class="sicon" aria-hidden="true">
+            <!-- BP cuff / stethoscope-ish icon -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M16 4v5a4 4 0 0 1-8 0V4" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round"/>
+              <circle cx="18.5" cy="8" r="2.5" stroke="#0369a1" stroke-width="1.6"/>
+              <path d="M18.5 10.5V15a4 4 0 0 1-4 4h-3" stroke="#0369a1" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </span>
+          Blood Pressure
+        </span>
+        <span aria-hidden="true">›</span>
+      </a>
+
+      <!-- Pulse (Daily Beat) -->
+      <a class="sheet-btn" role="menuitem" href="vitals/daily-beat.html" target="_blank" rel="noopener">
+        <span style="display:flex; align-items:center; gap:10px;">
+          <span class="sicon" aria-hidden="true">
+            <!-- Heartbeat icon -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M3 12h4l2 4 3-8 2 4h7" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          Pulse (Rate Trainer)
+        </span>
+        <span aria-hidden="true">›</span>
+      </a>
+
+      <!-- Breath Sounds -->
+      <a class="sheet-btn" role="menuitem" href="/vitals/breath-sound-simulator" target="_blank" rel="noopener">
+        <span style="display:flex; align-items:center; gap:10px;">
+          <span class="sicon" aria-hidden="true">
+            <!-- Lungs icon -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M10 4v8a4 4 0 0 1-4 4H4V9a5 5 0 0 1 6-5Zm4 0v8a4 4 0 0 0 4 4h2V9a5 5 0 0 0-6-5Z" stroke="#0369a1" stroke-width="1.6" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          Breath Sounds
+        </span>
+        <span aria-hidden="true">›</span>
+      </a>
+    </div>
+
+    <div class="close-row">
+      <button id="closeVitals" class="btn btn-ghost" type="button">Close</button>
+      <button id="closeVitals2" class="btn" type="button">Cancel</button>
+    </div>
+  </div>
+
+  <script>
+    const openBtn  = document.getElementById('openVitals');
+    const sheet    = document.getElementById('vitalsSheet');
+    const backdrop = document.getElementById('backdrop');
+    const close1   = document.getElementById('closeVitals');
+    const close2   = document.getElementById('closeVitals2');
+
+    function openSheet(){
+      backdrop.hidden = false;
+      backdrop.style.display = 'block';
+      sheet.classList.add('active');
+      sheet.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSheet(){
+      sheet.classList.remove('active');
+      sheet.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
+      backdrop.style.display = 'none';
+      backdrop.hidden = true;
+    }
+
+    openBtn.addEventListener('click', openSheet, {passive:true});
+    backdrop.addEventListener('click', closeSheet, {passive:true});
+    close1.addEventListener('click', closeSheet, {passive:true});
+    close2.addEventListener('click', closeSheet, {passive:true});
+
+    // ESC to close
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape' && sheet.classList.contains('active')) closeSheet();
+    }, {passive:true});
+  </script>
 </body>
 </html>
