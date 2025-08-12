@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>A&O×4 Orientation Simulator (NREMT-style, TTS)</title>
+<style>
+  :root{
+    --brand:#007B8A; --brand-dark:#0a616c; --bg:#f0f8ff; --panel:#fff; --muted:#e7f4f7; --text:#0f2b33;
+    --shadow:0 10px 24px rgba(0,0,0,.08); --radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh}
+  header{width:100%;background:var(--brand);color:#fff;text-align:center;padding:14px 16px;font-weight:700;letter-spacing:.2px}
+  main{width:100%;max-width:980px;padding:12px;display:grid;gap:12px}
+  .card{background:var(--panel);border-radius:16px;box-shadow:var(--shadow);padding:14px}
+  .layout{display:grid;gap:12px}
+  @media(min-width:920px){ .layout{grid-template-columns:1.15fr .85fr} }
+  .stage{background:var(--muted);border-radius:14px;padding:14px;display:grid;gap:12px}
+  .qgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  @media(max-width:520px){ .qgrid{grid-template-columns:1fr} }
+  .btn{
+    appearance:none;border:0;background:var(--brand);color:#fff;padding:14px;border-radius:12px;font-weight:800;cursor:pointer;width:100%;
+    touch-action:manipulation;-webkit-user-select:none;user-select:none;font-size:1.05rem
+  }
+  .btn.alt{background:#124b54}
+  .btn.warn{background:#c77b00}
+  .btn.ghost{background:#fff;color:var(--brand);border:2px solid var(--brand)}
+  .btn:active{transform:translateY(1px)}
+  .status{font-size:.98rem;background:#fff;border:1px solid #e0eaed;border-radius:12px;padding:10px;min-height:64px}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .kpi{background:#fff;border:1px solid #e8eef0;border-radius:10px;padding:8px;text-align:center}
+  .kpi strong{display:block;font-size:1.2rem}
+  label{display:block;margin-bottom:6px}
+  select,input[type="range"],input[type="number"]{width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
+  .row{display:grid;gap:10px}
+  @media(min-width:560px){ .row{grid-template-columns:1fr 1fr} }
+  .tiny{font-size:.85rem;color:#3b616b}
+  .pill{display:inline-block;padding:3px 8px;border-radius:999px;background:#e7f8f1;color:#0a8f5b;font-weight:700;font-size:.8rem}
+</style>
+</head>
+<body>
+<header>A&O×4 Orientation Simulator (TTS)</header>
+
+<main>
+  <section class="card layout">
+    <!-- LEFT: Interaction -->
+    <div class="stage">
+      <div class="qgrid">
+        <button class="btn" id="askPerson">Person — “What’s your name?”</button>
+        <button class="btn" id="askPlace">Place — “Where are you?”</button>
+        <button class="btn" id="askTime">Time — “What day/time is it?”</button>
+        <button class="btn" id="askEvent">Event — “What happened?”</button>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><small>A&O Count</small><strong id="aox">×0</strong></div>
+        <div class="kpi"><small>Answered</small><strong id="answered">0 / 4</strong></div>
+        <div class="kpi"><small>Accuracy</small><strong id="accuracy">—</strong></div>
+      </div>
+
+      <div class="status" id="transcript" aria-live="polite">
+        <strong>Patient:</strong> <span id="utter">…(quiet)…</span>
+        <div style="margin-top:6px"><span class="pill" id="speechStylePill">Speech: Normal</span></div>
+      </div>
+
+      <div class="row" style="margin-top:8px">
+        <button class="btn alt" id="randomize">🎲 Randomize Scenario</button>
+        <button class="btn warn" id="reset">Reset</button>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn ghost" id="emit">Emit Result (window.dispatchEvent)</button>
+        <button class="btn ghost" id="stopTTS">⏹ Stop Voice</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: Scenario controls -->
+    <div class="card">
+      <h3>Scenario</h3>
+      <div class="row">
+        <div>
+          <label>Difficulty (chance of correct answer)
+            <input id="difficulty" type="range" min="0" max="100" value="60" />
+          </label>
+          <div class="tiny">Higher = more correct (easier). Current: <strong><span id="diffVal">60%</span></strong></div>
+        </div>
+        <div>
+          <label>Response latency (ms)
+            <input id="latency" type="number" min="200" max="5000" step="100" value="900" />
+          </label>
+          <div class="tiny">Simulates processing delay before speaking.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Speech style
+            <select id="speechStyle">
+              <option value="normal" selected>Normal</option>
+              <option value="hesitant">Hesitant/Confused</option>
+              <option value="slurred">Slurred</option>
+            </select>
+          </label>
+        </div>
+        <div>
+          <label>Voice (browser TTS)
+            <select id="voiceSel"><option>Default</option></select>
+          </label>
+        </div>
+      </div>
+
+      <h3 style="margin-top:12px">Ground Truth (for grading)</h3>
+      <div class="row">
+        <div>
+          <label>Person (name)
+            <input id="gtPerson" type="text" value="Alex Miller" />
+          </label>
+        </div>
+        <div>
+          <label>Place (where)
+            <input id="gtPlace" type="text" value="in the ambulance" />
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Time (friendly)
+            <input id="gtTime" type="text" value="Tuesday afternoon" />
+          </label>
+        </div>
+        <div>
+          <label>Event (happened)
+            <input id="gtEvent" type="text" value="I fell and hit my head" />
+          </label>
+        </div>
+      </div>
+      <div class="tiny">Tip: You can prefill these from your scenario engine.</div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+  // ------- DOM
+  const askBtns = {
+    person: document.getElementById('askPerson'),
+    place:  document.getElementById('askPlace'),
+    time:   document.getElementById('askTime'),
+    event:  document.getElementById('askEvent')
+  };
+  const utterEl = document.getElementById('utter');
+  const aoxEl = document.getElementById('aox');
+  const answeredEl = document.getElementById('answered');
+  const accuracyEl = document.getElementById('accuracy');
+  const transcript = document.getElementById('transcript');
+  const diff = document.getElementById('difficulty');
+  const diffVal = document.getElementById('diffVal');
+  const latencyEl = document.getElementById('latency');
+  const speechStyleSel = document.getElementById('speechStyle');
+  const speechStylePill = document.getElementById('speechStylePill');
+  const voiceSel = document.getElementById('voiceSel');
+
+  const gt = {
+    person: document.getElementById('gtPerson'),
+    place:  document.getElementById('gtPlace'),
+    time:   document.getElementById('gtTime'),
+    event:  document.getElementById('gtEvent')
+  };
+
+  const randomizeBtn = document.getElementById('randomize');
+  const resetBtn = document.getElementById('reset');
+  const emitBtn = document.getElementById('emit');
+  const stopBtn = document.getElementById('stopTTS');
+
+  // ------- State
+  const state = {
+    asked: { person:false, place:false, time:false, event:false },
+    correct: { person:false, place:false, time:false, event:false },
+    lastAnswerText: '',
+    voice: null
+  };
+
+  // ------- TTS helpers
+  function getVoices(){
+    const v = window.speechSynthesis.getVoices();
+    // Populate select (once voices are loaded)
+    if(voiceSel.options.length <= 1){
+      voiceSel.innerHTML = '';
+      v.forEach((voice,i)=>{
+        const opt = document.createElement('option');
+        opt.value = String(i);
+        opt.textContent = `${voice.name} (${voice.lang})`;
+        voiceSel.appendChild(opt);
+      });
+    }
+    return v;
+  }
+  window.speechSynthesis.onvoiceschanged = getVoices;
+  getVoices();
+
+  function speak(text){
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    const voices = getVoices();
+    const idx = Number(voiceSel.value);
+    if(voices[idx]) u.voice = voices[idx];
+    u.rate = 1; u.pitch = 1; u.volume = 1;
+    window.speechSynthesis.speak(u);
+  }
+
+  stopBtn.addEventListener('click', ()=> window.speechSynthesis.cancel());
+
+  // ------- Plausible wrong answers (NREMT-style feel)
+  const wrong = {
+    person: [
+      "Mike... I think.", "I’m fine.", "Leave me alone.", "Uh... Sarah?", "I don’t remember."
+    ],
+    place: [
+      "At home.", "At work.", "The store?", "My friend’s house.", "Downtown... somewhere."
+    ],
+    time: [
+      "Morning?", "Saturday night?", "It’s... 2009?", "After dinner?", "I’m not sure."
+    ],
+    event: [
+      "Car crash.", "I was sleeping.", "Nothing happened.", "I got dizzy.", "I don’t know."
+    ]
+  };
+
+  // ------- Response generator
+  function styleSpeech(text, style){
+    if(style==='hesitant'){
+      // add hedges and pauses
+      return ("Uh... " + text).replace(/ /g, " ... ");
+    }
+    if(style==='slurred'){
+      // simple slur effect
+      return text.replace(/[sS]/g,'ssh').replace(/r/g,'rr').replace(/ing\b/g,'in’');
+    }
+    return text;
+  }
+
+  function pickWrong(key){
+    return wrong[key][Math.floor(Math.random()*wrong[key].length)];
+  }
+
+  function updateTopline(){
+    const total = Object.values(state.asked).filter(Boolean).length;
+    const correct = Object.values(state.correct).filter(Boolean).length;
+    aoxEl.textContent = '×' + correct;
+    answeredEl.textContent = `${total} / 4`;
+    accuracyEl.textContent = total ? Math.round((correct/total)*100)+'%' : '—';
+  }
+
+  function setBtnHandlers(el, down, up){
+    el.addEventListener('pointerdown', e=>{ e.preventDefault(); el.setPointerCapture?.(e.pointerId); down(); }, {passive:false});
+    el.addEventListener('pointerup',   e=>{ e.preventDefault(); up?.(); }, {passive:false});
+    el.addEventListener('pointercancel', ()=> up?.());
+    el.addEventListener('pointerleave',  e=>{ if(e.pressure===0) up?.(); });
+  }
+
+  async function ask(key){
+    // Visual feedback
+    transcript.style.outline = '3px solid rgba(0,123,138,.25)';
+    setTimeout(()=> transcript.style.outline = 'none', 250);
+
+    const pct = Number(diff.value)/100;
+    const style = speechStyleSel.value;
+    const latency = Math.max(200, Number(latencyEl.value)||900);
+
+    // Decide correct vs wrong by difficulty
+    const isCorrect = Math.random() < pct;
+
+    // Build text
+    let text = isCorrect ? gt[key].value : pickWrong(key);
+    text = styleSpeech(text, style);
+
+    // Delay to simulate processing
+    utterEl.textContent = '…thinking…';
+    await new Promise(r=>setTimeout(r, latency));
+
+    // Speak & show
+    utterEl.textContent = text;
+    speak(text);
+
+    // Update state
+    state.asked[key] = true;
+    state.correct[key] = isCorrect;
+    state.lastAnswerText = text;
+    updateTopline();
+  }
+
+  // Wire question buttons
+  setBtnHandlers(askBtns.person, ()=>ask('person'));
+  setBtnHandlers(askBtns.place,  ()=>ask('place'));
+  setBtnHandlers(askBtns.time,   ()=>ask('time'));
+  setBtnHandlers(askBtns.event,  ()=>ask('event'));
+
+  // Scenario controls
+  diff.addEventListener('input', ()=> diffVal.textContent = diff.value+'%');
+  speechStyleSel.addEventListener('change', ()=>{
+    speechStylePill.textContent = 'Speech: ' + (speechStyleSel.value[0].toUpperCase()+speechStyleSel.value.slice(1));
+  });
+
+  // Randomize: tweak difficulty, latency, style, and ground truths minimally
+  document.getElementById('randomize').addEventListener('click', ()=>{
+    diff.value = 30 + Math.floor(Math.random()*61); diffVal.textContent = diff.value+'%';
+    latencyEl.value = 600 + Math.floor(Math.random()*1200);
+    const styles = ['normal','hesitant','slurred']; speechStyleSel.value = styles[Math.floor(Math.random()*styles.length)];
+    speechStylePill.textContent = 'Speech: ' + (speechStyleSel.value[0].toUpperCase()+speechStyleSel.value.slice(1));
+    // Keep GT but you could shuffle here if desired
+  });
+
+  // Reset
+  document.getElementById('reset').addEventListener('click', ()=>{
+    window.speechSynthesis.cancel();
+    state.asked = { person:false, place:false, time:false, event:false };
+    state.correct = { person:false, place:false, time:false, event:false };
+    utterEl.textContent = '…(quiet)…';
+    updateTopline();
+  });
+
+  // Emit result
+  emitBtn.addEventListener('click', ()=>{
+    const payload = {
+      aox_count: Object.values(state.correct).filter(Boolean).length,
+      asked: {...state.asked},
+      correct: {...state.correct},
+      ground_truth: {
+        person: gt.person.value, place: gt.place.value, time: gt.time.value, event: gt.event.value
+      },
+      difficulty_pct: Number(diff.value),
+      latency_ms: Number(latencyEl.value),
+      speech_style: speechStyleSel.value,
+      last_answer_text: state.lastAnswerText,
+      timestamp: Date.now()
+    };
+    window.dispatchEvent(new CustomEvent('aox-result', { detail: payload }));
+    console.log('[aox-result]', payload);
+  });
+
+  // Init
+  diffVal.textContent = diff.value+'%';
+  updateTopline();
+})();
+</script>
+</body>
+</html>
