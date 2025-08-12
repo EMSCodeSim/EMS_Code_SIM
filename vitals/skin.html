@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Skin Appearance Simulator</title>
+<style>
+  :root{
+    --brand:#007B8A; --brand-dark:#0a616c;
+    --bg:#f0f8ff; --panel:#fff; --muted:#e7f4f7; --text:#0f2b33;
+    --shadow:0 10px 24px rgba(0,0,0,.08); --radius:16px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh}
+  header{width:100%;background:var(--brand);color:#fff;text-align:center;padding:14px 16px;font-weight:600}
+  main{width:100%;max-width:1100px;padding:12px;display:grid;gap:12px}
+  .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+  .layout{display:grid;gap:12px}
+  @media(min-width:920px){.layout{grid-template-columns:1.1fr .9fr}}
+  .skin-stage{background:var(--muted);border-radius:14px;padding:12px;display:grid;gap:12px}
+  .zones{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .zone-btn{border:0;border-radius:12px;background:#fff;padding:10px;box-shadow:0 1px 0 #e7ecee;cursor:pointer}
+  .zone-btn[aria-selected="true"]{outline:3px solid var(--brand)}
+  .stage{
+    width:100%;aspect-ratio:4/3;border-radius:14px;background:#dfeff2;position:relative;overflow:hidden;
+    display:grid;place-items:center;
+  }
+  /* The skin tile (pure CSS/SVG – no images) */
+  .skin{
+    width:min(92%,520px);aspect-ratio:1/1;border-radius:18px;position:relative;overflow:hidden;
+    box-shadow:inset 0 0 60px rgba(0,0,0,.18), inset 0 0 140px rgba(0,0,0,.12);
+  }
+  /* Base tone layer (updated via inline style bg) */
+  .skin::before{
+    content:"";position:absolute;inset:0;border-radius:18px;transition:background 180ms ease;
+  }
+  /* Color state overlays */
+  .overlay{position:absolute;inset:0;border-radius:18px;pointer-events:none}
+  .ov-pale{background:radial-gradient(120% 120% at 50% 20%, rgba(255,255,255,.18), rgba(255,255,255,.06) 45%, transparent 70%)}
+  .ov-flush{background:radial-gradient(120% 120% at 50% 20%, rgba(245,72,72,.18), rgba(245,72,72,.06) 45%, transparent 70%)}
+  .ov-cyanosis{background:radial-gradient(120% 120% at 50% 20%, rgba(40,90,160,.20), rgba(40,90,160,.10) 45%, transparent 70%) mix, transparent}
+  .ov-jaundice{background:radial-gradient(120% 120% at 50% 20%, rgba(240,210,60,.20), rgba(240,210,60,.10) 50%, transparent 75%)}
+  /* Mottling via repeating linear gradients */
+  .ov-mottle{
+    background:
+      repeating-radial-gradient(circle at 30% 40%, rgba(120,60,60,.16) 0 8px, transparent 8px 16px),
+      repeating-radial-gradient(circle at 70% 60%, rgba(120,60,60,.14) 0 7px, transparent 7px 14px);
+    mix-blend-mode:multiply; opacity:.65;
+    animation:mottlePulse 4s ease-in-out infinite;
+  }
+  @keyframes mottlePulse{
+    50% { opacity:.35; transform:scale(1.01) }
+  }
+  /* Moisture: sheen and droplets */
+  .ov-sheen{
+    background:linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,0) 35%, rgba(255,255,255,.06) 60%, rgba(255,255,255,0) 80%);
+    mix-blend-mode:screen; opacity:.0; transition:opacity 180ms ease;
+  }
+  .ov-drops{
+    background:
+      radial-gradient(circle at 20% 25%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px),
+      radial-gradient(circle at 68% 32%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px),
+      radial-gradient(circle at 40% 70%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px),
+      radial-gradient(circle at 78% 74%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px);
+    opacity:0; transition:opacity 180ms ease;
+  }
+  /* Temp: cool/flush edge tint */
+  .ov-cool{ box-shadow: inset 0 0 0 9999px rgba(40,120,220,.10) }
+  .ov-warm{ box-shadow: inset 0 0 0 9999px rgba(220,70,40,.10) }
+
+  .label{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:#ffffffcc;padding:4px 10px;border-radius:999px;font-size:.9rem}
+
+  .controls{display:grid;gap:10px}
+  .row{display:grid;gap:10px}
+  @media(min-width:560px){.row{grid-template-columns:1fr 1fr}}
+  .control{background:#fff;border-radius:12px;padding:10px;border:1px solid #e8eef0}
+  .control h3{margin:.2rem 0 .6rem;font-size:.95rem}
+  select,input[type="range"]{width:100%}
+  select{padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
+  input[type="range"]{accent-color:var(--brand)}
+  .btn{appearance:none;border:0;background:var(--brand);color:#fff;padding:12px 14px;border-radius:12px;font-weight:700;cursor:pointer;width:100%}
+  .btn.alt{background:#124b54}
+  .btn.warn{background:#c77b00}
+  .btn.bad{background:#b81e2b}
+  .btn:active{transform:translateY(1px)}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+  .kpi{background:#fff;border:1px solid #e8eef0;border-radius:10px;padding:8px;text-align:center}
+  .kpi strong{display:block;font-size:1.1rem}
+  .status{font-size:.9rem;padding:8px 10px;border-radius:10px;background:#fff;border:1px solid #e8eef0;color:#0b3b44}
+  footer{opacity:.7;font-size:.85rem;padding:12px}
+</style>
+</head>
+<body>
+<header>Skin Appearance Simulator</header>
+
+<main>
+  <section class="card layout">
+    <div class="skin-stage">
+      <div class="zones" id="zones">
+        <button class="zone-btn" data-zone="face" aria-selected="true">Face</button>
+        <button class="zone-btn" data-zone="lipsnails">Lips/Nails</button>
+        <button class="zone-btn" data-zone="hands">Hands</button>
+        <button class="zone-btn" data-zone="chest">Chest</button>
+      </div>
+
+      <div class="stage">
+        <div class="skin" id="skin">
+          <div class="overlay ov-pale" id="ovPale" style="opacity:0"></div>
+          <div class="overlay ov-flush" id="ovFlush" style="opacity:0"></div>
+          <div class="overlay ov-cyanosis" id="ovCyan" style="opacity:0"></div>
+          <div class="overlay ov-jaundice" id="ovJaund" style="opacity:0"></div>
+          <div class="overlay ov-mottle" id="ovMottle" style="opacity:0"></div>
+          <div class="overlay ov-sheen" id="ovSheen"></div>
+          <div class="overlay ov-drops" id="ovDrops"></div>
+          <div class="overlay ov-cool" id="ovCool" style="opacity:0"></div>
+          <div class="overlay ov-warm" id="ovWarm" style="opacity:0"></div>
+          <div class="label" id="zoneLabel">Face</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="control">
+        <h3>Tone & Temperature</h3>
+        <div class="row">
+          <div>
+            <label>Base skin tone (Fitzpatrick I–VI)
+              <select id="tone">
+                <option value="I">I (very light)</option>
+                <option value="II" selected>II</option>
+                <option value="III">III</option>
+                <option value="IV">IV</option>
+                <option value="V">V</option>
+                <option value="VI">VI (very dark)</option>
+              </select>
+            </label>
+          </div>
+          <div>
+            <label>Temperature
+              <select id="temp">
+                <option value="cool">Cool</option>
+                <option value="normal" selected>Normal</option>
+                <option value="warm">Warm</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="control">
+        <h3>Color States</h3>
+        <div class="row">
+          <div>
+            <label>Pallor
+              <input id="pallor" type="range" min="0" max="100" value="0"/>
+            </label>
+          </div>
+          <div>
+            <label>Flushing
+              <input id="flush" type="range" min="0" max="100" value="0"/>
+            </label>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Cyanosis
+              <input id="cyan" type="range" min="0" max="100" value="0"/>
+            </label>
+          </div>
+          <div>
+            <label>Jaundice
+              <input id="jaund" type="range" min="0" max="100" value="0"/>
+            </label>
+          </div>
+        </div>
+        <div>
+          <label>Mottling
+            <input id="mottle" type="range" min="0" max="100" value="0"/>
+          </label>
+        </div>
+      </div>
+
+      <div class="control">
+        <h3>Moisture</h3>
+        <div class="row">
+          <div>
+            <label>Moisture level
+              <input id="moist" type="range" min="0" max="100" value="0"/>
+            </label>
+          </div>
+          <div class="kpis">
+            <div class="kpi"><small>Moisture</small><strong id="moistLabel">Dry</strong></div>
+            <div class="kpi"><small>Temp</small><strong id="tempLabel">Normal</strong></div>
+            <div class="kpi"><small>State</small><strong id="stateSummary">—</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="control">
+        <h3>Scenario</h3>
+        <div class="row">
+          <button class="btn alt" id="progressBtn">▶ Progression (30s)</button>
+          <button class="btn warn" id="randomBtn">Randomize Zone</button>
+        </div>
+        <div class="row">
+          <button class="btn" id="emitBtn">Emit Result (window.dispatchEvent)</button>
+          <button class="btn bad" id="resetBtn">Reset Zone</button>
+        </div>
+        <div class="status" id="status">Ready. Each zone saves its own settings.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>© EMS Code Sim — Skin Appearance Trainer</footer>
+
+<script>
+/* Skin Appearance Simulator
+   - Zones: face, lipsnails, hands, chest (each with independent state)
+   - Tone (Fitz I–VI), Temp (cool/normal/warm)
+   - Color states: pallor, flush, cyanosis, jaundice, mottling (0–100)
+   - Moisture 0–100: Dry → Clammy → Diaphoretic (adds sheen & droplets)
+   - Randomize, 30s progression (e.g., shock trajectory), Emit result event
+*/
+
+(function(){
+  const toneSel = document.getElementById('tone');
+  const tempSel = document.getElementById('temp');
+  const pallor = document.getElementById('pallor');
+  const flush  = document.getElementById('flush');
+  const cyan   = document.getElementById('cyan');
+  const jaund  = document.getElementById('jaund');
+  const mottle = document.getElementById('mottle');
+  const moist  = document.getElementById('moist');
+
+  const moistLabel = document.getElementById('moistLabel');
+  const tempLabel  = document.getElementById('tempLabel');
+  const stateSummary = document.getElementById('stateSummary');
+
+  const skin = document.getElementById('skin');
+  const ovPale = document.getElementById('ovPale');
+  const ovFlush = document.getElementById('ovFlush');
+  const ovCyan = document.getElementById('ovCyan');
+  const ovJaund = document.getElementById('ovJaund');
+  const ovMottle = document.getElementById('ovMottle');
+  const ovSheen = document.getElementById('ovSheen');
+  const ovDrops = document.getElementById('ovDrops');
+  const ovCool = document.getElementById('ovCool');
+  const ovWarm = document.getElementById('ovWarm');
+
+  const zonesBar = document.getElementById('zones');
+  const zoneLabel = document.getElementById('zoneLabel');
+  const statusEl = document.getElementById('status');
+
+  const progressBtn = document.getElementById('progressBtn');
+  const randomBtn = document.getElementById('randomBtn');
+  const emitBtn = document.getElementById('emitBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  const ZONES = ['face','lipsnails','hands','chest'];
+
+  // Base tones (approximate, tuned to keep color overlays visible on all tones)
+  const TONES = {
+    I:  '#fde9d7',
+    II: '#f3d4bd',
+    III:'#e5bda1',
+    IV: '#c89579',
+    V:  '#9a6a4e',
+    VI: '#6f4a36'
+  };
+
+  // Each zone has its own state
+  const state = {};
+  for (const z of ZONES){
+    state[z] = {
+      tone:'II', temp:'normal',
+      pallor:0, flush:0, cyan:0, jaund:0, mottle:0, moist:0
+    };
+  }
+  let currentZone = 'face';
+  applyStateToUI();
+
+  // Wire zone buttons
+  zonesBar.querySelectorAll('.zone-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      zonesBar.querySelectorAll('.zone-btn').forEach(b=>b.setAttribute('aria-selected','false'));
+      btn.setAttribute('aria-selected','true');
+      currentZone = btn.dataset.zone;
+      zoneLabel.textContent = labelForZone(currentZone);
+      applyStateToUI();
+      status('Switched to '+labelForZone(currentZone)+'.');
+    });
+  });
+
+  // UI handlers
+  [toneSel,tempSel,pallor,flush,cyan,jaund,mottle,moist].forEach(el=>{
+    el.addEventListener('input', ()=>{
+      writeUIToState();
+      render();
+    });
+  });
+
+  resetBtn.addEventListener('click', ()=>{
+    state[currentZone] = { tone:'II', temp:'normal', pallor:0, flush:0, cyan:0, jaund:0, mottle:0, moist:0 };
+    applyStateToUI(); render(); status('Zone reset.');
+  });
+
+  randomBtn.addEventListener('click', ()=>{
+    const tones = Object.keys(TONES);
+    const temps = ['cool','normal','warm'];
+    const rand = ()=> Math.floor(Math.random()*101);
+    state[currentZone] = {
+      tone: pick(tones),
+      temp: pick(temps),
+      pallor:rand(), flush:rand(), cyan:rand(), jaund:rand(), mottle:rand(), moist:rand()
+    };
+    applyStateToUI(); render(); status('Randomized '+labelForZone(currentZone)+'.');
+  });
+
+  // 30s shock-like progression: pale↑, cyan↑ (for lips/nails), mottle↑, moist↑, temp→cool
+  let progTimer = null, progStart = 0;
+  progressBtn.addEventListener('click', ()=>{
+    if (progTimer){ clearInterval(progTimer); progTimer=null; progressBtn.textContent='▶ Progression (30s)'; status('Progression stopped.'); return; }
+    progressBtn.textContent='⏸ Progressing…';
+    progStart = Date.now();
+    const startState = { ...state[currentZone] };
+    progTimer = setInterval(()=>{
+      const t = (Date.now()-progStart)/30000; // 0 -> 1 over 30s
+      if (t>=1){ clearInterval(progTimer); progTimer=null; progressBtn.textContent='▶ Progression (30s)'; status('Progression complete.'); }
+      const s = state[currentZone];
+      s.pallor = clamp( lerp(startState.pallor, 85, t), 0, 100 );
+      s.mottle = clamp( lerp(startState.mottle, 80, t), 0, 100 );
+      s.moist  = clamp( lerp(startState.moist , 90, t), 0, 100 );
+      s.flush  = clamp( lerp(startState.flush , 10, t), 0, 100 );
+      s.jaund  = clamp( lerp(startState.jaund , 10, t), 0, 100 );
+      s.cyan   = clamp( lerp(startState.cyan  , currentZone==='lipsnails'? 85: 35, t), 0, 100 );
+      s.temp   = t>0.6 ? 'cool' : startState.temp;
+      applyStateToUI(); render();
+    }, 200);
+    status('Progression started (≈30s).');
+  });
+
+  emitBtn.addEventListener('click', ()=>{
+    const payload = { zone:currentZone, ...state[currentZone], timestamp:Date.now() };
+    window.dispatchEvent(new CustomEvent('skin-sim-result',{ detail: payload }));
+    console.log('[skin-sim-result]', payload);
+    status('Emitted result for '+labelForZone(currentZone)+'.');
+  });
+
+  // Render
+  function render(){
+    const s = state[currentZone];
+
+    // Base tone
+    skin.style.setProperty('--tone', TONES[s.tone]);
+    skin.style.setProperty('background','none');
+    skin.style.setProperty('--tone2', shade(TONES[s.tone], -6));
+    // gentle texture via gradient to avoid flat color
+    skin.style.setProperty('background',
+      `radial-gradient(120% 120% at 50% 20%, ${shade(TONES[s.tone], 6)}, ${TONES[s.tone]} 45%, ${shade(TONES[s.tone], -6)} 85%)`);
+
+    // Overlays opacity mapping (curve for subtle control)
+    ovPale.style.opacity   = mapCurve(s.pallor);
+    ovFlush.style.opacity  = mapCurve(s.flush);
+    ovCyan.style.opacity   = mapCurve(s.cyan);
+    ovJaund.style.opacity  = mapCurve(s.jaund);
+    ovMottle.style.opacity = mapCurve(s.mottle);
+
+    // Moisture visuals
+    const moistNorm = s.moist/100;
+    ovSheen.style.opacity = clamp(moistNorm*0.9, 0, 0.9);
+    ovDrops.style.opacity = moistNorm>0.6 ? clamp((moistNorm-0.6)/0.4, 0, 1) : 0;
+
+    // Temp tint
+    ovCool.style.opacity = s.temp==='cool' ? .35 : 0;
+    ovWarm.style.opacity = s.temp==='warm' ? .35 : 0;
+
+    // KPIs
+    moistLabel.textContent = s.moist<10 ? 'Dry' : s.moist<40 ? 'Slight' : s.moist<70 ? 'Clammy' : 'Diaphoretic';
+    tempLabel.textContent = s.temp[0].toUpperCase() + s.temp.slice(1);
+    stateSummary.textContent = summarize(s);
+  }
+
+  function applyStateToUI(){
+    const s = state[currentZone];
+    toneSel.value = s.tone; tempSel.value = s.temp;
+    pallor.value = s.pallor; flush.value=s.flush; cyan.value=s.cyan; jaund.value=s.jaund; mottle.value=s.mottle; moist.value=s.moist;
+    render();
+  }
+  function writeUIToState(){
+    const s = state[currentZone];
+    s.tone = toneSel.value; s.temp = tempSel.value;
+    s.pallor = num(pallor); s.flush=num(flush); s.cyan=num(cyan); s.jaund=num(jaund); s.mottle=num(mottle); s.moist=num(moist);
+    status('Updated '+labelForZone(currentZone)+'.');
+  }
+
+  // Utils
+  function labelForZone(z){ return z==='lipsnails'?'Lips/Nails': z[0].toUpperCase()+z.slice(1) }
+  function num(el){ return Number(el.value) }
+  function lerp(a,b,t){ return a+(b-a)*t }
+  function clamp(n,min=0,max=1){ return Math.max(min,Math.min(max,n)) }
+  function mapCurve(v){ return Math.pow(v/100, 0.85) } // slightly quicker ramp-up
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
+  function status(msg){ document.getElementById('status').textContent = msg }
+  function shade(hex,percent){ // +/- percent
+    const f=parseInt(hex.slice(1),16), t=percent<0?0:255, p=Math.abs(percent)/100;
+    const R=f>>16, G=(f>>8)&0x00FF, B=f&0x0000FF;
+    const r=Math.round((t-R)*p)+R, g=Math.round((t-G)*p)+G, b=Math.round((t-B)*p)+B;
+    return `#${(0x1000000 + (r<<16) + (g<<8) + b).toString(16).slice(1)}`
+  }
+
+  // Init
+  render();
+})();
+</script>
+</body>
+</html>
