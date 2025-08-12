@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+<title>Stroke Assessment Simulator — BEFAST</title>
+<style>
+  :root{
+    --brand:#007B8A; --brand-dark:#0a616c;
+    --bg:#f0f8ff; --panel:#fff; --muted:#e7f4f7; --text:#0f2b33;
+    --ok:#0a8f5b; --warn:#c77b00; --bad:#b81e2b;
+    --shadow:0 10px 24px rgba(0,0,0,.08); --radius:16px;
+    --face:#f7d2bd; --face-shadow:#e5b59e; --arm:#d9eaf0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.35}
+  header{width:100%;background:var(--brand);color:#fff;text-align:center;padding:14px 16px;font-weight:700;letter-spacing:.2px}
+  main{width:100%;max-width:1180px;margin:0 auto;padding:12px;display:grid;gap:12px}
+  .card{background:var(--panel);border-radius:16px;box-shadow:var(--shadow);padding:14px}
+  h3{margin:.4rem 0 .6rem}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;background:#e7f8f1;color:#0a8f5b;font-weight:700;font-size:.8rem}
+  .muted{color:#3b616b}
+  .btn{appearance:none;border:0;background:var(--brand);color:#fff;padding:12px 14px;border-radius:12px;font-weight:800;cursor:pointer;width:100%;
+       touch-action:manipulation;-webkit-user-select:none;user-select:none;font-size:1rem}
+  .btn.alt{background:#124b54}
+  .btn.warn{background:#c77b00}
+  .btn.bad{background:#b81e2b}
+  .btn.ghost{background:#fff;color:var(--brand);border:2px solid var(--brand)}
+  .btn:active{transform:translateY(1px)}
+  .grid{display:grid;gap:10px}
+  @media(min-width:980px){ .cols-2{grid-template-columns:1.05fr .95fr} }
+  .row{display:grid;gap:10px}
+  @media(min-width:620px){ .row{grid-template-columns:1fr 1fr} }
+  .status{font-size:.98rem;background:#fff;border:1px solid #e0eaed;border-radius:12px;padding:10px;min-height:60px}
+  select,input[type="time"]{width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .kpi{background:#fff;border:1px solid #e8eef0;border-radius:10px;padding:8px;text-align:center}
+  .kpi strong{display:block;font-size:1.1rem}
+  .findings{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  @media(max-width:720px){ .findings{grid-template-columns:1fr 1fr} }
+  .vwrap{display:grid;place-items:center;background:var(--muted);border:1px solid #dbeff3;border-radius:14px;padding:10px}
+  .faceBox svg{max-width:320px;width:100%;height:auto;display:block}
+  .armsBox{width:100%;max-width:420px;aspect-ratio:3/2;position:relative}
+  .arm{position:absolute;left:50%;width:140px;height:26px;background:var(--arm);border:2px solid #b7d0d7;border-radius:14px;transform:translateX(-50%);transition:transform .8s ease}
+  .arm.left{top:34%}
+  .arm.right{top:58%}
+  .arm.hold{background:#e9f6fa}
+  .stand{width:100%;max-width:360px;aspect-ratio:3/4;border-radius:14px;background:linear-gradient(180deg,#e6f3f6,#d7eef2);display:grid;place-items:center;position:relative;overflow:hidden}
+  .person{width:50px;height:110px;background:#2e5560;border-radius:16px;position:relative;transition:transform .8s ease}
+  .person::before{content:"";position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:42px;height:42px;background:var(--face);border-radius:50%;box-shadow:inset 0 -6px 0 var(--face-shadow)}
+  .person::after{content:"";position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:70px;height:14px;background:#1c3a40;border-radius:14px}
+  .gazeArrow{font-size:2.2rem;opacity:.0;transition:opacity .3s}
+  .speechOut{font-size:1.0rem}
+  .checklist{margin:8px 0 0 18px} .checklist li{margin:2px 0}
+  .tag{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef7ff;border:1px solid #cfe3e8;font-size:.75rem}
+</style>
+</head>
+<body>
+<header>Stroke Assessment Simulator — BEFAST</header>
+
+<main>
+  <!-- Scenario -->
+  <section class="card">
+    <h3>Scenario</h3>
+    <div class="grid cols-2">
+      <div class="status">
+        <div><span class="pill">Dispatch</span> <strong id="scDispatch">60 y/o with slurred speech & facial droop</strong></div>
+        <div><span class="pill">Setting</span> <strong id="scSetting">found sitting on couch</strong></div>
+        <div><span class="pill">Last Known Well</span> <strong id="scLKW">~30 minutes ago</strong></div>
+        <div class="muted">Run BEFAST tests. The patient’s visuals and voice will reflect the hidden deficits. Then mark Positive/Negative for each and Submit.</div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Record LKW Time (optional)</label>
+          <input id="lkwTime" type="time"/>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn ghost" id="stampNow">Use current time as exam time</button>
+          <div class="muted" id="examTimeNote"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Visual Patient Panel -->
+  <section class="card grid cols-2">
+    <div class="grid">
+      <h3>Visual Tests</h3>
+
+      <!-- FACE -->
+      <div class="card vwrap faceBox">
+        <h4>Face</h4>
+        <svg id="faceSVG" viewBox="0 0 300 260" aria-label="Face">
+          <!-- head -->
+          <ellipse cx="150" cy="120" rx="95" ry="110" fill="var(--face)" stroke="#d5a994" stroke-width="3"/>
+          <!-- eyes -->
+          <ellipse cx="115" cy="90" rx="22" ry="12" fill="#fff"/><circle id="eyeL" cx="115" cy="90" r="6" fill="#0a0a0a"/>
+          <ellipse cx="185" cy="90" rx="22" ry="12" fill="#fff"/><circle id="eyeR" cx="185" cy="90" r="6" fill="#0a0a0a"/>
+          <!-- eyebrows -->
+          <path id="browL" d="M95 70 q20 -12 40 0" stroke="#6a493c" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path id="browR" d="M165 70 q20 -12 40 0" stroke="#6a493c" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <!-- mouth -->
+          <path id="mouth" d="M110 160 q40 24 80 0" stroke="#9e4f3b" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <!-- droop overlay (we shift half) -->
+          <path id="droop" d="M110 160 q40 24 80 0" stroke="#9e4f3b" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.0"/>
+          <!-- label -->
+          <text x="150" y="220" text-anchor="middle" class="muted" style="font-size:14px">Face symmetry</text>
+        </svg>
+        <div class="row">
+          <button class="btn" id="testFace">Test: “Smile and show teeth”</button>
+        </div>
+      </div>
+
+      <!-- ARMS -->
+      <div class="card vwrap">
+        <h4>Arm Drift</h4>
+        <div class="armsBox" id="armsBox">
+          <div class="arm left" id="armL"></div>
+          <div class="arm right" id="armR"></div>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn alt" id="testArms">Test: “Hold both arms out, palms up”</button>
+        </div>
+      </div>
+
+      <!-- BALANCE -->
+      <div class="card vwrap">
+        <h4>Balance</h4>
+        <div class="stand">
+          <div class="person" id="person"></div>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn warn" id="testBalance">Test: “Stand with feet together”</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Eyes & Speech -->
+    <div class="grid">
+      <h3>Eyes & Speech</h3>
+
+      <!-- EYES -->
+      <div class="card vwrap">
+        <h4>Eyes</h4>
+        <div class="status">
+          <div>Ask patient to follow your finger left/right.</div>
+          <div class="gazeArrow" id="gazeArrow">⬅️ ⬅️</div>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="testEyes">Test Gaze / Visual Fields</button>
+        </div>
+      </div>
+
+      <!-- SPEECH -->
+      <div class="card vwrap">
+        <h4>Speech</h4>
+        <div class="status">
+          <div class="speechOut"><strong>Phrase:</strong> “You can’t teach an old dog new tricks.”</div>
+          <div class="muted" id="speechStatus">Press test to hear the patient.</div>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn" id="testSpeech">Test Speech</button>
+          <button class="btn ghost" id="stopTTS">⏹ Stop Voice</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Your BEFAST Marking -->
+  <section class="card">
+    <h3>Your BEFAST Decision</h3>
+    <div class="findings">
+      <div>
+        <label>Balance</label>
+        <select id="selB"><option>Negative</option><option>Positive</option><option>Not tested</option></select>
+      </div>
+      <div>
+        <label>Eyes</label>
+        <select id="selE"><option>Negative</option><option>Positive</option><option>Not tested</option></select>
+      </div>
+      <div>
+        <label>Face</label>
+        <select id="selF"><option>Negative</option><option>Positive</option><option>Not tested</option></select>
+      </div>
+      <div>
+        <label>Arm</label>
+        <select id="selA"><option>Negative</option><option>Positive</option><option>Not tested</option></select>
+      </div>
+      <div>
+        <label>Speech</label>
+        <select id="selS"><option>Negative</option><option>Positive</option><option>Not tested</option></select>
+      </div>
+      <div>
+        <label>Time</label>
+        <select id="selT">
+          <option>Call immediately (LKW ≤ 4.5h)</option>
+          <option>Call immediately (unknown/≥ 4.5h)</option>
+          <option>Not documented</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <button class="btn alt" id="submit">Submit</button>
+      <button class="btn warn" id="next">Next Scenario</button>
+    </div>
+
+    <div class="status" id="resultsBox" style="margin-top:8px">
+      <strong>Results:</strong> <span id="resultLine">—</span>
+      <ul class="checklist" id="why"></ul>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+  // ------------- DOM helpers
+  const $ = id => document.getElementById(id);
+  const scDispatch=$('scDispatch'), scSetting=$('scSetting'), scLKW=$('scLKW');
+  const lkwTime=$('lkwTime'), stampNow=$('stampNow'), examNote=$('examTimeNote');
+
+  // Face elements
+  const mouth=$('mouth'), droop=$('droop'), browL=$('browL'), browR=$('browR');
+  const armL=$('armL'), armR=$('armR'), person=$('person');
+  const gazeArrow=$('gazeArrow'), speechStatus=$('speechStatus');
+  const logWhy=$('why'), resultsBox=$('resultsBox'), resultLine=$('resultLine');
+
+  // ------------- Scenario Truth
+  const T = {
+    side: 'right',  // hemiparesis side (right or left body)
+    face: false,
+    arm: false,
+    speech: 'normal', // normal/slurred/aphasic
+    balance: false,
+    eyes: 'normal',   // normal/gazeDev/fieldCut
+    lkwMins: 30
+  };
+
+  // ------------- TTS
+  function speak(text){ try{ window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.rate=1;u.pitch=1;u.volume=1; window.speechSynthesis.speak(u);}catch(e){} }
+  $('stopTTS').addEventListener('click', ()=> window.speechSynthesis.cancel());
+
+  // ------------- Randomizers
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
+  function newScenario(){
+    // Dispatch
+    scDispatch.textContent = pick([
+      '72 y/o with sudden facial droop and slurred speech',
+      '58 y/o with right arm weakness and trouble speaking',
+      '66 y/o unsteady gait, veering to one side',
+      '74 y/o visual changes, not tracking left side'
+    ]);
+    scSetting.textContent = pick(['found sitting on couch', 'standing in kitchen', 'on porch with family', 'office break room']);
+    T.lkwMins = [20,30,40,60,120,240,999][Math.floor(Math.random()*7)];
+    scLKW.textContent = T.lkwMins===999 ? 'unknown' : `~${T.lkwMins} minutes ago`;
+
+    // Side & deficits (bias to common FAST + occasional posterior signs)
+    T.side = Math.random()<0.5 ? 'right' : 'left';
+    T.face = Math.random()<0.65;
+    T.arm  = Math.random()<0.7;
+    T.speech = Math.random()<0.55 ? (Math.random()<0.75?'slurred':'aphasic') : 'normal';
+    T.balance = Math.random()<0.35;
+    T.eyes = Math.random()<0.4 ? (Math.random()<0.6?'gazeDev':'fieldCut') : 'normal';
+
+    // Reset visuals
+    resetFace();
+    resetArms();
+    resetBalance();
+    resetEyes();
+    speechStatus.textContent = 'Press test to hear the patient.';
+    resultLine.textContent='—'; logWhy.innerHTML=''; resultsBox.style.outline='none';
+    // Clear selects
+    ['selB','selE','selF','selA','selS'].forEach(id=> $(id).selectedIndex=0);
+    if(T.lkwMins===999) $('selT').selectedIndex = 1; else $('selT').selectedIndex = (T.lkwMins<=270?0:1);
+  }
+
+  // ------------- Visual helpers
+  function resetFace(){
+    droop.setAttribute('opacity','0.0');
+    browL.setAttribute('d', 'M95 70 q20 -12 40 0');
+    browR.setAttribute('d', 'M165 70 q20 -12 40 0');
+    mouth.setAttribute('d','M110 160 q40 24 80 0');
+  }
+  function showFaceDroop(side){
+    // side: 'right' body droop = right face (SVG right -> higher x)
+    droop.setAttribute('opacity','1.0');
+    if(side==='right'){
+      // pull right mouth corner downward
+      droop.setAttribute('d','M110 160 q40 24 80 18');
+      browR.setAttribute('d','M165 70 q20 -4 40 8');
+    }else{
+      droop.setAttribute('d','M110 178 q40 24 80 0');
+      browL.setAttribute('d','M95 70 q20 -4 40 8');
+    }
+  }
+
+  let armAnim=null;
+  function resetArms(){
+    armL.style.transform='translate(-120px,0)'; // lift arms to mid
+    armR.style.transform='translate(120px,0)';
+    armL.classList.remove('hold'); armR.classList.remove('hold');
+    if(armAnim){ cancelAnimationFrame(armAnim); armAnim=null; }
+  }
+  function runArmDrift(side, hasDrift){
+    armL.classList.add('hold'); armR.classList.add('hold');
+    const start = performance.now();
+    function step(t){
+      const dt = (t-start)/1000; // seconds
+      // baseline: both up
+      let driftL=0, driftR=0;
+      if(hasDrift){
+        const drop = Math.min(80, dt*18); // px fall
+        if(side==='right'){ driftR = drop; } else { driftL = drop; }
+      }
+      armL.style.transform=`translate(-120px,${driftL}px)`;
+      armR.style.transform=`translate(120px,${driftR}px)`;
+      armAnim = requestAnimationFrame(step);
+    }
+    armAnim = requestAnimationFrame(step);
+  }
+
+  function resetBalance(){ person.style.transform='translateX(0) rotate(0deg)'; }
+  function showBalanceLoss(side){
+    const angle = side==='right' ? 8 : -8;
+    person.style.transform=`translateX(${side==='right'?12:-12}px) rotate(${angle}deg)`;
+  }
+
+  function resetEyes(){ gazeArrow.style.opacity = 0; }
+  function showGaze(side){ gazeArrow.textContent = side==='right'?'➡️ ➡️':'⬅️ ⬅️'; gazeArrow.style.opacity=1; }
+
+  // ------------- Test buttons
+  $('testFace').addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    // “Show me your teeth”
+    resetFace();
+    if(T.face) showFaceDroop(T.side);
+  });
+
+  $('testArms').addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    resetArms();
+    runArmDrift(T.side, T.arm);
+  });
+
+  $('testBalance').addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    resetBalance();
+    if(T.balance) showBalanceLoss(T.side);
+  });
+
+  $('testEyes').addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    resetEyes();
+    if(T.eyes==='gazeDev'){ showGaze(T.side==='right'?'right':'left'); }
+    else if(T.eyes==='fieldCut'){ showGaze(T.side==='right'?'left':'right'); } // ignores contralateral
+    else { gazeArrow.style.opacity=0.3; gazeArrow.textContent='↔️ ↔️'; }
+  });
+
+  $('testSpeech').addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    let line = "You can't teach an old dog new tricks.";
+    if(T.speech==='slurred'){
+      line = "You can' ... teach an ol' do' new trricks.";
+      speechStatus.textContent='Slurred articulation';
+    }else if(T.speech==='aphasic'){
+      line = "Uh... I... teach... dog... new... (word-finding difficulty)";
+      speechStatus.textContent='Aphasia / word salad';
+    }else{
+      speechStatus.textContent='Clear, fluent phrase';
+    }
+    speak(line);
+  });
+
+  // ------------- Time helper
+  stampNow.addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mm = String(now.getMinutes()).padStart(2,'0');
+    examNote.textContent = `Exam time set to ${hh}:${mm}. Use LKW to determine eligibility messaging.`;
+  });
+
+  // ------------- Submit / Grade
+  $('submit').addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    // Ground truth BEFAST flags
+    const truth = {
+      B: T.balance,
+      E: (T.eyes!=='normal'),
+      F: T.face,
+      A: T.arm,
+      S: (T.speech!=='normal'),
+      T: (T.lkwMins===999 ? 'unknown' : (T.lkwMins<=270 ? '<=4.5h' : '>=4.5h'))
+    };
+
+    // User picks
+    const user = {
+      B: $('selB').value,
+      E: $('selE').value,
+      F: $('selF').value,
+      A: $('selA').value,
+      S: $('selS').value,
+      T: $('selT').value
+    };
+
+    // Evaluate per domain
+    const lines=[];
+    const ok = [];
+
+    function evalDom(label, truthVal, userVal, whyPos, whyNeg){
+      const shouldPos = !!truthVal;
+      const pickedPos = (userVal==='Positive');
+      const pickedNeg = (userVal==='Negative');
+      let correct=false, note='';
+      if(userVal==='Not tested'){
+        note = `<span class="tag">Not tested</span> — cannot conclude.`;
+      }else if(shouldPos && pickedPos){
+        correct=true; note = `✅ Correct: ${whyPos}`;
+      }else if(!shouldPos && pickedNeg){
+        correct=true; note = `✅ Correct: ${whyNeg}`;
+      }else{
+        note = `❌ Not quite: ${shouldPos? 'sign present':'no sign present'} in scenario.`;
+      }
+      ok.push(correct || userVal==='Not tested');
+      lines.push(`<li><strong>${label}</strong> — ${note}</li>`);
+    }
+
+    evalDom('Balance', truth.B, user.B,
+      'instability/lean consistent with posterior involvement.',
+      'steady stance.');
+    evalDom('Eyes', truth.E, user.E,
+      T.eyes==='gazeDev' ? `gaze deviates toward the ${T.side} (cannot cross midline).`
+                          : `ignores ${T.side==='right'?'left':'right'} side (visual field cut).`,
+      'tracks left and right.');
+    evalDom('Face', truth.F, user.F,
+      `asymmetric smile with ${T.side} mouth corner droop.`,
+      'symmetric smile.');
+    evalDom('Arm', truth.A, user.A,
+      `${T.side} arm drifts/down with pronator drift test.`,
+      'no drift (both arms hold).');
+    evalDom('Speech', truth.S, user.S,
+      T.speech==='slurred' ? 'slurred articulation / dysarthria.' : 'aphasia / word-finding impairment.',
+      'clear, fluent phrase.');
+
+    // Time messaging
+    let timeLine = '';
+    if(user.T.startsWith('Call')){
+      timeLine = truth.T==='<=4.5h'
+        ? '✅ Correct: LKW within typical IV thrombolysis window (local protocols vary).'
+        : '✅ Appropriate: Call now; eligibility may depend on imaging/extended windows.'
+    }else{
+      timeLine = '❌ Not documented: Always document LKW and notify stroke team.';
+      ok.push(false);
+    }
+    lines.push(`<li><strong>Time</strong> — ${timeLine}</li>`);
+
+    // Final
+    const allOk = ok.every(Boolean);
+    resultLine.innerHTML = allOk
+      ? `✅ Good job: Your BEFAST determination matches the scenario.`
+      : `⚠️ Review: Some selections differ from findings. See details below.`;
+    logWhy.innerHTML = lines.join('');
+    resultsBox.style.outline = allOk ? '3px solid rgba(10,143,91,.25)' : '3px solid rgba(199,123,0,.35)';
+  });
+
+  // ------------- Next scenario
+  $('next').addEventListener('pointerdown', e=>{ e.preventDefault(); window.speechSynthesis.cancel(); newScenario(); });
+
+  // ------------- Boot
+  newScenario();
+})();
+</script>
+</body>
+</html>
