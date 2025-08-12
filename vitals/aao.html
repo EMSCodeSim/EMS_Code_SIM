@@ -50,7 +50,7 @@
 <header>A&O×4 Orientation Simulator</header>
 
 <main>
-  <!-- Scenario (auto generated each round; defaults to your example) -->
+  <!-- Scenario -->
   <section class="card">
     <h3>Scenario</h3>
     <div class="scenario" id="scenarioBox">
@@ -58,7 +58,7 @@
       <div><span class="pill">Place</span> <strong id="scPlace">at his home</strong></div>
       <div><span class="pill">Time</span> <strong id="scTime">this afternoon, about 1:00</strong></div>
       <div><span class="pill">Event</span> <strong id="scEvent">fell and hit his head</strong></div>
-      <div class="muted">Ask the questions in order (Person → Place → Time → Event). The patient will respond aloud (TTS).</div>
+      <div class="muted">Ask the questions in order (Person → Place → Time → Event). The patient will respond aloud.</div>
     </div>
   </section>
 
@@ -73,7 +73,7 @@
     </div>
 
     <div class="kpis" style="margin-top:10px">
-      <div class="kpi"><small>A&O Count</small><strong id="aox">×0</strong></div>
+      <div class="kpi"><small>A&O Count</small><strong id="aox">×—</strong></div>
       <div class="kpi"><small>Answered</small><strong id="answered">0 / 4</strong></div>
       <div class="kpi"><small>Status</small><strong id="flow">Ask Person</strong></div>
     </div>
@@ -145,12 +145,11 @@
   const stopBtn = document.getElementById('stopTTS');
 
   // --------- State
-  let caseData = null;
-  let askedIdx = 0; // 0..3 in order: person, place, time, event
+  let askedIdx = 0; // order: 0 person,1 place,2 time,3 event
   let answered = { person:false, place:false, time:false, event:false };
   let correct   = { person:false, place:false, time:false, event:false };
   let trueAns   = { person:'', place:'', time:'', event:'' };
-  let aoTrue = 4; // actual orientation level (0-4), determines which answers are correct
+  let aoTrue = 4; // actual orientation level (0-4)
 
   // --------- TTS
   function speak(text){
@@ -177,44 +176,38 @@
     const time   = useExample ? 'this afternoon, about 1:00' : pick(TIME_POOL);
     const event  = useExample ? 'fell and hit his head' : pick(EVENT_POOL);
 
-    // Decide true A&O level (0–4). In EMS, if A&OxN, we typically consider correctness in this order.
     aoTrue = Math.floor(Math.random()*5); // 0..4
 
-    // Fill DOM
     scPerson.textContent = person;
     scPlace.textContent = place;
     scTime.textContent = time;
     scEvent.textContent = event;
 
-    // Ground truth used for "correct" answers
     trueAns = {
       person: person,
-      place:  place.replace(/^at /,'in '),    // convert phrasing (“at home” -> “in my home”)
+      place:  place.replace(/^at /,'in '),
       time:   time,
       event:  event
     };
 
-    // Reset per-run state
     askedIdx = 0;
     answered = { person:false, place:false, time:false, event:false };
     correct  = { person:false, place:false, time:false, event:false };
-    updateTopline();
-
     utterEl.textContent = '…(quiet)…';
     flowEl.textContent = 'Ask Person';
     resultsBox.style.outline='none';
     resultLine.textContent='—';
     whyList.innerHTML='';
+    updateTopline(true); // reset displays (hide A&O)
   }
 
-  // On first load, use the exact example you gave; later rounds randomize.
+  // On first load, use provided example
   newScenario(true);
 
   // --------- Utility
-  function updateTopline(){
+  function updateTopline(hide=true){
     const total = Object.values(answered).filter(Boolean).length;
-    const got   = Object.values(correct).filter(Boolean).length;
-    aoxEl.textContent = '×'+got;
+    aoxEl.textContent = hide ? '×—' : ('×' + Object.values(correct).filter(Boolean).length);
     answeredEl.textContent = `${total} / 4`;
   }
 
@@ -228,8 +221,7 @@
     return true;
   }
 
-  // --------- Answer logic (A&O scale behavior)
-  // If aoTrue = N, then the first N items (in order) will be correct; the rest will be wrong/fuzzy.
+  // --------- Answer logic
   const wrongBank = {
     person: ["I’m fine.","Mike? Maybe.","Leave me alone.","I don't know.","Sarah?"],
     place:  ["At home.","At work.","Downtown?","In a store.","Somewhere."],
@@ -240,13 +232,11 @@
   function buildAnswer(key, index){
     const shouldBeCorrect = index < aoTrue;
     if(shouldBeCorrect){
-      // Slightly vary phrasing to sound natural
       if(key==='person') return `My name is ${trueAns.person}.`;
       if(key==='place')  return `I am ${trueAns.place}.`;
       if(key==='time')   return `${trueAns.time}.`;
       if(key==='event')  return `I ${trueAns.event}.`;
     }else{
-      // Pick plausible wrong
       return wrongBank[key][Math.floor(Math.random()*wrongBank[key].length)];
     }
   }
@@ -262,7 +252,7 @@
 
     const names = ['Place','Time','Event','(done)'];
     flowEl.textContent = askedIdx<=3 ? `Ask ${names[askedIdx-0]}` : 'All questions asked';
-    updateTopline();
+    updateTopline(true); // keep hidden during play
   }
 
   // --------- Button wiring (pointer events for mobile)
@@ -276,7 +266,6 @@
 
   // --------- Grading
   bind(showBtn, ()=>{
-    // Require all four asked
     if(Object.values(answered).some(v=>!v)){
       speak('Please complete all four questions first.');
       resultsBox.style.outline='3px solid rgba(199,123,0,.35)';
@@ -286,14 +275,12 @@
     }
     const yourAO = Number(assessSel.value);
     const trueAO = aoTrue;
-    const correctCount = Object.values(correct).filter(Boolean).length;
 
     const ok = yourAO === trueAO;
     resultLine.innerHTML = ok
       ? `✅ Correct: Patient is <strong>A&O ×${trueAO}</strong>.`
       : `❌ Not quite: You chose <strong>A&O ×${yourAO}</strong>, but correct is <strong>×${trueAO}</strong>.`;
 
-    // Explain which items were correct vs not
     const details = [];
     details.push(`<li>${correct.person ? '✅' : '❌'} Person — ${correct.person?'correct':'incorrect'}</li>`);
     details.push(`<li>${correct.place  ? '✅' : '❌'} Place — ${correct.place?'correct':'incorrect'}</li>`);
@@ -303,11 +290,13 @@
 
     resultsBox.style.outline = ok ? '3px solid rgba(10,143,91,.25)' : '3px solid rgba(184,30,43,.25)';
 
-    // Speak short summary
+    // Reveal actual A&O now
+    aoxEl.textContent = '×' + trueAO;
+
     speak(ok ? `Correct. Alert and oriented times ${trueAO}.` : `Not quite. Correct answer is alert and oriented times ${trueAO}.`);
   });
 
-  // --------- Next Scenario (full reset, new random case)
+  // --------- Next Scenario
   bind(nextBtn, ()=>{
     window.speechSynthesis.cancel();
     newScenario(false);
