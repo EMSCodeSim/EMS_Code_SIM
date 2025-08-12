@@ -39,6 +39,7 @@
   .results-list{margin:.5rem 0 0 1rem}
   .results-list li{margin:.2rem 0}
   select{width:100%; padding:.6rem .7rem; border-radius:10px; border:1px solid var(--border); background:#fff}
+  code{background:#eef6f8; padding:0 .35rem; border-radius:6px}
 </style>
 </head>
 <body>
@@ -51,10 +52,13 @@
       <div class="row">
         <div><span class="pill">Patient</span> <strong id="scPerson">—</strong></div>
         <div><span class="pill">Place</span> <strong id="scPlace">—</strong></div>
-        <div><span class="pill">Time</span> <strong id="scTime">—</strong></div>
+        <div><span class="pill">Time (ref)</span> <strong id="scTime">—</strong></div>
         <div><span class="pill">Event</span> <strong id="scEvent">—</strong></div>
       </div>
-      <p class="muted" style="margin:.5rem 0 0">Ask in order: <strong>Person → Place → Time → Event</strong>. Each button shows the patient's response directly under that question.</p>
+      <p class="muted" style="margin:.5rem 0 0">
+        Ask in order: <strong>Person → Place → Time → Event</strong>. Patient answers appear directly under each question.
+        Time orientation accepts reasonable approximations (e.g., <em>“shortly after lunch”</em> ≈ about 1:00 pm).
+      </p>
     </section>
 
     <!-- Questions -->
@@ -64,7 +68,7 @@
         <div class="q" id="q-person">
           <h3><span class="k">Person</span></h3>
           <div class="ask">
-            <button class="btn" data-ask="person">Ask "What is your name?"</button>
+            <button class="btn" data-ask="person">Ask “What is your name?”</button>
           </div>
           <div class="resp" id="resp-person" hidden>
             <span class="who">Patient:</span> <span class="line"></span>
@@ -74,7 +78,7 @@
         <div class="q" id="q-place">
           <h3><span class="k">Place</span></h3>
           <div class="ask">
-            <button class="btn" data-ask="place">Ask "Where are you right now?"</button>
+            <button class="btn" data-ask="place">Ask “Where are you right now?”</button>
           </div>
           <div class="resp" id="resp-place" hidden>
             <span class="who">Patient:</span> <span class="line"></span>
@@ -84,7 +88,7 @@
         <div class="q" id="q-time">
           <h3><span class="k">Time</span></h3>
           <div class="ask">
-            <button class="btn" data-ask="time">Ask "What day/time is it?"</button>
+            <button class="btn" data-ask="time">Ask “About what time is it?”</button>
           </div>
           <div class="resp" id="resp-time" hidden>
             <span class="who">Patient:</span> <span class="line"></span>
@@ -94,7 +98,7 @@
         <div class="q" id="q-event">
           <h3><span class="k">Event</span></h3>
           <div class="ask">
-            <button class="btn" data-ask="event">Ask "What happened?"</button>
+            <button class="btn" data-ask="event">Ask “What happened?”</button>
           </div>
           <div class="resp" id="resp-event" hidden>
             <span class="who">Patient:</span> <span class="line"></span>
@@ -174,45 +178,109 @@
   }
   stopBtn.addEventListener('click', ()=>window.speechSynthesis.cancel());
 
-  // ---------- Scenario bank
-  const persons = ["Mike Miller","Ashley Johnson","Ravi Patel","Jessica Chen","Alex Rivera","Kim Nguyen"];
-  const places  = ["at his home","in her apartment","in the ambulance","at the grocery store","in the park","at work"];
-  const times   = ["this morning around 9","this afternoon, about 1:00","this evening","Monday","July","winter"];
-  const events  = ["fell and hit his head","had chest pain","passed out briefly","was in a car crash","has been sick with fever","had a seizure"];
+  // ---------- Helpers
+  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function shuffle(a){ return a.sort(()=>Math.random()-0.5); }
+  function pad2(n){ return String(n).padStart(2,'0'); }
+  function fmt12h(h, m){
+    const am = h < 12;
+    const hr = ((h+11)%12)+1;
+    return `${hr}:${pad2(m)} ${am?'am':'pm'}`;
+  }
 
+  // ---------- Scenario banks (first-person phrasing)
+  const persons = ["Mike Miller","Ashley Johnson","Ravi Patel","Jessica Chen","Alex Rivera","Kim Nguyen"];
+  const places  = [
+    "at home","in my apartment","in the ambulance","at the grocery store",
+    "in the park","at work","in my bedroom","in the living room"
+  ];
+  const events  = [
+    "fell and hit my head","had chest pain","passed out for a moment",
+    "was in a car crash","have been sick with a fever","had a seizure"
+  ];
+
+  // Time options with fuzzy acceptance
+  const timeOptions = [
+    { hour: 9,  minute: 0,  period: "morning",   meal: "after breakfast",
+      rough: ["this morning","morning time","after breakfast","around nine in the morning","late morning"] },
+    { hour: 13, minute: 0,  period: "afternoon", meal: "after lunch",
+      rough: ["shortly after lunch","early afternoon","around one in the afternoon","this afternoon"] },
+    { hour: 18, minute: 30, period: "evening",   meal: "around dinner",
+      rough: ["around dinner time","evening","just after supper","early evening"] },
+    { hour: 22, minute: 0,  period: "night",     meal: "late night",
+      rough: ["late at night","night time","close to bedtime","around ten at night"] }
+  ];
+
+  // Wrong answers (first-person style)
   const wrongBank = {
-    person: ["I’m fine.","Mike? Maybe.","Leave me alone.","I don't know.","Sarah?"],
-    place:  ["At home.","At work.","Downtown?","In a store.","Somewhere."],
-    time:   ["Morning?","Saturday?","Later tonight?","2009?","Not sure."],
-    event:  ["Nothing.","Car crash.","I was sleeping.","I don’t know.","I got dizzy."]
+    person: ["I don’t know my name.","I can’t remember right now.","Uh… I’m not sure.","Leave me alone."],
+    place:  ["I’m at… somewhere.","Downtown?","I think I’m at school.","I don’t know where I am."],
+    time:   ["It’s… sometime today.","Maybe Saturday?","Later tonight?","I don’t really know."],
+    event:  ["Nothing happened.","I was sleeping.","I don’t remember.","I got dizzy but that’s it."]
   };
 
+  // Domain-specific causes (examples, not diagnostic)
+  const causesByDomain = {
+    person: [
+      "Advanced dementia or severe delirium",
+      "Head trauma / traumatic brain injury",
+      "Postictal state after seizure",
+      "Severe intoxication or sedative effects",
+      "Wernicke–Korsakoff or severe thiamine deficiency",
+      "Primary psychiatric conditions with disorganization",
+      "Severe aphasia affecting self-identification"
+    ],
+    place: [
+      "Delirium (infection/sepsis, especially in older adults)",
+      "Intoxication (alcohol, opioids, sedatives) or withdrawal",
+      "Wandering in dementia; unfamiliar environment (hospital)",
+      "Head injury / concussion",
+      "Hypoxia or hypercapnia",
+      "Metabolic derangements (electrolytes, glucose)"
+    ],
+    time: [
+      "Delirium or encephalopathy (often time is first lost)",
+      "Hospitalization, sleep deprivation, jet lag",
+      "Intoxication or sedating medications",
+      "Metabolic causes (hypoglycemia/hyperglycemia, uremia, hepatic encephalopathy)",
+      "Infection (e.g., UTI, pneumonia) causing confusion in older adults",
+      "Normal aging with intact logic about general time of day"
+    ],
+    event: [
+      "Concussion / head injury (anterograde or retrograde amnesia)",
+      "Syncope with brief LOC; postictal after seizure",
+      "Intoxication (alcohol/benzodiazepines) affecting memory encoding",
+      "Hypoglycemia or other metabolic disturbance",
+      "Acute stress reaction or dissociation"
+    ]
+  };
+
+  // ---------- State
   let trueAns = null;
+  let trueTime = null;
   let correctKeys = new Set();
   let said = { person:null, place:null, time:null, event:null };
 
-  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-  function shuffle(a){ return a.sort(()=>Math.random()-0.5); }
-
   function newScenario(first=true){
-    // pick true answers
+    // Pick true answers
     trueAns = {
       person: rand(persons),
       place:  rand(places),
-      time:   rand(times),
       event:  rand(events)
     };
+    trueTime = rand(timeOptions);
+    const refTime = fmt12h(trueTime.hour, trueTime.minute);
     sc.person.textContent = trueAns.person;
     sc.place.textContent  = trueAns.place;
-    sc.time.textContent   = trueAns.time;
+    sc.time.textContent   = `${refTime} (${trueTime.period}; ${trueTime.meal})`;
     sc.event.textContent  = trueAns.event;
 
-    // choose how oriented the patient really is
-    const aoTrue = Math.floor(Math.random()*5); // 0..4 correct
+    // Choose ground truth orientation: how many domains really correct (0..4)
+    const aoTrue = Math.floor(Math.random()*5);
     const keys = ["person","place","time","event"];
     correctKeys = new Set(shuffle(keys.slice()).slice(0, aoTrue));
 
-    // reset UI
+    // Reset UI
     for(const k of keys){
       said[k] = null;
       respBox[k].hidden = true;
@@ -222,18 +290,28 @@
     if(!first) speak("New scenario loaded.");
   }
 
-  // Build answer for a given key based on whether this domain is truly correct
+  // Build answer text (first person). For time, if oriented, often give a fuzzy phrase.
   function buildAnswer(key){
-    const shouldBeCorrect = correctKeys.has(key);
-    if(shouldBeCorrect){
-      if(key==='person') return `My name is ${trueAns.person}.`;
-      if(key==='place')  return `I am ${trueAns.place}.`;
-      if(key==='time')   return `${trueAns.time}.`;
-      if(key==='event')  return `I ${trueAns.event}.`;
-    }else{
-      return wrongBank[key][Math.floor(Math.random()*wrongBank[key].length)];
+    const oriented = correctKeys.has(key);
+    if(!oriented){
+      return rand(wrongBank[key]);
+    }
+    if(key==='person') return `My name is ${trueAns.person}.`;
+    if(key==='place')  return `I’m ${trueAns.place}.`;
+    if(key==='event')  return `I ${trueAns.event}.`;
+    if(key==='time'){
+      // 60% chance to use fuzzy time, 40% exact
+      const useFuzzy = Math.random() < 0.6;
+      if(useFuzzy){
+        return `${rand(trueTime.rough)}.`;
+      }else{
+        return `It’s about ${fmt12h(trueTime.hour, trueTime.minute)}.`;
+      }
     }
   }
+
+  // Fuzzy logic note: time is marked oriented based on scenario truth (correctKeys),
+  // and we *present* an approximate phrase. Results will call this out as acceptable.
 
   // Ask handlers
   btns.forEach(b=>{
@@ -248,68 +326,86 @@
     });
   });
 
+  // Explain meaning and causes
+  function meaningText(actualAO, wrongDomains){
+    if(actualAO===4) return 'Fully oriented to person, place, time, and event.';
+    if(actualAO===3) return 'Oriented to three domains; disoriented to one: ' + wrongDomains.join(', ') + '.';
+    if(actualAO===2) return 'Oriented to two domains; disoriented to two: ' + wrongDomains.join(', ') + '.';
+    if(actualAO===1) return 'Oriented to a single domain; disoriented to three: ' + wrongDomains.join(', ') + '.';
+    return 'Not oriented to person, place, time, or event.';
+  }
+
+  function domainCausesList(wrongDomains){
+    // Build HTML explaining domain-specific causes (with AAOx3 emphasis if applicable)
+    if(wrongDomains.length===0) return '';
+    let html = '';
+    if(wrongDomains.length===1){
+      const d = wrongDomains[0];
+      html += `<p><strong>Why A&O×3 (missed ${d}) might happen:</strong></p><ul>`;
+      html += causesByDomain[d].map(x=>`<li>${x}</li>`).join('');
+      html += `</ul>`;
+      if(d==='time'){
+        html += `<p class="muted">Note: Reasonable approximations (e.g., <em>“shortly after lunch”</em>) count as oriented to time. Here, the miss reflects a clear mismatch rather than an approximation.</p>`;
+      }
+      if(d==='person'){
+        html += `<p class="muted">Disorientation to <em>person</em> is usually a more severe finding and should prompt rapid evaluation for life threats (e.g., hypoxia, hypoglycemia, stroke, head injury, severe infection, toxic-metabolic causes).</p>`;
+      }
+      return html;
+    }
+    // Multiple domains missed
+    html += `<p><strong>Domain-specific causes to consider:</strong></p>`;
+    for(const d of wrongDomains){
+      html += `<p><em>${d}</em></p><ul>` + causesByDomain[d].map(x=>`<li>${x}</li>`).join('') + `</ul>`;
+    }
+    return html;
+  }
+
   // Results
   showBtn.addEventListener('click', ()=>{
     const keys = ["person","place","time","event"];
     const actualAO = correctKeys.size;
     const userAO = parseInt(assessEl.value,10);
 
-    // Build details list: which were correct vs wrong
     detailList.innerHTML = '';
     for(const k of keys){
       const wasCorrect = correctKeys.has(k);
       const li = document.createElement('li');
       if(wasCorrect){
-        li.innerHTML = `✅ <strong>${k}</strong>: patient was oriented.`;
+        if(k==='time'){
+          const ref = `${fmt12h(trueTime.hour,trueTime.minute)} (${trueTime.period}; ${trueTime.meal})`;
+          const saidTime = said.time ? said.time.replace(/^Patient:\s*/,'') : '(no response given yet)';
+          li.innerHTML = `✅ <strong>${k}</strong>: patient was oriented. Patient said: <em>${saidTime}</em>. Reference: <code>${ref}</code>. Approximate descriptions like these count as oriented.`;
+        }else if(k==='person'){
+          li.innerHTML = `✅ <strong>${k}</strong>: correctly stated name. Patient said: <em>${said.person||'(no response yet)'}</em>.`;
+        }else if(k==='place'){
+          li.innerHTML = `✅ <strong>${k}</strong>: correctly identified location. Patient said: <em>${said.place||'(no response yet)'}</em>.`;
+        }else{
+          li.innerHTML = `✅ <strong>${k}</strong>: correctly recalled event. Patient said: <em>${said.event||'(no response yet)'}</em>.`;
+        }
       }else{
-        const corr = (k==='person')? trueAns.person :
-                     (k==='place')? trueAns.place :
-                     (k==='time')? trueAns.time :
-                     trueAns.event;
-        li.innerHTML = `❌ <strong>${k}</strong>: patient response was incorrect. Correct: <em>${corr}</em>.`;
+        // Show correct reference
+        let corr;
+        if(k==='person') corr = trueAns.person;
+        else if(k==='place') corr = trueAns.place;
+        else if(k==='time') corr = `${fmt12h(trueTime.hour,trueTime.minute)} (${trueTime.period}; ${trueTime.meal})`;
+        else corr = trueAns.event;
+        li.innerHTML = `❌ <strong>${k}</strong>: patient response was incorrect. Correct reference: <em>${corr}</em>.`;
       }
       detailList.appendChild(li);
     }
 
-    // Top line
-    const you = (userAO===actualAO) ? 'You were correct.' : `Your assessment (A&O×${userAO}) did not match.`;
-    resultLine.innerHTML = `<strong>Results:</strong> Actual orientation is <strong>A&O×${actualAO}</strong>. ${you}`;
-
-    // Meaning text
     const wrongDomains = keys.filter(k=>!correctKeys.has(k));
-    let explain = '';
-    if(actualAO===4){
-      explain = 'Fully oriented to person, place, time, and event.';
-    }else if(actualAO===3){
-      explain = 'Oriented to three domains; disoriented to one: ' + wrongDomains.join(', ') + '.';
-    }else if(actualAO===2){
-      explain = 'Oriented to two domains; disoriented to two: ' + wrongDomains.join(', ') + '.';
-    }else if(actualAO===1){
-      explain = 'Oriented to a single domain; disoriented to three: ' + wrongDomains.join(', ') + '.';
-    }else{
-      explain = 'Not oriented to person, place, time, or event.';
-    }
-    meaning.textContent = `What this means: ${explain}`;
+    resultLine.innerHTML = `<strong>Results:</strong> Actual orientation is <strong>A&O×${actualAO}</strong>. `
+      + ((userAO===actualAO) ? 'You were correct.' : `Your assessment (A&O×${userAO}) did not match.`);
 
-    // Reasons (with AAOx2-specific note)
-    const common = [
-      'Delirium (infection, sepsis, UTI in older adults)',
-      'Dementia or baseline cognitive impairment',
-      'Head injury / traumatic brain injury',
-      'Postictal state after seizure',
-      'Stroke/TIA or other acute neuro deficit',
-      'Hypoxia or hypercapnia',
-      'Hypoglycemia or hyperglycemia',
-      'Intoxication (alcohol, opioids, sedatives), withdrawal',
-      'Electrolyte or metabolic disturbance',
-      'Severe pain, sleep deprivation, or shock'
-    ];
-    let note = '';
+    meaning.textContent = `What this means: ${meaningText(actualAO, wrongDomains)}`;
+
+    // If A&O×2, include general note; otherwise tailor to missed domains
+    let general = '';
     if(actualAO===2){
-      note = '<p><strong>AAO×2 note:</strong> Being oriented to only two domains often reflects a moderate alteration in mental status and warrants prompt evaluation for reversible causes (e.g., hypoxia, hypoglycemia, infection) and time-sensitive emergencies (e.g., stroke, head injury).</p>';
+      general = '<p><strong>A&O×2 note:</strong> Being oriented to only two domains often reflects a moderate alteration in mental status and warrants prompt evaluation for reversible causes (e.g., hypoxia, hypoglycemia, infection) and time-sensitive emergencies (e.g., stroke, head injury).</p>';
     }
-    reasons.innerHTML = note + '<p><strong>Possible medical reasons (examples — not diagnostic):</strong></p><ul>'
-      + common.map(x=>`<li>${x}</li>`).join('') + '</ul>';
+    reasons.innerHTML = general + domainCausesList(wrongDomains);
 
     resultsWrap.hidden = false;
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
