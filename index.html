@@ -1,241 +1,435 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>EMS CODE SIM</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <!-- Basic SEO -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EMS Code Sim – EMS Patient Assessment & Vitals Simulators (Blood Pressure, Pulse, Breath Sounds & More)</title>
+  <meta name="description" content="Practice EMS patient assessment with interactive vitals simulators: blood pressure, pulse, respiratory rate, SpO2, temperature, blood glucose, GCS, stroke (BE-FAST), and breath sounds. Designed for EMTs, AEMTs, and Paramedics." />
+  <link rel="canonical" href="https://emscodesim.com/" />
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
+  <meta name="theme-color" content="#007B8A" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="EMS Code Sim – Patient Assessment & Vitals Simulators" />
+  <meta property="og:description" content="Hands-on EMS training: BP cuff sim, pulse, breath sounds, RR, SpO2, temp, glucose, GCS, and stroke (BE-FAST)." />
+  <meta property="og:url" content="https://emscodesim.com/" />
+  <meta property="og:image" content="https://emscodesim.com/main/og-cover.jpg" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="EMS Code Sim – Patient Assessment & Vitals Simulators" />
+  <meta name="twitter:description" content="Interactive EMS simulators for vitals and neuro: BP, pulse, breath sounds, RR, SpO2, temp, glucose, GCS, BE-FAST." />
+  <meta name="twitter:image" content="https://emscodesim.com/main/og-cover.jpg" />
+
+  <!-- Structured Data: WebSite + SearchAction -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "EMS Code Sim",
+    "url": "https://emscodesim.com/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://duckduckgo.com/?q=site%3Aemscodesim.com+{search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <!-- Structured Data: FAQ (helps rich results) -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"FAQPage",
+    "mainEntity":[
+      {
+        "@type":"Question",
+        "name":"What vitals simulators are included?",
+        "acceptedAnswer":{"@type":"Answer","text":"Blood pressure, pulse, respiratory rate, SpO2, temperature, blood glucose, GCS scoring, stroke screening (BE-FAST), and breath sounds."}
+      },
+      {
+        "@type":"Question",
+        "name":"Who is EMS Code Sim for?",
+        "acceptedAnswer":{"@type":"Answer","text":"EMTs, AEMTs, Paramedics, and EMS students who want realistic practice with immediate feedback."}
+      },
+      {
+        "@type":"Question",
+        "name":"Do the simulators work on mobile?",
+        "acceptedAnswer":{"@type":"Answer","text":"Yes. The interface is mobile-first and optimized for phones and tablets."}
+      }
+    ]
+  }
+  </script>
+
+  <!-- Styles -->
   <style>
     :root{
-      --bg:#f7fafc;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#334155;
-      --accent:#007B8A;        /* BP sim blue/teal */
-      --accent-light:#009db3;
-      --ring: rgba(0,123,138,.35);
-      --shadow: 0 10px 28px rgba(15,23,42,.12);
-      --border: rgba(15,23,42,.10);
-      --tile-grad: linear-gradient(180deg, #ffffff 0%, #f3f6fb 100%);
+      --brand:#007B8A; --brand-600:#006D7B; --ink:#0f172a; --muted:#475569; --bg:#f0f8ff; --card:#ffffff;
+      --ring:0 0 0 3px rgba(0,123,138,.3);
     }
     *{box-sizing:border-box}
-    html,body{height:100%; touch-action: manipulation;}
+    html,body{height:100%}
     body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background:var(--bg);
-      color:var(--text);
-      -webkit-tap-highlight-color: transparent;
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      color:var(--ink); background:var(--bg); line-height:1.45;
+      display:flex; flex-direction:column;
     }
-
-    .app{
-      max-width: 640px;
-      margin: 0 auto;
-      padding: env(safe-area-inset-top) 18px env(safe-area-inset-bottom);
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+    header{
+      background:var(--brand); color:#fff; padding:1.25rem; position:sticky; top:0; z-index:10;
+      box-shadow:0 2px 8px rgba(0,0,0,.08);
     }
+    .wrap{max-width:1100px; margin:0 auto; padding:0 1rem}
+    .brand{display:flex; align-items:center; gap:.75rem}
+    .brand img{width:40px; height:40px; border-radius:10px; background:#fff; object-fit:cover}
+    .brand h1{font-size:1.25rem; margin:0; letter-spacing:.2px}
+    nav.primary{margin-top:.75rem; display:flex; gap:.5rem; flex-wrap:wrap}
+    nav.primary a{
+      color:#e6fffb; text-decoration:none; padding:.5rem .75rem; border-radius:999px; border:1px solid rgba(255,255,255,.25);
+    }
+    nav.primary a:hover{background:rgba(255,255,255,.12)}
 
-    header{text-align:center; padding: 8px 0 0;}
-    .title{ margin: 0; font-weight: 800; font-size: 1.4rem; }
-    .subtitle{ margin: 6px 0 0; color: var(--muted); font-size: 1rem; }
+    main{flex:1}
+    .hero{
+      padding:1.25rem 0 0;
+    }
+    .hero h2{font-size:1.6rem; margin:.25rem 0}
+    .hero p{color:var(--muted); max-width:70ch; margin:.25rem 0 1rem}
+    .search{
+      display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; margin: .75rem 0 1.25rem;
+    }
+    .search input{
+      flex:1 1 260px; padding:.75rem .9rem; border-radius:12px; border:1px solid #cbd5e1; outline:none;
+    }
+    .search input:focus{box-shadow:var(--ring); border-color:var(--brand)}
+    .btn{
+      background:var(--brand); color:#fff; border:none; padding:.7rem 1rem; border-radius:12px; cursor:pointer; font-weight:600;
+    }
+    .btn:hover{background:var(--brand-600)}
+    .btn.blue{background:#0ea5e9}
+    .btn.blue:hover{background:#0284c7}
+
+    /* Tabs */
+    .tabs{
+      margin:1.25rem 0;
+      background:transparent;
+    }
+    .tablist{
+      display:flex; overflow:auto; gap:.5rem; padding:.5rem; border-bottom:1px solid #e2e8f0;
+      scroll-snap-type:x mandatory;
+    }
+    .tab{
+      scroll-snap-align:start;
+      background:#e6f7f9; color:#05505a; border:1px solid #bfe8ee;
+      padding:.5rem .9rem; border-radius:999px; cursor:pointer; white-space:nowrap;
+    }
+    .tab[aria-selected="true"]{
+      background:var(--brand); color:#fff; border-color:var(--brand);
+    }
+    .panels{padding:1rem 0}
+    .panel{display:none; animation:fade .25s ease}
+    .panel[aria-hidden="false"]{display:block}
+    @keyframes fade{from{opacity:0; transform:translateY(2px)} to{opacity:1; transform:none}}
+
+    /* Cards inside panels */
+    .grid{
+      display:grid; gap:1rem; grid-template-columns:repeat(1, minmax(0,1fr));
+    }
+    @media (min-width:640px){ .grid{grid-template-columns:repeat(2, minmax(0,1fr))} }
+    @media (min-width:960px){ .grid{grid-template-columns:repeat(3, minmax(0,1fr))} }
 
     .card{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 16px;
-      box-shadow: var(--shadow);
+      background:var(--card); border:1px solid #e2e8f0; border-radius:16px; padding:1rem;
+      box-shadow:0 1px 4px rgba(2,8,23,.04);
+      display:flex; flex-direction:column; gap:.5rem; min-height:180px;
     }
+    .card h3{margin:.2rem 0; font-size:1.05rem}
+    .card p{margin:0; color:var(--muted)}
+    .card .actions{margin-top:auto; display:flex; gap:.5rem; flex-wrap:wrap}
 
-    .grid{
-      display: grid;
-      gap: 12px;
-      grid-template-columns: 1fr 1fr;
-    }
-    @media (max-width: 440px){
-      .grid{ grid-template-columns: 1fr; }
-    }
-
-    .tool{
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      background: var(--tile-grad);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
-      box-shadow: 0 6px 16px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.8);
-    }
-    .tool .icon{
-      width: 36px; height: 36px; flex: 0 0 36px;
-      display:flex; align-items:center; justify-content:center;
-      border-radius: 10px;
-      background: #e0f7fb;
-      border: 1px solid rgba(0,123,138,.25);
-    }
-    .tool h3{ margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--text); }
-    .tool p{ margin: 2px 0 10px 0; font-size: .92rem; color: var(--muted); }
-
-    /* All buttons blue */
-    .btn{
-      appearance: none;
-      display: inline-block;
-      width: 100%;
-      text-align: center;
-      text-decoration: none;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-weight: 800;
-      font-size: 1rem;
-      border: 1px solid rgba(0,123,138,.55);
-      color: #fff;
-      background: linear-gradient(180deg, var(--accent-light) 0%, var(--accent) 100%);
-      box-shadow: 0 6px 16px rgba(0,123,138,.25);
-      transition: transform .04s ease, box-shadow .2s ease;
-      -webkit-user-select: none; user-select: none;
-    }
-    .btn:active{ transform: translateY(1px) scale(.99); }
-    .btn:focus-visible{ outline: 2px solid var(--ring); outline-offset: 2px; }
-
+    /* Footer */
     footer{
-      margin-top: auto;
-      text-align: center;
-      color: var(--muted);
-      font-size: .85rem;
-      padding: 8px 0 6px;
+      border-top:1px solid #e2e8f0; background:#fff; margin-top:1rem;
     }
+    footer .cols{
+      display:grid; gap:1rem; grid-template-columns:repeat(1, minmax(0,1fr));
+      padding:1rem 0;
+    }
+    @media (min-width:800px){ footer .cols{grid-template-columns:2fr 1fr 1fr} }
+    footer a{color:var(--brand-600); text-decoration:none}
+    footer a:hover{text-decoration:underline}
+
+    /* Utilities */
+    .sr{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
   </style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <h1 class="title">EMS CODE SIM</h1>
-      <p class="subtitle">Tap a tool to launch. Optimized for phones.</p>
-    </header>
+  <header>
+    <div class="wrap">
+      <div class="brand">
+        <img src="/main/logo.png" alt="EMS Code Sim logo" />
+        <h1>EMS Code Sim</h1>
+      </div>
+      <nav class="primary" aria-label="Primary">
+        <a href="/">Home</a>
+        <a href="/vitals/blood-pressure-simulator">Blood Pressure</a>
+        <a href="/vitals/pulse">Pulse</a>
+        <a href="/vitals/breath-sound-simulator">Breath Sounds</a>
+        <a href="/vitals">All Vitals</a>
+        <a href="/quiz">Daily EMS Quiz</a>
+      </nav>
+    </div>
+  </header>
 
-    <section class="card">
-      <div class="grid">
-        <!-- Medical Assessment -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <!-- Clipboard icon -->
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M9 4h6a2 2 0 0 1 2 2v1h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1V6a2 2 0 0 1 2-2Z" stroke="#0369a1" stroke-width="1.6"/>
-              <path d="M9 6h6" stroke="#0369a1" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div style="flex:1">
-            <h3>Medical Assessment</h3>
-            <p>Interactive patient assessment trainer.</p>
-            <a class="btn" href="https://emscodesim3.netlify.app/" target="_blank" rel="noopener">Launch</a>
+  <main class="wrap">
+    <!-- Hero / SEO copy -->
+    <section class="hero">
+      <h2>Interactive EMS Patient Assessment & Vitals Simulators</h2>
+      <p>
+        Practice realistic assessments—without a proctor. Our browser-based tools simulate
+        <strong>blood pressure</strong>, <strong>pulse</strong>, <strong>respiratory rate</strong>, <strong>SpO₂</strong>, <strong>temperature</strong>, <strong>blood glucose</strong>, <strong>GCS</strong>, <strong>stroke screening (BE-FAST)</strong>, and <strong>breath sounds</strong>.
+        Built for EMTs, AEMTs, Paramedics, and students following common U.S. EMS practices.
+      </p>
+
+      <!-- Site Search (SEO-friendly with SearchAction) -->
+      <form class="search" role="search" aria-label="Site search" action="https://duckduckgo.com/" method="get">
+        <input type="hidden" name="sites" value="emscodesim.com" />
+        <input type="search" name="q" placeholder="Search EMS Code Sim…" aria-label="Search EMS Code Sim" />
+        <button class="btn" type="submit">Search</button>
+      </form>
+    </section>
+
+    <!-- Tabs for all vitals -->
+    <section class="tabs" aria-label="Vitals & Assessments">
+      <div class="tablist" role="tablist" aria-label="Vitals tabs">
+        <button class="tab" role="tab" aria-selected="true" aria-controls="panel-bp" id="tab-bp">Blood Pressure</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-pulse" id="tab-pulse">Pulse</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-rr" id="tab-rr">Respiratory Rate</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-spo2" id="tab-spo2">SpO₂</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-temp" id="tab-temp">Temperature</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-glucose" id="tab-glucose">Blood Glucose</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-gcs" id="tab-gcs">GCS</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-stroke" id="tab-stroke">Stroke (BE-FAST)</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-breath" id="tab-breath">Breath Sounds</button>
+      </div>
+
+      <div class="panels">
+        <!-- BP -->
+        <div class="panel" id="panel-bp" role="tabpanel" aria-labelledby="tab-bp" aria-hidden="false" tabindex="0">
+          <div class="grid">
+            <article class="card">
+              <h3>Blood Pressure Cuff Simulator</h3>
+              <p>Inflate, auscultate, and control deflation. Hear Korotkoff sounds with realistic timing—tune your systolic/diastolic accuracy.</p>
+              <div class="actions">
+                <a class="btn blue" href="/vitals/blood-pressure-simulator">Open Simulator</a>
+                <a class="btn" href="/docs/blood-pressure-tips">How it works</a>
+              </div>
+            </article>
           </div>
         </div>
 
-        <!-- Daily EMS Quiz -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <!-- Quiz/check icon -->
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M4 6h16M4 12h10M4 18h6" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="m15.5 17 2 2 3.5-3.5" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div style="flex:1">
-            <h3>Daily EMS Quiz</h3>
-            <p>Short, daily knowledge checks.</p>
-            <a class="btn" href="https://dailyemsquiz.com" target="_blank" rel="noopener">Take Quiz</a>
+        <!-- Pulse -->
+        <div class="panel" id="panel-pulse" role="tabpanel" aria-labelledby="tab-pulse" aria-hidden="true" tabindex="0">
+          <div class="grid">
+            <article class="card">
+              <h3>Pulse / Heart Rate Trainer</h3>
+              <p>Practice radial/ carotid counts and rhythm regularity. Mobile-friendly with randomized rates per session.</p>
+              <div class="actions">
+                <a class="btn blue" href="/vitals/pulse">Open Simulator</a>
+                <a class="btn" href="/docs/pulse-tips">Counting guide</a>
+              </div>
+            </article>
           </div>
         </div>
 
-        <!-- Scene Size-Up -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <!-- Warning triangle -->
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="m12 3 9 16H3l9-16Z" stroke="#0369a1" stroke-width="1.6"/>
-              <path d="M12 9v4" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round"/>
-              <circle cx="12" cy="16.5" r="1.2" fill="#0369a1"/>
-            </svg>
-          </div>
-          <div style="flex:1">
-            <h3>Scene Size-Up</h3>
-            <p>Practice safe scene approaches.</p>
-            <a class="btn" href="https://fireopssim.com/sizeup/scene_sizeup" target="_blank" rel="noopener">Start</a>
+        <!-- Respiratory Rate -->
+        <div class="panel" id="panel-rr" role="tabpanel" aria-labelledby="tab-rr" aria-hidden="true" tabindex="0">
+          <div class="grid">
+            <article class="card">
+              <h3>Respiratory Rate Trainer</h3>
+              <p>Watch chest rise and time your count. Mix in irregular patterns for realism.</p>
+              <div class="actions">
+                <a class="btn blue" href="/vitals/respiratory-rate">Open Simulator</a>
+                <a class="btn" href="/docs/rr-tips">Accuracy tips</a>
+              </div>
+            </article>
           </div>
         </div>
 
-        <!-- Handoff Report -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <!-- Arrow doc -->
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="#0369a1" stroke-width="1.6"/>
-              <path d="M14 3v6h6" stroke="#0369a1" stroke-width="1.6"/>
-              <path d="M8 14h8M8 18h5" stroke="#0369a1" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div style="flex:1">
-            <h3>Handoff Report</h3>
-            <p>SBAR-style hospital handoff builder.</p>
-            <a class="btn" href="https://fireopssim.com/handoff/handoff" target="_blank" rel="noopener">Open</a>
+        <!-- SpO2 -->
+        <div class="panel" id="panel-spo2" role="tabpanel" aria-labelledby="tab-spo2" aria-hidden="true" tabindex="0">
+          <div class="grid">
+            <article class="card">
+              <h3>Pulse Oximetry (SpO₂)</h3>
+              <p>Interpret saturation with context—perfusion, cold extremities, and motion artifacts.</p>
+              <div class="actions">
+                <a class="btn blue" href="/vitals/spo2">Open Simulator</a>
+                <a class="btn" href="/docs/spo2-tips">Reading guide</a>
+              </div>
+            </article>
           </div>
         </div>
 
-        <!-- Blood Pressure -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <!-- Steth / cuff-ish -->
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M16 4v5a4 4 0 0 1-8 0V4" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round"/>
-              <circle cx="18.5" cy="8" r="2.5" stroke="#0369a1" stroke-width="1.6"/>
-              <path d="M18.5 10.5V15a4 4 0 0 1-4 4h-3" stroke="#0369a1" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div style="flex:1">
-            <h3>Blood Pressure</h3>
-            <p>Sphyg & steth trainer.</p>
-            <a class="btn" href="vitals/BP.html">Open BP Simulator</a>
+        <!-- Temperature -->
+        <div class="panel" id="panel-temp" role="tabpanel" aria-labelledby="tab-temp" aria-hidden="true" tabindex="0">
+          <div class="grid">
+            <article class="card">
+              <h3>Temperature</h3>
+              <p>Practice oral/tympanic/axillary selections and interpret fever/sepsis clues.</p>
+              <div class="actions">
+                <a class="btn blue" href="/vitals/temperature">Open Simulator</a>
+                <a class="btn" href="/docs/temperature-tips">Device tips</a>
+              </div>
+            </article>
           </div>
         </div>
 
-        <!-- Pulse (Rate Trainer) -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <!-- Heartbeat -->
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M3 12h4l2 4 3-8 2 4h7" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+        <!-- Blood Glucose -->
+        <div class="panel" id="panel-glucose" role="tabpanel" aria-labelledby="tab-glucose" aria-hidden="true" tabindex="0">
+          <div class="grid">
+            <article class="card">
+              <h3>Blood Glucose (BGL)</h3>
+              <p>Simulate glucometer workflow, error states, and interpret hypoglycemia protocols.</p>
+              <div class="actions">
+                <a class="btn blue" href="/vitals/glucose">Open Simulator</a>
+                <a class="btn" href="/docs/glucose-tips">Technique & safety</a>
+              </div>
+            </article>
           </div>
-          <div style="flex:1">
-            <h3>Pulse (Rate Trainer)</h3>
-            <p>Hear a rhythm, guess the BPM.</p>
-            <a class="btn" href="https://emscodesim.com/vitals/pulse" target="_blank" rel="noopener">Open Pulse</a>
+        </div>
+
+        <!-- GCS -->
+        <div class="panel" id="panel-gcs" role="tabpanel" aria-labelledby="tab-gcs" aria-hidden="true" tabindex="0">
+          <div class="grid">
+            <article class="card">
+              <h3>Glasgow Coma Scale (GCS)</h3>
+              <p>Interactive E/V/M prompts with auto-scoring. Includes “not testable” logic.</p>
+              <div class="actions">
+                <a class="btn blue" href="/vitals/gcs">Open Simulator</a>
+                <a class="btn" href="/docs/gcs-tips">Scoring guide</a>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- Stroke (BE-FAST) -->
+        <div class="panel" id="panel-stroke" role="tabpanel" aria-labelledby="tab-stroke" aria-hidden="true" tabindex="0">
+          <div class="grid">
+            <article class="card">
+              <h3>Stroke Assessment (BE-FAST)</h3>
+              <p>Face droop, arm drift, gaze, speech, and time. Includes CP-SSS trigger for possible LVO.</p>
+              <div class="actions">
+                <a class="btn blue" href="/vitals/stroke">Open Simulator</a>
+                <a class="btn" href="/docs/stroke-tips">BE-FAST refresh</a>
+              </div>
+            </article>
           </div>
         </div>
 
         <!-- Breath Sounds -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <!-- Lungs -->
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M10 4v8a4 4 0 0 1-4 4H4V9a5 5 0 0 1 6-5Zm4 0v8a4 4 0 0 0 4 4h2V9a5 5 0 0 0-6-5Z" stroke="#0369a1" stroke-width="1.6" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div style="flex:1">
-            <h3>Breath Sounds</h3>
-            <p>Front/back lung map with audio.</p>
-            <a class="btn" href="/vitals/breath-sound-simulator" target="_blank" rel="noopener">Open Breath Sounds</a>
+        <div class="panel" id="panel-breath" role="tabpanel" aria-labelledby="tab-breath" aria-hidden="true" tabindex="0">
+          <div class="grid">
+            <article class="card">
+              <h3>Breath Sounds</h3>
+              <p>Tap anatomical points to hear wheezes, crackles, rhonchi, stridor, and normal. Front and back views.</p>
+              <div class="actions">
+                <a class="btn blue" href="/vitals/breath-sound-simulator">Open Simulator</a>
+                <a class="btn" href="/docs/breath-sounds-tips">Auscultation tips</a>
+              </div>
+            </article>
           </div>
         </div>
-
       </div>
     </section>
 
-    <footer>
-      &copy; 2025 EMS CODE SIM • All rights reserved
-    </footer>
-  </div>
+    <!-- Extra SEO content (brief) -->
+    <section aria-label="About EMS Code Sim">
+      <h2>Train Like It’s Real—But Safe</h2>
+      <p>
+        Each simulator is designed to mimic field conditions, reinforce critical thinking, and improve speed-to-competency.
+        Use them for classroom skill checks, independent study, or remediation.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap cols">
+      <div>
+        <h3>About</h3>
+        <p>EMS Code Sim provides practical, scenario-driven training tools for prehospital providers. Built by EMS professionals.</p>
+      </div>
+      <div>
+        <h3>Training</h3>
+        <ul>
+          <li><a href="/vitals/blood-pressure-simulator">Blood Pressure</a></li>
+          <li><a href="/vitals/pulse">Pulse</a></li>
+          <li><a href="/vitals/breath-sound-simulator">Breath Sounds</a></li>
+          <li><a href="/quiz">Daily EMS Quiz</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Resources</h3>
+        <ul>
+          <li><a href="/docs">Docs & Tips</a></li>
+          <li><a href="/privacy">Privacy</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Accessible Tabs Script -->
+  <script>
+    (function(){
+      const tablist = document.querySelector('.tablist');
+      const tabs = Array.from(document.querySelectorAll('.tablist .tab'));
+      const panels = Array.from(document.querySelectorAll('.panels .panel'));
+
+      function activateTab(tab){
+        tabs.forEach(t=>{
+          const selected = t === tab;
+          t.setAttribute('aria-selected', selected);
+          t.tabIndex = selected ? 0 : -1;
+          document.getElementById(t.getAttribute('aria-controls'))
+            .setAttribute('aria-hidden', (!selected).toString());
+        });
+        tab.focus();
+        // Update hash (nice for deep links + SEO crawl)
+        history.replaceState(null, '', `#${tab.id.replace('tab-','')}`);
+      }
+
+      // Click activation
+      tabs.forEach(tab=>{
+        tab.addEventListener('click', ()=>activateTab(tab));
+      });
+
+      // Keyboard navigation
+      tablist.addEventListener('keydown', (e)=>{
+        const current = document.activeElement;
+        let idx = tabs.indexOf(current);
+        if (idx < 0) return;
+
+        switch(e.key){
+          case 'ArrowRight': e.preventDefault(); activateTab(tabs[(idx+1)%tabs.length]); break;
+          case 'ArrowLeft': e.preventDefault(); activateTab(tabs[(idx-1+tabs.length)%tabs.length]); break;
+          case 'Home': e.preventDefault(); activateTab(tabs[0]); break;
+          case 'End': e.preventDefault(); activateTab(tabs[tabs.length-1]); break;
+          case 'Enter':
+          case ' ':
+            e.preventDefault();
+            activateTab(current);
+            break;
+        }
+      });
+
+      // Deep link handling (#bp, #pulse, etc.)
+      const hash = location.hash.replace('#','');
+      if(hash){
+        const targetTab = document.getElementById('tab-' + hash);
+        if (targetTab) activateTab(targetTab);
+      }
+    })();
+  </script>
 </body>
 </html>
