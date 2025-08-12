@@ -3,14 +3,15 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-<title>Stroke Assessment Simulator — BEFAST</title>
+<title>Stroke Assessment Simulator — BEFAST (Visual Upgrade)</title>
 <style>
   :root{
     --brand:#007B8A; --brand-dark:#0a616c;
     --bg:#f0f8ff; --panel:#fff; --muted:#e7f4f7; --text:#0f2b33;
     --ok:#0a8f5b; --warn:#c77b00; --bad:#b81e2b;
     --shadow:0 10px 24px rgba(0,0,0,.08); --radius:16px;
-    --face:#f7d2bd; --face-shadow:#e5b59e; --arm:#d9eaf0;
+    --face:#f7d2bd; --face-shadow:#e5b59e;
+    --skin:#efc7ac; --skin-deep:#e3b097;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--text);
@@ -34,24 +35,50 @@
   @media(min-width:620px){ .row{grid-template-columns:1fr 1fr} }
   .status{font-size:.98rem;background:#fff;border:1px solid #e0eaed;border-radius:12px;padding:10px;min-height:60px}
   select,input[type="time"]{width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-  .kpi{background:#fff;border:1px solid #e8eef0;border-radius:10px;padding:8px;text-align:center}
-  .kpi strong{display:block;font-size:1.1rem}
-  .findings{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-  @media(max-width:720px){ .findings{grid-template-columns:1fr 1fr} }
+
+  /* Visual containers */
   .vwrap{display:grid;place-items:center;background:var(--muted);border:1px solid #dbeff3;border-radius:14px;padding:10px}
-  .faceBox svg{max-width:320px;width:100%;height:auto;display:block}
-  .armsBox{width:100%;max-width:420px;aspect-ratio:3/2;position:relative}
-  .arm{position:absolute;left:50%;width:140px;height:26px;background:var(--arm);border:2px solid #b7d0d7;border-radius:14px;transform:translateX(-50%);transition:transform .8s ease}
-  .arm.left{top:34%}
-  .arm.right{top:58%}
-  .arm.hold{background:#e9f6fa}
+
+  /* FACE */
+  .faceBox svg{max-width:360px;width:100%;height:auto;display:block}
+  .vf-mask{fill:url(#vfgrad); opacity:0} /* visual field cut overlay (fade) */
+
+  /* ARMS/Hands */
+  .armsBox{width:100%;max-width:520px;aspect-ratio:4/2.2;position:relative;overflow:hidden}
+  .arm{
+    position:absolute; left:50%; transform:translateX(-50%); height:22px; width:180px;
+    background:linear-gradient(180deg,var(--skin),var(--skin-deep));
+    border:2px solid #d2a994; border-radius:14px; transition:transform .9s ease;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,.08);
+    display:flex; align-items:center; justify-content:flex-end; padding-right:6px;
+  }
+  .arm.left{ top:36% }
+  .arm.right{ top:56% }
+  .hand{
+    width:38px; height:34px; background:linear-gradient(180deg,var(--skin),var(--skin-deep));
+    border:2px solid #d2a994; border-radius:12px 14px 14px 12px; position:relative;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,.08);
+  }
+  .hand::before, .hand::after{
+    content:""; position:absolute; left:2px; right:2px; height:2px; background:#dcb39b; opacity:.6;
+  }
+  .hand::before{ top:10px } /* finger creases */
+  .hand::after{ top:20px }
+  .arm.hold{ background:linear-gradient(180deg,#f3d2bf,#e8bca5) }
+
+  /* BALANCE stick figure */
   .stand{width:100%;max-width:360px;aspect-ratio:3/4;border-radius:14px;background:linear-gradient(180deg,#e6f3f6,#d7eef2);display:grid;place-items:center;position:relative;overflow:hidden}
-  .person{width:50px;height:110px;background:#2e5560;border-radius:16px;position:relative;transition:transform .8s ease}
-  .person::before{content:"";position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:42px;height:42px;background:var(--face);border-radius:50%;box-shadow:inset 0 -6px 0 var(--face-shadow)}
-  .person::after{content:"";position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:70px;height:14px;background:#1c3a40;border-radius:14px}
-  .gazeArrow{font-size:2.2rem;opacity:.0;transition:opacity .3s}
-  .speechOut{font-size:1.0rem}
+  .person{width:54px;height:118px;background:#2e5560;border-radius:16px;position:relative;transition:transform .8s ease}
+  .person::before{content:"";position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:44px;height:44px;background:var(--face);border-radius:50%;box-shadow:inset 0 -6px 0 var(--face-shadow)}
+  .person::after{content:"";position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:74px;height:14px;background:#1c3a40;border-radius:14px}
+
+  /* Eyes panel */
+  .eyePanel{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center}
+  .eyeWrap{background:#eef6f9;border:1px solid #cfe3e8;border-radius:12px;display:grid;place-items:center;padding:8px}
+  .eyeSVG{width:140px;max-width:100%;height:auto;display:block}
+  .gazeArrow{font-size:2.0rem;opacity:.0;transition:opacity .3s}
+
+  /* Results list */
   .checklist{margin:8px 0 0 18px} .checklist li{margin:2px 0}
   .tag{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef7ff;border:1px solid #cfe3e8;font-size:.75rem}
 </style>
@@ -68,7 +95,7 @@
         <div><span class="pill">Dispatch</span> <strong id="scDispatch">60 y/o with slurred speech & facial droop</strong></div>
         <div><span class="pill">Setting</span> <strong id="scSetting">found sitting on couch</strong></div>
         <div><span class="pill">Last Known Well</span> <strong id="scLKW">~30 minutes ago</strong></div>
-        <div class="muted">Run BEFAST tests. The patient’s visuals and voice will reflect the hidden deficits. Then mark Positive/Negative for each and Submit.</div>
+        <div class="muted">Run BEFAST tests. Visuals and voice reflect hidden deficits. Mark Positive/Negative per domain, then Submit.</div>
       </div>
       <div class="row">
         <div>
@@ -92,21 +119,57 @@
       <!-- FACE -->
       <div class="card vwrap faceBox">
         <h4>Face</h4>
-        <svg id="faceSVG" viewBox="0 0 300 260" aria-label="Face">
+        <svg id="faceSVG" viewBox="0 0 320 270" aria-label="Face">
+          <defs>
+            <radialGradient id="irisGrad" cx="50%" cy="50%" r="60%">
+              <stop offset="0%" stop-color="#1c3f46"/>
+              <stop offset="55%" stop-color="#2e6772"/>
+              <stop offset="100%" stop-color="#1b3940"/>
+            </radialGradient>
+            <!-- visual field fade (left-to-right mask) -->
+            <linearGradient id="vfgrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#000" stop-opacity="0.65"/>
+              <stop offset="90%" stop-color="#000" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
           <!-- head -->
-          <ellipse cx="150" cy="120" rx="95" ry="110" fill="var(--face)" stroke="#d5a994" stroke-width="3"/>
-          <!-- eyes -->
-          <ellipse cx="115" cy="90" rx="22" ry="12" fill="#fff"/><circle id="eyeL" cx="115" cy="90" r="6" fill="#0a0a0a"/>
-          <ellipse cx="185" cy="90" rx="22" ry="12" fill="#fff"/><circle id="eyeR" cx="185" cy="90" r="6" fill="#0a0a0a"/>
+          <ellipse cx="160" cy="125" rx="100" ry="112" fill="var(--face)" stroke="#d5a994" stroke-width="3"/>
+          <!-- Eyes group -->
+          <g id="eyes">
+            <!-- Left eye capsule -->
+            <g transform="translate(105,92)">
+              <ellipse rx="26" ry="14" fill="#fff" stroke="#c6d9de"/>
+              <!-- eyelid -->
+              <path d="M -24 0 Q 0 -10 24 0" stroke="#b18a79" stroke-width="2" fill="none" opacity=".4"/>
+              <!-- iris + pupil group (movable) -->
+              <g id="irisL" transform="translate(0,0)">
+                <circle r="9" fill="url(#irisGrad)"/>
+                <circle r="4.5" fill="#0a0a0a"/>
+                <circle r="1.8" fill="#fff" opacity=".85" transform="translate(-2,-2)"/>
+              </g>
+            </g>
+            <!-- Right eye capsule -->
+            <g transform="translate(215,92)">
+              <ellipse rx="26" ry="14" fill="#fff" stroke="#c6d9de"/>
+              <path d="M -24 0 Q 0 -10 24 0" stroke="#b18a79" stroke-width="2" fill="none" opacity=".4"/>
+              <g id="irisR" transform="translate(0,0)">
+                <circle r="9" fill="url(#irisGrad)"/>
+                <circle r="4.5" fill="#0a0a0a"/>
+                <circle r="1.8" fill="#fff" opacity=".85" transform="translate(-2,-2)"/>
+              </g>
+            </g>
+          </g>
+
           <!-- eyebrows -->
-          <path id="browL" d="M95 70 q20 -12 40 0" stroke="#6a493c" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <path id="browR" d="M165 70 q20 -12 40 0" stroke="#6a493c" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <!-- mouth -->
-          <path id="mouth" d="M110 160 q40 24 80 0" stroke="#9e4f3b" stroke-width="6" fill="none" stroke-linecap="round"/>
-          <!-- droop overlay (we shift half) -->
-          <path id="droop" d="M110 160 q40 24 80 0" stroke="#9e4f3b" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.0"/>
-          <!-- label -->
-          <text x="150" y="220" text-anchor="middle" class="muted" style="font-size:14px">Face symmetry</text>
+          <path id="browL" d="M78 72 q28 -12 56 0" stroke="#6a493c" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path id="browR" d="M186 72 q28 -12 56 0" stroke="#6a493c" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <!-- mouth base + droop overlay -->
+          <path id="mouth" d="M110 168 q50 26 100 0" stroke="#9e4f3b" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path id="droop" d="M110 168 q50 26 100 0" stroke="#9e4f3b" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.0"/>
+          <!-- Visual field overlay (toggled) -->
+          <rect id="vfMaskLeft" class="vf-mask" x="0" y="0" width="160" height="270"/>
+          <rect id="vfMaskRight" class="vf-mask" x="160" y="0" width="160" height="270" transform="scale(-1,1) translate(-320,0)"/>
+          <text x="160" y="238" text-anchor="middle" class="muted" style="font-size:14px">Face symmetry & eyes</text>
         </svg>
         <div class="row">
           <button class="btn" id="testFace">Test: “Smile and show teeth”</button>
@@ -117,8 +180,8 @@
       <div class="card vwrap">
         <h4>Arm Drift</h4>
         <div class="armsBox" id="armsBox">
-          <div class="arm left" id="armL"></div>
-          <div class="arm right" id="armR"></div>
+          <div class="arm left"  id="armL"><div class="hand"></div></div>
+          <div class="arm right" id="armR"><div class="hand"></div></div>
         </div>
         <div class="row" style="margin-top:8px">
           <button class="btn alt" id="testArms">Test: “Hold both arms out, palms up”</button>
@@ -171,7 +234,7 @@
   <!-- Your BEFAST Marking -->
   <section class="card">
     <h3>Your BEFAST Decision</h3>
-    <div class="findings">
+    <div class="row" style="grid-template-columns:repeat(3,1fr)">
       <div>
         <label>Balance</label>
         <select id="selB"><option>Negative</option><option>Positive</option><option>Not tested</option></select>
@@ -223,6 +286,8 @@
 
   // Face elements
   const mouth=$('mouth'), droop=$('droop'), browL=$('browL'), browR=$('browR');
+  const irisL=$('irisL'), irisR=$('irisR');
+  const vfLeft=$('vfMaskLeft'), vfRight=$('vfMaskRight');
   const armL=$('armL'), armR=$('armR'), person=$('person');
   const gazeArrow=$('gazeArrow'), speechStatus=$('speechStatus');
   const logWhy=$('why'), resultsBox=$('resultsBox'), resultLine=$('resultLine');
@@ -256,7 +321,7 @@
     T.lkwMins = [20,30,40,60,120,240,999][Math.floor(Math.random()*7)];
     scLKW.textContent = T.lkwMins===999 ? 'unknown' : `~${T.lkwMins} minutes ago`;
 
-    // Side & deficits (bias to common FAST + occasional posterior signs)
+    // Side & deficits
     T.side = Math.random()<0.5 ? 'right' : 'left';
     T.face = Math.random()<0.65;
     T.arm  = Math.random()<0.7;
@@ -266,12 +331,12 @@
 
     // Reset visuals
     resetFace();
-    resetArms();
+    resetArms();   // level start
     resetBalance();
     resetEyes();
     speechStatus.textContent = 'Press test to hear the patient.';
     resultLine.textContent='—'; logWhy.innerHTML=''; resultsBox.style.outline='none';
-    // Clear selects
+    // Reset selects
     ['selB','selE','selF','selA','selS'].forEach(id=> $(id).selectedIndex=0);
     if(T.lkwMins===999) $('selT').selectedIndex = 1; else $('selT').selectedIndex = (T.lkwMins<=270?0:1);
   }
@@ -279,43 +344,45 @@
   // ------------- Visual helpers
   function resetFace(){
     droop.setAttribute('opacity','0.0');
-    browL.setAttribute('d', 'M95 70 q20 -12 40 0');
-    browR.setAttribute('d', 'M165 70 q20 -12 40 0');
-    mouth.setAttribute('d','M110 160 q40 24 80 0');
+    browL.setAttribute('d', 'M78 72 q28 -12 56 0');
+    browR.setAttribute('d', 'M186 72 q28 -12 56 0');
+    mouth.setAttribute('d','M110 168 q50 26 100 0');
+    // center pupils
+    irisL.setAttribute('transform','translate(0,0)');
+    irisR.setAttribute('transform','translate(0,0)');
+    vfLeft.style.opacity = 0; vfRight.style.opacity = 0;
   }
   function showFaceDroop(side){
-    // side: 'right' body droop = right face (SVG right -> higher x)
     droop.setAttribute('opacity','1.0');
     if(side==='right'){
-      // pull right mouth corner downward
-      droop.setAttribute('d','M110 160 q40 24 80 18');
-      browR.setAttribute('d','M165 70 q20 -4 40 8');
+      droop.setAttribute('d','M110 168 q50 26 100 18');
+      browR.setAttribute('d','M186 72 q28 -4 56 8');
     }else{
-      droop.setAttribute('d','M110 178 q40 24 80 0');
-      browL.setAttribute('d','M95 70 q20 -4 40 8');
+      droop.setAttribute('d','M110 186 q50 26 100 0');
+      browL.setAttribute('d','M78 72 q28 -4 56 8');
     }
   }
 
   let armAnim=null;
   function resetArms(){
-    armL.style.transform='translate(-120px,0)'; // lift arms to mid
-    armR.style.transform='translate(120px,0)';
+    // perfectly level start
+    armL.style.transform='translate(-140px,0)';
+    armR.style.transform='translate(140px,0)';
     armL.classList.remove('hold'); armR.classList.remove('hold');
     if(armAnim){ cancelAnimationFrame(armAnim); armAnim=null; }
   }
   function runArmDrift(side, hasDrift){
+    // both arms up, then affected side drifts
     armL.classList.add('hold'); armR.classList.add('hold');
     const start = performance.now();
     function step(t){
       const dt = (t-start)/1000; // seconds
-      // baseline: both up
-      let driftL=0, driftR=0;
-      if(hasDrift){
-        const drop = Math.min(80, dt*18); // px fall
-        if(side==='right'){ driftR = drop; } else { driftL = drop; }
-      }
-      armL.style.transform=`translate(-120px,${driftL}px)`;
-      armR.style.transform=`translate(120px,${driftR}px)`;
+      // fall amount
+      const drop = hasDrift ? Math.min(90, dt*22) : 0; // px
+      const driftL = (side==='left') ? drop : 0;
+      const driftR = (side==='right') ? drop : 0;
+      armL.style.transform=`translate(-140px,${driftL}px)`;
+      armR.style.transform=`translate(140px,${driftR}px)`;
       armAnim = requestAnimationFrame(step);
     }
     armAnim = requestAnimationFrame(step);
@@ -327,20 +394,39 @@
     person.style.transform=`translateX(${side==='right'?12:-12}px) rotate(${angle}deg)`;
   }
 
-  function resetEyes(){ gazeArrow.style.opacity = 0; }
-  function showGaze(side){ gazeArrow.textContent = side==='right'?'➡️ ➡️':'⬅️ ⬅️'; gazeArrow.style.opacity=1; }
+  function resetEyes(){
+    // center irises
+    irisL.setAttribute('transform','translate(0,0)');
+    irisR.setAttribute('transform','translate(0,0)');
+    vfLeft.style.opacity = 0; vfRight.style.opacity = 0;
+    gazeArrow.style.opacity=0; gazeArrow.textContent='↔️ ↔️';
+  }
+  function showGaze(side){
+    // Gaze deviation: eyes pulled toward lesion side (same side as body weakness)
+    const dx = side==='right' ? 7 : -7;
+    irisL.setAttribute('transform',`translate(${dx},0)`);
+    irisR.setAttribute('transform',`translate(${dx},0)`);
+    gazeArrow.textContent = side==='right' ? '➡️ ➡️' : '⬅️ ⬅️';
+    gazeArrow.style.opacity=1;
+  }
+  function showFieldCut(ignoreSide){
+    // Keep gaze centered but fade the ignored hemifield
+    resetEyes();
+    if(ignoreSide==='left'){ vfLeft.style.opacity = 0.55; }
+    if(ignoreSide==='right'){ vfRight.style.opacity = 0.55; }
+    gazeArrow.textContent='↔️ ↔️'; gazeArrow.style.opacity=.35;
+  }
 
   // ------------- Test buttons
   $('testFace').addEventListener('pointerdown', e=>{
     e.preventDefault();
-    // “Show me your teeth”
     resetFace();
     if(T.face) showFaceDroop(T.side);
   });
 
   $('testArms').addEventListener('pointerdown', e=>{
     e.preventDefault();
-    resetArms();
+    resetArms();                // level first, then drift
     runArmDrift(T.side, T.arm);
   });
 
@@ -353,9 +439,9 @@
   $('testEyes').addEventListener('pointerdown', e=>{
     e.preventDefault();
     resetEyes();
-    if(T.eyes==='gazeDev'){ showGaze(T.side==='right'?'right':'left'); }
-    else if(T.eyes==='fieldCut'){ showGaze(T.side==='right'?'left':'right'); } // ignores contralateral
-    else { gazeArrow.style.opacity=0.3; gazeArrow.textContent='↔️ ↔️'; }
+    if(T.eyes==='gazeDev'){ showGaze(T.side); }
+    else if(T.eyes==='fieldCut'){ showFieldCut(T.side==='right'?'left':'right'); }
+    else { gazeArrow.style.opacity=0.3; }
   });
 
   $('testSpeech').addEventListener('pointerdown', e=>{
@@ -385,7 +471,6 @@
   // ------------- Submit / Grade
   $('submit').addEventListener('pointerdown', e=>{
     e.preventDefault();
-    // Ground truth BEFAST flags
     const truth = {
       B: T.balance,
       E: (T.eyes!=='normal'),
@@ -395,34 +480,21 @@
       T: (T.lkwMins===999 ? 'unknown' : (T.lkwMins<=270 ? '<=4.5h' : '>=4.5h'))
     };
 
-    // User picks
     const user = {
-      B: $('selB').value,
-      E: $('selE').value,
-      F: $('selF').value,
-      A: $('selA').value,
-      S: $('selS').value,
-      T: $('selT').value
+      B: $('selB').value, E: $('selE').value, F: $('selF').value,
+      A: $('selA').value, S: $('selS').value, T: $('selT').value
     };
 
-    // Evaluate per domain
-    const lines=[];
-    const ok = [];
-
+    const lines=[]; const ok=[];
     function evalDom(label, truthVal, userVal, whyPos, whyNeg){
       const shouldPos = !!truthVal;
       const pickedPos = (userVal==='Positive');
       const pickedNeg = (userVal==='Negative');
       let correct=false, note='';
-      if(userVal==='Not tested'){
-        note = `<span class="tag">Not tested</span> — cannot conclude.`;
-      }else if(shouldPos && pickedPos){
-        correct=true; note = `✅ Correct: ${whyPos}`;
-      }else if(!shouldPos && pickedNeg){
-        correct=true; note = `✅ Correct: ${whyNeg}`;
-      }else{
-        note = `❌ Not quite: ${shouldPos? 'sign present':'no sign present'} in scenario.`;
-      }
+      if(userVal==='Not tested'){ note=`<span class="tag">Not tested</span> — cannot conclude.`; }
+      else if(shouldPos && pickedPos){ correct=true; note=`✅ Correct: ${whyPos}`; }
+      else if(!shouldPos && pickedNeg){ correct=true; note=`✅ Correct: ${whyNeg}`; }
+      else { note=`❌ Not quite: ${shouldPos? 'sign present':'no sign present'} in scenario.`; }
       ok.push(correct || userVal==='Not tested');
       lines.push(`<li><strong>${label}</strong> — ${note}</li>`);
     }
@@ -439,7 +511,7 @@
       'symmetric smile.');
     evalDom('Arm', truth.A, user.A,
       `${T.side} arm drifts/down with pronator drift test.`,
-      'no drift (both arms hold).');
+      'no drift (both arms hold).`);
     evalDom('Speech', truth.S, user.S,
       T.speech==='slurred' ? 'slurred articulation / dysarthria.' : 'aphasia / word-finding impairment.',
       'clear, fluent phrase.');
@@ -449,14 +521,13 @@
     if(user.T.startsWith('Call')){
       timeLine = truth.T==='<=4.5h'
         ? '✅ Correct: LKW within typical IV thrombolysis window (local protocols vary).'
-        : '✅ Appropriate: Call now; eligibility may depend on imaging/extended windows.'
+        : '✅ Appropriate: Call now; eligibility may depend on imaging/extended windows.';
     }else{
       timeLine = '❌ Not documented: Always document LKW and notify stroke team.';
       ok.push(false);
     }
     lines.push(`<li><strong>Time</strong> — ${timeLine}</li>`);
 
-    // Final
     const allOk = ok.every(Boolean);
     resultLine.innerHTML = allOk
       ? `✅ Good job: Your BEFAST determination matches the scenario.`
