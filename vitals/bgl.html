@@ -1,1 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+<title>Blood Glucose Simulator</title>
+<style>
+  :root{
+    --brand:#007B8A; --brand-dark:#0a616c;
+    --bg:#f0f8ff; --panel:#fff; --muted:#e7f4f7; --text:#0f2b33;
+    --shadow:0 10px 24px rgba(0,0,0,.08); --radius:16px;
+    --lcd:#0b2a31; --lcd-bg:#dfeff2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+       display:flex;flex-direction:column;align-items:center;min-height:100vh}
+  header{width:100%;background:var(--brand);color:#fff;text-align:center;padding:14px 16px;font-weight:600}
+  main{width:100%;max-width:1000px;padding:12px;display:grid;gap:12px}
+  .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+  .layout{display:grid;gap:12px}
+  @media(min-width:980px){.layout{grid-template-columns:1.1fr .9fr}}
+
+  /* Meter */
+  .meter{
+    background:linear-gradient(180deg,#f7fdff,#ebf6f8);
+    border:1px solid #cfe3e8; border-radius:18px; padding:16px; width:100%;
+    display:grid; gap:12px;
+  }
+  .strip-slot{
+    height:34px; border:2px dashed #9ec3cb; border-radius:10px; display:grid; place-items:center;
+    color:#3a5e67; font-size:.9rem; background:#f5fbfc;
+  }
+  .lcd{
+    border-radius:14px; background:var(--lcd-bg); border:1px solid #cfe3e8;
+    padding:14px; display:grid; gap:6px; min-height:120px;
+  }
+  .lcd-top{display:flex; justify-content:space-between; font-size:.9rem; color:#2b5660}
+  .reading{
+    font-family: ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:3rem; color:var(--lcd); letter-spacing:1px;
+    display:flex; align-items:baseline; gap:8px;
+  }
+  .units{font-size:1rem; color:#2b5660}
+  .status{font-size:.95rem; color:#2b5660}
+  .progress{height:10px; background:#e8f3f5; border-radius:999px; overflow:hidden}
+  .bar{height:100%; width:0%; background:var(--brand)}
+  .countdown{font-variant-numeric:tabular-nums; font-weight:700}
+
+  .controls{display:grid;gap:10px}
+  .row{display:grid;gap:10px}
+  @media(min-width:560px){.row{grid-template-columns:1fr 1fr}}
+  .control{background:#fff;border-radius:12px;padding:10px;border:1px solid #e8eef0}
+  .control h3{margin:.2rem 0 .6rem;font-size:.95rem}
+  select,input[type="range"],input[type="number"],input[type="color"]{
+    width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff
+  }
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+  .kpi{background:#fff;border:1px solid #e8eef0;border-radius:10px;padding:8px;text-align:center}
+  .kpi strong{display:block;font-size:1.05rem}
+  .btn{appearance:none;border:0;background:var(--brand);color:#fff;padding:12px 14px;border-radius:12px;
+       font-weight:700;cursor:pointer;width:100%}
+  .btn.alt{background:#124b54}
+  .btn.warn{background:#c77b00}
+  .btn.bad{background:#b81e2b}
+  .btn.ghost{background:#fff;color:var(--brand);border:2px solid var(--brand)}
+  .btn:active{transform:translateY(1px)}
+  .pill{display:inline-block;padding:3px 8px;border-radius:999px;background:#e7f8f1;color:#0a8f5b;font-size:.75rem;font-weight:700}
+  .muted{color:#3b616b}
+  footer{opacity:.7;font-size:.85rem;padding:12px}
+</style>
+</head>
+<body>
+<header>Blood Glucose (Glucometer) Simulator</header>
+
+<main>
+  <section class="card layout">
+    <!-- SIMULATOR -->
+    <div class="meter">
+      <div class="lcd">
+        <div class="lcd-top">
+          <div><span id="iconStrip">🟦</span> <span id="stripState">NO STRIP</span></div>
+          <div class="muted"><span id="battery">🔋</span> <span id="unitLabel">mg/dL</span></div>
+        </div>
+        <div class="reading"><span id="value">— — —</span><span class="units" id="units">mg/dL</span></div>
+        <div class="status" id="status">Power on, insert test strip to begin.</div>
+        <div class="progress" title="Sample fill">
+          <div class="bar" id="sampleBar"></div>
+        </div>
+        <div class="muted"><span class="countdown" id="countdown"></span></div>
+      </div>
+
+      <div class="row">
+        <button id="powerBtn" class="btn alt">⏻ Power</button>
+        <button id="stripBtn" class="btn">🧪 Insert/Remove Strip</button>
+      </div>
+      <div class="row">
+        <button id="applyBtn" class="btn ghost">💉 Press & Hold to Apply Blood</button>
+        <button id="removeDuringBtn" class="btn bad">⛔ Remove Strip (Test)</button>
+      </div>
+    </div>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+      <div class="control">
+        <h3>Scenario</h3>
+        <div class="row">
+          <div>
+            <label>Target glucose (mg/dL)
+              <input id="target" type="number" min="20" max="600" value="118"/>
+            </label>
+          </div>
+          <div>
+            <label>Test time (seconds)
+              <input id="testSec" type="number" min="3" max="20" step="1" value="5"/>
+            </label>
+          </div>
+        </div>
+        <div class="row">
+          <button id="randomBtn" class="btn warn">🎲 Randomize (Hypo/Normal/Hyper)</button>
+          <button id="resetBtn" class="btn bad">Reset Meter</button>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><small>Category</small><strong id="cat">—</strong></div>
+          <div class="kpi"><small>mg/dL</small><strong id="kpiMg">—</strong></div>
+          <div class="kpi"><small>mmol/L</small><strong id="kpiMmol">—</strong></div>
+        </div>
+      </div>
+
+      <div class="control">
+        <h3>Meter Settings</h3>
+        <div class="row">
+          <div>
+            <label>Units
+              <select id="unitSel">
+                <option value="mg">mg/dL</option>
+                <option value="mmol">mmol/L</option>
+              </select>
+            </label>
+          </div>
+          <div>
+            <label>Sample needed (%)
+              <input id="sampleNeed" type="number" min="20" max="100" value="70"/>
+            </label>
+          </div>
+        </div>
+        <div class="row">
+          <button id="emitBtn" class="btn">Emit Result (window.dispatchEvent)</button>
+          <button id="helpBtn" class="btn ghost">Tips</button>
+        </div>
+        <div class="status" id="hint">Hold “Apply Blood” until the fill bar passes the required %.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>© EMS Code Sim — Glucose Trainer</footer>
+
+<script>
+(function(){
+  // ----- DOM
+  const valueEl = document.getElementById('value');
+  const unitsEl = document.getElementById('units');
+  const unitLabel = document.getElementById('unitLabel');
+  const statusEl = document.getElementById('status');
+  const sampleBar = document.getElementById('sampleBar');
+  const countdown = document.getElementById('countdown');
+  const stripStateEl = document.getElementById('stripState');
+  const iconStrip = document.getElementById('iconStrip');
+  const catEl = document.getElementById('cat');
+  const kpiMg = document.getElementById('kpiMg');
+  const kpiMmol = document.getElementById('kpiMmol');
+
+  const powerBtn = document.getElementById('powerBtn');
+  const stripBtn = document.getElementById('stripBtn');
+  const applyBtn = document.getElementById('applyBtn');
+  const removeDuringBtn = document.getElementById('removeDuringBtn');
+  const randomBtn = document.getElementById('randomBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const emitBtn = document.getElementById('emitBtn');
+  const helpBtn = document.getElementById('helpBtn');
+
+  const unitSel = document.getElementById('unitSel');
+  const targetEl = document.getElementById('target');
+  const testSecEl = document.getElementById('testSec');
+  const sampleNeedEl = document.getElementById('sampleNeed');
+
+  // ----- Model / State
+  const STATE = { OFF:'OFF', READY:'READY', STRIP:'STRIP', WAIT_SAMPLE:'WAIT_SAMPLE', COUNTDOWN:'COUNTDOWN', RESULT:'RESULT', ERROR:'ERROR' };
+  let state = STATE.OFF;
+  let powered = false;
+  let stripIn = false;
+  let applying = false;
+  let samplePct = 0;  // 0..100
+  let testTimer = null;
+  let testStartedAt = 0;
+  let currentError = null; // 'E1','E2','E3','E4'
+  let targetMg = 118;
+  let testSec = 5;
+  let requiredPct = 70; // percent to avoid E2
+  let resultMg = null;
+
+  // ----- Utils
+  const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+  const mgToMmol = mg => mg/18.0;
+  const mmolToMg = mmol => mmol*18.0;
+  const fmt = n => (Math.round(n*10)/10).toFixed(1);
+
+  function setUnits(){
+    const u = unitSel.value;
+    unitsEl.textContent = u==='mg'?'mg/dL':'mmol/L';
+    unitLabel.textContent = unitsEl.textContent;
+    if(resultMg!=null){
+      showValue(resultMg);
+    }
+  }
+
+  function setCategory(mg){
+    let c='Normal';
+    if(mg<70) c='Hypoglycemia';
+    else if(mg>180) c='Hyperglycemia';
+    catEl.textContent=c;
+  }
+
+  function showValue(mg){
+    if(unitSel.value==='mg'){
+      valueEl.textContent = Math.round(mg);
+    }else{
+      valueEl.textContent = fmt(mgToMmol(mg));
+    }
+    setCategory(mg);
+    kpiMg.textContent = Math.round(mg);
+    kpiMmol.textContent = fmt(mgToMmol(mg));
+  }
+
+  function setStripUI(){
+    stripStateEl.textContent = stripIn ? 'STRIP INSERTED' : 'NO STRIP';
+    iconStrip.textContent = stripIn ? '🟦' : '⬜️';
+  }
+
+  function clearTimers(){
+    if(testTimer){ clearInterval(testTimer); testTimer=null; }
+  }
+
+  function goto(newState){
+    state = newState;
+    switch(state){
+      case STATE.OFF:
+        powered=false; stripIn=false; samplePct=0; currentError=null; resultMg=null;
+        setStripUI();
+        valueEl.textContent='— — —'; countdown.textContent='';
+        sampleBar.style.width='0%';
+        status('Power off.');
+        break;
+      case STATE.READY:
+        powered=true; stripIn=false; samplePct=0; currentError=null; resultMg=null;
+        setStripUI();
+        valueEl.textContent='---';
+        status('Insert test strip.');
+        break;
+      case STATE.STRIP:
+        stripIn=true; samplePct=0; currentError=null;
+        setStripUI();
+        valueEl.textContent='---';
+        status('Apply blood by press & hold until fill bar passes required %.');
+        break;
+      case STATE.WAIT_SAMPLE:
+        status('Collecting sample… keep holding until filled.');
+        break;
+      case STATE.COUNTDOWN:
+        status('Analyzing…');
+        break;
+      case STATE.RESULT:
+        status('Result ready.');
+        break;
+      case STATE.ERROR:
+        break;
+    }
+  }
+
+  function status(msg){ statusEl.textContent=msg }
+
+  // ----- Power & Strip
+  powerBtn.addEventListener('click', ()=>{
+    if(state===STATE.OFF){ goto(STATE.READY); }
+    else { goto(STATE.OFF); }
+  });
+
+  stripBtn.addEventListener('click', ()=>{
+    if(!powered){ status('Turn power on first.'); return; }
+    if(state===STATE.READY){ goto(STATE.STRIP); }
+    else if(state===STATE.STRIP || state===STATE.WAIT_SAMPLE){ stripIn=false; goto(STATE.READY); }
+    else if(state===STATE.COUNTDOWN){
+      // Removing strip mid-test -> E4
+      error('E4','Strip removed during test.');
+    }else if(state===STATE.RESULT || state===STATE.ERROR){
+      // Toggle strip to ready
+      stripIn = !stripIn;
+      setStripUI();
+      status(stripIn?'Ready for new sample.':'Insert strip to begin.');
+      if(stripIn) goto(STATE.STRIP); else goto(STATE.READY);
+    }
+  });
+
+  // ----- Apply blood (press & hold)
+  applyBtn.addEventListener('mousedown', startApply);
+  applyBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); startApply(); }, {passive:false});
+  window.addEventListener('mouseup', stopApply);
+  window.addEventListener('touchend', (e)=>{ e.preventDefault(); stopApply(); }, {passive:false});
+  window.addEventListener('touchcancel', (e)=>{ e.preventDefault(); stopApply(); }, {passive:false});
+
+  function startApply(){
+    if(!powered){ status('Power on first.'); return; }
+    if(!stripIn){ error('E1','No strip inserted.'); return; }
+    if(state===STATE.RESULT || state===STATE.ERROR){ status('Reset for a new test.'); return; }
+    if(applying) return;
+    applying=true;
+    goto(STATE.WAIT_SAMPLE);
+    // Fill percentage over time while held
+    const fillRate = 1.2; // % per frame step ~60fps => ~2s to full
+    function step(){
+      if(!applying) return;
+      samplePct = clamp(samplePct + fillRate* (1000/60)/1000 * 60, 0, 100); // normalize
+      sampleBar.style.width = samplePct.toFixed(1)+'%';
+      // auto-start when requirement met
+      if(samplePct >= requiredPct){
+        applying=false;
+        beginTest();
+        return;
+      }
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function stopApply(){
+    if(!applying) return;
+    applying=false;
+    if(state===STATE.WAIT_SAMPLE){
+      if(samplePct < requiredPct){
+        // insufficient sample
+        error('E2','Insufficient sample. Apply more blood.');
+      }else{
+        // should already begin test on meeting threshold, but keep safe
+        beginTest();
+      }
+    }
+  }
+
+  removeDuringBtn.addEventListener('click', ()=>{
+    if(state===STATE.COUNTDOWN){ error('E4','Strip removed during test.'); }
+  });
+
+  // ----- Start test (countdown)
+  function beginTest(){
+    if(!stripIn){ error('E1','No strip inserted.'); return; }
+    // If too slow to reach threshold (simulate timeout/expired)
+    if(samplePct > 0 && samplePct < requiredPct){
+      error('E3','Sample timed out.');
+      return;
+    }
+    goto(STATE.COUNTDOWN);
+    testSec = Number(testSecEl.value)||5;
+    testStartedAt = performance.now();
+    const endAt = testStartedAt + testSec*1000;
+    countdown.textContent = testSec.toFixed(0)+'s';
+    clearTimers();
+    testTimer = setInterval(()=>{
+      const now = performance.now();
+      const remain = Math.max(0, Math.ceil((endAt-now)/1000));
+      countdown.textContent = remain+'s';
+      if(now>=endAt){
+        clearTimers();
+        finishTest();
+      }
+    }, 200);
+  }
+
+  function finishTest(){
+    // Generate result around target
+    targetMg = Number(targetEl.value)||118;
+    // small random meter noise +/- 6 mg/dL
+    const noise = (Math.random()*12 - 6);
+    resultMg = clamp(targetMg + noise, 20, 600);
+    goto(STATE.RESULT);
+    showValue(resultMg);
+    countdown.textContent='';
+  }
+
+  // ----- Errors
+  function error(code, msg){
+    currentError = code;
+    goto(STATE.ERROR);
+    valueEl.textContent = code;
+    status(msg);
+    countdown.textContent='';
+  }
+
+  // ----- Controls
+  unitSel.addEventListener('change', setUnits);
+  setUnits();
+
+  randomBtn.addEventListener('click', ()=>{
+    // 30% hypo (35–69), 40% normal (80–140), 30% hyper (200–480)
+    const r=Math.random();
+    let mg=118;
+    if(r<0.3) mg = 40 + Math.random()*30;         // 40–70
+    else if(r<0.7) mg = 80 + Math.random()*60;     // 80–140
+    else mg = 200 + Math.random()*280;             // 200–480
+    targetEl.value = Math.round(mg);
+    kpiMg.textContent = Math.round(mg);
+    kpiMmol.textContent = (mg/18).toFixed(1);
+    catEl.textContent = mg<70?'Hypoglycemia': mg>180?'Hyperglycemia':'Normal';
+    status('Scenario randomized. Power on → insert strip → apply blood.');
+  });
+
+  resetBtn.addEventListener('click', ()=>{
+    clearTimers(); samplePct=0; sampleBar.style.width='0%';
+    resultMg=null; currentError=null; countdown.textContent='';
+    goto(powered?STATE.READY:STATE.OFF);
+  });
+
+  emitBtn.addEventListener('click', ()=>{
+    const payload = {
+      powered, strip_in: stripIn, state,
+      target_mgdl: Number(targetEl.value)||null,
+      measured_mgdl: resultMg,
+      measured_mmol: resultMg==null?null: +(resultMg/18).toFixed(1),
+      unit_view: unitSel.value==='mg'?'mg/dL':'mmol/L',
+      sample_required_pct: Number(sampleNeedEl.value)||requiredPct,
+      sample_achieved_pct: +samplePct.toFixed(1),
+      error: currentError,
+      test_seconds: Number(testSecEl.value)||5,
+      timestamp: Date.now()
+    };
+    window.dispatchEvent(new CustomEvent('glucometer-result',{ detail: payload }));
+    console.log('[glucometer-result]', payload);
+    status('Emitted glucometer-result.');
+  });
+
+  helpBtn.addEventListener('click', ()=>{
+    alert(
+`Workflow:
+1) Power ON, insert strip.
+2) Press & HOLD “Apply Blood” until the fill bar passes the required % (default 70%).
+   - Let go too early → E2 (insufficient sample).
+3) Meter counts down, then shows result.
+4) Remove strip mid-test → E4.
+Units toggle switches display only; mg/dL always emitted alongside mmol/L.`);
+  });
+
+  sampleNeedEl.addEventListener('input', ()=>{
+    requiredPct = clamp(Number(sampleNeedEl.value)||70, 20, 100);
+    document.getElementById('hint').textContent = 'Need ≥ '+requiredPct+'% fill to start.';
+  });
+
+  targetEl.addEventListener('input', ()=>{
+    const mg = Number(targetEl.value)||118;
+    kpiMg.textContent = Math.round(mg);
+    kpiMmol.textContent = (mg/18).toFixed(1);
+    catEl.textContent = mg<70?'Hypoglycemia': mg>180?'Hyperglycemia':'Normal';
+  });
+
+  testSecEl.addEventListener('input', ()=>{
+    testSec = clamp(Number(testSecEl.value)||5, 3, 20);
+  });
+
+  // Boot
+  goto(STATE.OFF);
+})();
+</script>
+</body>
+</html>
 
