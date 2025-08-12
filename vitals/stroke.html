@@ -41,7 +41,7 @@
 
   /* FACE */
   .faceBox svg{max-width:360px;width:100%;height:auto;display:block}
-  .vf-mask{fill:url(#vfgrad); opacity:0} /* visual field cut overlay (fade) */
+  .vf-mask{fill:url(#vfgrad); opacity:0}
 
   /* ARMS/Hands */
   .armsBox{width:100%;max-width:520px;aspect-ratio:4/2.2;position:relative;overflow:hidden}
@@ -62,7 +62,7 @@
   .hand::before, .hand::after{
     content:""; position:absolute; left:2px; right:2px; height:2px; background:#dcb39b; opacity:.6;
   }
-  .hand::before{ top:10px } /* finger creases */
+  .hand::before{ top:10px }
   .hand::after{ top:20px }
   .arm.hold{ background:linear-gradient(180deg,#f3d2bf,#e8bca5) }
 
@@ -78,7 +78,6 @@
   .eyeSVG{width:140px;max-width:100%;height:auto;display:block}
   .gazeArrow{font-size:2.0rem;opacity:.0;transition:opacity .3s}
 
-  /* Results list */
   .checklist{margin:8px 0 0 18px} .checklist li{margin:2px 0}
   .tag{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef7ff;border:1px solid #cfe3e8;font-size:.75rem}
 </style>
@@ -126,29 +125,22 @@
               <stop offset="55%" stop-color="#2e6772"/>
               <stop offset="100%" stop-color="#1b3940"/>
             </radialGradient>
-            <!-- visual field fade (left-to-right mask) -->
             <linearGradient id="vfgrad" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stop-color="#000" stop-opacity="0.65"/>
               <stop offset="90%" stop-color="#000" stop-opacity="0"/>
             </linearGradient>
           </defs>
-          <!-- head -->
           <ellipse cx="160" cy="125" rx="100" ry="112" fill="var(--face)" stroke="#d5a994" stroke-width="3"/>
-          <!-- Eyes group -->
           <g id="eyes">
-            <!-- Left eye capsule -->
             <g transform="translate(105,92)">
               <ellipse rx="26" ry="14" fill="#fff" stroke="#c6d9de"/>
-              <!-- eyelid -->
               <path d="M -24 0 Q 0 -10 24 0" stroke="#b18a79" stroke-width="2" fill="none" opacity=".4"/>
-              <!-- iris + pupil group (movable) -->
               <g id="irisL" transform="translate(0,0)">
                 <circle r="9" fill="url(#irisGrad)"/>
                 <circle r="4.5" fill="#0a0a0a"/>
                 <circle r="1.8" fill="#fff" opacity=".85" transform="translate(-2,-2)"/>
               </g>
             </g>
-            <!-- Right eye capsule -->
             <g transform="translate(215,92)">
               <ellipse rx="26" ry="14" fill="#fff" stroke="#c6d9de"/>
               <path d="M -24 0 Q 0 -10 24 0" stroke="#b18a79" stroke-width="2" fill="none" opacity=".4"/>
@@ -159,14 +151,10 @@
               </g>
             </g>
           </g>
-
-          <!-- eyebrows -->
           <path id="browL" d="M78 72 q28 -12 56 0" stroke="#6a493c" stroke-width="5" fill="none" stroke-linecap="round"/>
           <path id="browR" d="M186 72 q28 -12 56 0" stroke="#6a493c" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <!-- mouth base + droop overlay -->
           <path id="mouth" d="M110 168 q50 26 100 0" stroke="#9e4f3b" stroke-width="6" fill="none" stroke-linecap="round"/>
           <path id="droop" d="M110 168 q50 26 100 0" stroke="#9e4f3b" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.0"/>
-          <!-- Visual field overlay (toggled) -->
           <rect id="vfMaskLeft" class="vf-mask" x="0" y="0" width="160" height="270"/>
           <rect id="vfMaskRight" class="vf-mask" x="160" y="0" width="160" height="270" transform="scale(-1,1) translate(-320,0)"/>
           <text x="160" y="238" text-anchor="middle" class="muted" style="font-size:14px">Face symmetry & eyes</text>
@@ -204,7 +192,6 @@
     <div class="grid">
       <h3>Eyes & Speech</h3>
 
-      <!-- EYES -->
       <div class="card vwrap">
         <h4>Eyes</h4>
         <div class="status">
@@ -216,7 +203,6 @@
         </div>
       </div>
 
-      <!-- SPEECH -->
       <div class="card vwrap">
         <h4>Speech</h4>
         <div class="status">
@@ -294,12 +280,12 @@
 
   // ------------- Scenario Truth
   const T = {
-    side: 'right',  // hemiparesis side (right or left body)
+    side: 'right',
     face: false,
     arm: false,
-    speech: 'normal', // normal/slurred/aphasic
+    speech: 'normal',
     balance: false,
-    eyes: 'normal',   // normal/gazeDev/fieldCut
+    eyes: 'normal',
     lkwMins: 30
   };
 
@@ -310,7 +296,6 @@
   // ------------- Randomizers
   function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
   function newScenario(){
-    // Dispatch
     scDispatch.textContent = pick([
       '72 y/o with sudden facial droop and slurred speech',
       '58 y/o with right arm weakness and trouble speaking',
@@ -321,7 +306,6 @@
     T.lkwMins = [20,30,40,60,120,240,999][Math.floor(Math.random()*7)];
     scLKW.textContent = T.lkwMins===999 ? 'unknown' : `~${T.lkwMins} minutes ago`;
 
-    // Side & deficits
     T.side = Math.random()<0.5 ? 'right' : 'left';
     T.face = Math.random()<0.65;
     T.arm  = Math.random()<0.7;
@@ -329,14 +313,13 @@
     T.balance = Math.random()<0.35;
     T.eyes = Math.random()<0.4 ? (Math.random()<0.6?'gazeDev':'fieldCut') : 'normal';
 
-    // Reset visuals
     resetFace();
-    resetArms();   // level start
+    resetArms();
     resetBalance();
     resetEyes();
     speechStatus.textContent = 'Press test to hear the patient.';
     resultLine.textContent='—'; logWhy.innerHTML=''; resultsBox.style.outline='none';
-    // Reset selects
+
     ['selB','selE','selF','selA','selS'].forEach(id=> $(id).selectedIndex=0);
     if(T.lkwMins===999) $('selT').selectedIndex = 1; else $('selT').selectedIndex = (T.lkwMins<=270?0:1);
   }
@@ -347,7 +330,6 @@
     browL.setAttribute('d', 'M78 72 q28 -12 56 0');
     browR.setAttribute('d', 'M186 72 q28 -12 56 0');
     mouth.setAttribute('d','M110 168 q50 26 100 0');
-    // center pupils
     irisL.setAttribute('transform','translate(0,0)');
     irisR.setAttribute('transform','translate(0,0)');
     vfLeft.style.opacity = 0; vfRight.style.opacity = 0;
@@ -365,20 +347,17 @@
 
   let armAnim=null;
   function resetArms(){
-    // perfectly level start
     armL.style.transform='translate(-140px,0)';
     armR.style.transform='translate(140px,0)';
     armL.classList.remove('hold'); armR.classList.remove('hold');
     if(armAnim){ cancelAnimationFrame(armAnim); armAnim=null; }
   }
   function runArmDrift(side, hasDrift){
-    // both arms up, then affected side drifts
     armL.classList.add('hold'); armR.classList.add('hold');
     const start = performance.now();
     function step(t){
-      const dt = (t-start)/1000; // seconds
-      // fall amount
-      const drop = hasDrift ? Math.min(90, dt*22) : 0; // px
+      const dt = (t-start)/1000;
+      const drop = hasDrift ? Math.min(90, dt*22) : 0;
       const driftL = (side==='left') ? drop : 0;
       const driftR = (side==='right') ? drop : 0;
       armL.style.transform=`translate(-140px,${driftL}px)`;
@@ -395,14 +374,12 @@
   }
 
   function resetEyes(){
-    // center irises
     irisL.setAttribute('transform','translate(0,0)');
     irisR.setAttribute('transform','translate(0,0)');
     vfLeft.style.opacity = 0; vfRight.style.opacity = 0;
     gazeArrow.style.opacity=0; gazeArrow.textContent='↔️ ↔️';
   }
   function showGaze(side){
-    // Gaze deviation: eyes pulled toward lesion side (same side as body weakness)
     const dx = side==='right' ? 7 : -7;
     irisL.setAttribute('transform',`translate(${dx},0)`);
     irisR.setAttribute('transform',`translate(${dx},0)`);
@@ -410,7 +387,6 @@
     gazeArrow.style.opacity=1;
   }
   function showFieldCut(ignoreSide){
-    // Keep gaze centered but fade the ignored hemifield
     resetEyes();
     if(ignoreSide==='left'){ vfLeft.style.opacity = 0.55; }
     if(ignoreSide==='right'){ vfRight.style.opacity = 0.55; }
@@ -426,7 +402,7 @@
 
   $('testArms').addEventListener('pointerdown', e=>{
     e.preventDefault();
-    resetArms();                // level first, then drift
+    resetArms();
     runArmDrift(T.side, T.arm);
   });
 
@@ -511,7 +487,7 @@
       'symmetric smile.');
     evalDom('Arm', truth.A, user.A,
       `${T.side} arm drifts/down with pronator drift test.`,
-      'no drift (both arms hold).`);
+      'no drift (both arms hold).');
     evalDom('Speech', truth.S, user.S,
       T.speech==='slurred' ? 'slurred articulation / dysarthria.' : 'aphasia / word-finding impairment.',
       'clear, fluent phrase.');
