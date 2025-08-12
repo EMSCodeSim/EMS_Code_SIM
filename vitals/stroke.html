@@ -2,475 +2,389 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-<title>Stroke Assessment Simulator — BEFAST + CP-SSS + Glucose (Inline)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Stroke Assessment (BE-FAST) Simulator</title>
 <style>
   :root{
-    --brand:#007B8A; --bg:#f0f8ff; --panel:#fff; --muted:#e7f4f7; --text:#0f2b33;
-    --ok:#0a8f5b; --warn:#c77b00;
-    --shadow:0 10px 24px rgba(0,0,0,.08);
-    --face:#f7d2bd; --face-shadow:#e5b59e; --skin:#efc7ac; --skin-deep:#e3b097;
+    --brand:#007B8A; --brand-600:#066371;
+    --bg:#f0f8ff; --panel:#ffffff; --ink:#0f2b33; --muted:#46636a;
+    --border:#e2e8f0; --shadow:0 10px 28px rgba(2,8,23,.08);
+    --warn:#c77b00; --bad:#b81e2b;
+    --eye-size: 88px; /* eye (sclera) diameter */
+  }
+  @media (max-width: 640px){
+    :root{ --eye-size: clamp(72px, 30vw, 88px); }
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.35}
-  header{background:var(--brand);color:#fff;text-align:center;padding:14px 16px;font-weight:700}
-  main{max-width:1180px;margin:0 auto;padding:12px;display:grid;gap:12px}
-  .card{background:var(--panel);border-radius:16px;box-shadow:var(--shadow);padding:14px}
-  .grid{display:grid;gap:10px}
-  .row{display:grid;gap:10px}
-  @media(min-width:980px){ .cols-2{grid-template-columns:1.05fr .95fr} }
-  @media(min-width:620px){ .row{grid-template-columns:1fr 1fr} }
-  .status{font-size:.98rem;background:#fff;border:1px solid #e0eaed;border-radius:12px;padding:10px;min-height:56px}
-  .pill{display:inline-block;padding:3px 10px;border-radius:999px;background:#e7f8f1;color:#0a8f5b;font-weight:700;font-size:.8rem}
-  .muted{color:#3b616b}
-  .btn{appearance:none;border:0;background:var(--brand);color:#fff;padding:12px 14px;border-radius:12px;font-weight:800;cursor:pointer;width:100%}
-  .btn.alt{background:#124b54}
-  .btn.warn{background:#c77b00}
-  .btn.ghost{background:#fff;color:var(--brand);border:2px solid var(--brand)}
-  select,input[type="time"]{width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
-  .vwrap{display:grid;place-items:center;background:var(--muted);border:1px solid #dbeff3;border-radius:14px;padding:10px}
+  html,body{height:100%}
+  html,body{overflow-x:hidden}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; line-height:1.45;
+    -webkit-text-size-adjust:100%;
+  }
+  header{background:var(--brand); color:#fff; padding:14px 16px; font-weight:800; letter-spacing:.2px; position:sticky; top:0; z-index:10}
+  main{max-width:1000px; margin:0 auto; padding:12px}
+  h2{margin:.25rem 0 .75rem}
+  .card{background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:14px; box-shadow:var(--shadow); margin-bottom:12px}
 
-  .faceBox svg{max-width:360px;width:100%;height:auto;display:block}
-  .vf-mask{fill:url(#vfgrad); opacity:0}
+  .btn{
+    appearance:none; border:0; background:var(--brand); color:#fff;
+    padding:.7rem 1rem; border-radius:12px; font-weight:800; cursor:pointer;
+  }
+  .btn:hover{background:var(--brand-600)}
+  .btn.ghost{background:#fff; color:var(--brand); border:2px solid var(--brand)}
+  .btn.warn{background:var(--warn)}
+  .btn.bad{background:var(--bad)}
+  .row{display:grid; gap:10px; grid-template-columns:1fr}
+  .grid2{display:grid; gap:12px; grid-template-columns:1fr 1fr}
+  @media (max-width:760px){ .grid2{grid-template-columns:1fr} }
+  .muted{color:var(--muted)}
 
-  .armsBox{width:100%;max-width:520px;aspect-ratio:4/2.2;position:relative;overflow:hidden}
-  .arm{position:absolute; left:50%; transform:translateX(-50%); height:22px; width:180px;
-       background:linear-gradient(180deg,var(--skin),var(--skin-deep));
-       border:2px solid #d2a994; border-radius:14px; transition:transform .9s ease;
-       box-shadow: inset 0 2px 6px rgba(0,0,0,.08); display:flex; align-items:center; justify-content:flex-end; padding-right:6px}
-  .arm.left{ top:36% } .arm.right{ top:56% }
-  .hand{ width:38px; height:34px; background:linear-gradient(180deg,var(--skin),var(--skin-deep));
-         border:2px solid #d2a994; border-radius:12px 14px 14px 12px; position:relative;
-         box-shadow: inset 0 2px 6px rgba(0,0,0,.08) }
-  .hand::before,.hand::after{content:""; position:absolute; left:2px; right:2px; height:2px; background:#dcb39b; opacity:.6}
-  .hand::before{top:10px} .hand::after{top:20px}
+  /* Face */
+  .faceWrap{display:flex; justify-content:center}
+  .face{
+    width:min(520px, 95vw); background:#ffe4c7; border-radius:24px; border:1px solid #e0c7ae;
+    padding:16px; box-shadow:inset 0 4px 24px rgba(0,0,0,.08);
+  }
+  .eyes{
+    display:flex; justify-content:center; gap:28px; align-items:center; margin-top:8px;
+  }
+  .sclera{
+    width:var(--eye-size); height:var(--eye-size); background:#fff; border-radius:50%;
+    box-shadow:inset 0 0 0 1px #e5e7eb; position:relative; overflow:hidden;
+  }
+  .iris{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:calc(var(--eye-size) * .62); height:calc(var(--eye-size) * .62); border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #88b1c5, #3d6a7a 70%, #1f3c46 100%);
+    box-shadow:inset 0 0 18px rgba(0,0,0,.35);
+  }
+  .pupil{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:22px; height:22px; border-radius:50%; background:#000; box-shadow:0 0 10px rgba(0,0,0,.35);
+    transition: width .18s ease, height .18s ease, transform .18s ease;
+  }
+  .mouth{
+    width:180px; height:40px; background:#ffb3a1; border-radius:999px;
+    margin:14px auto 4px; position:relative; overflow:hidden; box-shadow:inset 0 -8px 12px rgba(0,0,0,.12);
+  }
+  .droopRight .mouth::after,
+  .droopLeft .mouth::after{
+    content:""; position:absolute; inset:0; border-radius:inherit; border-top:8px solid #e08b7e;
+    transform-origin:center; transform:skewY(-8deg);
+  }
+  .droopRight .mouth{clip-path:polygon(0 0,100% 10%,100% 100%,0 100%)}
+  .droopLeft  .mouth{clip-path:polygon(0 10%,100% 0,100% 100%,0 100%)}
 
-  .stand{width:100%;max-width:360px;aspect-ratio:3/4;border-radius:14px;background:linear-gradient(180deg,#e6f3f6,#d7eef2);display:grid;place-items:center;position:relative;overflow:hidden}
-  .person{width:54px;height:118px;background:#2e5560;border-radius:16px;position:relative;transition:transform .8s ease}
-  .person::before{content:"";position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:44px;height:44px;background:var(--face);border-radius:50%;box-shadow:inset 0 -6px 0 var(--face-shadow)}
-  .person::after{content:"";position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:74px;height:14px;background:#1c3a40;border-radius:14px}
+  /* Arms (palms up, facing user) */
+  .armsWrap{display:flex; justify-content:center; margin-top:8px}
+  .arms{
+    display:flex; gap:22px; align-items:flex-start; justify-content:center; flex-wrap:wrap;
+  }
+  .arm{
+    width:180px; height:160px; position:relative; transform-origin:top center;
+    transition: transform 1.0s ease;
+  }
+  .forearm{
+    width:32px; height:120px; background:#ffe4c7; border:1px solid #e0c7ae; border-radius:18px;
+    position:absolute; left:50%; transform:translateX(-50%); top:10px;
+    box-shadow:inset 0 6px 14px rgba(0,0,0,.08);
+  }
+  .hand{
+    position:absolute; left:50%; transform:translateX(-50%); top:118px;
+    width:80px; height:50px; background:#ffd9be; border:1px solid #e0c7ae; border-radius:22px;
+    box-shadow:inset 0 8px 16px rgba(0,0,0,.08);
+  }
+  .hand::before, .hand::after{
+    content:""; position:absolute; left:50%; transform:translateX(-50%);
+    width:60px; height:2px; background:#e9b9a0; top:16px; box-shadow:0 12px 0 #e9b9a0;
+  }
+  .thumb{
+    position:absolute; width:18px; height:36px; background:#ffd9be; border:1px solid #e0c7ae; border-radius:10px;
+    top:126px; left:calc(50% + 38px);
+  }
+  .right .thumb{ left:calc(50% - 56px); } /* thumbs outward for palms up */
 
-  .gazeArrow{font-size:1.1rem;opacity:.0;transition:opacity .3s}
-  .checklist{margin:8px 0 0 18px} .checklist li{margin:2px 0}
-  .tag{display:inline-block;padding:2px 8px;border-radius:999px;background:#eef7ff;border:1px solid #cfe3e8;font-size:.75rem}
-  .hidden{display:none}
-  .cpbox{border:2px dashed #bfe2e9;border-radius:14px;padding:12px;background:#f7fcfe}
-  .diag{font-size:.85rem;margin-top:6px}
-  .diag b{color:#0a8f5b}
+  .timer{
+    display:flex; justify-content:center; align-items:center; gap:10px; margin-top:10px;
+    font-weight:800;
+  }
+  .pill{display:inline-block; padding:3px 8px; border-radius:999px; background:#e7f5ff; color:#075985; font-weight:800; font-size:.82rem}
+  .note{font-size:.92rem}
+
+  .results{margin-top:10px}
+  .results .box{background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:10px}
+  .results ul{margin:.4rem 0 0 1.1rem}
+  .results li{margin:.18rem 0}
 </style>
 </head>
 <body>
-<header>Stroke Assessment Simulator — BEFAST + CP-SSS + Glucose</header>
+<header>Stroke Assessment (BE-FAST) Simulator</header>
 
 <main>
+  <!-- FACE + EYE GAZE -->
   <section class="card">
-    <h3>Scenario</h3>
-    <div class="grid cols-2">
-      <div class="status">
-        <div><span class="pill">Dispatch</span> <strong id="scDispatch">—</strong></div>
-        <div><span class="pill">Setting</span> <strong id="scSetting">—</strong></div>
-        <div><span class="pill">Last Known Well</span> <strong id="scLKW">—</strong></div>
-        <div><span class="pill">POC Glucose</span> <strong id="scGlucose">unknown</strong></div>
-        <div class="muted">Run BEFAST tests. If positive, proceed to CP-SSS for LVO screening. Hypoglycemia can mimic stroke—check glucose.</div>
-        <div class="diag" id="diag">Diagnostics: <b>⏳ waiting</b></div>
+    <h2>Face & Eye Gaze</h2>
+    <p class="muted note">Check for face droop, unequal pupils, and gaze abnormality. Then run the gaze test below.</p>
+
+    <div class="faceWrap">
+      <div id="face" class="face">
+        <div class="eyes">
+          <div class="sclera" id="sL" aria-label="Left eye">
+            <div class="iris">
+              <div class="pupil" id="pL"></div>
+            </div>
+          </div>
+          <div class="sclera" id="sR" aria-label="Right eye">
+            <div class="iris">
+              <div class="pupil" id="pR"></div>
+            </div>
+          </div>
+        </div>
+        <div class="mouth"></div>
       </div>
-      <div class="row">
-        <div>
-          <label>Record LKW Time (optional)</label>
-          <input id="lkwTime" type="time"/>
-        </div>
-        <div>
-          <label>&nbsp;</label>
-          <button class="btn ghost" id="stampNow" onclick="stampNow()">Use current time as exam time</button>
-          <div class="muted" id="examTimeNote"></div>
-        </div>
-        <div>
-          <label>&nbsp;</label>
-          <button class="btn alt" id="btnGlucose" onclick="checkGlucose()">Check Glucose</button>
-          <div class="muted" id="gluNote"></div>
-        </div>
+    </div>
+
+    <!-- Eye Gaze button directly under face -->
+    <div class="row" style="margin-top:10px">
+      <button class="btn" id="btnGaze">▶️ Run Eye Gaze</button>
+    </div>
+
+    <div class="results">
+      <div class="box" id="gazeInfo" hidden>
+        <strong>Eye Gaze:</strong> <span id="gazeLine">—</span>
       </div>
     </div>
   </section>
 
-  <section class="card grid cols-2">
-    <div class="grid">
-      <h3>Visual Tests</h3>
-
-      <div class="card vwrap faceBox">
-        <h4>Face</h4>
-        <svg id="faceSVG" viewBox="0 0 320 270" aria-label="Face">
-          <defs>
-            <radialGradient id="irisGrad" cx="50%" cy="50%" r="60%">
-              <stop offset="0%" stop-color="#1c3f46"/>
-              <stop offset="55%" stop-color="#2e6772"/>
-              <stop offset="100%" stop-color="#1b3940"/>
-            </radialGradient>
-            <linearGradient id="vfgrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#000" stop-opacity="0.65"/>
-              <stop offset="90%" stop-color="#000" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-          <ellipse cx="160" cy="125" rx="100" ry="112" fill="var(--face)" stroke="#d5a994" stroke-width="3"/>
-          <g id="eyes">
-            <g transform="translate(105,92)">
-              <ellipse rx="26" ry="14" fill="#fff" stroke="#c6d9de"/>
-              <path d="M -24 0 Q 0 -10 24 0" stroke="#b18a79" stroke-width="2" fill="none" opacity=".4"/>
-              <g id="irisL" transform="translate(0,0)">
-                <circle r="9" fill="url(#irisGrad)"/>
-                <circle r="4.5" fill="#0a0a0a"/>
-                <circle r="1.8" fill="#fff" opacity=".85" transform="translate(-2,-2)"/>
-              </g>
-            </g>
-            <g transform="translate(215,92)">
-              <ellipse rx="26" ry="14" fill="#fff" stroke="#c6d9de"/>
-              <path d="M -24 0 Q 0 -10 24 0" stroke="#b18a79" stroke-width="2" fill="none" opacity=".4"/>
-              <g id="irisR" transform="translate(0,0)">
-                <circle r="9" fill="url(#irisGrad)"/>
-                <circle r="4.5" fill="#0a0a0a"/>
-                <circle r="1.8" fill="#fff" opacity=".85" transform="translate(-2,-2)"/>
-              </g>
-            </g>
-          </g>
-          <path id="browL" d="M78 72 q28 -12 56 0" stroke="#6a493c" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <path id="browR" d="M186 72 q28 -12 56 0" stroke="#6a493c" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <path id="mouth" d="M110 168 q50 26 100 0" stroke="#9e4f3b" stroke-width="6" fill="none" stroke-linecap="round"/>
-          <path id="droop" d="M110 168 q50 26 100 0" stroke="#9e4f3b" stroke-width="6" fill="none" stroke-linecap="round" opacity="0"/>
-          <rect id="vfMaskLeft" class="vf-mask" x="0" y="0" width="160" height="270"/>
-          <rect id="vfMaskRight" class="vf-mask" x="160" y="0" width="160" height="270" transform="scale(-1,1) translate(-320,0)"/>
-          <text x="160" y="238" text-anchor="middle" class="muted" style="font-size:14px">Face symmetry & eyes</text>
-        </svg>
-        <div class="row"><button class="btn" onclick="testFace()">Test: “Smile and show teeth”</button></div>
-      </div>
-
-      <div class="card vwrap">
-        <h4>Arm Drift</h4>
-        <div class="armsBox">
-          <div class="arm left"  id="armL"><div class="hand" title="palm up"></div></div>
-          <div class="arm right" id="armR"><div class="hand" title="palm up"></div></div>
-        </div>
-        <div class="row" style="margin-top:8px"><button class="btn alt" onclick="testArms()">Test: “Hold both arms out, palms up”</button></div>
-      </div>
-
-      <div class="card vwrap">
-        <h4>Balance</h4>
-        <div class="stand"><div class="person" id="person"></div></div>
-        <div class="row" style="margin-top:8px"><button class="btn warn" onclick="testBalance()">Test: “Stand with feet together”</button></div>
-      </div>
-    </div>
-
-    <div class="grid">
-      <h3>Eyes & Speech</h3>
-
-      <div class="card vwrap">
-        <h4>Eyes (Gaze / Tracking)</h4>
-        <div class="status">
-          <div>“Follow my finger with just your eyes.”</div>
-          <div class="gazeArrow" id="gazeArrow">↔️ tracking…</div>
-        </div>
-        <div class="row" style="margin-top:8px">
-          <button class="btn" onclick="testEyes()">Run Gaze Tracking</button>
-          <button class="btn ghost" onclick="stopEyes()">⏹ Stop Tracking</button>
-        </div>
-      </div>
-
-      <div class="card vwrap">
-        <h4>Speech</h4>
-        <div class="status">
-          <div class="speechOut"><strong>Phrase:</strong> “You can’t teach an old dog new tricks.”</div>
-          <div class="muted" id="speechStatus">Press test to hear the patient.</div>
-        </div>
-        <div class="row" style="margin-top:8px">
-          <button class="btn" onclick="testSpeech()">Test Speech</button>
-          <button class="btn ghost" onclick="stopTTS()">⏹ Stop Voice</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
+  <!-- ARM DRIFT -->
   <section class="card">
-    <h3>Your BEFAST Decision</h3>
-    <div class="row" style="grid-template-columns:repeat(3,1fr)">
-      <div><label>Balance</label><select id="selB"><option>Negative</option><option>Positive</option><option>Not tested</option></select></div>
-      <div><label>Eyes</label><select id="selE"><option>Negative</option><option>Positive</option><option>Not tested</option></select></div>
-      <div><label>Face</label><select id="selF"><option>Negative</option><option>Positive</option><option>Not tested</option></select></div>
-      <div><label>Arm</label><select id="selA"><option>Negative</option><option>Positive</option><option>Not tested</option></select></div>
-      <div><label>Speech</label><select id="selS"><option>Negative</option><option>Positive</option><option>Not tested</option></select></div>
-      <div><label>Time</label>
-        <select id="selT">
-          <option>Call immediately (LKW ≤ 4.5h)</option>
-          <option>Call immediately (unknown/≥ 4.5h)</option>
-          <option>Not documented</option>
-        </select>
+    <h2>Arm Drift (10-second test)</h2>
+    <p class="muted note">Arms should be at shoulder height, palms up. Press start and watch for pronation/drift.</p>
+
+    <div class="armsWrap">
+      <div class="arms">
+        <!-- Left arm (patient’s left; viewer’s right) -->
+        <div class="arm left" id="armL" aria-label="Left arm">
+          <div class="forearm"></div>
+          <div class="hand"></div>
+          <div class="thumb"></div>
+        </div>
+
+        <!-- Right arm -->
+        <div class="arm right" id="armR" aria-label="Right arm">
+          <div class="forearm"></div>
+          <div class="hand"></div>
+          <div class="thumb"></div>
+        </div>
       </div>
     </div>
-    <div class="row" style="margin-top:10px">
-      <button class="btn alt" onclick="submitBefast()">Submit</button>
-      <button class="btn warn" onclick="nextScenario()">Next Scenario</button>
-    </div>
-    <div class="status" id="resultsBox" style="margin-top:8px">
-      <strong>Results:</strong> <span id="resultLine">—</span>
-      <ul class="checklist" id="why"></ul>
+
+    <div class="timer">
+      <button class="btn" id="btnDrift">⏱️ Start 10s</button>
+      <span class="pill">Timer: <span id="tClock">0.0</span>s</span>
+      <span class="pill" id="tResult" hidden>—</span>
     </div>
   </section>
 
-  <section class="card cpbox hidden" id="cpsssPanel">
-    <h3>CP-SSS (LVO Screen)</h3>
-    <div class="muted" style="margin-bottom:8px">
-      Score items:
-      <span class="pill">Gaze deviation (2)</span>
-      <span class="pill">Arm weakness (1)</span>
-      <span class="pill">Abnormal LOC Q/C (1)</span>
+  <!-- NAV / CASE -->
+  <section class="card">
+    <div class="row" style="align-items:center">
+      <button class="btn warn" id="btnNew">Next Case</button>
+      <button class="btn ghost" id="btnReset">Reset</button>
     </div>
-    <div class="row">
-      <div><label>Gaze deviation present?</label><select id="cpsGaze"><option>No (0)</option><option>Yes (2)</option></select></div>
-      <div><label>Arm weakness (cannot hold 10s)?</label><select id="cpsArm"><option>No (0)</option><option>Yes (1)</option></select></div>
-    </div>
-    <div class="row" style="margin-top:8px">
-      <div><label>LOC questions/commands abnormal?</label><select id="cpsLoc"><option>No (0)</option><option>Yes (1)</option></select>
-        <div class="muted" style="margin-top:4px">Ask: age & month; Commands: close eyes / open-close hand.</div></div>
-      <div><label>&nbsp;</label><button class="btn" onclick="runLoc()">Run LOC Q/C</button></div>
-    </div>
-    <div class="row" style="margin-top:10px">
-      <button class="btn alt" onclick="gradeCPSSS()">Submit CP-SSS</button>
-      <div class="status"><strong>CP-SSS Result:</strong> <span id="cpsssLine">—</span></div>
-    </div>
+    <p class="muted" style="margin:.5rem 0 0">
+      Tip: BE-FAST — <strong>B</strong>alance, <strong>E</strong>yes (gaze, fields), <strong>F</strong>ace droop, <strong>A</strong>rm weakness, <strong>S</strong>peech, <strong>T</strong>ime last known well.
+    </p>
   </section>
 </main>
 
 <script>
-/* ======= GLOBAL STATE & SHORTCUTS ======= */
-const $ = id => document.getElementById(id);
-const T = {
-  side:'right', face:false, arm:false, speech:'normal', balance:false, eyes:'normal',
-  lkwMins:30, locAbn:false, glucose:null
-};
-let gazeAnim=null, gazeStart=0, armAnim=null;
+(function(){
+  // ---------- DOM
+  const face = document.getElementById('face');
+  const pL = document.getElementById('pL');
+  const pR = document.getElementById('pR');
+  const btnGaze = document.getElementById('btnGaze');
+  const gazeInfo = document.getElementById('gazeInfo');
+  const gazeLine = document.getElementById('gazeLine');
 
-/* ======= DIAGNOSTICS ======= */
-function setDiag(msg){ $('diag').innerHTML = 'Diagnostics: <b>'+msg+'</b>'; }
+  const armL = document.getElementById('armL');
+  const armR = document.getElementById('armR');
+  const btnDrift = document.getElementById('btnDrift');
+  const tClock = document.getElementById('tClock');
+  const tResult = document.getElementById('tResult');
 
-/* ======= RANDOM HELPERS ======= */
-function pick(a){ return a[Math.floor(Math.random()*a.length)] }
-function randomGlucose(){
-  const r=Math.random();
-  if(r<0.12) return Math.floor(40 + Math.random()*20);
-  if(r<0.20) return Math.floor(61 + Math.random()*39);
-  if(r<0.85) return Math.floor(90 + Math.random()*40);
-  return Math.floor(180 + Math.random()*120);
-}
+  const btnNew = document.getElementById('btnNew');
+  const btnReset = document.getElementById('btnReset');
 
-/* ======= TTS ======= */
-function speak(text){
-  try{ window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.rate=1;u.pitch=1; window.speechSynthesis.speak(u); }
-  catch(e){}
-}
-function stopTTS(){ try{ window.speechSynthesis.cancel(); }catch(e){} setDiag('voice stopped'); }
+  // ---------- State (randomized per case)
+  let scenario = null;
+  let gazeTimer = null;
+  let gazeTick = 0;
+  let driftTimer = null;
+  let driftRunning = false;
+  let driftStart = 0;
+  let driftTriggeredAt = null;
 
-/* ======= SCENARIO ======= */
-function newScenario(){
-  $('scDispatch').textContent = pick([
-    '72 y/o with sudden facial droop and slurred speech',
-    '58 y/o with right arm weakness and trouble speaking',
-    '66 y/o unsteady gait, veering to one side',
-    '74 y/o visual changes, not tracking left side'
-  ]);
-  $('scSetting').textContent = pick(['found sitting on couch','standing in kitchen','on porch with family','office break room']);
-  T.lkwMins = [20,30,40,60,120,240,999][Math.floor(Math.random()*7)];
-  $('scLKW').textContent = T.lkwMins===999 ? 'unknown' : ('~'+T.lkwMins+' minutes ago');
+  // Build a scenario
+  function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
+  function newCase(){
+    // Randomize droop, anisocoria, gaze pattern, arm drift
+    scenario = {
+      faceDroop: rand([ 'none', 'left', 'right', 'none', 'none' ]), // weight to none
+      anisocoria: Math.random() < 0.35 ? rand(['left','right']) : null,
+      gaze: rand([ 'normal', 'slow', 'deviationLeft', 'deviationRight', 'normal', 'slow' ]),
+      armDrift: rand([ 'left', 'right', 'none', 'left', 'right' ]),  // more likely unilateral
+      armDriftDelay: Math.round((Math.random()*4 + 2)*10)/10 // 2.0–6.0 s
+    };
 
-  T.side = Math.random()<0.5?'right':'left';
-  T.face = Math.random()<0.65;
-  T.arm = Math.random()<0.7;
-  T.speech = Math.random()<0.55 ? (Math.random()<0.75?'slurred':'aphasic') : 'normal';
-  T.balance = Math.random()<0.35;
-  T.eyes = Math.random()<0.45 ? (Math.random()<0.6?'gazeDev':'fieldCut') : 'normal';
-  T.locAbn = Math.random()<0.35;
+    // Visuals: face droop
+    face.classList.remove('droopLeft','droopRight');
+    if(scenario.faceDroop==='left') face.classList.add('droopLeft');
+    if(scenario.faceDroop==='right') face.classList.add('droopRight');
 
-  T.glucose = Math.random()<0.5 ? randomGlucose() : null;
-  $('scGlucose').textContent = (T.glucose==null)?'unknown':(T.glucose+' mg/dL');
-  $('gluNote').textContent = (T.glucose!=null && T.glucose<60)?'⚠️ Hypoglycemia can mimic stroke—treat per protocol.':'';
+    // Pupils (anisocoria)
+    const base = 22, bigger = 32, smaller = 16;
+    pL.style.width = base+'px'; pL.style.height = base+'px';
+    pR.style.width = base+'px'; pR.style.height = base+'px';
+    if(scenario.anisocoria==='left'){ pL.style.width=bigger+'px'; pL.style.height=bigger+'px'; pR.style.width=smaller+'px'; pR.style.height=smaller+'px'; }
+    if(scenario.anisocoria==='right'){ pR.style.width=bigger+'px'; pR.style.height=bigger+'px'; pL.style.width=smaller+'px'; pL.style.height=smaller+'px'; }
 
-  resetFace(); resetArms(); resetBalance(); resetEyes();
-  $('resultLine').textContent='—'; $('why').innerHTML=''; $('resultsBox').style.outline='none';
-  $('cpsssPanel').classList.add('hidden'); $('cpsssLine').textContent='—';
-  ['selB','selE','selF','selA','selS'].forEach(id=> $(id).selectedIndex=0);
-  $('selT').selectedIndex = (T.lkwMins===999?1:(T.lkwMins<=270?0:1));
+    // Reset gaze
+    stopGaze();
+    gazeInfo.hidden = true; gazeLine.textContent = '—';
 
-  setDiag('✅ JS active — ready');
-}
-function nextScenario(){ stopTracking(); stopTTS(); newScenario(); }
+    // Reset arms
+    armL.style.transform = 'rotate(0deg)';
+    armR.style.transform = 'rotate(0deg)';
+    stopDrift();
 
-/* ======= FACE ======= */
-function resetFace(){
-  $('droop').setAttribute('opacity','0');
-  $('browL').setAttribute('d','M78 72 q28 -12 56 0');
-  $('browR').setAttribute('d','M186 72 q28 -12 56 0');
-  $('mouth').setAttribute('d','M110 168 q50 26 100 0');
-}
-function showFaceDroop(side){
-  $('droop').setAttribute('opacity','1');
-  if(side==='right'){ $('droop').setAttribute('d','M110 168 q50 26 100 18'); $('browR').setAttribute('d','M186 72 q28 -4 56 8'); }
-  else { $('droop').setAttribute('d','M110 186 q50 26 100 0'); $('browL').setAttribute('d','M78 72 q28 -4 56 8'); }
-}
-function testFace(){ resetFace(); if(T.face) showFaceDroop(T.side); setDiag('face tested'); }
-
-/* ======= EYES ======= */
-function stopTracking(){ if(gazeAnim){ cancelAnimationFrame(gazeAnim); gazeAnim=null; } }
-function resetEyes(){
-  stopTracking();
-  $('irisL').setAttribute('transform','translate(0,0)');
-  $('irisR').setAttribute('transform','translate(0,0)');
-  $('vfMaskLeft').style.opacity = 0; $('vfMaskRight').style.opacity = 0;
-  $('gazeArrow').style.opacity=0; $('gazeArrow').textContent='↔️ tracking…';
-}
-function testEyes(){
-  resetEyes();
-  $('gazeArrow').style.opacity=.7;
-  gazeStart = performance.now();
-  const max=9, midlock=2, dir=(T.side==='right')?1:-1, isDev=(T.eyes==='gazeDev'), isCut=(T.eyes==='fieldCut');
-  if(isCut){ (T.side==='right'?$('vfMaskLeft'):$('vfMaskRight')).style.opacity = .55; }
-  function step(t){
-    const s = Math.sin((t-gazeStart)/1000 * Math.PI/1.1);
-    let offset = Math.round(s*max);
-    if(isDev){ offset = dir===1 ? Math.max(midlock,offset) : Math.min(-midlock,offset); }
-    $('irisL').setAttribute('transform','translate('+offset+',0)');
-    $('irisR').setAttribute('transform','translate('+offset+',0)');
-    gazeAnim = requestAnimationFrame(step);
-  }
-  gazeAnim = requestAnimationFrame(step);
-  setDiag('gaze tracking running');
-}
-function stopEyes(){ stopTracking(); setDiag('gaze tracking stopped'); }
-
-/* ======= ARMS ======= */
-function resetArms(){
-  $('armL').style.transform='translate(-140px,0)';
-  $('armR').style.transform='translate(140px,0)';
-  if(armAnim){ cancelAnimationFrame(armAnim); armAnim=null; }
-}
-function runArmDrift(side, hasDrift){
-  const start=performance.now();
-  function step(t){
-    const drop = hasDrift ? Math.min(90, (t-start)/1000*22) : 0;
-    const dL = side==='left'?drop:0, dR = side==='right'?drop:0;
-    $('armL').style.transform='translate(-140px,'+dL+'px)';
-    $('armR').style.transform='translate(140px,'+dR+'px)';
-    armAnim = requestAnimationFrame(step);
-  }
-  armAnim = requestAnimationFrame(step);
-}
-function testArms(){ resetArms(); runArmDrift(T.side, T.arm); setDiag('arm drift tested'); }
-
-/* ======= BALANCE ======= */
-function resetBalance(){ $('person').style.transform='translateX(0) rotate(0deg)'; }
-function showBalanceLoss(side){ const ang = side==='right'?8:-8; $('person').style.transform='translateX('+(side==='right'?12:-12)+'px) rotate('+ang+'deg)'; }
-function testBalance(){ resetBalance(); if(T.balance) showBalanceLoss(T.side); setDiag('balance tested'); }
-
-/* ======= SPEECH ======= */
-function testSpeech(){
-  let line="You can't teach an old dog new tricks.";
-  if(T.speech==='slurred'){ line="You can' ... teach an ol' do' new trricks."; $('speechStatus').textContent='Slurred articulation'; }
-  else if(T.speech==='aphasic'){ line="Uh... I... teach... dog... new... (word-finding difficulty)"; $('speechStatus').textContent='Aphasia / word salad'; }
-  else { $('speechStatus').textContent='Clear, fluent phrase'; }
-  speak(line); setDiag('speech played');
-}
-
-/* ======= TIME & GLU ======= */
-function stampNow(){
-  const now = new Date(), hh=String(now.getHours()).padStart(2,'0'), mm=String(now.getMinutes()).padStart(2,'0');
-  $('examTimeNote').textContent = `Exam time set to ${hh}:${mm}.`;
-  setDiag('exam time stamped');
-}
-function checkGlucose(){
-  if(T.glucose==null){ T.glucose = randomGlucose(); }
-  $('scGlucose').textContent = T.glucose+' mg/dL';
-  $('gluNote').textContent = (T.glucose<60)?'⚠️ Hypoglycemia can mimic stroke—treat per protocol.':'';
-  setDiag('glucose checked');
-}
-
-/* ======= SUBMIT / GRADE ======= */
-function submitBefast(){
-  const truth = {
-    B:T.balance, E:(T.eyes!=='normal'), F:T.face, A:T.arm, S:(T.speech!=='normal'),
-    T:(T.lkwMins===999?'unknown':(T.lkwMins<=270?'<=4.5h':'>=4.5h'))
-  };
-  const user = { B:$('selB').value, E:$('selE').value, F:$('selF').value, A:$('selA').value, S:$('selS').value, T:$('selT').value };
-
-  const lines=[], ok=[];
-  function evalDom(label, tv, uv, whyPos, whyNeg){
-    const shouldPos=!!tv, pickedPos=(uv==='Positive'), pickedNeg=(uv==='Negative');
-    let note=''; let correct=false;
-    if(uv==='Not tested'){ note='<span class="tag">Not tested</span> — cannot conclude.'; }
-    else if(shouldPos && pickedPos){ correct=true; note='✅ Correct: '+whyPos; }
-    else if(!shouldPos && pickedNeg){ correct=true; note='✅ Correct: '+whyNeg; }
-    else{ note='❌ Not quite: '+(shouldPos?'sign present':'no sign present')+' in scenario.'; }
-    ok.push(correct || uv==='Not tested'); lines.push('<li><strong>'+label+'</strong> — '+note+'</li>');
+    // Reset timer labels
+    tClock.textContent = '0.0';
+    tResult.hidden = true; tResult.textContent = '—';
   }
 
-  evalDom('Balance', truth.B, user.B, 'instability/lean consistent with posterior involvement.', 'steady stance.');
-  evalDom('Eyes', truth.E, user.E,
-          (T.eyes==='gazeDev') ? ('gaze deviates toward the '+T.side+' (cannot cross midline).')
-                               : (T.eyes==='fieldCut' ? ('ignores '+(T.side==='right'?'left':'right')+' hemifield.') : 'tracks left and right.'),
-          'tracks left and right.');
-  evalDom('Face', truth.F, user.F, 'asymmetric smile with '+T.side+' mouth corner droop.', 'symmetric smile.');
-  evalDom('Arm', truth.A, user.A, T.side+' arm drifts/down with pronator drift test.', 'no drift (both arms hold).');
-  evalDom('Speech', truth.S, user.S, (T.speech==='slurred'?'slurred articulation / dysarthria.':'aphasia / word-finding impairment.'), 'clear, fluent phrase.');
+  // ---------- Eye Gaze animation
+  function startGaze(){
+    stopGaze();
+    gazeTick = 0;
+    btnGaze.textContent = '⏹️ Stop Eye Gaze';
 
-  let timeLine='';
-  if(user.T.startsWith('Call')){
-    timeLine = (truth.T==='<=4.5h') ? '✅ Correct: LKW within typical IV thrombolysis window (local protocols vary).'
-                                    : '✅ Appropriate: Call now; eligibility may depend on imaging/extended windows.';
-  }else{ timeLine = '❌ Not documented: Always document LKW and notify stroke team.'; ok.push(false); }
-  lines.push('<li><strong>Time</strong> — '+timeLine+'</li>');
+    const speed = (scenario.gaze==='slow') ? 140 : 75; // ms per step
+    const amp = 18; // px of lateral pupil motion
+    const limitLeft  = -amp, limitRight = amp;
 
-  if(T.glucose!=null){
-    if(T.glucose<60) lines.push('<li><strong>Glucose</strong> — ⚠️ Low (&lt;60 mg/dL). Correct hypoglycemia; reassess neuro after treatment.</li>');
-    else lines.push('<li><strong>Glucose</strong> — '+T.glucose+' mg/dL.</li>');
-  } else { lines.push('<li><strong>Glucose</strong> — Not checked. Always obtain POC glucose on suspected stroke.</li>'); ok.push(false); }
+    gazeTimer = setInterval(()=>{
+      gazeTick += 1;
+      // position from -1..1, oscillating
+      const phase = Math.sin(gazeTick/10);
+      let posL = phase * amp;
+      let posR = phase * amp;
 
-  const allOk = ok.every(Boolean);
-  $('resultLine').innerHTML = allOk ? '✅ Good job: Your BEFAST determination matches the scenario.'
-                                    : '⚠️ Review: Some selections differ from findings. See details below.';
-  $('why').innerHTML = lines.join('');
-  $('resultsBox').style.outline = allOk ? '3px solid rgba(10,143,91,.25)' : '3px solid rgba(199,123,0,.35)';
+      // Gaze deviations limit tracking toward one side
+      if(scenario.gaze==='deviationLeft'){
+        posL = Math.min(posL, 0) - 6; // bias left
+        posR = Math.min(posR, 0) - 6;
+      } else if(scenario.gaze==='deviationRight'){
+        posL = Math.max(posL, 0) + 6; // bias right
+        posR = Math.max(posR, 0) + 6;
+      }
 
-  const anyPositive = ['selB','selE','selF','selA','selS'].some(id => $(id).value==='Positive');
-  if(anyPositive) openCPSSSDefaults();
+      // Clamp bounds
+      posL = Math.max(limitLeft, Math.min(limitRight, posL));
+      posR = Math.max(limitLeft, Math.min(limitRight, posR));
 
-  setDiag('BEFAST submitted');
-}
+      pL.style.transform = `translate(calc(-50% + ${posL}px), -50%)`;
+      pR.style.transform = `translate(calc(-50% + ${posR}px), -50%)`;
+    }, speed);
 
-/* ======= CP-SSS ======= */
-function openCPSSSDefaults(){
-  $('cpsssPanel').classList.remove('hidden');
-  $('cpsGaze').selectedIndex = (T.eyes==='gazeDev')?1:0;
-  $('cpsArm').selectedIndex  = (T.arm?1:0);
-  $('cpsLoc').selectedIndex  = (T.locAbn?1:0);
-  $('cpsssLine').textContent='—';
-}
-function runLoc(){
-  const q1="How old are you?", q2="What month is it?", c1="Close your eyes.", c2="Open and close your hand.";
-  const good=["I'm 62.","It's August.","(closes eyes)","(opens and closes hand)"];
-  const bad =["...uh... 40?","...Tuesday?","(no response)","(no movement)"];
-  [q1,q2,c1,c2].forEach((q,i)=> setTimeout(()=>speak(q), i*700));
-  const rset = (T.locAbn? bad : good);
-  setTimeout(()=>speak(rset[0]),900); setTimeout(()=>speak(rset[1]),1600);
-  setDiag('LOC Q/C run');
-}
-function gradeCPSSS(){
-  const g = $('cpsGaze').value.includes('Yes')?2:0;
-  const a = $('cpsArm').value.includes('Yes')?1:0;
-  const l = $('cpsLoc').value.includes('Yes')?1:0;
-  const total=g+a+l;
-  $('cpsssLine').innerHTML = 'Score <strong>'+total+'</strong> (Gaze '+g+' + Arm '+a+' + LOC '+l+'). ' +
-    (total>=2 ? '➡️ Consider LVO / severe stroke pathway per local protocol.' : 'Lower likelihood of LVO; continue standard stroke pathway.');
-  setDiag('CP-SSS graded');
-}
+    // Describe what we saw
+    const map = {
+      normal: 'Tracks left and right appropriately.',
+      slow: 'Tracks both directions but with slow pursuit.',
+      deviationLeft: 'Eyes deviate left; limited ability to track right.',
+      deviationRight:'Eyes deviate right; limited ability to track left.'
+    };
+    gazeInfo.hidden = false;
+    gazeLine.textContent = map[scenario.gaze] + (scenario.anisocoria ? ` Unequal pupils present (${scenario.anisocoria} larger).` : '');
+  }
+  function stopGaze(){
+    if(gazeTimer){ clearInterval(gazeTimer); gazeTimer = null; }
+    btnGaze.textContent = '▶️ Run Eye Gaze';
+    // return pupils to center
+    pL.style.transform = 'translate(-50%,-50%)';
+    pR.style.transform = 'translate(-50%,-50%)';
+  }
 
-/* ======= INIT ======= */
-function boot(){ newScenario(); }
-document.addEventListener('DOMContentLoaded', boot);
+  // ---------- Arm Drift test (10s)
+  function startDrift(){
+    stopDrift();
+    driftRunning = true;
+    driftStart = performance.now();
+    driftTriggeredAt = null;
+    tClock.textContent = '0.0';
+    tResult.hidden = true; tResult.textContent = '—';
+    btnDrift.textContent = 'Running…';
+
+    // Animate drift when delay passes
+    function tick(now){
+      if(!driftRunning) return;
+      const elapsed = (now - driftStart) / 1000;
+      tClock.textContent = elapsed.toFixed(1);
+
+      if(!driftTriggeredAt && scenario.armDrift!=='none' && elapsed >= scenario.armDriftDelay){
+        driftTriggeredAt = elapsed;
+        const angle = 26; // degrees downward
+        if(scenario.armDrift==='left'){ armL.style.transform = `rotate(${angle}deg)`; }
+        if(scenario.armDrift==='right'){ armR.style.transform = `rotate(${angle}deg)`; }
+        tResult.hidden = false;
+        tResult.textContent = `Drift detected: ${scenario.armDrift} at ${driftTriggeredAt.toFixed(1)}s`;
+      }
+
+      if(elapsed < 10.0){
+        requestAnimationFrame(tick);
+      }else{
+        // end
+        if(!driftTriggeredAt){
+          tResult.hidden = false;
+          tResult.textContent = 'No drift within 10.0s';
+        }
+        btnDrift.textContent = '⏱️ Start 10s';
+        driftRunning = false;
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+  function stopDrift(){
+    driftRunning = false;
+    btnDrift.textContent = '⏱️ Start 10s';
+    // arm transforms stay where they are until new case/reset
+  }
+
+  // ---------- Events
+  btnGaze.addEventListener('click', ()=>{
+    if(gazeTimer) stopGaze(); else startGaze();
+  });
+  btnDrift.addEventListener('click', ()=>{
+    if(!driftRunning) startDrift();
+  });
+  btnNew.addEventListener('click', newCase);
+  btnReset.addEventListener('click', ()=>{
+    stopGaze(); stopDrift();
+    // reset visual offsets
+    pL.style.transform = 'translate(-50%,-50%)';
+    pR.style.transform = 'translate(-50%,-50%)';
+    armL.style.transform = 'rotate(0deg)';
+    armR.style.transform = 'rotate(0deg)';
+    tClock.textContent = '0.0'; tResult.hidden = true; tResult.textContent = '—';
+    gazeInfo.hidden = true; gazeLine.textContent = '—';
+  });
+
+  // ---------- Init
+  newCase();
+})();
 </script>
 </body>
 </html>
