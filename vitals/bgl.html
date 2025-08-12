@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-<title>Glucose Meter — Simple (Mobile-fixed)</title>
+<title>Glucose Meter — Simple (NREMT ranges + haptics)</title>
 <style>
   :root{
     --brand:#007B8A; --brand-dark:#0a616c;
@@ -23,23 +23,17 @@
   main{ width:100%; max-width:860px; padding:12px; display:grid; gap:12px }
   .card{ background:var(--panel); border-radius:16px; box-shadow:var(--shadow); padding:14px }
 
-  .stage{
-    background:var(--muted); border-radius:14px; padding:16px;
-    display:grid; place-items:center;
-  }
+  .stage{ background:var(--muted); border-radius:14px; padding:16px; display:grid; place-items:center; }
   .meter-wrap{ width:min(520px,92%); }
 
-  .controls{
-    display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; margin-top:12px
-  }
+  .controls{ display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; margin-top:12px }
   @media (max-width:640px){ .controls{ grid-template-columns:1fr 1fr } }
   @media (max-width:420px){ .controls{ grid-template-columns:1fr } }
 
   .btn{
     appearance:none; border:0; background:var(--brand); color:#fff;
     padding:12px 14px; border-radius:12px; font-weight:700; cursor:pointer; width:100%;
-    touch-action:manipulation; /* prevent double-tap zoom, speed up taps */
-    -webkit-user-select:none; user-select:none;
+    touch-action:manipulation; -webkit-user-select:none; user-select:none;
   }
   .btn.alt{ background:#124b54 }
   .btn.warn{ background:#c77b00 }
@@ -51,7 +45,7 @@
     padding:10px; border-radius:10px; color:#0b3b44;
   }
 
-  /* Simple modal for “Explain Readings” */
+  /* Simple modal */
   .modal {
     position: fixed; inset: 0; background: rgba(0,0,0,.35);
     display:none; align-items:center; justify-content:center; padding:16px;
@@ -61,7 +55,10 @@
     background:#fff; border-radius:14px; max-width:560px; width:100%; padding:16px; box-shadow:var(--shadow);
   }
   .modal-card h3{ margin:0 0 8px }
+  .modal-card h4{ margin:14px 0 6px }
   .close{ float:right; background:#fff; color:#0b3b44; border:2px solid #cfe3e8; padding:6px 10px; border-radius:10px; cursor:pointer }
+  .note{ font-size:.9rem; color:#3b616b }
+  .list{ margin:4px 0 0 18px; padding:0 }
 </style>
 </head>
 <body>
@@ -148,10 +145,25 @@
   <div class="modal-card">
     <button class="close" id="closeModal">Close</button>
     <h3>What the Reading Means</h3>
-    <p><strong>Hypoglycemia (&lt; 70 mg/dL):</strong> Shaky, sweaty, altered mental status. Give oral glucose if awake &amp; can swallow; consider D10/D50 per protocol.</p>
-    <p><strong>Normal (≈ 80–140 mg/dL):</strong> Typical fasting 70–99; post-meal up to ~140.</p>
-    <p><strong>Hyperglycemia (&gt; 180 mg/dL):</strong> Polyuria, polydipsia; if very high with illness or AMS, consider DKA/HHS. Manage ABCs, fluids per local protocol.</p>
-    <p style="font-size:.9rem;color:#3b616b;">*Teaching ranges only; follow your service’s protocols for treatment thresholds.</p>
+
+    <h4>Hypoglycemia</h4>
+    <ul class="list">
+      <li><strong>&lt; 70 mg/dL</strong>: treat as hypoglycemia on the exam; assess and manage per protocols. <span class="note">(teaching threshold)</span></li>
+      <li><strong>&le; 60 mg/dL</strong>: many EMS protocols use this as a treatment trigger (oral glucose if able; D10/D50/Glucagon per scope).</li>
+      <li><strong>&lt; 45 mg/dL</strong>: high risk for severe neuroglycopenia; prompt dextrose indicated.</li>
+    </ul>
+
+    <h4>Normal (field reading)</h4>
+    <ul class="list">
+      <li>Common teaching window: <strong>~80–140 mg/dL</strong> (non-fasting field checks vary).</li>
+    </ul>
+
+    <h4>Hyperglycemia</h4>
+    <ul class="list">
+      <li><strong>&gt; 180 mg/dL</strong>: hyperglycemia flag. Assess for infection/illness, dehydration, DKA/HHS risk with very high readings.</li>
+    </ul>
+
+    <p class="note">These are NREMT-prep friendly ranges; always follow your local protocol specifics during patient care.</p>
   </div>
 </div>
 
@@ -180,11 +192,16 @@
   const S = { OFF:'OFF', READY:'READY', STRIP:'STRIP', APPLY:'APPLY', COUNT:'COUNT', RESULT:'RESULT', ERROR:'ERROR' };
   let state = S.OFF, powered=false, stripIn=false, applying=false;
   let samplePct = 0, tHandle = null;
+  let vibArmedThreshold = true;
+
+  // Haptics
+  const vibrate = pattern => { if (navigator.vibrate) try { navigator.vibrate(pattern); } catch(e){} };
 
   // Helpers
   const setStatus = msg => { statusEl.textContent = msg; statusText.textContent = msg; };
   const showReading = val => { readingEl.textContent = val; };
   const clearTimers = ()=>{ if(tHandle){ clearInterval(tHandle); tHandle=null; } };
+
   function randomMgdl(){
     const r = Math.random();
     if(r < 0.25) return Math.floor(40 + Math.random()*30);    // 40–69
@@ -196,19 +213,19 @@
     state = s;
     switch(s){
       case S.OFF:
-        powered=false; stripIn=false; applying=false; samplePct=0;
+        powered=false; stripIn=false; applying=false; samplePct=0; vibArmedThreshold=true;
         strip.setAttribute('opacity','0'); hand.setAttribute('opacity','0'); drop.setAttribute('opacity','0');
         fillBar.setAttribute('height','0'); countdownEl.textContent='';
         showReading('— — —'); setStatus('Power off.');
         break;
       case S.READY:
-        powered=true; stripIn=false; applying=false; samplePct=0;
+        powered=true; stripIn=false; applying=false; samplePct=0; vibArmedThreshold=true;
         strip.setAttribute('opacity','0'); hand.setAttribute('opacity','0'); drop.setAttribute('opacity','0');
         fillBar.setAttribute('height','0'); countdownEl.textContent='';
         showReading('---'); setStatus('Insert a test strip.');
         break;
       case S.STRIP:
-        stripIn=true; samplePct=0; fillBar.setAttribute('height','0');
+        stripIn=true; samplePct=0; vibArmedThreshold=true; fillBar.setAttribute('height','0');
         strip.setAttribute('opacity','1'); setStatus('Press & hold to apply blood.');
         break;
       case S.APPLY:
@@ -219,10 +236,8 @@
         setStatus('Analyzing…');
         break;
       case S.RESULT:
-        // handled in finishTest
         break;
       case S.ERROR:
-        // handled in error()
         break;
     }
   }
@@ -233,9 +248,10 @@
     state = S.ERROR;
     clearTimers();
     hand.setAttribute('opacity','0');
+    vibrate([0, 220]); // single long buzz for error
   }
 
-  // Pointer-safe handlers (work on phone + desktop)
+  // Pointer-safe handlers
   function addPointer(el, down, up){
     el.addEventListener('pointerdown', e=>{ e.preventDefault(); el.setPointerCapture?.(e.pointerId); down(e); }, {passive:false});
     el.addEventListener('pointerup',   e=>{ e.preventDefault(); up(e); }, {passive:false});
@@ -266,6 +282,7 @@
     goto(S.APPLY);
     applying = true;
     samplePct = 0;
+    vibArmedThreshold = true;
     drop.setAttribute('opacity','0.0');
 
     const step = ()=>{
@@ -275,6 +292,13 @@
       fillBar.setAttribute('height', String(h));
       fillBar.setAttribute('y', String(36 + (12 - h)));
       if(samplePct > 30) drop.setAttribute('opacity','1');
+
+      // Haptic cue when threshold reached
+      if(vibArmedThreshold && samplePct >= 70){
+        vibArmedThreshold = false;
+        vibrate([0, 35, 50, 35]); // quick double tap
+      }
+
       if(samplePct >= 70){ applying=false; beginTest(); return; }
       requestAnimationFrame(step);
     };
@@ -316,6 +340,7 @@
     countdownEl.textContent = '';
     setStatus('Result ready.');
     state = S.RESULT;
+    vibrate([0, 40, 60, 40]); // result cue: double buzz
   }
 
   // Boot
