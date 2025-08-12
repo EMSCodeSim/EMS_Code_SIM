@@ -43,7 +43,6 @@
   }
   .eyes{display:flex; justify-content:center; gap:28px; align-items:flex-start; margin-top:4px}
   .eyeBlock{position:relative; width:var(--eye-size); height:calc(var(--eye-size) + 12px); display:flex; align-items:flex-start; justify-content:center}
-  /* Eyebrows (new) */
   .brow{
     position:absolute; top:-10px; left:50%; transform:translateX(-50%) rotate(0deg);
     width:calc(var(--eye-size) * .58); height:10px; background:#0f2b33; border-radius:10px; opacity:.92;
@@ -68,7 +67,7 @@
   #mouthSVG{width:220px; height:80px}
   #mouthPath{stroke:#c26357; stroke-width:8; fill:none; stroke-linecap:round; filter:drop-shadow(0 2px 2px rgba(0,0,0,.12))}
 
-  /* Balance + Arm SVG shared styling */
+  /* Shared SVG area */
   .stage{display:flex; justify-content:center; align-items:center}
   .stage svg{max-width:92vw}
 
@@ -95,14 +94,12 @@
     <div class="faceWrap">
       <div id="face" class="face">
         <div class="eyes">
-          <!-- Left eye block with eyebrow -->
           <div class="eyeBlock">
             <div class="brow" id="browL"></div>
             <div class="sclera" id="sL" aria-label="Left eye">
               <div class="iris"><div class="pupil" id="pL"></div></div>
             </div>
           </div>
-          <!-- Right eye block with eyebrow -->
           <div class="eyeBlock">
             <div class="brow" id="browR"></div>
             <div class="sclera" id="sR" aria-label="Right eye">
@@ -133,69 +130,47 @@
     </div>
   </section>
 
-  <!-- BALANCE (same simple SVG person) -->
+  <!-- ONE SHARED SVG: Balance + Arm Drift -->
   <section class="card">
-    <h2>Balance</h2>
-    <p class="muted note">Patient stands feet together, arms at sides. Observe sway/lean/fall.</p>
-    <div class="stage">
-      <svg id="balanceSvg" viewBox="0 0 160 260" width="200" height="325" aria-label="Standing person for balance" fill="#0f2b33">
-        <circle cx="80" cy="32" r="22"/>
-        <rect x="50" y="56" width="60" height="92" rx="16"/>
-        <rect x="26"  y="62" width="18" height="94" rx="9"/>
-        <rect x="116" y="62" width="18" height="94" rx="9"/>
-        <rect x="56" y="150" width="48" height="22" rx="11"/>
-        <rect x="61" y="174" width="18" height="72" rx="8"/>
-        <rect x="81" y="174" width="18" height="72" rx="8"/>
-        <rect x="56" y="246" width="28" height="10" rx="5"/>
-        <rect x="76" y="246" width="28" height="10" rx="5"/>
-      </svg>
-    </div>
-    <div class="row" style="margin-top:10px">
-      <button class="btn" id="btnBalance">🎯 Run Balance Test</button>
-    </div>
-  </section>
-
-  <!-- ARM DRIFT (10s) -->
-  <section class="card">
-    <h2>Arm Drift (10-second test)</h2>
-    <p class="muted note">Arms start at the sides. Tap start — arms go <strong>out</strong> to shoulder height (palms up). Watch for drift; the app won’t tell you.</p>
+    <h2>Balance & Arm Drift (shared figure)</h2>
+    <p class="muted note">Same figure is used for both tests. Arms start at the sides; for Arm Drift, they raise to shoulder height (palms up) when you start.</p>
 
     <div class="stage">
-      <svg id="driftSvg" viewBox="0 0 200 260" width="260" height="338" aria-label="Arm drift person" style="overflow:visible">
-        <defs>
-          <style>
-            .skin{ fill:#0f2b33 }
-            .lines{ fill:none; stroke:#0f2b33; stroke-width:2; stroke-linecap:round; opacity:.85 }
-          </style>
-        </defs>
+      <svg id="sharedSvg" viewBox="0 0 200 260" width="260" height="338" aria-label="Shared balance/arm-drift figure" style="overflow:visible" fill="#0f2b33">
         <!-- head -->
-        <circle class="skin" cx="100" cy="32" r="22"/>
+        <circle cx="100" cy="32" r="22"/>
         <!-- torso -->
-        <rect  class="skin" x="70" y="56" width="60" height="92" rx="16"/>
+        <rect  x="70" y="56" width="60" height="92" rx="16"/>
         <!-- hips -->
-        <rect  class="skin" x="76" y="150" width="48" height="22" rx="11"/>
+        <rect  x="76" y="150" width="48" height="22" rx="11"/>
         <!-- legs -->
-        <rect  class="skin" x="81" y="174" width="18" height="72" rx="8"/>
-        <rect  class="skin" x="101" y="174" width="18" height="72" rx="8"/>
+        <rect  x="81" y="174" width="18" height="72" rx="8"/>
+        <rect  x="101" y="174" width="18" height="72" rx="8"/>
         <!-- feet -->
-        <rect  class="skin" x="76" y="246" width="28" height="10" rx="5"/>
-        <rect  class="skin" x="96" y="246" width="28" height="10" rx="5"/>
+        <rect  x="76" y="246" width="28" height="10" rx="5"/>
+        <rect  x="96" y="246" width="28" height="10" rx="5"/>
 
-        <!-- ARMS: groups pivot at shoulders (start down; raise to 0deg on start) -->
+        <!-- ARMS (groups pivot at shoulders). Start down; rotate to 0° on test start. -->
         <g id="armL" transform="translate(70,92)">
-          <rect class="skin" x="-8" y="0" width="16" height="60" rx="8"/>
-          <g class="handL" transform="translate(-22,56)">
-            <rect class="skin" x="0" y="0" width="36" height="22" rx="10"/>
-            <rect class="skin" x="-10" y="4" width="10" height="14" rx="5"/>
-            <path class="lines" d="M6 8 h22"/><path class="lines" d="M6 12 h22"/><path class="lines" d="M6 16 h22"/>
+          <rect x="-8" y="0" width="16" height="60" rx="8"/>
+          <g transform="translate(-22,56)">
+            <rect x="0" y="0" width="36" height="22" rx="10"/>
+            <!-- left thumb (lateral) -->
+            <rect x="-10" y="4" width="10" height="14" rx="5"/>
+            <g stroke="#0f2b33" stroke-linecap="round" stroke-width="2" fill="none" opacity=".85">
+              <path d="M6 8 h22"/><path d="M6 12 h22"/><path d="M6 16 h22"/>
+            </g>
           </g>
         </g>
         <g id="armR" transform="translate(130,92)">
-          <rect class="skin" x="-8" y="0" width="16" height="60" rx="8"/>
-          <g class="handR" transform="translate(-14,56)">
-            <rect class="skin" x="0" y="0" width="36" height="22" rx="10"/>
-            <rect class="skin" x="36" y="4" width="10" height="14" rx="5"/>
-            <path class="lines" d="M4 8 h22"/><path class="lines" d="M4 12 h22"/><path class="lines" d="M4 16 h22"/>
+          <rect x="-8" y="0" width="16" height="60" rx="8"/>
+          <g transform="translate(-14,56)">
+            <rect x="0" y="0" width="36" height="22" rx="10"/>
+            <!-- right thumb (lateral) -->
+            <rect x="36" y="4" width="10" height="14" rx="5"/>
+            <g stroke="#0f2b33" stroke-linecap="round" stroke-width="2" fill="none" opacity=".85">
+              <path d="M4 8 h22"/><path d="M4 12 h22"/><path d="M4 16 h22"/>
+            </g>
           </g>
         </g>
       </svg>
@@ -203,8 +178,9 @@
 
     <div class="row" style="margin-top:10px">
       <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
-        <button class="btn" id="btnDrift">⏱️ Start 10s</button>
-        <span class="pill">Timer: <span id="tClock">0.0</span>s</span>
+        <button class="btn" id="btnBalanceShared">🎯 Run Balance</button>
+        <button class="btn" id="btnDriftShared">⏱️ Start 10s Arm Drift</button>
+        <span class="pill">Timer: <span id="tClockShared">0.0</span>s</span>
       </div>
     </div>
   </section>
@@ -224,7 +200,7 @@
     </div>
   </section>
 
-  <!-- YOUR FINDINGS (unchanged) -->
+  <!-- YOUR FINDINGS -->
   <section class="card">
     <h2>Your Findings (BE-FAST)</h2>
     <div class="formGrid">
@@ -303,7 +279,7 @@
 
 <script>
 (function(){
-  // ---------- DOM: face/eyes/mouth/brows
+  /* ---------- DOM: face/eyes/mouth/brows ---------- */
   const pL = document.getElementById('pL');
   const pR = document.getElementById('pR');
   const browL = document.getElementById('browL');
@@ -314,22 +290,20 @@
   const gazeLine = document.getElementById('gazeLine');
   const mouthPath= document.getElementById('mouthPath');
 
-  // Balance & Arm drift
-  const balanceSvg = document.getElementById('balanceSvg');
-  const btnBalance = document.getElementById('btnBalance');
+  /* ---------- DOM: shared SVG + controls ---------- */
+  const sharedSvg   = document.getElementById('sharedSvg');
+  const armGroupL   = document.getElementById('armL');
+  const armGroupR   = document.getElementById('armR');
+  const btnBalance  = document.getElementById('btnBalanceShared');
+  const btnDrift    = document.getElementById('btnDriftShared');
+  const tClock      = document.getElementById('tClockShared');
 
-  const driftSvg   = document.getElementById('driftSvg');
-  const armGroupL  = driftSvg.querySelector('#armL');
-  const armGroupR  = driftSvg.querySelector('#armR');
-  const btnDrift   = document.getElementById('btnDrift');
-  const tClock     = document.getElementById('tClock');
-
-  // Speech
+  /* ---------- DOM: speech ---------- */
   const btnSpeech  = document.getElementById('btnSpeech');
   const speechBox  = document.getElementById('speechBox');
   const speechLine = document.getElementById('speechLine');
 
-  // Findings
+  /* ---------- DOM: findings/results ---------- */
   const fBalance = document.getElementById('fBalance');
   const fEyes    = document.getElementById('fEyes');
   const fPupils  = document.getElementById('fPupils');
@@ -346,68 +320,19 @@
   const btnNew = document.getElementById('btnNew');
   const btnReset = document.getElementById('btnReset');
 
-  // ---------- State
+  /* ---------- State ---------- */
   let scenario = null;
-  let anisocoria = null;      // 'left' | 'right' | null
+  let anisocoria = null; // 'left' | 'right' | null
   let gazeTimer = null, gazeTick = 0;
-  let balTimer = null, balTick = 0;
-  let driftRunning = false, driftStart = 0, driftTriggeredAt = null;
 
-  function rand(arr){ return a[Math.floor(Math.random()*a.length)]; } // oops helper replaced below
-})();
-</script>
-<script>
-(function(){
-  // fix rand helper (scoped separately to avoid minifier confusion)
+  // Shared SVG animation state
+  sharedSvg.style.transformOrigin = '50% 90%'; // rotate around feet
+  let balTimer = null, balTick = 0;
+  let driftRAF = null, driftRunning = false, driftStart = 0, driftTriggeredAt = null;
+
   function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
 
-  // Access previously defined globals via window since scripts are sequential
-  const pL = document.getElementById('pL');
-  const pR = document.getElementById('pR');
-  const browL = document.getElementById('browL');
-  const browR = document.getElementById('browR');
-  const btnSmile = document.getElementById('btnSmile');
-  const btnGaze  = document.getElementById('btnGaze');
-  const gazeInfo = document.getElementById('gazeInfo');
-  const gazeLine = document.getElementById('gazeLine');
-  const mouthPath= document.getElementById('mouthPath');
-
-  const balanceSvg = document.getElementById('balanceSvg');
-  const btnBalance = document.getElementById('btnBalance');
-
-  const driftSvg   = document.getElementById('driftSvg');
-  const armGroupL  = driftSvg.querySelector('#armL');
-  const armGroupR  = driftSvg.querySelector('#armR');
-  const btnDrift   = document.getElementById('btnDrift');
-  const tClock     = document.getElementById('tClock');
-
-  const btnSpeech  = document.getElementById('btnSpeech');
-  const speechBox  = document.getElementById('speechBox');
-  const speechLine = document.getElementById('speechLine');
-
-  const fBalance = document.getElementById('fBalance');
-  const fEyes    = document.getElementById('fEyes');
-  const fPupils  = document.getElementById('fPupils');
-  const fFace    = document.getElementById('fFace');
-  const fArms    = document.getElementById('fArms');
-  const fSpeech  = document.getElementById('fSpeech');
-
-  const btnGrade = document.getElementById('btnGrade');
-  const gradeBox = document.getElementById('gradeBox');
-  const gradeSummary = document.getElementById('gradeSummary');
-  const gradeList = document.getElementById('gradeList');
-  const meaning = document.getElementById('meaning');
-
-  const btnNew = document.getElementById('btnNew');
-  const btnReset = document.getElementById('btnReset');
-
-  let scenario = null;
-  let anisocoria = null;
-  let gazeTimer = null, gazeTick = 0;
-  let balTimer = null, balTick = 0;
-  let driftRunning = false, driftStart = 0, driftTriggeredAt = null;
-
-  // --- Smile + eyebrow droop
+  /* ---------- Face: smile + eyebrow droop ---------- */
   function animateSmile(droop){
     const neutral = [20,45, 80,60, 140,60, 200,45];
     let L = 35, R = 35, MID = 70;
@@ -425,21 +350,14 @@
     }
     requestAnimationFrame(step);
 
-    // Eyebrows: neutral -> droop on affected side (lower + tilt)
-    // neutral
+    // Eyebrows: reset to neutral, then droop affected side
     browL.style.top = '-10px'; browL.style.transform = 'translateX(-50%) rotate(0deg)';
     browR.style.top = '-10px'; browR.style.transform = 'translateX(-50%) rotate(0deg)';
-    // apply droop
-    if(droop==='left'){
-      browL.style.top = '-4px';
-      browL.style.transform = 'translateX(-50%) rotate(12deg)';
-    }else if(droop==='right'){
-      browR.style.top = '-4px';
-      browR.style.transform = 'translateX(-50%) rotate(-12deg)';
-    }
+    if(droop==='left'){ browL.style.top='-4px';  browL.style.transform='translateX(-50%) rotate(12deg)'; }
+    if(droop==='right'){ browR.style.top='-4px'; browR.style.transform='translateX(-50%) rotate(-12deg)'; }
   }
 
-  // --- Eye gaze
+  /* ---------- Eyes: gaze ---------- */
   function startGaze(){
     stopGaze();
     gazeTick = 0;
@@ -467,12 +385,20 @@
   }
   function stopGaze(){ if(gazeTimer){ clearInterval(gazeTimer); gazeTimer=null; } btnGaze.textContent = '▶️ Run Eye Gaze'; }
 
-  // --- Balance sway
+  /* ---------- Shared SVG: helpers ---------- */
+  function setArms(degL, degR){
+    armGroupL.setAttribute('transform', `translate(70,92) rotate(${degL})`);
+    armGroupR.setAttribute('transform', `translate(130,92) rotate(${degR})`);
+  }
+  function armsDown(){ setArms(90,-90); }     // sides
+  function armsLevel(){ setArms(0,0); }        // forward to shoulder height
+
+  /* ---------- Balance (rotate entire figure) ---------- */
   function startBalance(){
-    stopBalance();
+    stopBalance(); stopDrift();
     btnBalance.textContent = '⏹️ Stop Balance';
     balTick = 0;
-    const kind = scenario.balance;
+    const kind = scenario.balance; // 'normal','unsteady','leansLeft','leansRight','fallsLeft','fallsRight'
     const baseAmp = kind==='normal' ? 2 : kind==='unsteady' ? 6 : 10;
     const leanBias = (kind.includes('Left') ? -12 : kind.includes('Right') ? 12 : 0);
     balTimer = setInterval(()=>{
@@ -480,27 +406,26 @@
       const sway = Math.sin(balTick/10)*baseAmp;
       let angle = sway + leanBias;
       if(kind.startsWith('falls')) angle = leanBias + 30 * Math.sign(leanBias || 1);
-      balanceSvg.style.transform = `rotate(${angle}deg)`;
-      balanceSvg.style.transformOrigin = '50% 90%';
+      sharedSvg.style.transform = `rotate(${angle}deg)`;
     }, 80);
   }
-  function stopBalance(){ if(balTimer){ clearInterval(balTimer); balTimer=null; } btnBalance.textContent = '🎯 Run Balance Test'; balanceSvg.style.transform=''; }
-
-  // --- Arm drift (10s): start with arms down; on start arms go out to 0°; then possible drift.
-  function setArms(angleL, angleR){
-    armGroupL.setAttribute('transform', `translate(70,92) rotate(${angleL})`);
-    armGroupR.setAttribute('transform', `translate(130,92) rotate(${angleR})`);
+  function stopBalance(){
+    if(balTimer){ clearInterval(balTimer); balTimer=null; }
+    sharedSvg.style.transform = 'rotate(0deg)';
+    btnBalance.textContent = '🎯 Run Balance';
   }
-  function armsDown(){ setArms(90,-90); }
+
+  /* ---------- Arm Drift (10 seconds) ---------- */
   function startDrift(){
+    stopBalance();
     if(driftRunning) return;
     driftRunning = true; driftStart = performance.now(); driftTriggeredAt = null;
     btnDrift.textContent = 'Running…'; tClock.textContent = '0.0';
 
-    // Raise arms from sides -> out (0°)
-    const raiseDur = 320, start = performance.now();
+    // Raise from sides to level in ~320ms
+    const raiseDur = 320, t0 = performance.now();
     function raiseStep(ts){
-      const t = Math.min(1, (ts - start)/raiseDur);
+      const t = Math.min(1, (ts - t0)/raiseDur);
       const aL = 90 + (0-90)*t;
       const aR = -90 + (0+90)*t;
       setArms(aL, aR);
@@ -509,35 +434,43 @@
     requestAnimationFrame(raiseStep);
 
     function runTenSeconds(){
-      const driftSide = scenario.armDrift; // 'none' | 'left' | 'right'
-      const driftDelay = scenario.armDriftDelay;
+      const side  = scenario.armDrift;                // 'left' | 'right' | 'none'
+      const delay = scenario.armDriftDelay || 3.0;    // seconds
+
       function tick(ts){
         if(!driftRunning) return;
         const elapsed = (ts - driftStart)/1000;
         tClock.textContent = elapsed.toFixed(1);
 
-        if(!driftTriggeredAt && driftSide!=='none' && elapsed >= driftDelay){
+        if(!driftTriggeredAt && side!=='none' && elapsed >= delay){
           driftTriggeredAt = elapsed;
         }
         if(driftTriggeredAt){
-          const driftT = Math.min(1, (elapsed - driftTriggeredAt)/0.6);
-          const drop = 26*driftT;
-          if(driftSide==='left')  setArms(drop, 0);
-          if(driftSide==='right') setArms(0, -drop);
+          const d = Math.min(1, (elapsed - driftTriggeredAt)/0.6); // smooth drop over 600ms
+          const drop = 26*d;
+          if(side==='left')  setArms(drop, 0);
+          if(side==='right') setArms(0, -drop);
         }
-        if(elapsed < 10){ requestAnimationFrame(tick); }
-        else{ driftRunning=false; btnDrift.textContent='⏱️ Start 10s'; }
+        if(elapsed < 10){ driftRAF = requestAnimationFrame(tick); }
+        else { stopDrift(); }
       }
-      requestAnimationFrame(tick);
+      driftRAF = requestAnimationFrame(tick);
     }
   }
+  function stopDrift(){
+    if(driftRAF) cancelAnimationFrame(driftRAF);
+    driftRAF = null; driftRunning = false; driftTriggeredAt = null;
+    btnDrift.textContent = '⏱️ Start 10s Arm Drift';
+    tClock.textContent = '0.0';
+    armsDown();
+  }
 
-  // --- Speech
+  /* ---------- Speech ---------- */
   function runSpeech(){
     speechBox.hidden = false;
-    const speech = scenario.speech;
+    const s = scenario.speech;
     let text = '';
-    switch(speech){
+    switch(s){
       case 'normal': text = `You can't teach an old dog new tricks. My name is Alex. I’m at home.`; break;
       case 'dysarthria': text = `Y- you caan'... teash an ol' d- dog new t- tricks... m' name is... A- Alex...`; break;
       case 'aphasiaExpressive': text = `You... can't... teach... um... the thing... dog... new... uh... (frustrated)`; break;
@@ -548,7 +481,7 @@
     try{ const u = new SpeechSynthesisUtterance(text.replace(/[()]/g,'')); u.rate=.95; u.lang='en-US'; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){}
   }
 
-  // --- Grading (unchanged)
+  /* ---------- Grading ---------- */
   function grade(){
     const user = { balance:fBalance.value, eyes:fEyes.value, pupils:fPupils.value, face:fFace.value, arms:fArms.value, speech:fSpeech.value };
     const truth = {
@@ -590,39 +523,34 @@
     gradeBox.hidden=false; gradeBox.scrollIntoView({behavior:'smooth',block:'start'});
   }
 
-  // --- Scenario
+  /* ---------- Scenario ---------- */
   function newCase(){
     scenario = {
       faceDroop: rand(['none','left','right','none','none']),
       gaze:      rand(['normal','slow','deviationLeft','deviationRight','normal','slow']),
       balance:   rand(['normal','unsteady','leansLeft','leansRight','fallsLeft','fallsRight','normal']),
       armDrift:  rand(['none','left','right','left','right']),
-      armDriftDelay: Math.round((Math.random()*4 + 2)*10)/10,
+      armDriftDelay: Math.round((Math.random()*4 + 2)*10)/10, // 2.0–6.0 s
       speech:    rand(['normal','dysarthria','aphasiaExpressive','aphasiaReceptive','aphasiaGlobal','normal'])
     };
     anisocoria = Math.random()<0.35 ? rand(['left','right']) : null;
 
-    // Pupils
+    // Pupils (anisocoria)
     const base = 22, bigger = 30, smaller = 16;
     pL.style.width=base+'px'; pL.style.height=base+'px';
     pR.style.width=base+'px'; pR.style.height=base+'px';
     if(anisocoria==='left'){ pL.style.width=bigger+'px'; pL.style.height=bigger+'px'; pR.style.width=smaller+'px'; pR.style.height=smaller+'px'; }
     if(anisocoria==='right'){ pR.style.width=bigger+'px'; pR.style.height=bigger+'px'; pL.style.width=smaller+'px'; pL.style.height=smaller+'px'; }
 
-    // Reset mouth + eyebrows (neutral)
+    // Reset face
     mouthPath.setAttribute('d','M20,45 C80,60 140,60 200,45');
     browL.style.top='-10px'; browL.style.transform='translateX(-50%) rotate(0deg)';
     browR.style.top='-10px'; browR.style.transform='translateX(-50%) rotate(0deg)';
-
-    // Reset gaze
     stopGaze(); gazeInfo.hidden = true; gazeLine.textContent='—';
     pL.style.transform='translate(-50%,-50%)'; pR.style.transform='translate(-50%,-50%)';
 
-    // Reset balance
-    stopBalance();
-
-    // Reset drift: arms down & timer UI
-    armsDown(); driftRunning=false; btnDrift.textContent='⏱️ Start 10s'; tClock.textContent='0.0';
+    // Reset shared SVG + timer
+    stopBalance(); stopDrift();
 
     // Reset speech & findings/results
     speechBox.hidden = true; speechLine.textContent='—';
@@ -630,11 +558,9 @@
     gradeBox.hidden=true; gradeList.innerHTML=''; gradeSummary.innerHTML='<strong>Results:</strong> —'; meaning.innerHTML='';
   }
 
-  // --- Reset same case
   function resetSameCase(){
     stopGaze(); gazeInfo.hidden=true; gazeLine.textContent='—';
-    stopBalance();
-    armsDown(); driftRunning=false; btnDrift.textContent='⏱️ Start 10s'; tClock.textContent='0.0';
+    stopBalance(); stopDrift();
     // Reset face visuals
     mouthPath.setAttribute('d','M20,45 C80,60 140,60 200,45');
     browL.style.top='-10px'; browL.style.transform='translateX(-50%) rotate(0deg)';
@@ -645,7 +571,7 @@
     gradeBox.hidden=true; gradeList.innerHTML=''; gradeSummary.innerHTML='<strong>Results:</strong> —'; meaning.innerHTML='';
   }
 
-  // --- Events
+  /* ---------- Events ---------- */
   btnSmile.addEventListener('click', ()=> animateSmile(scenario.faceDroop));
   btnGaze.addEventListener('click', ()=> gazeTimer ? stopGaze() : startGaze());
   btnBalance.addEventListener('click', ()=> balTimer ? stopBalance() : startBalance());
@@ -655,7 +581,7 @@
   btnNew.addEventListener('click', newCase);
   btnReset.addEventListener('click', resetSameCase);
 
-  // Go
+  // Init
   newCase();
 })();
 </script>
