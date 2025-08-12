@@ -1,445 +1,347 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pupil / PERL Simulator</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Pupil Simulator</title>
 <style>
   :root{
-    --brand:#007B8A;         /* matches your BP sim theme */
-    --brand-dark:#006775;
-    --bg:#f0f8ff;
-    --text:#0f2b33;
-    --panel:#ffffff;
-    --muted:#e7f4f7;
-    --ok:#0a8f5b;
-    --warn:#c77b00;
-    --bad:#b81e2b;
-    --shadow: 0 8px 20px rgba(0,0,0,.08);
-    --radius:16px;
+    --brand:#007B8A; --brand-600:#066371;
+    --bg:#f0f8ff; --panel:#ffffff; --ink:#0f2b33; --muted:#46636a;
+    --border:#e2e8f0; --shadow:0 10px 28px rgba(2,8,23,.08);
   }
   *{box-sizing:border-box}
+  html,body{height:100%}
+  html,body{overflow-x:hidden}
   body{
-    margin:0; background:var(--bg); color:var(--text);
-    font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-    display:flex; flex-direction:column; min-height:100vh; align-items:center;
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; line-height:1.45;
+    -webkit-text-size-adjust:100%;
   }
-  header{
-    background:var(--brand); color:#fff; width:100%; text-align:center;
-    padding:14px 16px; font-weight:600; letter-spacing:.2px;
-  }
-  main{ width:100%; max-width:980px; padding:12px; display:grid; gap:12px }
-  .card{
-    background:var(--panel); border-radius:var(--radius); box-shadow:var(--shadow);
-    padding:14px;
-  }
-  .sim-row{ display:grid; gap:12px }
-  @media(min-width:860px){ .sim-row{ grid-template-columns: 1.2fr .8fr } }
+  header{background:var(--brand); color:#fff; padding:14px 16px; font-weight:800; letter-spacing:.2px; position:sticky; top:0; z-index:10}
+  main{max-width:980px; margin:0 auto; padding:12px}
+  h2{margin:.25rem 0 .75rem}
+  .card{background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:14px; box-shadow:var(--shadow); margin-bottom:12px}
 
-  /* EYES AREA */
-  .eyes{
-    display:grid; grid-template-columns:1fr 1fr; gap:12px;
-    align-items:center; justify-items:center;
-    background:var(--muted); border-radius:12px; padding:12px;
+  .face{
+    display:grid; gap:16px; grid-template-columns:1fr; place-items:center; padding:6px;
   }
+  @media(min-width:700px){ .face{ grid-template-columns:1fr 1fr; } }
+
   .eye{
-    width:min(100%,420px); aspect-ratio:1/1; background:#dfeff2;
-    border-radius:50%; display:grid; place-items:center; position:relative;
-    box-shadow: inset 0 0 60px rgba(0,0,0,.15);
+    width:220px; height:220px; background:#fdebd0;
+    border-radius:50%; border:2px solid #d7ccc8; position:relative;
+    box-shadow:inset 0 8px 24px rgba(0,0,0,.12);
   }
-  svg{ width:90%; height:auto; display:block }
-  .label{
-    position:absolute; bottom:8px; left:50%; transform:translateX(-50%);
-    font-size:.85rem; color:#1b3e46; background:#ffffffcc; padding:2px 8px; border-radius:999px;
+  .sclera{
+    position:absolute; inset:22px; background:#fff; border-radius:50%;
+    box-shadow:inset 0 0 0 1px #e5e7eb;
+  }
+  .iris{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:120px; height:120px; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #88b1c5, #3d6a7a 70%, #1f3c46 100%);
+    box-shadow:inset 0 0 18px rgba(0,0,0,.35);
+  }
+  .pupil{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:40px; height:40px; border-radius:50%; background:#000;
+    box-shadow:0 0 10px rgba(0,0,0,.35);
+  }
+  .corneal-gloss{
+    position:absolute; top:38%; left:42%;
+    width:26px; height:16px; border-radius:50%; background:rgba(255,255,255,.6);
+    filter:blur(1px);
   }
 
-  /* CONTROLS */
-  .controls{ display:grid; gap:10px }
-  .row{ display:grid; gap:10px }
-  @media(min-width:560px){ .row{ grid-template-columns:1fr 1fr } }
-  .control{
-    background:#fff; border-radius:12px; padding:10px; border:1px solid #e8eef0;
+  .controls{display:grid; gap:10px; grid-template-columns:1fr}
+  @media(min-width:760px){ .controls{grid-template-columns:1fr 1fr} }
+  .row{display:grid; gap:10px; grid-template-columns:1fr}
+  label{font-weight:700}
+  select{
+    width:100%; padding:.6rem .7rem; border-radius:10px; border:1px solid var(--border);
+    background:#fff;
   }
-  .control h3{ margin:.2rem 0 .6rem; font-size:.95rem; color:#0f2b33 }
-  .control small{ color:#3b616b }
-  .btn, button{
-    appearance:none; border:0; background:var(--brand); color:#fff; padding:12px 14px;
-    border-radius:12px; font-weight:600; cursor:pointer; width:100%;
+
+  .btn{
+    appearance:none; border:0; background:var(--brand); color:#fff;
+    padding:.7rem 1rem; border-radius:12px; font-weight:800; cursor:pointer;
   }
-  .btn:active, button:active{ transform:translateY(1px) }
-  .btn.alt{ background:#124b54 }
-  .btn.warn{ background:var(--warn) }
-  .btn.bad{ background:var(--bad) }
-  .btn.ghost{
-    background:#fff; color:var(--brand); border:2px solid var(--brand);
-  }
-  input[type="range"]{ width:100% }
-  select, input[type="number"]{
-    width:100%; padding:10px; border:1px solid #cfe3e8; border-radius:10px; background:#fff;
-    font-size:1rem;
-  }
-  .kpis{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:6px }
-  .kpi{ background:#fff; border:1px solid #e8eef0; border-radius:10px; padding:8px; text-align:center }
-  .kpi strong{ display:block; font-size:1.1rem }
-  .status{
-    font-size:.9rem; padding:8px 10px; border-radius:10px; background:#fff;
-    border:1px solid #e8eef0; color:#0b3b44;
-  }
-  .pill{
-    display:inline-block; padding:4px 8px; border-radius:999px; background:#e7f8f1; color:#0a8f5b;
-    font-size:.8rem; font-weight:700; letter-spacing:.25px;
-  }
-  footer{ opacity:.7; font-size:.85rem; padding:12px }
+  .btn:hover{background:var(--brand-600)}
+  .btn.ghost{background:#fff; color:var(--brand); border:2px solid var(--brand)}
+  .btn.warn{background:#c77b00}
+
+  .resp{margin:.5rem 0 0 0; padding:.6rem .7rem; border-radius:10px; background:#f8fafc; border:1px solid var(--border)}
+  .results-list{margin:.5rem 0 0 1rem}
+  .results-list li{margin:.2rem 0}
 </style>
 </head>
 <body>
-<header>Pupil / PERL Simulator</header>
+<header>Pupil Simulator</header>
 
 <main>
-  <!-- SIMULATOR VIEW -->
-  <section class="card sim-row">
-    <div class="eyes">
-      <!-- LEFT EYE -->
-      <div class="eye" id="eyeL">
-        <svg viewBox="0 0 100 100" aria-label="Left eye">
-          <!-- sclera -->
-          <circle cx="50" cy="50" r="46" fill="#fdfefe" />
-          <!-- iris -->
-          <circle id="irisL" cx="50" cy="50" r="26" fill="#2d6b75" />
-          <!-- pupil -->
-          <circle id="pupilL" cx="50" cy="50" r="10" fill="#0a0a0a" />
-          <!-- specular highlight -->
-          <circle cx="42" cy="42" r="3" fill="#ffffff" opacity=".8"/>
-        </svg>
-        <div class="label">Left</div>
+  <!-- Visual exam -->
+  <section class="card">
+    <h2>Examine Pupils</h2>
+    <p class="muted" style="margin-top:-4px">Use the <strong>Light</strong> toggle to check reactivity. Then select the condition for each eye.</p>
+
+    <div class="face" aria-label="Eyes">
+      <!-- Left eye -->
+      <div>
+        <div class="eye" id="eyeL" aria-label="Left eye">
+          <div class="sclera"></div>
+          <div class="iris"></div>
+          <div class="pupil" id="pupilL"></div>
+          <div class="corneal-gloss"></div>
+        </div>
+        <p style="text-align:center;margin:.5rem 0 0"><strong>Left</strong></p>
       </div>
 
-      <!-- RIGHT EYE -->
-      <div class="eye" id="eyeR">
-        <svg viewBox="0 0 100 100" aria-label="Right eye">
-          <circle cx="50" cy="50" r="46" fill="#fdfefe" />
-          <circle id="irisR" cx="50" cy="50" r="26" fill="#2d6b75" />
-          <circle id="pupilR" cx="50" cy="50" r="10" fill="#0a0a0a" />
-          <circle cx="42" cy="42" r="3" fill="#ffffff" opacity=".8"/>
-        </svg>
-        <div class="label">Right</div>
+      <!-- Right eye -->
+      <div>
+        <div class="eye" id="eyeR" aria-label="Right eye">
+          <div class="sclera"></div>
+          <div class="iris"></div>
+          <div class="pupil" id="pupilR"></div>
+          <div class="corneal-gloss"></div>
+        </div>
+        <p style="text-align:center;margin:.5rem 0 0"><strong>Right</strong></p>
       </div>
     </div>
 
-    <!-- CONTROLS -->
+    <div class="row" style="margin-top:10px">
+      <button class="btn" id="toggleLight">🔦 Light: OFF</button>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button class="btn warn" id="newCase">Next Case</button>
+        <button class="btn ghost" id="resetChoices">Reset Choices</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Choose answers -->
+  <section class="card">
+    <h2>Your Assessment</h2>
     <div class="controls">
-      <div class="control">
-        <h3>Light & Reaction</h3>
-        <label>Ambient light
-          <input id="ambient" type="range" min="0" max="100" value="40" />
-        </label>
-        <div class="row">
-          <div>
-            <label>Reaction speed (ms to constrict)
-              <input id="speed" type="number" min="60" max="2000" step="20" value="220" />
-            </label>
-          </div>
-          <div>
-            <label>Recovery (ms to dilate)
-              <input id="recovery" type="number" min="60" max="3000" step="20" value="600" />
-            </label>
-          </div>
-        </div>
-        <div class="row">
-          <button id="flashBtn" class="btn">🔦 Press & Hold Flashlight</button>
-          <button id="blinkBtn" class="btn ghost" title="momentary light off/on">Blink</button>
-        </div>
-        <small>Tip: Hold the flashlight button to check direct/consensual response.</small>
+      <div>
+        <label for="selL">Left eye</label>
+        <select id="selL">
+          <option value="" selected>Select condition…</option>
+          <option value="normal">Normal / reactive</option>
+          <option value="pinpoint">Pinpoint</option>
+          <option value="dilatedReactive">Dilated (reactive)</option>
+          <option value="fixedDilated">Fixed dilated</option>
+          <option value="sluggish">Sluggish</option>
+          <option value="fixedMid">Fixed mid-position</option>
+        </select>
       </div>
+      <div>
+        <label for="selR">Right eye</label>
+        <select id="selR">
+          <option value="" selected>Select condition…</option>
+          <option value="normal">Normal / reactive</option>
+          <option value="pinpoint">Pinpoint</option>
+          <option value="dilatedReactive">Dilated (reactive)</option>
+          <option value="fixedDilated">Fixed dilated</option>
+          <option value="sluggish">Sluggish</option>
+          <option value="fixedMid">Fixed mid-position</option>
+        </select>
+      </div>
+    </div>
 
-      <div class="control">
-        <h3>States</h3>
-        <div class="row">
-          <div>
-            <label>Left eye state
-              <select id="stateL">
-                <option value="normal" selected>Normal (PERL)</option>
-                <option value="sluggish">Sluggish</option>
-                <option value="fixed">Fixed (no light reaction)</option>
-                <option value="pinpoint">Pinpoint</option>
-                <option value="blown">Blown (dilated, fixed)</option>
-              </select>
-            </label>
-          </div>
-          <div>
-            <label>Right eye state
-              <select id="stateR">
-                <option value="normal" selected>Normal (PERL)</option>
-                <option value="sluggish">Sluggish</option>
-                <option value="fixed">Fixed (no light reaction)</option>
-                <option value="pinpoint">Pinpoint</option>
-                <option value="blown">Blown (dilated, fixed)</option>
-              </select>
-            </label>
-          </div>
-        </div>
-        <div class="row">
-          <button id="anisocoriaBtn" class="btn alt">Toggle Unequal (Anisocoria)</button>
-          <button id="randomizeBtn" class="btn warn">Randomize Scenario</button>
-        </div>
-      </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn" id="check">Show Results</button>
+    </div>
 
-      <div class="control">
-        <h3>Outputs</h3>
-        <div class="kpis">
-          <div class="kpi"><small>Left pupil (mm)</small><strong id="sizeL">—</strong></div>
-          <div class="kpi"><small>Right pupil (mm)</small><strong id="sizeR">—</strong></div>
-          <div class="kpi"><small>PERL</small><strong id="perl">—</strong></div>
-        </div>
-        <div class="status" id="statusLine">
-          Ready. <span class="pill">Mobile‑friendly</span>
-        </div>
-      </div>
-
-      <div class="control">
-        <h3>Integration Hooks</h3>
-        <div class="row">
-          <button id="emitBtn" class="btn">Emit Result (window.dispatchEvent)</button>
-          <button id="resetBtn" class="btn bad">Reset</button>
-        </div>
-        <small>This fires a <code>pupil-sim-result</code> event you can listen for in your parent app.</small>
-      </div>
+    <div id="results" class="resp" hidden>
+      <div id="summary"><strong>Results:</strong> —</div>
+      <ul class="results-list" id="detailList"></ul>
+      <div id="reasons" style="margin-top:.5rem"></div>
     </div>
   </section>
 </main>
 
-<footer>© EMS Code Sim — Pupil/Light Reflex Trainer</footer>
-
 <script>
-/*
-  Pupil / PERL Simulator
-  - SVG circles as pupils (radius = pupil size)
-  - Press-and-hold flashlight constricts directly illuminated eye, consensual response on the other
-  - States: normal, sluggish, fixed, pinpoint, blown
-  - Anisocoria toggle and randomizer for quick scenario creation
-  - Emits a "pupil-sim-result" CustomEvent for your grading/recording
-*/
-
 (function(){
-  // --- DOM refs
+  // --- DOM
   const pupilL = document.getElementById('pupilL');
   const pupilR = document.getElementById('pupilR');
-  const ambient = document.getElementById('ambient');
-  const speed = document.getElementById('speed');
-  const recovery = document.getElementById('recovery');
-  const flashBtn = document.getElementById('flashBtn');
-  const blinkBtn = document.getElementById('blinkBtn');
-  const stateL = document.getElementById('stateL');
-  const stateR = document.getElementById('stateR');
-  const anisocoriaBtn = document.getElementById('anisocoriaBtn');
-  const randomizeBtn = document.getElementById('randomizeBtn');
-  const sizeL = document.getElementById('sizeL');
-  const sizeR = document.getElementById('sizeR');
-  const perl = document.getElementById('perl');
-  const statusLine = document.getElementById('statusLine');
-  const emitBtn = document.getElementById('emitBtn');
-  const resetBtn = document.getElementById('resetBtn');
+  const toggleLightBtn = document.getElementById('toggleLight');
+  const newCaseBtn = document.getElementById('newCase');
+  const resetChoicesBtn = document.getElementById('resetChoices');
+  const selL = document.getElementById('selL');
+  const selR = document.getElementById('selR');
+  const checkBtn = document.getElementById('check');
+  const resultsWrap = document.getElementById('results');
+  const summary = document.getElementById('summary');
+  const detailList = document.getElementById('detailList');
+  const reasonsBox = document.getElementById('reasons');
 
-  // --- Model
-  const mmToSvg = mm => {
-    // map 1–9 mm into SVG radius 4–16 px (tunable)
-    const r = 4 + (mm - 1) * ( (16-4) / (9-1) );
-    return Math.max(2, Math.min(18, r));
+  // --- Condition model
+  // Visual sizes (px) and behavior flags by condition.
+  // We don't display these values; they just drive the visuals.
+  const CONDITIONS = {
+    normal:         { label:"Normal / reactive",        base:38, constrict:22, reactive:true,  sluggish:false },
+    pinpoint:       { label:"Pinpoint",                 base:16, constrict:12, reactive:true,  sluggish:false },
+    dilatedReactive:{ label:"Dilated (reactive)",       base:58, constrict:28, reactive:true,  sluggish:false },
+    fixedDilated:   { label:"Fixed dilated",            base:64, constrict:64, reactive:false, sluggish:false },
+    sluggish:       { label:"Sluggish",                 base:44, constrict:24, reactive:true,  sluggish:true  },
+    fixedMid:       { label:"Fixed mid-position",       base:38, constrict:38, reactive:false, sluggish:false }
   };
 
-  const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
-
-  const model = {
-    lightOn:false,
-    // target sizes in mm (per eye)
-    target:{ L:4.0, R:4.0 },
-    cur:{ L:4.0, R:4.0 },
-    // state per eye
-    state:{ L:'normal', R:'normal' },
-    // baseline decided by ambient (darker -> larger)
-    baselineFromAmbient(a){
-      // 0–100 -> 7.5 mm (dark) down to 2.5 mm (bright)
-      return clamp(7.5 - (a/100)*5, 2.0, 8.0);
-    },
-    // reaction multiplier for state
-    reactionFor(state){
-      if(state==='fixed') return 0.0;       // no reaction
-      if(state==='sluggish') return 0.4;    // slower, smaller magnitude
-      if(state==='pinpoint') return -1.0;   // always tiny
-      if(state==='blown') return 1.0;       // always huge
-      return 1.0;                            // normal
-    },
-    hardOverrideSize(state, baseline){
-      if(state==='pinpoint') return 1.5;
-      if(state==='blown') return 8.0;
-      return null; // no hard override
-    },
-    // consensual response factor (how much the other eye follows)
-    consensual: 0.6
+  // Reasons mapped to the true condition (examples; not diagnostic)
+  const REASONS = {
+    normal: [
+      "Normal finding in an awake, well-perfused patient",
+      "Mild sympathetic tone (anxiety) can appear slightly larger yet reactive"
+    ],
+    pinpoint: [
+      "Opioid effect (e.g., heroin, fentanyl, oxycodone)",
+      "Pontine hemorrhage/lesion",
+      "Organophosphate or cholinergic toxicity",
+      "Miotic eye drops (e.g., pilocarpine)"
+    ],
+    dilatedReactive: [
+      "Sympathomimetic stimulation (caffeine, amphetamines, cocaine)",
+      "Anticholinergic drugs (e.g., atropine, ipratropium, antihistamines)",
+      "Dark environment / fight-or-flight",
+      "Postictal state (may be reactive but larger)"
+    ],
+    fixedDilated: [
+      "Uncal herniation with CN III compression (“blown pupil”)",
+      "Severe anoxia/hypoxia or brain death (often bilateral)",
+      "Topical/mydriatic agent to that eye (e.g., atropine drop)",
+      "Severe ocular trauma"
+    ],
+    sluggish: [
+      "Raised intracranial pressure (ICP)",
+      "Hypoxia, hypothermia, or shock",
+      "Sedatives/brain injury affecting pupillary reflex arc",
+      "Early compression of CN III"
+    ],
+    fixedMid: [
+      "Severe midbrain/brainstem injury",
+      "Deep anesthesia or central herniation",
+      "Brain death (often with other absent brainstem reflexes)"
+    ]
   };
 
-  // --- Animation loop
-  let lastTs = 0;
-  function tick(ts){
-    const dt = Math.min(50, ts - (lastTs||ts)); // ms cap
-    lastTs = ts;
+  // Weighted random pick of conditions (favor normal/learners’ variety)
+  const WEIGHTED = [
+    "normal","normal","normal",
+    "pinpoint","pinpoint",
+    "dilatedReactive","dilatedReactive",
+    "sluggish",
+    "fixedDilated",
+    "fixedMid"
+  ];
 
-    const amb = Number(ambient.value);
-    const baseL = model.baselineFromAmbient(amb);
-    const baseR = model.baselineFromAmbient(amb);
+  // State
+  let truth = { L:null, R:null };
+  let lightOn = false;
 
-    // desired sizes before state overrides
-    let desiredL = baseL;
-    let desiredR = baseR;
+  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-    // flashlight directly aimed at both by default (you can adapt to eye-specific later)
-    const directHitL = model.lightOn;
-    const directHitR = model.lightOn;
+  function applyPupil(el, cond, toLight){
+    const c = CONDITIONS[cond];
+    const size = (c.reactive && toLight) ? c.constrict : c.base;
+    // Animate if sluggish; instant for fixed; quick for reactive
+    el.style.transition = c.reactive ? (c.sluggish ? 'width 1.2s ease, height 1.2s ease' : 'width .18s ease, height .18s ease') : 'none';
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+  }
 
-    // compute direct light target (smaller)
-    const lightTarget = 2.5; // mm under bright direct light (normal)
-    // apply reaction multipliers
-    const rxL = model.reactionFor(model.state.L);
-    const rxR = model.reactionFor(model.state.R);
+  function render(){
+    applyPupil(pupilL, truth.L, lightOn);
+    applyPupil(pupilR, truth.R, lightOn);
+    toggleLightBtn.textContent = lightOn ? "🔦 Light: ON" : "🔦 Light: OFF";
+  }
 
-    if (directHitL && rxL>0) desiredL = baseL - (baseL - lightTarget)*rxL;
-    if (directHitR && rxR>0) desiredR = baseR - (baseR - lightTarget)*rxR;
+  function newCase(){
+    lightOn = false;
+    // Ensure a realistic mix; sometimes symmetric, sometimes anisocoria
+    const left = rand(WEIGHTED);
+    let right = rand(WEIGHTED);
 
-    // consensual response: when one eye is stimulated, the other follows partially
-    if (model.lightOn){
-      if(rxL>0 && rxR>0){
-        const mean = (desiredL + desiredR)/2;
-        desiredL = desiredL*0.7 + mean*0.3*model.consensual;
-        desiredR = desiredR*0.7 + mean*0.3*model.consensual;
+    // Small chance to intentionally generate anisocoria patterns that make sense
+    // e.g., one fixed dilated + contralateral normal
+    if(Math.random()<0.35){
+      const pattern = rand(["anisocoria1","anisocoria2","symmetric"]);
+      if(pattern==="anisocoria1"){ // fixed dilated on one side
+        const side = Math.random()<0.5 ? 'L' : 'R';
+        truth[side] = "fixedDilated";
+        truth[side==='L'?'R':'L'] = rand(["normal","sluggish","dilatedReactive"]);
+      }else if(pattern==="anisocoria2"){ // pinpoint one side (rare pharmacologic)
+        const side = Math.random()<0.5 ? 'L' : 'R';
+        truth[side] = "pinpoint";
+        truth[side==='L'?'R':'L'] = rand(["normal","sluggish"]);
+      }else{
+        truth.L = left; truth.R = left;
       }
+    }else{
+      truth.L = left; truth.R = right;
     }
 
-    // hard overrides (pinpoint / blown / fixed)
-    const hardL = model.hardOverrideSize(model.state.L, baseL);
-    const hardR = model.hardOverrideSize(model.state.R, baseR);
-    if(hardL!==null) desiredL = hardL;
-    if(hardR!==null) desiredR = hardR;
-    if(model.state.L==='fixed' && !hardL) desiredL = baseL; // fixed tracks ambient only
-    if(model.state.R==='fixed' && !hardR) desiredR = baseR;
+    // Reset UI selections/results
+    selL.value = ""; selR.value = "";
+    resultsWrap.hidden = true;
+    detailList.innerHTML = "";
+    summary.innerHTML = "<strong>Results:</strong> —";
+    reasonsBox.innerHTML = "";
 
-    // ease toward desired
-    const constrictMs = Number(speed.value);
-    const dilateMs = Number(recovery.value);
-    const kConstrict = dt / Math.max(60, constrictMs);
-    const kDilate = dt / Math.max(60, dilateMs);
+    render();
+  }
 
-    function step(cur, desired){
-      const goingSmaller = desired < cur;
-      const k = goingSmaller ? kConstrict : kDilate;
-      return cur + (desired - cur) * clamp(k, 0.02, 0.35);
+  toggleLightBtn.addEventListener('click', ()=>{
+    lightOn = !lightOn;
+    render();
+  });
+
+  newCaseBtn.addEventListener('click', newCase);
+
+  resetChoicesBtn.addEventListener('click', ()=>{
+    selL.value = ""; selR.value = "";
+    resultsWrap.hidden = true;
+  });
+
+  function conditionLabel(key){ return CONDITIONS[key].label; }
+
+  checkBtn.addEventListener('click', ()=>{
+    if(!selL.value || !selR.value){
+      resultsWrap.hidden = false;
+      summary.innerHTML = "<strong>Results:</strong> Select a condition for both eyes.";
+      detailList.innerHTML = "";
+      reasonsBox.innerHTML = "";
+      return;
     }
 
-    model.cur.L = step(model.cur.L, desiredL);
-    model.cur.R = step(model.cur.R, desiredR);
+    const correctL = selL.value === truth.L;
+    const correctR = selR.value === truth.R;
 
-    // render
-    pupilL.setAttribute('r', mmToSvg(model.cur.L));
-    pupilR.setAttribute('r', mmToSvg(model.cur.R));
+    summary.innerHTML =
+      `<strong>Results:</strong> Left: ${correctL?'✅ Correct':'❌ Incorrect'} • Right: ${correctR?'✅ Correct':'❌ Incorrect'}`;
 
-    sizeL.textContent = model.cur.L.toFixed(1);
-    sizeR.textContent = model.cur.R.toFixed(1);
-    perl.textContent = computePERL();
+    detailList.innerHTML = "";
+    const liL = document.createElement('li');
+    liL.innerHTML = `<strong>Left:</strong> You chose <em>${conditionLabel(selL.value)}</em>. Actual: <em>${conditionLabel(truth.L)}</em>.`;
+    const liR = document.createElement('li');
+    liR.innerHTML = `<strong>Right:</strong> You chose <em>${conditionLabel(selR.value)}</em>. Actual: <em>${conditionLabel(truth.R)}</em>.`;
+    detailList.appendChild(liL);
+    detailList.appendChild(liR);
 
-    requestAnimationFrame(tick);
-  }
+    // Reasons for the actual conditions
+    function listReasons(side, cond){
+      const title = side + " eye – " + conditionLabel(cond);
+      const items = (REASONS[cond]||[]).map(r=>`<li>${r}</li>`).join('');
+      return `<p><strong>${title}</strong></p><ul>${items}</ul>`;
+    }
+    reasonsBox.innerHTML = listReasons("Left", truth.L) + listReasons("Right", truth.R);
 
-  function computePERL(){
-    const sL = model.state.L, sR = model.state.R;
-    const reactL = sL!=='fixed' && sL!=='blown' && sL!=='pinpoint';
-    const reactR = sR!=='fixed' && sR!=='blown' && sR!=='pinpoint';
-    if(reactL && reactR) return 'PERRL';
-    if(reactL || reactR) return 'One reacts';
-    return 'Non‑reactive';
-  }
-
-  // --- UI Handlers
-  flashBtn.addEventListener('mousedown', ()=> setLight(true));
-  flashBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); setLight(true); }, {passive:false});
-  const clearLight = ()=> setLight(false);
-  flashBtn.addEventListener('mouseup', clearLight);
-  flashBtn.addEventListener('mouseleave', clearLight);
-  flashBtn.addEventListener('touchend', (e)=>{ e.preventDefault(); clearLight(); });
-
-  blinkBtn.addEventListener('click', async ()=>{
-    setLight(false);
-    await wait(120);
-    setLight(true);
-    await wait(120);
-    setLight(false);
+    resultsWrap.hidden = false;
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   });
 
-  anisocoriaBtn.addEventListener('click', ()=>{
-    // add ~1.0–1.5 mm difference
-    const delta = (Math.random()*0.8 + 0.7) * (Math.random()<.5 ? -1 : 1);
-    model.cur.L = clamp(model.cur.L + delta, 1.0, 8.5);
-    model.cur.R = clamp(model.cur.R - delta, 1.0, 8.5);
-    status('Anisocoria toggled.');
-  });
-
-  randomizeBtn.addEventListener('click', ()=>{
-    const states = ['normal','sluggish','fixed','pinpoint','blown'];
-    stateL.value = pick(states);
-    stateR.value = pick(states);
-    ambient.value = Math.floor(Math.random()*101);
-    // reset sizes to new baselines
-    model.cur.L = model.baselineFromAmbient(Number(ambient.value));
-    model.cur.R = model.baselineFromAmbient(Number(ambient.value));
-    status('Randomized scenario.');
-  });
-
-  stateL.addEventListener('change', ()=>{ model.state.L = stateL.value; status('Left state: '+stateL.value); });
-  stateR.addEventListener('change', ()=>{ model.state.R = stateR.value; status('Right state: '+stateR.value); });
-
-  resetBtn.addEventListener('click', ()=>{
-    ambient.value = 40; speed.value = 220; recovery.value = 600;
-    stateL.value = 'normal'; stateR.value = 'normal';
-    model.state.L='normal'; model.state.R='normal';
-    model.cur.L = model.baselineFromAmbient(40);
-    model.cur.R = model.baselineFromAmbient(40);
-    setLight(false);
-    status('Reset.');
-  });
-
-  emitBtn.addEventListener('click', ()=>{
-    const payload = {
-      left_mm: round(model.cur.L,1),
-      right_mm: round(model.cur.R,1),
-      left_state: model.state.L,
-      right_state: model.state.R,
-      perl: computePERL(),
-      ambient: Number(ambient.value),
-      speed_ms: Number(speed.value),
-      recovery_ms: Number(recovery.value),
-      timestamp: Date.now()
-    };
-    window.dispatchEvent(new CustomEvent('pupil-sim-result', { detail: payload }));
-    status('Emitted result event for parent app.');
-    // For debugging in isolation:
-    console.log('[pupil-sim-result]', payload);
-  });
-
-  function setLight(on){
-    model.lightOn = !!on;
-    flashBtn.textContent = on ? '🔦 Flashlight ON (hold)' : '🔦 Press & Hold Flashlight';
-    status(on ? 'Direct light applied.' : 'Light removed.');
-  }
-
-  function status(msg){ statusLine.textContent = msg; }
-  function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
-  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
-  function round(n,dp=1){ const p=Math.pow(10,dp); return Math.round(n*p)/p }
-
-  // init
-  model.state.L = stateL.value;
-  model.state.R = stateR.value;
-  model.cur.L = model.baselineFromAmbient(Number(ambient.value));
-  model.cur.R = model.baselineFromAmbient(Number(ambient.value));
-  requestAnimationFrame(tick);
+  // Init
+  newCase();
 })();
 </script>
 </body>
