@@ -8,8 +8,8 @@
   :root{
     --brand:#007B8A; --brand-600:#066371;
     --bg:#f0f8ff; --panel:#ffffff; --ink:#0f2b33; --muted:#46636a;
-    --border:#e2e8f0; --shadow:0 10px 28px rgba(0,0,0,.08);
-    --warn:#c77b00; --bad:#b81e2b; --ok:#0a8f5b;
+    --border:#e2e8f0; --shadow:0 10px 28px rgba(2,8,23,.08);
+    --warn:#c77b00; --ok:#0a8f5b;
     --eye-size: 88px;
   }
   @media (max-width: 640px){
@@ -18,11 +18,8 @@
   *{box-sizing:border-box}
   html,body{height:100%}
   html,body{overflow-x:hidden}
-  body{
-    margin:0; background:var(--bg); color:var(--ink);
-    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; line-height:1.45;
-    -webkit-text-size-adjust:100%;
-  }
+  body{margin:0; background:var(--bg); color:var(--ink);
+       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; line-height:1.45}
   header{background:var(--brand); color:#fff; padding:14px 16px; font-weight:800; letter-spacing:.2px; position:sticky; top:0; z-index:10}
   main{max-width:1000px; margin:0 auto; padding:12px}
   h2{margin:.25rem 0 .75rem}
@@ -38,7 +35,7 @@
   .pill{display:inline-block; padding:3px 8px; border-radius:999px; background:#e7f5ff; color:#075985; font-weight:800; font-size:.82rem}
   .note{font-size:.92rem}
 
-  /* Face block */
+  /* Face */
   .faceWrap{display:flex; justify-content:center}
   .face{
     width:min(560px, 95vw); background:#ffe4c7; border-radius:24px; border:1px solid #e0c7ae;
@@ -60,96 +57,33 @@
     width:22px; height:22px; border-radius:50%; background:#000; box-shadow:0 0 10px rgba(0,0,0,.35);
     transition: width .18s ease, height .18s ease, transform .18s ease;
   }
-  /* SVG mouth (smile; can droop left/right) */
   .mouthBox{display:flex; justify-content:center; margin:14px auto 4px}
   #mouthSVG{width:220px; height:80px}
   #mouthPath{stroke:#c26357; stroke-width:8; fill:none; stroke-linecap:round; filter:drop-shadow(0 2px 2px rgba(0,0,0,.12))}
 
-  /* Eye gaze info */
+  /* Balance + Arm SVG shared styling */
+  .stage{display:flex; justify-content:center; align-items:center}
+  .stage svg{max-width:92vw}
+
+  /* Findings panel */
+  label{font-weight:700}
+  select{width:100%; padding:.6rem .7rem; border-radius:10px; border:1px solid var(--border); background:#fff}
+  .formGrid{display:grid; gap:10px; grid-template-columns:1fr 1fr}
+  @media (max-width:760px){ .formGrid{grid-template-columns:1fr} }
   .results{margin-top:10px}
   .results .box{background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:10px}
   .results ul{margin:.4rem 0 0 1.1rem}
   .results li{margin:.18rem 0}
-
-  /* Balance – person with feet together */
-  .balanceWrap{display:flex; justify-content:center; align-items:center; height:220px; overflow:hidden}
-  .person{
-    width:120px; height:200px; position:relative; transform-origin:bottom center;
-  }
-  .person .head{
-    width:48px; height:48px; border-radius:50%; background:#ffd9be; border:1px solid #e0c7ae; position:absolute; top:0; left:50%; transform:translateX(-50%);
-  }
-  .person .torso{
-    width:70px; height:90px; background:#b5d4ff; border:1px solid #9dbdea; border-radius:16px; position:absolute; top:48px; left:50%; transform:translateX(-50%);
-    box-shadow:inset 0 -6px 10px rgba(0,0,0,.08)
-  }
-  .person .legs{
-    position:absolute; top:138px; left:50%; width:90px; height:62px; transform:translateX(-50%);
-  }
-  .person .leg{
-    width:18px; height:62px; background:#2e3a46; border-radius:10px; position:absolute; bottom:0;
-  }
-  .leg.left{ left:calc(50% - 20px) }
-  .leg.right{ left:calc(50% + 2px) }
-  .person .feet{
-    position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:80px; height:12px; background:#2e3a46; border-radius:6px;
-  }
-
-  /* Arm Drift – head/torso front, arms masked by torso, hands above torso */
-  .armScene{display:flex; justify-content:center; align-items:center; min-height:280px; position:relative}
-  .figure{
-    position:relative; width:360px; max-width:92vw; height:260px;
-  }
-  .fig-head{
-    position:absolute; top:0; left:50%; transform:translateX(-50%);
-    width:70px; height:70px; border-radius:50%; background:#ffd9be; border:1px solid #e0c7ae; z-index:2;
-  }
-  .fig-torso{
-    position:absolute; top:68px; left:50%; transform:translateX(-50%);
-    width:220px; height:140px; background:#b5d4ff; border:1px solid #9dbdea; border-radius:18px; z-index:2;
-    box-shadow:inset 0 -10px 18px rgba(0,0,0,.10);
-  }
-  /* Arms behind torso (masked), pivot at shoulders */
-  .armGroup{
-    position:absolute; top:92px; width:0; height:0; z-index:1; /* behind torso */
-    transform-origin:0 0;
-  }
-  .armGroup.left{ left:calc(50% - 102px) }   /* left shoulder */
-  .armGroup.right{ left:calc(50% + 102px) }  /* right shoulder */
-  .forearm{
-    position:absolute; left:0; top:0;
-    width:26px; height:110px; background:#ffd9be; border:1px solid #e0c7ae; border-radius:16px;
-    transform-origin:13px 0;
-  }
-  /* Hands are above torso so they’re always visible at shoulder height; show palm lines */
-  .hand{
-    position:absolute; left:-27px; top:96px; width:80px; height:50px; border-radius:22px;
-    background:#ffd1b0; border:1px solid #e0c7ae; z-index:3;  /* above torso */
-    box-shadow:inset 0 8px 16px rgba(0,0,0,.08);
-  }
-  .hand::before, .hand::after{
-    content:""; position:absolute; left:50%; transform:translateX(-50%);
-    width:60px; height:2px; background:#e9b9a0; top:16px; box-shadow:0 12px 0 #e9b9a0;
-  }
-  .thumb{ position:absolute; width:16px; height:34px; background:#ffd1b0; border:1px solid #e0c7ae; border-radius:10px; top:96px }
-  .left .thumb{ left:40px }   /* thumbs outward for palms up */
-  .right .thumb{ left:-30px }
-
-  .timer{display:flex; justify-content:center; align-items:center; gap:10px; margin-top:10px; font-weight:800}
-  label{font-weight:700}
-  select, input[type="text"]{width:100%; padding:.6rem .7rem; border-radius:10px; border:1px solid var(--border); background:#fff}
-  .formGrid{display:grid; gap:10px; grid-template-columns:1fr 1fr}
-  @media (max-width:760px){ .formGrid{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
 <header>Stroke Assessment (BE-FAST) Simulator</header>
 
 <main>
-  <!-- FACE + EYES -->
+  <!-- FACE + EYES (smile animation) -->
   <section class="card">
     <h2>Face & Eye Gaze</h2>
-    <p class="muted note">Look for face droop on smile, unequal pupils, and gaze abnormality. Then run the gaze test.</p>
+    <p class="muted note">Tap <strong>Smile</strong> to animate the mouth. Droop shows on the left or right if present. Eye gaze test is below.</p>
 
     <div class="faceWrap">
       <div id="face" class="face">
@@ -163,16 +97,18 @@
         </div>
 
         <div class="mouthBox">
-          <!-- SVG smile so we can droop one corner -->
           <svg id="mouthSVG" viewBox="0 0 220 80" aria-hidden="true">
-            <path id="mouthPath" d="M20,45 C80,80 140,80 200,45" />
+            <path id="mouthPath" d="M20,45 C80,60 140,60 200,45" />
           </svg>
         </div>
       </div>
     </div>
 
     <div class="row" style="margin-top:10px">
-      <button class="btn" id="btnGaze">▶️ Run Eye Gaze</button>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button class="btn" id="btnSmile">🙂 Smile</button>
+        <button class="btn" id="btnGaze">▶️ Run Eye Gaze</button>
+      </div>
     </div>
 
     <div class="results">
@@ -182,53 +118,90 @@
     </div>
   </section>
 
-  <!-- BALANCE -->
+  <!-- BALANCE (reuses the same simple SVG person) -->
   <section class="card">
     <h2>Balance</h2>
-    <p class="muted note">Patient stands feet together, hands at sides. Observe sway, leaning or falling (assist for safety).</p>
-    <div class="balanceWrap">
-      <div class="person" id="person">
-        <div class="head"></div>
-        <div class="torso"></div>
-        <div class="legs">
-          <div class="leg left"></div>
-          <div class="leg right"></div>
-          <div class="feet"></div>
-        </div>
-      </div>
+    <p class="muted note">Patient stands feet together, arms at sides. Observe sway/lean/fall.</p>
+    <div class="stage">
+      <!-- Instance A: balance person -->
+      <svg id="balanceSvg" viewBox="0 0 160 260" width="200" height="325" aria-label="Standing person for balance" fill="#0f2b33">
+        <!-- head -->
+        <circle cx="80" cy="32" r="22"/>
+        <!-- torso -->
+        <rect x="50" y="56" width="60" height="92" rx="16"/>
+        <!-- arms (at sides) -->
+        <rect x="26"  y="62" width="18" height="94" rx="9"/>
+        <rect x="116" y="62" width="18" height="94" rx="9"/>
+        <!-- hips -->
+        <rect x="56" y="150" width="48" height="22" rx="11"/>
+        <!-- legs -->
+        <rect x="61" y="174" width="18" height="72" rx="8"/>
+        <rect x="81" y="174" width="18" height="72" rx="8"/>
+        <!-- feet -->
+        <rect x="56" y="246" width="28" height="10" rx="5"/>
+        <rect x="76" y="246" width="28" height="10" rx="5"/>
+      </svg>
     </div>
-    <div class="row">
+    <div class="row" style="margin-top:10px">
       <button class="btn" id="btnBalance">🎯 Run Balance Test</button>
     </div>
   </section>
 
-  <!-- ARM DRIFT -->
+  <!-- ARM DRIFT (10 seconds, reusing same SVG design) -->
   <section class="card">
     <h2>Arm Drift (10-second test)</h2>
-    <p class="muted note">Arms start at the patient’s sides. Tap start — hands lift to shoulder height (palms up). Watch for drift; the simulator will not tell you.</p>
+    <p class="muted note">Arms start at the sides. Tap start — hands lift to shoulder height (palms up). Watch for drift (the app won’t tell you).</p>
 
-    <div class="armScene">
-      <div class="figure">
-        <div class="fig-head"></div>
-        <div class="fig-torso" id="figTorso"></div>
+    <div class="stage">
+      <!-- Instance B: same person concept, with arm groups that can rotate & hands (palms up) -->
+      <svg id="driftSvg" viewBox="0 0 200 260" width="260" height="338" aria-label="Arm drift person" style="overflow:visible">
+        <defs>
+          <style>
+            .skin{ fill:#0f2b33 }
+            .lines{ fill:none; stroke:#0f2b33; stroke-width:2; stroke-linecap:round; opacity:.85 }
+          </style>
+        </defs>
+        <!-- head -->
+        <circle class="skin" cx="100" cy="32" r="22"/>
+        <!-- torso -->
+        <rect  class="skin" x="70" y="56" width="60" height="92" rx="16"/>
+        <!-- hips -->
+        <rect  class="skin" x="76" y="150" width="48" height="22" rx="11"/>
+        <!-- legs -->
+        <rect  class="skin" x="81" y="174" width="18" height="72" rx="8"/>
+        <rect  class="skin" x="101" y="174" width="18" height="72" rx="8"/>
+        <!-- feet -->
+        <rect  class="skin" x="76" y="246" width="28" height="10" rx="5"/>
+        <rect  class="skin" x="96" y="246" width="28" height="10" rx="5"/>
 
-        <!-- Arms behind torso, hands above -->
-        <div class="armGroup left" id="armL">
-          <div class="forearm" id="faL"></div>
-          <div class="hand"></div>
-          <div class="thumb"></div>
-        </div>
-        <div class="armGroup right" id="armR">
-          <div class="forearm" id="faR"></div>
-          <div class="hand"></div>
-          <div class="thumb"></div>
-        </div>
-      </div>
+        <!-- ARMS: groups pivot at shoulders (behind torso); hands in front at end of forearms -->
+        <!-- Left arm group -->
+        <g id="armL" transform="translate(70,92)">
+          <!-- pivot at (0,0) -->
+          <rect class="skin" x="-8" y="0" width="16" height="60" rx="8"/> <!-- forearm -->
+          <g class="handL" transform="translate(-22,56)">
+            <rect class="skin" x="0" y="0" width="36" height="22" rx="10"/>
+            <rect class="skin" x="-10" y="4" width="10" height="14" rx="5"/> <!-- thumb lateral -->
+            <path class="lines" d="M6 8 h22"/><path class="lines" d="M6 12 h22"/><path class="lines" d="M6 16 h22"/>
+          </g>
+        </g>
+        <!-- Right arm group -->
+        <g id="armR" transform="translate(130,92)">
+          <rect class="skin" x="-8" y="0" width="16" height="60" rx="8"/>
+          <g class="handR" transform="translate(-14,56)">
+            <rect class="skin" x="0" y="0" width="36" height="22" rx="10"/>
+            <rect class="skin" x="36" y="4" width="10" height="14" rx="5"/> <!-- thumb lateral -->
+            <path class="lines" d="M4 8 h22"/><path class="lines" d="M4 12 h22"/><path class="lines" d="M4 16 h22"/>
+          </g>
+        </g>
+      </svg>
     </div>
 
-    <div class="timer">
-      <button class="btn" id="btnDrift">⏱️ Start 10s</button>
-      <span class="pill">Timer: <span id="tClock">0.0</span>s</span>
+    <div class="row" style="margin-top:10px">
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+        <button class="btn" id="btnDrift">⏱️ Start 10s</button>
+        <span class="pill">Timer: <span id="tClock">0.0</span>s</span>
+      </div>
     </div>
   </section>
 
@@ -247,7 +220,7 @@
     </div>
   </section>
 
-  <!-- YOUR FINDINGS -->
+  <!-- YOUR FINDINGS (unchanged) -->
   <section class="card">
     <h2>Your Findings (BE-FAST)</h2>
     <div class="formGrid">
@@ -326,28 +299,31 @@
 
 <script>
 (function(){
-  // ---------- DOM
+  // ---------- DOM: face/eyes/mouth
   const pL = document.getElementById('pL');
   const pR = document.getElementById('pR');
-  const btnGaze = document.getElementById('btnGaze');
+  const btnSmile = document.getElementById('btnSmile');
+  const btnGaze  = document.getElementById('btnGaze');
   const gazeInfo = document.getElementById('gazeInfo');
   const gazeLine = document.getElementById('gazeLine');
-  const mouthPath = document.getElementById('mouthPath');
+  const mouthPath= document.getElementById('mouthPath');
 
-  const person = document.getElementById('person');
+  // Balance & Arm drift
+  const balanceSvg = document.getElementById('balanceSvg');
   const btnBalance = document.getElementById('btnBalance');
 
-  const armL = document.getElementById('armL');
-  const armR = document.getElementById('armR');
-  const faL  = document.getElementById('faL');
-  const faR  = document.getElementById('faR');
-  const btnDrift = document.getElementById('btnDrift');
-  const tClock = document.getElementById('tClock');
+  const driftSvg   = document.getElementById('driftSvg');
+  const armGroupL  = driftSvg.querySelector('#armL');
+  const armGroupR  = driftSvg.querySelector('#armR');
+  const btnDrift   = document.getElementById('btnDrift');
+  const tClock     = document.getElementById('tClock');
 
-  const btnSpeech = document.getElementById('btnSpeech');
-  const speechBox = document.getElementById('speechBox');
+  // Speech
+  const btnSpeech  = document.getElementById('btnSpeech');
+  const speechBox  = document.getElementById('speechBox');
   const speechLine = document.getElementById('speechLine');
 
+  // Findings
   const fBalance = document.getElementById('fBalance');
   const fEyes    = document.getElementById('fEyes');
   const fPupils  = document.getElementById('fPupils');
@@ -366,61 +342,35 @@
 
   // ---------- State
   let scenario = null;
+  let anisocoria = null;      // 'left' | 'right' | null
   let gazeTimer = null, gazeTick = 0;
-  let balanceTimer = null, balanceTick = 0;
-  let driftTimer = null, driftRunning = false, driftStart = 0, driftTriggeredAt = null;
+  let balTimer = null, balTick = 0;
+  let driftRunning = false, driftStart = 0, driftTriggeredAt = null;
 
-  function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
+  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-  // Mouth droop: set SVG path to smiling, with optional left/right sag
-  function setSmile(droop){
-    // Base smile arc: endpoints x=20..200, nominal y=45, control points give smile
-    let leftY = 35, rightY = 35, midY = 70;
-    if(droop==='left'){ leftY = 55; rightY = 35; midY = 72; }
-    if(droop==='right'){ leftY = 35; rightY = 55; midY = 72; }
-    const d = `M20,${leftY} C80,${midY} 140,${midY} 200,${rightY}`;
-    mouthPath.setAttribute('d', d);
+  // Smile animation helper (morph mouth path)
+  // neutral: M20,45 C80,60 140,60 200,45
+  // smile:   M20,L C80,mid 140,mid 200,R (where L/R depend on droop side)
+  function animateSmile(droop){
+    const neutral = [20,45, 80,60, 140,60, 200,45];
+    let L = 35, R = 35, MID = 70;
+    if(droop === 'left'){ L = 55; R = 35; MID = 72; }
+    if(droop === 'right'){ L = 35; R = 55; MID = 72; }
+    const smile  = [20,L, 80,MID, 140,MID, 200,R];
+
+    const dur = 450, start = performance.now();
+    function step(ts){
+      const t = Math.min(1, (ts - start)/dur);
+      const ease = t<.5 ? 2*t*t : -1+(4-2*t)*t;
+      const p = neutral.map((v,i)=> v + (smile[i]-v)*ease);
+      mouthPath.setAttribute('d', `M${p[0]},${p[1]} C${p[2]},${p[3]} ${p[4]},${p[5]} ${p[6]},${p[7]}`);
+      if(t<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
   }
 
-  function newCase(){
-    scenario = {
-      faceDroop: rand(['none','left','right','none','none']),
-      anisocoria: Math.random() < 0.35 ? rand(['left','right']) : null,
-      gaze: rand(['normal','slow','deviationLeft','deviationRight','normal','slow']),
-      balance: rand(['normal','unsteady','leansLeft','leansRight','fallsLeft','fallsRight','normal']),
-      armDrift: rand(['none','left','right','left','right']),
-      armDriftDelay: Math.round((Math.random()*4 + 2)*10)/10, // 2.0–6.0 s
-      speech: rand(['normal','dysarthria','aphasiaExpressive','aphasiaReceptive','aphasiaGlobal','normal'])
-    };
-
-    // Pupils / anisocoria
-    const base = 22, bigger = 30, smaller = 16;
-    pL.style.width = base+'px'; pL.style.height = base+'px';
-    pR.style.width = base+'px'; pR.style.height = base+'px';
-    if(scenario.anisocoria==='left'){ pL.style.width=bigger+'px'; pL.style.height=bigger+'px'; pR.style.width=smaller+'px'; pR.style.height=smaller+'px'; }
-    if(scenario.anisocoria==='right'){ pR.style.width=bigger+'px'; pR.style.height=bigger+'px'; pL.style.width=smaller+'px'; pL.style.height=smaller+'px'; }
-
-    // Smile with droop
-    setSmile(scenario.faceDroop);
-
-    // Reset eye gaze
-    stopGaze(); gazeInfo.hidden = true; gazeLine.textContent = '—'; pL.style.transform='translate(-50%,-50%)'; pR.style.transform='translate(-50%,-50%)';
-
-    // Reset balance
-    stopBalance(); person.style.transform='rotate(0deg)';
-
-    // Arm scene: arms DOWN at sides; behind torso; hands above torso but low (so not visible yet)
-    resetArms();
-
-    // Speech
-    speechBox.hidden = true; speechLine.textContent = '—';
-
-    // Form + results reset
-    fBalance.value='normal'; fEyes.value='normal'; fPupils.value='equal'; fFace.value='none'; fArms.value='none'; fSpeech.value='normal';
-    gradeBox.hidden = true; gradeList.innerHTML = ''; gradeSummary.innerHTML = '<strong>Results:</strong> —'; meaning.innerHTML='';
-  }
-
-  // Eye Gaze
+  // Eye gaze
   function startGaze(){
     stopGaze();
     gazeTick = 0;
@@ -437,7 +387,6 @@
       pL.style.transform = `translate(calc(-50% + ${posL}px), -50%)`;
       pR.style.transform = `translate(calc(-50% + ${posR}px), -50%)`;
     }, speed);
-
     const map = {
       normal: 'Tracks left and right appropriately.',
       slow: 'Tracks both directions but with slow pursuit.',
@@ -445,194 +394,198 @@
       deviationRight:'Eyes deviate right; limited ability to track left.'
     };
     gazeInfo.hidden = false;
-    gazeLine.textContent = map[scenario.gaze] + (scenario.anisocoria ? ` Unequal pupils present (${scenario.anisocoria} larger).` : '');
+    gazeLine.textContent = map[scenario.gaze] + (anisocoria ? ` Unequal pupils present (${anisocoria} larger).` : '');
   }
   function stopGaze(){ if(gazeTimer){ clearInterval(gazeTimer); gazeTimer=null; } btnGaze.textContent = '▶️ Run Eye Gaze'; }
 
-  // Balance
+  // Balance sway animation (rotate whole figure)
   function startBalance(){
     stopBalance();
     btnBalance.textContent = '⏹️ Stop Balance';
-    balanceTick = 0;
-    const baseAmp = scenario.balance==='normal' ? 2 : scenario.balance==='unsteady' ? 6 : 10;
-    const leanBias = (scenario.balance.includes('Left') ? -12 : scenario.balance.includes('Right') ? 12 : 0);
-    balanceTimer = setInterval(()=>{
-      balanceTick += 1;
-      const sway = Math.sin(balanceTick/10) * baseAmp;
+    balTick = 0;
+    const kind = scenario.balance; // 'normal','unsteady','leansLeft','leansRight','fallsLeft','fallsRight'
+    const baseAmp = kind==='normal' ? 2 : kind==='unsteady' ? 6 : 10;
+    const leanBias = (kind.includes('Left') ? -12 : kind.includes('Right') ? 12 : 0);
+    balTimer = setInterval(()=>{
+      balTick++;
+      const sway = Math.sin(balTick/10)*baseAmp;
       let angle = sway + leanBias;
-      if(scenario.balance.startsWith('falls')) angle = leanBias + 30 * Math.sign(leanBias || 1);
-      person.style.transform = `rotate(${angle}deg)`;
+      if(kind.startsWith('falls')) angle = leanBias + 30 * Math.sign(leanBias || 1);
+      balanceSvg.style.transform = `rotate(${angle}deg)`;
+      balanceSvg.style.transformOrigin = '50% 90%';
     }, 80);
   }
-  function stopBalance(){ if(balanceTimer){ clearInterval(balanceTimer); balanceTimer=null; } btnBalance.textContent = '🎯 Run Balance Test'; }
+  function stopBalance(){ if(balTimer){ clearInterval(balTimer); balTimer=null; } btnBalance.textContent = '🎯 Run Balance Test'; balanceSvg.style.transform=''; }
 
-  // Arms
-  function resetArms(){
-    // Arms down (90° from horizontal), hands low
-    armL.style.transform = 'rotate(90deg)';
-    armR.style.transform = 'rotate(-90deg)';
-    faL.style.transform = 'rotate(0deg)';
-    faR.style.transform = 'rotate(0deg)';
-    tClock.textContent = '0.0';
-    driftRunning=false; btnDrift.textContent='⏱️ Start 10s';
+  // Arm drift (10s). Arms start down; raise to 0°, palms up; then one side may drift downward.
+  function setArms(angleL, angleR){
+    armGroupL.setAttribute('transform', `translate(70,92) rotate(${angleL})`);
+    armGroupR.setAttribute('transform', `translate(130,92) rotate(${angleR})`);
   }
-  function raiseHandsToStart(){
-    // Rotate from sides to shoulder-height (horizontal). Hands stay above torso; forearms remain hidden behind torso.
-    armL.style.transition = armR.style.transition = 'transform .35s ease';
-    armL.style.transform = 'rotate(0deg)';
-    armR.style.transform = 'rotate(0deg)';
-    setTimeout(()=>{ armL.style.transition = armR.style.transition = ''; }, 360);
-  }
+  function armsDown(){ setArms(90,-90); }
+  function armsRaised(){ setArms(0,0); }
   function startDrift(){
     if(driftRunning) return;
-    driftRunning = true;
-    driftStart = performance.now(); driftTriggeredAt=null; tClock.textContent='0.0';
-    btnDrift.textContent = 'Running…';
-    raiseHandsToStart();
+    driftRunning = true; driftStart = performance.now(); driftTriggeredAt = null;
+    btnDrift.textContent = 'Running…'; tClock.textContent = '0.0';
 
-    function tick(now){
-      if(!driftRunning) return;
-      const elapsed = (now - driftStart) / 1000;
-      tClock.textContent = elapsed.toFixed(1);
-
-      if(!driftTriggeredAt && scenario.armDrift!=='none' && elapsed >= scenario.armDriftDelay){
-        driftTriggeredAt = elapsed;
-        const angle = 26; // drop angle
-        if(scenario.armDrift==='left'){ armL.style.transform = `rotate(${angle}deg)`; }
-        if(scenario.armDrift==='right'){ armR.style.transform = `rotate(${angle}deg)`; }
-        // Do NOT announce detection.
-      }
-      if(elapsed < 10.0){ requestAnimationFrame(tick); }
-      else { driftRunning=false; btnDrift.textContent='⏱️ Start 10s'; }
+    // quick raise
+    const raiseDur = 300, start = performance.now();
+    function raiseStep(ts){
+      const t = Math.min(1, (ts - start)/raiseDur);
+      const aL = 90 + (0-90)*t;
+      const aR = -90 + (0+90)*t;
+      setArms(aL, aR);
+      if(t<1){ requestAnimationFrame(raiseStep); } else { runTenSeconds(); }
     }
-    requestAnimationFrame(tick);
+    requestAnimationFrame(raiseStep);
+
+    function runTenSeconds(){
+      const driftSide = scenario.armDrift; // 'none' | 'left' | 'right'
+      const driftDelay = scenario.armDriftDelay;
+      function tick(ts){
+        if(!driftRunning) return;
+        const elapsed = (ts - driftStart)/1000;
+        tClock.textContent = elapsed.toFixed(1);
+
+        // trigger drift once past delay
+        if(!driftTriggeredAt && driftSide!=='none' && elapsed >= driftDelay){
+          driftTriggeredAt = elapsed;
+        }
+        // apply drift angle gradually after trigger
+        if(driftTriggeredAt){
+          const driftT = Math.min(1, (elapsed - driftTriggeredAt)/0.6); // ease in 600ms
+          const drop = 26*driftT;
+          if(driftSide==='left')  setArms(drop, 0);
+          if(driftSide==='right') setArms(0, drop*-1); // right droops downward visually
+        }
+        if(elapsed < 10){ requestAnimationFrame(tick); }
+        else{ driftRunning=false; btnDrift.textContent='⏱️ Start 10s'; }
+      }
+      requestAnimationFrame(tick);
+    }
   }
 
-  // Speech
+  // Speech (same)
   function runSpeech(){
     speechBox.hidden = false;
+    const speech = scenario.speech;
     let text = '';
-    switch(scenario.speech){
-      case 'normal':
-        text = `You can't teach an old dog new tricks. My name is Alex. I’m at home.`;
-        break;
-      case 'dysarthria':
-        text = `Y- you caan'... teash an ol' d- dog new t- tricks... m' name is... A- Alex...`;
-        break;
-      case 'aphasiaExpressive':
-        text = `You... can't... teach... um... the thing... dog... new... uh... (frustrated)`;
-        break;
-      case 'aphasiaReceptive':
-        text = `Blue chair—what? Yes it's fine, the window. (off-topic; does not follow commands)`;
-        break;
-      case 'aphasiaGlobal':
-        text = `(No speech or only groans; unable to name or repeat.)`;
-        break;
+    switch(speech){
+      case 'normal': text = `You can't teach an old dog new tricks. My name is Alex. I’m at home.`; break;
+      case 'dysarthria': text = `Y- you caan'... teash an ol' d- dog new t- tricks... m' name is... A- Alex...`; break;
+      case 'aphasiaExpressive': text = `You... can't... teach... um... the thing... dog... new... uh... (frustrated)`; break;
+      case 'aphasiaReceptive': text = `Blue chair—what? Yes it's fine, the window. (off-topic; does not follow commands)`; break;
+      case 'aphasiaGlobal': text = `(No speech or only groans; unable to name or repeat.)`; break;
     }
     speechLine.textContent = text;
-    try{
-      const u = new SpeechSynthesisUtterance(text.replace(/[()]/g,''));
-      u.rate = 0.95; u.pitch = 1; u.lang = 'en-US';
-      window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
-    }catch(e){}
+    try{ const u = new SpeechSynthesisUtterance(text.replace(/[()]/g,'')); u.rate=.95; u.lang='en-US'; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){}
   }
 
-  // Grading
+  // Findings & grading (unchanged from your previous version)
   function grade(){
     const user = {
-      balance: fBalance.value,
-      eyes:    fEyes.value,
-      pupils:  fPupils.value,
-      face:    fFace.value,
-      arms:    fArms.value,
-      speech:  fSpeech.value
+      balance: fBalance.value, eyes: fEyes.value, pupils: fPupils.value,
+      face: fFace.value, arms: fArms.value, speech: fSpeech.value
     };
     const truth = {
       balance: scenario.balance.startsWith('falls') ? (scenario.balance==='fallsLeft'?'leansLeft':'leansRight') :
                (scenario.balance==='leansLeft'?'leansLeft':scenario.balance==='leansRight'?'leansRight': (scenario.balance==='unsteady'?'unsteady':'normal')),
       eyes:    scenario.gaze,
-      pupils:  scenario.anisocoria ? (scenario.anisocoria==='left'?'unequalLeft':'unequalRight') : 'equal',
+      pupils:  anisocoria ? (anisocoria==='left'?'unequalLeft':'unequalRight') : 'equal',
       face:    scenario.faceDroop==='none'?'none':scenario.faceDroop,
       arms:    scenario.armDrift,
-      speech:  scenario.speech==='normal'?'normal':
-               scenario.speech==='dysarthria'?'dysarthria':
-               scenario.speech==='aphasiaExpressive'?'aphasiaExpressive':
-               scenario.speech==='aphasiaReceptive'?'aphasiaReceptive':'aphasiaGlobal'
+      speech:  scenario.speech
     };
-
-    const fields = [
-      ['Balance','balance'],
-      ['Eyes (gaze)','eyes'],
-      ['Pupils','pupils'],
-      ['Face','face'],
-      ['Arms','arms'],
-      ['Speech','speech']
-    ];
-    gradeList.innerHTML = '';
-    let correct = 0; let total = fields.length;
+    const fields = [['Balance','balance'],['Eyes (gaze)','eyes'],['Pupils','pupils'],['Face','face'],['Arms','arms'],['Speech','speech']];
+    gradeList.innerHTML=''; let correct=0;
     for(const [label,key] of fields){
-      const li = document.createElement('li');
-      if(user[key]===truth[key]){ correct++; li.innerHTML = `✅ <strong>${label}</strong> correct.`; }
+      const li=document.createElement('li');
+      if(user[key]===truth[key]){ correct++; li.innerHTML=`✅ <strong>${label}</strong> correct.`; }
       else{
         const exp = truth[key]
-          .replace('unequalLeft','Unequal (Left larger)')
-          .replace('unequalRight','Unequal (Right larger)')
-          .replace('leansLeft','Leans/Falls Left')
-          .replace('leansRight','Leans/Falls Right')
-          .replace('aphasiaExpressive','Aphasia (expressive)')
-          .replace('aphasiaReceptive','Aphasia (receptive)')
-          .replace('aphasiaGlobal','Aphasia (global/mute)')
-          .replace('slow','Slow pursuit')
-          .replace('none','None')
-          .replace('equal','Equal / reactive')
-          .replace(/^./, c => c.toUpperCase());
-        li.innerHTML = `❌ <strong>${label}</strong> expected: <em>${exp}</em>.`;
+          .replace('unequalLeft','Unequal (Left larger)').replace('unequalRight','Unequal (Right larger)')
+          .replace('leansLeft','Leans/Falls Left').replace('leansRight','Leans/Falls Right')
+          .replace('aphasiaExpressive','Aphasia (expressive)').replace('aphasiaReceptive','Aphasia (receptive)').replace('aphasiaGlobal','Aphasia (global/mute)')
+          .replace('slow','Slow pursuit').replace('none','None').replace('equal','Equal / reactive')
+          .replace(/^./,c=>c.toUpperCase());
+        li.innerHTML=`❌ <strong>${label}</strong> expected: <em>${exp}</em>.`;
       }
       gradeList.appendChild(li);
     }
-
-    const befastPositives = (
-      (truth.balance!=='normal') +
-      ((truth.eyes==='deviationLeft'||truth.eyes==='deviationRight')?1:0) +
-      (truth.face!=='none') +
-      (truth.arms!=='none') +
-      (truth.speech!=='normal')
-    );
-    const lvoCues = ((truth.eyes==='deviationLeft'||truth.eyes==='deviationRight') ? 1:0) +
-                    ((truth.speech==='aphasiaExpressive'||truth.speech==='aphasiaReceptive'||truth.speech==='aphasiaGlobal') ? 1:0);
-
-    gradeSummary.innerHTML = `<strong>Results:</strong> You matched <strong>${correct}/${total}</strong> domains. BE-FAST positives: <strong>${befastPositives}</strong>.`;
-
-    let lines = [];
+    const befastPositives = (truth.balance!=='normal') + ((truth.eyes==='deviationLeft'||truth.eyes==='deviationRight')?1:0) + (truth.face!=='none') + (truth.arms!=='none') + (truth.speech!=='normal');
+    const lvoCues = ((truth.eyes==='deviationLeft'||truth.eyes==='deviationRight')?1:0) + ((/aphasia/.test(truth.speech))?1:0);
+    gradeSummary.innerHTML = `<strong>Results:</strong> You matched <strong>${correct}/6</strong> domains. BE-FAST positives: <strong>${befastPositives}</strong>.`;
+    const lines=[];
     if(befastPositives>=1) lines.push("Findings concern for acute stroke. Determine LKW and activate stroke pathway per protocol.");
-    if(befastPositives>=2) lines.push("Multiple positives raise stroke likelihood; consider transporting to a stroke-capable center.");
+    if(befastPositives>=2) lines.push("Multiple positives raise stroke likelihood; consider transport to a stroke-capable center.");
     if(lvoCues>=1) lines.push("Cortical sign(s) present (gaze deviation and/or aphasia) — possible large vessel occlusion (LVO).");
     if(truth.arms!=='none' && (truth.eyes==='deviationLeft'||truth.speech!=='normal')) lines.push("Motor deficit plus cortical sign strengthens suspicion for LVO.");
     if(truth.pupils!=='equal') lines.push("Unequal pupils are not a BE-FAST item; correlate with trauma/ICP/herniation vs pharmacologic causes.");
     if(befastPositives===0) lines.push("No BE-FAST findings. Continue neuro exam and consider mimics (hypoglycemia, postictal, migraine, toxicity).");
-
     meaning.innerHTML = `<p><strong>What this pattern can mean:</strong></p><ul>${lines.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+    gradeBox.hidden=false; gradeBox.scrollIntoView({behavior:'smooth',block:'start'});
+  }
 
-    gradeBox.hidden = false;
-    gradeBox.scrollIntoView({behavior:'smooth', block:'start'});
+  // Scenario generation
+  function newCase(){
+    scenario = {
+      faceDroop: rand(['none','left','right','none','none']),
+      gaze:      rand(['normal','slow','deviationLeft','deviationRight','normal','slow']),
+      balance:   rand(['normal','unsteady','leansLeft','leansRight','fallsLeft','fallsRight','normal']),
+      armDrift:  rand(['none','left','right','left','right']),
+      armDriftDelay: Math.round((Math.random()*4 + 2)*10)/10,
+      speech:    rand(['normal','dysarthria','aphasiaExpressive','aphasiaReceptive','aphasiaGlobal','normal'])
+    };
+    anisocoria = Math.random()<0.35 ? rand(['left','right']) : null;
+
+    // Pupils
+    const base = 22, bigger = 30, smaller = 16;
+    pL.style.width=base+'px'; pL.style.height=base+'px';
+    pR.style.width=base+'px'; pR.style.height=base+'px';
+    if(anisocoria==='left'){ pL.style.width=bigger+'px'; pL.style.height=bigger+'px'; pR.style.width=smaller+'px'; pR.style.height=smaller+'px'; }
+    if(anisocoria==='right'){ pR.style.width=bigger+'px'; pR.style.height=bigger+'px'; pL.style.width=smaller+'px'; pL.style.height=smaller+'px'; }
+
+    // Reset mouth to neutral each case
+    mouthPath.setAttribute('d','M20,45 C80,60 140,60 200,45');
+
+    // Reset gaze panel and transforms
+    stopGaze(); gazeInfo.hidden = true; gazeLine.textContent='—';
+    pL.style.transform='translate(-50%,-50%)'; pR.style.transform='translate(-50%,-50%)';
+
+    // Reset balance
+    stopBalance();
+
+    // Reset drift figure: arms down & timer UI
+    armsDown(); driftRunning=false; btnDrift.textContent='⏱️ Start 10s'; tClock.textContent='0.0';
+
+    // Reset speech & findings/results
+    speechBox.hidden = true; speechLine.textContent='—';
+    fBalance.value='normal'; fEyes.value='normal'; fPupils.value='equal'; fFace.value='none'; fArms.value='none'; fSpeech.value='normal';
+    gradeBox.hidden=true; gradeList.innerHTML=''; gradeSummary.innerHTML='<strong>Results:</strong> —'; meaning.innerHTML='';
+  }
+
+  // Reset visuals without new scenario
+  function resetSameCase(){
+    stopGaze(); gazeInfo.hidden=true; gazeLine.textContent='—';
+    stopBalance();
+    armsDown(); driftRunning=false; btnDrift.textContent='⏱️ Start 10s'; tClock.textContent='0.0';
+    speechBox.hidden=true; speechLine.textContent='—';
+    fBalance.value='normal'; fEyes.value='normal'; fPupils.value='equal'; fFace.value='none'; fArms.value='none'; fSpeech.value='normal';
+    gradeBox.hidden=true; gradeList.innerHTML=''; gradeSummary.innerHTML='<strong>Results:</strong> —'; meaning.innerHTML='';
   }
 
   // Events
-  btnGaze.addEventListener('click', ()=>{ gazeTimer ? stopGaze() : startGaze(); });
-  btnBalance.addEventListener('click', ()=>{ balanceTimer ? stopBalance() : startBalance(); });
+  btnSmile.addEventListener('click', ()=> animateSmile(scenario.faceDroop));
+  btnGaze.addEventListener('click', ()=> gazeTimer ? stopGaze() : startGaze());
+  btnBalance.addEventListener('click', ()=> balTimer ? stopBalance() : startBalance());
   btnDrift.addEventListener('click', startDrift);
   btnSpeech.addEventListener('click', runSpeech);
   btnGrade.addEventListener('click', grade);
   btnNew.addEventListener('click', newCase);
-  btnReset.addEventListener('click', ()=>{
-    stopGaze(); pL.style.transform='translate(-50%,-50%)'; pR.style.transform='translate(-50%,-50%)';
-    stopBalance(); person.style.transform='rotate(0deg)';
-    resetArms(); speechBox.hidden=true; speechLine.textContent='—';
-    fBalance.value='normal'; fEyes.value='normal'; fPupils.value='equal'; fFace.value='none'; fArms.value='none'; fSpeech.value='normal';
-    gradeBox.hidden=true; gradeList.innerHTML=''; gradeSummary.innerHTML='<strong>Results:</strong> —'; meaning.innerHTML='';
-  });
+  btnReset.addEventListener('click', resetSameCase);
 
-  // Init
+  // Go
   newCase();
 })();
 </script>
