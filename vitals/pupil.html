@@ -9,7 +9,13 @@
     --brand:#007B8A; --brand-600:#066371;
     --bg:#f0f8ff; --panel:#ffffff; --ink:#0f2b33; --muted:#46636a;
     --border:#e2e8f0; --shadow:0 10px 28px rgba(2,8,23,.08);
+    /* Responsive eye size: stays side-by-side on phones without overflow */
+    --eye-size: 220px;
   }
+  @media (max-width: 700px){
+    :root{ --eye-size: clamp(160px, 44vw, 190px); }
+  }
+
   *{box-sizing:border-box}
   html,body{height:100%}
   html,body{overflow-x:hidden}
@@ -23,23 +29,25 @@
   h2{margin:.25rem 0 .75rem}
   .card{background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:14px; box-shadow:var(--shadow); margin-bottom:12px}
 
+  /* Eyes stay on same plane (two columns) at ALL sizes */
   .face{
-    display:grid; gap:16px; grid-template-columns:1fr; place-items:center; padding:6px;
+    display:grid; gap:10px; grid-template-columns: repeat(2, minmax(0,1fr));
+    align-items:center; justify-items:center; padding:6px;
   }
-  @media(min-width:700px){ .face{ grid-template-columns:1fr 1fr; } }
 
   .eye{
-    width:220px; height:220px; background:#fdebd0;
-    border-radius:50%; border:2px solid #d7ccc8; position:relative;
+    width:var(--eye-size); height:var(--eye-size);
+    background:#fdebd0; border-radius:50%; border:2px solid #d7ccc8; position:relative;
     box-shadow:inset 0 8px 24px rgba(0,0,0,.12);
   }
   .sclera{
-    position:absolute; inset:22px; background:#fff; border-radius:50%;
+    position:absolute; inset:calc(var(--eye-size) * 0.10); background:#fff; border-radius:50%;
     box-shadow:inset 0 0 0 1px #e5e7eb;
   }
   .iris{
     position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-    width:120px; height:120px; border-radius:50%;
+    width:calc(var(--eye-size) * 0.545); height:calc(var(--eye-size) * 0.545);
+    border-radius:50%;
     background:radial-gradient(circle at 35% 35%, #88b1c5, #3d6a7a 70%, #1f3c46 100%);
     box-shadow:inset 0 0 18px rgba(0,0,0,.35);
   }
@@ -47,22 +55,24 @@
     position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
     width:40px; height:40px; border-radius:50%; background:#000;
     box-shadow:0 0 10px rgba(0,0,0,.35);
+    transition: width .18s ease, height .18s ease;
   }
   .corneal-gloss{
     position:absolute; top:38%; left:42%;
-    width:26px; height:16px; border-radius:50%; background:rgba(255,255,255,.6);
+    width:calc(var(--eye-size) * 0.12); height:calc(var(--eye-size) * 0.07);
+    border-radius:50%; background:rgba(255,255,255,.6);
     filter:blur(1px);
   }
 
-  .controls{display:grid; gap:10px; grid-template-columns:1fr}
-  @media(min-width:760px){ .controls{grid-template-columns:1fr 1fr} }
   .row{display:grid; gap:10px; grid-template-columns:1fr}
+  .controls{display:grid; gap:10px; grid-template-columns:1fr 1fr}
+  @media (max-width:560px){ .controls{ grid-template-columns:1fr } }
+
   label{font-weight:700}
   select{
     width:100%; padding:.6rem .7rem; border-radius:10px; border:1px solid var(--border);
     background:#fff;
   }
-
   .btn{
     appearance:none; border:0; background:var(--brand); color:#fff;
     padding:.7rem 1rem; border-radius:12px; font-weight:800; cursor:pointer;
@@ -70,6 +80,7 @@
   .btn:hover{background:var(--brand-600)}
   .btn.ghost{background:#fff; color:var(--brand); border:2px solid var(--brand)}
   .btn.warn{background:#c77b00}
+  .btn.full{width:100%}
 
   .resp{margin:.5rem 0 0 0; padding:.6rem .7rem; border-radius:10px; background:#f8fafc; border:1px solid var(--border)}
   .results-list{margin:.5rem 0 0 1rem}
@@ -94,7 +105,7 @@
           <div class="pupil" id="pupilL"></div>
           <div class="corneal-gloss"></div>
         </div>
-        <p style="text-align:center;margin:.5rem 0 0"><strong>Left</strong></p>
+        <p style="text-align:center;margin:.4rem 0 0"><strong>Left</strong></p>
       </div>
 
       <!-- Right eye -->
@@ -105,16 +116,12 @@
           <div class="pupil" id="pupilR"></div>
           <div class="corneal-gloss"></div>
         </div>
-        <p style="text-align:center;margin:.5rem 0 0"><strong>Right</strong></p>
+        <p style="text-align:center;margin:.4rem 0 0"><strong>Right</strong></p>
       </div>
     </div>
 
     <div class="row" style="margin-top:10px">
       <button class="btn" id="toggleLight">🔦 Light: OFF</button>
-      <div style="display:flex; gap:10px; flex-wrap:wrap">
-        <button class="btn warn" id="newCase">Next Case</button>
-        <button class="btn ghost" id="resetChoices">Reset Choices</button>
-      </div>
     </div>
   </section>
 
@@ -157,6 +164,14 @@
       <ul class="results-list" id="detailList"></ul>
       <div id="reasons" style="margin-top:.5rem"></div>
     </div>
+
+    <!-- Moved here: bottom controls per your request -->
+    <div class="row" style="margin-top:12px">
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button class="btn warn" id="newCase">Next Case</button>
+        <button class="btn ghost" id="resetChoices">Reset Choices</button>
+      </div>
+    </div>
   </section>
 </main>
 
@@ -177,8 +192,6 @@
   const reasonsBox = document.getElementById('reasons');
 
   // --- Condition model
-  // Visual sizes (px) and behavior flags by condition.
-  // We don't display these values; they just drive the visuals.
   const CONDITIONS = {
     normal:         { label:"Normal / reactive",        base:38, constrict:22, reactive:true,  sluggish:false },
     pinpoint:       { label:"Pinpoint",                 base:16, constrict:12, reactive:true,  sluggish:false },
@@ -188,7 +201,6 @@
     fixedMid:       { label:"Fixed mid-position",       base:38, constrict:38, reactive:false, sluggish:false }
   };
 
-  // Reasons mapped to the true condition (examples; not diagnostic)
   const REASONS = {
     normal: [
       "Normal finding in an awake, well-perfused patient",
@@ -225,7 +237,6 @@
     ]
   };
 
-  // Weighted random pick of conditions (favor normal/learners’ variety)
   const WEIGHTED = [
     "normal","normal","normal",
     "pinpoint","pinpoint",
@@ -244,7 +255,6 @@
   function applyPupil(el, cond, toLight){
     const c = CONDITIONS[cond];
     const size = (c.reactive && toLight) ? c.constrict : c.base;
-    // Animate if sluggish; instant for fixed; quick for reactive
     el.style.transition = c.reactive ? (c.sluggish ? 'width 1.2s ease, height 1.2s ease' : 'width .18s ease, height .18s ease') : 'none';
     el.style.width = size + 'px';
     el.style.height = size + 'px';
@@ -258,19 +268,16 @@
 
   function newCase(){
     lightOn = false;
-    // Ensure a realistic mix; sometimes symmetric, sometimes anisocoria
     const left = rand(WEIGHTED);
     let right = rand(WEIGHTED);
 
-    // Small chance to intentionally generate anisocoria patterns that make sense
-    // e.g., one fixed dilated + contralateral normal
     if(Math.random()<0.35){
       const pattern = rand(["anisocoria1","anisocoria2","symmetric"]);
-      if(pattern==="anisocoria1"){ // fixed dilated on one side
+      if(pattern==="anisocoria1"){
         const side = Math.random()<0.5 ? 'L' : 'R';
         truth[side] = "fixedDilated";
         truth[side==='L'?'R':'L'] = rand(["normal","sluggish","dilatedReactive"]);
-      }else if(pattern==="anisocoria2"){ // pinpoint one side (rare pharmacologic)
+      }else if(pattern==="anisocoria2"){
         const side = Math.random()<0.5 ? 'L' : 'R';
         truth[side] = "pinpoint";
         truth[side==='L'?'R':'L'] = rand(["normal","sluggish"]);
@@ -281,7 +288,6 @@
       truth.L = left; truth.R = right;
     }
 
-    // Reset UI selections/results
     selL.value = ""; selR.value = "";
     resultsWrap.hidden = true;
     detailList.innerHTML = "";
@@ -328,7 +334,6 @@
     detailList.appendChild(liL);
     detailList.appendChild(liR);
 
-    // Reasons for the actual conditions
     function listReasons(side, cond){
       const title = side + " eye – " + conditionLabel(cond);
       const items = (REASONS[cond]||[]).map(r=>`<li>${r}</li>`).join('');
