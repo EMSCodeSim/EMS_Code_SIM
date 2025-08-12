@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Skin Appearance Simulator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+<title>Skin + Cap Refill Simulator</title>
 <style>
   :root{
     --brand:#007B8A; --brand-dark:#0a616c;
@@ -11,397 +11,208 @@
     --shadow:0 10px 24px rgba(0,0,0,.08); --radius:16px;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+       display:flex;flex-direction:column;align-items:center;min-height:100vh}
   header{width:100%;background:var(--brand);color:#fff;text-align:center;padding:14px 16px;font-weight:600}
-  main{width:100%;max-width:1100px;padding:12px;display:grid;gap:12px}
+  main{width:100%;max-width:900px;padding:12px;display:grid;gap:12px}
   .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
   .layout{display:grid;gap:12px}
-  @media(min-width:920px){.layout{grid-template-columns:1.1fr .9fr}}
-  .skin-stage{background:var(--muted);border-radius:14px;padding:12px;display:grid;gap:12px}
-  .zones{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-  .zone-btn{border:0;border-radius:12px;background:#fff;padding:10px;box-shadow:0 1px 0 #e7ecee;cursor:pointer}
-  .zone-btn[aria-selected="true"]{outline:3px solid var(--brand)}
-  .stage{
-    width:100%;aspect-ratio:4/3;border-radius:14px;background:#dfeff2;position:relative;overflow:hidden;
-    display:grid;place-items:center;
-  }
-  /* The skin tile (pure CSS/SVG – no images) */
+  @media(min-width:860px){.layout{grid-template-columns:1.1fr .9fr}}
+
+  /* Stage */
+  .stage{background:var(--muted);border-radius:14px;padding:12px;display:grid;gap:12px}
+  .skin-wrap{display:grid;place-items:center}
   .skin{
-    width:min(92%,520px);aspect-ratio:1/1;border-radius:18px;position:relative;overflow:hidden;
+    width:min(92%,520px); aspect-ratio:1/1; border-radius:18px; position:relative; overflow:hidden;
     box-shadow:inset 0 0 60px rgba(0,0,0,.18), inset 0 0 140px rgba(0,0,0,.12);
+    touch-action:manipulation; /* reduce accidental zoom/pan */
   }
-  /* Base tone layer (updated via inline style bg) */
+  /* Base tone & shading */
   .skin::before{
-    content:"";position:absolute;inset:0;border-radius:18px;transition:background 180ms ease;
+    content:""; position:absolute; inset:0; border-radius:18px;
+    background: radial-gradient(120% 120% at 50% 20%, var(--tone-hi), var(--tone) 45%, var(--tone-lo) 85%);
+    transition: filter 160ms ease, background 160ms ease;
   }
-  /* Color state overlays */
-  .overlay{position:absolute;inset:0;border-radius:18px;pointer-events:none}
-  .ov-pale{background:radial-gradient(120% 120% at 50% 20%, rgba(255,255,255,.18), rgba(255,255,255,.06) 45%, transparent 70%)}
-  .ov-flush{background:radial-gradient(120% 120% at 50% 20%, rgba(245,72,72,.18), rgba(245,72,72,.06) 45%, transparent 70%)}
-  .ov-cyanosis{background:radial-gradient(120% 120% at 50% 20%, rgba(40,90,160,.20), rgba(40,90,160,.10) 45%, transparent 70%) mix, transparent}
-  .ov-jaundice{background:radial-gradient(120% 120% at 50% 20%, rgba(240,210,60,.20), rgba(240,210,60,.10) 50%, transparent 75%)}
-  /* Mottling via repeating linear gradients */
-  .ov-mottle{
-    background:
-      repeating-radial-gradient(circle at 30% 40%, rgba(120,60,60,.16) 0 8px, transparent 8px 16px),
-      repeating-radial-gradient(circle at 70% 60%, rgba(120,60,60,.14) 0 7px, transparent 7px 14px);
-    mix-blend-mode:multiply; opacity:.65;
-    animation:mottlePulse 4s ease-in-out infinite;
+  /* Blanch overlay (pressure) – we animate opacity during press/release */
+  .blanch{
+    position:absolute; inset:0; border-radius:18px; pointer-events:none; opacity:0;
+    background: radial-gradient(140% 140% at 50% 35%, rgba(255,255,255,.65), rgba(255,255,255,.25) 45%, transparent 75%);
+    transition: opacity 120ms ease;
   }
-  @keyframes mottlePulse{
-    50% { opacity:.35; transform:scale(1.01) }
-  }
-  /* Moisture: sheen and droplets */
-  .ov-sheen{
+  /* Sweat sheen (for future) */
+  .sheen{
+    position:absolute; inset:0; border-radius:18px; pointer-events:none; opacity:0;
     background:linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,0) 35%, rgba(255,255,255,.06) 60%, rgba(255,255,255,0) 80%);
-    mix-blend-mode:screen; opacity:.0; transition:opacity 180ms ease;
   }
-  .ov-drops{
-    background:
-      radial-gradient(circle at 20% 25%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px),
-      radial-gradient(circle at 68% 32%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px),
-      radial-gradient(circle at 40% 70%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px),
-      radial-gradient(circle at 78% 74%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px);
-    opacity:0; transition:opacity 180ms ease;
-  }
-  /* Temp: cool/flush edge tint */
-  .ov-cool{ box-shadow: inset 0 0 0 9999px rgba(40,120,220,.10) }
-  .ov-warm{ box-shadow: inset 0 0 0 9999px rgba(220,70,40,.10) }
 
-  .label{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:#ffffffcc;padding:4px 10px;border-radius:999px;font-size:.9rem}
+  .label{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+         background:#ffffffcc;padding:4px 10px;border-radius:999px;font-size:.9rem}
 
+  /* Controls */
   .controls{display:grid;gap:10px}
   .row{display:grid;gap:10px}
   @media(min-width:560px){.row{grid-template-columns:1fr 1fr}}
   .control{background:#fff;border-radius:12px;padding:10px;border:1px solid #e8eef0}
   .control h3{margin:.2rem 0 .6rem;font-size:.95rem}
-  select,input[type="range"]{width:100%}
-  select{padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
-  input[type="range"]{accent-color:var(--brand)}
-  .btn{appearance:none;border:0;background:var(--brand);color:#fff;padding:12px 14px;border-radius:12px;font-weight:700;cursor:pointer;width:100%}
-  .btn.alt{background:#124b54}
-  .btn.warn{background:#c77b00}
-  .btn.bad{background:#b81e2b}
-  .btn:active{transform:translateY(1px)}
   .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
   .kpi{background:#fff;border:1px solid #e8eef0;border-radius:10px;padding:8px;text-align:center}
   .kpi strong{display:block;font-size:1.1rem}
+  select,input[type="range"],input[type="number"],input[type="color"]{
+    width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff
+  }
+  .btn{appearance:none;border:0;background:var(--brand);color:#fff;padding:12px 14px;border-radius:12px;
+       font-weight:700;cursor:pointer;width:100%}
+  .btn.alt{background:#124b54}
+  .btn.warn{background:#c77b00}
+  .btn.bad{background:#b81e2b}
+  .btn.ghost{background:#fff; color:var(--brand); border:2px solid var(--brand)}
+  .btn:active{transform:translateY(1px)}
   .status{font-size:.9rem;padding:8px 10px;border-radius:10px;background:#fff;border:1px solid #e8eef0;color:#0b3b44}
   footer{opacity:.7;font-size:.85rem;padding:12px}
+
+  .swatch{
+    display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:center;
+    background:#fff;border:1px solid #e8eef0;border-radius:12px;padding:8px;
+  }
+  .chip{width:64px;height:40px;border-radius:8px;border:1px solid #dfe7ea}
+  .muted{color:#3a5e67;font-size:.9rem}
 </style>
 </head>
 <body>
-<header>Skin Appearance Simulator</header>
+<header>Skin Appearance + Capillary Refill Simulator</header>
 
 <main>
   <section class="card layout">
-    <div class="skin-stage">
-      <div class="zones" id="zones">
-        <button class="zone-btn" data-zone="face" aria-selected="true">Face</button>
-        <button class="zone-btn" data-zone="lipsnails">Lips/Nails</button>
-        <button class="zone-btn" data-zone="hands">Hands</button>
-        <button class="zone-btn" data-zone="chest">Chest</button>
-      </div>
-
-      <div class="stage">
+    <!-- STAGE -->
+    <div class="stage">
+      <div class="skin-wrap">
         <div class="skin" id="skin">
-          <div class="overlay ov-pale" id="ovPale" style="opacity:0"></div>
-          <div class="overlay ov-flush" id="ovFlush" style="opacity:0"></div>
-          <div class="overlay ov-cyanosis" id="ovCyan" style="opacity:0"></div>
-          <div class="overlay ov-jaundice" id="ovJaund" style="opacity:0"></div>
-          <div class="overlay ov-mottle" id="ovMottle" style="opacity:0"></div>
-          <div class="overlay ov-sheen" id="ovSheen"></div>
-          <div class="overlay ov-drops" id="ovDrops"></div>
-          <div class="overlay ov-cool" id="ovCool" style="opacity:0"></div>
-          <div class="overlay ov-warm" id="ovWarm" style="opacity:0"></div>
-          <div class="label" id="zoneLabel">Face</div>
+          <div class="blanch" id="blanch"></div>
+          <div class="sheen" id="sheen"></div>
+          <div class="label">Press & hold to blanch → release to refill</div>
         </div>
       </div>
     </div>
 
+    <!-- CONTROLS -->
     <div class="controls">
       <div class="control">
-        <h3>Tone & Temperature</h3>
+        <h3>Baseline Tone (Static)</h3>
         <div class="row">
           <div>
-            <label>Base skin tone (Fitzpatrick I–VI)
-              <select id="tone">
-                <option value="I">I (very light)</option>
-                <option value="II" selected>II</option>
-                <option value="III">III</option>
-                <option value="IV">IV</option>
-                <option value="V">V</option>
-                <option value="VI">VI (very dark)</option>
-              </select>
+            <label>Pick tone once
+              <input id="tonePicker" type="color" value="#e5bda1"/>
             </label>
           </div>
           <div>
-            <label>Temperature
-              <select id="temp">
-                <option value="cool">Cool</option>
-                <option value="normal" selected>Normal</option>
-                <option value="warm">Warm</option>
-              </select>
+            <label>Lock baseline
+              <button id="lockBtn" class="btn">🔒 Lock Baseline</button>
             </label>
+          </div>
+        </div>
+        <div class="swatch" aria-live="polite">
+          <div class="chip" id="chip"></div>
+          <div>
+            <div class="muted">Baseline (hex): <strong id="toneHex">#e5bda1</strong></div>
+            <small class="muted">Once locked, tone stays fixed for all CRT tests.</small>
           </div>
         </div>
       </div>
 
       <div class="control">
-        <h3>Color States</h3>
+        <h3>Capillary Refill</h3>
         <div class="row">
           <div>
-            <label>Pallor
-              <input id="pallor" type="range" min="0" max="100" value="0"/>
+            <label>Target refill time (scenario)
+              <input id="targetMs" type="number" min="200" max="8000" step="50" value="1500"/>
             </label>
           </div>
           <div>
-            <label>Flushing
-              <input id="flush" type="range" min="0" max="100" value="0"/>
+            <label>Abnormal threshold (ms)
+              <input id="abnMs" type="number" min="1000" max="6000" step="100" value="2000"/>
             </label>
           </div>
         </div>
         <div class="row">
-          <div>
-            <label>Cyanosis
-              <input id="cyan" type="range" min="0" max="100" value="0"/>
-            </label>
-          </div>
-          <div>
-            <label>Jaundice
-              <input id="jaund" type="range" min="0" max="100" value="0"/>
-            </label>
-          </div>
+          <button class="btn alt" id="randomizeBtn">🎲 Randomize Scenario</button>
+          <button class="btn bad" id="resetBtn">Reset</button>
         </div>
-        <div>
-          <label>Mottling
-            <input id="mottle" type="range" min="0" max="100" value="0"/>
-          </label>
+        <div class="kpis">
+          <div class="kpi"><small>CRT (ms)</small><strong id="crtMs">—</strong></div>
+          <div class="kpi"><small>CRT (s)</small><strong id="crtSec">—</strong></div>
+          <div class="kpi"><small>Status</small><strong id="crtStatus">Ready</strong></div>
         </div>
-      </div>
-
-      <div class="control">
-        <h3>Moisture</h3>
-        <div class="row">
-          <div>
-            <label>Moisture level
-              <input id="moist" type="range" min="0" max="100" value="0"/>
-            </label>
-          </div>
-          <div class="kpis">
-            <div class="kpi"><small>Moisture</small><strong id="moistLabel">Dry</strong></div>
-            <div class="kpi"><small>Temp</small><strong id="tempLabel">Normal</strong></div>
-            <div class="kpi"><small>State</small><strong id="stateSummary">—</strong></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="control">
-        <h3>Scenario</h3>
-        <div class="row">
-          <button class="btn alt" id="progressBtn">▶ Progression (30s)</button>
-          <button class="btn warn" id="randomBtn">Randomize Zone</button>
-        </div>
-        <div class="row">
+        <div class="row" style="margin-top:8px">
           <button class="btn" id="emitBtn">Emit Result (window.dispatchEvent)</button>
-          <button class="btn bad" id="resetBtn">Reset Zone</button>
+          <button class="btn ghost" id="hintBtn">Tips</button>
         </div>
-        <div class="status" id="status">Ready. Each zone saves its own settings.</div>
+        <div class="status" id="status">Pick a tone, lock it, then press & hold on the skin to blanch.</div>
       </div>
     </div>
   </section>
 </main>
 
-<footer>© EMS Code Sim — Skin Appearance Trainer</footer>
+<footer>© EMS Code Sim — Skin & Cap Refill</footer>
 
 <script>
-/* Skin Appearance Simulator
-   - Zones: face, lipsnails, hands, chest (each with independent state)
-   - Tone (Fitz I–VI), Temp (cool/normal/warm)
-   - Color states: pallor, flush, cyanosis, jaundice, mottling (0–100)
-   - Moisture 0–100: Dry → Clammy → Diaphoretic (adds sheen & droplets)
-   - Randomize, 30s progression (e.g., shock trajectory), Emit result event
+/* Skin + Capillary Refill Simulator
+   - Static baseline tone (color picker, then lock)
+   - Press/hold to blanch (opacity overlay)
+   - On release: animated refill toward baseline; measure time to 90% recovery (CRT)
+   - Scenario controls: target refill ms & abnormal threshold
+   - Emits 'cap-refill-result' event
 */
 
 (function(){
-  const toneSel = document.getElementById('tone');
-  const tempSel = document.getElementById('temp');
-  const pallor = document.getElementById('pallor');
-  const flush  = document.getElementById('flush');
-  const cyan   = document.getElementById('cyan');
-  const jaund  = document.getElementById('jaund');
-  const mottle = document.getElementById('mottle');
-  const moist  = document.getElementById('moist');
+  // --- DOM
+  const skin       = document.getElementById('skin');
+  const blanch     = document.getElementById('blanch');
+  const sheen      = document.getElementById('sheen');
+  const tonePicker = document.getElementById('tonePicker');
+  const lockBtn    = document.getElementById('lockBtn');
+  const chip       = document.getElementById('chip');
+  const toneHex    = document.getElementById('toneHex');
+  const targetMsEl = document.getElementById('targetMs');
+  const abnMsEl    = document.getElementById('abnMs');
+  const crtMsEl    = document.getElementById('crtMs');
+  const crtSecEl   = document.getElementById('crtSec');
+  const crtStatus  = document.getElementById('crtStatus');
+  const statusEl   = document.getElementById('status');
+  const emitBtn    = document.getElementById('emitBtn');
+  const randomize  = document.getElementById('randomizeBtn');
+  const resetBtn   = document.getElementById('resetBtn');
+  const hintBtn    = document.getElementById('hintBtn');
 
-  const moistLabel = document.getElementById('moistLabel');
-  const tempLabel  = document.getElementById('tempLabel');
-  const stateSummary = document.getElementById('stateSummary');
+  // --- Model
+  let baseline = '#e5bda1';
+  let locked = false;
+  let pressing = false;
+  let pressStart = 0;
+  let releaseStart = 0;
+  let crtMeasured = null; // ms
+  let targetMs = 1500;    // scenario refill duration to ~100%
+  let abnMs = 2000;
 
-  const skin = document.getElementById('skin');
-  const ovPale = document.getElementById('ovPale');
-  const ovFlush = document.getElementById('ovFlush');
-  const ovCyan = document.getElementById('ovCyan');
-  const ovJaund = document.getElementById('ovJaund');
-  const ovMottle = document.getElementById('ovMottle');
-  const ovSheen = document.getElementById('ovSheen');
-  const ovDrops = document.getElementById('ovDrops');
-  const ovCool = document.getElementById('ovCool');
-  const ovWarm = document.getElementById('ovWarm');
+  // Visual state: blanch amount (0..1)
+  let blanchAmt = 0;
+  let refillPct = 0; // 0..1 progression from fully blanched back to baseline after release
 
-  const zonesBar = document.getElementById('zones');
-  const zoneLabel = document.getElementById('zoneLabel');
-  const statusEl = document.getElementById('status');
+  // Helpers
+  const clamp = (n,min,max)=>Math.max(min,Math.min(max,n));
+  const lerp = (a,b,t)=>a+(b-a)*t;
 
-  const progressBtn = document.getElementById('progressBtn');
-  const randomBtn = document.getElementById('randomBtn');
-  const emitBtn = document.getElementById('emitBtn');
-  const resetBtn = document.getElementById('resetBtn');
-
-  const ZONES = ['face','lipsnails','hands','chest'];
-
-  // Base tones (approximate, tuned to keep color overlays visible on all tones)
-  const TONES = {
-    I:  '#fde9d7',
-    II: '#f3d4bd',
-    III:'#e5bda1',
-    IV: '#c89579',
-    V:  '#9a6a4e',
-    VI: '#6f4a36'
-  };
-
-  // Each zone has its own state
-  const state = {};
-  for (const z of ZONES){
-    state[z] = {
-      tone:'II', temp:'normal',
-      pallor:0, flush:0, cyan:0, jaund:0, mottle:0, moist:0
-    };
+  function hexToRgb(hex){
+    const v = parseInt(hex.slice(1),16);
+    return { r:(v>>16)&255, g:(v>>8)&255, b:v&255 };
   }
-  let currentZone = 'face';
-  applyStateToUI();
-
-  // Wire zone buttons
-  zonesBar.querySelectorAll('.zone-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      zonesBar.querySelectorAll('.zone-btn').forEach(b=>b.setAttribute('aria-selected','false'));
-      btn.setAttribute('aria-selected','true');
-      currentZone = btn.dataset.zone;
-      zoneLabel.textContent = labelForZone(currentZone);
-      applyStateToUI();
-      status('Switched to '+labelForZone(currentZone)+'.');
-    });
-  });
-
-  // UI handlers
-  [toneSel,tempSel,pallor,flush,cyan,jaund,mottle,moist].forEach(el=>{
-    el.addEventListener('input', ()=>{
-      writeUIToState();
-      render();
-    });
-  });
-
-  resetBtn.addEventListener('click', ()=>{
-    state[currentZone] = { tone:'II', temp:'normal', pallor:0, flush:0, cyan:0, jaund:0, mottle:0, moist:0 };
-    applyStateToUI(); render(); status('Zone reset.');
-  });
-
-  randomBtn.addEventListener('click', ()=>{
-    const tones = Object.keys(TONES);
-    const temps = ['cool','normal','warm'];
-    const rand = ()=> Math.floor(Math.random()*101);
-    state[currentZone] = {
-      tone: pick(tones),
-      temp: pick(temps),
-      pallor:rand(), flush:rand(), cyan:rand(), jaund:rand(), mottle:rand(), moist:rand()
-    };
-    applyStateToUI(); render(); status('Randomized '+labelForZone(currentZone)+'.');
-  });
-
-  // 30s shock-like progression: pale↑, cyan↑ (for lips/nails), mottle↑, moist↑, temp→cool
-  let progTimer = null, progStart = 0;
-  progressBtn.addEventListener('click', ()=>{
-    if (progTimer){ clearInterval(progTimer); progTimer=null; progressBtn.textContent='▶ Progression (30s)'; status('Progression stopped.'); return; }
-    progressBtn.textContent='⏸ Progressing…';
-    progStart = Date.now();
-    const startState = { ...state[currentZone] };
-    progTimer = setInterval(()=>{
-      const t = (Date.now()-progStart)/30000; // 0 -> 1 over 30s
-      if (t>=1){ clearInterval(progTimer); progTimer=null; progressBtn.textContent='▶ Progression (30s)'; status('Progression complete.'); }
-      const s = state[currentZone];
-      s.pallor = clamp( lerp(startState.pallor, 85, t), 0, 100 );
-      s.mottle = clamp( lerp(startState.mottle, 80, t), 0, 100 );
-      s.moist  = clamp( lerp(startState.moist , 90, t), 0, 100 );
-      s.flush  = clamp( lerp(startState.flush , 10, t), 0, 100 );
-      s.jaund  = clamp( lerp(startState.jaund , 10, t), 0, 100 );
-      s.cyan   = clamp( lerp(startState.cyan  , currentZone==='lipsnails'? 85: 35, t), 0, 100 );
-      s.temp   = t>0.6 ? 'cool' : startState.temp;
-      applyStateToUI(); render();
-    }, 200);
-    status('Progression started (≈30s).');
-  });
-
-  emitBtn.addEventListener('click', ()=>{
-    const payload = { zone:currentZone, ...state[currentZone], timestamp:Date.now() };
-    window.dispatchEvent(new CustomEvent('skin-sim-result',{ detail: payload }));
-    console.log('[skin-sim-result]', payload);
-    status('Emitted result for '+labelForZone(currentZone)+'.');
-  });
-
-  // Render
-  function render(){
-    const s = state[currentZone];
-
-    // Base tone
-    skin.style.setProperty('--tone', TONES[s.tone]);
-    skin.style.setProperty('background','none');
-    skin.style.setProperty('--tone2', shade(TONES[s.tone], -6));
-    // gentle texture via gradient to avoid flat color
-    skin.style.setProperty('background',
-      `radial-gradient(120% 120% at 50% 20%, ${shade(TONES[s.tone], 6)}, ${TONES[s.tone]} 45%, ${shade(TONES[s.tone], -6)} 85%)`);
-
-    // Overlays opacity mapping (curve for subtle control)
-    ovPale.style.opacity   = mapCurve(s.pallor);
-    ovFlush.style.opacity  = mapCurve(s.flush);
-    ovCyan.style.opacity   = mapCurve(s.cyan);
-    ovJaund.style.opacity  = mapCurve(s.jaund);
-    ovMottle.style.opacity = mapCurve(s.mottle);
-
-    // Moisture visuals
-    const moistNorm = s.moist/100;
-    ovSheen.style.opacity = clamp(moistNorm*0.9, 0, 0.9);
-    ovDrops.style.opacity = moistNorm>0.6 ? clamp((moistNorm-0.6)/0.4, 0, 1) : 0;
-
-    // Temp tint
-    ovCool.style.opacity = s.temp==='cool' ? .35 : 0;
-    ovWarm.style.opacity = s.temp==='warm' ? .35 : 0;
-
-    // KPIs
-    moistLabel.textContent = s.moist<10 ? 'Dry' : s.moist<40 ? 'Slight' : s.moist<70 ? 'Clammy' : 'Diaphoretic';
-    tempLabel.textContent = s.temp[0].toUpperCase() + s.temp.slice(1);
-    stateSummary.textContent = summarize(s);
+  function rgbToHex({r,g,b}){
+    return "#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
   }
-
-  function applyStateToUI(){
-    const s = state[currentZone];
-    toneSel.value = s.tone; tempSel.value = s.temp;
-    pallor.value = s.pallor; flush.value=s.flush; cyan.value=s.cyan; jaund.value=s.jaund; mottle.value=s.mottle; moist.value=s.moist;
-    render();
+  function mixHex(a,b,t){
+    const A=hexToRgb(a), B=hexToRgb(b);
+    return rgbToHex({ r:Math.round(lerp(A.r,B.r,t)), g:Math.round(lerp(A.g,B.g,t)), b:Math.round(lerp(A.b,B.b,t)) });
   }
-  function writeUIToState(){
-    const s = state[currentZone];
-    s.tone = toneSel.value; s.temp = tempSel.value;
-    s.pallor = num(pallor); s.flush=num(flush); s.cyan=num(cyan); s.jaund=num(jaund); s.mottle=num(mottle); s.moist=num(moist);
-    status('Updated '+labelForZone(currentZone)+'.');
-  }
-
-  // Utils
-  function labelForZone(z){ return z==='lipsnails'?'Lips/Nails': z[0].toUpperCase()+z.slice(1) }
-  function num(el){ return Number(el.value) }
-  function lerp(a,b,t){ return a+(b-a)*t }
-  function clamp(n,min=0,max=1){ return Math.max(min,Math.min(max,n)) }
-  function mapCurve(v){ return Math.pow(v/100, 0.85) } // slightly quicker ramp-up
-  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
-  function status(msg){ document.getElementById('status').textContent = msg }
   function shade(hex,percent){ // +/- percent
     const f=parseInt(hex.slice(1),16), t=percent<0?0:255, p=Math.abs(percent)/100;
     const R=f>>16, G=(f>>8)&0x00FF, B=f&0x0000FF;
@@ -409,8 +220,177 @@
     return `#${(0x1000000 + (r<<16) + (g<<8) + b).toString(16).slice(1)}`
   }
 
-  // Init
-  render();
+  // --- UI init
+  applyTone(baseline);
+  tonePicker.addEventListener('input', ()=>{
+    if(locked){ status('Baseline is locked. Unlock to change.'); tonePicker.value = baseline; return; }
+    baseline = tonePicker.value;
+    applyTone(baseline);
+    status('Baseline preview updated.');
+  });
+  lockBtn.addEventListener('click', ()=>{
+    locked = !locked;
+    lockBtn.textContent = locked ? '🔓 Unlock Baseline' : '🔒 Lock Baseline';
+    tonePicker.disabled = locked;
+    status(locked ? 'Baseline locked.' : 'Baseline unlocked.');
+  });
+
+  randomize.addEventListener('click', ()=>{
+    // Random realistic scenario: 1.0–3.5s target
+    const ms = Math.floor(1000 + Math.random()*2500);
+    const threshold = 2000; // keep teaching default
+    targetMsEl.value = ms; abnMsEl.value = threshold;
+    updateScenario();
+    status('Scenario randomized (target ~'+ms+' ms).');
+  });
+
+  resetBtn.addEventListener('click', reset);
+
+  function applyTone(hex){
+    chip.style.background = hex;
+    toneHex.textContent = hex.toLowerCase();
+    const hi = shade(hex, +6);
+    const lo = shade(hex, -6);
+    skin.style.setProperty('--tone', hex);
+    skin.style.setProperty('--tone-hi', hi);
+    skin.style.setProperty('--tone-lo', lo);
+  }
+
+  function updateScenario(){
+    targetMs = Number(targetMsEl.value) || 1500;
+    abnMs = Number(abnMsEl.value) || 2000;
+  }
+  targetMsEl.addEventListener('input', updateScenario);
+  abnMsEl.addEventListener('input', updateScenario);
+  updateScenario();
+
+  // --- Interaction: press/hold/release on skin
+  function startPress(){
+    if(!locked){ status('Lock a baseline tone before testing.'); return; }
+    if(pressing) return;
+    pressing = true;
+    crtMeasured = null;
+    pressStart = performance.now();
+    releaseStart = 0;
+    // Animate blanch in
+    blanchAmt = 0;
+    requestAnimationFrame(stepPressIn);
+  }
+  function stepPressIn(ts){
+    if(!pressing) return;
+    blanchAmt = clamp(blanchAmt + 0.08, 0, 1); // ramp to full blanch quickly
+    renderBlanch();
+    // subtle haptic-like cue via status
+    if(blanchAmt>=1 && Math.random()<0.02) status('Holding pressure…');
+    requestAnimationFrame(stepPressIn);
+  }
+  function endPress(){
+    if(!pressing) return;
+    pressing = false;
+    releaseStart = performance.now();
+    // Start refill animation from fully blanched back to baseline
+    refillPct = 0;
+    requestAnimationFrame(stepRefill);
+  }
+  function stepRefill(now){
+    if(pressing) return; // interrupted
+    // progress 0..1 over targetMs
+    const t = clamp((now - releaseStart) / targetMs, 0, 1);
+    refillPct = t;
+
+    // As refill progresses, reduce blanch overlay opacity
+    const remaining = 1 - t;
+    blanchAmt = remaining;
+    renderBlanch();
+
+    // We measure CRT at 90% recovered (common teaching proxy)
+    if(crtMeasured===null && t >= 0.9){
+      crtMeasured = now - releaseStart;
+      showCRT(crtMeasured);
+    }
+    if(t < 1){
+      requestAnimationFrame(stepRefill);
+    } else {
+      // ensure full recovery
+      blanchAmt = 0;
+      renderBlanch();
+      if(crtMeasured===null){
+        crtMeasured = now - releaseStart;
+        showCRT(crtMeasured);
+      }
+      status('Refill complete.');
+    }
+  }
+
+  function renderBlanch(){
+    // Visual blanch: overlay opacity; also lift base highlight slightly
+    blanch.style.opacity = blanchAmt;
+    const blur = Math.round(4*blanchAmt);
+    skin.style.filter = `saturate(${1 - blanchAmt*0.25}) brightness(${1 + blanchAmt*0.05}) blur(${blur}px)`;
+  }
+
+  function showCRT(ms){
+    const s = (ms/1000);
+    crtMsEl.textContent = Math.round(ms);
+    crtSecEl.textContent = s.toFixed(2);
+    const ok = ms < abnMs;
+    crtStatus.textContent = ok ? 'Normal' : 'Abnormal';
+    crtStatus.style.color = ok ? '#0a8f5b' : '#b81e2b';
+    // emit automatically on measurement
+    emit(ms, ok);
+  }
+
+  // Emit result for parent app
+  function emit(ms, ok){
+    const payload = {
+      baseline_hex: baseline,
+      target_ms: targetMs,
+      threshold_ms: abnMs,
+      measured_ms: Math.round(ms),
+      normal: ok,
+      timestamp: Date.now()
+    };
+    window.dispatchEvent(new CustomEvent('cap-refill-result', { detail: payload }));
+    console.log('[cap-refill-result]', payload);
+  }
+
+  emitBtn.addEventListener('click', ()=>{
+    if(crtMeasured==null){ status('Do a test first (press & hold, then release).'); return; }
+    emit(crtMeasured, crtMeasured < abnMs);
+    status('Result emitted.');
+  });
+
+  hintBtn.addEventListener('click', ()=>{
+    alert(
+`How to use:
+1) Pick a baseline skin tone that matches your patient, then LOCK it.
+2) Press & hold on the skin to blanch (simulate fingertip/nailbed pressure).
+3) Release to start capillary refill. The timer stops at ~90% recovery.
+4) “Normal” if under your threshold (default 2000 ms).`
+    );
+  });
+
+  // Pointer events (mouse + touch)
+  skin.addEventListener('mousedown', (e)=>{ e.preventDefault(); startPress(); });
+  skin.addEventListener('mouseup',   (e)=>{ e.preventDefault(); endPress(); });
+  skin.addEventListener('mouseleave',(e)=>{ if(pressing) endPress(); });
+
+  skin.addEventListener('touchstart', (e)=>{ e.preventDefault(); startPress(); }, {passive:false});
+  skin.addEventListener('touchend',   (e)=>{ e.preventDefault(); endPress(); },   {passive:false});
+  skin.addEventListener('touchcancel',(e)=>{ e.preventDefault(); endPress(); },   {passive:false});
+
+  function reset(){
+    pressing=false; blanchAmt=0; refillPct=0; crtMeasured=null;
+    skin.style.filter='none'; blanch.style.opacity=0;
+    status('Reset. Ready for next test.');
+    crtMsEl.textContent='—'; crtSecEl.textContent='—';
+    crtStatus.textContent='Ready'; crtStatus.style.color='';
+  }
+
+  function status(msg){ statusEl.textContent = msg }
+
+  // initial paint
+  applyTone(baseline);
 })();
 </script>
 </body>
