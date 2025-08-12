@@ -1,346 +1,318 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-<title>A&O×4 Orientation Simulator (NREMT-style, TTS)</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+<title>A&O×4 Orientation Simulator — NREMT Style</title>
 <style>
   :root{
-    --brand:#007B8A; --brand-dark:#0a616c; --bg:#f0f8ff; --panel:#fff; --muted:#e7f4f7; --text:#0f2b33;
+    --brand:#007B8A; --brand-dark:#0a616c;
+    --bg:#f0f8ff; --panel:#fff; --muted:#e7f4f7; --text:#0f2b33;
+    --ok:#0a8f5b; --warn:#c77b00; --bad:#b81e2b;
     --shadow:0 10px 24px rgba(0,0,0,.08); --radius:16px;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.35}
   header{width:100%;background:var(--brand);color:#fff;text-align:center;padding:14px 16px;font-weight:700;letter-spacing:.2px}
-  main{width:100%;max-width:980px;padding:12px;display:grid;gap:12px}
+  main{width:100%;max-width:980px;margin:0 auto;padding:12px;display:grid;gap:12px}
   .card{background:var(--panel);border-radius:16px;box-shadow:var(--shadow);padding:14px}
-  .layout{display:grid;gap:12px}
-  @media(min-width:920px){ .layout{grid-template-columns:1.15fr .85fr} }
-  .stage{background:var(--muted);border-radius:14px;padding:14px;display:grid;gap:12px}
-  .qgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-  @media(max-width:520px){ .qgrid{grid-template-columns:1fr} }
+  h3{margin:.4rem 0 .6rem}
+  .scenario{display:grid;gap:8px}
+  .row{display:grid;gap:10px}
+  @media(min-width:680px){ .row{grid-template-columns:1fr 1fr} }
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;background:#e7f8f1;color:#0a8f5b;font-weight:700;font-size:.8rem}
+  .muted{color:#3b616b}
   .btn{
-    appearance:none;border:0;background:var(--brand);color:#fff;padding:14px;border-radius:12px;font-weight:800;cursor:pointer;width:100%;
-    touch-action:manipulation;-webkit-user-select:none;user-select:none;font-size:1.05rem
+    appearance:none;border:0;background:var(--brand);color:#fff;
+    padding:12px 14px;border-radius:12px;font-weight:800;cursor:pointer;width:100%;
+    touch-action:manipulation;-webkit-user-select:none;user-select:none;font-size:1rem
   }
   .btn.alt{background:#124b54}
   .btn.warn{background:#c77b00}
+  .btn.bad{background:#b81e2b}
   .btn.ghost{background:#fff;color:var(--brand);border:2px solid var(--brand)}
   .btn:active{transform:translateY(1px)}
-  .status{font-size:.98rem;background:#fff;border:1px solid #e0eaed;border-radius:12px;padding:10px;min-height:64px}
+  .qgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  @media(max-width:520px){ .qgrid{grid-template-columns:1fr} }
+  .status{font-size:.98rem;background:#fff;border:1px solid #e0eaed;border-radius:12px;padding:10px;min-height:60px}
   .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
   .kpi{background:#fff;border:1px solid #e8eef0;border-radius:10px;padding:8px;text-align:center}
   .kpi strong{display:block;font-size:1.2rem}
-  label{display:block;margin-bottom:6px}
-  select,input[type="range"],input[type="number"]{width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
-  .row{display:grid;gap:10px}
-  @media(min-width:560px){ .row{grid-template-columns:1fr 1fr} }
-  .tiny{font-size:.85rem;color:#3b616b}
-  .pill{display:inline-block;padding:3px 8px;border-radius:999px;background:#e7f8f1;color:#0a8f5b;font-weight:700;font-size:.8rem}
+  .answerbox{display:grid;gap:8px}
+  select{width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
+  .explain.ok{color:var(--ok)} .explain.bad{color:var(--bad)}
+  .checklist{margin:8px 0 0 18px}
+  .checklist li{margin:2px 0}
 </style>
 </head>
 <body>
-<header>A&O×4 Orientation Simulator (TTS)</header>
+<header>A&O×4 Orientation Simulator</header>
 
 <main>
-  <section class="card layout">
-    <!-- LEFT: Interaction -->
-    <div class="stage">
-      <div class="qgrid">
-        <button class="btn" id="askPerson">Person — “What’s your name?”</button>
-        <button class="btn" id="askPlace">Place — “Where are you?”</button>
-        <button class="btn" id="askTime">Time — “What day/time is it?”</button>
-        <button class="btn" id="askEvent">Event — “What happened?”</button>
-      </div>
+  <!-- Scenario (auto generated each round; defaults to your example) -->
+  <section class="card">
+    <h3>Scenario</h3>
+    <div class="scenario" id="scenarioBox">
+      <div><span class="pill">Patient</span> <strong id="scPerson">Mike Miller</strong></div>
+      <div><span class="pill">Place</span> <strong id="scPlace">at his home</strong></div>
+      <div><span class="pill">Time</span> <strong id="scTime">this afternoon, about 1:00</strong></div>
+      <div><span class="pill">Event</span> <strong id="scEvent">fell and hit his head</strong></div>
+      <div class="muted">Ask the questions in order (Person → Place → Time → Event). The patient will respond aloud (TTS).</div>
+    </div>
+  </section>
 
-      <div class="kpis">
-        <div class="kpi"><small>A&O Count</small><strong id="aox">×0</strong></div>
-        <div class="kpi"><small>Answered</small><strong id="answered">0 / 4</strong></div>
-        <div class="kpi"><small>Accuracy</small><strong id="accuracy">—</strong></div>
-      </div>
-
-      <div class="status" id="transcript" aria-live="polite">
-        <strong>Patient:</strong> <span id="utter">…(quiet)…</span>
-        <div style="margin-top:6px"><span class="pill" id="speechStylePill">Speech: Normal</span></div>
-      </div>
-
-      <div class="row" style="margin-top:8px">
-        <button class="btn alt" id="randomize">🎲 Randomize Scenario</button>
-        <button class="btn warn" id="reset">Reset</button>
-      </div>
-      <div class="row" style="margin-top:8px">
-        <button class="btn ghost" id="emit">Emit Result (window.dispatchEvent)</button>
-        <button class="btn ghost" id="stopTTS">⏹ Stop Voice</button>
-      </div>
+  <!-- Interaction -->
+  <section class="card">
+    <h3>Ask Orientation Questions</h3>
+    <div class="qgrid">
+      <button class="btn" id="askPerson">Person — “What’s your name?”</button>
+      <button class="btn" id="askPlace">Place — “Where are you?”</button>
+      <button class="btn" id="askTime">Time — “What day/time is it?”</button>
+      <button class="btn" id="askEvent">Event — “What happened?”</button>
     </div>
 
-    <!-- RIGHT: Scenario controls -->
-    <div class="card">
-      <h3>Scenario</h3>
+    <div class="kpis" style="margin-top:10px">
+      <div class="kpi"><small>A&O Count</small><strong id="aox">×0</strong></div>
+      <div class="kpi"><small>Answered</small><strong id="answered">0 / 4</strong></div>
+      <div class="kpi"><small>Status</small><strong id="flow">Ask Person</strong></div>
+    </div>
+
+    <div class="status" id="transcript" aria-live="polite" style="margin-top:8px">
+      <strong>Patient:</strong> <span id="utter">…(quiet)…</span>
+    </div>
+  </section>
+
+  <!-- You record your assessment and grade it -->
+  <section class="card">
+    <h3>Your Assessment</h3>
+    <div class="answerbox">
       <div class="row">
         <div>
-          <label>Difficulty (chance of correct answer)
-            <input id="difficulty" type="range" min="0" max="100" value="60" />
-          </label>
-          <div class="tiny">Higher = more correct (easier). Current: <strong><span id="diffVal">60%</span></strong></div>
+          <label for="assess">Your A&O result</label>
+          <select id="assess">
+            <option value="0">A&O ×0</option>
+            <option value="1">A&O ×1</option>
+            <option value="2">A&O ×2</option>
+            <option value="3">A&O ×3</option>
+            <option value="4" selected>A&O ×4</option>
+          </select>
         </div>
         <div>
-          <label>Response latency (ms)
-            <input id="latency" type="number" min="200" max="5000" step="100" value="900" />
-          </label>
-          <div class="tiny">Simulates processing delay before speaking.</div>
+          <label>&nbsp;</label>
+          <button class="btn alt" id="showResults">Show Results</button>
         </div>
       </div>
 
-      <div class="row">
-        <div>
-          <label>Speech style
-            <select id="speechStyle">
-              <option value="normal" selected>Normal</option>
-              <option value="hesitant">Hesitant/Confused</option>
-              <option value="slurred">Slurred</option>
-            </select>
-          </label>
-        </div>
-        <div>
-          <label>Voice (browser TTS)
-            <select id="voiceSel"><option>Default</option></select>
-          </label>
-        </div>
+      <div class="status" id="resultsBox">
+        <strong>Results:</strong> <span id="resultLine">—</span>
+        <ul class="checklist" id="why"></ul>
       </div>
 
-      <h3 style="margin-top:12px">Ground Truth (for grading)</h3>
-      <div class="row">
-        <div>
-          <label>Person (name)
-            <input id="gtPerson" type="text" value="Alex Miller" />
-          </label>
-        </div>
-        <div>
-          <label>Place (where)
-            <input id="gtPlace" type="text" value="in the ambulance" />
-          </label>
-        </div>
+      <div class="row" style="margin-top:6px">
+        <button class="btn warn" id="next">Next Scenario</button>
+        <button class="btn ghost" id="stopTTS">⏹ Stop Voice</button>
       </div>
-      <div class="row">
-        <div>
-          <label>Time (friendly)
-            <input id="gtTime" type="text" value="Tuesday afternoon" />
-          </label>
-        </div>
-        <div>
-          <label>Event (happened)
-            <input id="gtEvent" type="text" value="I fell and hit my head" />
-          </label>
-        </div>
-      </div>
-      <div class="tiny">Tip: You can prefill these from your scenario engine.</div>
     </div>
   </section>
 </main>
 
 <script>
 (function(){
-  // ------- DOM
-  const askBtns = {
-    person: document.getElementById('askPerson'),
-    place:  document.getElementById('askPlace'),
-    time:   document.getElementById('askTime'),
-    event:  document.getElementById('askEvent')
-  };
-  const utterEl = document.getElementById('utter');
+  // --------- DOM
+  const scPerson = document.getElementById('scPerson');
+  const scPlace  = document.getElementById('scPlace');
+  const scTime   = document.getElementById('scTime');
+  const scEvent  = document.getElementById('scEvent');
+
+  const askPersonBtn = document.getElementById('askPerson');
+  const askPlaceBtn  = document.getElementById('askPlace');
+  const askTimeBtn   = document.getElementById('askTime');
+  const askEventBtn  = document.getElementById('askEvent');
+
   const aoxEl = document.getElementById('aox');
   const answeredEl = document.getElementById('answered');
-  const accuracyEl = document.getElementById('accuracy');
-  const transcript = document.getElementById('transcript');
-  const diff = document.getElementById('difficulty');
-  const diffVal = document.getElementById('diffVal');
-  const latencyEl = document.getElementById('latency');
-  const speechStyleSel = document.getElementById('speechStyle');
-  const speechStylePill = document.getElementById('speechStylePill');
-  const voiceSel = document.getElementById('voiceSel');
+  const flowEl = document.getElementById('flow');
+  const utterEl = document.getElementById('utter');
 
-  const gt = {
-    person: document.getElementById('gtPerson'),
-    place:  document.getElementById('gtPlace'),
-    time:   document.getElementById('gtTime'),
-    event:  document.getElementById('gtEvent')
-  };
+  const assessSel = document.getElementById('assess');
+  const showBtn = document.getElementById('showResults');
+  const resultsBox = document.getElementById('resultsBox');
+  const resultLine = document.getElementById('resultLine');
+  const whyList = document.getElementById('why');
 
-  const randomizeBtn = document.getElementById('randomize');
-  const resetBtn = document.getElementById('reset');
-  const emitBtn = document.getElementById('emit');
+  const nextBtn = document.getElementById('next');
   const stopBtn = document.getElementById('stopTTS');
 
-  // ------- State
-  const state = {
-    asked: { person:false, place:false, time:false, event:false },
-    correct: { person:false, place:false, time:false, event:false },
-    lastAnswerText: '',
-    voice: null
-  };
+  // --------- State
+  let caseData = null;
+  let askedIdx = 0; // 0..3 in order: person, place, time, event
+  let answered = { person:false, place:false, time:false, event:false };
+  let correct   = { person:false, place:false, time:false, event:false };
+  let trueAns   = { person:'', place:'', time:'', event:'' };
+  let aoTrue = 4; // actual orientation level (0-4), determines which answers are correct
 
-  // ------- TTS helpers
-  function getVoices(){
-    const v = window.speechSynthesis.getVoices();
-    // Populate select (once voices are loaded)
-    if(voiceSel.options.length <= 1){
-      voiceSel.innerHTML = '';
-      v.forEach((voice,i)=>{
-        const opt = document.createElement('option');
-        opt.value = String(i);
-        opt.textContent = `${voice.name} (${voice.lang})`;
-        voiceSel.appendChild(opt);
-      });
-    }
-    return v;
-  }
-  window.speechSynthesis.onvoiceschanged = getVoices;
-  getVoices();
-
+  // --------- TTS
   function speak(text){
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    const voices = getVoices();
-    const idx = Number(voiceSel.value);
-    if(voices[idx]) u.voice = voices[idx];
-    u.rate = 1; u.pitch = 1; u.volume = 1;
-    window.speechSynthesis.speak(u);
+    try{
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate=1; u.pitch=1; u.volume=1;
+      window.speechSynthesis.speak(u);
+    }catch(e){}
   }
-
   stopBtn.addEventListener('click', ()=> window.speechSynthesis.cancel());
 
-  // ------- Plausible wrong answers (NREMT-style feel)
-  const wrong = {
-    person: [
-      "Mike... I think.", "I’m fine.", "Leave me alone.", "Uh... Sarah?", "I don’t remember."
-    ],
-    place: [
-      "At home.", "At work.", "The store?", "My friend’s house.", "Downtown... somewhere."
-    ],
-    time: [
-      "Morning?", "Saturday night?", "It’s... 2009?", "After dinner?", "I’m not sure."
-    ],
-    event: [
-      "Car crash.", "I was sleeping.", "Nothing happened.", "I got dizzy.", "I don’t know."
-    ]
+  // --------- Generators
+  const NAME_POOL = ['Mike Miller','Alex Garcia','Jordan Lee','Taylor Nguyen','Sam Patel','Chris Johnson','Morgan Davis','Riley Brooks'];
+  const PLACE_POOL = ['at home','in the ambulance','at the grocery store','at work','on the sidewalk','in a restaurant'];
+  const TIME_POOL  = ['this morning','this afternoon','this evening','about 1:00','about 4:30','around 9 pm','Tuesday afternoon','Friday morning'];
+  const EVENT_POOL = ['fell and hit my head','got dizzy and sat down','had chest pain','was in a minor car crash','took my insulin and felt weak','had a severe headache'];
+
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
+
+  function newScenario(useExample=false){
+    const person = useExample ? 'Mike Miller' : pick(NAME_POOL);
+    const place  = useExample ? 'at his home' : pick(PLACE_POOL);
+    const time   = useExample ? 'this afternoon, about 1:00' : pick(TIME_POOL);
+    const event  = useExample ? 'fell and hit his head' : pick(EVENT_POOL);
+
+    // Decide true A&O level (0–4). In EMS, if A&OxN, we typically consider correctness in this order.
+    aoTrue = Math.floor(Math.random()*5); // 0..4
+
+    // Fill DOM
+    scPerson.textContent = person;
+    scPlace.textContent = place;
+    scTime.textContent = time;
+    scEvent.textContent = event;
+
+    // Ground truth used for "correct" answers
+    trueAns = {
+      person: person,
+      place:  place.replace(/^at /,'in '),    // convert phrasing (“at home” -> “in my home”)
+      time:   time,
+      event:  event
+    };
+
+    // Reset per-run state
+    askedIdx = 0;
+    answered = { person:false, place:false, time:false, event:false };
+    correct  = { person:false, place:false, time:false, event:false };
+    updateTopline();
+
+    utterEl.textContent = '…(quiet)…';
+    flowEl.textContent = 'Ask Person';
+    resultsBox.style.outline='none';
+    resultLine.textContent='—';
+    whyList.innerHTML='';
+  }
+
+  // On first load, use the exact example you gave; later rounds randomize.
+  newScenario(true);
+
+  // --------- Utility
+  function updateTopline(){
+    const total = Object.values(answered).filter(Boolean).length;
+    const got   = Object.values(correct).filter(Boolean).length;
+    aoxEl.textContent = '×'+got;
+    answeredEl.textContent = `${total} / 4`;
+  }
+
+  function guardOrder(wantIdx){
+    if(askedIdx !== wantIdx){
+      const names = ['Person','Place','Time','Event'];
+      speak(`Please ask ${names[askedIdx]} first.`);
+      flowEl.textContent = `Ask ${names[askedIdx]}`;
+      return false;
+    }
+    return true;
+  }
+
+  // --------- Answer logic (A&O scale behavior)
+  // If aoTrue = N, then the first N items (in order) will be correct; the rest will be wrong/fuzzy.
+  const wrongBank = {
+    person: ["I’m fine.","Mike? Maybe.","Leave me alone.","I don't know.","Sarah?"],
+    place:  ["At home.","At work.","Downtown?","In a store.","Somewhere."],
+    time:   ["Morning?","Saturday?","Later tonight?","2009?","Not sure."],
+    event:  ["Nothing.","Car crash.","I was sleeping.","I don’t know.","I got dizzy."]
   };
 
-  // ------- Response generator
-  function styleSpeech(text, style){
-    if(style==='hesitant'){
-      // add hedges and pauses
-      return ("Uh... " + text).replace(/ /g, " ... ");
+  function buildAnswer(key, index){
+    const shouldBeCorrect = index < aoTrue;
+    if(shouldBeCorrect){
+      // Slightly vary phrasing to sound natural
+      if(key==='person') return `My name is ${trueAns.person}.`;
+      if(key==='place')  return `I am ${trueAns.place}.`;
+      if(key==='time')   return `${trueAns.time}.`;
+      if(key==='event')  return `I ${trueAns.event}.`;
+    }else{
+      // Pick plausible wrong
+      return wrongBank[key][Math.floor(Math.random()*wrongBank[key].length)];
     }
-    if(style==='slurred'){
-      // simple slur effect
-      return text.replace(/[sS]/g,'ssh').replace(/r/g,'rr').replace(/ing\b/g,'in’');
-    }
-    return text;
   }
 
-  function pickWrong(key){
-    return wrong[key][Math.floor(Math.random()*wrong[key].length)];
-  }
+  function answer(key, index){
+    const line = buildAnswer(key, index);
+    utterEl.textContent = line;
+    speak(line);
 
-  function updateTopline(){
-    const total = Object.values(state.asked).filter(Boolean).length;
-    const correct = Object.values(state.correct).filter(Boolean).length;
-    aoxEl.textContent = '×' + correct;
-    answeredEl.textContent = `${total} / 4`;
-    accuracyEl.textContent = total ? Math.round((correct/total)*100)+'%' : '—';
-  }
+    answered[key] = true;
+    correct[key]  = (index < aoTrue);
+    askedIdx = Math.min(3, askedIdx+1);
 
-  function setBtnHandlers(el, down, up){
-    el.addEventListener('pointerdown', e=>{ e.preventDefault(); el.setPointerCapture?.(e.pointerId); down(); }, {passive:false});
-    el.addEventListener('pointerup',   e=>{ e.preventDefault(); up?.(); }, {passive:false});
-    el.addEventListener('pointercancel', ()=> up?.());
-    el.addEventListener('pointerleave',  e=>{ if(e.pressure===0) up?.(); });
-  }
-
-  async function ask(key){
-    // Visual feedback
-    transcript.style.outline = '3px solid rgba(0,123,138,.25)';
-    setTimeout(()=> transcript.style.outline = 'none', 250);
-
-    const pct = Number(diff.value)/100;
-    const style = speechStyleSel.value;
-    const latency = Math.max(200, Number(latencyEl.value)||900);
-
-    // Decide correct vs wrong by difficulty
-    const isCorrect = Math.random() < pct;
-
-    // Build text
-    let text = isCorrect ? gt[key].value : pickWrong(key);
-    text = styleSpeech(text, style);
-
-    // Delay to simulate processing
-    utterEl.textContent = '…thinking…';
-    await new Promise(r=>setTimeout(r, latency));
-
-    // Speak & show
-    utterEl.textContent = text;
-    speak(text);
-
-    // Update state
-    state.asked[key] = true;
-    state.correct[key] = isCorrect;
-    state.lastAnswerText = text;
+    const names = ['Place','Time','Event','(done)'];
+    flowEl.textContent = askedIdx<=3 ? `Ask ${names[askedIdx-0]}` : 'All questions asked';
     updateTopline();
   }
 
-  // Wire question buttons
-  setBtnHandlers(askBtns.person, ()=>ask('person'));
-  setBtnHandlers(askBtns.place,  ()=>ask('place'));
-  setBtnHandlers(askBtns.time,   ()=>ask('time'));
-  setBtnHandlers(askBtns.event,  ()=>ask('event'));
+  // --------- Button wiring (pointer events for mobile)
+  function bind(el, fn){
+    el.addEventListener('pointerdown', e=>{ e.preventDefault(); fn(); }, {passive:false});
+  }
+  bind(askPersonBtn, ()=>{ if(guardOrder(0)) answer('person',0); });
+  bind(askPlaceBtn,  ()=>{ if(guardOrder(1)) answer('place',1);  });
+  bind(askTimeBtn,   ()=>{ if(guardOrder(2)) answer('time',2);   });
+  bind(askEventBtn,  ()=>{ if(guardOrder(3)) answer('event',3);  });
 
-  // Scenario controls
-  diff.addEventListener('input', ()=> diffVal.textContent = diff.value+'%');
-  speechStyleSel.addEventListener('change', ()=>{
-    speechStylePill.textContent = 'Speech: ' + (speechStyleSel.value[0].toUpperCase()+speechStyleSel.value.slice(1));
+  // --------- Grading
+  bind(showBtn, ()=>{
+    // Require all four asked
+    if(Object.values(answered).some(v=>!v)){
+      speak('Please complete all four questions first.');
+      resultsBox.style.outline='3px solid rgba(199,123,0,.35)';
+      resultLine.textContent='Finish asking all four questions before grading.';
+      whyList.innerHTML='';
+      return;
+    }
+    const yourAO = Number(assessSel.value);
+    const trueAO = aoTrue;
+    const correctCount = Object.values(correct).filter(Boolean).length;
+
+    const ok = yourAO === trueAO;
+    resultLine.innerHTML = ok
+      ? `✅ Correct: Patient is <strong>A&O ×${trueAO}</strong>.`
+      : `❌ Not quite: You chose <strong>A&O ×${yourAO}</strong>, but correct is <strong>×${trueAO}</strong>.`;
+
+    // Explain which items were correct vs not
+    const details = [];
+    details.push(`<li>${correct.person ? '✅' : '❌'} Person — ${correct.person?'correct':'incorrect'}</li>`);
+    details.push(`<li>${correct.place  ? '✅' : '❌'} Place — ${correct.place?'correct':'incorrect'}</li>`);
+    details.push(`<li>${correct.time   ? '✅' : '❌'} Time — ${correct.time?'correct':'incorrect'}</li>`);
+    details.push(`<li>${correct.event  ? '✅' : '❌'} Event — ${correct.event?'correct':'incorrect'}</li>`);
+    whyList.innerHTML = details.join('');
+
+    resultsBox.style.outline = ok ? '3px solid rgba(10,143,91,.25)' : '3px solid rgba(184,30,43,.25)';
+
+    // Speak short summary
+    speak(ok ? `Correct. Alert and oriented times ${trueAO}.` : `Not quite. Correct answer is alert and oriented times ${trueAO}.`);
   });
 
-  // Randomize: tweak difficulty, latency, style, and ground truths minimally
-  document.getElementById('randomize').addEventListener('click', ()=>{
-    diff.value = 30 + Math.floor(Math.random()*61); diffVal.textContent = diff.value+'%';
-    latencyEl.value = 600 + Math.floor(Math.random()*1200);
-    const styles = ['normal','hesitant','slurred']; speechStyleSel.value = styles[Math.floor(Math.random()*styles.length)];
-    speechStylePill.textContent = 'Speech: ' + (speechStyleSel.value[0].toUpperCase()+speechStyleSel.value.slice(1));
-    // Keep GT but you could shuffle here if desired
-  });
-
-  // Reset
-  document.getElementById('reset').addEventListener('click', ()=>{
+  // --------- Next Scenario (full reset, new random case)
+  bind(nextBtn, ()=>{
     window.speechSynthesis.cancel();
-    state.asked = { person:false, place:false, time:false, event:false };
-    state.correct = { person:false, place:false, time:false, event:false };
-    utterEl.textContent = '…(quiet)…';
-    updateTopline();
+    newScenario(false);
   });
 
-  // Emit result
-  emitBtn.addEventListener('click', ()=>{
-    const payload = {
-      aox_count: Object.values(state.correct).filter(Boolean).length,
-      asked: {...state.asked},
-      correct: {...state.correct},
-      ground_truth: {
-        person: gt.person.value, place: gt.place.value, time: gt.time.value, event: gt.event.value
-      },
-      difficulty_pct: Number(diff.value),
-      latency_ms: Number(latencyEl.value),
-      speech_style: speechStyleSel.value,
-      last_answer_text: state.lastAnswerText,
-      timestamp: Date.now()
-    };
-    window.dispatchEvent(new CustomEvent('aox-result', { detail: payload }));
-    console.log('[aox-result]', payload);
-  });
-
-  // Init
-  diffVal.textContent = diff.value+'%';
-  updateTopline();
 })();
 </script>
 </body>
