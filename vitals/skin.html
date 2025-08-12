@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-<title>Skin + Cap Refill Simulator</title>
+<title>Skin Signs + Cap Refill + Turgor</title>
 <style>
   :root{
     --brand:#007B8A; --brand-dark:#0a616c;
@@ -15,39 +15,80 @@
        font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
        display:flex;flex-direction:column;align-items:center;min-height:100vh}
   header{width:100%;background:var(--brand);color:#fff;text-align:center;padding:14px 16px;font-weight:600}
-  main{width:100%;max-width:900px;padding:12px;display:grid;gap:12px}
+  main{width:100%;max-width:1100px;padding:12px;display:grid;gap:12px}
   .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
   .layout{display:grid;gap:12px}
-  @media(min-width:860px){.layout{grid-template-columns:1.1fr .9fr}}
+  @media(min-width:980px){.layout{grid-template-columns:1.1fr .9fr}}
 
   /* Stage */
   .stage{background:var(--muted);border-radius:14px;padding:12px;display:grid;gap:12px}
   .skin-wrap{display:grid;place-items:center}
   .skin{
-    width:min(92%,520px); aspect-ratio:1/1; border-radius:18px; position:relative; overflow:hidden;
+    width:min(92%,560px); aspect-ratio:1/1; border-radius:18px; position:relative; overflow:hidden;
     box-shadow:inset 0 0 60px rgba(0,0,0,.18), inset 0 0 140px rgba(0,0,0,.12);
-    touch-action:manipulation; /* reduce accidental zoom/pan */
+    touch-action:manipulation;
   }
-  /* Base tone & shading */
   .skin::before{
     content:""; position:absolute; inset:0; border-radius:18px;
     background: radial-gradient(120% 120% at 50% 20%, var(--tone-hi), var(--tone) 45%, var(--tone-lo) 85%);
     transition: filter 160ms ease, background 160ms ease;
   }
-  /* Blanch overlay (pressure) – we animate opacity during press/release */
-  .blanch{
-    position:absolute; inset:0; border-radius:18px; pointer-events:none; opacity:0;
-    background: radial-gradient(140% 140% at 50% 35%, rgba(255,255,255,.65), rgba(255,255,255,.25) 45%, transparent 75%);
-    transition: opacity 120ms ease;
-  }
-  /* Sweat sheen (for future) */
-  .sheen{
-    position:absolute; inset:0; border-radius:18px; pointer-events:none; opacity:0;
-    background:linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,0) 35%, rgba(255,255,255,.06) 60%, rgba(255,255,255,0) 80%);
-  }
-
   .label{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
          background:#ffffffcc;padding:4px 10px;border-radius:999px;font-size:.9rem}
+  /* Overlays (signs) */
+  .ov{position:absolute; inset:0; border-radius:18px; pointer-events:none; opacity:0; transition:opacity 140ms ease}
+  .ov-pale{background:radial-gradient(120% 120% at 50% 20%, rgba(255,255,255,.20), rgba(255,255,255,.08) 50%, transparent 75%)}
+  .ov-flush{background:radial-gradient(120% 120% at 50% 25%, rgba(240,64,64,.20), rgba(240,64,64,.08) 55%, transparent 80%)}
+  .ov-cyan{ background:radial-gradient(120% 120% at 50% 25%, rgba(40,100,180,.22), rgba(40,100,180,.10) 55%, transparent 80%)}
+  .ov-jaund{background:radial-gradient(120% 120% at 50% 25%, rgba(240,210,60,.22), rgba(240,210,60,.10) 55%, transparent 80%)}
+
+  /* Mottling: noise-based to avoid perfect circles */
+  .ov-mottle{
+    background-image:
+      radial-gradient(8px 8px at 20% 30%, rgba(120,60,60,.20), transparent 60%),
+      radial-gradient(10px 10px at 70% 60%, rgba(120,60,60,.18), transparent 60%),
+      radial-gradient(7px 7px at 35% 70%, rgba(120,60,60,.16), transparent 60%),
+      radial-gradient(9px 9px at 80% 40%, rgba(120,60,60,.18), transparent 60%),
+      radial-gradient(6px 6px at 55% 50%, rgba(120,60,60,.16), transparent 60%);
+    mix-blend-mode:multiply;
+    filter: blur(0.5px);
+  }
+
+  /* Rash: speckled maculopapular look via multi-layer noise */
+  .ov-rash{
+    background-image:
+      radial-gradient(3px 3px at 25% 30%, rgba(180,40,40,.45), transparent 60%),
+      radial-gradient(2.5px 2.5px at 60% 40%, rgba(180,40,40,.35), transparent 60%),
+      radial-gradient(2.8px 2.8px at 40% 65%, rgba(180,40,40,.35), transparent 60%),
+      radial-gradient(3.2px 3.2px at 78% 75%, rgba(180,40,40,.35), transparent 60%),
+      radial-gradient(2.4px 2.4px at 18% 72%, rgba(180,40,40,.35), transparent 60%);
+    mix-blend-mode:multiply;
+    filter: blur(.2px);
+  }
+
+  /* Moisture/Temp */
+  .ov-sheen{ background:linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,0) 35%, rgba(255,255,255,.06) 60%, rgba(255,255,255,0) 80%); opacity:0; }
+  .ov-drops{ background:
+      radial-gradient(circle at 20% 25%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px),
+      radial-gradient(circle at 68% 32%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px),
+      radial-gradient(circle at 40% 70%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px),
+      radial-gradient(circle at 78% 74%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px); opacity:0; }
+  .ov-cool{ box-shadow: inset 0 0 0 9999px rgba(40,120,220,.12); opacity:0 }
+  .ov-warm{ box-shadow: inset 0 0 0 9999px rgba(220,70,40,.12); opacity:0 }
+
+  /* Cap refill overlay */
+  .blanch{ position:absolute; inset:0; border-radius:18px; pointer-events:none; opacity:0;
+           background: radial-gradient(140% 140% at 50% 35%, rgba(255,255,255,.65), rgba(255,255,255,.25) 45%, transparent 75%);
+           transition: opacity 120ms ease; }
+
+  /* Turgor “tent” indicator (simple ridge that relaxes) */
+  .turgor{
+    position:absolute; left:50%; top:40%; width:46%; height:12%;
+    transform:translateX(-50%) scaleY(0); transform-origin:center bottom;
+    background: radial-gradient(60% 160% at 50% 0%, rgba(0,0,0,.25), rgba(0,0,0,0) 70%);
+    border-radius:999px;
+    pointer-events:none; opacity:.7; transition:transform 120ms ease, opacity 240ms ease;
+  }
 
   /* Controls */
   .controls{display:grid;gap:10px}
@@ -55,12 +96,13 @@
   @media(min-width:560px){.row{grid-template-columns:1fr 1fr}}
   .control{background:#fff;border-radius:12px;padding:10px;border:1px solid #e8eef0}
   .control h3{margin:.2rem 0 .6rem;font-size:.95rem}
-  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
-  .kpi{background:#fff;border:1px solid #e8eef0;border-radius:10px;padding:8px;text-align:center}
-  .kpi strong{display:block;font-size:1.1rem}
   select,input[type="range"],input[type="number"],input[type="color"]{
     width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff
   }
+  .signs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+  .kpi{background:#fff;border:1px solid #e8eef0;border-radius:10px;padding:8px;text-align:center}
+  .kpi strong{display:block;font-size:1.1rem}
   .btn{appearance:none;border:0;background:var(--brand);color:#fff;padding:12px 14px;border-radius:12px;
        font-weight:700;cursor:pointer;width:100%}
   .btn.alt{background:#124b54}
@@ -69,18 +111,13 @@
   .btn.ghost{background:#fff; color:var(--brand); border:2px solid var(--brand)}
   .btn:active{transform:translateY(1px)}
   .status{font-size:.9rem;padding:8px 10px;border-radius:10px;background:#fff;border:1px solid #e8eef0;color:#0b3b44}
-  footer{opacity:.7;font-size:.85rem;padding:12px}
-
-  .swatch{
-    display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:center;
-    background:#fff;border:1px solid #e8eef0;border-radius:12px;padding:8px;
-  }
+  .swatch{display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:center;background:#fff;border:1px solid #e8eef0;border-radius:12px;padding:8px}
   .chip{width:64px;height:40px;border-radius:8px;border:1px solid #dfe7ea}
-  .muted{color:#3a5e67;font-size:.9rem}
+  footer{opacity:.7;font-size:.85rem;padding:12px}
 </style>
 </head>
 <body>
-<header>Skin Appearance + Capillary Refill Simulator</header>
+<header>Skin Signs + Cap Refill + Turgor</header>
 
 <main>
   <section class="card layout">
@@ -88,9 +125,25 @@
     <div class="stage">
       <div class="skin-wrap">
         <div class="skin" id="skin">
+          <!-- Signs overlays -->
+          <div class="ov ov-pale"   id="ovPale"></div>
+          <div class="ov ov-flush"  id="ovFlush"></div>
+          <div class="ov ov-cyan"   id="ovCyan"></div>
+          <div class="ov ov-jaund"  id="ovJaund"></div>
+          <div class="ov ov-mottle" id="ovMottle"></div>
+          <div class="ov ov-rash"   id="ovRash"></div>
+
+          <!-- Temp/Moisture -->
+          <div class="ov ov-sheen"  id="ovSheen"></div>
+          <div class="ov ov-drops"  id="ovDrops"></div>
+          <div class="ov ov-cool"   id="ovCool"></div>
+          <div class="ov ov-warm"   id="ovWarm"></div>
+
+          <!-- Dynamics -->
           <div class="blanch" id="blanch"></div>
-          <div class="sheen" id="sheen"></div>
-          <div class="label">Press & hold to blanch → release to refill</div>
+          <div class="turgor" id="turgor"></div>
+
+          <div class="label">Press & hold skin for CRT • Use “Pinch Skin” for turgor</div>
         </div>
       </div>
     </div>
@@ -114,9 +167,70 @@
         <div class="swatch" aria-live="polite">
           <div class="chip" id="chip"></div>
           <div>
-            <div class="muted">Baseline (hex): <strong id="toneHex">#e5bda1</strong></div>
-            <small class="muted">Once locked, tone stays fixed for all CRT tests.</small>
+            <div class="status" id="toneHex">#e5bda1</div>
           </div>
+        </div>
+      </div>
+
+      <div class="control">
+        <h3>Skin Signs</h3>
+        <div class="signs">
+          <label>Pallor <input id="pallor" type="range" min="0" max="100" value="0"></label>
+          <label>Flushed <input id="flush" type="range" min="0" max="100" value="0"></label>
+          <label>Cyanotic <input id="cyan" type="range" min="0" max="100" value="0"></label>
+          <label>Jaundice <input id="jaund" type="range" min="0" max="100" value="0"></label>
+          <label>Mottled <input id="mottle" type="range" min="0" max="100" value="0"></label>
+          <label>Rash <input id="rash" type="range" min="0" max="100" value="0"></label>
+        </div>
+      </div>
+
+      <div class="control">
+        <h3>Temp & Moisture</h3>
+        <div class="row">
+          <div>
+            <label>Temperature
+              <select id="temp">
+                <option value="cool">Cool</option>
+                <option value="normal" selected>Normal</option>
+                <option value="warm">Warm</option>
+              </select>
+            </label>
+          </div>
+          <div>
+            <label>Moisture (0 Dry → 100 Diaphoretic)
+              <input id="moist" type="range" min="0" max="100" value="0">
+            </label>
+          </div>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><small>Moisture</small><strong id="moistLabel">Dry</strong></div>
+          <div class="kpi"><small>Temp</small><strong id="tempLabel">Normal</strong></div>
+          <div class="kpi"><small>Summary</small><strong id="stateSummary">—</strong></div>
+        </div>
+      </div>
+
+      <div class="control">
+        <h3>Turgor (Pinch Test)</h3>
+        <div class="row">
+          <div>
+            <label>Target recoil (ms)
+              <input id="turgorTarget" type="number" min="150" max="5000" step="50" value="600"/>
+            </label>
+          </div>
+          <div>
+            <label>Abnormal ≥ (ms)
+              <input id="turgorThresh" type="number" min="300" max="5000" step="50" value="2000"/>
+            </label>
+          </div>
+        </div>
+        <div class="row">
+          <button id="turgorBtn" class="btn alt">🤏 Press & Hold: Pinch Skin</button>
+          <button id="turgorReset" class="btn bad">Reset Turgor</button>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><small>Turgor (ms)</small><strong id="turgorMs">—</strong></div>
+          <div class="kpi"><small>Turgor (s)</small><strong id="turgorSec">—</strong></div>
+          <div class="kpi"><small>Status</small><strong id="turgorStatus">Ready</strong></div>
         </div>
       </div>
 
@@ -124,109 +238,133 @@
         <h3>Capillary Refill</h3>
         <div class="row">
           <div>
-            <label>Target refill time (scenario)
-              <input id="targetMs" type="number" min="200" max="8000" step="50" value="1500"/>
+            <label>Target refill (ms)
+              <input id="crtTarget" type="number" min="200" max="8000" step="50" value="1500"/>
             </label>
           </div>
           <div>
-            <label>Abnormal threshold (ms)
-              <input id="abnMs" type="number" min="1000" max="6000" step="100" value="2000"/>
+            <label>Abnormal ≥ (ms)
+              <input id="crtThresh" type="number" min="1000" max="6000" step="100" value="2000"/>
             </label>
           </div>
-        </div>
-        <div class="row">
-          <button class="btn alt" id="randomizeBtn">🎲 Randomize Scenario</button>
-          <button class="btn bad" id="resetBtn">Reset</button>
         </div>
         <div class="kpis">
           <div class="kpi"><small>CRT (ms)</small><strong id="crtMs">—</strong></div>
           <div class="kpi"><small>CRT (s)</small><strong id="crtSec">—</strong></div>
           <div class="kpi"><small>Status</small><strong id="crtStatus">Ready</strong></div>
         </div>
-        <div class="row" style="margin-top:8px">
-          <button class="btn" id="emitBtn">Emit Result (window.dispatchEvent)</button>
-          <button class="btn ghost" id="hintBtn">Tips</button>
+      </div>
+
+      <div class="control">
+        <h3>Scenario & Export</h3>
+        <div class="row">
+          <button id="randomizeBtn" class="btn warn">🎲 Randomize Signs</button>
+          <button id="resetBtn" class="btn bad">Reset All</button>
         </div>
-        <div class="status" id="status">Pick a tone, lock it, then press & hold on the skin to blanch.</div>
+        <div class="row" style="margin-top:8px">
+          <button id="emitBtn" class="btn">Emit Result (window.dispatchEvent)</button>
+          <button id="tipsBtn" class="btn ghost">Tips</button>
+        </div>
+        <div class="status" id="status">Pick & lock a tone. Move sliders to set signs. CRT: press/hold on skin. Turgor: press/hold Pinch.</div>
       </div>
     </div>
   </section>
 </main>
 
-<footer>© EMS Code Sim — Skin & Cap Refill</footer>
+<footer>© EMS Code Sim — Skin Signs Trainer</footer>
 
 <script>
-/* Skin + Capillary Refill Simulator
-   - Static baseline tone (color picker, then lock)
-   - Press/hold to blanch (opacity overlay)
-   - On release: animated refill toward baseline; measure time to 90% recovery (CRT)
-   - Scenario controls: target refill ms & abnormal threshold
-   - Emits 'cap-refill-result' event
-*/
-
 (function(){
   // --- DOM
-  const skin       = document.getElementById('skin');
-  const blanch     = document.getElementById('blanch');
-  const sheen      = document.getElementById('sheen');
+  const skin = document.getElementById('skin');
+  const ovPale = document.getElementById('ovPale');
+  const ovFlush = document.getElementById('ovFlush');
+  const ovCyan = document.getElementById('ovCyan');
+  const ovJaund = document.getElementById('ovJaund');
+  const ovMottle = document.getElementById('ovMottle');
+  const ovRash = document.getElementById('ovRash');
+  const ovSheen = document.getElementById('ovSheen');
+  const ovDrops = document.getElementById('ovDrops');
+  const ovCool = document.getElementById('ovCool');
+  const ovWarm = document.getElementById('ovWarm');
+  const blanch = document.getElementById('blanch');
+  const turgorRidge = document.getElementById('turgor');
+
   const tonePicker = document.getElementById('tonePicker');
-  const lockBtn    = document.getElementById('lockBtn');
-  const chip       = document.getElementById('chip');
-  const toneHex    = document.getElementById('toneHex');
-  const targetMsEl = document.getElementById('targetMs');
-  const abnMsEl    = document.getElementById('abnMs');
-  const crtMsEl    = document.getElementById('crtMs');
-  const crtSecEl   = document.getElementById('crtSec');
-  const crtStatus  = document.getElementById('crtStatus');
-  const statusEl   = document.getElementById('status');
-  const emitBtn    = document.getElementById('emitBtn');
-  const randomize  = document.getElementById('randomizeBtn');
-  const resetBtn   = document.getElementById('resetBtn');
-  const hintBtn    = document.getElementById('hintBtn');
+  const lockBtn = document.getElementById('lockBtn');
+  const chip = document.getElementById('chip');
+  const toneHex = document.getElementById('toneHex');
+
+  const pallor = document.getElementById('pallor');
+  const flush = document.getElementById('flush');
+  const cyan = document.getElementById('cyan');
+  const jaund = document.getElementById('jaund');
+  const mottle = document.getElementById('mottle');
+  const rash = document.getElementById('rash');
+
+  const tempSel = document.getElementById('temp');
+  const moist = document.getElementById('moist');
+
+  const moistLabel = document.getElementById('moistLabel');
+  const tempLabel = document.getElementById('tempLabel');
+  const stateSummary = document.getElementById('stateSummary');
+
+  const turgorBtn = document.getElementById('turgorBtn');
+  const turgorReset = document.getElementById('turgorReset');
+  const turgorTarget = document.getElementById('turgorTarget');
+  const turgorThresh = document.getElementById('turgorThresh');
+  const turgorMsEl = document.getElementById('turgorMs');
+  const turgorSecEl = document.getElementById('turgorSec');
+  const turgorStatus = document.getElementById('turgorStatus');
+
+  const crtTarget = document.getElementById('crtTarget');
+  const crtThresh = document.getElementById('crtThresh');
+  const crtMsEl = document.getElementById('crtMs');
+  const crtSecEl = document.getElementById('crtSec');
+  const crtStatus = document.getElementById('crtStatus');
+
+  const randomizeBtn = document.getElementById('randomizeBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const emitBtn = document.getElementById('emitBtn');
+  const tipsBtn = document.getElementById('tipsBtn');
+  const statusEl = document.getElementById('status');
 
   // --- Model
   let baseline = '#e5bda1';
   let locked = false;
-  let pressing = false;
-  let pressStart = 0;
-  let releaseStart = 0;
-  let crtMeasured = null; // ms
-  let targetMs = 1500;    // scenario refill duration to ~100%
-  let abnMs = 2000;
 
-  // Visual state: blanch amount (0..1)
-  let blanchAmt = 0;
-  let refillPct = 0; // 0..1 progression from fully blanched back to baseline after release
+  // CRT
+  let pressingCRT = false, pressStart=0, releaseStart=0, crtMeasured=null, crtTargetMs=1500, crtAbnMs=2000;
+  let blanchAmt = 0, refillPct = 0;
 
-  // Helpers
-  const clamp = (n,min,max)=>Math.max(min,Math.min(max,n));
-  const lerp = (a,b,t)=>a+(b-a)*t;
+  // TURGOR
+  let pinching=false, pinchStart=0, turgorStart=0, turgorMeasured=null, turgorTargetMs=600, turgorAbnMs=2000;
+  let ridgeScale=0;
 
-  function hexToRgb(hex){
-    const v = parseInt(hex.slice(1),16);
-    return { r:(v>>16)&255, g:(v>>8)&255, b:v&255 };
-  }
-  function rgbToHex({r,g,b}){
-    return "#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
-  }
-  function mixHex(a,b,t){
-    const A=hexToRgb(a), B=hexToRgb(b);
-    return rgbToHex({ r:Math.round(lerp(A.r,B.r,t)), g:Math.round(lerp(A.g,B.g,t)), b:Math.round(lerp(A.b,B.b,t)) });
-  }
-  function shade(hex,percent){ // +/- percent
+  // Utils
+  const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  function shade(hex,percent){
     const f=parseInt(hex.slice(1),16), t=percent<0?0:255, p=Math.abs(percent)/100;
-    const R=f>>16, G=(f>>8)&0x00FF, B=f&0x0000FF;
+    const R=f>>16, G=(f>>8)&255, B=f&255;
     const r=Math.round((t-R)*p)+R, g=Math.round((t-G)*p)+G, b=Math.round((t-B)*p)+B;
     return `#${(0x1000000 + (r<<16) + (g<<8) + b).toString(16).slice(1)}`
   }
+  function mapCurve(v){ return Math.pow(v/100, 0.85) } // slider -> opacity curve
 
-  // --- UI init
+  function applyTone(hex){
+    skin.style.setProperty('--tone', hex);
+    skin.style.setProperty('--tone-hi', shade(hex, +6));
+    skin.style.setProperty('--tone-lo', shade(hex, -6));
+    chip.style.background = hex;
+    toneHex.textContent = hex.toLowerCase();
+  }
+
+  // Tone picking & lock
   applyTone(baseline);
   tonePicker.addEventListener('input', ()=>{
-    if(locked){ status('Baseline is locked. Unlock to change.'); tonePicker.value = baseline; return; }
-    baseline = tonePicker.value;
-    applyTone(baseline);
-    status('Baseline preview updated.');
+    if(locked){ status('Baseline locked. Unlock to change.'); tonePicker.value = baseline; return; }
+    baseline = tonePicker.value; applyTone(baseline);
   });
   lockBtn.addEventListener('click', ()=>{
     locked = !locked;
@@ -235,161 +373,234 @@
     status(locked ? 'Baseline locked.' : 'Baseline unlocked.');
   });
 
-  randomize.addEventListener('click', ()=>{
-    // Random realistic scenario: 1.0–3.5s target
-    const ms = Math.floor(1000 + Math.random()*2500);
-    const threshold = 2000; // keep teaching default
-    targetMsEl.value = ms; abnMsEl.value = threshold;
-    updateScenario();
-    status('Scenario randomized (target ~'+ms+' ms).');
-  });
+  // Signs rendering
+  function renderSigns(){
+    ovPale.style.opacity   = mapCurve(Number(pallor.value));
+    ovFlush.style.opacity  = mapCurve(Number(flush.value));
+    ovCyan.style.opacity   = mapCurve(Number(cyan.value));
+    ovJaund.style.opacity  = mapCurve(Number(jaund.value));
+    ovMottle.style.opacity = mapCurve(Number(mottle.value))*0.9;
+    ovRash.style.opacity   = mapCurve(Number(rash.value))*0.95;
 
-  resetBtn.addEventListener('click', reset);
+    // Temp tints
+    ovCool.style.opacity = tempSel.value==='cool' ? .35 : 0;
+    ovWarm.style.opacity = tempSel.value==='warm' ? .35 : 0;
 
-  function applyTone(hex){
-    chip.style.background = hex;
-    toneHex.textContent = hex.toLowerCase();
-    const hi = shade(hex, +6);
-    const lo = shade(hex, -6);
-    skin.style.setProperty('--tone', hex);
-    skin.style.setProperty('--tone-hi', hi);
-    skin.style.setProperty('--tone-lo', lo);
+    // Moisture visuals
+    const m = Number(moist.value)/100;
+    ovSheen.style.opacity = clamp(m*0.9, 0, 0.9);
+    ovDrops.style.opacity = m>0.6 ? clamp((m-0.6)/0.4, 0, 1) : 0;
+
+    moistLabel.textContent = m<.1?'Dry': m<.4?'Slight': m<.7?'Clammy':'Diaphoretic';
+    tempLabel.textContent = tempSel.value[0].toUpperCase()+tempSel.value.slice(1);
+    stateSummary.textContent = summarize();
   }
-
-  function updateScenario(){
-    targetMs = Number(targetMsEl.value) || 1500;
-    abnMs = Number(abnMsEl.value) || 2000;
+  function summarize(){
+    const parts=[];
+    if(Number(pallor.value)>10) parts.push('pale');
+    if(Number(flush.value)>10) parts.push('flushed');
+    if(Number(cyan.value)>10) parts.push('cyanotic');
+    if(Number(jaund.value)>10) parts.push('jaundiced');
+    if(Number(mottle.value)>10) parts.push('mottled');
+    if(Number(rash.value)>10) parts.push('rash');
+    parts.push(tempSel.value==='normal'?'normal temp':tempSel.value+' temp');
+    parts.push(moist.value<10?'dry':moist.value<70?'clammy':'diaphoretic');
+    return parts.join(', ');
   }
-  targetMsEl.addEventListener('input', updateScenario);
-  abnMsEl.addEventListener('input', updateScenario);
-  updateScenario();
+  [pallor,flush,cyan,jaund,mottle,rash,tempSel,moist].forEach(el=>el.addEventListener('input', renderSigns));
+  renderSigns();
 
-  // --- Interaction: press/hold/release on skin
+  // CRT interaction (press skin)
   function startPress(){
-    if(!locked){ status('Lock a baseline tone before testing.'); return; }
-    if(pressing) return;
-    pressing = true;
-    crtMeasured = null;
-    pressStart = performance.now();
-    releaseStart = 0;
-    // Animate blanch in
-    blanchAmt = 0;
-    requestAnimationFrame(stepPressIn);
+    if(!locked){ status('Lock baseline before CRT.'); return; }
+    if(pressingCRT) return;
+    pressingCRT = true; crtMeasured=null; pressStart=performance.now(); releaseStart=0; refillPct=0;
+    blanchAmt=0; requestAnimationFrame(stepPressIn);
   }
-  function stepPressIn(ts){
-    if(!pressing) return;
-    blanchAmt = clamp(blanchAmt + 0.08, 0, 1); // ramp to full blanch quickly
+  function stepPressIn(){
+    if(!pressingCRT) return;
+    blanchAmt = clamp(blanchAmt + 0.08, 0, 1);
     renderBlanch();
-    // subtle haptic-like cue via status
-    if(blanchAmt>=1 && Math.random()<0.02) status('Holding pressure…');
     requestAnimationFrame(stepPressIn);
   }
   function endPress(){
-    if(!pressing) return;
-    pressing = false;
-    releaseStart = performance.now();
-    // Start refill animation from fully blanched back to baseline
-    refillPct = 0;
-    requestAnimationFrame(stepRefill);
+    if(!pressingCRT) return;
+    pressingCRT=false; releaseStart = performance.now();
+    refillPct = 0; requestAnimationFrame(stepRefill);
   }
   function stepRefill(now){
-    if(pressing) return; // interrupted
-    // progress 0..1 over targetMs
-    const t = clamp((now - releaseStart) / targetMs, 0, 1);
+    if(pressingCRT) return;
+    const t = clamp((now - releaseStart) / crtTargetMs, 0, 1);
     refillPct = t;
-
-    // As refill progresses, reduce blanch overlay opacity
-    const remaining = 1 - t;
-    blanchAmt = remaining;
+    blanchAmt = 1 - t;
     renderBlanch();
-
-    // We measure CRT at 90% recovered (common teaching proxy)
     if(crtMeasured===null && t >= 0.9){
-      crtMeasured = now - releaseStart;
-      showCRT(crtMeasured);
+      crtMeasured = now - releaseStart; showCRT(crtMeasured);
     }
-    if(t < 1){
-      requestAnimationFrame(stepRefill);
-    } else {
-      // ensure full recovery
-      blanchAmt = 0;
-      renderBlanch();
-      if(crtMeasured===null){
-        crtMeasured = now - releaseStart;
-        showCRT(crtMeasured);
-      }
-      status('Refill complete.');
+    if(t<1){ requestAnimationFrame(stepRefill); }
+    else{
+      blanchAmt=0; renderBlanch();
+      if(crtMeasured===null){ crtMeasured = now - releaseStart; showCRT(crtMeasured); }
+      status('Cap refill complete.');
     }
   }
-
   function renderBlanch(){
-    // Visual blanch: overlay opacity; also lift base highlight slightly
     blanch.style.opacity = blanchAmt;
-    const blur = Math.round(4*blanchAmt);
-    skin.style.filter = `saturate(${1 - blanchAmt*0.25}) brightness(${1 + blanchAmt*0.05}) blur(${blur}px)`;
+    skin.style.filter = `saturate(${1 - blanchAmt*0.25}) brightness(${1 + blanchAmt*0.05})`;
   }
-
   function showCRT(ms){
-    const s = (ms/1000);
     crtMsEl.textContent = Math.round(ms);
-    crtSecEl.textContent = s.toFixed(2);
-    const ok = ms < abnMs;
+    crtSecEl.textContent = (ms/1000).toFixed(2);
+    const ok = ms < crtAbnMs;
     crtStatus.textContent = ok ? 'Normal' : 'Abnormal';
     crtStatus.style.color = ok ? '#0a8f5b' : '#b81e2b';
-    // emit automatically on measurement
-    emit(ms, ok);
   }
 
-  // Emit result for parent app
-  function emit(ms, ok){
-    const payload = {
-      baseline_hex: baseline,
-      target_ms: targetMs,
-      threshold_ms: abnMs,
-      measured_ms: Math.round(ms),
-      normal: ok,
-      timestamp: Date.now()
-    };
-    window.dispatchEvent(new CustomEvent('cap-refill-result', { detail: payload }));
-    console.log('[cap-refill-result]', payload);
+  skin.addEventListener('mousedown', (e)=>{ e.preventDefault(); startPress(); });
+  skin.addEventListener('mouseup',   (e)=>{ e.preventDefault(); endPress(); });
+  skin.addEventListener('mouseleave',(e)=>{ if(pressingCRT) endPress(); });
+  skin.addEventListener('touchstart',(e)=>{ e.preventDefault(); startPress(); }, {passive:false});
+  skin.addEventListener('touchend',  (e)=>{ e.preventDefault(); endPress(); },   {passive:false});
+  skin.addEventListener('touchcancel',(e)=>{ e.preventDefault(); endPress(); },  {passive:false});
+
+  // Turgor interaction (pinch button)
+  turgorBtn.addEventListener('mousedown', startPinch);
+  turgorBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); startPinch(); }, {passive:false});
+  window.addEventListener('mouseup', endPinch);
+  window.addEventListener('touchend', (e)=>{ e.preventDefault(); endPinch(); }, {passive:false});
+
+  function startPinch(){
+    if(!locked){ status('Lock baseline before turgor.'); return; }
+    if(pinching) return;
+    pinching=true; turgorMeasured=null; pinchStart=performance.now(); turgorStart=0;
+    ridgeScale=0; requestAnimationFrame(stepPinchIn);
+  }
+  function stepPinchIn(){
+    if(!pinching) return;
+    ridgeScale = clamp(ridgeScale + 0.07, 0, 1.0);
+    renderRidge();
+    requestAnimationFrame(stepPinchIn);
+  }
+  function endPinch(){
+    if(!pinching) return;
+    pinching=false; turgorStart = performance.now();
+    requestAnimationFrame(stepRidgeOut);
+  }
+  function stepRidgeOut(now){
+    if(pinching) return;
+    const t = clamp((now - turgorStart) / turgorTargetMs, 0, 1);
+    ridgeScale = 1 - t; // relax back to flat
+    renderRidge();
+
+    if(turgorMeasured===null && t>=0.9){
+      turgorMeasured = now - turgorStart; showTurgor(turgorMeasured);
+    }
+    if(t<1){ requestAnimationFrame(stepRidgeOut); }
+    else{
+      ridgeScale = 0; renderRidge();
+      if(turgorMeasured===null){ turgorMeasured = now - turgorStart; showTurgor(turgorMeasured); }
+      status('Turgor recoil complete.');
+    }
+  }
+  function renderRidge(){
+    turgorRidge.style.transform = `translateX(-50%) scaleY(${ridgeScale})`;
+    turgorRidge.style.opacity = ridgeScale ? .7 : 0;
+  }
+  function showTurgor(ms){
+    turgorMsEl.textContent = Math.round(ms);
+    turgorSecEl.textContent = (ms/1000).toFixed(2);
+    const ok = ms < turgorAbnMs;
+    turgorStatus.textContent = ok ? 'Normal' : 'Abnormal';
+    turgorStatus.style.color = ok ? '#0a8f5b' : '#b81e2b';
   }
 
-  emitBtn.addEventListener('click', ()=>{
-    if(crtMeasured==null){ status('Do a test first (press & hold, then release).'); return; }
-    emit(crtMeasured, crtMeasured < abnMs);
-    status('Result emitted.');
+  // Scenario + export
+  function updateScenario(){
+    crtTargetMs = Number(crtTarget.value)||1500;
+    crtAbnMs = Number(crtThresh.value)||2000;
+    turgorTargetMs = Number(turgorTarget.value)||600;
+    turgorAbnMs = Number(turgorThresh.value)||2000;
+  }
+  [crtTarget,crtThresh,turgorTarget,turgorThresh].forEach(el=>el.addEventListener('input', updateScenario));
+  updateScenario();
+
+  randomizeBtn.addEventListener('click', ()=>{
+    const rand=()=>Math.floor(Math.random()*101);
+    pallor.value=rand(); flush.value=rand(); cyan.value=rand();
+    jaund.value=rand(); mottle.value=rand(); rash.value=rand();
+    tempSel.value = Math.random()<.33?'cool':(Math.random()<.5?'normal':'warm');
+    moist.value = rand();
+    renderSigns();
+    status('Randomized skin signs.');
   });
 
-  hintBtn.addEventListener('click', ()=>{
+  resetBtn.addEventListener('click', ()=>{
+    pallor.value=0; flush.value=0; cyan.value=0; jaund.value=0; mottle.value=0; rash.value=0;
+    tempSel.value='normal'; moist.value=0; renderSigns();
+    // CRT reset
+    pressingCRT=false; blanchAmt=0; skin.style.filter='none'; blanch.style.opacity=0;
+    crtMeasured=null; crtMsEl.textContent='—'; crtSecEl.textContent='—'; crtStatus.textContent='Ready'; crtStatus.style.color='';
+    // Turgor reset
+    pinching=false; ridgeScale=0; turgorRidge.style.opacity=0; turgorMeasured=null;
+    turgorMsEl.textContent='—'; turgorSecEl.textContent='—'; turgorStatus.textContent='Ready'; turgorStatus.style.color='';
+    status('Reset all.');
+  });
+
+  turgorReset.addEventListener('click', ()=>{
+    pinching=false; ridgeScale=0; renderRidge();
+    turgorMeasured=null; turgorMsEl.textContent='—'; turgorSecEl.textContent='—'; turgorStatus.textContent='Ready'; turgorStatus.style.color='';
+    status('Turgor reset.');
+  });
+
+  emitBtn.addEventListener('click', ()=>{
+    const payload = {
+      baseline_hex: baseline,
+      signs: {
+        pallor: Number(pallor.value),
+        flushed: Number(flush.value),
+        cyanosis: Number(cyan.value),
+        jaundice: Number(jaund.value),
+        mottled: Number(mottle.value),
+        rash: Number(rash.value)
+      },
+      temp: tempSel.value,
+      moisture: Number(moist.value),
+      crt: {
+        target_ms: crtTargetMs,
+        threshold_ms: crtAbnMs,
+        measured_ms: crtMeasured==null?null:Math.round(crtMeasured),
+        normal: crtMeasured==null?null:(crtMeasured<crtAbnMs)
+      },
+      turgor: {
+        target_ms: turgorTargetMs,
+        threshold_ms: turgorAbnMs,
+        measured_ms: turgorMeasured==null?null:Math.round(turgorMeasured),
+        normal: turgorMeasured==null?null:(turgorMeasured<turgorAbnMs)
+      },
+      summary: summarize(),
+      timestamp: Date.now()
+    };
+    window.dispatchEvent(new CustomEvent('skin-sim-result',{ detail: payload }));
+    console.log('[skin-sim-result]', payload);
+    status('Emitted skin-sim-result.');
+  });
+
+  tipsBtn.addEventListener('click', ()=>{
     alert(
 `How to use:
-1) Pick a baseline skin tone that matches your patient, then LOCK it.
-2) Press & hold on the skin to blanch (simulate fingertip/nailbed pressure).
-3) Release to start capillary refill. The timer stops at ~90% recovery.
-4) “Normal” if under your threshold (default 2000 ms).`
+• Pick a baseline skin tone that matches your patient, then LOCK it.
+• Set skin signs with the sliders: pale, cyanotic, flushed, jaundice, mottled, rash.
+• Temperature & moisture update visuals and KPIs.
+• Capillary refill: press & hold on the skin to blanch; release to time refill (90% recovery).
+• Turgor: press & hold “Pinch Skin”; release to time recoil.
+• “Emit Result” sends a skin-sim-result event with all values for grading/recording.`
     );
   });
 
-  // Pointer events (mouse + touch)
-  skin.addEventListener('mousedown', (e)=>{ e.preventDefault(); startPress(); });
-  skin.addEventListener('mouseup',   (e)=>{ e.preventDefault(); endPress(); });
-  skin.addEventListener('mouseleave',(e)=>{ if(pressing) endPress(); });
-
-  skin.addEventListener('touchstart', (e)=>{ e.preventDefault(); startPress(); }, {passive:false});
-  skin.addEventListener('touchend',   (e)=>{ e.preventDefault(); endPress(); },   {passive:false});
-  skin.addEventListener('touchcancel',(e)=>{ e.preventDefault(); endPress(); },   {passive:false});
-
-  function reset(){
-    pressing=false; blanchAmt=0; refillPct=0; crtMeasured=null;
-    skin.style.filter='none'; blanch.style.opacity=0;
-    status('Reset. Ready for next test.');
-    crtMsEl.textContent='—'; crtSecEl.textContent='—';
-    crtStatus.textContent='Ready'; crtStatus.style.color='';
-  }
-
   function status(msg){ statusEl.textContent = msg }
 
-  // initial paint
+  // Initial tone
+  tonePicker.addEventListener('change', ()=>{ baseline = tonePicker.value; });
   applyTone(baseline);
 })();
 </script>
