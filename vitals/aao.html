@@ -2,94 +2,113 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-<title>A&O×4 Orientation Simulator — NREMT Style</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>A&O×4 Orientation Simulator</title>
 <style>
   :root{
-    --brand:#007B8A; --brand-dark:#0a616c;
-    --bg:#f0f8ff; --panel:#fff; --muted:#e7f4f7; --text:#0f2b33;
-    --ok:#0a8f5b; --warn:#c77b00; --bad:#b81e2b;
-    --shadow:0 10px 24px rgba(0,0,0,.08); --radius:16px;
+    --brand:#007B8A; --brand-600:#066371;
+    --bg:#f0f8ff; --panel:#ffffff; --ink:#0f2b33; --muted:#46636a;
+    --ok:#0a8f5b; --bad:#b81e2b; --warn:#c77b00;
+    --border:#e2e8f0; --shadow:0 10px 28px rgba(2,8,23,.08);
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);
-       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.35}
-  header{width:100%;background:var(--brand);color:#fff;text-align:center;padding:14px 16px;font-weight:700;letter-spacing:.2px}
-  main{width:100%;max-width:980px;margin:0 auto;padding:12px;display:grid;gap:12px}
-  .card{background:var(--panel);border-radius:16px;box-shadow:var(--shadow);padding:14px}
-  h3{margin:.4rem 0 .6rem}
-  .scenario{display:grid;gap:8px}
-  .row{display:grid;gap:10px}
-  @media(min-width:680px){ .row{grid-template-columns:1fr 1fr} }
-  .pill{display:inline-block;padding:3px 10px;border-radius:999px;background:#e7f8f1;color:#0a8f5b;font-weight:700;font-size:.8rem}
-  .muted{color:#3b616b}
-  .btn{
-    appearance:none;border:0;background:var(--brand);color:#fff;
-    padding:12px 14px;border-radius:12px;font-weight:800;cursor:pointer;width:100%;
-    touch-action:manipulation;-webkit-user-select:none;user-select:none;font-size:1rem
-  }
-  .btn.alt{background:#124b54}
-  .btn.warn{background:#c77b00}
-  .btn.bad{background:#b81e2b}
-  .btn.ghost{background:#fff;color:var(--brand);border:2px solid var(--brand)}
-  .btn:active{transform:translateY(1px)}
-  .qgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-  @media(max-width:520px){ .qgrid{grid-template-columns:1fr} }
-  .status{font-size:.98rem;background:#fff;border:1px solid #e0eaed;border-radius:12px;padding:10px;min-height:60px}
-  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-  .kpi{background:#fff;border:1px solid #e8eef0;border-radius:10px;padding:8px;text-align:center}
-  .kpi strong{display:block;font-size:1.2rem}
-  .answerbox{display:grid;gap:8px}
-  select{width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
-  .explain.ok{color:var(--ok)} .explain.bad{color:var(--bad)}
-  .checklist{margin:8px 0 0 18px}
-  .checklist li{margin:2px 0}
+  html,body{height:100%}
+  body{margin:0; background:var(--bg); color:var(--ink);
+       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; line-height:1.45}
+  header{background:var(--brand); color:#fff; padding:14px 16px; font-weight:800; letter-spacing:.2px; position:sticky; top:0; z-index:10}
+  main{max-width:960px; margin:0 auto; padding:12px}
+  h2{margin:.25rem 0 .75rem}
+  .card{background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:14px; box-shadow:var(--shadow); margin-bottom:12px}
+  .pill{display:inline-block; padding:3px 8px; border-radius:999px; background:#e7f8f1; color:#0a8f5b; font-weight:800; font-size:.8rem}
+  .muted{color:var(--muted)}
+  .row{display:grid; gap:10px}
+  @media(min-width:680px){ .row{ grid-template-columns:1fr 1fr } }
+  .q{border:1px solid var(--border); border-radius:12px; padding:12px}
+  .q h3{margin:0 0 .35rem 0; font-size:1.05rem}
+  .ask{display:flex; gap:.5rem; flex-wrap:wrap}
+  .btn{appearance:none; border:0; background:var(--brand); color:#fff; padding:.6rem .9rem; border-radius:12px; font-weight:800; cursor:pointer}
+  .btn:hover{background:var(--brand-600)}
+  .btn.ghost{background:#fff; color:var(--brand); border:2px solid var(--brand)}
+  .btn.warn{background:var(--warn)}
+  .btn.bad{background:var(--bad)}
+  .resp{margin:.5rem 0 0 0; padding:.6rem .7rem; border-radius:10px; background:#f8fafc; border:1px solid var(--border)}
+  .resp .who{font-weight:700}
+  .k{display:inline-flex; align-items:center; gap:.4rem; font-weight:800}
+  .grid2{display:grid; gap:10px; grid-template-columns:1fr}
+  @media(min-width:760px){ .grid2{grid-template-columns:1fr 1fr} }
+  .results-list{margin:.5rem 0 0 1rem}
+  .results-list li{margin:.2rem 0}
+  select{width:100%; padding:.6rem .7rem; border-radius:10px; border:1px solid var(--border); background:#fff}
 </style>
 </head>
 <body>
-<header>A&O×4 Orientation Simulator</header>
+  <header>A&O×4 Orientation Simulator</header>
 
-<main>
-  <!-- Scenario -->
-  <section class="card">
-    <h3>Scenario</h3>
-    <div class="scenario" id="scenarioBox">
-      <div><span class="pill">Patient</span> <strong id="scPerson">Mike Miller</strong></div>
-      <div><span class="pill">Place</span> <strong id="scPlace">at his home</strong></div>
-      <div><span class="pill">Time</span> <strong id="scTime">this afternoon, about 1:00</strong></div>
-      <div><span class="pill">Event</span> <strong id="scEvent">fell and hit his head</strong></div>
-      <div class="muted">Ask the questions in order (Person → Place → Time → Event). The patient will respond aloud.</div>
-    </div>
-  </section>
-
-  <!-- Interaction -->
-  <section class="card">
-    <h3>Ask Orientation Questions</h3>
-    <div class="qgrid">
-      <button class="btn" id="askPerson">Person — “What’s your name?”</button>
-      <button class="btn" id="askPlace">Place — “Where are you?”</button>
-      <button class="btn" id="askTime">Time — “What day/time is it?”</button>
-      <button class="btn" id="askEvent">Event — “What happened?”</button>
-    </div>
-
-    <div class="kpis" style="margin-top:10px">
-      <div class="kpi"><small>A&O Count</small><strong id="aox">×—</strong></div>
-      <div class="kpi"><small>Answered</small><strong id="answered">0 / 4</strong></div>
-      <div class="kpi"><small>Status</small><strong id="flow">Ask Person</strong></div>
-    </div>
-
-    <div class="status" id="transcript" aria-live="polite" style="margin-top:8px">
-      <strong>Patient:</strong> <span id="utter">…(quiet)…</span>
-    </div>
-  </section>
-
-  <!-- You record your assessment and grade it -->
-  <section class="card">
-    <h3>Your Assessment</h3>
-    <div class="answerbox">
+  <main>
+    <!-- Scenario -->
+    <section class="card">
+      <h2>Scenario</h2>
       <div class="row">
+        <div><span class="pill">Patient</span> <strong id="scPerson">—</strong></div>
+        <div><span class="pill">Place</span> <strong id="scPlace">—</strong></div>
+        <div><span class="pill">Time</span> <strong id="scTime">—</strong></div>
+        <div><span class="pill">Event</span> <strong id="scEvent">—</strong></div>
+      </div>
+      <p class="muted" style="margin:.5rem 0 0">Ask in order: <strong>Person → Place → Time → Event</strong>. Each button shows the patient's response directly under that question.</p>
+    </section>
+
+    <!-- Questions -->
+    <section class="card">
+      <h2>Orientation Questions</h2>
+      <div class="grid2">
+        <div class="q" id="q-person">
+          <h3><span class="k">Person</span></h3>
+          <div class="ask">
+            <button class="btn" data-ask="person">Ask "What is your name?"</button>
+          </div>
+          <div class="resp" id="resp-person" hidden>
+            <span class="who">Patient:</span> <span class="line"></span>
+          </div>
+        </div>
+
+        <div class="q" id="q-place">
+          <h3><span class="k">Place</span></h3>
+          <div class="ask">
+            <button class="btn" data-ask="place">Ask "Where are you right now?"</button>
+          </div>
+          <div class="resp" id="resp-place" hidden>
+            <span class="who">Patient:</span> <span class="line"></span>
+          </div>
+        </div>
+
+        <div class="q" id="q-time">
+          <h3><span class="k">Time</span></h3>
+          <div class="ask">
+            <button class="btn" data-ask="time">Ask "What day/time is it?"</button>
+          </div>
+          <div class="resp" id="resp-time" hidden>
+            <span class="who">Patient:</span> <span class="line"></span>
+          </div>
+        </div>
+
+        <div class="q" id="q-event">
+          <h3><span class="k">Event</span></h3>
+          <div class="ask">
+            <button class="btn" data-ask="event">Ask "What happened?"</button>
+          </div>
+          <div class="resp" id="resp-event" hidden>
+            <span class="who">Patient:</span> <span class="line"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Your assessment + Results -->
+    <section class="card">
+      <h2>Assessment & Results</h2>
+      <div class="row" style="align-items:end">
         <div>
-          <label for="assess">Your A&O result</label>
+          <label for="assess"><strong>Your Assessment</strong></label>
           <select id="assess">
             <option value="0">A&O ×0</option>
             <option value="1">A&O ×1</option>
@@ -99,129 +118,68 @@
           </select>
         </div>
         <div>
-          <label>&nbsp;</label>
-          <button class="btn alt" id="showResults">Show Results</button>
+          <button class="btn" id="showResults">Show Results</button>
         </div>
       </div>
 
-      <div class="status" id="resultsBox">
-        <strong>Results:</strong> <span id="resultLine">—</span>
-        <ul class="checklist" id="why"></ul>
+      <div id="results" class="resp" hidden>
+        <div id="resultLine"><strong>Results:</strong> —</div>
+        <ul class="results-list" id="detailList"></ul>
+        <div id="meaning" class="muted" style="margin-top:.5rem"></div>
+        <div id="reasons" style="margin-top:.5rem"></div>
       </div>
 
-      <div class="row" style="margin-top:6px">
+      <div class="row" style="margin-top:8px">
         <button class="btn warn" id="next">Next Scenario</button>
         <button class="btn ghost" id="stopTTS">⏹ Stop Voice</button>
       </div>
-    </div>
-  </section>
-</main>
+    </section>
+  </main>
 
 <script>
 (function(){
-  // --------- DOM
-  const scPerson = document.getElementById('scPerson');
-  const scPlace  = document.getElementById('scPlace');
-  const scTime   = document.getElementById('scTime');
-  const scEvent  = document.getElementById('scEvent');
-
-  const askPersonBtn = document.getElementById('askPerson');
-  const askPlaceBtn  = document.getElementById('askPlace');
-  const askTimeBtn   = document.getElementById('askTime');
-  const askEventBtn  = document.getElementById('askEvent');
-
-  const aoxEl = document.getElementById('aox');
-  const answeredEl = document.getElementById('answered');
-  const flowEl = document.getElementById('flow');
-  const utterEl = document.getElementById('utter');
-
-  const assessSel = document.getElementById('assess');
-  const showBtn = document.getElementById('showResults');
-  const resultsBox = document.getElementById('resultsBox');
+  // ---------- DOM
+  const sc = {
+    person: document.getElementById('scPerson'),
+    place:  document.getElementById('scPlace'),
+    time:   document.getElementById('scTime'),
+    event:  document.getElementById('scEvent')
+  };
+  const respBox = {
+    person: document.getElementById('resp-person'),
+    place:  document.getElementById('resp-place'),
+    time:   document.getElementById('resp-time'),
+    event:  document.getElementById('resp-event')
+  };
+  const assessEl = document.getElementById('assess');
+  const resultsWrap = document.getElementById('results');
   const resultLine = document.getElementById('resultLine');
-  const whyList = document.getElementById('why');
-
-  const nextBtn = document.getElementById('next');
+  const detailList = document.getElementById('detailList');
+  const meaning = document.getElementById('meaning');
+  const reasons = document.getElementById('reasons');
   const stopBtn = document.getElementById('stopTTS');
 
-  // --------- State
-  let askedIdx = 0; // order: 0 person,1 place,2 time,3 event
-  let answered = { person:false, place:false, time:false, event:false };
-  let correct   = { person:false, place:false, time:false, event:false };
-  let trueAns   = { person:'', place:'', time:'', event:'' };
-  let aoTrue = 4; // actual orientation level (0-4)
+  const btns = Array.from(document.querySelectorAll('button[data-ask]'));
+  const nextBtn = document.getElementById('next');
+  const showBtn = document.getElementById('showResults');
 
-  // --------- TTS
+  // ---------- Speech (TTS)
   function speak(text){
     try{
-      window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
-      u.rate=1; u.pitch=1; u.volume=1;
+      u.rate = 1; u.pitch = 1; u.lang = 'en-US';
+      window.speechSynthesis.cancel();
       window.speechSynthesis.speak(u);
-    }catch(e){}
+    }catch(e){ /* ignore */ }
   }
-  stopBtn.addEventListener('click', ()=> window.speechSynthesis.cancel());
+  stopBtn.addEventListener('click', ()=>window.speechSynthesis.cancel());
 
-  // --------- Generators
-  const NAME_POOL = ['Mike Miller','Alex Garcia','Jordan Lee','Taylor Nguyen','Sam Patel','Chris Johnson','Morgan Davis','Riley Brooks'];
-  const PLACE_POOL = ['at home','in the ambulance','at the grocery store','at work','on the sidewalk','in a restaurant'];
-  const TIME_POOL  = ['this morning','this afternoon','this evening','about 1:00','about 4:30','around 9 pm','Tuesday afternoon','Friday morning'];
-  const EVENT_POOL = ['fell and hit my head','got dizzy and sat down','had chest pain','was in a minor car crash','took my insulin and felt weak','had a severe headache'];
+  // ---------- Scenario bank
+  const persons = ["Mike Miller","Ashley Johnson","Ravi Patel","Jessica Chen","Alex Rivera","Kim Nguyen"];
+  const places  = ["at his home","in her apartment","in the ambulance","at the grocery store","in the park","at work"];
+  const times   = ["this morning around 9","this afternoon, about 1:00","this evening","Monday","July","winter"];
+  const events  = ["fell and hit his head","had chest pain","passed out briefly","was in a car crash","has been sick with fever","had a seizure"];
 
-  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
-
-  function newScenario(useExample=false){
-    const person = useExample ? 'Mike Miller' : pick(NAME_POOL);
-    const place  = useExample ? 'at his home' : pick(PLACE_POOL);
-    const time   = useExample ? 'this afternoon, about 1:00' : pick(TIME_POOL);
-    const event  = useExample ? 'fell and hit his head' : pick(EVENT_POOL);
-
-    aoTrue = Math.floor(Math.random()*5); // 0..4
-
-    scPerson.textContent = person;
-    scPlace.textContent = place;
-    scTime.textContent = time;
-    scEvent.textContent = event;
-
-    trueAns = {
-      person: person,
-      place:  place.replace(/^at /,'in '),
-      time:   time,
-      event:  event
-    };
-
-    askedIdx = 0;
-    answered = { person:false, place:false, time:false, event:false };
-    correct  = { person:false, place:false, time:false, event:false };
-    utterEl.textContent = '…(quiet)…';
-    flowEl.textContent = 'Ask Person';
-    resultsBox.style.outline='none';
-    resultLine.textContent='—';
-    whyList.innerHTML='';
-    updateTopline(true); // reset displays (hide A&O)
-  }
-
-  // On first load, use provided example
-  newScenario(true);
-
-  // --------- Utility
-  function updateTopline(hide=true){
-    const total = Object.values(answered).filter(Boolean).length;
-    aoxEl.textContent = hide ? '×—' : ('×' + Object.values(correct).filter(Boolean).length);
-    answeredEl.textContent = `${total} / 4`;
-  }
-
-  function guardOrder(wantIdx){
-    if(askedIdx !== wantIdx){
-      const names = ['Person','Place','Time','Event'];
-      speak(`Please ask ${names[askedIdx]} first.`);
-      flowEl.textContent = `Ask ${names[askedIdx]}`;
-      return false;
-    }
-    return true;
-  }
-
-  // --------- Answer logic
   const wrongBank = {
     person: ["I’m fine.","Mike? Maybe.","Leave me alone.","I don't know.","Sarah?"],
     place:  ["At home.","At work.","Downtown?","In a store.","Somewhere."],
@@ -229,8 +187,44 @@
     event:  ["Nothing.","Car crash.","I was sleeping.","I don’t know.","I got dizzy."]
   };
 
-  function buildAnswer(key, index){
-    const shouldBeCorrect = index < aoTrue;
+  let trueAns = null;
+  let correctKeys = new Set();
+  let said = { person:null, place:null, time:null, event:null };
+
+  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function shuffle(a){ return a.sort(()=>Math.random()-0.5); }
+
+  function newScenario(first=true){
+    // pick true answers
+    trueAns = {
+      person: rand(persons),
+      place:  rand(places),
+      time:   rand(times),
+      event:  rand(events)
+    };
+    sc.person.textContent = trueAns.person;
+    sc.place.textContent  = trueAns.place;
+    sc.time.textContent   = trueAns.time;
+    sc.event.textContent  = trueAns.event;
+
+    // choose how oriented the patient really is
+    const aoTrue = Math.floor(Math.random()*5); // 0..4 correct
+    const keys = ["person","place","time","event"];
+    correctKeys = new Set(shuffle(keys.slice()).slice(0, aoTrue));
+
+    // reset UI
+    for(const k of keys){
+      said[k] = null;
+      respBox[k].hidden = true;
+      respBox[k].querySelector('.line').textContent = '';
+    }
+    resultsWrap.hidden = true;
+    if(!first) speak("New scenario loaded.");
+  }
+
+  // Build answer for a given key based on whether this domain is truly correct
+  function buildAnswer(key){
+    const shouldBeCorrect = correctKeys.has(key);
     if(shouldBeCorrect){
       if(key==='person') return `My name is ${trueAns.person}.`;
       if(key==='place')  return `I am ${trueAns.place}.`;
@@ -241,67 +235,95 @@
     }
   }
 
-  function answer(key, index){
-    const line = buildAnswer(key, index);
-    utterEl.textContent = line;
-    speak(line);
-
-    answered[key] = true;
-    correct[key]  = (index < aoTrue);
-    askedIdx = Math.min(3, askedIdx+1);
-
-    const names = ['Place','Time','Event','(done)'];
-    flowEl.textContent = askedIdx<=3 ? `Ask ${names[askedIdx-0]}` : 'All questions asked';
-    updateTopline(true); // keep hidden during play
-  }
-
-  // --------- Button wiring (pointer events for mobile)
-  function bind(el, fn){
-    el.addEventListener('pointerdown', e=>{ e.preventDefault(); fn(); }, {passive:false});
-  }
-  bind(askPersonBtn, ()=>{ if(guardOrder(0)) answer('person',0); });
-  bind(askPlaceBtn,  ()=>{ if(guardOrder(1)) answer('place',1);  });
-  bind(askTimeBtn,   ()=>{ if(guardOrder(2)) answer('time',2);   });
-  bind(askEventBtn,  ()=>{ if(guardOrder(3)) answer('event',3);  });
-
-  // --------- Grading
-  bind(showBtn, ()=>{
-    if(Object.values(answered).some(v=>!v)){
-      speak('Please complete all four questions first.');
-      resultsBox.style.outline='3px solid rgba(199,123,0,.35)';
-      resultLine.textContent='Finish asking all four questions before grading.';
-      whyList.innerHTML='';
-      return;
-    }
-    const yourAO = Number(assessSel.value);
-    const trueAO = aoTrue;
-
-    const ok = yourAO === trueAO;
-    resultLine.innerHTML = ok
-      ? `✅ Correct: Patient is <strong>A&O ×${trueAO}</strong>.`
-      : `❌ Not quite: You chose <strong>A&O ×${yourAO}</strong>, but correct is <strong>×${trueAO}</strong>.`;
-
-    const details = [];
-    details.push(`<li>${correct.person ? '✅' : '❌'} Person — ${correct.person?'correct':'incorrect'}</li>`);
-    details.push(`<li>${correct.place  ? '✅' : '❌'} Place — ${correct.place?'correct':'incorrect'}</li>`);
-    details.push(`<li>${correct.time   ? '✅' : '❌'} Time — ${correct.time?'correct':'incorrect'}</li>`);
-    details.push(`<li>${correct.event  ? '✅' : '❌'} Event — ${correct.event?'correct':'incorrect'}</li>`);
-    whyList.innerHTML = details.join('');
-
-    resultsBox.style.outline = ok ? '3px solid rgba(10,143,91,.25)' : '3px solid rgba(184,30,43,.25)';
-
-    // Reveal actual A&O now
-    aoxEl.textContent = '×' + trueAO;
-
-    speak(ok ? `Correct. Alert and oriented times ${trueAO}.` : `Not quite. Correct answer is alert and oriented times ${trueAO}.`);
+  // Ask handlers
+  btns.forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const key = b.getAttribute('data-ask');
+      const line = buildAnswer(key);
+      said[key] = line;
+      const box = respBox[key];
+      box.hidden = false;
+      box.querySelector('.line').textContent = line;
+      speak(line);
+    });
   });
 
-  // --------- Next Scenario
-  bind(nextBtn, ()=>{
+  // Results
+  showBtn.addEventListener('click', ()=>{
+    const keys = ["person","place","time","event"];
+    const actualAO = correctKeys.size;
+    const userAO = parseInt(assessEl.value,10);
+
+    // Build details list: which were correct vs wrong
+    detailList.innerHTML = '';
+    for(const k of keys){
+      const wasCorrect = correctKeys.has(k);
+      const li = document.createElement('li');
+      if(wasCorrect){
+        li.innerHTML = `✅ <strong>${k}</strong>: patient was oriented.`;
+      }else{
+        const corr = (k==='person')? trueAns.person :
+                     (k==='place')? trueAns.place :
+                     (k==='time')? trueAns.time :
+                     trueAns.event;
+        li.innerHTML = `❌ <strong>${k}</strong>: patient response was incorrect. Correct: <em>${corr}</em>.`;
+      }
+      detailList.appendChild(li);
+    }
+
+    // Top line
+    const you = (userAO===actualAO) ? 'You were correct.' : `Your assessment (A&O×${userAO}) did not match.`;
+    resultLine.innerHTML = `<strong>Results:</strong> Actual orientation is <strong>A&O×${actualAO}</strong>. ${you}`;
+
+    // Meaning text
+    const wrongDomains = keys.filter(k=>!correctKeys.has(k));
+    let explain = '';
+    if(actualAO===4){
+      explain = 'Fully oriented to person, place, time, and event.';
+    }else if(actualAO===3){
+      explain = 'Oriented to three domains; disoriented to one: ' + wrongDomains.join(', ') + '.';
+    }else if(actualAO===2){
+      explain = 'Oriented to two domains; disoriented to two: ' + wrongDomains.join(', ') + '.';
+    }else if(actualAO===1){
+      explain = 'Oriented to a single domain; disoriented to three: ' + wrongDomains.join(', ') + '.';
+    }else{
+      explain = 'Not oriented to person, place, time, or event.';
+    }
+    meaning.textContent = `What this means: ${explain}`;
+
+    // Reasons (with AAOx2-specific note)
+    const common = [
+      'Delirium (infection, sepsis, UTI in older adults)',
+      'Dementia or baseline cognitive impairment',
+      'Head injury / traumatic brain injury',
+      'Postictal state after seizure',
+      'Stroke/TIA or other acute neuro deficit',
+      'Hypoxia or hypercapnia',
+      'Hypoglycemia or hyperglycemia',
+      'Intoxication (alcohol, opioids, sedatives), withdrawal',
+      'Electrolyte or metabolic disturbance',
+      'Severe pain, sleep deprivation, or shock'
+    ];
+    let note = '';
+    if(actualAO===2){
+      note = '<p><strong>AAO×2 note:</strong> Being oriented to only two domains often reflects a moderate alteration in mental status and warrants prompt evaluation for reversible causes (e.g., hypoxia, hypoglycemia, infection) and time-sensitive emergencies (e.g., stroke, head injury).</p>';
+    }
+    reasons.innerHTML = note + '<p><strong>Possible medical reasons (examples — not diagnostic):</strong></p><ul>'
+      + common.map(x=>`<li>${x}</li>`).join('') + '</ul>';
+
+    resultsWrap.hidden = false;
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  });
+
+  // Next scenario
+  nextBtn.addEventListener('click', ()=>{
     window.speechSynthesis.cancel();
     newScenario(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
+  // init
+  newScenario(true);
 })();
 </script>
 </body>
