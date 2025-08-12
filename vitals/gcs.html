@@ -3,26 +3,27 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-<title>Glasgow Coma Scale (GCS) Simulator</title>
+<title>GCS Simulator — Eyes / Verbal / Motor</title>
 <style>
   :root{
     --brand:#007B8A; --brand-dark:#0a616c;
     --bg:#f0f8ff; --panel:#fff; --muted:#e7f4f7; --text:#0f2b33;
     --ok:#0a8f5b; --warn:#c77b00; --bad:#b81e2b;
-    --shadow:0 10px 24px rgba(0,0,0,.08);
-    --radius:16px;
+    --shadow:0 10px 24px rgba(0,0,0,.08); --radius:16px;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.35}
+  body{margin:0;background:var(--bg);color:var(--text);
+       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.35}
   header{width:100%;background:var(--brand);color:#fff;text-align:center;padding:14px 16px;font-weight:700;letter-spacing:.2px}
   main{width:100%;max-width:1100px;margin:0 auto;padding:12px;display:grid;gap:12px}
-  .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
+  .card{background:var(--panel);border-radius:16px;box-shadow:var(--shadow);padding:14px}
   h3{margin:.4rem 0 .6rem}
   .scenario{display:grid;gap:8px}
   .pill{display:inline-block;padding:3px 10px;border-radius:999px;background:#e7f8f1;color:#0a8f5b;font-weight:700;font-size:.8rem}
   .muted{color:#3b616b}
   .btn{
-    appearance:none;border:0;background:var(--brand);color:#fff;padding:12px 14px;border-radius:12px;font-weight:800;cursor:pointer;width:100%;
+    appearance:none;border:0;background:var(--brand);color:#fff;
+    padding:12px 14px;border-radius:12px;font-weight:800;cursor:pointer;width:100%;
     touch-action:manipulation;-webkit-user-select:none;user-select:none;font-size:1rem
   }
   .btn.alt{background:#124b54}
@@ -31,22 +32,22 @@
   .btn.ghost{background:#fff;color:var(--brand);border:2px solid var(--brand)}
   .btn:active{transform:translateY(1px)}
   .grid{display:grid;gap:10px}
-  @media(min-width:820px){ .grid-cols{grid-template-columns:1.1fr .9fr} .grid{grid-template-columns:repeat(3,1fr)} }
+  @media(min-width:880px){ .grid-2{grid-template-columns:1.1fr .9fr} }
+  .row{display:grid;gap:10px}
+  @media(min-width:560px){ .row{grid-template-columns:1fr 1fr} }
+  .status{font-size:.98rem;background:#fff;border:1px solid #e0eaed;border-radius:12px;padding:10px;min-height:60px}
+  .log{max-height:220px;overflow:auto;background:#ffffff;border:1px solid #e0eaed;border-radius:12px;padding:8px}
+  .log p{margin:.25rem 0}
+  select{width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
   .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
   .kpi{background:#fff;border:1px solid #e8eef0;border-radius:10px;padding:8px;text-align:center}
   .kpi strong{display:block;font-size:1.2rem}
-  .status{font-size:.98rem;background:#fff;border:1px solid #e0eaed;border-radius:12px;padding:10px;min-height:60px}
-  .row{display:grid;gap:10px}
-  @media(min-width:560px){ .row{grid-template-columns:1fr 1fr} }
-  select{width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
-  .log{max-height:180px;overflow:auto;background:#ffffff; border:1px solid #e0eaed; border-radius:12px; padding:8px}
-  .log p{margin:.25rem 0}
-  .explain.ok{color:var(--ok)} .explain.bad{color:var(--bad)}
-  .checklist{margin:8px 0 0 18px} .checklist li{margin:2px 0}
+  .checklist{margin:8px 0 0 18px}
+  .checklist li{margin:2px 0}
 </style>
 </head>
 <body>
-<header>Glasgow Coma Scale (GCS) Simulator</header>
+<header>Glasgow Coma Scale (GCS) — Training Simulator</header>
 
 <main>
   <!-- Scenario -->
@@ -55,57 +56,37 @@
     <div class="scenario">
       <div><span class="pill">Patient</span> <strong id="scPatient">Male, 35</strong></div>
       <div><span class="pill">Setting</span> <strong id="scSetting">found on kitchen floor</strong></div>
-      <div><span class="pill">Context</span> <strong id="scContext">report of fall, brief LOC</strong></div>
-      <div class="muted">Use the buttons below to assess Eye, Verbal, and Motor. The patient will respond based on a hidden true GCS.</div>
+      <div><span class="pill">Context</span> <strong id="scContext">reported fall, brief LOC</strong></div>
+      <div class="muted">Use the three buttons (Eyes / Verbal / Motor) to elicit responses. Then choose your E/V/M and submit.</div>
     </div>
   </section>
 
-  <!-- Interaction + Transcript -->
-  <section class="card grid-cols">
+  <!-- Assess + Transcript -->
+  <section class="card grid-2" style="display:grid">
     <div class="grid" style="grid-template-columns:1fr">
       <h3>Assess</h3>
 
-      <!-- Eye -->
       <div class="card">
-        <h4>Eye (E)</h4>
-        <div class="row">
-          <button class="btn" id="eyeObserve">Observe</button>
-          <button class="btn alt" id="eyeVoice">Call name / loud voice</button>
-        </div>
-        <div class="row">
-          <button class="btn warn" id="eyePain">Apply painful stimulus</button>
-        </div>
+        <h4>Eyes (E)</h4>
+        <button class="btn" id="testEyes">Test Eyes</button>
+        <div class="muted" style="margin-top:6px">Reports the <em>best</em> eye response (spontaneous → voice → pain → none), or not testable.</div>
       </div>
 
-      <!-- Verbal -->
       <div class="card">
         <h4>Verbal (V)</h4>
-        <div class="row">
-          <button class="btn" id="verbalAsk">Ask orientation questions</button>
-          <button class="btn ghost" id="verbalRepeat">Repeat question</button>
-        </div>
+        <button class="btn alt" id="testVerbal">Ask orientation question</button>
+        <div class="muted" style="margin-top:6px">Plays a realistic reply via TTS (Oriented → No verbal), or not testable (e.g., intubated).</div>
       </div>
 
-      <!-- Motor -->
       <div class="card">
         <h4>Motor (M)</h4>
-        <div class="row">
-          <button class="btn" id="motorCommand">Give command (squeeze hands)</button>
-          <button class="btn warn" id="motorPain">Apply painful stimulus</button>
-        </div>
+        <button class="btn warn" id="testMotor">Give command: “Squeeze my hands”</button>
+        <div class="muted" style="margin-top:6px">Logs motor behavior (Obeys → None), or not testable (e.g., pharmacologic paralysis).</div>
       </div>
     </div>
 
     <div class="card">
-      <h3>Findings</h3>
-      <div class="kpis">
-        <div class="kpi"><small>E</small><strong id="kpiE">—</strong></div>
-        <div class="kpi"><small>V</small><strong id="kpiV">—</strong></div>
-        <div class="kpi"><small>M</small><strong id="kpiM">—</strong></div>
-        <div class="kpi"><small>Total</small><strong id="kpiT">—</strong></div>
-      </div>
-
-      <h4 style="margin-top:10px">Transcript</h4>
+      <h3>Transcript</h3>
       <div class="log" id="log"></div>
       <div class="row" style="margin-top:8px">
         <button class="btn ghost" id="stopTTS">⏹ Stop Voice</button>
@@ -116,47 +97,50 @@
 
   <!-- Your Assessment -->
   <section class="card">
-    <h3>Your Assessment</h3>
+    <h3>Your GCS Selection</h3>
     <div class="row">
       <div>
         <label for="selE">Eye (E)</label>
         <select id="selE">
-          <option value="4">4 — Spontaneous</option>
-          <option value="3">3 — To voice</option>
-          <option value="2">2 — To pain</option>
-          <option value="1" selected>1 — None</option>
+          <option value="4">E4 — Spontaneous</option>
+          <option value="3">E3 — To voice</option>
+          <option value="2">E2 — To pain</option>
+          <option value="1">E1 — None</option>
+          <option value="NT">E-NT — Not testable</option>
         </select>
       </div>
       <div>
         <label for="selV">Verbal (V)</label>
         <select id="selV">
-          <option value="5">5 — Oriented</option>
-          <option value="4">4 — Confused</option>
-          <option value="3">3 — Inappropriate words</option>
-          <option value="2">2 — Incomprehensible sounds</option>
-          <option value="1" selected>1 — None</option>
+          <option value="5">V5 — Oriented</option>
+          <option value="4">V4 — Confused</option>
+          <option value="3">V3 — Inappropriate words</option>
+          <option value="2">V2 — Incomprehensible sounds</option>
+          <option value="1">V1 — No verbal</option>
+          <option value="NT">V-NT — Not testable</option>
         </select>
       </div>
     </div>
-    <div class="row">
+    <div class="row" style="margin-top:8px">
       <div>
         <label for="selM">Motor (M)</label>
         <select id="selM">
-          <option value="6">6 — Obeys commands</option>
-          <option value="5">5 — Localizes pain</option>
-          <option value="4">4 — Withdraws to pain</option>
-          <option value="3">3 — Abnormal flexion</option>
-          <option value="2">2 — Extension</option>
-          <option value="1" selected>1 — None</option>
+          <option value="6">M6 — Obeys commands</option>
+          <option value="5">M5 — Localizes pain</option>
+          <option value="4">M4 — Withdraws (flexion)</option>
+          <option value="3">M3 — Abnormal flexion</option>
+          <option value="2">M2 — Extension</option>
+          <option value="1">M1 — None</option>
+          <option value="NT">M-NT — Not testable</option>
         </select>
       </div>
       <div>
         <label>&nbsp;</label>
-        <button class="btn alt" id="showResults">Show Results</button>
+        <button class="btn alt" id="submit">Submit</button>
       </div>
     </div>
 
-    <div class="status" id="resultsBox">
+    <div class="status" id="resultsBox" style="margin-top:8px">
       <strong>Results:</strong> <span id="resultLine">—</span>
       <ul class="checklist" id="why"></ul>
     </div>
@@ -171,21 +155,19 @@
 (function(){
   // ---------- DOM helpers
   const $ = id => document.getElementById(id);
+  const logEl=$('log'), stopTTS=$('stopTTS'), clearLog=$('clearLog');
   const scPatient=$('scPatient'), scSetting=$('scSetting'), scContext=$('scContext');
-  const logEl=$('log');
-  const kpiE=$('kpiE'), kpiV=$('kpiV'), kpiM=$('kpiM'), kpiT=$('kpiT');
-  const selE=$('selE'), selV=$('selV'), selM=$('selM');
-  const resultLine=$('resultLine'), resultsBox=$('resultsBox'), why=$('why');
 
-  // ---------- State (hidden truth)
-  const S = {
-    E: 3, V: 4, M: 6,           // true scores (randomized per scenario)
-    eyesOpen: false,            // baseline for E4
-    didVoice: false, didPain: false,
-    vUttered: false, mTested: false
+  // ---------- Hidden Truth (random per scenario)
+  const Truth = {
+    E: 3, V: 4, M: 6,         // numeric truth if testable
+    ENT: false, VNT: false, MNT: false, // not testable flags
+    reasonE: '', reasonV: '', reasonM: ''
   };
 
-  // ---------- TTS + log
+  // ---------- Util
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
+  function log(msg){ const p=document.createElement('p'); p.textContent=msg; logEl.appendChild(p); logEl.scrollTop=logEl.scrollHeight; }
   function speak(text){
     try{
       window.speechSynthesis.cancel();
@@ -194,194 +176,176 @@
       window.speechSynthesis.speak(u);
     }catch(e){}
   }
-  $('stopTTS').addEventListener('click', ()=> window.speechSynthesis.cancel());
-  $('clearLog').addEventListener('click', ()=> logEl.innerHTML='');
-
-  function log(msg){ const p=document.createElement('p'); p.textContent=msg; logEl.appendChild(p); logEl.scrollTop=logEl.scrollHeight; }
+  stopTTS.addEventListener('click', ()=> window.speechSynthesis.cancel());
+  clearLog.addEventListener('click', ()=> logEl.innerHTML='');
 
   // ---------- Scenario generator
-  const PATIENTS = ['Male, 22','Male, 35','Female, 29','Female, 64','Male, 72','Female, 47'];
-  const SETTINGS = ['found on kitchen floor','in a parking lot','on sidewalk outside store','on couch, snoring respirations','driver seat after minor MVC','bathroom, door forced open'];
-  const CONTEXTS = ['report of fall, brief LOC','ETOH suspected','possible hypoglycemia','postictal per bystanders','unknown downtime','headache then collapse'];
-
-  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
-
-  function newScenario(){
-    scPatient.textContent = pick(PATIENTS);
-    scSetting.textContent = pick(SETTINGS);
-    scContext.textContent = pick(CONTEXTS);
-
-    // Weighted random (skew toward mid-range)
-    S.E = weighted([4,3,2,1],[0.25,0.35,0.25,0.15]);
-    S.V = weighted([5,4,3,2,1],[0.20,0.30,0.25,0.15,0.10]);
-    S.M = weighted([6,5,4,3,2,1],[0.25,0.25,0.20,0.15,0.10,0.05]);
-
-    S.eyesOpen = (S.E===4);
-    S.didVoice = false; S.didPain=false;
-    S.vUttered=false; S.mTested=false;
-
-    // Reset UI (hide true values)
-    kpiE.textContent='—'; kpiV.textContent='—'; kpiM.textContent='—'; kpiT.textContent='—';
-    resultLine.textContent='—'; why.innerHTML=''; resultsBox.style.outline='none';
-    logEl.innerHTML='';
-    log('Scenario loaded. Begin assessment.');
-    window.speechSynthesis.cancel();
-  }
+  const PATIENTS=['Male, 22','Male, 35','Female, 29','Female, 64','Male, 72','Female, 47'];
+  const SETTINGS=['kitchen floor','parking lot','sidewalk outside store','couch at home','driver seat after minor MVC','bathroom, door forced'];
+  const CONTEXTS=['fall, brief LOC','ETOH suspected','possible hypoglycemia','postictal per bystanders','unknown downtime','headache then collapse'];
 
   function weighted(values, weights){
-    const r=Math.random(); let cum=0;
-    for(let i=0;i<values.length;i++){ cum+=weights[i]; if(r<=cum) return values[i]; }
+    const r=Math.random(); let c=0;
+    for(let i=0;i<values.length;i++){ c+=weights[i]; if(r<=c) return values[i]; }
     return values[values.length-1];
   }
 
-  // ---------- Eye tests
-  $('eyeObserve').addEventListener('pointerdown', e=>{
-    e.preventDefault();
-    if(S.E===4){ S.eyesOpen=true; log('Eyes open spontaneously.'); }
-    else { log('Eyes closed at rest.'); }
-  });
+  function newScenario(){
+    scPatient.textContent = pick(PATIENTS);
+    scSetting.textContent = 'found on ' + pick(SETTINGS);
+    scContext.textContent = pick(CONTEXTS);
 
-  $('eyeVoice').addEventListener('pointerdown', e=>{
-    e.preventDefault();
-    S.didVoice=true;
-    if(S.E>=3){ S.eyesOpen=true; log('Opens eyes to voice.'); }
-    else { log('No eye opening to voice.'); }
-  });
+    // Randomize true scores (skew to mid-range)
+    Truth.E = weighted([4,3,2,1],[0.25,0.35,0.25,0.15]);
+    Truth.V = weighted([5,4,3,2,1],[0.20,0.30,0.25,0.15,0.10]);
+    Truth.M = weighted([6,5,4,3,2,1],[0.25,0.25,0.20,0.15,0.10,0.05]);
 
-  $('eyePain').addEventListener('pointerdown', e=>{
-    e.preventDefault();
-    S.didPain=true;
-    if(S.E>=2){ S.eyesOpen=true; log('Opens eyes to pain.'); }
-    else { log('No eye opening to pain.'); }
-  });
+    // Random chance of NOT TESTABLE with reason
+    Truth.ENT = Math.random()<0.08;
+    Truth.VNT = Math.random()<0.12;
+    Truth.MNT = Math.random()<0.06;
 
-  // ---------- Verbal tests
-  $('verbalAsk').addEventListener('pointerdown', e=>{
-    e.preventDefault();
-    S.vUttered=true;
-    const line = verbalLine(S.V);
-    log('You ask orientation questions.');
-    if(S.V>=2){ speak(line); }
-    if(S.V===5) log('Speech: oriented.');
-    else if(S.V===4) log('Speech: confused conversation.');
-    else if(S.V===3) log('Speech: inappropriate words.');
-    else if(S.V===2) log('Speech: incomprehensible sounds.');
-    else log('No verbal response.');
-  });
+    Truth.reasonE = Truth.ENT ? pick(['eyes swollen shut','eyelids taped for injury','severe facial trauma']) : '';
+    Truth.reasonV = Truth.VNT ? pick(['intubated (ETT in place)','tracheostomy without speaking valve','severe aphonia']) : '';
+    Truth.reasonM = Truth.MNT ? pick(['pharmacologic paralysis','bilateral upper extremity immobilization','deep sedation']) : '';
 
-  $('verbalRepeat').addEventListener('pointerdown', e=>{
-    e.preventDefault();
-    if(!S.vUttered){ log('Repeat has no effect before asking.'); return; }
-    if(S.V>=2){ speak(verbalLine(S.V,true)); log('You repeat the question.'); }
-    else log('Still no verbal response.');
-  });
-
-  function verbalLine(v,repeat=false){
-    if(v===5) return repeat? "Yes, I'm okay. My name is Alex. We're at home." : "My name is Alex. We're at home. It's Tuesday afternoon.";
-    if(v===4) return repeat? "Uh... I think it's afternoon. I'm at... home?" : "I'm not sure... maybe Tuesday? I think I'm at home.";
-    if(v===3) return repeat? "Home. Pizza. Okay." : "Hey! Doctor. No.";
-    if(v===2) return repeat? "Mmm... uhh..." : "Aaah... mmm...";
-    return ""; // none
+    // Clear UI
+    logEl.innerHTML='';
+    $('resultLine').textContent='—';
+    $('why').innerHTML='';
+    $('resultsBox').style.outline='none';
+    window.speechSynthesis.cancel();
   }
 
-  // ---------- Motor tests
-  $('motorCommand').addEventListener('pointerdown', e=>{
+  // ---------- Buttons: Eyes / Verbal / Motor
+  $('testEyes').addEventListener('pointerdown', e=>{
     e.preventDefault();
-    S.mTested=true;
-    if(S.M===6){ log('Obeys: squeezes both hands on command.'); }
-    else { log('Does not obey command.'); }
+    if(Truth.ENT){
+      log(`Eyes not testable: ${Truth.reasonE}.`);
+      return;
+    }
+    if(Truth.E===4){ log('Eyes open spontaneously.'); }
+    else if(Truth.E===3){ log('Opens eyes to verbal command.'); }
+    else if(Truth.E===2){ log('Opens eyes only to painful stimulus.'); }
+    else { log('No eye opening.'); }
   });
 
-  $('motorPain').addEventListener('pointerdown', e=>{
+  $('testVerbal').addEventListener('pointerdown', e=>{
     e.preventDefault();
-    S.didPain=true; S.mTested=true;
-    switch(S.M){
-      case 6: log('Localizes and attempts to push away stimulus (still obeys commands).'); break;
-      case 5: log('Localizes pain: purposeful movement toward stimulus.'); break;
-      case 4: log('Withdraws from pain.'); break;
-      case 3: log('Abnormal flexion (decorticate).'); break;
-      case 2: log('Extension (decerebrate).'); break;
+    log('You ask: "Can you tell me your name and where you are?"');
+    if(Truth.VNT){
+      log(`Verbal not testable: ${Truth.reasonV}.`);
+      return;
+    }
+    let line='';
+    switch(Truth.V){
+      case 5: line="My name is Alex. I'm at home. It's Tuesday afternoon."; break;
+      case 4: line="Uh... I think I'm at home? Maybe Tuesday?"; break;
+      case 3: line="Hey! Doctor! No!"; break;
+      case 2: line="Aaah... mmm..."; break;
+      default: line="(no verbal response)";
+    }
+    if(Truth.V>=2) speak(line);
+    log('Patient: ' + line);
+  });
+
+  $('testMotor').addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    log('You say: "Squeeze my hands."');
+    if(Truth.MNT){
+      log(`Motor not testable: ${Truth.reasonM}.`);
+      return;
+    }
+    switch(Truth.M){
+      case 6: log('Obeys: squeezes both hands on command.'); break;
+      case 5: log('Does not obey command; would localize painful stimulus.'); break;
+      case 4: log('Does not obey command; would withdraw to pain.'); break;
+      case 3: log('Abnormal flexion to painful stimulus.'); break;
+      case 2: log('Extension to painful stimulus.'); break;
       default: log('No motor response.'); break;
     }
   });
 
-  // ---------- Show Results
-  $('showResults').addEventListener('pointerdown', e=>{
+  // ---------- Submit & Grade
+  $('submit').addEventListener('pointerdown', e=>{
     e.preventDefault();
+    const selE = $('selE').value;  // "4".."1" or "NT"
+    const selV = $('selV').value;
+    const selM = $('selM').value;
 
-    // Encourage performing each domain at least once
-    const notes=[];
-    if(!(S.eyesOpen || S.didVoice || S.didPain)) notes.push('Eye not tested.');
-    if(!S.vUttered) notes.push('Verbal not tested.');
-    if(!S.mTested) notes.push('Motor not tested.');
-    if(notes.length){ log('Note: ' + notes.join(' ')); }
+    // Derive correct display tokens (with NT if applicable)
+    const corrE = Truth.ENT ? 'NT' : String(Truth.E);
+    const corrV = Truth.VNT ? 'NT' : String(Truth.V);
+    const corrM = Truth.MNT ? 'NT' : String(Truth.M);
 
-    const yourE = Number(selE.value), yourV = Number(selV.value), yourM = Number(selM.value);
-    const trueE = deriveE(), trueV = S.V, trueM = S.M;
+    // Numeric total (ignore NT domains for total; show dash)
+    const numE = Truth.ENT ? null : Truth.E;
+    const numV = Truth.VNT ? null : Truth.V;
+    const numM = Truth.MNT ? null : Truth.M;
+    const total = (numE??0) + (numV??0) + (numM??0);
+    const totalStr = (numE==null || numV==null || numM==null) ? `${numE??'–'}/${numV??'–'}/${numM??'–'} (numeric total shown where testable)` :
+                                                             `${numE}/${numV}/${numM} = ${total}`;
 
-    // Reveal correct E/V/M and total
-    kpiE.textContent = String(trueE);
-    kpiV.textContent = String(trueV);
-    kpiM.textContent = String(trueM);
-    kpiT.textContent = String(trueE + trueV + trueM);
+    const ok = (selE===corrE && selV===corrV && selM===corrM);
 
-    const ok = (yourE===trueE && yourV===trueV && yourM===trueM);
-    resultLine.innerHTML = ok
-      ? `✅ Correct: GCS ${trueE} / ${trueV} / ${trueM} = <strong>${trueE+trueV+trueM}</strong>.`
-      : `❌ Not quite. Correct is GCS ${trueE} / ${trueV} / ${trueM} = <strong>${trueE+trueV+trueM}</strong>.`;
+    $('resultLine').innerHTML = ok
+      ? `✅ Correct. GCS: E${corrE} V${corrV} M${corrM}. ${totalStr}.`
+      : `❌ Not quite. Correct is GCS: <strong>E${corrE} V${corrV} M${corrM}</strong>. ${totalStr}.`;
 
-    // Why (explanations)
-    const whyLines = [];
-    whyLines.push(`<li>${explainE(trueE)}</li>`);
-    whyLines.push(`<li>${explainV(trueV)}</li>`);
-    whyLines.push(`<li>${explainM(trueM)}</li>`);
-    if(yourE!==trueE) whyLines.push(`<li class="explain bad">You chose E${yourE}; observed behavior supports E${trueE}.</li>`);
-    if(yourV!==trueV) whyLines.push(`<li class="explain bad">You chose V${yourV}; spoken response supports V${trueV}.</li>`);
-    if(yourM!==trueM) whyLines.push(`<li class="explain bad">You chose M${yourM}; motor response supports M${trueM}.</li>`);
-    why.innerHTML = whyLines.join('');
+    const why = $('why');
+    const lines = [];
 
-    resultsBox.style.outline = ok ? '3px solid rgba(10,143,91,.25)' : '3px solid rgba(184,30,43,.25)';
+    // Domain explanations
+    lines.push(`<li>${explainE(corrE)}</li>`);
+    lines.push(`<li>${explainV(corrV)}</li>`);
+    lines.push(`<li>${explainM(corrM)}</li>`);
+
+    // Mismatches
+    if(selE!==corrE) lines.push(`<li class="explain bad">You selected E${selE}; observation supports E${corrE}.</li>`);
+    if(selV!==corrV) lines.push(`<li class="explain bad">You selected V${selV}; verbal output supports V${corrV}.</li>`);
+    if(selM!==corrM) lines.push(`<li class="explain bad">You selected M${selM}; motor behavior supports M${corrM}.</li>`);
+
+    // NT reasons
+    if(Truth.ENT) lines.push(`<li class="muted">Eyes NT reason: ${Truth.reasonE}.</li>`);
+    if(Truth.VNT) lines.push(`<li class="muted">Verbal NT reason: ${Truth.reasonV}.</li>`);
+    if(Truth.MNT) lines.push(`<li class="muted">Motor NT reason: ${Truth.reasonM}.</li>`);
+
+    why.innerHTML = lines.join('');
+    $('resultsBox').style.outline = ok ? '3px solid rgba(10,143,91,.25)' : '3px solid rgba(184,30,43,.25)';
   });
 
-  function deriveE(){
-    // Determine best eye opening actually elicited / observed
-    if(S.E===4) return 4;
-    if(S.E===3 && (S.didVoice||S.eyesOpen)) return 3;
-    if(S.E===2 && S.didPain) return 2;
-    if(S.E===1) return 1;
-    // If tester never tried pain/voice but patient is capable, still grade by capability
-    return S.E;
-  }
-
   function explainE(e){
+    if(e==='NT') return 'E-NT: Eyes not testable (e.g., swollen shut / taped).';
     const map = {
-      4:'E4: Eyes open spontaneously (observed at rest).',
-      3:'E3: Opens eyes to voice (responded when you called/shouted).',
-      2:'E2: Opens eyes to pain (responded only after painful stimulus).',
-      1:'E1: No eye opening.'
+      '4':'E4: Eyes open spontaneously.',
+      '3':'E3: Opens eyes to verbal command.',
+      '2':'E2: Opens eyes to pain.',
+      '1':'E1: No eye opening.'
     };
-    return map[e];
+    return map[e]||'';
   }
   function explainV(v){
+    if(v==='NT') return 'V-NT: Verbal not testable (e.g., intubated / trach without valve).';
     const map = {
-      5:'V5: Oriented — appropriate conversation.',
-      4:'V4: Confused conversation — answers but disoriented.',
-      3:'V3: Inappropriate words — random words/shouting.',
-      2:'V2: Incomprehensible sounds — moans/groans.',
-      1:'V1: No verbal response.'
+      '5':'V5: Oriented — appropriate conversation.',
+      '4':'V4: Confused conversation — disoriented but conversant.',
+      '3':'V3: Inappropriate words — random/exclamations.',
+      '2':'V2: Incomprehensible sounds — moans/groans.',
+      '1':'V1: No verbal response.'
     };
-    return map[v];
+    return map[v]||'';
   }
   function explainM(m){
+    if(m==='NT') return 'M-NT: Motor not testable (e.g., pharmacologic paralysis / immobilization).';
     const map = {
-      6:'M6: Obeys commands — followed your command.',
-      5:'M5: Localizes pain — purposeful movement to stimulus.',
-      4:'M4: Withdraws from pain.',
-      3:'M3: Abnormal flexion (decorticate).',
-      2:'M2: Extension (decerebrate).',
-      1:'M1: No motor response.'
+      '6':'M6: Obeys commands — follows your command.',
+      '5':'M5: Localizes pain — purposeful movement to stimulus.',
+      '4':'M4: Withdraws from pain.',
+      '3':'M3: Abnormal flexion (decorticate).',
+      '2':'M2: Extension (decerebrate).',
+      '1':'M1: No motor response.'
     };
-    return map[m];
+    return map[m]||'';
   }
 
   // ---------- Next scenario
