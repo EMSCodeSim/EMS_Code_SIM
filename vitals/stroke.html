@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-<title>Stroke Assessment Simulator — BEFAST + CP-SSS</title>
+<title>Stroke Assessment Simulator — BEFAST + CP-SSS + Glucose</title>
 <style>
   :root{
     --brand:#007B8A; --brand-dark:#0a616c;
@@ -35,10 +35,9 @@
   @media(min-width:620px){ .row{grid-template-columns:1fr 1fr} }
   .status{font-size:.98rem;background:#fff;border:1px solid #e0eaed;border-radius:12px;padding:10px;min-height:60px}
   select,input[type="time"]{width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
-
   .vwrap{display:grid;place-items:center;background:var(--muted);border:1px solid #dbeff3;border-radius:14px;padding:10px}
 
-  /* FACE */
+  /* FACE/EYES SVG */
   .faceBox svg{max-width:360px;width:100%;height:auto;display:block}
   .vf-mask{fill:url(#vfgrad); opacity:0}
 
@@ -70,7 +69,6 @@
   .person::before{content:"";position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:44px;height:44px;background:var(--face);border-radius:50%;box-shadow:inset 0 -6px 0 var(--face-shadow)}
   .person::after{content:"";position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:74px;height:14px;background:#1c3a40;border-radius:14px}
 
-  /* Eyes panel */
   .gazeArrow{font-size:1.1rem;opacity:.0;transition:opacity .3s}
 
   .checklist{margin:8px 0 0 18px} .checklist li{margin:2px 0}
@@ -82,7 +80,7 @@
 </style>
 </head>
 <body>
-<header>Stroke Assessment Simulator — BEFAST + CP-SSS</header>
+<header>Stroke Assessment Simulator — BEFAST + CP-SSS + Glucose</header>
 
 <main>
   <!-- Scenario -->
@@ -93,7 +91,8 @@
         <div><span class="pill">Dispatch</span> <strong id="scDispatch">60 y/o with slurred speech & facial droop</strong></div>
         <div><span class="pill">Setting</span> <strong id="scSetting">found sitting on couch</strong></div>
         <div><span class="pill">Last Known Well</span> <strong id="scLKW">~30 minutes ago</strong></div>
-        <div class="muted">Run BEFAST tests. If positive, you’ll proceed to CP-SSS for LVO screening.</div>
+        <div><span class="pill">POC Glucose</span> <strong id="scGlucose">unknown</strong></div>
+        <div class="muted">Run BEFAST tests. If positive, proceed to CP-SSS for LVO screening. Hypoglycemia can mimic stroke — check glucose.</div>
       </div>
       <div class="row">
         <div>
@@ -104,6 +103,11 @@
           <label>&nbsp;</label>
           <button class="btn ghost" id="stampNow">Use current time as exam time</button>
           <div class="muted" id="examTimeNote"></div>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn alt" id="btnGlucose">Check Glucose</button>
+          <div class="muted" id="gluNote"></div>
         </div>
       </div>
     </div>
@@ -318,19 +322,9 @@
   // ---------- helpers
   const $ = id => document.getElementById(id);
 
-  // Cross-device button binding (pointer + touch + click)
-  function onTap(el, handler){
-    if(!el) return;
-    let locked = false;
-    const wrap = (e) => { e.preventDefault?.(); if (locked) return; locked = true; handler(e); setTimeout(()=>locked=false, 0); };
-    el.addEventListener('pointerdown', wrap, {passive:false});
-    el.addEventListener('touchstart', wrap, {passive:false});
-    el.addEventListener('click', wrap, {passive:false});
-  }
-
   // Scenario text
-  const scDispatch=$('scDispatch'), scSetting=$('scSetting'), scLKW=$('scLKW');
-  const examNote=$('examTimeNote');
+  const scDispatch=$('scDispatch'), scSetting=$('scSetting'), scLKW=$('scLKW'), scGlucose=$('scGlucose');
+  const examNote=$('examTimeNote'), gluNote=$('gluNote');
 
   // Face/eyes elements
   const mouth=$('mouth'), droop=$('droop'), browL=$('browL'), browR=$('browR');
@@ -360,7 +354,8 @@
     balance: false,
     eyes: 'normal',     // normal/gazeDev/fieldCut
     lkwMins: 30,
-    locAbn: false
+    locAbn: false,
+    glucose: null       // mg/dL or null for unknown
   };
 
   // TTS
@@ -372,10 +367,19 @@
       window.speechSynthesis.speak(u);
     }catch(e){}
   }
-  onTap($('stopTTS'), ()=> window.speechSynthesis.cancel());
+  $('stopTTS').addEventListener('click', ()=> window.speechSynthesis.cancel());
 
   // Random helpers
   function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
+
+  function randomGlucose(){
+    // Weighted: mostly normal, sometimes low or high
+    const r=Math.random();
+    if(r<0.12) return Math.floor(40 + Math.random()*20);     // 40–60 (hypo)
+    if(r<0.20) return Math.floor(61 + Math.random()*39);     // 61–100 (low-normal)
+    if(r<0.85) return Math.floor(90 + Math.random()*40);     // 90–130 (normal)
+    return Math.floor(180 + Math.random()*120);              // hyperglycemia
+  }
 
   function newScenario(){
     scDispatch.textContent = pick([
@@ -388,6 +392,7 @@
     T.lkwMins = [20,30,40,60,120,240,999][Math.floor(Math.random()*7)];
     scLKW.textContent = T.lkwMins===999 ? 'unknown' : `~${T.lkwMins} minutes ago`;
 
+    // Side & deficits
     T.side = Math.random()<0.5 ? 'right' : 'left';
     T.face = Math.random()<0.65;
     T.arm  = Math.random()<0.7;
@@ -395,6 +400,11 @@
     T.balance = Math.random()<0.35;
     T.eyes = Math.random()<0.45 ? (Math.random()<0.6?'gazeDev':'fieldCut') : 'normal';
     T.locAbn = Math.random()<0.35;
+
+    // Glucose: 50% chance known at dispatch, else unknown until checked
+    T.glucose = Math.random()<0.5 ? randomGlucose() : null;
+    scGlucose.textContent = (T.glucose==null) ? 'unknown' : `${T.glucose} mg/dL`;
+    gluNote.textContent = (T.glucose!=null && T.glucose<60) ? '⚠️ Hypoglycemia can mimic stroke—treat per protocol.' : '';
 
     resetFace(); resetArms(); resetBalance(); resetEyes();
     resultLine.textContent='—'; logWhy.innerHTML=''; resultsBox.style.outline='none';
@@ -448,11 +458,10 @@
 
     function step(t){
       const dt = (t - gazeStart)/1000;
-      const s = Math.sin(dt * Math.PI/1.1);
+      const s = Math.sin(dt * Math.PI/1.1); // smooth left-right
       let offset = Math.round(s * max);
       if(isDev){
-        if(dirToward===1) offset = Math.max( midlock, offset);
-        else              offset = Math.min(-midlock, offset);
+        if(dirToward===1) offset = Math.max( midlock, offset); else offset = Math.min(-midlock, offset);
       }
       irisL.setAttribute('transform',`translate(${offset},0)`);
       irisR.setAttribute('transform',`translate(${offset},0)`);
@@ -464,7 +473,7 @@
   // Arms
   let armAnim=null;
   function resetArms(){
-    armL.style.transform='translate(-140px,0)';
+    armL.style.transform='translate(-140px,0)'; // level start
     armR.style.transform='translate(140px,0)';
     armL.classList.remove('hold'); armR.classList.remove('hold');
     if(armAnim){ cancelAnimationFrame(armAnim); armAnim=null; }
@@ -491,37 +500,49 @@
     person.style.transform=`translateX(${side==='right'?12:-12}px) rotate(${angle}deg)`;
   }
 
-  // Time button
-  onTap($('stampNow'), ()=>{
+  // Time & Glucose buttons
+  document.getElementById('stampNow').addEventListener('click', ()=>{
     const now = new Date();
     const hh = String(now.getHours()).padStart(2,'0');
     const mm = String(now.getMinutes()).padStart(2,'0');
     examNote.textContent = `Exam time set to ${hh}:${mm}. Use LKW to determine eligibility messaging.`;
   });
 
-  // Test buttons (with cross-device onTap)
-  onTap($('testFace'),   ()=>{ resetFace(); if(T.face) showFaceDroop(T.side); });
-  onTap($('testArms'),   ()=>{ resetArms(); runArmDrift(T.side, T.arm); });
-  onTap($('testBalance'),()=>{ resetBalance(); if(T.balance) showBalanceLoss(T.side); });
-  onTap($('testEyes'),   ()=>{ resetEyes(); runTracking(); });
-  onTap($('stopEyes'),   ()=>{ stopTracking(); });
-
-  onTap($('testSpeech'), ()=>{
-    let line = "You can't teach an old dog new tricks.";
-    if(T.speech==='slurred'){
-      line = "You can' ... teach an ol' do' new trricks.";
-      speechStatus.textContent='Slurred articulation';
-    }else if(T.speech==='aphasic'){
-      line = "Uh... I... teach... dog... new... (word-finding difficulty)";
-      speechStatus.textContent='Aphasia / word salad';
-    }else{
-      speechStatus.textContent='Clear, fluent phrase';
-    }
-    speak(line);
+  document.getElementById('btnGlucose').addEventListener('click', ()=>{
+    if(T.glucose==null){ T.glucose = randomGlucose(); }
+    scGlucose.textContent = `${T.glucose} mg/dL`;
+    if(T.glucose<60){ gluNote.textContent = '⚠️ Hypoglycemia can mimic stroke—treat per protocol.'; }
+    else { gluNote.textContent = ''; }
   });
 
+  // Test buttons (plain click for max compatibility)
+  document.getElementById('testFace').addEventListener('click', ()=>{
+    resetFace(); if(T.face) showFaceDroop(T.side);
+  });
+  document.getElementById('testArms').addEventListener('click', ()=>{
+    resetArms(); runArmDrift(T.side, T.arm);
+  });
+  document.getElementById('testBalance').addEventListener('click', ()=>{
+    resetBalance(); if(T.balance) showBalanceLoss(T.side);
+  });
+  document.getElementById('testEyes').addEventListener('click', ()=>{
+    resetEyes(); runTracking();
+  });
+  document.getElementById('stopEyes').addEventListener('click', ()=>{
+    stopTracking();
+  });
+
+  document.getElementById('testSpeech').addEventListener('click', ()=>{
+    let line = "You can't teach an old dog new tricks.";
+    if(T.speech==='slurred'){ line = "You can' ... teach an ol' do' new trricks."; speechStatus.textContent='Slurred articulation'; }
+    else if(T.speech==='aphasic'){ line = "Uh... I... teach... dog... new... (word-finding difficulty)"; speechStatus.textContent='Aphasia / word salad'; }
+    else { speechStatus.textContent='Clear, fluent phrase'; }
+    speak(line);
+  });
+  document.getElementById('stopTTS').addEventListener('click', ()=> window.speechSynthesis.cancel());
+
   // Submit / grade BEFAST
-  onTap($('submit'), ()=>{
+  document.getElementById('submit').addEventListener('click', ()=>{
     const truth = {
       B: T.balance,
       E: (T.eyes!=='normal'),
@@ -579,6 +600,15 @@
     }
     lines.push(`<li><strong>Time</strong> — ${timeLine}</li>`);
 
+    // Glucose hint
+    if(T.glucose!=null){
+      if(T.glucose<60) lines.push('<li><strong>Glucose</strong> — ⚠️ Low (<60 mg/dL). Correct hypoglycemia; reassess neuro after treatment.</li>');
+      else lines.push(`<li><strong>Glucose</strong> — ${T.glucose} mg/dL.</li>`);
+    } else {
+      lines.push('<li><strong>Glucose</strong> — Not checked. Always obtain POC glucose on suspected stroke.</li>');
+      ok.push(false);
+    }
+
     const allOk = ok.every(Boolean);
     resultLine.innerHTML = allOk
       ? `✅ Good job: Your BEFAST determination matches the scenario.`
@@ -600,7 +630,7 @@
     cpsssLine.textContent = '—';
   }
 
-  onTap($('runLoc'), ()=>{
+  document.getElementById('runLoc').addEventListener('click', ()=>{
     // Ask age & month; commands close eyes / open-close hand
     const q1="How old are you?"; const q2="What month is it?";
     const c1="Close your eyes."; const c2="Open and close your hand.";
@@ -610,10 +640,9 @@
     const rset = (T.locAbn? respBad : respGood);
     setTimeout(()=>speak(rset[0]), 900);
     setTimeout(()=>speak(rset[1]), 1600);
-    // We could animate a blink/hand wiggle here in a later pass
   });
 
-  onTap($('gradeCPSSS'), ()=>{
+  document.getElementById('gradeCPSSS').addEventListener('click', ()=>{
     const g = cpsGaze.value.includes('Yes') ? 2 : 0;
     const a = cpsArm.value.includes('Yes')  ? 1 : 0;
     const l = cpsLoc.value.includes('Yes')  ? 1 : 0;
@@ -622,7 +651,10 @@
       (total>=2 ? '➡️ Consider LVO / severe stroke pathway per local protocol.' : 'Lower likelihood of LVO; continue standard stroke pathway.');
   });
 
-  onTap($('next'), ()=>{ window.speechSynthesis.cancel(); stopTracking(); newScenario(); });
+  // Next scenario
+  document.getElementById('next').addEventListener('click', ()=>{
+    window.speechSynthesis.cancel(); stopTracking(); newScenario();
+  });
 
   // Boot
   newScenario();
