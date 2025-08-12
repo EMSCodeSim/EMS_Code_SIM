@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-<title>Glucose Meter — Simple</title>
+<title>Glucose Meter — Simple (Mobile-fixed)</title>
 <style>
   :root{
     --brand:#007B8A; --brand-dark:#0a616c;
@@ -17,6 +17,7 @@
     margin:0; background:var(--bg); color:var(--text);
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
     display:flex; flex-direction:column; align-items:center; min-height:100vh;
+    -webkit-tap-highlight-color: transparent;
   }
   header{ width:100%; background:var(--brand); color:#fff; text-align:center; padding:14px 16px; font-weight:600 }
   main{ width:100%; max-width:860px; padding:12px; display:grid; gap:12px }
@@ -28,21 +29,39 @@
   }
   .meter-wrap{ width:min(520px,92%); }
 
-  /* Buttons */
-  .controls{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:12px }
-  @media (max-width:480px){ .controls{ grid-template-columns:1fr } }
+  .controls{
+    display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; margin-top:12px
+  }
+  @media (max-width:640px){ .controls{ grid-template-columns:1fr 1fr } }
+  @media (max-width:420px){ .controls{ grid-template-columns:1fr } }
+
   .btn{
     appearance:none; border:0; background:var(--brand); color:#fff;
-    padding:12px 14px; border-radius:12px; font-weight:700; cursor:pointer; width:100%
+    padding:12px 14px; border-radius:12px; font-weight:700; cursor:pointer; width:100%;
+    touch-action:manipulation; /* prevent double-tap zoom, speed up taps */
+    -webkit-user-select:none; user-select:none;
   }
   .btn.alt{ background:#124b54 }
   .btn.warn{ background:#c77b00 }
+  .btn.ghost{ background:#fff; color:var(--brand); border:2px solid var(--brand) }
   .btn:active{ transform:translateY(1px) }
 
   .status{
     margin-top:8px; font-size:.95rem; background:#fff; border:1px solid #e8eef0;
     padding:10px; border-radius:10px; color:#0b3b44;
   }
+
+  /* Simple modal for “Explain Readings” */
+  .modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,.35);
+    display:none; align-items:center; justify-content:center; padding:16px;
+  }
+  .modal[open]{ display:flex }
+  .modal-card{
+    background:#fff; border-radius:14px; max-width:560px; width:100%; padding:16px; box-shadow:var(--shadow);
+  }
+  .modal-card h3{ margin:0 0 8px }
+  .close{ float:right; background:#fff; color:#0b3b44; border:2px solid #cfe3e8; padding:6px 10px; border-radius:10px; cursor:pointer }
 </style>
 </head>
 <body>
@@ -53,7 +72,6 @@
     <div class="stage">
       <!-- SVG GLUCOSE METER -->
       <svg id="meter" class="meter-wrap" viewBox="0 0 420 620" role="img" aria-label="Glucose meter">
-        <!-- Device body -->
         <defs>
           <linearGradient id="gBody" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%"  stop-color="var(--meter-hi)"/>
@@ -72,7 +90,7 @@
           </filter>
         </defs>
 
-        <!-- Body shape -->
+        <!-- Body -->
         <rect x="40" y="20" rx="40" ry="40" width="340" height="560" fill="url(#gBody)" stroke="#0c1f22" stroke-width="2" />
         <!-- Screen bezel -->
         <rect x="75" y="70" rx="16" ry="16" width="270" height="170" fill="#102b30" opacity="0.9"/>
@@ -86,35 +104,30 @@
           <text id="countdown" x="210" y="28" font-size="18" fill="#2b5660" text-anchor="end"></text>
         </g>
 
-        <!-- Soft buttons (decorative) -->
+        <!-- Decorative soft key -->
         <circle cx="210" cy="300" r="20" fill="#0d2a2f"/>
         <circle cx="210" cy="300" r="12" fill="#174147"/>
 
         <!-- Strip slot -->
         <rect x="170" y="20" width="80" height="18" rx="8" fill="#0d2a2f"/>
 
-        <!-- Strip (toggle visibility) -->
+        <!-- Strip -->
         <g id="strip" transform="translate(200,5)" opacity="0">
           <rect x="-10" y="0" width="20" height="50" rx="4" fill="#f3f5f6" stroke="#cfd9dc"/>
           <rect x="-8"  y="34" width="16" height="12" rx="2" fill="#b5c9cf"/>
-          <!-- Fill indicator on strip -->
           <rect id="fillBar" x="-6" y="36" width="12" height="0" fill="var(--accent)"/>
         </g>
 
-        <!-- Hand/finger (appears while applying blood) -->
+        <!-- Hand/finger shown during apply -->
         <g id="hand" transform="translate(60,400)" opacity="0">
-          <!-- palm -->
           <ellipse cx="120" cy="60" rx="90" ry="60" fill="#e6b69b" filter="url(#innerShadow)"/>
-          <!-- index finger -->
           <rect x="190" y="46" width="130" height="28" rx="14" fill="#ebc2a9"/>
           <circle cx="320" cy="60" r="14" fill="#e6b69b"/>
-          <!-- drop of blood near fingertip -->
           <g id="drop" transform="translate(308,66)" opacity="0.0">
             <path d="M12 0 C18 10, 18 20, 12 26 C6 20, 6 10, 12 0 Z" fill="#b3202a"/>
           </g>
         </g>
 
-        <!-- Label -->
         <text x="210" y="560" text-anchor="middle" font-size="16" fill="#cde6eb">EMS Code Sim • Glucose</text>
       </svg>
 
@@ -122,20 +135,34 @@
         <button id="powerBtn" class="btn alt">⏻ Power</button>
         <button id="stripBtn" class="btn">🧪 Insert / Remove Strip</button>
         <button id="applyBtn" class="btn warn">💉 Press & Hold: Apply Blood</button>
+        <button id="explainBtn" class="btn ghost">ℹ️ Explain Readings</button>
       </div>
 
-      <div id="status" class="status">Power on, then insert a strip.</div>
+      <div id="status" class="status" aria-live="polite">Power on, then insert a strip.</div>
     </div>
   </section>
 </main>
 
+<!-- Modal -->
+<div id="modal" class="modal" aria-modal="true" role="dialog">
+  <div class="modal-card">
+    <button class="close" id="closeModal">Close</button>
+    <h3>What the Reading Means</h3>
+    <p><strong>Hypoglycemia (&lt; 70 mg/dL):</strong> Shaky, sweaty, altered mental status. Give oral glucose if awake &amp; can swallow; consider D10/D50 per protocol.</p>
+    <p><strong>Normal (≈ 80–140 mg/dL):</strong> Typical fasting 70–99; post-meal up to ~140.</p>
+    <p><strong>Hyperglycemia (&gt; 180 mg/dL):</strong> Polyuria, polydipsia; if very high with illness or AMS, consider DKA/HHS. Manage ABCs, fluids per local protocol.</p>
+    <p style="font-size:.9rem;color:#3b616b;">*Teaching ranges only; follow your service’s protocols for treatment thresholds.</p>
+  </div>
+</div>
+
 <script>
 (function(){
-  // DOM shortcuts
+  // Elements
   const statusEl = document.getElementById('status');
   const powerBtn = document.getElementById('powerBtn');
   const stripBtn = document.getElementById('stripBtn');
   const applyBtn = document.getElementById('applyBtn');
+  const explainBtn = document.getElementById('explainBtn');
 
   const strip = document.getElementById('strip');
   const fillBar = document.getElementById('fillBar');
@@ -146,13 +173,24 @@
   const statusText = document.getElementById('statusText');
   const countdownEl = document.getElementById('countdown');
 
-  // State machine
+  const modal = document.getElementById('modal');
+  const closeModal = document.getElementById('closeModal');
+
+  // State
   const S = { OFF:'OFF', READY:'READY', STRIP:'STRIP', APPLY:'APPLY', COUNT:'COUNT', RESULT:'RESULT', ERROR:'ERROR' };
   let state = S.OFF, powered=false, stripIn=false, applying=false;
   let samplePct = 0, tHandle = null;
 
-  function setStatus(msg){ statusEl.textContent = msg; statusText.textContent = msg; }
-  function showReading(val){ readingEl.textContent = val; }
+  // Helpers
+  const setStatus = msg => { statusEl.textContent = msg; statusText.textContent = msg; };
+  const showReading = val => { readingEl.textContent = val; };
+  const clearTimers = ()=>{ if(tHandle){ clearInterval(tHandle); tHandle=null; } };
+  function randomMgdl(){
+    const r = Math.random();
+    if(r < 0.25) return Math.floor(40 + Math.random()*30);    // 40–69
+    if(r < 0.70) return Math.floor(80 + Math.random()*61);     // 80–140
+    return Math.floor(200 + Math.random()*251);                // 200–450
+  }
 
   function goto(s){
     state = s;
@@ -181,10 +219,10 @@
         setStatus('Analyzing…');
         break;
       case S.RESULT:
-        // status set when result finishes
+        // handled in finishTest
         break;
       case S.ERROR:
-        // handled on throw
+        // handled in error()
         break;
     }
   }
@@ -197,45 +235,32 @@
     hand.setAttribute('opacity','0');
   }
 
-  // Random reading generator (weighted: 25% hypo, 45% normal, 30% hyper)
-  function randomMgdl(){
-    const r = Math.random();
-    if(r < 0.25){ // hypo: 40–69
-      return Math.floor(40 + Math.random()*30);
-    }else if(r < 0.70){ // normal: 80–140
-      return Math.floor(80 + Math.random()*61);
-    }else{ // hyper: 200–450
-      return Math.floor(200 + Math.random()*251);
-    }
+  // Pointer-safe handlers (work on phone + desktop)
+  function addPointer(el, down, up){
+    el.addEventListener('pointerdown', e=>{ e.preventDefault(); el.setPointerCapture?.(e.pointerId); down(e); }, {passive:false});
+    el.addEventListener('pointerup',   e=>{ e.preventDefault(); up(e); }, {passive:false});
+    el.addEventListener('pointercancel', e=>{ up(e); });
+    el.addEventListener('pointerleave',  e=>{ if(e.pressure===0) up(e); });
   }
 
-  function clearTimers(){ if(tHandle){ clearInterval(tHandle); tHandle=null; } }
+  // Buttons
+  addPointer(powerBtn, ()=>{
+    if(state===S.OFF){ goto(S.READY); } else { goto(S.OFF); }
+  }, ()=>{});
 
-  // Button handlers
-  powerBtn.addEventListener('click', ()=>{
-    if(state===S.OFF){ goto(S.READY); }
-    else { goto(S.OFF); }
-  });
-
-  stripBtn.addEventListener('click', ()=>{
-    if(!powered) return setStatus('Power on first.');
+  addPointer(stripBtn, ()=>{
+    if(!powered){ setStatus('Power on first.'); return; }
     if(state===S.READY){ goto(S.STRIP); }
     else if(state===S.STRIP || state===S.APPLY){ goto(S.READY); }
     else if(state===S.COUNT){ error('Strip removed during test.'); }
     else if(state===S.RESULT || state===S.ERROR){ goto(S.READY); }
-  });
+  }, ()=>{});
 
   // Apply blood (press & hold)
-  applyBtn.addEventListener('mousedown', startApply);
-  applyBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); startApply(); }, {passive:false});
-  window.addEventListener('mouseup', stopApply);
-  window.addEventListener('touchend', (e)=>{ e.preventDefault(); stopApply(); }, {passive:false});
-  window.addEventListener('touchcancel', (e)=>{ e.preventDefault(); stopApply(); }, {passive:false});
-
-  function startApply(){
+  addPointer(applyBtn, ()=>{
     if(!powered) return setStatus('Power on first.');
     if(!stripIn) return setStatus('Insert a strip first.');
-    if(state===S.RESULT){ setStatus('Reset (remove & reinsert strip) for a new test.'); return; }
+    if(state===S.RESULT){ setStatus('Remove & reinsert strip for a new test.'); return; }
     if(applying) return;
 
     goto(S.APPLY);
@@ -243,41 +268,35 @@
     samplePct = 0;
     drop.setAttribute('opacity','0.0');
 
-    // Fill the strip as you hold
-    function step(){
+    const step = ()=>{
       if(!applying) return;
-      samplePct = Math.min(100, samplePct + 1.8); // ~1.8% per frame @60fps ≈ <1s to full
-      const h = Math.max(0, Math.min(12, (samplePct/100)*12)); // max 12px fill
+      samplePct = Math.min(100, samplePct + 1.8); // fast fill
+      const h = Math.max(0, Math.min(12, (samplePct/100)*12)); // fill bar height
       fillBar.setAttribute('height', String(h));
       fillBar.setAttribute('y', String(36 + (12 - h)));
-      if(samplePct > 30) drop.setAttribute('opacity','1'); // show a drop once it’s flowing
-
-      if(samplePct >= 70){ // threshold reached -> start test
-        applying = false;
-        beginTest();
-        return;
-      }
+      if(samplePct > 30) drop.setAttribute('opacity','1');
+      if(samplePct >= 70){ applying=false; beginTest(); return; }
       requestAnimationFrame(step);
-    }
+    };
     requestAnimationFrame(step);
-  }
-
-  function stopApply(){
+  }, ()=>{
     if(!applying) return;
     applying = false;
     if(state===S.APPLY){
-      if(samplePct < 70){
-        error('Insufficient sample. Hold longer.');
-      }else{
-        beginTest();
-      }
+      if(samplePct < 70){ error('Insufficient sample. Hold longer.'); }
+      else{ beginTest(); }
     }
-  }
+  });
 
+  // Explain readings modal
+  addPointer(explainBtn, ()=>{ modal.setAttribute('open',''); }, ()=>{});
+  addPointer(closeModal, ()=>{ modal.removeAttribute('open'); }, ()=>{});
+  modal.addEventListener('click', (e)=>{ if(e.target===modal) modal.removeAttribute('open'); });
+
+  // Test flow
   function beginTest(){
     goto(S.COUNT);
     hand.setAttribute('opacity','0');
-    // 5-second countdown
     let remain = 5;
     countdownEl.textContent = remain+'s';
     clearTimers();
@@ -299,7 +318,7 @@
     state = S.RESULT;
   }
 
-  // boot
+  // Boot
   goto(S.OFF);
 })();
 </script>
