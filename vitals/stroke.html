@@ -27,7 +27,7 @@
   .btn{appearance:none; border:0; background:var(--brand); color:#fff; padding:.7rem 1rem; border-radius:12px; font-weight:800; cursor:pointer}
   .btn:hover{background:var(--brand-600)}
   .btn.ghost{background:#fff; color:var(--brand); border:2px solid var(--brand)}
-  .btn.warn{background:var(--warn)}
+  .btn.warn{background:#c77b00}
   .row{display:grid; gap:10px; grid-template-columns:1fr}
   .grid2{display:grid; gap:12px; grid-template-columns:1fr 1fr}
   @media (max-width:760px){ .grid2{grid-template-columns:1fr} }
@@ -41,7 +41,14 @@
     width:min(560px, 95vw); background:#ffe4c7; border-radius:24px; border:1px solid #e0c7ae;
     padding:16px; box-shadow:inset 0 4px 24px rgba(0,0,0,.08); position:relative;
   }
-  .eyes{display:flex; justify-content:center; gap:28px; align-items:center; margin-top:8px}
+  .eyes{display:flex; justify-content:center; gap:28px; align-items:flex-start; margin-top:4px}
+  .eyeBlock{position:relative; width:var(--eye-size); height:calc(var(--eye-size) + 12px); display:flex; align-items:flex-start; justify-content:center}
+  /* Eyebrows (new) */
+  .brow{
+    position:absolute; top:-10px; left:50%; transform:translateX(-50%) rotate(0deg);
+    width:calc(var(--eye-size) * .58); height:10px; background:#0f2b33; border-radius:10px; opacity:.92;
+    transition: transform .45s ease, top .45s ease;
+  }
   .sclera{
     width:var(--eye-size); height:var(--eye-size); background:#fff; border-radius:50%;
     box-shadow:inset 0 0 0 1px #e5e7eb; position:relative; overflow:hidden;
@@ -80,19 +87,27 @@
 <header>Stroke Assessment (BE-FAST) Simulator</header>
 
 <main>
-  <!-- FACE + EYES (smile animation) -->
+  <!-- FACE + EYES (smile + eyebrow droop) -->
   <section class="card">
     <h2>Face & Eye Gaze</h2>
-    <p class="muted note">Tap <strong>Smile</strong> to animate the mouth. Droop shows on the left or right if present. Eye gaze test is below.</p>
+    <p class="muted note">Tap <strong>Smile</strong> to animate the mouth. If facial droop is present, the <em>eyebrow on that side</em> also droops.</p>
 
     <div class="faceWrap">
       <div id="face" class="face">
         <div class="eyes">
-          <div class="sclera" id="sL" aria-label="Left eye">
-            <div class="iris"><div class="pupil" id="pL"></div></div>
+          <!-- Left eye block with eyebrow -->
+          <div class="eyeBlock">
+            <div class="brow" id="browL"></div>
+            <div class="sclera" id="sL" aria-label="Left eye">
+              <div class="iris"><div class="pupil" id="pL"></div></div>
+            </div>
           </div>
-          <div class="sclera" id="sR" aria-label="Right eye">
-            <div class="iris"><div class="pupil" id="pR"></div></div>
+          <!-- Right eye block with eyebrow -->
+          <div class="eyeBlock">
+            <div class="brow" id="browR"></div>
+            <div class="sclera" id="sR" aria-label="Right eye">
+              <div class="iris"><div class="pupil" id="pR"></div></div>
+            </div>
           </div>
         </div>
 
@@ -118,26 +133,19 @@
     </div>
   </section>
 
-  <!-- BALANCE (reuses the same simple SVG person) -->
+  <!-- BALANCE (same simple SVG person) -->
   <section class="card">
     <h2>Balance</h2>
     <p class="muted note">Patient stands feet together, arms at sides. Observe sway/lean/fall.</p>
     <div class="stage">
-      <!-- Instance A: balance person -->
       <svg id="balanceSvg" viewBox="0 0 160 260" width="200" height="325" aria-label="Standing person for balance" fill="#0f2b33">
-        <!-- head -->
         <circle cx="80" cy="32" r="22"/>
-        <!-- torso -->
         <rect x="50" y="56" width="60" height="92" rx="16"/>
-        <!-- arms (at sides) -->
         <rect x="26"  y="62" width="18" height="94" rx="9"/>
         <rect x="116" y="62" width="18" height="94" rx="9"/>
-        <!-- hips -->
         <rect x="56" y="150" width="48" height="22" rx="11"/>
-        <!-- legs -->
         <rect x="61" y="174" width="18" height="72" rx="8"/>
         <rect x="81" y="174" width="18" height="72" rx="8"/>
-        <!-- feet -->
         <rect x="56" y="246" width="28" height="10" rx="5"/>
         <rect x="76" y="246" width="28" height="10" rx="5"/>
       </svg>
@@ -147,13 +155,12 @@
     </div>
   </section>
 
-  <!-- ARM DRIFT (10 seconds, reusing same SVG design) -->
+  <!-- ARM DRIFT (10s) -->
   <section class="card">
     <h2>Arm Drift (10-second test)</h2>
-    <p class="muted note">Arms start at the sides. Tap start — hands lift to shoulder height (palms up). Watch for drift (the app won’t tell you).</p>
+    <p class="muted note">Arms start at the sides. Tap start — arms go <strong>out</strong> to shoulder height (palms up). Watch for drift; the app won’t tell you.</p>
 
     <div class="stage">
-      <!-- Instance B: same person concept, with arm groups that can rotate & hands (palms up) -->
       <svg id="driftSvg" viewBox="0 0 200 260" width="260" height="338" aria-label="Arm drift person" style="overflow:visible">
         <defs>
           <style>
@@ -174,23 +181,20 @@
         <rect  class="skin" x="76" y="246" width="28" height="10" rx="5"/>
         <rect  class="skin" x="96" y="246" width="28" height="10" rx="5"/>
 
-        <!-- ARMS: groups pivot at shoulders (behind torso); hands in front at end of forearms -->
-        <!-- Left arm group -->
+        <!-- ARMS: groups pivot at shoulders (start down; raise to 0deg on start) -->
         <g id="armL" transform="translate(70,92)">
-          <!-- pivot at (0,0) -->
-          <rect class="skin" x="-8" y="0" width="16" height="60" rx="8"/> <!-- forearm -->
+          <rect class="skin" x="-8" y="0" width="16" height="60" rx="8"/>
           <g class="handL" transform="translate(-22,56)">
             <rect class="skin" x="0" y="0" width="36" height="22" rx="10"/>
-            <rect class="skin" x="-10" y="4" width="10" height="14" rx="5"/> <!-- thumb lateral -->
+            <rect class="skin" x="-10" y="4" width="10" height="14" rx="5"/>
             <path class="lines" d="M6 8 h22"/><path class="lines" d="M6 12 h22"/><path class="lines" d="M6 16 h22"/>
           </g>
         </g>
-        <!-- Right arm group -->
         <g id="armR" transform="translate(130,92)">
           <rect class="skin" x="-8" y="0" width="16" height="60" rx="8"/>
           <g class="handR" transform="translate(-14,56)">
             <rect class="skin" x="0" y="0" width="36" height="22" rx="10"/>
-            <rect class="skin" x="36" y="4" width="10" height="14" rx="5"/> <!-- thumb lateral -->
+            <rect class="skin" x="36" y="4" width="10" height="14" rx="5"/>
             <path class="lines" d="M4 8 h22"/><path class="lines" d="M4 12 h22"/><path class="lines" d="M4 16 h22"/>
           </g>
         </g>
@@ -299,9 +303,11 @@
 
 <script>
 (function(){
-  // ---------- DOM: face/eyes/mouth
+  // ---------- DOM: face/eyes/mouth/brows
   const pL = document.getElementById('pL');
   const pR = document.getElementById('pR');
+  const browL = document.getElementById('browL');
+  const browR = document.getElementById('browR');
   const btnSmile = document.getElementById('btnSmile');
   const btnGaze  = document.getElementById('btnGaze');
   const gazeInfo = document.getElementById('gazeInfo');
@@ -347,11 +353,61 @@
   let balTimer = null, balTick = 0;
   let driftRunning = false, driftStart = 0, driftTriggeredAt = null;
 
-  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function rand(arr){ return a[Math.floor(Math.random()*a.length)]; } // oops helper replaced below
+})();
+</script>
+<script>
+(function(){
+  // fix rand helper (scoped separately to avoid minifier confusion)
+  function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
 
-  // Smile animation helper (morph mouth path)
-  // neutral: M20,45 C80,60 140,60 200,45
-  // smile:   M20,L C80,mid 140,mid 200,R (where L/R depend on droop side)
+  // Access previously defined globals via window since scripts are sequential
+  const pL = document.getElementById('pL');
+  const pR = document.getElementById('pR');
+  const browL = document.getElementById('browL');
+  const browR = document.getElementById('browR');
+  const btnSmile = document.getElementById('btnSmile');
+  const btnGaze  = document.getElementById('btnGaze');
+  const gazeInfo = document.getElementById('gazeInfo');
+  const gazeLine = document.getElementById('gazeLine');
+  const mouthPath= document.getElementById('mouthPath');
+
+  const balanceSvg = document.getElementById('balanceSvg');
+  const btnBalance = document.getElementById('btnBalance');
+
+  const driftSvg   = document.getElementById('driftSvg');
+  const armGroupL  = driftSvg.querySelector('#armL');
+  const armGroupR  = driftSvg.querySelector('#armR');
+  const btnDrift   = document.getElementById('btnDrift');
+  const tClock     = document.getElementById('tClock');
+
+  const btnSpeech  = document.getElementById('btnSpeech');
+  const speechBox  = document.getElementById('speechBox');
+  const speechLine = document.getElementById('speechLine');
+
+  const fBalance = document.getElementById('fBalance');
+  const fEyes    = document.getElementById('fEyes');
+  const fPupils  = document.getElementById('fPupils');
+  const fFace    = document.getElementById('fFace');
+  const fArms    = document.getElementById('fArms');
+  const fSpeech  = document.getElementById('fSpeech');
+
+  const btnGrade = document.getElementById('btnGrade');
+  const gradeBox = document.getElementById('gradeBox');
+  const gradeSummary = document.getElementById('gradeSummary');
+  const gradeList = document.getElementById('gradeList');
+  const meaning = document.getElementById('meaning');
+
+  const btnNew = document.getElementById('btnNew');
+  const btnReset = document.getElementById('btnReset');
+
+  let scenario = null;
+  let anisocoria = null;
+  let gazeTimer = null, gazeTick = 0;
+  let balTimer = null, balTick = 0;
+  let driftRunning = false, driftStart = 0, driftTriggeredAt = null;
+
+  // --- Smile + eyebrow droop
   function animateSmile(droop){
     const neutral = [20,45, 80,60, 140,60, 200,45];
     let L = 35, R = 35, MID = 70;
@@ -368,9 +424,22 @@
       if(t<1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
+
+    // Eyebrows: neutral -> droop on affected side (lower + tilt)
+    // neutral
+    browL.style.top = '-10px'; browL.style.transform = 'translateX(-50%) rotate(0deg)';
+    browR.style.top = '-10px'; browR.style.transform = 'translateX(-50%) rotate(0deg)';
+    // apply droop
+    if(droop==='left'){
+      browL.style.top = '-4px';
+      browL.style.transform = 'translateX(-50%) rotate(12deg)';
+    }else if(droop==='right'){
+      browR.style.top = '-4px';
+      browR.style.transform = 'translateX(-50%) rotate(-12deg)';
+    }
   }
 
-  // Eye gaze
+  // --- Eye gaze
   function startGaze(){
     stopGaze();
     gazeTick = 0;
@@ -398,12 +467,12 @@
   }
   function stopGaze(){ if(gazeTimer){ clearInterval(gazeTimer); gazeTimer=null; } btnGaze.textContent = '▶️ Run Eye Gaze'; }
 
-  // Balance sway animation (rotate whole figure)
+  // --- Balance sway
   function startBalance(){
     stopBalance();
     btnBalance.textContent = '⏹️ Stop Balance';
     balTick = 0;
-    const kind = scenario.balance; // 'normal','unsteady','leansLeft','leansRight','fallsLeft','fallsRight'
+    const kind = scenario.balance;
     const baseAmp = kind==='normal' ? 2 : kind==='unsteady' ? 6 : 10;
     const leanBias = (kind.includes('Left') ? -12 : kind.includes('Right') ? 12 : 0);
     balTimer = setInterval(()=>{
@@ -417,20 +486,19 @@
   }
   function stopBalance(){ if(balTimer){ clearInterval(balTimer); balTimer=null; } btnBalance.textContent = '🎯 Run Balance Test'; balanceSvg.style.transform=''; }
 
-  // Arm drift (10s). Arms start down; raise to 0°, palms up; then one side may drift downward.
+  // --- Arm drift (10s): start with arms down; on start arms go out to 0°; then possible drift.
   function setArms(angleL, angleR){
     armGroupL.setAttribute('transform', `translate(70,92) rotate(${angleL})`);
     armGroupR.setAttribute('transform', `translate(130,92) rotate(${angleR})`);
   }
   function armsDown(){ setArms(90,-90); }
-  function armsRaised(){ setArms(0,0); }
   function startDrift(){
     if(driftRunning) return;
     driftRunning = true; driftStart = performance.now(); driftTriggeredAt = null;
     btnDrift.textContent = 'Running…'; tClock.textContent = '0.0';
 
-    // quick raise
-    const raiseDur = 300, start = performance.now();
+    // Raise arms from sides -> out (0°)
+    const raiseDur = 320, start = performance.now();
     function raiseStep(ts){
       const t = Math.min(1, (ts - start)/raiseDur);
       const aL = 90 + (0-90)*t;
@@ -448,16 +516,14 @@
         const elapsed = (ts - driftStart)/1000;
         tClock.textContent = elapsed.toFixed(1);
 
-        // trigger drift once past delay
         if(!driftTriggeredAt && driftSide!=='none' && elapsed >= driftDelay){
           driftTriggeredAt = elapsed;
         }
-        // apply drift angle gradually after trigger
         if(driftTriggeredAt){
-          const driftT = Math.min(1, (elapsed - driftTriggeredAt)/0.6); // ease in 600ms
+          const driftT = Math.min(1, (elapsed - driftTriggeredAt)/0.6);
           const drop = 26*driftT;
           if(driftSide==='left')  setArms(drop, 0);
-          if(driftSide==='right') setArms(0, drop*-1); // right droops downward visually
+          if(driftSide==='right') setArms(0, -drop);
         }
         if(elapsed < 10){ requestAnimationFrame(tick); }
         else{ driftRunning=false; btnDrift.textContent='⏱️ Start 10s'; }
@@ -466,7 +532,7 @@
     }
   }
 
-  // Speech (same)
+  // --- Speech
   function runSpeech(){
     speechBox.hidden = false;
     const speech = scenario.speech;
@@ -482,12 +548,9 @@
     try{ const u = new SpeechSynthesisUtterance(text.replace(/[()]/g,'')); u.rate=.95; u.lang='en-US'; speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){}
   }
 
-  // Findings & grading (unchanged from your previous version)
+  // --- Grading (unchanged)
   function grade(){
-    const user = {
-      balance: fBalance.value, eyes: fEyes.value, pupils: fPupils.value,
-      face: fFace.value, arms: fArms.value, speech: fSpeech.value
-    };
+    const user = { balance:fBalance.value, eyes:fEyes.value, pupils:fPupils.value, face:fFace.value, arms:fArms.value, speech:fSpeech.value };
     const truth = {
       balance: scenario.balance.startsWith('falls') ? (scenario.balance==='fallsLeft'?'leansLeft':'leansRight') :
                (scenario.balance==='leansLeft'?'leansLeft':scenario.balance==='leansRight'?'leansRight': (scenario.balance==='unsteady'?'unsteady':'normal')),
@@ -527,7 +590,7 @@
     gradeBox.hidden=false; gradeBox.scrollIntoView({behavior:'smooth',block:'start'});
   }
 
-  // Scenario generation
+  // --- Scenario
   function newCase(){
     scenario = {
       faceDroop: rand(['none','left','right','none','none']),
@@ -546,17 +609,19 @@
     if(anisocoria==='left'){ pL.style.width=bigger+'px'; pL.style.height=bigger+'px'; pR.style.width=smaller+'px'; pR.style.height=smaller+'px'; }
     if(anisocoria==='right'){ pR.style.width=bigger+'px'; pR.style.height=bigger+'px'; pL.style.width=smaller+'px'; pL.style.height=smaller+'px'; }
 
-    // Reset mouth to neutral each case
+    // Reset mouth + eyebrows (neutral)
     mouthPath.setAttribute('d','M20,45 C80,60 140,60 200,45');
+    browL.style.top='-10px'; browL.style.transform='translateX(-50%) rotate(0deg)';
+    browR.style.top='-10px'; browR.style.transform='translateX(-50%) rotate(0deg)';
 
-    // Reset gaze panel and transforms
+    // Reset gaze
     stopGaze(); gazeInfo.hidden = true; gazeLine.textContent='—';
     pL.style.transform='translate(-50%,-50%)'; pR.style.transform='translate(-50%,-50%)';
 
     // Reset balance
     stopBalance();
 
-    // Reset drift figure: arms down & timer UI
+    // Reset drift: arms down & timer UI
     armsDown(); driftRunning=false; btnDrift.textContent='⏱️ Start 10s'; tClock.textContent='0.0';
 
     // Reset speech & findings/results
@@ -565,17 +630,22 @@
     gradeBox.hidden=true; gradeList.innerHTML=''; gradeSummary.innerHTML='<strong>Results:</strong> —'; meaning.innerHTML='';
   }
 
-  // Reset visuals without new scenario
+  // --- Reset same case
   function resetSameCase(){
     stopGaze(); gazeInfo.hidden=true; gazeLine.textContent='—';
     stopBalance();
     armsDown(); driftRunning=false; btnDrift.textContent='⏱️ Start 10s'; tClock.textContent='0.0';
+    // Reset face visuals
+    mouthPath.setAttribute('d','M20,45 C80,60 140,60 200,45');
+    browL.style.top='-10px'; browL.style.transform='translateX(-50%) rotate(0deg)';
+    browR.style.top='-10px'; browR.style.transform='translateX(-50%) rotate(0deg)';
+    // Reset UI
     speechBox.hidden=true; speechLine.textContent='—';
     fBalance.value='normal'; fEyes.value='normal'; fPupils.value='equal'; fFace.value='none'; fArms.value='none'; fSpeech.value='normal';
     gradeBox.hidden=true; gradeList.innerHTML=''; gradeSummary.innerHTML='<strong>Results:</strong> —'; meaning.innerHTML='';
   }
 
-  // Events
+  // --- Events
   btnSmile.addEventListener('click', ()=> animateSmile(scenario.faceDroop));
   btnGaze.addEventListener('click', ()=> gazeTimer ? stopGaze() : startGaze());
   btnBalance.addEventListener('click', ()=> balTimer ? stopBalance() : startBalance());
