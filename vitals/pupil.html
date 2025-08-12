@@ -163,9 +163,10 @@
       <div id="summary"><strong>Results:</strong> —</div>
       <ul class="results-list" id="detailList"></ul>
       <div id="reasons" style="margin-top:.5rem"></div>
+      <div id="anisocoria" style="margin-top:.5rem"></div>
     </div>
 
-    <!-- Moved here: bottom controls per your request -->
+    <!-- Bottom controls -->
     <div class="row" style="margin-top:12px">
       <div style="display:flex; gap:10px; flex-wrap:wrap">
         <button class="btn warn" id="newCase">Next Case</button>
@@ -190,6 +191,7 @@
   const summary = document.getElementById('summary');
   const detailList = document.getElementById('detailList');
   const reasonsBox = document.getElementById('reasons');
+  const anisocoriaBox = document.getElementById('anisocoria');
 
   // --- Condition model
   const CONDITIONS = {
@@ -260,6 +262,12 @@
     el.style.height = size + 'px';
   }
 
+  function pupilSizePx(cond, toLight){
+    const c = CONDITIONS[cond];
+    return (c.reactive && toLight) ? c.constrict : c.base;
+  }
+
+  function pxToMm(px){ return Math.round((px/6)*10)/10; } // ~6px ≈ 1 mm visual approximation
   function render(){
     applyPupil(pupilL, truth.L, lightOn);
     applyPupil(pupilR, truth.R, lightOn);
@@ -293,6 +301,7 @@
     detailList.innerHTML = "";
     summary.innerHTML = "<strong>Results:</strong> —";
     reasonsBox.innerHTML = "";
+    anisocoriaBox.innerHTML = "";
 
     render();
   }
@@ -311,12 +320,81 @@
 
   function conditionLabel(key){ return CONDITIONS[key].label; }
 
+  function anisocoriaAnalysis(){
+    // Compute size difference in dark and in light regardless of current toggle
+    const L_dark = pupilSizePx(truth.L, false);
+    const R_dark = pupilSizePx(truth.R, false);
+    const L_light= pupilSizePx(truth.L, true);
+    const R_light= pupilSizePx(truth.R, true);
+
+    const diffDark  = Math.abs(L_dark - R_dark);
+    const diffLight = Math.abs(L_light - R_light);
+
+    const mmDark  = pxToMm(diffDark);
+    const mmLight = pxToMm(diffLight);
+
+    const THRESH = 6; // px ≈ 1 mm — clinically meaningful
+    const hasAniso = (diffDark >= THRESH) || (diffLight >= THRESH);
+
+    if(!hasAniso) return ""; // nothing to report
+
+    // Determine which setting magnifies anisocoria
+    let context;
+    if(diffLight - diffDark > 2){ context = "greater in light"; }
+    else if(diffDark - diffLight > 2){ context = "greater in dark"; }
+    else { context = "similar in light and dark"; }
+
+    // Which eye is larger in light/dark
+    const largerLight = (L_light > R_light) ? "Left" : "Right";
+    const largerDark  = (L_dark  > R_dark ) ? "Left" : "Right";
+
+    // Build cause lists by context
+    let bullets = [];
+    if(context === "greater in light"){
+      bullets = [
+        "Larger pupil likely abnormal (parasympathetic problem).",
+        "Consider CN III palsy (e.g., compressive lesion), pharmacologic dilation, iris sphincter injury.",
+        "If fixed and dilated with decreased LOC or focal deficits → concern for **uncal herniation**; treat per head injury/ICP protocol and expedite transport."
+      ];
+    }else if(context === "greater in dark"){
+      bullets = [
+        "Smaller pupil likely abnormal (sympathetic problem).",
+        "Consider **Horner syndrome** (ptosis, miosis, anhidrosis), carotid dissection, cluster headache.",
+        "Correlate with trauma to neck/face and new-onset headache or neuro deficits."
+      ];
+    }else{
+      bullets = [
+        "Anisocoria is similar in light and dark.",
+        "May be **physiologic anisocoria** (~20% of people) if longstanding and reactive.",
+        "If one pupil is **fixed** or markedly sluggish, or findings are acute with trauma/AMS, treat as **pathologic** until proven otherwise."
+      ];
+    }
+
+    // Extra hints for specific one-sided pathologies from our truth states
+    if((truth.L === "fixedDilated" && truth.R !== "fixedDilated") || (truth.R === "fixedDilated" && truth.L !== "fixedDilated")){
+      bullets.unshift("Unilateral **fixed dilated** pupil is highly concerning for CN III compression or herniation pattern in the right clinical context.");
+    }
+    if((truth.L === "pinpoint" && truth.R !== "pinpoint") || (truth.R === "pinpoint" && truth.L !== "pinpoint")){
+      bullets.push("Unilateral pinpoint pupil may reflect topical miotic exposure or focal brainstem lesion; bilateral pinpoint is more typical of opioids.");
+    }
+
+    const mmText = `≈${Math.max(mmDark, mmLight).toFixed(1)} mm (dark: ${mmDark.toFixed(1)} mm; light: ${mmLight.toFixed(1)} mm)`;
+
+    return `
+      <p><strong>Inter-eye differences (anisocoria):</strong> Present, ${context}. Estimated difference ${mmText}.
+      ${context==="greater in light" ? `Larger in light: <em>${largerLight}</em> eye.` : context==="greater in dark" ? `Larger in dark: <em>${largerDark}</em> eye.` : ""}</p>
+      <ul>${bullets.map(b=>`<li>${b}</li>`).join("")}</ul>
+      <p class="muted">Always correlate with history (trauma, medications/eye drops), vitals, neuro exam, and glucose. When in doubt, manage ABCs and transport per protocol.</p>
+    `;
+  }
+
   checkBtn.addEventListener('click', ()=>{
     if(!selL.value || !selR.value){
       resultsWrap.hidden = false;
       summary.innerHTML = "<strong>Results:</strong> Select a condition for both eyes.";
       detailList.innerHTML = "";
       reasonsBox.innerHTML = "";
+      anisocoriaBox.innerHTML = "";
       return;
     }
 
@@ -341,11 +419,22 @@
     }
     reasonsBox.innerHTML = listReasons("Left", truth.L) + listReasons("Right", truth.R);
 
+    // New: anisocoria explanation
+    anisocoriaBox.innerHTML = anisocoriaAnalysis();
+
     resultsWrap.hidden = false;
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   });
 
   // Init
+  function render(){ /* overwritten earlier; keep latest */ }
+  // Re-define render with latest references
+  function render(){
+    applyPupil(pupilL, truth.L, lightOn);
+    applyPupil(pupilR, truth.R, lightOn);
+    toggleLightBtn.textContent = lightOn ? "🔦 Light: ON" : "🔦 Light: OFF";
+  }
+
   newCase();
 })();
 </script>
