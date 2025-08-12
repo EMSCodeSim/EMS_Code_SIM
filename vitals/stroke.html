@@ -130,9 +130,8 @@
             </linearGradient>
           </defs>
           <ellipse cx="160" cy="125" rx="100" ry="112" fill="var(--face)" stroke="#d5a994" stroke-width="3"/>
-          <!-- Eyes group -->
+          <!-- Eyes -->
           <g id="eyes">
-            <!-- Left eye -->
             <g transform="translate(105,92)">
               <ellipse rx="26" ry="14" fill="#fff" stroke="#c6d9de"/>
               <path d="M -24 0 Q 0 -10 24 0" stroke="#b18a79" stroke-width="2" fill="none" opacity=".4"/>
@@ -142,7 +141,6 @@
                 <circle r="1.8" fill="#fff" opacity=".85" transform="translate(-2,-2)"/>
               </g>
             </g>
-            <!-- Right eye -->
             <g transform="translate(215,92)">
               <ellipse rx="26" ry="14" fill="#fff" stroke="#c6d9de"/>
               <path d="M -24 0 Q 0 -10 24 0" stroke="#b18a79" stroke-width="2" fill="none" opacity=".4"/>
@@ -312,18 +310,27 @@
       <button class="btn alt" id="gradeCPSSS">Submit CP-SSS</button>
       <div class="status"><strong>CP-SSS Result:</strong> <span id="cpsssLine">—</span></div>
     </div>
-    <div class="muted" style="margin-top:8px">
-      Note: CP-SSS ranges **0–4**; often **≥2** suggests severe stroke / possible LVO—used for destination triage per Katz et al. 2015 and external validations. :contentReference[oaicite:0]{index=0}
-    </div>
   </section>
 </main>
 
 <script>
 (function(){
-  // ------------- DOM helpers
+  // ---------- helpers
   const $ = id => document.getElementById(id);
+
+  // Cross-device button binding (pointer + touch + click)
+  function onTap(el, handler){
+    if(!el) return;
+    let locked = false;
+    const wrap = (e) => { e.preventDefault?.(); if (locked) return; locked = true; handler(e); setTimeout(()=>locked=false, 0); };
+    el.addEventListener('pointerdown', wrap, {passive:false});
+    el.addEventListener('touchstart', wrap, {passive:false});
+    el.addEventListener('click', wrap, {passive:false});
+  }
+
+  // Scenario text
   const scDispatch=$('scDispatch'), scSetting=$('scSetting'), scLKW=$('scLKW');
-  const lkwTime=$('lkwTime'), stampNow=$('stampNow'), examNote=$('examTimeNote');
+  const examNote=$('examTimeNote');
 
   // Face/eyes elements
   const mouth=$('mouth'), droop=$('droop'), browL=$('browL'), browR=$('browR');
@@ -341,24 +348,35 @@
   // CP-SSS selectors
   const cpsGaze=$('cpsGaze'), cpsArm=$('cpsArm'), cpsLoc=$('cpsLoc');
 
-  // ------------- Scenario Truth
+  // Speech
+  const speechStatus=$('speechStatus');
+
+  // State
   const T = {
-    side: 'right',         // hemiparesis side (right or left body)
+    side: 'right',
     face: false,
     arm: false,
-    speech: 'normal',      // normal/slurred/aphasic
+    speech: 'normal',   // normal/slurred/aphasic
     balance: false,
-    eyes: 'normal',        // normal/gazeDev/fieldCut
+    eyes: 'normal',     // normal/gazeDev/fieldCut
     lkwMins: 30,
-    locAbn: false          // LOC Q/C abnormal for CP-SSS
+    locAbn: false
   };
 
-  // ------------- TTS
-  function speak(text){ try{ window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.rate=1;u.pitch=1;u.volume=1; window.speechSynthesis.speak(u);}catch(e){} }
-  $('stopTTS')?.addEventListener('click', ()=> window.speechSynthesis.cancel());
+  // TTS
+  function speak(text){
+    try{
+      window.speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text);
+      u.rate=1; u.pitch=1; u.volume=1;
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  onTap($('stopTTS'), ()=> window.speechSynthesis.cancel());
 
-  // ------------- Randomizers
+  // Random helpers
   function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
+
   function newScenario(){
     scDispatch.textContent = pick([
       '72 y/o with sudden facial droop and slurred speech',
@@ -370,7 +388,6 @@
     T.lkwMins = [20,30,40,60,120,240,999][Math.floor(Math.random()*7)];
     scLKW.textContent = T.lkwMins===999 ? 'unknown' : `~${T.lkwMins} minutes ago`;
 
-    // Side & deficits
     T.side = Math.random()<0.5 ? 'right' : 'left';
     T.face = Math.random()<0.65;
     T.arm  = Math.random()<0.7;
@@ -379,15 +396,15 @@
     T.eyes = Math.random()<0.45 ? (Math.random()<0.6?'gazeDev':'fieldCut') : 'normal';
     T.locAbn = Math.random()<0.35;
 
-    // Reset visuals & results
     resetFace(); resetArms(); resetBalance(); resetEyes();
     resultLine.textContent='—'; logWhy.innerHTML=''; resultsBox.style.outline='none';
     cpsssPanel.classList.add('hidden'); cpsssLine.textContent='—';
+
     ['selB','selE','selF','selA','selS'].forEach(id=> $(id).selectedIndex=0);
     if(T.lkwMins===999) $('selT').selectedIndex = 1; else $('selT').selectedIndex = (T.lkwMins<=270?0:1);
   }
 
-  // ------------- Visual helpers (face/eyes)
+  // Face
   function resetFace(){
     droop.setAttribute('opacity','0.0');
     browL.setAttribute('d', 'M78 72 q28 -12 56 0');
@@ -405,45 +422,38 @@
     }
   }
 
-  // Eye tracking animation
+  // Eyes: tracking animation
   let gazeAnim=null, gazeStart=0;
+  function stopTracking(){ if(gazeAnim){ cancelAnimationFrame(gazeAnim); gazeAnim=null; } }
   function resetEyes(){
     stopTracking();
     irisL.setAttribute('transform','translate(0,0)');
     irisR.setAttribute('transform','translate(0,0)');
-    $('vfMaskLeft').style.opacity = 0; $('vfMaskRight').style.opacity = 0;
+    vfLeft.style.opacity = 0; vfRight.style.opacity = 0;
     gazeArrow.style.opacity=0; gazeArrow.textContent='↔️ tracking…';
-  }
-  function stopTracking(){
-    if(gazeAnim){ cancelAnimationFrame(gazeAnim); gazeAnim=null; }
   }
   function runTracking(){
     stopTracking();
     gazeArrow.style.opacity=.7;
     gazeStart = performance.now();
-    const max = 9;          // max iris offset
-    const midlock = 2;      // “can’t cross” buffer if gaze deviation
-    const dirToward = (T.side==='right')? 1 : -1; // deviation direction
+    const max = 9;
+    const midlock = 2;
+    const dirToward = (T.side==='right')? 1 : -1;
     const isDev = (T.eyes==='gazeDev');
     const isCut = (T.eyes==='fieldCut');
 
-    // set field cut overlay
     if(isCut){
-      if(T.side==='right') $('vfMaskLeft').style.opacity = .55; else $('vfMaskRight').style.opacity = .55;
+      if(T.side==='right') vfLeft.style.opacity = .55; else vfRight.style.opacity = .55;
     }
 
     function step(t){
       const dt = (t - gazeStart)/1000;
-      // sine wave -1..1 over time (2.2s per sweep)
       const s = Math.sin(dt * Math.PI/1.1);
       let offset = Math.round(s * max);
-
       if(isDev){
-        // lock toward lesion side; prevent crossing midline into contralateral
-        if(dirToward===1) offset = Math.max( midlock, offset);  // stick right
-        else              offset = Math.min(-midlock, offset);  // stick left
+        if(dirToward===1) offset = Math.max( midlock, offset);
+        else              offset = Math.min(-midlock, offset);
       }
-
       irisL.setAttribute('transform',`translate(${offset},0)`);
       irisR.setAttribute('transform',`translate(${offset},0)`);
       gazeAnim = requestAnimationFrame(step);
@@ -451,10 +461,10 @@
     gazeAnim = requestAnimationFrame(step);
   }
 
-  // ------------- Arms
+  // Arms
   let armAnim=null;
   function resetArms(){
-    armL.style.transform='translate(-140px,0)';  // level start, palms up
+    armL.style.transform='translate(-140px,0)';
     armR.style.transform='translate(140px,0)';
     armL.classList.remove('hold'); armR.classList.remove('hold');
     if(armAnim){ cancelAnimationFrame(armAnim); armAnim=null; }
@@ -464,7 +474,7 @@
     const start = performance.now();
     function step(t){
       const dt = (t-start)/1000;
-      const drop = hasDrift ? Math.min(90, dt*22) : 0; // px fall
+      const drop = hasDrift ? Math.min(90, dt*22) : 0;
       const driftL = (side==='left') ? drop : 0;
       const driftR = (side==='right') ? drop : 0;
       armL.style.transform=`translate(-140px,${driftL}px)`;
@@ -474,52 +484,29 @@
     armAnim = requestAnimationFrame(step);
   }
 
-  // ------------- Balance
+  // Balance
   function resetBalance(){ person.style.transform='translateX(0) rotate(0deg)'; }
   function showBalanceLoss(side){
     const angle = side==='right' ? 8 : -8;
     person.style.transform=`translateX(${side==='right'?12:-12}px) rotate(${angle}deg)`;
   }
 
-  // ------------- Time helper
-  stampNow.addEventListener('pointerdown', e=>{
-    e.preventDefault();
+  // Time button
+  onTap($('stampNow'), ()=>{
     const now = new Date();
     const hh = String(now.getHours()).padStart(2,'0');
     const mm = String(now.getMinutes()).padStart(2,'0');
     examNote.textContent = `Exam time set to ${hh}:${mm}. Use LKW to determine eligibility messaging.`;
   });
 
-  // ------------- Test buttons
-  $('testFace').addEventListener('pointerdown', e=>{
-    e.preventDefault();
-    resetFace();
-    if(T.face) showFaceDroop(T.side);
-  });
+  // Test buttons (with cross-device onTap)
+  onTap($('testFace'),   ()=>{ resetFace(); if(T.face) showFaceDroop(T.side); });
+  onTap($('testArms'),   ()=>{ resetArms(); runArmDrift(T.side, T.arm); });
+  onTap($('testBalance'),()=>{ resetBalance(); if(T.balance) showBalanceLoss(T.side); });
+  onTap($('testEyes'),   ()=>{ resetEyes(); runTracking(); });
+  onTap($('stopEyes'),   ()=>{ stopTracking(); });
 
-  $('testArms').addEventListener('pointerdown', e=>{
-    e.preventDefault();
-    resetArms();
-    runArmDrift(T.side, T.arm);
-  });
-
-  $('testBalance').addEventListener('pointerdown', e=>{
-    e.preventDefault();
-    resetBalance();
-    if(T.balance) showBalanceLoss(T.side);
-  });
-
-  $('testEyes').addEventListener('pointerdown', e=>{
-    e.preventDefault();
-    resetEyes();
-    // Run tracking no matter what; deviation behavior is inside
-    runTracking();
-  });
-  $('stopEyes').addEventListener('pointerdown', e=>{ e.preventDefault(); stopTracking(); });
-
-  const speechStatus=$('speechStatus');
-  $('testSpeech').addEventListener('pointerdown', e=>{
-    e.preventDefault();
+  onTap($('testSpeech'), ()=>{
     let line = "You can't teach an old dog new tricks.";
     if(T.speech==='slurred'){
       line = "You can' ... teach an ol' do' new trricks.";
@@ -533,9 +520,8 @@
     speak(line);
   });
 
-  // ------------- Submit / Grade (BEFAST)
-  $('submit').addEventListener('pointerdown', e=>{
-    e.preventDefault();
+  // Submit / grade BEFAST
+  onTap($('submit'), ()=>{
     const truth = {
       B: T.balance,
       E: (T.eyes!=='normal'),
@@ -600,44 +586,34 @@
     logWhy.innerHTML = lines.join('');
     resultsBox.style.outline = allOk ? '3px solid rgba(10,143,91,.25)' : '3px solid rgba(199,123,0,.35)';
 
-    // If any BEFAST domain was marked Positive, open CP-SSS
+    // If any BEFAST domain marked Positive, open CP-SSS
     const anyPositive = ['selB','selE','selF','selA','selS'].some(id => $(id).value==='Positive');
     if(anyPositive){ openCPSSSDefaults(); }
   });
 
-  // ------------- CP-SSS helpers
+  // CP-SSS
   function openCPSSSDefaults(){
     cpsssPanel.classList.remove('hidden');
-    // Pre-fill picks to help teaching (user can change):
-    cpsGaze.selectedIndex = (T.eyes==='gazeDev') ? 1 : 0;  // Yes if deviation
-    cpsArm.selectedIndex  = (T.arm ? 1 : 0);               // Yes if weakness/drift
-    cpsLoc.selectedIndex  = (T.locAbn ? 1 : 0);            // Yes if LOC Q/C abnormal
+    cpsGaze.selectedIndex = (T.eyes==='gazeDev') ? 1 : 0;
+    cpsArm.selectedIndex  = (T.arm ? 1 : 0);
+    cpsLoc.selectedIndex  = (T.locAbn ? 1 : 0);
     cpsssLine.textContent = '—';
   }
 
-  // Simulate LOC Q/C (ask + commands)
-  $('runLoc').addEventListener('pointerdown', e=>{
-    e.preventDefault();
-    // Ask age & month, then commands
-    const ask1 = "How old are you?";
-    const ask2 = "What month is it?";
-    const cmd1 = "Close your eyes.";
-    const cmd2 = "Open and close your hand.";
-
-    function respond(ok){
-      if(ok) return ["I'm 62.","It's August.","(closes eyes)","(opens and closes hand)"];
-      return ["...uh... 40?","...Tuesday?","(no response)","(no movement)"];
-    }
-    const lines = respond(!T.locAbn);
-    [ask1,ask2,cmd1,cmd2].forEach((q,i)=>{ speak(q); });
-    setTimeout(()=>{ speak(lines[0]); }, 700);
-    setTimeout(()=>{ speak(lines[1]); }, 1400);
-    // commands are silent actions; we could show a brief blink / hand wiggle in future
+  onTap($('runLoc'), ()=>{
+    // Ask age & month; commands close eyes / open-close hand
+    const q1="How old are you?"; const q2="What month is it?";
+    const c1="Close your eyes."; const c2="Open and close your hand.";
+    const respGood = ["I'm 62.","It's August.","(closes eyes)","(opens and closes hand)"];
+    const respBad  = ["...uh... 40?","...Tuesday?","(no response)","(no movement)"];
+    [q1,q2,c1,c2].forEach((q,i)=> setTimeout(()=>speak(q), i*700));
+    const rset = (T.locAbn? respBad : respGood);
+    setTimeout(()=>speak(rset[0]), 900);
+    setTimeout(()=>speak(rset[1]), 1600);
+    // We could animate a blink/hand wiggle here in a later pass
   });
 
-  // Grade CP-SSS
-  $('gradeCPSSS').addEventListener('pointerdown', e=>{
-    e.preventDefault();
+  onTap($('gradeCPSSS'), ()=>{
     const g = cpsGaze.value.includes('Yes') ? 2 : 0;
     const a = cpsArm.value.includes('Yes')  ? 1 : 0;
     const l = cpsLoc.value.includes('Yes')  ? 1 : 0;
@@ -646,10 +622,9 @@
       (total>=2 ? '➡️ Consider LVO / severe stroke pathway per local protocol.' : 'Lower likelihood of LVO; continue standard stroke pathway.');
   });
 
-  // ------------- Next scenario
-  $('next').addEventListener('pointerdown', e=>{ e.preventDefault(); window.speechSynthesis.cancel(); stopTracking(); newScenario(); });
+  onTap($('next'), ()=>{ window.speechSynthesis.cancel(); stopTracking(); newScenario(); });
 
-  // ------------- Boot
+  // Boot
   newScenario();
 })();
 </script>
