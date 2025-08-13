@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Stroke Assessment (BE-FAST) – Single SVG, Per-Test Auto Start</title>
+<title>Stroke Assessment – Single SVG, Per-Test Auto Start</title>
 <style>
   :root{
     --bg:#f4f8fb; --card:#fff; --ink:#122230; --muted:#5c6a78;
@@ -46,19 +46,15 @@
   .results .box{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:10px}
   .results ul{margin:.4rem 0 0 1.1rem}
   .results li{margin:.18rem 0}
-
   .infoGrid{display:grid;gap:8px;grid-template-columns:1fr}
   @media (max-width:760px){ .infoGrid{grid-template-columns:1fr} }
-
-  /* Anim helpers */
-  @keyframes sway{0%{transform:translateX(0)}50%{transform:translateX(3px)}100%{transform:translateX(0)}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="card">
-    <h1>Stroke Assessment (BE-FAST)</h1>
-    <p>Neutral on load. Press any test to start immediately. Pupils remain equal and are not included in findings.</p>
+    <h1>Stroke Assessment</h1>
+    <p>Neutral on load. Press any test to start. Pupils stay equal and are not part of findings.</p>
   </header>
 
   <div class="grid">
@@ -89,56 +85,58 @@
             <!-- Ground -->
             <ellipse cx="100" cy="262" rx="58" ry="10" fill="#e7eef6"/>
 
-            <!-- Upper and lower separated so only upper sways on Balance -->
-            <!-- LOWER (legs/feet) stays fixed -->
-            <g id="lower">
-              <path d="M 92 162 V 228" stroke="#2f3d56" stroke-width="14" stroke-linecap="round"/>
-              <path d="M 108 162 V 228" stroke="#2f3d56" stroke-width="14" stroke-linecap="round"/>
-              <rect x="84" y="228" width="32" height="10" rx="3" fill="#2f3d56"/>
-            </g>
-
-            <!-- UPPER (head + torso + arms) may sway/transform -->
-            <g id="upper">
-              <!-- Head -->
-              <g id="head" transform="translate(100,60)">
-                <circle r="22" fill="#f5d2b8" stroke="#c9a18c"/>
-                <!-- Eyes with equal pupils (we move pupils for gaze) -->
-                <g id="eyeL" transform="translate(-9,-3)">
-                  <ellipse rx="6" ry="4.2" fill="#fff" stroke="#c9a18c"/>
-                  <circle id="pL" r="2.2" cx="0" cy="0" fill="#222"/>
-                </g>
-                <g id="eyeR" transform="translate(9,-3)">
-                  <ellipse rx="6" ry="4.2" fill="#fff" stroke="#c9a18c"/>
-                  <circle id="pR" r="2.2" cx="0" cy="0" fill="#222"/>
-                </g>
-                <!-- Brows -->
-                <path id="browL" d="M -12 -9 Q -6 -11 -1 -10" fill="none" stroke="#8b5a4e" stroke-width="2" stroke-linecap="round"/>
-                <path id="browR" d="M 1 -10 Q 6 -11 12 -9" fill="none" stroke="#8b5a4e" stroke-width="2" stroke-linecap="round"/>
-                <!-- Mouth (we morph this for smile & droop) -->
-                <path id="mouth" d="M -7 8 Q 0 10 7 8" fill="none" stroke="#8b5a4e" stroke-width="2" stroke-linecap="round"/>
+            <!-- Wrap lower+upper so we can rotate the WHOLE body around the feet for Balance -->
+            <g id="bodyAll">
+              <!-- LOWER (legs/feet) -->
+              <g id="lower">
+                <path d="M 92 162 V 228" stroke="#2f3d56" stroke-width="14" stroke-linecap="round"/>
+                <path d="M 108 162 V 228" stroke="#2f3d56" stroke-width="14" stroke-linecap="round"/>
+                <rect x="84" y="228" width="32" height="10" rx="3" fill="#2f3d56"/>
               </g>
 
-              <!-- Torso -->
-              <rect x="72" y="84" width="56" height="78" rx="10" fill="#79a9ff" stroke="#4c77cc"/>
+              <!-- UPPER (head + torso + arms) -->
+              <g id="upper">
+                <!-- Head -->
+                <g id="head" transform="translate(100,60)">
+                  <circle r="22" fill="#f5d2b8" stroke="#c9a18c"/>
+                  <!-- Eyes with equal pupils -->
+                  <g id="eyeL" transform="translate(-9,-3)">
+                    <ellipse rx="6" ry="4.2" fill="#fff" stroke="#c9a18c"/>
+                    <circle id="pL" r="2.2" cx="0" cy="0" fill="#222"/>
+                  </g>
+                  <g id="eyeR" transform="translate(9,-3)">
+                    <ellipse rx="6" ry="4.2" fill="#fff" stroke="#c9a18c"/>
+                    <circle id="pR" r="2.2" cx="0" cy="0" fill="#222"/>
+                  </g>
+                  <!-- Brows -->
+                  <path id="browL" d="M -12 -9 Q -6 -11 -1 -10" fill="none" stroke="#8b5a4e" stroke-width="2" stroke-linecap="round"/>
+                  <path id="browR" d="M 1 -10 Q 6 -11 12 -9" fill="none" stroke="#8b5a4e" stroke-width="2" stroke-linecap="round"/>
+                  <!-- Mouth (morphs for smile & droop) -->
+                  <path id="mouth" d="M -7 8 Q 0 10 7 8" fill="none" stroke="#8b5a4e" stroke-width="2" stroke-linecap="round"/>
+                </g>
 
-              <!-- Arms DOWN (Balance default) -->
-              <g id="arms-down">
-                <path d="M 72 92 C 62 120, 62 150, 70 178" fill="none" stroke="#79a9ff" stroke-width="14" stroke-linecap="round"/>
-                <path d="M 128 92 C 138 120, 138 150, 130 178" fill="none" stroke="#79a9ff" stroke-width="14" stroke-linecap="round"/>
-                <circle cx="70" cy="184" r="7" fill="#f5d2b8" stroke="#c9a18c"/>
-                <circle cx="130" cy="184" r="7" fill="#f5d2b8" stroke="#c9a18c"/>
-              </g>
+                <!-- Torso -->
+                <rect x="72" y="84" width="56" height="78" rx="10" fill="#79a9ff" stroke="#4c77cc"/>
 
-              <!-- Arms UP, PALMS UP (Arm Drift) -->
-              <g id="arms-up" visibility="hidden">
-                <path d="M 84 110 Q 84 100 92 98" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
-                <path d="M 116 110 Q 116 100 108 98" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
-                <path id="left-forearm" d="M 92 98 H 66" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
-                <path id="right-forearm" d="M 108 98 H 134" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
-                <ellipse id="left-palm" cx="62" cy="98" rx="7.5" ry="6.5" fill="#f5d2b8" stroke="#c9a18c"/>
-                <ellipse id="right-palm" cx="138" cy="98" rx="7.5" ry="6.5" fill="#f5d2b8" stroke="#c9a18c"/>
-                <path d="M 58 98 h 8" stroke="#d3b2a0" />
-                <path d="M 134 98 h 8" stroke="#d3b2a0" />
+                <!-- Arms DOWN (Balance default) -->
+                <g id="arms-down">
+                  <path d="M 72 92 C 62 120, 62 150, 70 178" fill="none" stroke="#79a9ff" stroke-width="14" stroke-linecap="round"/>
+                  <path d="M 128 92 C 138 120, 138 150, 130 178" fill="none" stroke="#79a9ff" stroke-width="14" stroke-linecap="round"/>
+                  <circle cx="70" cy="184" r="7" fill="#f5d2b8" stroke="#c9a18c"/>
+                  <circle cx="130" cy="184" r="7" fill="#f5d2b8" stroke="#c9a18c"/>
+                </g>
+
+                <!-- Arms UP, PALMS UP (Arm Drift) -->
+                <g id="arms-up" visibility="hidden">
+                  <path d="M 84 110 Q 84 100 92 98" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
+                  <path d="M 116 110 Q 116 100 108 98" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
+                  <path id="left-forearm" d="M 92 98 H 66" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
+                  <path id="right-forearm" d="M 108 98 H 134" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
+                  <ellipse id="left-palm" cx="62" cy="98" rx="7.5" ry="6.5" fill="#f5d2b8" stroke="#c9a18c"/>
+                  <ellipse id="right-palm" cx="138" cy="98" rx="7.5" ry="6.5" fill="#f5d2b8" stroke="#c9a18c"/>
+                  <path d="M 58 98 h 8" stroke="#d3b2a0" />
+                  <path d="M 134 98 h 8" stroke="#d3b2a0" />
+                </g>
               </g>
             </g>
           </svg>
@@ -155,63 +153,63 @@
       </div>
     </section>
 
-    <!-- RIGHT: BE-FAST user findings (no pupils) -->
+    <!-- RIGHT: Findings -->
     <aside class="card">
-      <h2>Your Findings (BE-FAST)</h2>
+      <h2>Your Findings</h2>
       <div class="body">
         <div class="formGrid">
           <div>
             <label for="fBalance">Balance</label>
             <select id="fBalance">
               <option value="normal">Normal</option>
-              <option value="unsteady">Unsteady / broad-based</option>
-              <option value="leansLeft">Leans/Falls Left</option>
-              <option value="leansRight">Leans/Falls Right</option>
+              <option value="unsteady">Unsteady or wide stance</option>
+              <option value="leansLeft">Leans or falls to the left</option>
+              <option value="leansRight">Leans or falls to the right</option>
             </select>
           </div>
           <div>
             <label for="fEyes">Eyes (Gaze)</label>
             <select id="fEyes">
-              <option value="normal">Normal tracking</option>
-              <option value="slow">Slow pursuit</option>
-              <option value="deviationLeft">Gaze deviation Left</option>
-              <option value="deviationRight">Gaze deviation Right</option>
+              <option value="normal">Follows finger both ways</option>
+              <option value="slow">Follows slowly</option>
+              <option value="deviationLeft">Eyes pulled to the left</option>
+              <option value="deviationRight">Eyes pulled to the right</option>
             </select>
           </div>
           <div>
-            <label for="fFace">Face droop</label>
+            <label for="fFace">Face</label>
             <select id="fFace">
-              <option value="none">None</option>
-              <option value="left">Left droop</option>
-              <option value="right">Right droop</option>
+              <option value="none">No droop</option>
+              <option value="left">Left side droops</option>
+              <option value="right">Right side droops</option>
             </select>
           </div>
           <div>
-            <label for="fArms">Arm drift</label>
+            <label for="fArms">Arms</label>
             <select id="fArms">
-              <option value="none">No drift</option>
-              <option value="left">Left arm drifts</option>
-              <option value="right">Right arm drifts</option>
+              <option value="none">No arm drift</option>
+              <option value="left">Left arm drifts down</option>
+              <option value="right">Right arm drifts down</option>
             </select>
           </div>
           <div>
             <label for="fSpeech">Speech</label>
             <select id="fSpeech">
               <option value="normal">Normal</option>
-              <option value="dysarthria">Slurred (dysarthria)</option>
-              <option value="aphasiaExpressive">Aphasia (expressive)</option>
-              <option value="aphasiaReceptive">Aphasia (receptive)</option>
-              <option value="aphasiaGlobal">Aphasia (global/mute)</option>
+              <option value="slurred">Slurred</option>
+              <option value="expressive">Trouble speaking</option>
+              <option value="receptive">Trouble understanding</option>
+              <option value="mute">No speech</option>
             </select>
           </div>
           <div>
-            <label for="fTime">Time (Last Known Well)</label>
+            <label for="fTime">Time (last known well)</label>
             <select id="fTime">
-              <option value="lt3h">&lt; 3 hours</option>
-              <option value="3to6h">3–6 hours</option>
-              <option value="6to24h">6–24 hours</option>
-              <option value="gt24h">&gt; 24 hours</option>
-              <option value="unknown">Unknown</option>
+              <option value="lt3h">Less than 3 hours</option>
+              <option value="3to6h">3 to 6 hours</option>
+              <option value="6to24h">6 to 24 hours</option>
+              <option value="gt24h">More than 24 hours</option>
+              <option value="unknown">Not sure</option>
             </select>
           </div>
         </div>
@@ -238,7 +236,7 @@
 (function(){
   const $ = s => document.querySelector(s);
 
-  /* Tabs (no active at start; pressing starts & highlights) */
+  /* Tabs */
   const tabBalance = $('#tab-balance');
   const tabDrift   = $('#tab-drift');
   const tabFace    = $('#tab-face');
@@ -249,18 +247,15 @@
   const testDesc = $('#testDesc');
 
   /* SVG elements */
-  const upper = $('#upper');
-  const lower = $('#lower');
+  const bodyAll = $('#bodyAll'); // whole body group (for balance pivot at feet)
   const armsDown = $('#arms-down');
   const armsUp   = $('#arms-up');
-  const leftPalm  = $('#left-palm');
-  const rightPalm = $('#right-palm');
   const mouth = $('#mouth');
   const browL = $('#browL');
   const browR = $('#browR');
   const pL = $('#pL'); const pR = $('#pR');
 
-  /* Findings form (no pupils) */
+  /* Findings form */
   const fBalance = $('#fBalance');
   const fEyes = $('#fEyes');
   const fFace = $('#fFace');
@@ -275,7 +270,7 @@
   const gradeSummary = $('#gradeSummary');
   const meaning = $('#meaning');
 
-  /* Patient info elements */
+  /* Patient info */
   const ptInfo = $('#ptInfo');
 
   /* State */
@@ -293,25 +288,19 @@
 
   /* ---------- Scenario generation ---------- */
   function newCase(){
-    // Demographics + core info
     const ages = [34,41,55,62,69,73,79,84];
     const sexes = ['Male','Female'];
-    const complaints = [
-      'sudden weakness','facial droop','difficulty speaking','unsteady gait','blurred vision',
-      'headache','numbness','confusion'
-    ];
+    const complaints = ['sudden weakness','face looks uneven','hard to speak','unsteady walking','blurry vision','headache','numbness','confusion'];
     const minutesAgo = [10,15,20,25,30,45,60,90,120,180];
     const glucoseVals = [58,72,88,101,110,126,140,182];
-    const hx = [
-      'HTN','Type 2 DM','Afib','HLD','Former smoker','CAD','No significant history'
-    ];
+    const hx = ['high blood pressure','type 2 diabetes','irregular heartbeat','high cholesterol','former smoker','heart disease','no major history'];
 
     const hasStroke = coin(0.7);
     const face = hasStroke ? rand(['left','right','none','none']) : 'none';
     const arm  = hasStroke ? rand(['left','right','none']) : 'none';
     const eyes = hasStroke ? rand(['deviationLeft','deviationRight','slow','normal']) : 'normal';
     const bal  = hasStroke ? rand(['unsteady','leansLeft','leansRight','normal']) : 'normal';
-    const speech = hasStroke ? rand(['dysarthria','aphasiaExpressive','aphasiaReceptive','aphasiaGlobal','normal']) : 'normal';
+    const speech = hasStroke ? rand(['slurred','expressive','receptive','mute','normal']) : 'normal';
 
     scenario = {
       age: rand(ages),
@@ -320,7 +309,6 @@
       lkwMin: rand(minutesAgo),
       glucose: rand(glucoseVals),
       hx: rand(hx),
-
       faceDroop: face,
       armDrift: arm,
       gaze: eyes,
@@ -328,39 +316,33 @@
       speech: speech
     };
 
-    // Fill patient info
-    const onset = scenario.lkwMin<=60 ? `${scenario.lkwMin} min ago` : `${Math.round(scenario.lkwMin/60)} hr ago`;
+    const onset = scenario.lkwMin<=60 ? `${scenario.lkwMin} minutes ago` : `${Math.round(scenario.lkwMin/60)} hours ago`;
     ptInfo.innerHTML = `
       <div><strong>Age/Sex:</strong> ${scenario.age} / ${scenario.sex}</div>
-      <div><strong>Chief Complaint:</strong> ${scenario.cco}</div>
-      <div><strong>Last Known Well:</strong> ${onset}</div>
-      <div><strong>Glucose:</strong> ${scenario.glucose} mg/dL</div>
+      <div><strong>Main concern:</strong> ${scenario.cco}</div>
+      <div><strong>Last known well:</strong> ${onset}</div>
+      <div><strong>Blood sugar:</strong> ${scenario.glucose} mg/dL</div>
       <div><strong>History:</strong> ${scenario.hx}</div>
     `;
 
-    // Reset user selections & visuals
     resetForm();
     resetVisuals();
     clearActive();
-    setTestDesc(''); // neutral on load
+    setTestDesc('');
   }
 
   /* ---------- Visual reset ---------- */
   function resetVisuals(){
     stopAll();
-    // neutral arms
     armsDown.setAttribute('visibility','visible');
     armsUp.setAttribute('visibility','hidden');
-    // eyes centered
     pL.style.transform='translate(0,0)'; pR.style.transform='translate(0,0)';
-    // mouth & brows neutral
     mouth.setAttribute('d','M -7 8 Q 0 10 7 8');
     browL.setAttribute('d','M -12 -9 Q -6 -11 -1 -10');
     browR.setAttribute('d','M 1 -10 Q 6 -11 12 -9');
-    // timer
     timerEl.textContent='0.0';
-    // ensure lower body remains fixed; upper transform reset
-    upper.style.transform = 'rotate(0deg) translateX(0px)';
+    // Whole body reset (rotate around feet pivot at ~y=238)
+    bodyAll.setAttribute('transform','rotate(0,100,238)');
   }
 
   function stopAll(){
@@ -382,31 +364,32 @@
   }
   function setTestDesc(msg){ testDesc.textContent = msg; }
 
-  /* ---------- Test actions (start immediately on press) ---------- */
+  /* ---------- Tests ---------- */
   function doBalance(){
     setActive(tabBalance);
     resetVisuals();
-    setTestDesc('Balance: Feet together, arms at sides. Observe upper body for sway or a lean; legs and feet remain planted.');
+    setTestDesc('Balance: Ask the person to stand with feet together and arms at the sides. Watch the whole body. It may lean or sway. The feet stay on the ground.');
 
     const bal = scenario.balance;
     if(bal==='normal'){ return; }
+
     running=true; swayTick=0;
     const baseAmp = bal==='unsteady' ? 8 : 10;
     const bias = (bal==='leansLeft') ? -12 : (bal==='leansRight' ? 12 : 0);
+    const pivotX = 100, pivotY = 238; // around bottom of feet
     swayTimer=setInterval(()=>{
       swayTick++;
-      const sway = Math.sin(swayTick/10)*baseAmp + bias;
-      // Only move the UPPER group; lower stays fixed
-      upper.style.transform = `rotate(${sway/2}deg) translateX(${sway>0?2:-2}px)`;
+      const sway = Math.sin(swayTick/10)*baseAmp + bias; // degrees-ish feel
+      // rotate whole body group around the feet (pivot)
+      bodyAll.setAttribute('transform', `rotate(${sway/2},${pivotX},${pivotY})`);
     },80);
   }
 
   function doDrift(){
     setActive(tabDrift);
     resetVisuals();
-    setTestDesc('Arm Drift: Ask patient to close eyes and hold both arms straight out, palms up, for 10 seconds. Watch for one arm drifting down.');
+    setTestDesc('Arm Drift: Ask the person to close their eyes and hold both arms out, palms up, for ten seconds. Watch if one arm drops.');
 
-    // Arms up immediately
     armsDown.setAttribute('visibility','hidden');
     armsUp.setAttribute('visibility','visible');
 
@@ -419,8 +402,7 @@
       timerEl.textContent = elapsed.toFixed(1);
 
       if(side!=='none'){
-        // Begin drift after ~3s
-        if(!driftTriggeredAt && elapsed>=3.0){ driftTriggeredAt = elapsed; }
+        if(!d riftTriggeredAt && elapsed>=3.0){ driftTriggeredAt = elapsed; }
         if(driftTriggeredAt){
           const d = clamp((elapsed - driftTriggeredAt)/0.6, 0, 1);
           const drop = 26*d;
@@ -441,32 +423,27 @@
   function doFace(){
     setActive(tabFace);
     resetVisuals();
-    setTestDesc('Face: Ask the patient to smile. Look for asymmetry (one corner lower). Eyebrow on the affected side may also droop.');
+    setTestDesc('Face: Ask the person to smile. Look to see if one side of the mouth is lower. The eyebrow on that side may also look lower.');
 
-    // Smile morph + asymmetric droop based on scenario.faceDroop
     const droop = scenario.faceDroop; // 'left'|'right'|'none'
-
-    // Build an asymmetric smile path: control point stays centered; end corners shift
-    // Base neutral: M -7 8 Q 0 10 7 8
-    // Smile target: left corner y, right corner y may differ if droop is present
+    // Build an asymmetric smile path so droop shows in the mouth
     const Lx0=-7, Rx0=7, Ly0=8, Ry0=8, Cx0=0, Cy0=10;
-    const LySmile = (droop==='left') ? 11 : 6.5;   // lower (bigger y) if droop on that side
+    const LySmile = (droop==='left') ? 11 : 6.5;   // lower side has larger y
     const RySmile = (droop==='right') ? 11 : 6.5;
 
     const steps=24; let i=0;
     const id = setInterval(()=>{
       i++;
       const t = i/steps;
-      // ease
       const e = t<.5 ? 2*t*t : -1+(4-2*t)*t;
       const Ly = Ly0 + (LySmile - Ly0)*e;
       const Ry = Ry0 + (RySmile - Ry0)*e;
-      const Cy = Cy0 + (13 - Cy0)*e; // slightly bigger smile arc
+      const Cy = Cy0 + (13 - Cy0)*e; // bigger smile arc
       mouth.setAttribute('d', `M ${Lx0} ${Ly} Q ${Cx0} ${Cy} ${Rx0} ${Ry}`);
       if(i>=steps) clearInterval(id);
     }, 16);
 
-    // Eyebrow droop (pupils stay equal)
+    // Eyebrow droop
     if(droop==='left'){
       browL.setAttribute('d','M -12 -6 Q -6 -6 -1 -7');
       browR.setAttribute('d','M 1 -10 Q 6 -11 12 -9');
@@ -479,7 +456,7 @@
   function doEyes(){
     setActive(tabEyes);
     resetVisuals();
-    setTestDesc('Eyes/Gaze: Ask patient to follow your finger left and right. Look for slow pursuit or forced gaze deviation.');
+    setTestDesc('Eyes: Ask the person to follow your finger left and right. Look for slow eye movement or eyes pulled to one side.');
 
     const kind = scenario.gaze; // 'normal'|'slow'|'deviationLeft'|'deviationRight'
     const speed = (kind==='slow') ? 140 : 75;
@@ -498,23 +475,22 @@
   function doSpeech(){
     setActive(tabSpeech);
     resetVisuals();
-    setTestDesc('Speech: Have the patient repeat a phrase. Listen for slurring (dysarthria) or errors in expression/comprehension (aphasia).');
+    setTestDesc('Speech: Ask the person to repeat a simple sentence. Listen for slurred words, trouble getting words out, trouble understanding, or no speech.');
 
-    // Uses browser Text-to-Speech to emulate speech findings
-    const s = scenario.speech; // 'normal' | dysarthria | aphasia*
+    const s = scenario.speech; // 'normal' | 'slurred' | 'expressive' | 'receptive' | 'mute'
     const u = new SpeechSynthesisUtterance();
     u.rate = 1.0; u.pitch = 1.0; u.lang = 'en-US';
 
     let text = "The sky is blue and the grass is green.";
     if(s==='normal'){
       text = "The early bird catches the worm. Today is a sunny day.";
-    }else if(s==='dysarthria'){
+    }else if(s==='slurred'){
       text = "Thuhh earrly burd catchezz the werm. Tuhday ishh a shunny day.";
-    }else if(s==='aphasiaExpressive'){
+    }else if(s==='expressive'){
       text = "Uh... sky... uh... blue... um... grass... uh... uh...";
-    }else if(s==='aphasiaReceptive'){
+    }else if(s==='receptive'){
       text = "Yes, okay, I understand. Happy sofa banana elbow, absolutely.";
-    }else if(s==='aphasiaGlobal'){
+    }else if(s==='mute'){
       text = "...";
     }
     u.text = text;
@@ -536,7 +512,7 @@
       face: scenario.faceDroop,
       arms: scenario.armDrift,
       speech: scenario.speech,
-      time: scenario.lkwMin // informational; not graded exact bucket
+      time: scenario.lkwMin
     };
     const fields = [['Balance','balance'],['Eyes (gaze)','eyes'],['Face','face'],['Arms','arms'],['Speech','speech']];
     gradeList.innerHTML=''; let correct=0;
@@ -544,40 +520,42 @@
       const li=document.createElement('li');
       if(user[key]===truth[key]){ correct++; li.innerHTML=`✅ <strong>${label}</strong> correct.`; }
       else{
-        const norm=v=>v.replace('leansLeft','Leans/Falls Left').replace('leansRight','Leans/Falls Right')
-                       .replace('slow','Slow pursuit').replace('none','None')
-                       .replace('aphasiaExpressive','Aphasia (expressive)')
-                       .replace('aphasiaReceptive','Aphasia (receptive)')
-                       .replace('aphasiaGlobal','Aphasia (global/mute)')
+        const norm=v=>v.replace('leansLeft','Leans or falls to the left')
+                       .replace('leansRight','Leans or falls to the right')
+                       .replace('slow','Follows slowly')
+                       .replace('none','None')
+                       .replace('expressive','Trouble speaking')
+                       .replace('receptive','Trouble understanding')
+                       .replace('mute','No speech')
                        .replace(/^./,c=>c.toUpperCase());
         li.innerHTML=`❌ <strong>${label}</strong> expected: <em>${norm(truth[key])}</em>.`;
       }
       gradeList.appendChild(li);
     }
 
-    // Show Time as informational (no right/wrong)
     const timeLi = document.createElement('li');
-    const onset = (truth.time<=60) ? `${truth.time} min ago` : `${Math.round(truth.time/60)} hr ago`;
-    timeLi.innerHTML = `🕒 <strong>Time (LKW)</strong>: scenario LKW ≈ <em>${onset}</em>.`;
+    const onset = (truth.time<=60) ? `${truth.time} minutes ago` : `${Math.round(truth.time/60)} hours ago`;
+    timeLi.innerHTML = `🕒 <strong>Time</strong>: last known well was about <em>${onset}</em>.`;
     gradeList.appendChild(timeLi);
 
-    const befastPositives =
+    const strokeSigns =
       (truth.balance!=='normal') +
       ((truth.eyes==='deviationLeft'||truth.eyes==='deviationRight')?1:0) +
       (truth.face!=='none') +
       (truth.arms!=='none') +
       (truth.speech!=='normal');
 
-    const lvoCues = ((truth.eyes==='deviationLeft'||truth.eyes==='deviationRight')?1:0) + ((/aphasia/.test(truth.speech))?1:0);
-
-    gradeSummary.innerHTML = `<strong>Results:</strong> You matched <strong>${correct}/5</strong> domains. BE-FAST positives: <strong>${befastPositives}</strong>.`;
+    gradeSummary.innerHTML = `<strong>Results:</strong> You matched <strong>${correct}/5</strong> areas. Stroke signs found: <strong>${strokeSigns}</strong>.`;
 
     const lines=[];
-    if(befastPositives>=1) lines.push("Concern for acute stroke. Determine LKW and activate stroke pathway.");
-    if(befastPositives>=2) lines.push("Multiple positives increase stroke likelihood; consider stroke-capable destination.");
-    if(lvoCues>=1) lines.push("Cortical sign(s) present (gaze deviation and/or aphasia) → possible large vessel occlusion (LVO).");
-    if(befastPositives===0) lines.push("No BE-FAST findings. Consider mimics (hypoglycemia, postictal, migraine, toxicity).");
-    meaning.innerHTML = `<p><strong>What this pattern can mean:</strong></p><ul>${lines.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+    if(strokeSigns>=1) lines.push("This pattern can mean a stroke. Find the last time the person was well and call a stroke alert. Go to a hospital that treats strokes.");
+    if(strokeSigns>=2) lines.push("More than one sign makes a stroke more likely.");
+    if(truth.eyes==='deviationLeft' || truth.eyes==='deviationRight' || truth.speech==='expressive' || truth.speech==='receptive' || truth.speech==='mute'){
+      lines.push("Eye pulled to one side or trouble with speech can mean a big artery blockage.");
+    }
+    if(strokeSigns===0) lines.push("No stroke signs found here. Think about other causes like low blood sugar, a seizure, a migraine, or a drug or medicine problem.");
+
+    meaning.innerHTML = `<p><strong>What this can mean:</strong></p><ul>${lines.map(x=>`<li>${x}</li>`).join('')}</ul>`;
     gradeBox.hidden=false; gradeBox.scrollIntoView({behavior:'smooth',block:'start'});
   }
 
@@ -593,7 +571,7 @@
   btnNew.addEventListener('click', newCase);
   btnResetForm.addEventListener('click', resetForm);
 
-  // init: neutral (no active)
+  // init: neutral
   newCase();
 })();
 </script>
