@@ -3,25 +3,20 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Stroke Assessment Simulator</title>
+<title>Stroke Assessment (BE-FAST) – Single SVG</title>
 <style>
   :root{
-    --bg:#f4f8fb;
-    --card:#ffffff;
-    --ink:#123;
-    --accent:#0a76d3;
-    --accent-2:#0db37d;
-    --muted:#6b7c93;
-    --border:#e5ecf3;
+    --bg:#f4f8fb; --card:#ffffff; --ink:#122230; --muted:#5c6a78;
+    --accent:#0a76d3; --accent-2:#0db37d; --border:#e6edf3;
   }
-  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Apple Color Emoji","Segoe UI Emoji";}
-  .wrap{max-width:960px;margin:0 auto;padding:16px;display:grid;gap:12px}
-  header{background:linear-gradient(180deg,#0a76d3, #095fb0);color:#fff;border-radius:16px;padding:16px}
-  header h1{font-size:1.2rem;margin:0 0 4px}
-  header p{margin:0;font-size:.95rem;opacity:.95}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"Helvetica Neue",sans-serif}
+  .wrap{max-width:1000px;margin:0 auto;padding:14px;display:grid;gap:12px}
+  header{background:linear-gradient(180deg,#0a76d3,#095fb0);color:#fff;border-radius:16px;padding:16px}
+  header h1{margin:0 0 6px;font-size:1.2rem}
+  header p{margin:0;opacity:.95}
 
   .grid{display:grid;gap:12px}
-  @media(min-width:900px){ .grid{grid-template-columns: 1.2fr .8fr} }
+  @media(min-width:900px){ .grid{grid-template-columns:1.2fr .8fr} }
 
   .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 2px 12px rgba(10,30,60,.05)}
   .card h2{font-size:1rem;margin:0;padding:12px;border-bottom:1px solid var(--border)}
@@ -29,297 +24,507 @@
 
   .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
   .seg{display:flex;border:1px solid var(--border);border-radius:12px;overflow:hidden}
-  .seg button{padding:8px 10px;border:0;background:#fff;color:var(--ink)}
+  .seg button{padding:8px 10px;border:0;background:#fff;color:var(--ink);font-weight:600}
   .seg button.active{background:var(--accent);color:#fff}
   .seg button+button{border-left:1px solid var(--border)}
 
-  .btn{appearance:none;border:1px solid var(--border);background:#fff;color:var(--ink);padding:10px 12px;border-radius:12px;font-weight:600}
+  .btn{appearance:none;border:1px solid var(--border);background:#fff;color:var(--ink);padding:10px 12px;border-radius:12px;font-weight:700;cursor:pointer}
   .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
   .btn.success{background:var(--accent-2);border-color:var(--accent-2);color:#fff}
   .btn:active{transform:translateY(1px)}
-  .btn-row{display:flex;gap:8px;flex-wrap:wrap}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .pill{display:inline-block;background:#eef6ff;border:1px solid #d9e9fb;border-radius:999px;padding:4px 10px;font-weight:700}
 
   .panel{aspect-ratio: 3/4;background:linear-gradient(180deg,#f9fcff,#f1f6fb);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-  svg{width:100%;max-width:420px;height:auto}
-
-  .findings{font-size:.95rem;line-height:1.4;color:var(--ink)}
-  .findings .tag{display:inline-block;background:#eef6ff;color:#0a76d3;border:1px solid #d9e9fb;border-radius:10px;padding:4px 8px;margin:2px 4px 0 0;font-size:.8rem}
-
-  /* Simple animation helpers */
-  .anim { animation-duration: 2.2s; animation-iteration-count: infinite; animation-timing-function: ease-in-out; transform-origin: center; }
-  @keyframes sway {
-    0%{ transform: translateX(0) }
-    50%{ transform: translateX(3px) }
-    100%{ transform: translateX(0) }
-  }
-  @keyframes driftDown {
-    0%{ transform: translateY(0) }
-    50%{ transform: translateY(16px) }
-    100%{ transform: translateY(0) }
-  }
+  svg{width:100%;max-width:460px;height:auto}
 
   .muted{color:var(--muted)}
-  .k{font-weight:700}
+  label{font-weight:700}
+  select{width:100%;padding:.6rem .7rem;border-radius:10px;border:1px solid var(--border);background:#fff}
+  .formGrid{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+  @media (max-width:760px){ .formGrid{grid-template-columns:1fr} }
+  .results{margin-top:10px}
+  .results .box{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:10px}
+  .results ul{margin:.4rem 0 0 1.1rem}
+  .results li{margin:.18rem 0}
+
+  /* Anim helpers */
+  .anim{animation-duration:2.2s;animation-iteration-count:infinite;animation-timing-function:ease-in-out;transform-origin:center}
+  @keyframes sway{0%{transform:translateX(0)}50%{transform:translateX(3px)}100%{transform:translateX(0)}}
+  @keyframes driftDown{0%{transform:translateY(0)}50%{transform:translateY(16px)}100%{transform:translateY(0)}}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <header class="card">
-      <h1>Stroke Assessment Simulator</h1>
-      <p>Configured per your latest instructions: equal pupils, no pupil findings, balance with arms down, arm drift with arms up (palms up).</p>
-    </header>
+<div class="wrap">
+  <header class="card">
+    <h1>Stroke Assessment (BE-FAST) – Single SVG</h1>
+    <p>Same figure for Balance, Arm Drift, Face Droop (smile & eyebrow), and Eye Tracking. Pupils remain equal; pupils are removed from findings.</p>
+  </header>
 
-    <div class="grid">
-      <!-- Left: Simulator -->
-      <section class="card">
-        <h2>Simulator</h2>
-        <div class="body">
-          <div class="toolbar">
-            <div class="seg" role="tablist" aria-label="Test selector">
-              <button id="tab-balance" class="active" role="tab" aria-selected="true">Balance</button>
-              <button id="tab-drift" role="tab" aria-selected="false">Arm Drift</button>
-            </div>
-            <div class="seg" role="group" aria-label="Outcome selector">
-              <button id="outcome-normal" class="active">Normal</button>
-              <button id="outcome-positive">Positive</button>
-            </div>
-            <div class="btn-row">
-              <button id="btn-start" class="btn primary">Start</button>
-              <button id="btn-reset" class="btn">Reset</button>
-            </div>
+  <div class="grid">
+    <!-- Left: Simulator -->
+    <section class="card">
+      <h2>Simulator</h2>
+      <div class="body">
+        <div class="toolbar">
+          <div class="seg" role="tablist" aria-label="Test selector">
+            <button id="tab-balance" class="active" role="tab" aria-selected="true">Balance</button>
+            <button id="tab-drift" role="tab" aria-selected="false">Arm Drift</button>
+            <button id="tab-face" role="tab" aria-selected="false">Face</button>
+            <button id="tab-eyes" role="tab" aria-selected="false">Eyes</button>
           </div>
+          <div class="seg" role="group" aria-label="Outcome selector">
+            <button id="outcome-normal" class="active">Normal</button>
+            <button id="outcome-positive">Positive</button>
+          </div>
+          <div class="btn-row">
+            <button id="btn-start" class="btn primary">Start</button>
+            <button id="btn-reset" class="btn">Reset</button>
+            <span class="pill">Timer: <span id="timer">0.0</span>s</span>
+          </div>
+        </div>
 
-          <div class="panel">
-            <!-- Reusable SVG Person -->
-            <svg id="person" viewBox="0 0 200 280" aria-labelledby="title desc" role="img">
-              <title id="title">Patient Figure</title>
-              <desc id="desc">Front view human figure used in stroke assessment animations.</desc>
+        <div class="panel">
+          <!-- One reusable SVG person for all tests -->
+          <svg id="person" viewBox="0 0 200 280" aria-labelledby="title desc" role="img">
+            <title id="title">Patient Figure</title>
+            <desc id="desc">Front view human figure used in stroke assessment animations (balance, drift, face, eyes).</desc>
 
-              <!-- Ground -->
-              <ellipse cx="100" cy="262" rx="58" ry="10" fill="#e7eef6"/>
+            <!-- Ground -->
+            <ellipse cx="100" cy="262" rx="58" ry="10" fill="#e7eef6"/>
 
-              <!-- Torso group (used to sway in Balance) -->
-              <g id="torso" transform="translate(0,0)">
-                <!-- Head -->
-                <g id="head" transform="translate(100,60)">
-                  <circle r="22" fill="#f5d2b8" stroke="#c9a18c"/>
-                  <!-- Eyes (equal pupils) -->
-                  <g transform="translate(-9,-3)">
-                    <ellipse rx="6" ry="4.2" fill="#fff" stroke="#c9a18c"/>
-                    <circle r="2.2" cx="0" cy="0" fill="#222"/>
-                  </g>
-                  <g transform="translate(9,-3)">
-                    <ellipse rx="6" ry="4.2" fill="#fff" stroke="#c9a18c"/>
-                    <circle r="2.2" cx="0" cy="0" fill="#222"/>
-                  </g>
-                  <!-- Neutral mouth -->
-                  <path id="mouth" d="M -7 8 Q 0 10 7 8" fill="none" stroke="#8b5a4e" stroke-width="2" stroke-linecap="round"/>
-                  <!-- Brows (equal, neutral) -->
-                  <path d="M -12 -9 Q -6 -11 -1 -10" fill="none" stroke="#8b5a4e" stroke-width="2" stroke-linecap="round"/>
-                  <path d="M 1 -10 Q 6 -11 12 -9" fill="none" stroke="#8b5a4e" stroke-width="2" stroke-linecap="round"/>
+            <!-- Group we may rotate for balance -->
+            <g id="figure" transform="translate(0,0)">
+              <!-- Head -->
+              <g id="head" transform="translate(100,60)">
+                <circle r="22" fill="#f5d2b8" stroke="#c9a18c"/>
+                <!-- Eyes with equal pupils (we'll move the black pupils for gaze) -->
+                <g id="eyeL" transform="translate(-9,-3)">
+                  <ellipse rx="6" ry="4.2" fill="#fff" stroke="#c9a18c"/>
+                  <circle id="pL" r="2.2" cx="0" cy="0" fill="#222"/>
                 </g>
-
-                <!-- Body -->
-                <rect x="72" y="84" width="56" height="78" rx="10" fill="#79a9ff" stroke="#4c77cc"/>
-
-                <!-- Arms container (we switch between arms-down vs arms-up) -->
-                <!-- Arms DOWN (Balance) -->
-                <g id="arms-down">
-                  <!-- Left arm -->
-                  <path d="M 72 92 C 62 120, 62 150, 70 178" fill="none" stroke="#79a9ff" stroke-width="14" stroke-linecap="round"/>
-                  <!-- Right arm -->
-                  <path d="M 128 92 C 138 120, 138 150, 130 178" fill="none" stroke="#79a9ff" stroke-width="14" stroke-linecap="round"/>
-                  <!-- Hands relaxed -->
-                  <circle cx="70" cy="184" r="7" fill="#f5d2b8" stroke="#c9a18c"/>
-                  <circle cx="130" cy="184" r="7" fill="#f5d2b8" stroke="#c9a18c"/>
+                <g id="eyeR" transform="translate(9,-3)">
+                  <ellipse rx="6" ry="4.2" fill="#fff" stroke="#c9a18c"/>
+                  <circle id="pR" r="2.2" cx="0" cy="0" fill="#222"/>
                 </g>
-
-                <!-- Arms UP, PALMS UP (Arm Drift) -->
-                <g id="arms-up" visibility="hidden">
-                  <!-- Upper arms -->
-                  <path d="M 84 110 Q 84 100 92 98" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
-                  <path d="M 116 110 Q 116 100 108 98" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
-                  <!-- Forearms horizontal -->
-                  <path id="left-forearm" d="M 92 98 H 66" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
-                  <path id="right-forearm" d="M 108 98 H 134" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
-                  <!-- Palms facing viewer (simple ovals) -->
-                  <ellipse id="left-palm" cx="62" cy="98" rx="7.5" ry="6.5" fill="#f5d2b8" stroke="#c9a18c"/>
-                  <ellipse id="right-palm" cx="138" cy="98" rx="7.5" ry="6.5" fill="#f5d2b8" stroke="#c9a18c"/>
-                  <!-- Minimal finger hints -->
-                  <path d="M 58 98 h 8" stroke="#d3b2a0" />
-                  <path d="M 134 98 h 8" stroke="#d3b2a0" />
-                </g>
-
-                <!-- Legs -->
-                <g id="legs">
-                  <path d="M 92 162 V 228" stroke="#2f3d56" stroke-width="14" stroke-linecap="round"/>
-                  <path d="M 108 162 V 228" stroke="#2f3d56" stroke-width="14" stroke-linecap="round"/>
-                  <!-- Feet together -->
-                  <rect x="84" y="228" width="32" height="10" rx="3" fill="#2f3d56"/>
-                </g>
+                <!-- Brows -->
+                <path id="browL" d="M -12 -9 Q -6 -11 -1 -10" fill="none" stroke="#8b5a4e" stroke-width="2" stroke-linecap="round"/>
+                <path id="browR" d="M 1 -10 Q 6 -11 12 -9" fill="none" stroke="#8b5a4e" stroke-width="2" stroke-linecap="round"/>
+                <!-- Mouth -->
+                <path id="mouth" d="M -7 8 Q 0 10 7 8" fill="none" stroke="#8b5a4e" stroke-width="2" stroke-linecap="round"/>
               </g>
-            </svg>
-          </div>
-        </div>
-      </section>
 
-      <!-- Right: Findings -->
-      <aside class="card">
-        <h2>Findings</h2>
-        <div class="body findings">
-          <div><span class="k">Selected Test:</span> <span id="f-test">Balance</span></div>
-          <div><span class="k">Outcome:</span> <span id="f-outcome">Normal</span></div>
-          <hr style="border:none;border-top:1px solid var(--border);margin:10px 0">
-          <div id="f-details" class="muted">
-            Balance with feet together, arms at sides. No notable sway.
+              <!-- Body -->
+              <rect x="72" y="84" width="56" height="78" rx="10" fill="#79a9ff" stroke="#4c77cc"/>
+
+              <!-- Arms container -->
+              <!-- Arms DOWN (Balance default) -->
+              <g id="arms-down">
+                <path d="M 72 92 C 62 120, 62 150, 70 178" fill="none" stroke="#79a9ff" stroke-width="14" stroke-linecap="round"/>
+                <path d="M 128 92 C 138 120, 138 150, 130 178" fill="none" stroke="#79a9ff" stroke-width="14" stroke-linecap="round"/>
+                <circle cx="70" cy="184" r="7" fill="#f5d2b8" stroke="#c9a18c"/>
+                <circle cx="130" cy="184" r="7" fill="#f5d2b8" stroke="#c9a18c"/>
+              </g>
+
+              <!-- Arms UP, PALMS UP (Arm Drift default when running) -->
+              <g id="arms-up" visibility="hidden">
+                <!-- Upper arms -->
+                <path d="M 84 110 Q 84 100 92 98" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
+                <path d="M 116 110 Q 116 100 108 98" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
+                <!-- Forearms horizontal -->
+                <path id="left-forearm" d="M 92 98 H 66" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
+                <path id="right-forearm" d="M 108 98 H 134" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
+                <!-- Palms facing viewer -->
+                <ellipse id="left-palm" cx="62" cy="98" rx="7.5" ry="6.5" fill="#f5d2b8" stroke="#c9a18c"/>
+                <ellipse id="right-palm" cx="138" cy="98" rx="7.5" ry="6.5" fill="#f5d2b8" stroke="#c9a18c"/>
+                <path d="M 58 98 h 8" stroke="#d3b2a0" />
+                <path d="M 134 98 h 8" stroke="#d3b2a0" />
+              </g>
+
+              <!-- Legs/feet together -->
+              <g id="legs">
+                <path d="M 92 162 V 228" stroke="#2f3d56" stroke-width="14" stroke-linecap="round"/>
+                <path d="M 108 162 V 228" stroke="#2f3d56" stroke-width="14" stroke-linecap="round"/>
+                <rect x="84" y="228" width="32" height="10" rx="3" fill="#2f3d56"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <p class="muted" style="margin-top:8px">
+          <strong>Balance:</strong> arms down, subtle/biased sway. &nbsp; 
+          <strong>Drift:</strong> arms raise to shoulder height (palms up), optional unilateral drop. &nbsp; 
+          <strong>Face:</strong> smile animation + eyebrow droop (no anisocoria). &nbsp;
+          <strong>Eyes:</strong> pupils track left/right; can add gaze deviation/slow pursuit.
+        </p>
+      </div>
+    </section>
+
+    <!-- Right: BE-FAST user findings (no pupils) -->
+    <aside class="card">
+      <h2>Your Findings (BE-FAST)</h2>
+      <div class="body">
+        <div class="formGrid">
+          <div>
+            <label for="fBalance">Balance</label>
+            <select id="fBalance">
+              <option value="normal">Normal</option>
+              <option value="unsteady">Unsteady / broad-based</option>
+              <option value="leansLeft">Leans/Falls Left</option>
+              <option value="leansRight">Leans/Falls Right</option>
+            </select>
           </div>
-          <div style="margin-top:10px">
-            <span class="tag">BEFAST: Balance</span>
-            <span class="tag">BEFAST: Arms</span>
-            <span class="tag">Speech</span>
-            <span class="tag">Time</span>
-            <!-- intentionally no pupils tag per your instruction -->
+          <div>
+            <label for="fEyes">Eyes (Gaze)</label>
+            <select id="fEyes">
+              <option value="normal">Normal tracking</option>
+              <option value="slow">Slow pursuit</option>
+              <option value="deviationLeft">Gaze deviation Left</option>
+              <option value="deviationRight">Gaze deviation Right</option>
+            </select>
+          </div>
+          <div>
+            <label for="fFace">Face droop</label>
+            <select id="fFace">
+              <option value="none">None</option>
+              <option value="left">Left droop</option>
+              <option value="right">Right droop</option>
+            </select>
+          </div>
+          <div>
+            <label for="fArms">Arm drift</label>
+            <select id="fArms">
+              <option value="none">No drift</option>
+              <option value="left">Left arm drifts</option>
+              <option value="right">Right arm drifts</option>
+            </select>
+          </div>
+          <div>
+            <label for="fSpeech">Speech</label>
+            <select id="fSpeech">
+              <option value="normal">Normal</option>
+              <option value="dysarthria">Slurred (dysarthria)</option>
+              <option value="aphasiaExpressive">Aphasia (expressive)</option>
+              <option value="aphasiaReceptive">Aphasia (receptive)</option>
+              <option value="aphasiaGlobal">Aphasia (global/mute)</option>
+            </select>
           </div>
         </div>
-      </aside>
-    </div>
+
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn success" id="btnGrade">Show Results</button>
+          <button class="btn" id="btnNew">Next Case</button>
+          <button class="btn" id="btnResetForm">Reset</button>
+        </div>
+
+        <div class="results">
+          <div class="box" id="gradeBox" hidden>
+            <div id="gradeSummary"><strong>Results:</strong> —</div>
+            <ul id="gradeList"></ul>
+            <div id="meaning" style="margin-top:.5rem"></div>
+          </div>
+        </div>
+      </div>
+    </aside>
   </div>
+</div>
 
 <script>
 (function(){
-  const $ = sel => document.querySelector(sel);
+  const $ = s => document.querySelector(s);
 
+  /* Tabs & outcome */
   const tabBalance = $('#tab-balance');
   const tabDrift   = $('#tab-drift');
+  const tabFace    = $('#tab-face');
+  const tabEyes    = $('#tab-eyes');
   const outcomeNormal = $('#outcome-normal');
   const outcomePositive = $('#outcome-positive');
   const btnStart = $('#btn-start');
   const btnReset = $('#btn-reset');
+  const timerEl = $('#timer');
 
-  const torso = $('#torso');
+  /* SVG elements */
+  const figure = $('#figure');
   const armsDown = $('#arms-down');
   const armsUp   = $('#arms-up');
-
   const leftPalm  = $('#left-palm');
   const rightPalm = $('#right-palm');
+  const mouth = $('#mouth');
+  const browL = $('#browL');
+  const browR = $('#browR');
+  const pL = $('#pL'); // pupils (equal size), we only move them for gaze
+  const pR = $('#pR');
 
-  const fTest = $('#f-test');
-  const fOutcome = $('#f-outcome');
-  const fDetails = $('#f-details');
+  /* Findings form (no pupils) */
+  const fBalance = $('#fBalance');
+  const fEyes = $('#fEyes');
+  const fFace = $('#fFace');
+  const fArms = $('#fArms');
+  const fSpeech = $('#fSpeech');
+  const btnGrade = $('#btnGrade');
+  const btnNew = $('#btnNew');
+  const btnResetForm = $('#btnResetForm');
+  const gradeBox = $('#gradeBox');
+  const gradeList = $('#gradeList');
+  const gradeSummary = $('#gradeSummary');
+  const meaning = $('#meaning');
 
-  let mode = 'balance';      // 'balance' | 'drift'
-  let outcome = 'normal';    // 'normal' | 'positive'
+  /* State */
+  let mode = 'balance';      // 'balance'|'drift'|'face'|'eyes'
+  let outcome = 'normal';    // 'normal'|'positive'
   let running = false;
-  let activeAnimCleanups = [];
 
+  // Scenario truth (no pupils item)
+  let scenario = null;
+
+  // animation handles
+  let swayTimer = null, swayTick = 0;
+  let driftRAF = null, driftRunning = false, driftStart = 0, driftTriggeredAt = null;
+
+  function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
+
+  /* ---------- UI Mode handling ---------- */
   function setMode(m){
     mode = m;
-    if(m === 'balance'){
-      tabBalance.classList.add('active'); tabBalance.setAttribute('aria-selected','true');
-      tabDrift.classList.remove('active'); tabDrift.setAttribute('aria-selected','false');
+    for(const el of [tabBalance,tabDrift,tabFace,tabEyes]){ el.classList.remove('active'); el.setAttribute('aria-selected','false'); }
+    if(m==='balance'){ tabBalance.classList.add('active'); tabBalance.setAttribute('aria-selected','true'); }
+    if(m==='drift'){ tabDrift.classList.add('active'); tabDrift.setAttribute('aria-selected','true'); }
+    if(m==='face'){ tabFace.classList.add('active'); tabFace.setAttribute('aria-selected','true'); }
+    if(m==='eyes'){ tabEyes.classList.add('active'); tabEyes.setAttribute('aria-selected','true'); }
 
-      // Arms down for balance
-      armsDown.setAttribute('visibility', 'visible');
-      armsUp.setAttribute('visibility',   'hidden');
-
-      fTest.textContent = 'Balance';
-      updateDetails();
-    }else{
-      tabDrift.classList.add('active'); tabDrift.setAttribute('aria-selected','true');
-      tabBalance.classList.remove('active'); tabBalance.setAttribute('aria-selected','false');
-
-      // Arms up (palms up) for arm drift
-      armsDown.setAttribute('visibility', 'hidden');
-      armsUp.setAttribute('visibility',   'visible');
-
-      fTest.textContent = 'Arm Drift';
-      updateDetails();
+    // Arm posture by mode
+    if(m==='balance' || m==='face' || m==='eyes'){
+      armsDown.setAttribute('visibility','visible');
+      armsUp.setAttribute('visibility','hidden');
+    }else if(m==='drift'){
+      armsDown.setAttribute('visibility','hidden');
+      armsUp.setAttribute('visibility','visible');
     }
-    stopAllAnimations();
+
+    stopAll();
   }
 
   function setOutcome(o){
     outcome = o;
-    if(o === 'normal'){
-      outcomeNormal.classList.add('active');
-      outcomePositive.classList.remove('active');
-      fOutcome.textContent = 'Normal';
-    }else{
-      outcomePositive.classList.add('active');
-      outcomeNormal.classList.remove('active');
-      fOutcome.textContent = 'Positive';
-    }
-    updateDetails();
-    stopAllAnimations();
+    if(o==='normal'){ outcomeNormal.classList.add('active'); outcomePositive.classList.remove('active'); }
+    else{ outcomePositive.classList.add('active'); outcomeNormal.classList.remove('active'); }
+    stopAll();
   }
 
-  function updateDetails(){
-    if(mode === 'balance'){
-      if(outcome === 'normal'){
-        fDetails.textContent = 'Balance with feet together, arms at sides. No notable sway.';
-      }else{
-        fDetails.textContent = 'Balance with feet together, arms at sides. Sway noted.';
-      }
-    }else{ // drift
-      if(outcome === 'normal'){
-        fDetails.textContent = 'Arms raised, palms up at equal height. No drift observed.';
-      }else{
-        fDetails.textContent = 'Arms raised, palms up. Asymmetric drift noted on one side.';
-      }
-    }
-  }
-
-  function stopAllAnimations(){
-    running = false;
-    // Remove any animation classes or inline transforms we added
-    activeAnimCleanups.forEach(fn => { try{ fn(); }catch{} });
-    activeAnimCleanups = [];
-
-    // Reset transforms
-    torso.style.animation = '';
-    leftPalm.style.transform = '';
-    rightPalm.style.transform = '';
+  /* ---------- Animations ---------- */
+  function stopAll(){
+    running=false;
+    // stop sway
+    if(swayTimer){ clearInterval(swayTimer); swayTimer=null; }
+    figure.style.transform = 'rotate(0deg)';
+    // stop drift
+    if(driftRAF) cancelAnimationFrame(driftRAF);
+    driftRAF=null; driftRunning=false; driftTriggeredAt=null; timerEl.textContent='0.0';
+    armsDown.setAttribute('visibility', mode==='drift'?'hidden':'visible');
+    armsUp.setAttribute('visibility', mode==='drift'?'visible':'hidden');
+    // reset gaze pupil centers
+    pL.setAttribute('cx',0); pL.setAttribute('cy',0); pR.setAttribute('cx',0); pR.setAttribute('cy',0);
+    pL.style.transform='translate(0,0)'; pR.style.transform='translate(0,0)';
+    // reset face mouth/brows
+    mouth.setAttribute('d','M -7 8 Q 0 10 7 8');
+    browL.setAttribute('d','M -12 -9 Q -6 -11 -1 -10');
+    browR.setAttribute('d','M 1 -10 Q 6 -11 12 -9');
   }
 
   function start(){
-    stopAllAnimations();
-    running = true;
+    stopAll();
+    running=true;
+    if(mode==='balance'){
+      if(outcome==='positive'){
+        // more sway + lean bias
+        swayTick=0;
+        const baseAmp=8, bias = rand([-10,10]);
+        swayTimer=setInterval(()=>{
+          swayTick++;
+          const sway = Math.sin(swayTick/10)*baseAmp + bias;
+          figure.style.transform = `rotate(${sway/2}deg) translateX(${sway>0?2:-2}px)`;
+        },80);
+      }else{
+        // minimal sway or static
+        // (Keep static for clarity)
+      }
+    }else if(mode==='drift'){
+      // Raise in ~320ms then 10s run; drop one side if positive
+      const raiseDur = 320, t0 = performance.now();
+      function raiseStep(ts){
+        const t = Math.min(1,(ts - t0)/raiseDur);
+        armsDown.setAttribute('visibility','hidden');
+        armsUp.setAttribute('visibility','visible');
+        // no rotation needed; forearms already level
+        if(t<1) requestAnimationFrame(raiseStep); else runTenSeconds();
+      }
+      requestAnimationFrame(raiseStep);
 
-    if(mode === 'balance'){
-      if(outcome === 'normal'){
-        // Gentle minimal sway (very subtle or none). We'll keep it static for clarity.
-        // If desired, uncomment to add a slight sway:
-        // torso.style.animation = 'sway 2.2s ease-in-out infinite';
-        // activeAnimCleanups.push(()=> torso.style.animation='');
-      }else{
-        torso.style.animation = 'sway 2.2s ease-in-out infinite';
-        activeAnimCleanups.push(()=> torso.style.animation='');
+      function runTenSeconds(){
+        driftRunning=true; driftStart=performance.now(); driftTriggeredAt=null;
+        const side = (outcome==='positive') ? rand(['left','right']) : 'none';
+        function tick(ts){
+          if(!driftRunning) return;
+          const elapsed=(ts - driftStart)/1000;
+          timerEl.textContent = elapsed.toFixed(1);
+          if(!driftTriggeredAt && side!=='none' && elapsed>=3.0){ driftTriggeredAt = elapsed; }
+          if(driftTriggeredAt){
+            const d = Math.min(1,(elapsed - driftTriggeredAt)/0.6);
+            const drop = 26*d;
+            if(side==='left'){ // rotate left forearm down a bit
+              // simulate by moving left palm down
+              const baseY = 98; leftPalm.setAttribute('cy', baseY + drop);
+              document.getElementById('left-forearm').setAttribute('d', `M 92 98 H ${66 + drop*0.2}`);
+            }
+            if(side==='right'){
+              const baseY = 98; rightPalm.setAttribute('cy', baseY + drop);
+              document.getElementById('right-forearm').setAttribute('d', `M 108 98 H ${134 - drop*0.2}`);
+            }
+          }
+          if(elapsed<10){ driftRAF=requestAnimationFrame(tick); } else { stopAll(); }
+        }
+        driftRAF=requestAnimationFrame(tick);
       }
-    }else{ // arm drift
-      if(outcome === 'normal'){
-        // Keep both palms steady at equal height
-        // (no animation)
-      }else{
-        // Drift one side down slightly. Randomize left vs right for realism.
-        const driftLeft = Math.random() < 0.5;
-        const driftingHand = driftLeft ? leftPalm : rightPalm;
-        driftingHand.style.animation = 'driftDown 2.2s ease-in-out infinite';
-        activeAnimCleanups.push(()=> driftingHand.style.animation='');
-      }
+    }else if(mode==='face'){
+      // Smile + eyebrow droop on affected side if positive
+      const droopSide = (outcome==='positive') ? rand(['left','right']) : 'none';
+      animateSmile(droopSide);
+    }else if(mode==='eyes'){
+      // Eye tracking: normal vs slow vs deviation (if positive)
+      startGaze(outcome==='positive' ? rand(['slow','deviationLeft','deviationRight']) : 'normal');
     }
   }
 
-  // Event wiring
-  tabBalance.addEventListener('click', ()=> setMode('balance'));
-  tabDrift.addEventListener('click',   ()=> setMode('drift'));
-  outcomeNormal.addEventListener('click', ()=> setOutcome('normal'));
-  outcomePositive.addEventListener('click', ()=> setOutcome('positive'));
-  btnStart.addEventListener('click', start);
-  btnReset.addEventListener('click', ()=>{
-    setMode(mode); setOutcome(outcome); stopAllAnimations();
-  });
+  function animateSmile(droop){
+    // mouth morph
+    const neutral = [-7,8, 0,10, 7,8];
+    const smile   = [-7,8, 0,13, 7,8];
+    const dur = 450, start = performance.now();
+    function step(ts){
+      const t = Math.min(1,(ts-start)/dur);
+      const ease = t<.5 ? 2*t*t : -1+(4-2*t)*t;
+      const p = neutral.map((v,i)=> v + (smile[i]-v)*ease);
+      mouth.setAttribute('d', `M ${p[0]} ${p[1]} Q ${p[2]} ${p[3]} ${p[4]} ${p[5]}`);
+      if(t<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
 
-  // Initialize defaults
+    // brow droop on affected side
+    if(droop==='left'){
+      browL.setAttribute('d','M -12 -6 Q -6 -6 -1 -7');
+      browR.setAttribute('d','M 1 -10 Q 6 -11 12 -9');
+    }else if(droop==='right'){
+      browR.setAttribute('d','M 1 -6 Q 6 -6 12 -7');
+      browL.setAttribute('d','M -12 -9 Q -6 -11 -1 -10');
+    }else{
+      browL.setAttribute('d','M -12 -9 Q -6 -11 -1 -10');
+      browR.setAttribute('d','M 1 -10 Q 6 -11 12 -9');
+    }
+  }
+
+  function startGaze(kind){
+    // move black pupils horizontally within each white eye
+    const speed = (kind==='slow') ? 140 : 75;
+    const amp = 3.5; // small travel within the small sclera
+    let tick=0;
+    swayTimer = setInterval(()=>{
+      tick++;
+      let pos = Math.sin(tick/10)*amp;
+      if(kind==='deviationLeft'){ pos = Math.min(pos,0) - 1.2; }
+      if(kind==='deviationRight'){ pos = Math.max(pos,0) + 1.2; }
+      // center is (0,0) since we use cx/cy of inner circles
+      pL.style.transform = `translate(${pos}px, 0)`;
+      pR.style.transform = `translate(${pos}px, 0)`;
+    }, speed);
+  }
+
+  /* ---------- Findings, grading, scenarios ---------- */
+  function newCase(){
+    scenario = {
+      faceDroop: rand(['none','left','right','none','none']),
+      gaze:      rand(['normal','slow','deviationLeft','deviationRight','normal','slow']),
+      balance:   rand(['normal','unsteady','leansLeft','leansRight','fallsLeft','fallsRight','normal']),
+      armDrift:  rand(['none','left','right','left','right']),
+      speech:    rand(['normal','dysarthria','aphasiaExpressive','aphasiaReceptive','aphasiaGlobal','normal'])
+    };
+    // Reset UI & figure
+    stopAll();
+    timerEl.textContent='0.0';
+    // Clear user picks
+    fBalance.value='normal'; fEyes.value='normal'; fFace.value='none'; fArms.value='none'; fSpeech.value='normal';
+    gradeBox.hidden=true; gradeList.innerHTML=''; gradeSummary.innerHTML='<strong>Results:</strong> —'; meaning.innerHTML='';
+  }
+
+  function grade(){
+    const user = {
+      balance: fBalance.value, eyes: fEyes.value, face: fFace.value, arms: fArms.value, speech: fSpeech.value
+    };
+    const truth = {
+      balance: scenario.balance.startsWith('falls') ? (scenario.balance==='fallsLeft'?'leansLeft':'leansRight') :
+               (scenario.balance==='leansLeft'?'leansLeft':scenario.balance==='leansRight'?'leansRight': (scenario.balance==='unsteady'?'unsteady':'normal')),
+      eyes:    scenario.gaze,
+      face:    scenario.faceDroop,
+      arms:    scenario.armDrift,
+      speech:  scenario.speech
+    };
+    gradeList.innerHTML=''; let correct=0;
+    const fields = [['Balance','balance'],['Eyes (gaze)','eyes'],['Face','face'],['Arms','arms'],['Speech','speech']];
+    for(const [label,key] of fields){
+      const li=document.createElement('li');
+      if(user[key]===truth[key]){ correct++; li.innerHTML=`✅ <strong>${label}</strong> correct.`; }
+      else{
+        const norm = v => v.replace('leansLeft','Leans/Falls Left').replace('leansRight','Leans/Falls Right')
+                           .replace('slow','Slow pursuit').replace('none','None')
+                           .replace('aphasiaExpressive','Aphasia (expressive)')
+                           .replace('aphasiaReceptive','Aphasia (receptive)')
+                           .replace('aphasiaGlobal','Aphasia (global/mute)')
+                           .replace(/^./,c=>c.toUpperCase());
+        li.innerHTML=`❌ <strong>${label}</strong> expected: <em>${norm(truth[key])}</em>.`;
+      }
+      gradeList.appendChild(li);
+    }
+    const befastPositives =
+      (truth.balance!=='normal') +
+      ((truth.eyes==='deviationLeft'||truth.eyes==='deviationRight')?1:0) +
+      (truth.face!=='none') +
+      (truth.arms!=='none') +
+      (truth.speech!=='normal');
+    const lvoCues = ((truth.eyes==='deviationLeft'||truth.eyes==='deviationRight')?1:0) + ((/aphasia/.test(truth.speech))?1:0);
+
+    gradeSummary.innerHTML = `<strong>Results:</strong> You matched <strong>${correct}/5</strong> domains. BE-FAST positives: <strong>${befastPositives}</strong>.`;
+    const lines=[];
+    if(befastPositives>=1) lines.push("Findings concern for acute stroke. Determine LKW and activate stroke pathway per protocol.");
+    if(befastPositives>=2) lines.push("Multiple positives raise stroke likelihood; consider transport to a stroke-capable center.");
+    if(lvoCues>=1) lines.push("Cortical sign(s) present (gaze deviation and/or aphasia) — possible large vessel occlusion (LVO).");
+    if(truth.arms!=='none' && (truth.eyes==='deviationLeft'||truth.speech!=='normal')) lines.push("Motor deficit plus cortical sign strengthens suspicion for LVO.");
+    if(befastPositives===0) lines.push("No BE-FAST findings. Continue neuro exam and consider mimics (hypoglycemia, postictal, migraine, toxicity).");
+
+    meaning.innerHTML = `<p><strong>What this pattern can mean:</strong></p><ul>${lines.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+    gradeBox.hidden=false; gradeBox.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  function resetForm(){
+    fBalance.value='normal'; fEyes.value='normal'; fFace.value='none'; fArms.value='none'; fSpeech.value='normal';
+    gradeBox.hidden=true; gradeList.innerHTML=''; gradeSummary.innerHTML='<strong>Results:</strong> —'; meaning.innerHTML='';
+  }
+
+  /* ---------- Events ---------- */
+  tabBalance.addEventListener('click',()=> setMode('balance'));
+  tabDrift.addEventListener('click',()=> setMode('drift'));
+  tabFace.addEventListener('click',()=> setMode('face'));
+  tabEyes.addEventListener('click',()=> setMode('eyes'));
+  outcomeNormal.addEventListener('click',()=> setOutcome('normal'));
+  outcomePositive.addEventListener('click',()=> setOutcome('positive'));
+  btnStart.addEventListener('click', start);
+  btnReset.addEventListener('click', stopAll);
+
+  btnGrade.addEventListener('click', grade);
+  btnNew.addEventListener('click', newCase);
+  btnResetForm.addEventListener('click', resetForm);
+
+  // init
+  newCase();
   setMode('balance');
   setOutcome('normal');
 })();
