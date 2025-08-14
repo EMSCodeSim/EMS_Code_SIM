@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rule of Nines Burn Simulator</title>
+<style>
+  :root{
+    --brand:#007B8A;
+    --bg:#f0f8ff;
+    --ink:#123;
+    --card:#ffffff;
+    --muted:#6b7c85;
+    --chip:#e8f4f6;
+    --full:#d9534f;     /* full burn */
+    --half:#f0ad4e;     /* half burn */
+    --none:#c8d7df;     /* outlines */
+    --selected-stroke:#233;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--ink); background:var(--bg); display:flex; flex-direction:column; min-height:100vh;
+  }
+  header{
+    background:var(--brand); color:#fff; padding:1rem 1.25rem; text-align:center;
+  }
+  header h1{ margin:0; font-size:1.25rem; letter-spacing:.3px; }
+  .wrap{
+    width: min(1100px, 100%); margin:0 auto; padding:1rem; display:grid; gap:1rem;
+  }
+  .controls, .results, .parkland, .legend{
+    background:var(--card); border-radius:.75rem; padding:1rem; box-shadow:0 1px 2px rgba(0,0,0,.05);
+  }
+  .controls{
+    display:grid; gap:.75rem;
+  }
+  .row{ display:flex; flex-wrap:wrap; gap:.5rem; align-items:center }
+  .row label{ font-size:.95rem; color:var(--muted) }
+  .seg{
+    display:flex; gap:.5rem; flex-wrap:wrap;
+  }
+  .btn{
+    appearance:none; border:1px solid #0a6; border-color:#0a6 transparent transparent transparent;
+  }
+  button, .chip, select, input[type="number"], input[type="text"]{
+    outline:0; border:1px solid #cbd5db; border-radius:.6rem; padding:.6rem .8rem; background:#fff; color:var(--ink);
+  }
+  button{
+    background:var(--brand); color:#fff; border:none; cursor:pointer; font-weight:600;
+  }
+  button.secondary{ background:#fff; color:var(--brand); border:1px solid var(--brand)}
+  button.danger{ background:#9f2f2f }
+  button:active{ transform:translateY(1px) }
+  .chip{
+    background:var(--chip); border:none; color:var(--brand); font-weight:600;
+  }
+  .board{
+    background:var(--card); border-radius:.75rem; padding:.5rem; display:grid; grid-template-columns:1fr; justify-items:center;
+    box-shadow:0 1px 2px rgba(0,0,0,.05);
+  }
+  .svg-wrap{
+    width:min(520px, 100%); height:auto; position:relative;
+  }
+  svg{ width:100%; height:auto; }
+  .zone{
+    fill:#fff; stroke:var(--none); stroke-width:2; cursor:pointer; transition:fill .15s, stroke .15s, opacity .15s;
+    touch-action:manipulation;
+  }
+  .zone[data-state="0"]{ fill:#fff }
+  .zone[data-state="0.5"]{ fill:var(--half); stroke:var(--selected-stroke) }
+  .zone[data-state="1"]{ fill:var(--full); stroke:var(--selected-stroke) }
+  .label{
+    font-size:.72rem; fill:#223; opacity:.85; user-select:none; pointer-events:none;
+  }
+  .legend{
+    display:flex; gap:1rem; align-items:center; flex-wrap:wrap;
+  }
+  .legend .key{ display:flex; align-items:center; gap:.4rem }
+  .sw{ width:18px; height:12px; border-radius:3px; border:1px solid #9cb0ba; }
+  .sw.none{ background:#fff }
+  .sw.half{ background:var(--half) }
+  .sw.full{ background:var(--full) }
+  .results{
+    display:grid; gap:.6rem; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    align-items:center;
+  }
+  .kv{
+    background:var(--chip); padding:0.8rem; border-radius:.6rem; display:flex; justify-content:space-between; gap:.5rem; align-items:center;
+  }
+  .kv b{ font-size:1.1rem }
+  .parkland .grid{
+    display:grid; gap:.6rem; grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  }
+  .note{ color:var(--muted); font-size:.9rem }
+  .footer-actions{ display:flex; gap:.5rem; flex-wrap:wrap; justify-content:flex-end }
+  code.small{ background:#f6fafc; padding:.15rem .4rem; border-radius:.35rem; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.85rem }
+</style>
+</head>
+<body>
+  <header><h1>Rule of Nines — TBSA Burn Simulator (Adult & Pediatric)</h1></header>
+  <div class="wrap">
+    <!-- Controls -->
+    <div class="controls">
+      <div class="row">
+        <span class="chip">Tap a region to cycle: <code class="small">None → ½ → Full</code></span>
+      </div>
+      <div class="row">
+        <label>Patient Type:</label>
+        <div class="seg">
+          <button id="adultBtn" class="secondary">Adult</button>
+          <button id="pedsBtn" class="secondary">Pediatric</button>
+        </div>
+        <label style="margin-left:1rem">View:</label>
+        <div class="seg">
+          <button id="frontBtn" class="secondary">Front</button>
+          <button id="backBtn" class="secondary">Back</button>
+        </div>
+        <div class="seg" style="margin-left:auto">
+          <button id="resetBtn" class="danger">Reset</button>
+          <button id="exportBtn" class="secondary">Export JSON</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Board -->
+    <div class="board">
+      <div class="svg-wrap">
+        <!-- FRONT VIEW -->
+        <svg id="svgFront" viewBox="0 0 320 720" aria-labelledby="titleFront" role="img">
+          <title id="titleFront">Front View Burn Map</title>
+          <!-- Head (front)  -->
+          <rect class="zone" id="head-front" x="120" y="20" width="80" height="80"
+                data-key="head-front" data-state="0" rx="40" ry="40"></rect>
+          <text class="label" x="160" y="65" text-anchor="middle">Head (F)</text>
+
+          <!-- Neck/Perineum spacer not counted; perineum separate -->
+          <!-- Torso front split into chest(9) + abdomen(9) -->
+          <rect class="zone" id="chest" x="95" y="110" width="130" height="110"
+                data-key="chest" data-state="0"></rect>
+          <text class="label" x="160" y="165" text-anchor="middle">Chest 9%</text>
+
+          <rect class="zone" id="abdomen" x="95" y="225" width="130" height="110"
+                data-key="abdomen" data-state="0"></rect>
+          <text class="label" x="160" y="280" text-anchor="middle">Abd 9%</text>
+
+          <!-- Perineum (1%) -->
+          <rect class="zone" id="perineum" x="150" y="340" width="20" height="16"
+                data-key="perineum" data-state="0" rx="5" ry="5"></rect>
+          <text class="label" x="160" y="370" text-anchor="middle">Perineum 1%</text>
+
+          <!-- Arms (front halves) 4.5% each side -->
+          <!-- Left arm front -->
+          <rect class="zone" id="armL-front" x="55" y="120" width="35" height="250"
+                data-key="armL-front" data-state="0" rx="18" ry="18"></rect>
+          <text class="label" x="72" y="255" text-anchor="middle">L Arm (F)</text>
+
+          <!-- Right arm front -->
+          <rect class="zone" id="armR-front" x="230" y="120" width="35" height="250"
+                data-key="armR-front" data-state="0" rx="18" ry="18"></rect>
+          <text class="label" x="247" y="255" text-anchor="middle">R Arm (F)</text>
+
+          <!-- Legs (front halves) 9% each side -->
+          <!-- Left leg front -->
+          <rect class="zone" id="legL-front" x="120" y="360" width="60" height="300"
+                data-key="legL-front" data-state="0" rx="28" ry="28"></rect>
+          <text class="label" x="150" y="520" text-anchor="middle">L Leg (F)</text>
+
+          <!-- Right leg front -->
+          <rect class="zone" id="legR-front" x="190" y="360" width="60" height="300"
+                data-key="legR-front" data-state="0" rx="28" ry="28"></rect>
+          <text class="label" x="220" y="520" text-anchor="middle">R Leg (F)</text>
+        </svg>
+
+        <!-- BACK VIEW -->
+        <svg id="svgBack" viewBox="0 0 320 720" aria-labelledby="titleBack" role="img" style="display:none">
+          <title id="titleBack">Back View Burn Map</title>
+          <!-- Head (back) -->
+          <rect class="zone" id="head-back" x="120" y="20" width="80" height="80"
+                data-key="head-back" data-state="0" rx="40" ry="40"></rect>
+          <text class="label" x="160" y="65" text-anchor="middle">Head (B)</text>
+
+          <!-- Back split into upper (9) and lower (9) -->
+          <rect class="zone" id="upper-back" x="95" y="110" width="130" height="130"
+                data-key="upper-back" data-state="0"></rect>
+          <text class="label" x="160" y="175" text-anchor="middle">Upper Back 9%</text>
+
+          <rect class="zone" id="lower-back" x="95" y="245" width="130" height="130"
+                data-key="lower-back" data-state="0"></rect>
+          <text class="label" x="160" y="310" text-anchor="middle">Lower Back 9%</text>
+
+          <!-- Arms (back halves) 4.5% each -->
+          <rect class="zone" id="armL-back" x="55" y="120" width="35" height="250"
+                data-key="armL-back" data-state="0" rx="18" ry="18"></rect>
+          <text class="label" x="72" y="255" text-anchor="middle">L Arm (B)</text>
+
+          <rect class="zone" id="armR-back" x="230" y="120" width="35" height="250"
+                data-key="armR-back" data-state="0" rx="18" ry="18"></rect>
+          <text class="label" x="247" y="255" text-anchor="middle">R Arm (B)</text>
+
+          <!-- Legs (back halves) 9% each -->
+          <rect class="zone" id="legL-back" x="120" y="360" width="60" height="300"
+                data-key="legL-back" data-state="0" rx="28" ry="28"></rect>
+          <text class="label" x="150" y="520" text-anchor="middle">L Leg (B)</text>
+
+          <rect class="zone" id="legR-back" x="190" y="360" width="60" height="300"
+                data-key="legR-back" data-state="0" rx="28" ry="28"></rect>
+          <text class="label" x="220" y="520" text-anchor="middle">R Leg (B)</text>
+        </svg>
+      </div>
+
+      <div class="legend">
+        <div class="key"><span class="sw none"></span><span>None</span></div>
+        <div class="key"><span class="sw half"></span><span>Half (½)</span></div>
+        <div class="key"><span class="sw full"></span><span>Full</span></div>
+        <span class="note">Tip: Tap a region to cycle states. Long-press on mobile also works as a tap.</span>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results" id="results">
+      <div class="kv"><span>Total TBSA Burned</span><b id="tbsaOut">0%</b></div>
+      <div class="kv"><span>Selected Regions</span><b id="countOut">0</b></div>
+      <div class="kv"><span>Mode</span><b id="modeOut">Adult</b></div>
+      <div class="kv"><span>View</span><b id="viewOut">Front</b></div>
+    </div>
+
+    <!-- Parkland Formula -->
+    <div class="parkland">
+      <h3 style="margin:.2rem 0 .6rem">Parkland Formula (optional)</h3>
+      <div class="grid">
+        <div>
+          <label for="weightVal">Weight</label>
+          <div class="row" style="margin-top:.25rem">
+            <input id="weightVal" type="number" min="0" step="0.1" placeholder="e.g., 70" style="width:120px">
+            <select id="weightUnit">
+              <option value="kg" selected>kg</option>
+              <option value="lb">lb</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label>Formula</label>
+          <div class="row" style="margin-top:.25rem">
+            <span class="chip">4 mL × kg × %TBSA</span>
+          </div>
+        </div>
+        <div class="footer-actions">
+          <button id="calcBtn" class="secondary">Calculate Fluids</button>
+        </div>
+      </div>
+      <div id="parklandOut" class="note" style="margin-top:.5rem"></div>
+    </div>
+
+  </div>
+
+<script>
+/*
+  Rule of Nines Simulator
+  - Tap regions (None → Half → Full)
+  - Adult vs Pediatric adjusts the percent mapping
+  - Front/Back SVG toggle
+  - Parkland formula helper
+  - Export JSON for integration with your scenario engine
+*/
+
+// Percent maps (per region key)
+const PCT_ADULT = {
+  // Head total 9%: 4.5 front, 4.5 back
+  "head-front": 4.5,
+  "head-back": 4.5,
+
+  // Torso front 18% split chest/abdomen 9/9
+  "chest": 9,
+  "abdomen": 9,
+
+  // Back 18% split upper/lower 9/9
+  "upper-back": 9,
+  "lower-back": 9,
+
+  // Arms total 9% each: 4.5 front, 4.5 back
+  "armL-front": 4.5,
+  "armR-front": 4.5,
+  "armL-back": 4.5,
+  "armR-back": 4.5,
+
+  // Legs total 18% each: 9 front, 9 back
+  "legL-front": 9,
+  "legR-front": 9,
+  "legL-back": 9,
+  "legR-back": 9,
+
+  // Perineum 1%
+  "perineum": 1
+};
+
+// Pediatric approximation (common teaching shortcut)
+// - Head total 18% (9 front, 9 back)
+// - Legs total 14% each (7 front, 7 back)
+// - Arms 9% each total (4.5 + 4.5)
+// - Torso same as adult (18 front split, 18 back split)
+// - Perineum 1%
+const PCT_PEDS = {
+  "head-front": 9,
+  "head-back": 9,
+
+  "chest": 9,
+  "abdomen": 9,
+
+  "upper-back": 9,
+  "lower-back": 9,
+
+  "armL-front": 4.5,
+  "armR-front": 4.5,
+  "armL-back": 4.5,
+  "armR-back": 4.5,
+
+  "legL-front": 7,
+  "legR-front": 7,
+  "legL-back": 7,
+  "legR-back": 7,
+
+  "perineum": 1
+};
+
+let mode = "adult"; // 'adult' | 'peds'
+let view = "front"; // 'front' | 'back'
+
+const els = {
+  svgFront: document.getElementById('svgFront'),
+  svgBack: document.getElementById('svgBack'),
+  adultBtn: document.getElementById('adultBtn'),
+  pedsBtn: document.getElementById('pedsBtn'),
+  frontBtn: document.getElementById('frontBtn'),
+  backBtn: document.getElementById('backBtn'),
+  resetBtn: document.getElementById('resetBtn'),
+  exportBtn: document.getElementById('exportBtn'),
+  tbsaOut: document.getElementById('tbsaOut'),
+  countOut: document.getElementById('countOut'),
+  modeOut: document.getElementById('modeOut'),
+  viewOut: document.getElementById('viewOut'),
+  weightVal: document.getElementById('weightVal'),
+  weightUnit: document.getElementById('weightUnit'),
+  calcBtn: document.getElementById('calcBtn'),
+  parklandOut: document.getElementById('parklandOut')
+};
+
+// Utility: current percent map
+function pctMap(){
+  return mode === 'adult' ? PCT_ADULT : PCT_PEDS;
+}
+
+// Cycle state: 0 -> 0.5 -> 1 -> 0
+function cycleState(zone){
+  const curr = parseFloat(zone.getAttribute('data-state') || "0");
+  let next;
+  if(curr === 0){ next = 0.5; }
+  else if(curr === 0.5){ next = 1; }
+  else { next = 0; }
+  zone.setAttribute('data-state', String(next));
+}
+
+// Update totals
+function recalc(){
+  const zones = document.querySelectorAll('.zone');
+  let total = 0;
+  let count = 0;
+  const map = pctMap();
+  zones.forEach(z=>{
+    const st = parseFloat(z.getAttribute('data-state') || "0");
+    if(st > 0){
+      count++;
+      const key = z.getAttribute('data-key');
+      const pct = map[key] || 0;
+      total += pct * st; // half contributes 0.5x
+    }
+  });
+  // Round to 2 decimals but show .0 if neat
+  const rounded = Math.round(total * 100) / 100;
+  els.tbsaOut.textContent = `${rounded}%`;
+  els.countOut.textContent = String(count);
+  els.modeOut.textContent = (mode === 'adult' ? 'Adult' : 'Pediatric');
+  els.viewOut.textContent = (view === 'front' ? 'Front' : 'Back');
+  return rounded; // for Parkland calc
+}
+
+// Attach click handlers to zones (both svgs)
+function wireZones(){
+  document.querySelectorAll('.zone').forEach(z=>{
+    z.addEventListener('click', ()=>{
+      cycleState(z);
+      recalc();
+    }, {passive:true});
+    // accessibility: keyboard
+    z.setAttribute('tabindex','0');
+    z.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        cycleState(z);
+        recalc();
+      }
+    });
+  });
+}
+
+function setMode(newMode){
+  if(newMode === mode) return;
+  mode = newMode;
+  // No need to change UI state colors; just recalc with new mapping
+  recalc();
+  // Visual hint on selected mode buttons
+  [els.adultBtn, els.pedsBtn].forEach(b=>b.classList.add('secondary'));
+  if(mode === 'adult') els.adultBtn.classList.remove('secondary');
+  else els.pedsBtn.classList.remove('secondary');
+}
+
+function setView(newView){
+  view = newView;
+  if(view === 'front'){
+    els.svgFront.style.display = '';
+    els.svgBack.style.display = 'none';
+  }else{
+    els.svgFront.style.display = 'none';
+    els.svgBack.style.display = '';
+  }
+  recalc();
+  // Buttons styles
+  [els.frontBtn, els.backBtn].forEach(b=>b.classList.add('secondary'));
+  if(view === 'front') els.frontBtn.classList.remove('secondary');
+  else els.backBtn.classList.remove('secondary');
+}
+
+function resetAll(){
+  document.querySelectorAll('.zone').forEach(z=>z.setAttribute('data-state','0'));
+  recalc();
+}
+
+function exportJSON(){
+  const result = {
+    mode,
+    selections: [],
+    tbsa: recalc()
+  };
+  const map = pctMap();
+  document.querySelectorAll('.zone').forEach(z=>{
+    const st = parseFloat(z.getAttribute('data-state') || "0");
+    if(st > 0){
+      result.selections.push({
+        key: z.getAttribute('data-key'),
+        state: st,          // 0.5 or 1
+        percent_each: map[z.getAttribute('data-key')] || 0
+      });
+    }
+  });
+  const pretty = JSON.stringify(result, null, 2);
+  // Download
+  const blob = new Blob([pretty], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `burn_selection_${mode}_${Date.now()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function calcParkland(){
+  const tbsa = recalc();
+  const w = parseFloat(els.weightVal.value);
+  if(isNaN(w) || w <= 0){
+    els.parklandOut.innerHTML = `<span style="color:#9f2f2f">Enter a valid weight.</span>`;
+    return;
+  }
+  let kg = w;
+  if(els.weightUnit.value === 'lb') kg = w * 0.45359237;
+  const total = 4 * kg * tbsa; // mL over 24 hrs
+  const first8 = total / 2;    // mL in first 8 hours
+  const next16 = total / 2;    // mL in next 16 hours
+  const rate8 = first8 / 8;    // mL/hr first 8 hrs
+  const rate16 = next16 / 16;  // mL/hr next 16 hrs
+
+  const fmt = (n)=> (Math.round(n*10)/10).toLocaleString();
+  els.parklandOut.innerHTML = `
+    <div><b>Total 24h:</b> ${fmt(total)} mL</div>
+    <div><b>First 8h:</b> ${fmt(first8)} mL (${fmt(rate8)} mL/hr)</div>
+    <div><b>Next 16h:</b> ${fmt(next16)} mL (${fmt(rate16)} mL/hr)</div>
+    <div class="note" style="margin-top:.35rem">
+      Note: Start timing from the burn injury, not arrival. Adjust per local protocol and patient condition.
+    </div>
+  `;
+}
+
+// Wire UI
+els.adultBtn.addEventListener('click', ()=>setMode('adult'));
+els.pedsBtn.addEventListener('click', ()=>setMode('peds'));
+els.frontBtn.addEventListener('click', ()=>setView('front'));
+els.backBtn.addEventListener('click', ()=>setView('back'));
+els.resetBtn.addEventListener('click', resetAll);
+els.exportBtn.addEventListener('click', exportJSON);
+els.calcBtn.addEventListener('click', calcParkland);
+
+// Initialize
+wireZones();
+setMode('adult');
+setView('front');
+recalc();
+
+</script>
+</body>
+</html>
