@@ -18,6 +18,9 @@
   html,body{margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif}
   body{min-height:100vh; display:flex; flex-direction:column; -webkit-text-size-adjust:100%}
 
+  header{background:var(--brand); color:#fff; padding:0.9rem 1rem; text-align:center}
+  header h1{margin:0; font-size:1.15rem}
+
   .wrap{width:min(1100px,100%);margin:0 auto;padding:1rem;display:grid;gap:1rem}
 
   .controls,.results,.quiz{background:var(--card);border-radius:.75rem;padding:1rem;box-shadow:0 1px 2px rgba(0,0,0,.05)}
@@ -41,7 +44,7 @@
     font-size:16px; width:160px; text-align:center; touch-action:manipulation;
   }
 
-  .board{background:var(--card);border-radius:.75rem;padding:.5rem;display:grid;justify-items:center;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .board{background:var(--card);border-radius:.75rem;padding:.5rem;display:grid;justify-items:center;box-shadow:0 1px 1px rgba(0,0,0,.05)}
   .svg-wrap{width:min(520px,100%);height:auto;position:relative;transition:transform .15s ease}
   .svg-wrap.peds{transform:scale(.9); transform-origin: top center;} /* pediatric a bit smaller */
   svg{width:100%;height:auto; display:block}
@@ -55,9 +58,18 @@
   /* Percent contribution tags (hidden until submit) */
   .pct-tag{display:none;font-size:.8rem;fill:#000;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;font-weight:700;opacity:.95}
 
+  /* Info row */
   .results{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));align-items:center}
   .kv{background:var(--chip);padding:.8rem;border-radius:.65rem;display:flex;justify-content:space-between;gap:.5rem;align-items:center}
   .kv b{font-size:1.05rem}
+
+  /* Color key styles (replaces Status box) */
+  .key{display:flex;align-items:center; gap:.75rem; flex-wrap:wrap}
+  .key .k{display:flex; align-items:center; gap:.4rem}
+  .sw{width:18px;height:12px;border-radius:3px;border:1px solid #9cb0ba}
+  .sw.none{background:#fff}
+  .sw.half{background:var(--half)}
+  .sw.full{background:var(--full)}
 
   .quiz .grid{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
   .feedback{margin-top:.6rem;border-top:1px dashed #d6e3e9;padding-top:.6rem}
@@ -72,17 +84,30 @@
   /* View control — only one side visible per model */
   .front-only .back { display:none }
   .back-only  .front{ display:none }
+
+  /* Hidden utility (keeps old IDs alive for unchanged logic) */
+  .visually-hidden{position:absolute !important; left:-9999px !important; width:1px; height:1px; overflow:hidden}
 </style>
 </head>
 <body>
+<header><h1>Rule of Nines (TBSA)</h1></header>
 <div class="wrap">
 
-  <!-- Patient / View / Burned / Status ABOVE the model -->
+  <!-- Patient / View ABOVE the model; Burned Regions removed; Status replaced by color key -->
   <div class="results">
     <div class="kv"><span>Patient</span><b id="modeOut">Adult</b></div>
     <div class="kv"><span>View</span><b id="viewOut">Front</b></div>
-    <div class="kv"><span>Burned Regions</span><b id="countOut">0</b></div>
-    <div class="kv"><span>Status</span><b id="statusOut">Scenario active — enter your answer</b></div>
+    <div class="kv">
+      <span>Color Key</span>
+      <div class="key">
+        <span class="k"><span class="sw none"></span>None</span>
+        <span class="k"><span class="sw half"></span>Half (½)</span>
+        <span class="k"><span class="sw full"></span>Full</span>
+      </div>
+    </div>
+    <!-- Hidden placeholders so existing JS stays unchanged -->
+    <span id="countOut" class="visually-hidden">0</span>
+    <span id="statusOut" class="visually-hidden">Scenario active — enter your answer</span>
   </div>
 
   <!-- Buttons BELOW patient info -->
@@ -100,59 +125,59 @@
   <!-- Board with model -->
   <div class="board">
     <div id="svgWrap" class="svg-wrap">
-      <!-- ADULT MODEL — viewBox shortened to remove extra bottom space -->
-      <svg id="adultSVG" viewBox="0 0 320 620" role="img" aria-label="Adult Burn Map" class="front-only">
+      <!-- ADULT MODEL — viewBox further shortened to reduce space under legs -->
+      <svg id="adultSVG" viewBox="0 0 320 570" role="img" aria-label="Adult Burn Map" class="front-only">
         <!-- FRONT -->
         <g class="front">
           <rect class="zone" data-key="head-front" x="120" y="20" width="80" height="80" rx="40" ry="40"></rect>
           <rect class="zone" data-key="chest"      x="95"  y="110" width="130" height="110"></rect>
           <rect class="zone" data-key="abdomen"    x="95"  y="225" width="130" height="110"></rect>
           <rect class="zone" data-key="perineum"   x="150" y="340" width="20"  height="16"  rx="5" ry="5"></rect>
-          <rect class="zone" data-key="armL-front" x="55"  y="120" width="35"  height="230" rx="18" ry="18"></rect>
-          <rect class="zone" data-key="armR-front" x="230" y="120" width="35"  height="230" rx="18" ry="18"></rect>
-          <!-- legs moved UP and keep gap; slightly shorter -->
-          <rect class="zone" data-key="legL-front" x="100" y="360" width="60"  height="240" rx="28" ry="28"></rect>
-          <rect class="zone" data-key="legR-front" x="170" y="360" width="60"  height="240" rx="28" ry="28"></rect>
+          <rect class="zone" data-key="armL-front" x="55"  y="120" width="35"  height="220" rx="18" ry="18"></rect>
+          <rect class="zone" data-key="armR-front" x="230" y="120" width="35"  height="220" rx="18" ry="18"></rect>
+          <!-- legs moved UP and shortened a bit more -->
+          <rect class="zone" data-key="legL-front" x="100" y="345" width="60"  height="210" rx="28" ry="28"></rect>
+          <rect class="zone" data-key="legR-front" x="170" y="345" width="60"  height="210" rx="28" ry="28"></rect>
         </g>
 
         <!-- BACK -->
         <g class="back">
           <rect class="zone" data-key="head-back"   x="120" y="20" width="80" height="80" rx="40" ry="40"></rect>
-          <rect class="zone" data-key="upper-back"  x="95"  y="110" width="130" height="120"></rect>
-          <rect class="zone" data-key="lower-back"  x="95"  y="235" width="130" height="120"></rect>
-          <rect class="zone" data-key="armL-back"   x="55"  y="120" width="35"  height="230" rx="18" ry="18"></rect>
-          <rect class="zone" data-key="armR-back"   x="230" y="120" width="35"  height="230" rx="18" ry="18"></rect>
-          <!-- legs moved UP and keep gap; slightly shorter -->
-          <rect class="zone" data-key="legL-back"   x="100" y="360" width="60"  height="240" rx="28" ry="28"></rect>
-          <rect class="zone" data-key="legR-back"   x="170" y="360" width="60"  height="240" rx="28" ry="28"></rect>
+          <rect class="zone" data-key="upper-back"  x="95"  y="110" width="130" height="115"></rect>
+          <rect class="zone" data-key="lower-back"  x="95"  y="230" width="130" height="110"></rect>
+          <rect class="zone" data-key="armL-back"   x="55"  y="120" width="35"  height="220" rx="18" ry="18"></rect>
+          <rect class="zone" data-key="armR-back"   x="230" y="120" width="35"  height="220" rx="18" ry="18"></rect>
+          <!-- legs moved UP and shortened a bit more -->
+          <rect class="zone" data-key="legL-back"   x="100" y="345" width="60"  height="210" rx="28" ry="28"></rect>
+          <rect class="zone" data-key="legR-back"   x="170" y="345" width="60"  height="210" rx="28" ry="28"></rect>
         </g>
       </svg>
 
-      <!-- PEDIATRIC MODEL — viewBox shortened to remove extra bottom space -->
-      <svg id="pedsSVG" viewBox="0 0 320 620" role="img" aria-label="Pediatric Burn Map" style="display:none" class="front-only">
+      <!-- PEDIATRIC MODEL — viewBox further shortened too -->
+      <svg id="pedsSVG" viewBox="0 0 320 570" role="img" aria-label="Pediatric Burn Map" style="display:none" class="front-only">
         <!-- FRONT -->
         <g class="front">
           <rect class="zone" data-key="head-front" x="118" y="20" width="84" height="84" rx="42" ry="42"></rect>
           <rect class="zone" data-key="chest"      x="105" y="110" width="110" height="100"></rect>
           <rect class="zone" data-key="abdomen"    x="105" y="215" width="110" height="100"></rect>
           <rect class="zone" data-key="perineum"   x="150" y="322" width="20"  height="16" rx="5" ry="5"></rect>
-          <rect class="zone" data-key="armL-front" x="70"  y="120" width="28"  height="210" rx="14" ry="14"></rect>
-          <rect class="zone" data-key="armR-front" x="222" y="120" width="28"  height="210" rx="14" ry="14"></rect>
-          <!-- legs moved UP and keep gap; slightly shorter -->
-          <rect class="zone" data-key="legL-front" x="104" y="360" width="56"  height="240" rx="26" ry="26"></rect>
-          <rect class="zone" data-key="legR-front" x="170" y="360" width="56"  height="240" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="armL-front" x="70"  y="120" width="28"  height="200" rx="14" ry="14"></rect>
+          <rect class="zone" data-key="armR-front" x="222" y="120" width="28"  height="200" rx="14" ry="14"></rect>
+          <!-- legs moved UP and shortened a bit more -->
+          <rect class="zone" data-key="legL-front" x="104" y="345" width="56"  height="210" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="legR-front" x="170" y="345" width="56"  height="210" rx="26" ry="26"></rect>
         </g>
 
         <!-- BACK -->
         <g class="back">
           <rect class="zone" data-key="head-back"   x="118" y="20" width="84" height="84" rx="42" ry="42"></rect>
-          <rect class="zone" data-key="upper-back"  x="105" y="110" width="110" height="115"></rect>
-          <rect class="zone" data-key="lower-back"  x="105" y="230" width="110" height="110"></rect>
-          <rect class="zone" data-key="armL-back"   x="70"  y="120" width="28"  height="210" rx="14" ry="14"></rect>
-          <rect class="zone" data-key="armR-back"   x="222" y="120" width="28"  height="210" rx="14" ry="14"></rect>
-          <!-- legs moved UP and keep gap; slightly shorter -->
-          <rect class="zone" data-key="legL-back"   x="104" y="360" width="56"  height="240" rx="26" ry="26"></rect>
-          <rect class="zone" data-key="legR-back"   x="170" y="360" width="56"  height="240" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="upper-back"  x="105" y="110" width="110" height="110"></rect>
+          <rect class="zone" data-key="lower-back"  x="105" y="225" width="110" height="105"></rect>
+          <rect class="zone" data-key="armL-back"   x="70"  y="120" width="28"  height="200" rx="14" ry="14"></rect>
+          <rect class="zone" data-key="armR-back"   x="222" y="120" width="28"  height="200" rx="14" ry="14"></rect>
+          <!-- legs moved UP and shortened a bit more -->
+          <rect class="zone" data-key="legL-back"   x="104" y="345" width="56"  height="210" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="legR-back"   x="170" y="345" width="56"  height="210" rx="26" ry="26"></rect>
         </g>
       </svg>
     </div>
@@ -222,8 +247,8 @@ const els = {
   resetBtn: document.getElementById('resetBtn'),
   modeOut: document.getElementById('modeOut'),
   viewOut: document.getElementById('viewOut'),
-  countOut: document.getElementById('countOut'),
-  statusOut: document.getElementById('statusOut'),
+  countOut: document.getElementById('countOut'),   // hidden
+  statusOut: document.getElementById('statusOut'), // hidden
   answerVal: document.getElementById('answerVal'),
   submitBtn: document.getElementById('submitBtn'),
   feedback: document.getElementById('feedback'),
@@ -278,9 +303,11 @@ function keySide(key){
 function clearAll(){
   document.querySelectorAll('.zone').forEach(z=>z.setAttribute('data-state','0'));
   document.querySelectorAll('.pct-tag').forEach(t=>t.remove());
-  els.countOut.textContent = '0';
-  els.riskBox.style.display='none';
-  els.riskBox.innerHTML='';
+  if(els.countOut) els.countOut.textContent = '0';
+  if(els.riskBox){
+    els.riskBox.style.display='none';
+    els.riskBox.innerHTML='';
+  }
 }
 
 /* Random helpers */
@@ -330,8 +357,8 @@ function newScenario(){
 
   scenario = { mode, selections, tbsa };
   scenarioActive = true;
-  els.statusOut.textContent = 'Scenario active — enter your answer';
-  els.countOut.textContent = String(selections.length);
+  if(els.statusOut) els.statusOut.textContent = 'Scenario active — enter your answer';
+  if(els.countOut) els.countOut.textContent = String(selections.length);
   els.feedback.innerHTML = '';
   els.answerVal.value = '';
 }
@@ -339,7 +366,7 @@ function newScenario(){
 /* Reset then immediately start a new random scenario */
 function resetAll(){
   scenarioActive = false; scenario = null; clearAll();
-  els.statusOut.textContent = 'Generating scenario...';
+  if(els.statusOut) els.statusOut.textContent = 'Generating scenario...';
   setTimeout(newScenario, 50);
 }
 
