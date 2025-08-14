@@ -21,12 +21,12 @@
   button{background:var(--brand);color:#fff;border:none;cursor:pointer;font-weight:600}
   button.secondary{background:#fff;color:var(--brand);border:1px solid var(--brand)}
   button.danger{background:#9f2f2f}
-  button[disabled]{opacity:.6;cursor:not-allowed}
   .chip{background:var(--chip);border:none;border-radius:.6rem;padding:.5rem .7rem;color:var(--brand);font-weight:600}
   .board{background:var(--card);border-radius:.75rem;padding:.5rem;display:grid;justify-items:center;box-shadow:0 1px 2px rgba(0,0,0,.05)}
-  .svg-wrap{width:min(520px,100%);height:auto;position:relative}
+  .svg-wrap{width:min(520px,100%);height:auto;position:relative;transition:transform .2s ease}
+  .svg-wrap.peds{transform:scale(.88); transform-origin: top center;} /* pediatric smaller */
   svg{width:100%;height:auto}
-  .zone{fill:#fff;stroke:var(--none);stroke-width:2;transition:fill .15s,stroke .15s,opacity .15s;pointer-events:none; /* locked for quiz */}
+  .zone{fill:#fff;stroke:var(--none);stroke-width:2;transition:fill .15s,stroke .15s,opacity .15s;pointer-events:none}
   .zone[data-state="0"]{fill:#fff}
   .zone[data-state="0.5"]{fill:var(--half);stroke:var(--stroke)}
   .zone[data-state="1"]{fill:var(--full);stroke:var(--stroke)}
@@ -45,6 +45,8 @@
   .ok{color:#116e3a}
   .bad{color:#9f2f2f}
   .hint{color:var(--muted);font-size:.9rem}
+  /* Contribution tags drawn after submit */
+  .pct-tag{font-size:.7rem;fill:#000;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;font-weight:700;opacity:.95}
 </style>
 </head>
 <body>
@@ -54,26 +56,12 @@
   <!-- Controls -->
   <div class="controls">
     <div class="row">
-      <span class="chip">Burns are pre-marked. Flip views — burns may be on BOTH sides.</span>
-    </div>
-    <div class="row">
-      <label>Scenario Patient Type:</label>
-      <div class="seg">
-        <button id="adultBtn" class="secondary">Adult</button>
-        <button id="pedsBtn" class="secondary">Pediatric</button>
-      </div>
-      <label style="margin-left:1rem">View:</label>
-      <div class="seg">
+      <span class="chip">A random scenario is active. Burns may be on BOTH sides. Pediatric view appears smaller.</span>
+      <div class="seg" style="margin-left:auto">
+        <button id="adultBtn" class="secondary" title="Adult percentages">Adult</button>
+        <button id="pedsBtn" class="secondary" title="Pediatric percentages">Pediatric</button>
         <button id="frontBtn" class="secondary">Front</button>
         <button id="backBtn" class="secondary">Back</button>
-      </div>
-      <label style="margin-left:1rem">Difficulty:</label>
-      <select id="difficulty">
-        <option value="easy">Easy (2–3 zones)</option>
-        <option value="med" selected>Moderate (3–5 zones)</option>
-        <option value="hard">Hard (5–8 zones)</option>
-      </select>
-      <div class="seg" style="margin-left:auto">
         <button id="newScenarioBtn">New Scenario</button>
         <button id="resetBtn" class="danger">Reset</button>
       </div>
@@ -82,7 +70,7 @@
 
   <!-- Board -->
   <div class="board">
-    <div class="svg-wrap">
+    <div id="svgWrap" class="svg-wrap">
       <!-- FRONT -->
       <svg id="svgFront" viewBox="0 0 320 720" aria-labelledby="titleFront" role="img">
         <title id="titleFront">Front View Burn Map</title>
@@ -143,7 +131,7 @@
       <div class="key"><span class="sw none"></span><span>None</span></div>
       <div class="key"><span class="sw half"></span><span>Half (½)</span></div>
       <div class="key"><span class="sw full"></span><span>Full</span></div>
-      <span class="hint">Hint: Legs are 18% each in adults (9% front, 9% back). Pediatric head is larger.</span>
+      <span class="hint">Hint: Legs are 18% each in adults (9% front + 9% back). Pediatric head is larger.</span>
     </div>
   </div>
 
@@ -152,7 +140,7 @@
     <div class="kv"><span>Scenario Mode</span><b id="modeOut">Adult</b></div>
     <div class="kv"><span>View</span><b id="viewOut">Front</b></div>
     <div class="kv"><span>Burned Regions</span><b id="countOut">0</b></div>
-    <div class="kv"><span>Status</span><b id="statusOut">Generate a scenario</b></div>
+    <div class="kv"><span>Status</span><b id="statusOut">Scenario active — enter your answer</b></div>
   </div>
 
   <!-- Quiz -->
@@ -165,12 +153,6 @@
           <button id="submitBtn" class="secondary">Submit Answer</button>
         </div>
         <div class="hint" style="margin-top:.35rem">Acceptable tolerance: ±0.25%.</div>
-      </div>
-      <div>
-        <label>Instructor Tools</label>
-        <div class="row" style="margin-top:.25rem">
-          <button id="revealBtn" class="secondary">Reveal Answer</button>
-        </div>
       </div>
     </div>
     <div id="feedback" class="feedback"></div>
@@ -210,19 +192,19 @@ const NAME = {
   "perineum": "Perineum (1%)"
 };
 
-let mode = 'adult';       // UI selection (before scenario)
-let scenario = null;      // { mode, selections:[{key, state}], tbsa }
+let mode = 'adult';       // 'adult' | 'peds'
+let scenario = null;      // { mode, selections:[{key, state, percent_each}], tbsa }
 let scenarioActive = false;
 let view = 'front';
 
 const els = {
+  svgWrap: document.getElementById('svgWrap'),
   svgFront: document.getElementById('svgFront'),
   svgBack: document.getElementById('svgBack'),
   adultBtn: document.getElementById('adultBtn'),
   pedsBtn: document.getElementById('pedsBtn'),
   frontBtn: document.getElementById('frontBtn'),
   backBtn: document.getElementById('backBtn'),
-  difficulty: document.getElementById('difficulty'),
   newScenarioBtn: document.getElementById('newScenarioBtn'),
   resetBtn: document.getElementById('resetBtn'),
   modeOut: document.getElementById('modeOut'),
@@ -231,7 +213,6 @@ const els = {
   statusOut: document.getElementById('statusOut'),
   answerVal: document.getElementById('answerVal'),
   submitBtn: document.getElementById('submitBtn'),
-  revealBtn: document.getElementById('revealBtn'),
   feedback: document.getElementById('feedback')
 };
 
@@ -243,6 +224,7 @@ function setMode(newMode){
   [els.adultBtn, els.pedsBtn].forEach(b=>b.classList.add('secondary'));
   (mode==='adult'?els.adultBtn:els.pedsBtn).classList.remove('secondary');
   els.modeOut.textContent = mode==='adult' ? 'Adult' : 'Pediatric';
+  els.svgWrap.classList.toggle('peds', mode==='peds'); // smaller peds svg
 }
 
 function setView(newView){
@@ -254,26 +236,24 @@ function setView(newView){
   els.viewOut.textContent = view==='front' ? 'Front' : 'Back';
 }
 
-/* Reset all highlighted burns */
+/* Clear all highlighted burns & contribution tags */
 function clearAll(){
   document.querySelectorAll('.zone').forEach(z=>z.setAttribute('data-state','0'));
+  // remove any prior pct tags
+  document.querySelectorAll('.pct-tag').forEach(t=>t.remove());
   els.countOut.textContent = '0';
 }
 
 /* Random helpers */
 function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-function choice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-/* Build a new randomized scenario using current mode + difficulty */
+/* Build a new randomized scenario using current mode; random difficulty (2–8 zones) */
 function newScenario(){
   clearAll();
   const modeUsed = mode;
   const zones = Array.from(document.querySelectorAll('.zone'));
-  // Decide number of zones by difficulty
-  const diff = els.difficulty.value;
-  const count = (diff==='easy') ? randInt(2,3) : (diff==='med') ? randInt(3,5) : randInt(5,8);
-
-  // Sample without replacement
+  const count = randInt(2,8); // random difficulty
+  // sample unique zones
   const pool = zones.map(z=>z.getAttribute('data-key'));
   const selectedKeys = [];
   while(selectedKeys.length < count && pool.length){
@@ -301,25 +281,57 @@ function newScenario(){
 
   scenario = { mode: modeUsed, selections, tbsa };
   scenarioActive = true;
-  // Lock mode buttons until reset/new
-  els.adultBtn.setAttribute('disabled','');
-  els.pedsBtn.setAttribute('disabled','');
+  els.adultBtn.setAttribute('disabled',''); els.pedsBtn.setAttribute('disabled',''); // lock mode
   els.statusOut.textContent = 'Scenario active — enter your answer';
   els.countOut.textContent = String(selections.length);
   els.feedback.innerHTML = '';
   els.answerVal.value = '';
+  // Always start on front
+  setView('front');
 }
 
-/* Reset to start state (no scenario) */
+/* Reset to blank and immediately start a new random scenario */
 function resetAll(){
   scenarioActive = false; scenario = null; clearAll();
   els.adultBtn.removeAttribute('disabled'); els.pedsBtn.removeAttribute('disabled');
-  els.statusOut.textContent = 'Generate a scenario';
-  els.feedback.innerHTML = '';
-  els.answerVal.value = '';
+  els.statusOut.textContent = 'Generating scenario...';
+  // small delay to ensure UI updates before new scenario
+  setTimeout(newScenario, 50);
 }
 
-/* Explain breakdown */
+/* Create % contribution tags on the corresponding SVG after submit */
+function annotateContributions(scn){
+  // Remove old tags
+  document.querySelectorAll('.pct-tag').forEach(t=>t.remove());
+  const frontSVG = els.svgFront;
+  const backSVG = els.svgBack;
+  const isFrontKey = (key)=>key.includes('front') || ['chest','abdomen','perineum'].includes(key);
+
+  scn.selections.forEach(sel=>{
+    const z = document.querySelector(`.zone[data-key="${sel.key}"]`);
+    if(!z) return;
+    const x = parseFloat(z.getAttribute('x')||'0');
+    const y = parseFloat(z.getAttribute('y')||'0');
+    const w = parseFloat(z.getAttribute('width')||'0');
+    const h = parseFloat(z.getAttribute('height')||'0');
+    const cx = x + w/2;
+    const cy = y + h/2;
+    const contrib = Math.round(sel.percent_each * sel.state * 100)/100;
+
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('class','pct-tag');
+    t.setAttribute('x', String(cx));
+    t.setAttribute('y', String(cy));
+    t.setAttribute('text-anchor','middle');
+    t.textContent = `+${contrib}%`;
+
+    // place in the correct svg (front/back)
+    const svg = isFrontKey(sel.key) ? frontSVG : backSVG;
+    svg.appendChild(t);
+  });
+}
+
+/* Breakdown for feedback */
 function breakdownHTML(scn){
   const rows = scn.selections.map(sel=>{
     const name = NAME[sel.key] || sel.key;
@@ -328,7 +340,7 @@ function breakdownHTML(scn){
     return `<li>${name}: ${sel.percent_each}% ${mult} = <b>${contrib}%</b></li>`;
   }).join('');
   return `
-    <div style="margin:.4rem 0 .2rem">Breakdown (${scn.mode==='adult'?'Adult':'Pediatric'} percentages):</div>
+    <div style="margin:.4rem 0 .2rem">Breakdown (${scn.mode==='adult'?'Adult':'Pediatric'}):</div>
     <ul style="margin:.2rem 0 .4rem 1rem">${rows}</ul>
     <div><b>Total TBSA:</b> ${scn.tbsa}%</div>
   `;
@@ -337,7 +349,7 @@ function breakdownHTML(scn){
 /* Submit answer */
 function submitAnswer(){
   if(!scenarioActive || !scenario){
-    els.feedback.innerHTML = `<div class="bad">Create a scenario first.</div>`;
+    els.feedback.innerHTML = `<div class="bad">Scenario is not ready. (Click New Scenario)</div>`;
     return;
   }
   const v = parseFloat(els.answerVal.value);
@@ -348,27 +360,19 @@ function submitAnswer(){
   const tol = 0.25;
   const correct = scenario.tbsa;
   const diff = Math.abs(v - correct);
+
+  // Visualize contributions on the SVGs
+  annotateContributions(scenario);
+
   if(diff <= tol){
     els.feedback.innerHTML = `<div class="ok"><b>Correct!</b> Your answer ${v.toFixed(2)}% is within ±${tol}% of ${correct.toFixed(2)}%.</div>`;
   }else{
     els.feedback.innerHTML = `
       <div class="bad"><b>Not quite.</b> Correct TBSA is ${correct.toFixed(2)}% (you entered ${v.toFixed(2)}%).</div>
       ${breakdownHTML(scenario)}
-      <div class="hint">Tip: Remember to consider both front and back.</div>
+      <div class="hint">Those <b>+% tags</b> on the diagram show each region’s contribution.</div>
     `;
   }
-}
-
-/* Reveal answer (instructor) */
-function revealAnswer(){
-  if(!scenarioActive || !scenario){
-    els.feedback.innerHTML = `<div class="bad">Create a scenario first.</div>`;
-    return;
-  }
-  els.feedback.innerHTML = `
-    <div class="ok"><b>Answer:</b> ${scenario.tbsa.toFixed(2)}%</div>
-    ${breakdownHTML(scenario)}
-  `;
 }
 
 /* Wire UI */
@@ -379,9 +383,8 @@ els.backBtn.addEventListener('click', ()=>setView('back'));
 els.newScenarioBtn.addEventListener('click', newScenario);
 els.resetBtn.addEventListener('click', resetAll);
 els.submitBtn.addEventListener('click', submitAnswer);
-els.revealBtn.addEventListener('click', revealAnswer);
 
-/* Init */
+/* Init: default to Adult/Front and auto-start a scenario */
 setMode('adult'); setView('front');
 resetAll();
 </script>
