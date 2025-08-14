@@ -1,322 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>EMS CODE SIM</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EMS Simulator Index</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#f7fafc; --card:#ffffff; --text:#0f172a; --muted:#334155;
-      --accent:#007B8A; --accent-light:#009db3;
-      --ring: rgba(0,123,138,.35); --shadow: 0 10px 28px rgba(15,23,42,.12);
-      --border:#e5e7eb; --tile-grad: linear-gradient(180deg,#fff, #f8fbfc);
+    :root {
+      --bg: #0b1f2a;
+      --panel: #0f2a39;
+      --card: #123548;
+      --ink: #eaf3f7;
+      --muted: #94b7c6;
+      --accent: #21c4d7;
+      --accent-2: #2a9fb0;
+      --ring: #39d1e1;
+      --shadow: 0 10px 24px rgba(0,0,0,.25);
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
-    html{overflow-x:hidden}
-    body{
-      margin:0; background:var(--bg); color:var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
-      line-height:1.45; -webkit-text-size-adjust:100%;
-      overflow-x:hidden;
-    }
-    img, svg, video{max-width:100%; height:auto; display:block}
-    a{color:inherit}
-
-    .wrap{max-width:980px; margin:0 auto; padding:16px;}
-
-    header{
-      background:var(--card);
-      border-bottom:1px solid var(--border);
-      box-shadow: 0 2px 10px rgba(2,6,23,.04);
-      position:sticky; top:0; z-index:10;
-    }
-    .top{display:flex; align-items:center; gap:12px;}
-    .logo{width:36px; height:36px; border-radius:10px; background:#e6f7fb; border:1px solid rgba(0,123,138,.25)}
-    .title{font-size:1.25rem; font-weight:800; margin:0}
-    .subtitle{margin:.25rem 0 0 0; color:var(--muted); font-size:.95rem}
-
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:14px;
-      box-shadow: var(--shadow);
-      margin-top:14px;
-    }
-
-    .grid{
-      display:grid; gap:12px; grid-template-columns: 1fr;
-    }
-    @media (min-width:680px){ .grid{ grid-template-columns: 1fr 1fr; } }
-    @media (min-width:960px){ .grid{ grid-template-columns: 1fr 1fr 1fr; } }
-
-    .tool{
-      display:flex; gap:12px; align-items:flex-start;
-      background:var(--tile-grad);
-      border:1px solid var(--border);
-      border-radius:14px; padding:14px;
-      box-shadow: 0 6px 16px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.8);
-      min-width:0; /* prevent flex overflow on small screens */
-    }
-    .tool .icon{
-      width:36px; height:36px; flex:0 0 36px;
-      display:flex; align-items:center; justify-content:center;
-      border-radius:10px; background:#e0f7fb; border:1px solid rgba(0,123,138,.25);
-    }
-    .tool h3{margin:0; font-size:1.05rem; font-weight:800}
-    .tool p{margin:2px 0 10px 0; font-size:.92rem; color:var(--muted)}
-    .tool .actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px}
-
-    /* All buttons blue; never overflow */
-    .btn{
-      appearance:none; display:inline-block; text-align:center; text-decoration:none;
-      border:1px solid var(--accent); background:var(--accent); color:#fff;
-      padding:.6rem .9rem; border-radius:12px; font-weight:700; box-shadow: 0 2px 0 rgba(0,0,0,.05);
-      flex:1 1 180px; min-width:0;
-      transition:transform .03s ease, background .15s ease;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
-    .btn:hover{background:var(--accent-light)}
-    .btn:active{transform:translateY(1px)}
-    .btn.ghost{background:#fff; color:var(--accent); border-color:var(--accent)}
-    .btn.full{width:100%}
-
-    footer{
-      color:#64748b; font-size:.9rem; text-align:center; padding:24px 16px 40px;
-    }
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+    header{padding:1.1rem 1.2rem;background:linear-gradient(90deg,#0f2a39,#102f40);position:sticky;top:0;z-index:5;border-bottom:1px solid rgba(255,255,255,.06)}
+    h1{margin:0;font-size:1.1rem;letter-spacing:.5px}
+    .wrap{max-width:1200px;margin:0 auto;padding:1rem;display:grid;gap:1rem}
+    .toolbar{background:var(--panel);border-radius:14px;padding:.9rem;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;box-shadow:var(--shadow)}
+    .search{flex:1;min-width:220px;display:flex;gap:.5rem;align-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.55rem .75rem}
+    .search input{flex:1;background:transparent;border:none;color:var(--ink);font-size:16px;outline:none}
+    .pill{border:none;background:#1a3f53;color:var(--ink);padding:.5rem .7rem;border-radius:999px;cursor:pointer;font-weight:600}
+    .pill.active{background:var(--accent);color:#02222a}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+    section.cat{background:var(--panel);border-radius:16px;padding:1rem;box-shadow:var(--shadow)}
+    section.cat h2{margin:.2rem 0 .8rem;font-size:1rem;color:var(--accent)}
+    .card{background:var(--card);border-radius:14px;padding:.9rem;display:flex;flex-direction:column;gap:.45rem;border:1px solid rgba(255,255,255,.06)}
+    .card h3{margin:0;font-size:1rem;line-height:1.2}
+    .meta{font-size:.8rem;color:var(--muted)}
+    .go{margin-top:.4rem;display:inline-block;background:var(--accent);color:#02222a;border:none;border-radius:10px;padding:.5rem .7rem;text-decoration:none;font-weight:700;text-align:center}
+    .go:hover{background:var(--ring)}
+    footer{color:var(--muted);text-align:center;padding:1.2rem 1rem}
+    .hide{display:none}
   </style>
 </head>
 <body>
   <header>
-    <div class="wrap">
-      <div class="top">
-        <div class="logo"></div>
-        <h1 class="title">EMS CODE SIM</h1>
-      </div>
-      <p class="subtitle">Tap a tool to launch. Optimized for phones.</p>
-    </div>
+    <h1>EMS Simulators Index</h1>
   </header>
 
-  <main class="wrap">
-    <section class="card">
+  <div class="wrap">
+    <div class="toolbar">
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input id="q" placeholder="Search simulators, e.g., vitals, airway, peds..." />
+      </div>
+      <div class="filters">
+        <button class="pill" data-cat="Vitals">Vitals</button>
+        <button class="pill" data-cat="Assessment">Assessment</button>
+        <button class="pill" data-cat="Airway/Breathing">Airway/Breathing</button>
+        <button class="pill" data-cat="Circulation/Fluids">Circulation/Fluids</button>
+        <button class="pill" data-cat="Pharmacology">Pharmacology</button>
+        <button class="pill" data-cat="Pediatrics/OB">Pediatrics/OB</button>
+        <button class="pill" data-cat="Operations">Operations</button>
+        <button class="pill" data-cat="Other">Other</button>
+        <button class="pill active" data-cat="All">All</button>
+      </div>
+    </div>
+
+    <!-- Example category section, repeat for each category -->
+    <section class="cat" data-section="Vitals">
+      <h2>Vitals</h2>
       <div class="grid">
-
-        <!-- Medical Assessment -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M9 4h6a2 2 0 0 1 2 2v1h1a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1V6a2 2 0 0 1 2-2Z" stroke="#0369a1" stroke-width="1.6"/>
-              <path d="M9 6h6" stroke="#0369a1" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div style="flex:1; min-width:0">
-            <h3>Medical Assessment</h3>
-            <p>Interactive patient assessment trainer.</p>
-            <div class="actions">
-              <a class="btn" href="https://emscodesim3.netlify.app/" target="_blank" rel="noopener">Launch</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Daily EMS Quiz -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M4 6h16M4 12h10M4 18h6" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="m15.5 17 2 2 3.5-3.5" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div style="flex:1; min-width:0">
-            <h3>Daily EMS Quiz</h3>
-            <p>Five new questions. Track your streak.</p>
-            <div class="actions">
-              <a class="btn" href="https://dailyemsquiz.com" target="_blank" rel="noopener">Open Quiz</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Fire Size-Up (external) -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M5 19v-6l7-7 7 7v6H5Z" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div style="flex:1; min-width:0">
-            <h3>Fire Size-Up</h3>
-            <p>Practice radio reports and 360 size-up.</p>
-            <div class="actions">
-              <a class="btn" href="https://fireopssim.com/sizeup/scene_sizeup" target="_blank" rel="noopener">Open Size-Up</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Hospital Handoff (external) -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M3 12h18M12 3v18" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div style="flex:1; min-width:0">
-            <h3>Hospital Handoff</h3>
-            <p>Concise SBAR-style report practice.</p>
-            <div class="actions">
-              <a class="btn" href="https://fireopssim.com/handoff/handoff" target="_blank" rel="noopener">Open Handoff</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Blood Pressure -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M3 12h5l2 4 3-8 2 4h6" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div style="flex:1; min-width:0">
-            <h3>Blood Pressure</h3>
-            <p>Inflate, auscultate, and read Korotkoff sounds.</p>
-            <div class="actions">
-              <a class="btn" href="vitals/bp.html">Open BP</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pulse -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M3 12h4l2 4 3-8 2 4h7" stroke="#0369a1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div style="flex:1; min-width:0">
-            <h3>Pulse (Rate Trainer)</h3>
-            <p>Hear a rhythm, guess the BPM.</p>
-            <div class="actions">
-              <a class="btn" href="vitals/pulse.html">Open Pulse</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Breath Sounds -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M10 4v8a4 4 0 0 1-4 4H4V9a5 5 0 0 1 6-5Zm4 0v8a4 4 0 0 0 4 4h2V9a5 5 0 0 0-6-5Z" stroke="#0369a1" stroke-width="1.6" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <div style="flex:1; min-width:0">
-            <h3>Breath Sounds</h3>
-            <p>Front/back lung map with audio.</p>
-            <div class="actions">
-              <a class="btn" href="vitals/breath-sound-simulator.html">Open Breath Sounds</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Blood Glucose -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M8 12h8M6 8h12M10 16h4" stroke="#0369a1" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div style="flex:1; min-width:0">
-            <h3>Blood Glucose</h3>
-            <p>Simulate glucometer and interpretation.</p>
-            <div class="actions">
-              <a class="btn" href="vitals/bgl.html">Open BGL</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- GCS -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="8" r="3" stroke="#0369a1" stroke-width="1.6"/>
-              <path d="M6 20a6 6 0 0 1 12 0" stroke="#0369a1" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div style="flex:1; min-width:0">
-            <h3>GCS</h3>
-            <p>Interactive E/V/M with auto-scoring.</p>
-            <div class="actions">
-              <a class="btn" href="vitals/gcs.html">Open GCS</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Stroke (BE-FAST) -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M12 3v18M3 12h18" stroke="#0369a1" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div style="flex:1; min-width:0">
-            <h3>Stroke (BE-FAST)</h3>
-            <p>Face, Arms, Speech + CP-SSS cue.</p>
-            <div class="actions">
-              <a class="btn" href="vitals/stroke.html">Open Stroke</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- AAOx4 / LOC -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2v4M4 12h4m8 0h4M12 18v4" stroke="#0369a1" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div style="flex:1; min-width:0">
-            <h3>AAOx4</h3>
-            <p>Level of consciousness check.</p>
-            <div class="actions">
-              <a class="btn" href="vitals/aao.html">Open AAOx4</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Pupil (PERRL) -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="5" stroke="#0369a1" stroke-width="1.6"/>
-            </svg>
-          </div>
-          <div style="flex:1; min-width:0">
-            <h3>Pupil (PERRL)</h3>
-            <p>Light response and size.</p>
-            <div class="actions">
-              <a class="btn" href="vitals/pupil.html">Open Pupil</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Skin -->
-        <div class="tool">
-          <div class="icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <rect x="5" y="5" width="14" height="14" rx="3" stroke="#0369a1" stroke-width="1.6"/>
-            </svg>
-          </div>
-          <div style="flex:1; min-width:0">
-            <h3>Skin</h3>
-            <p>Color, temp, moisture assessment.</p>
-            <div class="actions">
-              <a class="btn" href="vitals/skin.html">Open Skin</a>
-            </div>
-          </div>
-        </div>
-
+        <article class="card" data-title="Blood Pressure Simulator" data-cat="Vitals">
+          <h3>Blood Pressure Simulator</h3>
+          <div class="meta">vitals/blood-pressure.html</div>
+          <a class="go" href="vitals/blood-pressure.html">Open</a>
+        </article>
+        <!-- Add more Vitals simulators here -->
       </div>
     </section>
-  </main>
 
-  <footer>&copy; 2025 EMS CODE SIM • All rights reserved</footer>
+    <!-- Repeat the above section block for Assessment, Airway/Breathing, etc. -->
+
+  </div>
+
+  <footer>Generated index — edit categories/labels as needed.</footer>
+
+  <script>
+  const sections = Array.from(document.querySelectorAll('section.cat'));
+  const pills = Array.from(document.querySelectorAll('.pill'));
+  const q = document.getElementById('q');
+
+  function applyFilters() {
+    const active = pills.find(p=>p.classList.contains('active'));
+    const cat = active ? active.dataset.cat : 'All';
+    const term = q.value.trim().toLowerCase();
+    sections.forEach(sec => {
+      const inCat = (cat==='All') || (sec.dataset.section===cat);
+      let visibleInSection = 0;
+      sec.querySelectorAll('.card').forEach(card=>{
+        const text = card.innerText.toLowerCase();
+        const matchTerm = term==='' ? true : text.includes(term);
+        const matchCat = (cat==='All') || (card.dataset.cat===cat);
+        const show = matchTerm && matchCat;
+        card.classList.toggle('hide', !show);
+        if (show) visibleInSection++;
+      });
+      if (cat!=='All') {
+        sec.classList.toggle('hide', sec.dataset.section!==cat);
+      } else {
+        sec.classList.toggle('hide', visibleInSection===0);
+      }
+    });
+  }
+
+  pills.forEach(p=>p.addEventListener('click', e=>{
+    pills.forEach(x=>x.classList.remove('active'));
+    p.classList.add('active');
+    applyFilters();
+  }));
+  q.addEventListener('input', applyFilters);
+  applyFilters();
+  </script>
 </body>
 </html>
