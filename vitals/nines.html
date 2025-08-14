@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<!-- Prevent mobile zooming on focus -->
+<!-- Prevent mobile zoom on focus -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
 <title>Rule of Nines — TBSA Burn Quiz</title>
 <style>
@@ -20,14 +20,14 @@
 
   .wrap{width:min(1100px,100%);margin:0 auto;padding:1rem;display:grid;gap:1rem}
 
-  .controls,.results,.legend,.quiz{background:var(--card);border-radius:.75rem;padding:1rem;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .controls,.results,.quiz{background:var(--card);border-radius:.75rem;padding:1rem;box-shadow:0 1px 2px rgba(0,0,0,.05)}
   .row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
   .seg{display:flex;gap:.5rem;flex-wrap:wrap}
 
   /* Buttons: unified color; highlight active view button */
   .btn{
     appearance:none; border:none; border-radius:.65rem; padding:.7rem 1rem;
-    background:var(--brand); color:var(--brand-ink); font-weight:700; font-size:16px; /* >=16px stops iOS zoom */
+    background:var(--brand); color:var(--brand-ink); font-weight:700; font-size:16px;
     cursor:pointer; line-height:1; touch-action:manipulation;
     box-shadow:0 1px 1px rgba(0,0,0,.06);
   }
@@ -38,14 +38,13 @@
   /* Inputs: keep font-size >=16px to prevent iOS zoom */
   input{
     border:1px solid #cbd5db;border-radius:.65rem;padding:.7rem .9rem;background:#fff;color:var(--ink);
-    font-size:16px; /* important for mobile */
-    width:160px; text-align:center; touch-action:manipulation;
+    font-size:16px; width:160px; text-align:center; touch-action:manipulation;
   }
 
   .board{background:var(--card);border-radius:.75rem;padding:.5rem;display:grid;justify-items:center;box-shadow:0 1px 2px rgba(0,0,0,.05)}
   .svg-wrap{width:min(520px,100%);height:auto;position:relative;transition:transform .15s ease}
   .svg-wrap.peds{transform:scale(.9); transform-origin: top center;} /* pediatric a bit smaller */
-  svg{width:100%;height:auto}
+  svg{width:100%;height:auto; display:block}
 
   /* Zones (calculation areas) */
   .zone{fill:#fff;stroke:var(--none);stroke-width:2;transition:fill .15s,stroke .15s,opacity .15s;pointer-events:none}
@@ -55,13 +54,6 @@
 
   /* Percent contribution tags (hidden until submit) */
   .pct-tag{display:none;font-size:.8rem;fill:#000;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;font-weight:700;opacity:.95}
-
-  .legend{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
-  .legend .key{display:flex;align-items:center;gap:.4rem}
-  .sw{width:18px;height:12px;border-radius:3px;border:1px solid #9cb0ba}
-  .sw.none{background:#fff}
-  .sw.half{background:var(--half)}
-  .sw.full{background:var(--full)}
 
   .results{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));align-items:center}
   .kv{background:var(--chip);padding:.8rem;border-radius:.65rem;display:flex;justify-content:space-between;gap:.5rem;align-items:center}
@@ -93,7 +85,7 @@
     <div class="kv"><span>Status</span><b id="statusOut">Scenario active — enter your answer</b></div>
   </div>
 
-  <!-- Buttons BELOW patient info, unified color, active view highlighted -->
+  <!-- Buttons BELOW patient info -->
   <div class="controls">
     <div class="row" style="justify-content:flex-end">
       <div class="seg">
@@ -108,68 +100,61 @@
   <!-- Board with model -->
   <div class="board">
     <div id="svgWrap" class="svg-wrap">
-      <!-- ADULT MODEL -->
-      <svg id="adultSVG" viewBox="0 0 320 720" role="img" aria-label="Adult Burn Map" class="front-only">
+      <!-- ADULT MODEL — viewBox shortened to remove extra bottom space -->
+      <svg id="adultSVG" viewBox="0 0 320 620" role="img" aria-label="Adult Burn Map" class="front-only">
         <!-- FRONT -->
         <g class="front">
           <rect class="zone" data-key="head-front" x="120" y="20" width="80" height="80" rx="40" ry="40"></rect>
           <rect class="zone" data-key="chest"      x="95"  y="110" width="130" height="110"></rect>
           <rect class="zone" data-key="abdomen"    x="95"  y="225" width="130" height="110"></rect>
           <rect class="zone" data-key="perineum"   x="150" y="340" width="20"  height="16"  rx="5" ry="5"></rect>
-          <rect class="zone" data-key="armL-front" x="55"  y="120" width="35"  height="250" rx="18" ry="18"></rect>
-          <rect class="zone" data-key="armR-front" x="230" y="120" width="35"  height="250" rx="18" ry="18"></rect>
-          <!-- centered, not touching, AND slightly shorter (y +10, height -20) -->
-          <rect class="zone" data-key="legL-front" x="100" y="380" width="60"  height="260" rx="28" ry="28"></rect>
-          <rect class="zone" data-key="legR-front" x="170" y="380" width="60"  height="260" rx="28" ry="28"></rect>
+          <rect class="zone" data-key="armL-front" x="55"  y="120" width="35"  height="230" rx="18" ry="18"></rect>
+          <rect class="zone" data-key="armR-front" x="230" y="120" width="35"  height="230" rx="18" ry="18"></rect>
+          <!-- legs moved UP and keep gap; slightly shorter -->
+          <rect class="zone" data-key="legL-front" x="100" y="360" width="60"  height="240" rx="28" ry="28"></rect>
+          <rect class="zone" data-key="legR-front" x="170" y="360" width="60"  height="240" rx="28" ry="28"></rect>
         </g>
 
         <!-- BACK -->
         <g class="back">
           <rect class="zone" data-key="head-back"   x="120" y="20" width="80" height="80" rx="40" ry="40"></rect>
-          <rect class="zone" data-key="upper-back"  x="95"  y="110" width="130" height="130"></rect>
-          <rect class="zone" data-key="lower-back"  x="95"  y="245" width="130" height="130"></rect>
-          <rect class="zone" data-key="armL-back"   x="55"  y="120" width="35"  height="250" rx="18" ry="18"></rect>
-          <rect class="zone" data-key="armR-back"   x="230" y="120" width="35"  height="250" rx="18" ry="18"></rect>
-          <!-- centered, not touching, AND slightly shorter -->
-          <rect class="zone" data-key="legL-back"   x="100" y="380" width="60"  height="260" rx="28" ry="28"></rect>
-          <rect class="zone" data-key="legR-back"   x="170" y="380" width="60"  height="260" rx="28" ry="28"></rect>
+          <rect class="zone" data-key="upper-back"  x="95"  y="110" width="130" height="120"></rect>
+          <rect class="zone" data-key="lower-back"  x="95"  y="235" width="130" height="120"></rect>
+          <rect class="zone" data-key="armL-back"   x="55"  y="120" width="35"  height="230" rx="18" ry="18"></rect>
+          <rect class="zone" data-key="armR-back"   x="230" y="120" width="35"  height="230" rx="18" ry="18"></rect>
+          <!-- legs moved UP and keep gap; slightly shorter -->
+          <rect class="zone" data-key="legL-back"   x="100" y="360" width="60"  height="240" rx="28" ry="28"></rect>
+          <rect class="zone" data-key="legR-back"   x="170" y="360" width="60"  height="240" rx="28" ry="28"></rect>
         </g>
       </svg>
 
-      <!-- PEDIATRIC MODEL -->
-      <svg id="pedsSVG" viewBox="0 0 320 720" role="img" aria-label="Pediatric Burn Map" style="display:none" class="front-only">
+      <!-- PEDIATRIC MODEL — viewBox shortened to remove extra bottom space -->
+      <svg id="pedsSVG" viewBox="0 0 320 620" role="img" aria-label="Pediatric Burn Map" style="display:none" class="front-only">
         <!-- FRONT -->
         <g class="front">
           <rect class="zone" data-key="head-front" x="118" y="20" width="84" height="84" rx="42" ry="42"></rect>
           <rect class="zone" data-key="chest"      x="105" y="110" width="110" height="100"></rect>
           <rect class="zone" data-key="abdomen"    x="105" y="215" width="110" height="100"></rect>
           <rect class="zone" data-key="perineum"   x="150" y="322" width="20"  height="16" rx="5" ry="5"></rect>
-          <rect class="zone" data-key="armL-front" x="70"  y="120" width="28"  height="230" rx="14" ry="14"></rect>
-          <rect class="zone" data-key="armR-front" x="222" y="120" width="28"  height="230" rx="14" ry="14"></rect>
-          <!-- centered, not touching, AND slightly shorter -->
-          <rect class="zone" data-key="legL-front" x="104" y="380" width="56"  height="260" rx="26" ry="26"></rect>
-          <rect class="zone" data-key="legR-front" x="170" y="380" width="56"  height="260" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="armL-front" x="70"  y="120" width="28"  height="210" rx="14" ry="14"></rect>
+          <rect class="zone" data-key="armR-front" x="222" y="120" width="28"  height="210" rx="14" ry="14"></rect>
+          <!-- legs moved UP and keep gap; slightly shorter -->
+          <rect class="zone" data-key="legL-front" x="104" y="360" width="56"  height="240" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="legR-front" x="170" y="360" width="56"  height="240" rx="26" ry="26"></rect>
         </g>
 
         <!-- BACK -->
         <g class="back">
           <rect class="zone" data-key="head-back"   x="118" y="20" width="84" height="84" rx="42" ry="42"></rect>
-          <rect class="zone" data-key="upper-back"  x="105" y="110" width="110" height="120"></rect>
-          <rect class="zone" data-key="lower-back"  x="105" y="235" width="110" height="85"></rect>
-          <rect class="zone" data-key="armL-back"   x="70"  y="120" width="28"  height="230" rx="14" ry="14"></rect>
-          <rect class="zone" data-key="armR-back"   x="222" y="120" width="28"  height="230" rx="14" ry="14"></rect>
-          <!-- centered, not touching, AND slightly shorter -->
-          <rect class="zone" data-key="legL-back"   x="104" y="380" width="56"  height="260" rx="26" ry="26"></rect>
-          <rect class="zone" data-key="legR-back"   x="170" y="380" width="56"  height="260" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="upper-back"  x="105" y="110" width="110" height="115"></rect>
+          <rect class="zone" data-key="lower-back"  x="105" y="230" width="110" height="110"></rect>
+          <rect class="zone" data-key="armL-back"   x="70"  y="120" width="28"  height="210" rx="14" ry="14"></rect>
+          <rect class="zone" data-key="armR-back"   x="222" y="120" width="28"  height="210" rx="14" ry="14"></rect>
+          <!-- legs moved UP and keep gap; slightly shorter -->
+          <rect class="zone" data-key="legL-back"   x="104" y="360" width="56"  height="240" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="legR-back"   x="170" y="360" width="56"  height="240" rx="26" ry="26"></rect>
         </g>
       </svg>
-    </div>
-
-    <div class="legend">
-      <div class="key"><span class="sw none"></span><span>None</span></div>
-      <div class="key"><span class="sw half"></span><span>Half (½)</span></div>
-      <div class="key"><span class="sw full"></span><span>Full</span></div>
-      <span class="hint">Adult legs = 18% each (9% front + 9% back). Pediatric head proportion is larger.</span>
     </div>
   </div>
 
