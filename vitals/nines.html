@@ -52,15 +52,21 @@
   .feedback{margin-top:.6rem;border-top:1px dashed #d6e3e9;padding-top:.6rem}
   .ok{color:#116e3a}
   .bad{color:#9f2f2f}
-  .hint{color:var(--muted);font-size:.9rem}
+  .hint{color:#6b7c85}
 
   .risks{margin-top:.6rem;background:#fbfcfe;border:1px solid #e1ebf0;border-radius:.6rem;padding:.6rem}
   .risks h4{margin:.2rem 0 .4rem;font-size:1rem}
   .risks ul{margin:.2rem 0 .2rem 1.1rem}
 
-  /* Only one side visible per model */
+  /* View control — only one side visible per model */
   .front-only .back { display:none }
   .back-only  .front{ display:none }
+
+  /* SVG view label text */
+  .view-label{
+    font-size:18px;font-weight:700;fill:var(--ink);
+    paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;
+  }
 </style>
 </head>
 <body>
@@ -70,7 +76,7 @@
   <!-- Controls -->
   <div class="controls">
     <div class="row">
-      <span class="chip">A random Adult or Pediatric scenario starts on load. Burns may be on BOTH sides — use Front/Back.</span>
+      <span class="chip">Random Adult or Pediatric scenario starts on load. Burns may be on BOTH sides — use Front/Back.</span>
       <div class="seg" style="margin-left:auto">
         <button id="frontBtn" class="secondary">Front</button>
         <button id="backBtn"  class="secondary">Back</button>
@@ -83,55 +89,63 @@
   <!-- Board -->
   <div class="board">
     <div id="svgWrap" class="svg-wrap">
-      <!-- ADULT MODEL (front & back share same footprint) -->
+      <!-- ADULT MODEL -->
       <svg id="adultSVG" viewBox="0 0 320 720" role="img" aria-label="Adult Burn Map" class="front-only">
         <!-- FRONT -->
         <g class="front">
+          <text class="view-label" x="160" y="18" text-anchor="middle">FRONT</text>
           <rect class="zone" data-key="head-front" x="120" y="20" width="80" height="80" rx="40" ry="40"></rect>
           <rect class="zone" data-key="chest"      x="95"  y="110" width="130" height="110"></rect>
           <rect class="zone" data-key="abdomen"    x="95"  y="225" width="130" height="110"></rect>
           <rect class="zone" data-key="perineum"   x="150" y="340" width="20"  height="16"  rx="5" ry="5"></rect>
           <rect class="zone" data-key="armL-front" x="55"  y="120" width="35"  height="250" rx="18" ry="18"></rect>
           <rect class="zone" data-key="armR-front" x="230" y="120" width="35"  height="250" rx="18" ry="18"></rect>
-          <rect class="zone" data-key="legL-front" x="120" y="360" width="60"  height="300" rx="28" ry="28"></rect>
+          <!-- recentered legs -->
+          <rect class="zone" data-key="legL-front" x="130" y="360" width="60"  height="300" rx="28" ry="28"></rect>
           <rect class="zone" data-key="legR-front" x="190" y="360" width="60"  height="300" rx="28" ry="28"></rect>
         </g>
 
         <!-- BACK -->
         <g class="back">
+          <text class="view-label" x="160" y="18" text-anchor="middle">BACK</text>
           <rect class="zone" data-key="head-back"   x="120" y="20" width="80" height="80" rx="40" ry="40"></rect>
           <rect class="zone" data-key="upper-back"  x="95"  y="110" width="130" height="130"></rect>
           <rect class="zone" data-key="lower-back"  x="95"  y="245" width="130" height="130"></rect>
           <rect class="zone" data-key="armL-back"   x="55"  y="120" width="35"  height="250" rx="18" ry="18"></rect>
           <rect class="zone" data-key="armR-back"   x="230" y="120" width="35"  height="250" rx="18" ry="18"></rect>
-          <rect class="zone" data-key="legL-back"   x="120" y="360" width="60"  height="300" rx="28" ry="28"></rect>
+          <!-- recentered legs -->
+          <rect class="zone" data-key="legL-back"   x="130" y="360" width="60"  height="300" rx="28" ry="28"></rect>
           <rect class="zone" data-key="legR-back"   x="190" y="360" width="60"  height="300" rx="28" ry="28"></rect>
         </g>
       </svg>
 
-      <!-- PEDIATRIC MODEL (same footprint, slightly scaled by wrapper) -->
+      <!-- PEDIATRIC MODEL -->
       <svg id="pedsSVG" viewBox="0 0 320 720" role="img" aria-label="Pediatric Burn Map" style="display:none" class="front-only">
         <!-- FRONT -->
         <g class="front">
+          <text class="view-label" x="160" y="18" text-anchor="middle">FRONT</text>
           <rect class="zone" data-key="head-front" x="118" y="20" width="84" height="84" rx="42" ry="42"></rect>
           <rect class="zone" data-key="chest"      x="105" y="110" width="110" height="100"></rect>
           <rect class="zone" data-key="abdomen"    x="105" y="215" width="110" height="100"></rect>
           <rect class="zone" data-key="perineum"   x="150" y="322" width="20"  height="16" rx="5" ry="5"></rect>
           <rect class="zone" data-key="armL-front" x="70"  y="120" width="28"  height="230" rx="14" ry="14"></rect>
           <rect class="zone" data-key="armR-front" x="222" y="120" width="28"  height="230" rx="14" ry="14"></rect>
-          <rect class="zone" data-key="legL-front" x="120" y="360" width="56"  height="300" rx="26" ry="26"></rect>
-          <rect class="zone" data-key="legR-front" x="160" y="360" width="56"  height="300" rx="26" ry="26"></rect>
+          <!-- recentered legs -->
+          <rect class="zone" data-key="legL-front" x="130" y="360" width="56"  height="300" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="legR-front" x="170" y="360" width="56"  height="300" rx="26" ry="26"></rect>
         </g>
 
         <!-- BACK -->
         <g class="back">
+          <text class="view-label" x="160" y="18" text-anchor="middle">BACK</text>
           <rect class="zone" data-key="head-back"   x="118" y="20" width="84" height="84" rx="42" ry="42"></rect>
           <rect class="zone" data-key="upper-back"  x="105" y="110" width="110" height="120"></rect>
           <rect class="zone" data-key="lower-back"  x="105" y="235" width="110" height="85"></rect>
           <rect class="zone" data-key="armL-back"   x="70"  y="120" width="28"  height="230" rx="14" ry="14"></rect>
           <rect class="zone" data-key="armR-back"   x="222" y="120" width="28"  height="230" rx="14" ry="14"></rect>
-          <rect class="zone" data-key="legL-back"   x="120" y="360" width="56"  height="300" rx="26" ry="26"></rect>
-          <rect class="zone" data-key="legR-back"   x="160" y="360" width="56"  height="300" rx="26" ry="26"></rect>
+          <!-- recentered legs -->
+          <rect class="zone" data-key="legL-back"   x="130" y="360" width="56"  height="300" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="legR-back"   x="170" y="360" width="56"  height="300" rx="26" ry="26"></rect>
         </g>
       </svg>
     </div>
@@ -252,7 +266,7 @@ function setView(newView){
   });
 }
 
-/* Utility: robust center for rects */
+/* Utility: center of rects (for placing % tags) */
 function rectCenter(node){
   const x = parseFloat(node.getAttribute('x')||'0');
   const y = parseFloat(node.getAttribute('y')||'0');
@@ -295,7 +309,7 @@ function newScenario(){
   setView('front');
 
   const svg = (mode==='adult'?els.adultSVG:els.pedsSVG);
-  const zones = Array.from(svg.querySelectorAll('.zone'));
+  const zones = Array.from(svg.querySelectorAll('.zone')); // includes front & back groups
   const count = randInt(2,8);
   const selected = sample(zones, count);
 
@@ -397,15 +411,15 @@ function riskAdviceHTML(scn){
     items.push(`<li><b>Hands/Arms:</b> high functional impact. Remove rings/watches early; elevate; splint in position of function; consult for deep/circumferential burns.</li>`);
   }
   if(involves.chestBack){
-    items.push(`<li><b>Chest/Back/Torso:</b> deep or circumferential burns may restrict ventilation—monitor chest excursion, WOB; consider eschar-related restriction; adequate analgesia; SpO₂/EtCO₂ if available.</li>`);
+    items.push(`<li><b>Chest/Back/Torso:</b> deep or circumferential burns may restrict ventilation—monitor chest excursion and WOB; consider eschar-related restriction; adequate analgesia; SpO₂/EtCO₂ if available.</li>`);
   }
   if(involves.perineum){
     items.push(`<li><b>Perineum:</b> high contamination/infection risk; meticulous hygiene; early specialty evaluation.</li>`);
   }
   if(involves.legs){
-    items.push(`<li><b>Lower extremities:</b> elevate; frequent distal pulse/cap refill checks; beware compartment-like effects in circumferential burns.</li>`);
+    items.push(`<li><b>Lower extremities:</b> elevate; frequent distal pulse/cap refill checks; beware compartment-like effects if circumferential.</li>`);
   }
-  items.push(`<li><b>General:</b> stop the burning process, prevent hypothermia, dry sterile dressings, good analgesia, tetanus status, follow local protocols for fluids and destination.</li>`);
+  items.push(`<li><b>General:</b> stop the burning process, prevent hypothermia, dry sterile dressings, good analgesia, tetanus status, and follow local protocols for fluids & destination.</li>`);
 
   return `<h4>Special Considerations</h4><ul>${items.join('')}</ul>`;
 }
