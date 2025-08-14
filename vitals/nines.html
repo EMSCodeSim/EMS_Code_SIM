@@ -22,38 +22,45 @@
   button.secondary{background:#fff;color:var(--brand);border:1px solid var(--brand)}
   button.danger{background:#9f2f2f}
   .chip{background:var(--chip);border:none;border-radius:.6rem;padding:.5rem .7rem;color:var(--brand);font-weight:600}
+
   .board{background:var(--card);border-radius:.75rem;padding:.5rem;display:grid;justify-items:center;box-shadow:0 1px 2px rgba(0,0,0,.05)}
-  .svg-wrap{width:min(520px,100%);height:auto;position:relative;transition:transform .2s ease}
-  .svg-wrap.peds{transform:scale(.9); transform-origin: top center;} /* pediatric smaller */
+  .svg-wrap{width:min(560px,100%);height:auto;position:relative;transition:transform .2s ease}
+  .svg-wrap.peds{transform:scale(.92); transform-origin: top center;} /* pediatric slightly smaller */
   svg{width:100%;height:auto}
-  /* Zones */
+
+  /* Zones (calculation areas) */
   .zone{fill:#fdfdfd;stroke:var(--none);stroke-width:2;pointer-events:none;transition:fill .15s,stroke .15s}
   .zone[data-state="0"]{fill:#fdfdfd}
   .zone[data-state="0.5"]{fill:var(--half);stroke:var(--stroke)}
   .zone[data-state="1"]{fill:var(--full);stroke:var(--stroke)}
-  /* Silhouette base (skin) behind zones for nicer look */
-  .sil{fill:#ffe6d1;stroke:#cdb09b;stroke-width:1.2}
-  .label{font-size:.7rem;fill:#223;opacity:.85;user-select:none;pointer-events:none}
+
+  /* Silhouette base (visual only) */
+  .sil{fill:url(#skinGrad);stroke:#cdb09b;stroke-width:1.1}
+
+  .label{font-size:.72rem;fill:#223;opacity:.85;user-select:none;pointer-events:none}
   .legend{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
   .legend .key{display:flex;align-items:center;gap:.4rem}
   .sw{width:18px;height:12px;border-radius:3px;border:1px solid #9cb0ba}
   .sw.none{background:#fff}
   .sw.half{background:var(--half)}
   .sw.full{background:var(--full)}
+
   .results{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));align-items:center}
   .kv{background:var(--chip);padding:.8rem;border-radius:.6rem;display:flex;justify-content:space-between;gap:.5rem;align-items:center}
   .kv b{font-size:1.05rem}
+
   .quiz .grid{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
   .feedback{margin-top:.6rem;border-top:1px dashed #d6e3e9;padding-top:.6rem}
   .ok{color:#116e3a}
   .bad{color:#9f2f2f}
   .hint{color:var(--muted);font-size:.9rem}
+
   .pct-tag{font-size:.72rem;fill:#000;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;font-weight:700;opacity:.95}
-  .pct-tag[data-side="back"]{display:none} /* front default */
   .risks{margin-top:.6rem;background:#fbfcfe;border:1px solid #e1ebf0;border-radius:.6rem;padding:.6rem}
   .risks h4{margin:.2rem 0 .4rem;font-size:1rem}
   .risks ul{margin:.2rem 0 .2rem 1.1rem}
-  /* view toggling */
+
+  /* View toggling */
   .front-group{display:block}
   .back-group{display:none}
   .view-back .front-group{display:none}
@@ -67,7 +74,7 @@
   <!-- Controls -->
   <div class="controls">
     <div class="row">
-      <span class="chip">A random scenario is active. Burns may be on BOTH sides. Pediatric model renders slightly smaller.</span>
+      <span class="chip">Random Adult or Pediatric scenario starts on load. Burns may be on BOTH sides. Use Front/Back.</span>
       <div class="seg" style="margin-left:auto">
         <button id="frontBtn" class="secondary">Front</button>
         <button id="backBtn" class="secondary">Back</button>
@@ -80,92 +87,204 @@
   <!-- Board -->
   <div class="board">
     <div id="svgWrap" class="svg-wrap">
-      <!-- ADULT MODEL -->
+      <!-- ADULT MODEL (more anatomical) -->
       <svg id="adultSVG" viewBox="0 0 320 720" role="img" aria-label="Adult Burn Map" class="view-front">
-        <!-- FRONT silhouette group -->
-        <g id="adultFrontSil" class="front-group">
+        <defs>
+          <linearGradient id="skinGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffe6d1"/>
+            <stop offset="100%" stop-color="#f6d5bf"/>
+          </linearGradient>
+        </defs>
+
+        <!-- FRONT silhouette -->
+        <g class="front-group">
+          <!-- head -->
           <path class="sil" d="M160 24c-20 0-36 16-36 36s16 36 36 36 36-16 36-36-16-36-36-36z"/>
+          <!-- torso -->
           <path class="sil" d="M120 96h80c16 0 28 12 28 28v98c0 16-12 28-28 28h-80c-16 0-28-12-28-28v-98c0-16 12-28 28-28z"/>
+          <!-- arms -->
           <path class="sil" d="M64 120c-10 0-18 8-18 18v190c0 10 8 18 18 18 10 0 18-8 18-18V138c0-10-8-18-18-18z"/>
           <path class="sil" d="M256 120c10 0 18 8 18 18v190c0 10-8 18-18 18-10 0-18-8-18-18V138c0-10 8-18 18-18z"/>
+          <!-- pelvis -->
           <path class="sil" d="M120 324h80c14 0 24 10 24 24v12c0 10-8 18-18 18h-92c-10 0-18-8-18-18v-12c0-14 10-24 24-24z"/>
+          <!-- legs -->
           <path class="sil" d="M130 378c-14 0-24 10-24 24v220c0 14 10 24 24 24s24-10 24-24V402c0-14-10-24-24-24z"/>
           <path class="sil" d="M190 378c14 0 24 10 24 24v220c0 14-10 24-24 24s-24-10-24-24V402c0-14 10-24 24-24z"/>
         </g>
-        <!-- BACK silhouette group -->
-        <g id="adultBackSil" class="back-group">
+
+        <!-- BACK silhouette -->
+        <g class="back-group">
           <path class="sil" d="M160 24c-20 0-36 16-36 36s16 36 36 36 36-16 36-36-16-36-36-36z" transform="translate(0,360)"/>
           <path class="sil" d="M120 456h80c16 0 28 12 28 28v98c0 16-12 28-28 28h-80c-16 0-28-12-28-28v-98c0-16 12-28 28-28z"/>
           <path class="sil" d="M64 480c-10 0-18 8-18 18v190c0 10 8 18 18 18 10 0 18-8 18-18V498c0-10-8-18-18-18z"/>
           <path class="sil" d="M256 480c10 0 18 8 18 18v190c0 10-8 18-18 18-10 0-18-8-18-18V498c0-10 8-18 18-18z"/>
         </g>
 
-        <!-- FRONT ZONES -->
+        <!-- FRONT ZONES (paths/ellipse) -->
         <g class="front-group">
-          <rect class="zone" x="120" y="20" width="80" height="80" rx="40" ry="40" data-key="head-front" data-state="0"></rect>
-          <rect class="zone" x="95" y="110" width="130" height="110" data-key="chest" data-state="0"></rect>
-          <rect class="zone" x="95" y="225" width="130" height="110" data-key="abdomen" data-state="0"></rect>
-          <rect class="zone" x="150" y="340" width="20" height="16" rx="5" ry="5" data-key="perineum" data-state="0"></rect>
-          <rect class="zone" x="55" y="120" width="35" height="250" rx="18" ry="18" data-key="armL-front" data-state="0"></rect>
-          <rect class="zone" x="230" y="120" width="35" height="250" rx="18" ry="18" data-key="armR-front" data-state="0"></rect>
-          <rect class="zone" x="110" y="360" width="60" height="300" rx="28" ry="28" data-key="legL-front" data-state="0"></rect>
-          <rect class="zone" x="150" y="360" width="60" height="300" rx="28" ry="28" data-key="legR-front" data-state="0"></rect>
+          <ellipse class="zone" cx="160" cy="60" rx="38" ry="40" data-key="head-front" data-state="0"></ellipse>
+
+          <path class="zone" data-key="chest" data-state="0"
+            d="M95,115 C105,105 125,102 160,102 C195,102 215,105 225,115
+               L225,205 C215,212 195,216 160,216 C125,216 105,212 95,205 Z"></path>
+
+          <path class="zone" data-key="abdomen" data-state="0"
+            d="M95,220 C105,212 125,210 160,210 C195,210 215,212 225,220
+               L225,325 C210,332 190,336 160,336 C130,336 110,332 95,325 Z"></path>
+
+          <rect class="zone" x="150" y="340" width="20" height="16" rx="6" ry="6" data-key="perineum" data-state="0"></rect>
+
+          <path class="zone" data-key="armL-front" data-state="0"
+            d="M70,130 C60,135 56,145 56,160 L56,350 C56,365 62,375 74,378
+               C86,375 92,365 92,350 L92,160 C92,145 88,135 78,130 Z"></path>
+
+          <path class="zone" data-key="armR-front" data-state="0"
+            d="M248,130 C238,135 234,145 234,160 L234,350 C234,365 240,375 252,378
+               C264,375 270,365 270,350 L270,160 C270,145 266,135 256,130 Z"></path>
+
+          <!-- Centered legs -->
+          <path class="zone" data-key="legL-front" data-state="0"
+            d="M120,360 C115,385 114,420 114,460 L114,590
+               C114,615 124,650 150,660 C170,650 176,620 176,590
+               L176,460 C176,420 175,385 170,360 Z"></path>
+
+          <path class="zone" data-key="legR-front" data-state="0"
+            d="M144,360 C139,385 138,420 138,460 L138,590
+               C138,615 148,650 174,660 C194,650 200,620 200,590
+               L200,460 C200,420 199,385 194,360 Z"></path>
+
           <text class="label" x="160" y="100" text-anchor="middle">Front</text>
         </g>
 
-        <!-- BACK ZONES -->
+        <!-- BACK ZONES (paths/ellipse) -->
         <g class="back-group">
-          <rect class="zone" x="120" y="380" width="80" height="80" rx="40" ry="40" data-key="head-back" data-state="0"></rect>
-          <rect class="zone" x="95" y="470" width="130" height="130" data-key="upper-back" data-state="0"></rect>
-          <rect class="zone" x="95" y="605" width="130" height="90" data-key="lower-back" data-state="0"></rect>
-          <rect class="zone" x="55" y="480" width="35" height="250" rx="18" ry="18" data-key="armL-back" data-state="0"></rect>
-          <rect class="zone" x="230" y="480" width="35" height="250" rx="18" ry="18" data-key="armR-back" data-state="0"></rect>
-          <!-- invisible guides for leg centering not needed when we hide groups -->
+          <ellipse class="zone" cx="160" cy="420" rx="38" ry="40" data-key="head-back" data-state="0"></ellipse>
+
+          <path class="zone" data-key="upper-back" data-state="0"
+            d="M95,470 C110,458 133,454 160,454 C187,454 210,458 225,470
+               L225,560 C210,568 187,572 160,572 C133,572 110,568 95,560 Z"></path>
+
+          <path class="zone" data-key="lower-back" data-state="0"
+            d="M95,578 C110,586 133,590 160,590 C187,590 210,586 225,578
+               L225,660 C210,666 187,670 160,670 C133,670 110,666 95,660 Z"></path>
+
+          <path class="zone" data-key="armL-back" data-state="0"
+            d="M70,480 C60,485 56,495 56,510 L56,700 C56,715 62,725 74,728
+               C86,725 92,715 92,700 L92,510 C92,495 88,485 78,480 Z"></path>
+
+          <path class="zone" data-key="armR-back" data-state="0"
+            d="M248,480 C238,485 234,495 234,510 L234,700 C234,715 240,725 252,728
+               C264,725 270,715 270,700 L270,510 C270,495 266,485 256,480 Z"></path>
+
+          <!-- leg back zones are still computed (same positions) but overlaid by front silhouette -->
+          <path class="zone" data-key="legL-back" data-state="0" style="opacity:0"
+            d="M120,360 C115,385 114,420 114,460 L114,590
+               C114,615 124,650 150,660 C170,650 176,620 176,590
+               L176,460 C176,420 175,385 170,360 Z"></path>
+
+          <path class="zone" data-key="legR-back" data-state="0" style="opacity:0"
+            d="M144,360 C139,385 138,420 138,460 L138,590
+               C138,615 148,650 174,660 C194,650 200,620 200,590
+               L200,460 C200,420 199,385 194,360 Z"></path>
+
           <text class="label" x="160" y="460" text-anchor="middle">Back</text>
         </g>
       </svg>
 
-      <!-- PEDIATRIC MODEL -->
+      <!-- PEDIATRIC MODEL (bigger head, narrower shoulders/legs) -->
       <svg id="pedsSVG" viewBox="0 0 320 720" role="img" aria-label="Pediatric Burn Map" style="display:none" class="view-front">
-        <!-- FRONT silhouette group -->
+        <defs>
+          <linearGradient id="skinGradP" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffe6d1"/>
+            <stop offset="100%" stop-color="#f6d5bf"/>
+          </linearGradient>
+        </defs>
+
+        <!-- FRONT silhouette -->
         <g class="front-group">
-          <path class="sil" d="M160 20c-24 0-42 18-42 42s18 42 42 42 42-18 42-42-18-42-42-42z"/>
-          <path class="sil" d="M128 100h64c14 0 24 10 24 24v100c0 14-10 24-24 24h-64c-14 0-24-10-24-24V124c0-14 10-24 24-24z"/>
-          <path class="sil" d="M78 118c-9 0-16 7-16 16v180c0 9 7 16 16 16s16-7 16-16V134c0-9-7-16-16-16z"/>
-          <path class="sil" d="M242 118c9 0 16 7 16 16v180c0 9-7 16-16 16s-16-7-16-16V134c0-9 7-16 16-16z"/>
-          <path class="sil" d="M136 324h48c12 0 20 8 20 20v16c0 8-6 14-14 14h-60c-8 0-14-6-14-14v-16c0-12 8-20 20-20z"/>
-          <path class="sil" d="M140 378c-12 0-20 8-20 20v222c0 12 8 20 20 20s20-8 20-20V398c0-12-8-20-20-20z"/>
-          <path class="sil" d="M180 378c12 0 20 8 20 20v222c0 12-8 20-20 20s-20-8-20-20V398c0-12 8-20 20-20z"/>
+          <ellipse class="sil" cx="160" cy="62" rx="42" ry="44" fill="url(#skinGradP)"></ellipse>
+          <path class="sil" d="M128 100h64c14 0 24 10 24 24v100c0 14-10 24-24 24h-64c-14 0-24-10-24-24V124c0-14 10-24 24-24z" fill="url(#skinGradP)"/>
+          <path class="sil" d="M78 118c-9 0-16 7-16 16v180c0 9 7 16 16 16s16-7 16-16V134c0-9-7-16-16-16z" fill="url(#skinGradP)"/>
+          <path class="sil" d="M242 118c9 0 16 7 16 16v180c0 9-7 16-16 16s-16-7-16-16V134c0-9 7-16 16-16z" fill="url(#skinGradP)"/>
+          <path class="sil" d="M136 324h48c12 0 20 8 20 20v16c0 8-6 14-14 14h-60c-8 0-14-6-14-14v-16c0-12 8-20 20-20z" fill="url(#skinGradP)"/>
+          <path class="sil" d="M140 378c-12 0-20 8-20 20v222c0 12 8 20 20 20s20-8 20-20V398c0-12-8-20-20-20z" fill="url(#skinGradP)"/>
+          <path class="sil" d="M180 378c12 0 20 8 20 20v222c0 12-8 20-20 20s-20-8-20-20V398c0-12 8-20 20-20z" fill="url(#skinGradP)"/>
         </g>
 
-        <!-- BACK silhouette group -->
+        <!-- BACK silhouette -->
         <g class="back-group">
-          <path class="sil" d="M160 20c-24 0-42 18-42 42s18 42 42 42 42-18 42-42-18-42-42-42z" transform="translate(0,360)"/>
-          <path class="sil" d="M128 456h64c14 0 24 10 24 24v100c0 14-10 24-24 24h-64c-14 0-24-10-24-24v-100c0-14 10-24 24-24z"/>
-          <path class="sil" d="M78 480c-9 0-16 7-16 16v180c0 9 7 16 16 16s16-7 16-16V496c0-9-7-16-16-16z"/>
-          <path class="sil" d="M242 480c9 0 16 7 16 16v180c0 9-7 16-16 16s-16-7-16-16V496c0-9 7-16 16-16z"/>
+          <ellipse class="sil" cx="160" cy="422" rx="42" ry="44" fill="url(#skinGradP)"></ellipse>
+          <path class="sil" d="M128 456h64c14 0 24 10 24 24v100c0 14-10 24-24 24h-64c-14 0-24-10-24-24v-100c0-14 10-24 24-24z" fill="url(#skinGradP)"/>
+          <path class="sil" d="M78 480c-9 0-16 7-16 16v180c0 9 7 16 16 16s16-7 16-16V496c0-9-7-16-16-16z" fill="url(#skinGradP)"/>
+          <path class="sil" d="M242 480c9 0 16 7 16 16v180c0 9-7 16-16 16s-16-7-16-16V496c0-9 7-16 16-16z" fill="url(#skinGradP)"/>
         </g>
 
         <!-- FRONT ZONES -->
         <g class="front-group">
-          <rect class="zone" x="118" y="20" width="84" height="84" rx="42" ry="42" data-key="head-front" data-state="0"></rect>
-          <rect class="zone" x="105" y="110" width="110" height="100" data-key="chest" data-state="0"></rect>
-          <rect class="zone" x="105" y="215" width="110" height="100" data-key="abdomen" data-state="0"></rect>
-          <rect class="zone" x="155" y="322" width="20" height="16" rx="5" ry="5" data-key="perineum" data-state="0"></rect>
-          <rect class="zone" x="70"  y="120" width="28" height="230" rx="14" ry="14" data-key="armL-front" data-state="0"></rect>
-          <rect class="zone" x="222" y="120" width="28" height="230" rx="14" ry="14" data-key="armR-front" data-state="0"></rect>
-          <rect class="zone" x="120" y="360" width="56" height="300" rx="26" ry="26" data-key="legL-front" data-state="0"></rect>
-          <rect class="zone" x="160" y="360" width="56" height="300" rx="26" ry="26" data-key="legR-front" data-state="0"></rect>
+          <ellipse class="zone" cx="160" cy="62" rx="42" ry="44" data-key="head-front" data-state="0"></ellipse>
+
+          <path class="zone" data-key="chest" data-state="0"
+            d="M105,110 C118,102 136,100 160,100 C184,100 202,102 215,110
+               L215,200 C202,206 184,210 160,210 C136,210 118,206 105,200 Z"></path>
+
+          <path class="zone" data-key="abdomen" data-state="0"
+            d="M105,215 C118,208 136,206 160,206 C184,206 202,208 215,215
+               L215,310 C200,318 180,322 160,322 C140,322 120,318 105,310 Z"></path>
+
+          <rect class="zone" x="150" y="322" width="20" height="16" rx="6" ry="6" data-key="perineum" data-state="0"></rect>
+
+          <path class="zone" data-key="armL-front" data-state="0"
+            d="M70,120 C62,124 58,132 58,144 L58,330 C58,344 62,352 74,355
+               C86,352 90,344 90,330 L90,144 C90,132 86,124 78,120 Z"></path>
+
+          <path class="zone" data-key="armR-front" data-state="0"
+            d="M230,120 C222,124 218,132 218,144 L218,330 C218,344 222,352 234,355
+               C246,352 250,344 250,330 L250,144 C250,132 246,124 238,120 Z"></path>
+
+          <!-- Centered, slightly narrower legs -->
+          <path class="zone" data-key="legL-front" data-state="0"
+            d="M126,360 C122,382 121,414 121,450 L121,590
+               C121,612 129,640 150,648 C166,640 172,614 172,590
+               L172,450 C172,414 171,382 168,360 Z"></path>
+
+          <path class="zone" data-key="legR-front" data-state="0"
+            d="M148,360 C144,382 143,414 143,450 L143,590
+               C143,612 151,640 172,648 C188,640 194,614 194,590
+               L194,450 C194,414 193,382 190,360 Z"></path>
+
           <text class="label" x="160" y="100" text-anchor="middle">Front</text>
         </g>
 
         <!-- BACK ZONES -->
         <g class="back-group">
-          <rect class="zone" x="118" y="380" width="84" height="84" rx="42" ry="42" data-key="head-back" data-state="0"></rect>
-          <rect class="zone" x="105" y="470" width="110" height="120" data-key="upper-back" data-state="0"></rect>
-          <rect class="zone" x="105" y="595" width="110" height="85" data-key="lower-back" data-state="0"></rect>
-          <rect class="zone" x="70"  y="480" width="28" height="230" rx="14" ry="14" data-key="armL-back" data-state="0"></rect>
-          <rect class="zone" x="222" y="480" width="28" height="230" rx="14" ry="14" data-key="armR-back" data-state="0"></rect>
+          <ellipse class="zone" cx="160" cy="422" rx="42" ry="44" data-key="head-back" data-state="0"></ellipse>
+
+          <path class="zone" data-key="upper-back" data-state="0"
+            d="M105,470 C120,460 140,456 160,456 C180,456 200,460 215,470
+               L215,560 C200,566 180,570 160,570 C140,570 120,566 105,560 Z"></path>
+
+          <path class="zone" data-key="lower-back" data-state="0"
+            d="M105,578 C120,584 140,588 160,588 C180,588 200,584 215,578
+               L215,658 C200,664 180,668 160,668 C140,668 120,664 105,658 Z"></path>
+
+          <path class="zone" data-key="armL-back" data-state="0"
+            d="M70,480 C62,484 58,492 58,504 L58,690 C58,704 62,712 74,715
+               C86,712 90,704 90,690 L90,504 C90,492 86,484 78,480 Z"></path>
+
+          <path class="zone" data-key="armR-back" data-state="0"
+            d="M230,480 C222,484 218,492 218,504 L218,690 C218,704 222,712 234,715
+               C246,712 250,704 250,690 L250,504 C250,492 246,484 238,480 Z"></path>
+
+          <path class="zone" data-key="legL-back" data-state="0" style="opacity:0"
+            d="M126,360 C122,382 121,414 121,450 L121,590
+               C121,612 129,640 150,648 C166,640 172,614 172,590
+               L172,450 C172,414 171,382 168,360 Z"></path>
+
+          <path class="zone" data-key="legR-back" data-state="0" style="opacity:0"
+            d="M148,360 C144,382 143,414 143,450 L143,590
+               C143,612 151,640 172,648 C188,640 194,614 194,590
+               L194,450 C194,414 193,382 190,360 Z"></path>
+
           <text class="label" x="160" y="460" text-anchor="middle">Back</text>
         </g>
       </svg>
@@ -175,7 +294,7 @@
       <div class="key"><span class="sw none"></span><span>None</span></div>
       <div class="key"><span class="sw half"></span><span>Half (½)</span></div>
       <div class="key"><span class="sw full"></span><span>Full</span></div>
-      <span class="hint">Remember: adult legs = 18% each (9% front + 9% back). Pediatric head proportion is larger.</span>
+      <span class="hint">Adult legs = 18% each (9% front + 9% back). Pediatric head proportion is larger.</span>
     </div>
   </div>
 
@@ -206,7 +325,7 @@
 </div>
 
 <script>
-/* ==== Percent maps (unchanged) ==== */
+/* ==== Percent maps (adult vs pediatric) ==== */
 const PCT_ADULT = {
   "head-front": 4.5, "head-back": 4.5,
   "chest": 9, "abdomen": 9,
@@ -263,35 +382,31 @@ const els = {
 
 function pctMap(which){ return which === 'peds' ? PCT_PEDS : PCT_ADULT; }
 
-/* === New: toggle only one model + header text === */
+/* Toggle one model and update header */
 function setPatientMode(newMode){
   mode = newMode;
   els.modeOut.textContent = mode==='adult' ? 'Adult' : 'Pediatric';
   els.title.textContent = `Rule of Nines — ${mode==='adult'?'Adult View':'Pediatric View'}`;
   els.svgWrap.classList.toggle('peds', mode==='peds');
-  if(mode==='adult'){
-    els.adultSVG.style.display = '';
-    els.pedsSVG.style.display = 'none';
-  }else{
-    els.adultSVG.style.display = 'none';
-    els.pedsSVG.style.display = '';
-  }
+  if(mode==='adult'){ els.adultSVG.style.display = ''; els.pedsSVG.style.display = 'none'; }
+  else { els.adultSVG.style.display = 'none'; els.pedsSVG.style.display = ''; }
 }
 
-/* === New/updated: Front/Back buttons actually switch views === */
+/* Front/Back view switch */
 function setView(newView){
   view = newView;
   els.viewOut.textContent = (view==='front' ? 'Front' : 'Back');
   const svg = (mode==='adult'?els.adultSVG:els.pedsSVG);
   svg.classList.toggle('view-back', view==='back');
-  // hide/show contribution tags by data-side
+
+  // show pct-tags for current side only
   document.querySelectorAll('.pct-tag').forEach(t=>{
     const side = t.getAttribute('data-side') || 'front';
     t.style.display = (side === view) ? '' : 'none';
   });
 }
 
-/* Clear all highlighted burns & contribution tags */
+/* Clear all highlighted burns & tags */
 function clearAll(){
   document.querySelectorAll('.zone').forEach(z=>z.setAttribute('data-state','0'));
   document.querySelectorAll('.pct-tag').forEach(t=>t.remove());
@@ -311,20 +426,31 @@ function sample(arr,n){
   }
   return out;
 }
-function zoneCenter(z){
-  const x = parseFloat(z.getAttribute('x')||'0');
-  const y = parseFloat(z.getAttribute('y')||'0');
-  const w = parseFloat(z.getAttribute('width')||'0');
-  const h = parseFloat(z.getAttribute('height')||'0');
-  return {cx: x + w/2, cy: y + h/2};
+
+/* Robust center for rect/ellipse/path */
+function zoneCenter(node){
+  const tag = node.tagName.toLowerCase();
+  if(tag==='rect' || tag==='image'){
+    const x = parseFloat(node.getAttribute('x')||'0');
+    const y = parseFloat(node.getAttribute('y')||'0');
+    const w = parseFloat(node.getAttribute('width')||'0');
+    const h = parseFloat(node.getAttribute('height')||'0');
+    return {cx: x + w/2, cy: y + h/2};
+  }
+  if(tag==='ellipse' || tag==='circle'){
+    return {cx: parseFloat(node.getAttribute('cx')), cy: parseFloat(node.getAttribute('cy'))};
+  }
+  const b = node.getBBox();
+  return {cx: b.x + b.width/2, cy: b.y + b.height/2};
 }
+
 function keySide(key){
   if(key.endsWith('front') || key==='chest' || key==='abdomen' || key==='perineum') return 'front';
   if(key.endsWith('back')  || key==='upper-back' || key==='lower-back') return 'back';
   return 'front';
 }
 
-/* Build a new randomized scenario; random patient type and difficulty (2–8 zones); 70% full, 30% half */
+/* New random scenario: adult or peds; 2–8 zones; 70% full / 30% half */
 function newScenario(){
   clearAll();
 
@@ -332,18 +458,18 @@ function newScenario(){
   setPatientMode(newMode);
   setView('front');
 
-  // pick zones from the active svg (front+back exist; view hides one at a time)
-  const zones = Array.from((mode==='adult'?els.adultSVG:els.pedsSVG).querySelectorAll('.zone'));
+  const svg = (mode==='adult'?els.adultSVG:els.pedsSVG);
+  const zones = Array.from(svg.querySelectorAll('.zone'));
   const count = randInt(2,8);
   const selected = sample(zones, count);
 
-  // apply states
+  // mark states
   selected.forEach(z=>{
     const st = Math.random() < 0.7 ? 1 : 0.5;
     z.setAttribute('data-state', String(st));
   });
 
-  // compute TBSA for scenario
+  // compute TBSA
   const map = pctMap(mode);
   let total = 0;
   const selections = [];
@@ -366,16 +492,15 @@ function newScenario(){
   els.answerVal.value = '';
 }
 
-/* Reset to blank and immediately start a new random scenario */
+/* Reset: wipe and immediately start new */
 function resetAll(){
   scenarioActive = false; scenario = null; clearAll();
   els.statusOut.textContent = 'Generating scenario...';
   setTimeout(newScenario, 50);
 }
 
-/* Create % contribution tags on the model after submit (respect view toggling via data-side) */
+/* Draw +% contribution tags (respect side & view) */
 function annotateContributions(scn){
-  // remove old tags
   document.querySelectorAll('.pct-tag').forEach(t=>t.remove());
   const svg = (scn.mode==='adult'?els.adultSVG:els.pedsSVG);
 
@@ -391,14 +516,13 @@ function annotateContributions(scn){
     svg.appendChild(t);
   });
 
-  // Immediately apply visibility based on current view
-  setView(view);
+  setView(view); // ensure tags match current side visibility
 }
 
 /* Breakdown list */
 function breakdownHTML(scn){
   const rows = scn.selections
-    .sort((a,b)=> (b.percent_each*a.state) - (a.percent_each*b.state))
+    .sort((a,b)=> (b.percent_each*b.state) - (a.percent_each*a.state))
     .map(sel=>{
       const name = NAME[sel.key] || sel.key;
       const mult = sel.state === 1 ? '× full' : '× ½';
@@ -412,7 +536,7 @@ function breakdownHTML(scn){
   `;
 }
 
-/* Risk advice based on involved regions (unchanged) */
+/* Risk advice */
 function riskAdviceHTML(scn){
   const keys = scn.selections.map(s=>s.key);
   const isSelected = (k)=> keys.includes(k);
@@ -426,29 +550,26 @@ function riskAdviceHTML(scn){
 
   const items = [];
   if(involves.faceHead){
-    items.push(`<li><b>Face/Head:</b> watch for inhalation injury and airway edema (soot, hoarseness, singed hairs). Early airway consideration; humidified O₂; rapid burn center transport.</li>`);
+    items.push(`<li><b>Face/Head:</b> monitor for inhalation injury & airway edema (soot, hoarseness, singed hairs). Early airway; humidified O₂; rapid burn-center transport.</li>`);
   }
   if(involves.handsArms){
-    items.push(`<li><b>Hands/Arms:</b> high functional risk. Remove rings/watches early. Elevate, splint in position of function, burn center consult if deep or circumferential.</li>`);
+    items.push(`<li><b>Hands/Arms:</b> high functional risk. Remove rings/watches early; elevate; splint in position of function; consult if deep/circumferential.</li>`);
   }
   if(involves.chestBack){
-    items.push(`<li><b>Chest/Back/Torso:</b> circumferential/deep burns can restrict ventilation. Monitor chest excursion, WOB; anticipate eschar-related restriction; adequate analgesia; continuous SpO₂/EtCO₂ if available.</li>`);
+    items.push(`<li><b>Chest/Back/Torso:</b> deep/circumferential burns may restrict ventilation—monitor chest excursion, WOB; consider eschar risk; analgesia; SpO₂/EtCO₂ if available.</li>`);
   }
   if(involves.perineum){
-    items.push(`<li><b>Perineum:</b> high contamination/infection risk; meticulous hygiene and early specialty evaluation.</li>`);
+    items.push(`<li><b>Perineum:</b> high contamination/infection risk; meticulous hygiene; early specialty evaluation.</li>`);
   }
   if(involves.legs){
-    items.push(`<li><b>Lower extremities:</b> elevate; frequent pulse/cap refill checks; beware compartment-like effects with circumferential burns.</li>`);
+    items.push(`<li><b>Lower extremities:</b> elevate; frequent pulse/cap refill checks; watch for compartment-like effects if circumferential.</li>`);
   }
-  items.push(`<li><b>General:</b> stop the burning process, prevent hypothermia, dry sterile dressings, analgesia, tetanus considerations, and follow local protocols for fluids and destination (burn center criteria).</li>`);
+  items.push(`<li><b>General:</b> stop the burning process, prevent hypothermia, dry sterile dressings, analgesia, tetanus up to date, and follow local protocols for fluids/destination.</li>`);
 
-  return `
-    <h4>Clinical Risk Considerations</h4>
-    <ul>${items.join('')}</ul>
-  `;
+  return `<h4>Clinical Risk Considerations</h4><ul>${items.join('')}</ul>`;
 }
 
-/* Submit answer (unchanged logic; now also honors view buttons for tag visibility) */
+/* Submit answer */
 function submitAnswer(){
   if(!scenarioActive || !scenario){
     els.feedback.innerHTML = `<div class="bad">Scenario is not ready. Click New Scenario.</div>`;
@@ -471,7 +592,7 @@ function submitAnswer(){
     els.feedback.innerHTML = `
       <div class="bad"><b>Not quite.</b> Correct TBSA is ${correct.toFixed(2)}% (you entered ${v.toFixed(2)}%).</div>
       ${breakdownHTML(scenario)}
-      <div class="hint">Use the <b>Front/Back</b> buttons. The <b>+% tags</b> show each region’s contribution.</div>
+      <div class="hint">Use the <b>Front/Back</b> buttons. The <b>+% tags</b> on the model show each region’s contribution.</div>
     `;
   }
 
@@ -486,7 +607,7 @@ els.newScenarioBtn.addEventListener('click', newScenario);
 els.resetBtn.addEventListener('click', resetAll);
 els.submitBtn.addEventListener('click', submitAnswer);
 
-/* Init: auto-start scenario with random patient type/difficulty */
+/* Init: auto-start scenario */
 resetAll();
 </script>
 </body>
