@@ -24,8 +24,9 @@
     @media(min-width:940px){ .grid{ grid-template-columns: 1.1fr .9fr } }
     .card{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px }
     h2{ margin:0 0 8px 0; font-size:20px }
-    .scenario{ font-size:16px; color:#0b2c3a; line-height:1.5 }
+    .scenario{ font-size:16px; color:#0b2c3a; line-height:1.55 }
     .tiny{ font-size:12px; color:var(--muted) }
+    .badge{ font-size:12px; display:inline-block; padding:2px 8px; border-radius:999px; background:#eaf7ff; color:#0b2c3a; border:1px solid #cfe7ef }
     .device{ display:grid; gap:12px; grid-template-rows:auto auto 1fr auto }
     .screen{ background:#0b2530; color:#e8ffff; border-radius:14px; padding:12px 14px; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.08) }
     .status-strip{ display:flex; justify-content:space-between; gap:8px; color:#b5dee2; font-size:13px; margin-bottom:6px }
@@ -53,8 +54,7 @@
     button.choice.incorrect{ border-color:#ffb3b3; background:#fff0f0 }
     .explain{ margin-top:10px; padding:12px; border-radius:12px; border:1px solid #dbeff6; background:#f6fcff; color:#073042 }
     .next{ display:inline-flex; gap:10px; align-items:center; background:var(--brand); color:#fff; border:none; border-radius:12px; padding:12px 14px; cursor:pointer; font-weight:700; margin-top:10px; box-shadow:0 4px 12px rgba(0,123,255,.25) }
-    .footer-note{ text-align:center; font-size:12px; color:var(--muted); padding:4px 0 10px }
-    .badge{ font-size:12px; display:inline-block; padding:2px 8px; border-radius:999px; background:#eaf7ff; color:#0b2c3a; border:1px solid #cfe7ef }
+    .footer-note{ text-align:center; font-size:12px; color:#muted; padding:4px 0 10px }
   </style>
 </head>
 <body>
@@ -66,9 +66,12 @@
       <h2>Scenario</h2>
       <div id="scenarioText" class="scenario">Loading case…</div>
       <div style="margin-top:8px">
-        <span class="badge" id="hintBadge">NREMT Focus: Oxygenation & Ventilation</span>
+        <span class="badge" id="hintBadge">NREMT Focus: Oxygenation, Ventilation & CPAP</span>
       </div>
-      <p class="tiny" style="margin-top:6px">Read the scenario, review the SpO₂ and waveform, then choose the **best EMT treatment**. SpO₂ will change based on your choice.</p>
+      <p class="tiny" style="margin-top:6px">
+        Review the chief complaint and **RR**, then choose the **best EMT treatment**. SpO₂ will change based on your choice.
+        <br>Guidance: **BVM** if ventilation is inadequate (slow/shallow/poor tidal volume or altered mentation). **CPAP** for severe respiratory distress with **adequate** respirations (e.g., CHF pulmonary edema or COPD exacerbation), when allowed by protocol and no contraindications.
+      </p>
     </div>
 
     <div class="card device" aria-label="Pulse oximeter">
@@ -115,135 +118,178 @@
   function clamp(v,a,b){ return Math.max(a, Math.min(b,v)); }
   function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
 
-  // Core case library (NREMT-aligned oxygenation/ventilation decisions)
+  // ---- Case Library (now includes CPAP-best cases) ----
   const CASES = [
+    // --- CPAP Best: CHF ---
     {
-      id:'asthma_adult',
-      title:'Adult with asthma exacerbation',
-      text:'You find a 28-year-old adult sitting upright, speaking in 2–3 word sentences with audible wheezes, increased work of breathing, and accessory muscle use. Skin cool and diaphoretic.',
-      base:{ spo2:[84,89], pulse:[110,130], perf:'fair' },
+      id:'chf_pulmonary_edema_cpap',
+      title:'CHF with acute pulmonary edema',
+      text:'74-year-old in severe respiratory distress: pink frothy sputum, rales bilaterally, JVD, tripod, speaking 1–2 word phrases. Mentation intact, able to follow commands.',
+      base:{ spo2:[80,86], pulse:[100,120], rr:[24,34], perf:'fair' },
       signal:3,
-      best:'nrb15',
-      alsoCorrect:[],
+      best:'cpap',
+      alsoCorrect:['nrb15'], // acceptable if CPAP unavailable; consider BVM if ventilation fails
       options:[
-        {key:'none', label:'No oxygen; coach breathing only'},
         {key:'nc2', label:'O₂ via nasal cannula 2–4 L/min'},
         {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min'},
+        {key:'cpap', label:'CPAP with high-flow O₂'},
         {key:'bvm', label:'Assist ventilations with BVM + high-flow O₂'}
       ],
       targets:{
-        none:    {spo2: base=> base-1, note:'Patient is hypoxic; withholding O₂ is inappropriate.'},
-        nc2:     {spo2: base=> clamp(base+3, 80, 93), note:'Low-flow may be insufficient for moderate/severe distress.'},
-        nrb15:   {spo2: base=> clamp(Math.max(base, 86)+8, 90, 97), note:'High-concentration O₂ indicated with distress/hypoxia.'},
-        bvm:     {spo2: base=> clamp(base+6, 88, 96), note:'Useful if tidal volume is poor; here patient is ventilating, so NRB is first choice.'}
+        nc2:   {spo2: base=> clamp(base+3, 84, 90), note:'Too low-flow for this severity.'},
+        nrb15: {spo2: base=> clamp(base+8, 90, 96), note:'Improves oxygenation but does not reduce pulmonary edema like CPAP does.'},
+        cpap:  {spo2: base=> clamp(base+12, 92, 98), note:'CPAP improves oxygenation and reduces work of breathing by recruiting alveoli and decreasing preload/afterload.'},
+        bvm:   {spo2: base=> clamp(base+11, 90, 98), note:'Use if ventilation becomes inadequate or mental status worsens.'}
       },
-      whyCorrect:'NREMT: Provide oxygen for signs of hypoxia or SpO₂ < 94%. With moderate respiratory distress and adequate ventilations, high-concentration O₂ via NRB is appropriate. Assist ventilations with BVM if ventilation becomes inadequate.'
+      whyCorrect:'NREMT: For severe respiratory distress with adequate respirations in suspected cardiogenic pulmonary edema, CPAP is indicated when authorized and no contraindications (e.g., altered LOC, vomiting, hypotension).'
     },
+    // --- CPAP Best: COPD ---
     {
-      id:'pneumonia_adult',
-      title:'Adult with suspected pneumonia',
-      text:'62-year-old with fever, productive cough, and mild increased work of breathing. Speaking full sentences, mild crackles in right base.',
-      base:{ spo2:[90,93], pulse:[88,104], perf:'good' },
+      id:'copd_exacerbation_cpap',
+      title:'COPD exacerbation (adequate respirations)',
+      text:'66-year-old with history of COPD. Increased work of breathing with wheezes, prolonged expirations, pursed-lip breathing. Speaking short phrases, alert, cooperative.',
+      base:{ spo2:[84,90], pulse:[96,112], rr:[22,30], perf:'fair' },
       signal:3,
-      best:'nc2',
-      alsoCorrect:['nrb15'], // acceptable if patient worsens; we’ll mark as not-best but defensible
+      best:'cpap',
+      alsoCorrect:['nrb15'],
       options:[
-        {key:'none', label:'No oxygen; observe only'},
         {key:'nc2', label:'O₂ via nasal cannula 2–4 L/min (titrate)'},
-        {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min'}
+        {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min'},
+        {key:'cpap', label:'CPAP with high-flow O₂'},
+        {key:'bvm', label:'Assist ventilations with BVM + high-flow O₂'}
       ],
       targets:{
-        none:   {spo2: base=> base-1, note:'SpO₂ ~91–93% with symptoms → oxygen indicated.'},
-        nc2:    {spo2: base=> clamp(base+4, 92, 98), note:'Titrate to ≥94% if tolerated.'},
-        nrb15:  {spo2: base=> clamp(base+5, 93, 99), note:'Works, but low-flow nasal cannula is typically sufficient for mild distress.'}
+        nc2:   {spo2: base=> clamp(base+3, 88, 94), note:'Helpful but may not relieve dynamic airway collapse/air trapping.'},
+        nrb15: {spo2: base=> clamp(base+6, 90, 96), note:'Improves FiO₂ but not airway stenting.'},
+        cpap:  {spo2: base=> clamp(base+10, 92, 97), note:'CPAP splints airways open, reduces work of breathing, and improves gas exchange when respirations are adequate.'},
+        bvm:   {spo2: base=> clamp(base+8, 90, 96), note:'Reserve for ventilatory failure (fatigue/altered LOC).'}
       },
-      whyCorrect:'NREMT: For mild hypoxia with adequate breathing, administer oxygen and titrate to maintain SpO₂ ≥ 94%. Nasal cannula 2–4 L/min is appropriate here.'
+      whyCorrect:'NREMT: CPAP is appropriate for COPD exacerbation when the patient is in moderate/severe distress yet ventilating adequately; avoid CPAP if respiratory failure or contraindications exist.'
     },
+    // --- BVM Best: Opioid ---
     {
       id:'opioid_overdose',
       title:'Opioid overdose with hypoventilation',
-      text:'22-year-old found with slow, shallow respirations at 6/min, pinpoint pupils, cyanotic lips. Pulse weak and rapid.',
-      base:{ spo2:[76,82], pulse:[100,120], perf:'poor' },
+      text:'22-year-old with slow, shallow respirations, pinpoint pupils, cyanotic lips. Weak rapid pulse.',
+      base:{ spo2:[76,82], pulse:[100,120], rr:[4,8], perf:'poor' },
       signal:2,
       best:'bvm',
       alsoCorrect:[],
       options:[
         {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min'},
+        {key:'cpap', label:'CPAP with high-flow O₂'},
         {key:'bvm', label:'Assist ventilations with BVM + high-flow O₂'},
         {key:'nc2', label:'O₂ via nasal cannula 2–4 L/min'}
       ],
       targets:{
-        nrb15: {spo2: base=> clamp(base+2, 78, 85), note:'NRB does not correct inadequate ventilation.'},
-        bvm:   {spo2: base=> clamp(base+14, 90, 99), note:'Positive-pressure ventilation corrects hypoventilation and improves oxygenation.'},
+        nrb15: {spo2: base=> clamp(base+2, 78, 85), note:'Adds O₂ but does not fix hypoventilation.'},
+        cpap:  {spo2: base=> clamp(base+2, 78, 86), note:'Positive pressure without controlled ventilation is inappropriate in apnea/hypoventilation.'},
+        bvm:   {spo2: base=> clamp(base+14, 90, 99), note:'Ventilate; consider naloxone per protocol after airway/ventilation.'},
         nc2:   {spo2: base=> clamp(base+1, 77, 84), note:'Insufficient with inadequate breathing.'}
       },
-      whyCorrect:'NREMT: If breathing is inadequate (slow/shallow), ventilate with BVM and high-flow O₂. Consider naloxone per protocol, but airway/ventilation takes priority.'
+      whyCorrect:'NREMT: If breathing is inadequate (RR ~6, shallow), ventilate with BVM and high-flow O₂. CPAP is not for hypoventilation/apnea.'
     },
+    // --- BVM Best: Severe Asthma Tiring ---
     {
-      id:'peds_asthma',
-      title:'Pediatric asthma with moderate distress',
-      text:'6-year-old with expiratory wheezes, intercostal retractions, anxious but responsive. Able to speak short phrases.',
-      base:{ spo2:[87,90], pulse:[110,140], perf:'fair' },
-      signal:3,
-      best:'nrb15',
-      alsoCorrect:['blowby'],
+      id:'severe_asthma_tiring',
+      title:'Severe asthma now tiring (ventilatory failure looming)',
+      text:'35-year-old initially tachypneic; now fatigued, drowsy, shallow breaths, minimal air movement, silent chest between occasional wheezes.',
+      base:{ spo2:[82,88], pulse:[120,140], rr:[8,12], perf:'poor' },
+      signal:2,
+      best:'bvm',
+      alsoCorrect:[],
       options:[
-        {key:'blowby', label:'Blow-by O₂ (tolerated)'},
-        {key:'nc2', label:'O₂ via nasal cannula 2–4 L/min'},
-        {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min (if tolerated)'},
-        {key:'none', label:'No oxygen; reassure only'}
+        {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min'},
+        {key:'cpap', label:'CPAP with high-flow O₂'},
+        {key:'bvm', label:'Assist ventilations with BVM + high-flow O₂'},
+        {key:'nc2', label:'O₂ via nasal cannula 2–4 L/min'}
       ],
       targets:{
-        blowby:{spo2: base=> clamp(base+7, 90, 96), note:'Gentle approach is helpful if mask not tolerated.'},
-        nc2:   {spo2: base=> clamp(base+4, 90, 95), note:'May help, but higher FiO₂ preferable with moderate distress.'},
-        nrb15: {spo2: base=> clamp(base+9, 92, 97), note:'Best if child tolerates the mask.'},
-        none:  {spo2: base=> base-1, note:'Hypoxic child needs oxygen.'}
+        nrb15:{spo2: base=> clamp(base+3, 84, 90), note:'High FiO₂ without ventilation support won’t fix fatigue/shallow breaths.'},
+        cpap: {spo2: base=> clamp(base+4, 85, 92), note:'Not appropriate when ventilation is failing.'},
+        bvm:  {spo2: base=> clamp(base+12, 90, 98), note:'Impending failure → assist ventilations now.'},
+        nc2:  {spo2: base=> clamp(base+1, 83, 89), note:'Too little for this severity.'}
       },
-      whyCorrect:'NREMT: Pediatric patients with hypoxia/distress should receive oxygen. Use NRB if tolerated; otherwise blow-by is reasonable. Avoid delaying oxygen.'
+      whyCorrect:'NREMT: Signs of ventilatory failure require assisted ventilations with BVM, not CPAP.'
     },
+    // --- NRB Best: Asthma moderate ---
+    {
+      id:'asthma_adult',
+      title:'Adult with asthma exacerbation (moderate)',
+      text:'28-year-old upright, speaking 2–3 word sentences, audible wheezes, accessory muscle use. Mentation intact.',
+      base:{ spo2:[84,89], pulse:[110,130], rr:[24,34], perf:'fair' },
+      signal:3,
+      best:'nrb15',
+      alsoCorrect:['cpap','bvm'], // CPAP could be considered in some systems if ventilations adequate; BVM if failing
+      options:[
+        {key:'none', label:'No oxygen; coach breathing only'},
+        {key:'nc2', label:'O₂ via nasal cannula 2–4 L/min'},
+        {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min'},
+        {key:'cpap', label:'CPAP with high-flow O₂'},
+        {key:'bvm', label:'Assist ventilations with BVM + high-flow O₂'}
+      ],
+      targets:{
+        none:   {spo2: base=> base-1, note:'Hypoxic; oxygen indicated.'},
+        nc2:    {spo2: base=> clamp(base+3, 80, 93), note:'Likely insufficient for moderate/severe distress.'},
+        nrb15:  {spo2: base=> clamp(Math.max(base,86)+8, 90, 97), note:'Appropriate initial therapy with adequate ventilation.'},
+        cpap:   {spo2: base=> clamp(base+9, 90, 97), note:'Can reduce work of breathing if tolerated and protocols allow.'},
+        bvm:    {spo2: base=> clamp(base+6, 88, 96), note:'Use if ventilation becomes inadequate.'}
+      },
+      whyCorrect:'NREMT: Provide high-concentration O₂ for hypoxia with adequate ventilation; escalate to BVM if ventilation worsens. CPAP use varies by protocol for asthma.'
+    },
+    // --- NC Best: Pneumonia mild ---
+    {
+      id:'pneumonia_adult',
+      title:'Adult with suspected pneumonia (mild distress)',
+      text:'62-year-old with fever, productive cough, mild increased work of breathing. Speaking full sentences; mild crackles.',
+      base:{ spo2:[90,93], pulse:[88,104], rr:[18,24], perf:'good' },
+      signal:3,
+      best:'nc2',
+      alsoCorrect:['nrb15'],
+      options:[
+        {key:'none', label:'No oxygen; observe only'},
+        {key:'nc2', label:'O₂ via nasal cannula 2–4 L/min (titrate)'},
+        {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min'},
+        {key:'cpap', label:'CPAP with high-flow O₂'},
+        {key:'bvm', label:'Assist ventilations with BVM + high-flow O₂'}
+      ],
+      targets:{
+        none:   {spo2: base=> base-1, note:'SpO₂ ~91–93% with symptoms → oxygen indicated.'},
+        nc2:    {spo2: base=> clamp(base+4, 92, 98), note:'Titrate to ≥94% if tolerated.'},
+        nrb15:  {spo2: base=> clamp(base+5, 93, 99), note:'Works, but low-flow may suffice for mild distress.'},
+        cpap:   {spo2: base=> clamp(base+5, 93, 99), note:'Not typically indicated for pneumonia with adequate oxygenation on NC.'},
+        bvm:    {spo2: base=> clamp(base+4, 92, 98), note:'Not indicated when ventilation is adequate.'}
+      },
+      whyCorrect:'NREMT: For mild hypoxia with adequate breathing, administer and titrate O₂ to maintain SpO₂ ≥ 94%.'
+    },
+    // --- Reassurance Best: Anxiety ---
     {
       id:'anxiety_hypervent',
       title:'Anxiety/hyperventilation',
       text:'19-year-old anxious after an argument, tingling fingers, rapid deep respirations. Clear lungs, normal skin signs.',
-      base:{ spo2:[98,100], pulse:[90,110], perf:'good' },
+      base:{ spo2:[98,100], pulse:[90,110], rr:[24,32], perf:'good' },
       signal:4,
       best:'none',
       alsoCorrect:[],
       options:[
         {key:'none', label:'No oxygen; coach breathing and reassurance'},
         {key:'nc2', label:'O₂ via nasal cannula 2–4 L/min'},
-        {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min'}
-      ],
-      targets:{
-        none:  {spo2: base=> clamp(randInt(98,100), 95, 100), note:'SpO₂ already normal. Focus on calming/assessment.'},
-        nc2:   {spo2: base=> clamp(randInt(98,100), 95, 100), note:'Oxygen not indicated; does not treat cause.'},
-        nrb15: {spo2: base=> clamp(randInt(98,100), 95, 100), note:'Unnecessary; may be uncomfortable and waste resources.'}
-      },
-      whyCorrect:'NREMT: Do not give oxygen routinely when SpO₂ is normal and there are no signs of hypoxia. Provide reassurance and monitor.'
-    },
-    {
-      id:'chf_pulmonary_edema',
-      title:'CHF with pulmonary edema',
-      text:'74-year-old with sudden dyspnea, rales bilaterally, JVD, pink frothy sputum, sitting tripod. Speaking 1–2 word phrases.',
-      base:{ spo2:[80,86], pulse:[100,120], perf:'fair' },
-      signal:3,
-      best:'nrb15',
-      alsoCorrect:['bvm'],
-      options:[
-        {key:'nc2', label:'O₂ via nasal cannula 2–4 L/min'},
         {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min'},
+        {key:'cpap', label:'CPAP with high-flow O₂'},
         {key:'bvm', label:'Assist ventilations with BVM + high-flow O₂'}
       ],
       targets:{
-        nc2:   {spo2: base=> clamp(base+3, 84, 90), note:'Likely inadequate given severity.'},
-        nrb15: {spo2: base=> clamp(base+10, 90, 97), note:'High-concentration O₂ indicated for significant distress.'},
-        bvm:   {spo2: base=> clamp(base+12, 90, 98), note:'Use if ventilations are inadequate or mental status worsens.'}
+        none:  {spo2: base=> clamp(randInt(98,100), 95, 100), note:'SpO₂ normal. Focus on calming/assessment.'},
+        nc2:   {spo2: base=> clamp(randInt(98,100), 95, 100), note:'O₂ not indicated; does not treat cause.'},
+        nrb15: {spo2: base=> clamp(randInt(98,100), 95, 100), note:'Unnecessary and uncomfortable.'},
+        cpap:  {spo2: base=> clamp(randInt(98,100), 95, 100), note:'Not indicated; may worsen anxiety.'},
+        bvm:   {spo2: base=> clamp(randInt(98,100), 95, 100), note:'Not indicated; ventilation is adequate/excessive.'}
       },
-      whyCorrect:'NREMT: Provide high-concentration oxygen for severe respiratory distress/hypoxia. If inadequate ventilation develops, assist with BVM.'
+      whyCorrect:'NREMT: Do not give oxygen routinely when SpO₂ is normal and there are no signs of hypoxia. Provide reassurance and monitor.'
     }
   ];
 
-  // Signal bar helper
+  // Signal bars
   function setSignal(n){
     const bars = sigBars.querySelectorAll('span');
     bars.forEach((b,i)=> b.classList.toggle('on', i < n));
@@ -262,7 +308,7 @@
   const state = {
     spo2: null, pulse: null, baseSpO2: null, targetSpO2: null,
     perf: 'good', signal: 3, t:0, phase:0, anim: null,
-    readingShown:false, transitioning:false
+    readingShown:false, transitioning:false, rr:null
   };
 
   // Pleth drawing
@@ -345,17 +391,21 @@
 
     // visual correctness
     const isBest = key === caseDef.best;
-    const isAlso = caseDef.alsoCorrect.includes(key);
+    const isAlso = caseDef.alsoCorrect && caseDef.alsoCorrect.includes(key);
     btnEl.classList.add(isBest ? 'correct' : 'incorrect');
 
-    // feedback
+    // RR note when ventilation/CPAP relevant
+    const rrNote = (key==='bvm' || key==='cpap' || caseDef.best==='bvm' || caseDef.best==='cpap')
+      ? ` RR here is ${state.rr}/min, which informs ventilation vs CPAP decisions.`
+      : '';
+
     let msg = '';
     if(isBest){
-      msg = `✅ Correct. ${plan.note} ${caseDef.whyCorrect}`;
+      msg = `✅ Correct. ${plan.note}${rrNote} ${caseDef.whyCorrect}`;
     } else if(isAlso){
-      msg = `🟡 Acceptable but not best. ${plan.note} Best initial choice: ${labelFor(caseDef, caseDef.best)}. ${caseDef.whyCorrect}`;
+      msg = `🟡 Acceptable but not best. ${plan.note}${rrNote} Best initial choice: ${labelFor(caseDef, caseDef.best)}. ${caseDef.whyCorrect}`;
     } else {
-      msg = `❌ Not the best choice. ${plan.note} The preferred treatment is **${labelFor(caseDef, caseDef.best)}**. ${caseDef.whyCorrect}`;
+      msg = `❌ Not the best choice. ${plan.note}${rrNote} The preferred treatment is **${labelFor(caseDef, caseDef.best)}**. ${caseDef.whyCorrect}`;
     }
     explainBox.style.display = 'block';
     explainBox.innerHTML = msg;
@@ -367,7 +417,7 @@
     return f ? f.label : key;
   }
 
-  // Case runner
+  // Run a random case
   function runRandomCase(){
     explainBox.style.display='none'; explainBox.innerHTML='';
     nextBtn.style.display='none';
@@ -377,15 +427,21 @@
 
     // pick a case
     const caseDef = CASES[Math.floor(Math.random()*CASES.length)];
-    scenarioText.innerHTML = `<strong>${caseDef.title}</strong><br>${caseDef.text}`;
-    setSignal(caseDef.signal);
-
-    // establish baseline vitals
     const baseSpO2 = randInt(caseDef.base.spo2[0], caseDef.base.spo2[1]);
     const basePulse = randInt(caseDef.base.pulse[0], caseDef.base.pulse[1]);
+    const rr = randInt(caseDef.base.rr[0], caseDef.base.rr[1]);
+
     state.baseSpO2 = baseSpO2;
     state.spo2 = null; state.pulse = null; state.perf = caseDef.base.perf;
     state.signal = caseDef.signal; state.readingShown=false; state.transitioning=false; state.targetSpO2=null;
+    state.rr = rr;
+
+    scenarioText.innerHTML = `
+      <strong>${caseDef.title}</strong><br>
+      ${caseDef.text}<br>
+      <strong>RR:</strong> ${rr}/min
+    `;
+    setSignal(caseDef.signal);
 
     // simulate acquisition delay
     setTimeout(()=>{
@@ -397,7 +453,7 @@
     }, 1600 + Math.random()*800);
   }
 
-  // Prevent double-tap zoom on iOS for tap elements
+  // Prevent double-tap zoom on iOS
   let lastTouch=0;
   document.addEventListener('touchend', e=>{
     const now = Date.now();
