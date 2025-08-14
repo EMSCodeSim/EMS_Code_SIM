@@ -1,184 +1,456 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rule of Nines Quiz</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rule of Nines — TBSA Burn Quiz</title>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        background: #f0f8ff;
-        margin: 0;
-    }
-    header {
-        background: #007B8A;
-        color: white;
-        padding: 1rem;
-        font-size: 1.5rem;
-    }
-    svg {
-        max-width: 300px;
-        margin: 1rem auto;
-        display: block;
-    }
-    .burned {
-        fill: orange !important;
-    }
-    input[type="number"] {
-        padding: 0.4rem;
-        font-size: 1rem;
-        width: 80px;
-        text-align: center;
-    }
-    button {
-        padding: 0.5rem 1rem;
-        margin: 0.5rem;
-        font-size: 1rem;
-        background: #007B8A;
-        color: white;
-        border: none;
-        cursor: pointer;
-    }
-    button:hover {
-        background: #005f65;
-    }
-    #feedback {
-        margin-top: 1rem;
-        font-size: 1rem;
-        font-weight: bold;
-    }
+  :root{
+    --brand:#007B8A; --bg:#f0f8ff; --ink:#123; --card:#ffffff; --muted:#6b7c85;
+    --chip:#e8f4f6; --full:#d9534f; --half:#f0ad4e; --none:#c8d7df; --stroke:#233;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;display:flex;flex-direction:column}
+  header{background:var(--brand);color:#fff;padding:1rem 1.25rem;text-align:center}
+  header h1{margin:0;font-size:1.2rem}
+  .wrap{width:min(1100px,100%);margin:0 auto;padding:1rem;display:grid;gap:1rem}
+  .controls,.results,.legend,.quiz{background:var(--card);border-radius:.75rem;padding:1rem;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+  .seg{display:flex;gap:.5rem;flex-wrap:wrap}
+  button,input{border:1px solid #cbd5db;border-radius:.6rem;padding:.6rem .8rem;background:#fff;color:var(--ink);outline:0}
+  button{background:var(--brand);color:#fff;border:none;cursor:pointer;font-weight:600}
+  button.secondary{background:#fff;color:var(--brand);border:1px solid var(--brand)}
+  button.danger{background:#9f2f2f}
+  .chip{background:var(--chip);border:none;border-radius:.6rem;padding:.5rem .7rem;color:var(--brand);font-weight:600}
+
+  .board{background:var(--card);border-radius:.75rem;padding:.5rem;display:grid;justify-items:center;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .svg-wrap{width:min(520px,100%);height:auto;position:relative;transition:transform .15s ease}
+  .svg-wrap.peds{transform:scale(.9); transform-origin: top center;} /* pediatric a bit smaller */
+  svg{width:100%;height:auto}
+
+  /* Zones (calculation areas) */
+  .zone{fill:#fff;stroke:var(--none);stroke-width:2;transition:fill .15s,stroke .15s,opacity .15s;pointer-events:none}
+  .zone[data-state="0"]{fill:#fff}
+  .zone[data-state="0.5"]{fill:var(--half);stroke:var(--stroke)}
+  .zone[data-state="1"]{fill:var(--full);stroke:var(--stroke)}
+
+  /* Percent contribution tags (hidden until submit) */
+  .pct-tag{display:none;font-size:.72rem;fill:#000;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;font-weight:700;opacity:.95}
+
+  .legend{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+  .legend .key{display:flex;align-items:center;gap:.4rem}
+  .sw{width:18px;height:12px;border-radius:3px;border:1px solid #9cb0ba}
+  .sw.none{background:#fff}
+  .sw.half{background:var(--half)}
+  .sw.full{background:var(--full)}
+
+  .results{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));align-items:center}
+  .kv{background:var(--chip);padding:.8rem;border-radius:.6rem;display:flex;justify-content:space-between;gap:.5rem;align-items:center}
+  .kv b{font-size:1.05rem}
+
+  .quiz .grid{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .feedback{margin-top:.6rem;border-top:1px dashed #d6e3e9;padding-top:.6rem}
+  .ok{color:#116e3a}
+  .bad{color:#9f2f2f}
+  .hint{color:var(--muted);font-size:.9rem}
+
+  .risks{margin-top:.6rem;background:#fbfcfe;border:1px solid #e1ebf0;border-radius:.6rem;padding:.6rem}
+  .risks h4{margin:.2rem 0 .4rem;font-size:1rem}
+  .risks ul{margin:.2rem 0 .2rem 1.1rem}
+
+  /* Only one side visible per model */
+  .front-only .back { display:none }
+  .back-only  .front{ display:none }
 </style>
 </head>
 <body>
-<header id="viewType">Rule of Nines Burn Quiz</header>
+<header><h1 id="title">Rule of Nines — TBSA Burn Quiz</h1></header>
+<div class="wrap">
 
-<div id="svg-container"></div>
-<button id="toggleViewBtn">Show Back</button>
+  <!-- Controls -->
+  <div class="controls">
+    <div class="row">
+      <span class="chip">A random Adult or Pediatric scenario starts on load. Burns may be on BOTH sides — use Front/Back.</span>
+      <div class="seg" style="margin-left:auto">
+        <button id="frontBtn" class="secondary">Front</button>
+        <button id="backBtn"  class="secondary">Back</button>
+        <button id="newScenarioBtn">New Scenario</button>
+        <button id="resetBtn" class="danger">Reset</button>
+      </div>
+    </div>
+  </div>
 
-<div id="question">Estimate the %TBSA burned:</div>
-<input type="number" id="answer" min="0" max="100"> %
-<br>
-<button id="submitBtn">Submit</button>
+  <!-- Board -->
+  <div class="board">
+    <div id="svgWrap" class="svg-wrap">
+      <!-- ADULT MODEL (front & back share same footprint) -->
+      <svg id="adultSVG" viewBox="0 0 320 720" role="img" aria-label="Adult Burn Map" class="front-only">
+        <!-- FRONT -->
+        <g class="front">
+          <rect class="zone" data-key="head-front" x="120" y="20" width="80" height="80" rx="40" ry="40"></rect>
+          <rect class="zone" data-key="chest"      x="95"  y="110" width="130" height="110"></rect>
+          <rect class="zone" data-key="abdomen"    x="95"  y="225" width="130" height="110"></rect>
+          <rect class="zone" data-key="perineum"   x="150" y="340" width="20"  height="16"  rx="5" ry="5"></rect>
+          <rect class="zone" data-key="armL-front" x="55"  y="120" width="35"  height="250" rx="18" ry="18"></rect>
+          <rect class="zone" data-key="armR-front" x="230" y="120" width="35"  height="250" rx="18" ry="18"></rect>
+          <rect class="zone" data-key="legL-front" x="120" y="360" width="60"  height="300" rx="28" ry="28"></rect>
+          <rect class="zone" data-key="legR-front" x="190" y="360" width="60"  height="300" rx="28" ry="28"></rect>
+        </g>
 
-<div id="feedback"></div>
+        <!-- BACK -->
+        <g class="back">
+          <rect class="zone" data-key="head-back"   x="120" y="20" width="80" height="80" rx="40" ry="40"></rect>
+          <rect class="zone" data-key="upper-back"  x="95"  y="110" width="130" height="130"></rect>
+          <rect class="zone" data-key="lower-back"  x="95"  y="245" width="130" height="130"></rect>
+          <rect class="zone" data-key="armL-back"   x="55"  y="120" width="35"  height="250" rx="18" ry="18"></rect>
+          <rect class="zone" data-key="armR-back"   x="230" y="120" width="35"  height="250" rx="18" ry="18"></rect>
+          <rect class="zone" data-key="legL-back"   x="120" y="360" width="60"  height="300" rx="28" ry="28"></rect>
+          <rect class="zone" data-key="legR-back"   x="190" y="360" width="60"  height="300" rx="28" ry="28"></rect>
+        </g>
+      </svg>
+
+      <!-- PEDIATRIC MODEL (same footprint, slightly scaled by wrapper) -->
+      <svg id="pedsSVG" viewBox="0 0 320 720" role="img" aria-label="Pediatric Burn Map" style="display:none" class="front-only">
+        <!-- FRONT -->
+        <g class="front">
+          <rect class="zone" data-key="head-front" x="118" y="20" width="84" height="84" rx="42" ry="42"></rect>
+          <rect class="zone" data-key="chest"      x="105" y="110" width="110" height="100"></rect>
+          <rect class="zone" data-key="abdomen"    x="105" y="215" width="110" height="100"></rect>
+          <rect class="zone" data-key="perineum"   x="150" y="322" width="20"  height="16" rx="5" ry="5"></rect>
+          <rect class="zone" data-key="armL-front" x="70"  y="120" width="28"  height="230" rx="14" ry="14"></rect>
+          <rect class="zone" data-key="armR-front" x="222" y="120" width="28"  height="230" rx="14" ry="14"></rect>
+          <rect class="zone" data-key="legL-front" x="120" y="360" width="56"  height="300" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="legR-front" x="160" y="360" width="56"  height="300" rx="26" ry="26"></rect>
+        </g>
+
+        <!-- BACK -->
+        <g class="back">
+          <rect class="zone" data-key="head-back"   x="118" y="20" width="84" height="84" rx="42" ry="42"></rect>
+          <rect class="zone" data-key="upper-back"  x="105" y="110" width="110" height="120"></rect>
+          <rect class="zone" data-key="lower-back"  x="105" y="235" width="110" height="85"></rect>
+          <rect class="zone" data-key="armL-back"   x="70"  y="120" width="28"  height="230" rx="14" ry="14"></rect>
+          <rect class="zone" data-key="armR-back"   x="222" y="120" width="28"  height="230" rx="14" ry="14"></rect>
+          <rect class="zone" data-key="legL-back"   x="120" y="360" width="56"  height="300" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="legR-back"   x="160" y="360" width="56"  height="300" rx="26" ry="26"></rect>
+        </g>
+      </svg>
+    </div>
+
+    <div class="legend">
+      <div class="key"><span class="sw none"></span><span>None</span></div>
+      <div class="key"><span class="sw half"></span><span>Half (½)</span></div>
+      <div class="key"><span class="sw full"></span><span>Full</span></div>
+      <span class="hint">Adult legs = 18% each (9% front + 9% back). Pediatric head proportion is larger.</span>
+    </div>
+  </div>
+
+  <!-- Results / Status -->
+  <div class="results">
+    <div class="kv"><span>Scenario Patient</span><b id="modeOut">Adult</b></div>
+    <div class="kv"><span>View</span><b id="viewOut">Front</b></div>
+    <div class="kv"><span>Burned Regions</span><b id="countOut">0</b></div>
+    <div class="kv"><span>Status</span><b id="statusOut">Scenario active — enter your answer</b></div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz">
+    <div class="grid">
+      <div>
+        <label for="answerVal">Your TBSA (%)</label>
+        <div class="row" style="margin-top:.25rem">
+          <input id="answerVal" type="number" step="0.25" placeholder="e.g., 18.0" style="width:140px">
+          <button id="submitBtn" class="secondary">Submit Answer</button>
+        </div>
+        <div class="hint" style="margin-top:.35rem">Tolerance: ±0.25%.</div>
+      </div>
+    </div>
+    <div id="feedback" class="feedback"></div>
+    <div id="riskBox" class="risks" style="display:none"></div>
+  </div>
+
+</div>
 
 <script>
-const adultParts = {
-    front: [
-        {id:"head-front", percent:4.5, name:"Head (Front)"},
-        {id:"torso-front", percent:18, name:"Torso (Front)"},
-        {id:"arm-left-front", percent:4.5, name:"Left Arm (Front)"},
-        {id:"arm-right-front", percent:4.5, name:"Right Arm (Front)"},
-        {id:"leg-left-front", percent:9, name:"Left Leg (Front)"},
-        {id:"leg-right-front", percent:9, name:"Right Leg (Front)"},
-        {id:"perineum", percent:1, name:"Perineum"}
-    ],
-    back: [
-        {id:"head-back", percent:4.5, name:"Head (Back)"},
-        {id:"torso-back", percent:18, name:"Torso (Back)"},
-        {id:"arm-left-back", percent:4.5, name:"Left Arm (Back)"},
-        {id:"arm-right-back", percent:4.5, name:"Right Arm (Back)"},
-        {id:"leg-left-back", percent:9, name:"Left Leg (Back)"},
-        {id:"leg-right-back", percent:9, name:"Right Leg (Back)"}
-    ]
+/* ==== Percent maps ==== */
+const PCT_ADULT = {
+  "head-front": 4.5, "head-back": 4.5,
+  "chest": 9, "abdomen": 9,
+  "upper-back": 9, "lower-back": 9,
+  "armL-front": 4.5, "armR-front": 4.5, "armL-back": 4.5, "armR-back": 4.5,
+  "legL-front": 9, "legR-front": 9, "legL-back": 9, "legR-back": 9,
+  "perineum": 1
+};
+const PCT_PEDS = {
+  "head-front": 9, "head-back": 9,
+  "chest": 9, "abdomen": 9,
+  "upper-back": 9, "lower-back": 9,
+  "armL-front": 4.5, "armR-front": 4.5, "armL-back": 4.5, "armR-back": 4.5,
+  "legL-front": 7, "legR-front": 7, "legL-back": 7, "legR-back": 7,
+  "perineum": 1
 };
 
-const pediatricParts = {
-    front: [
-        {id:"head-front", percent:9, name:"Head (Front)"},
-        {id:"torso-front", percent:18, name:"Torso (Front)"},
-        {id:"arm-left-front", percent:4.5, name:"Left Arm (Front)"},
-        {id:"arm-right-front", percent:4.5, name:"Right Arm (Front)"},
-        {id:"leg-left-front", percent:7, name:"Left Leg (Front)"},
-        {id:"leg-right-front", percent:7, name:"Right Leg (Front)"},
-        {id:"perineum", percent:1, name:"Perineum"}
-    ],
-    back: [
-        {id:"head-back", percent:9, name:"Head (Back)"},
-        {id:"torso-back", percent:18, name:"Torso (Back)"},
-        {id:"arm-left-back", percent:4.5, name:"Left Arm (Back)"},
-        {id:"arm-right-back", percent:4.5, name:"Right Arm (Back)"},
-        {id:"leg-left-back", percent:7, name:"Left Leg (Back)"},
-        {id:"leg-right-back", percent:7, name:"Right Leg (Back)"}
-    ]
+/* === Names for breakdown === */
+const NAME = {
+  "head-front": "Head (front)", "head-back": "Head (back)",
+  "chest": "Chest", "abdomen": "Abdomen",
+  "upper-back": "Upper back", "lower-back": "Lower back",
+  "armL-front": "Left arm (front)", "armR-front": "Right arm (front)",
+  "armL-back": "Left arm (back)",  "armR-back": "Right arm (back)",
+  "legL-front": "Left leg (front)", "legR-front": "Right leg (front)",
+  "legL-back": "Left leg (back)",   "legR-back": "Right leg (back)",
+  "perineum": "Perineum"
 };
 
-function getSVG(view, isPediatric) {
-    let scale = isPediatric ? 'scale(0.85)' : '';
-    return `
-    <svg viewBox="0 0 200 500">
-        <g transform="${scale}">
-            <rect id="head-${view}" x="80" y="10" width="40" height="40" fill="#ffe0bd" stroke="#000"/>
-            <rect id="torso-${view}" x="70" y="50" width="60" height="100" fill="#ffe0bd" stroke="#000"/>
-            <rect id="arm-left-${view}" x="40" y="50" width="30" height="100" fill="#ffe0bd" stroke="#000"/>
-            <rect id="arm-right-${view}" x="130" y="50" width="30" height="100" fill="#ffe0bd" stroke="#000"/>
-            <rect id="leg-left-${view}" x="80" y="150" width="30" height="120" fill="#ffe0bd" stroke="#000"/>
-            <rect id="leg-right-${view}" x="110" y="150" width="30" height="120" fill="#ffe0bd" stroke="#000"/>
-            ${view === 'front' ? '<rect id="perineum" x="95" y="270" width="10" height="10" fill="#ffe0bd" stroke="#000"/>' : ''}
-        </g>
-    </svg>`;
+let mode = 'adult';       // 'adult' | 'peds'
+let scenario = null;      // { mode, selections:[{key, state, percent_each, cx, cy, side}], tbsa }
+let scenarioActive = false;
+let view = 'front';
+
+const els = {
+  title: document.getElementById('title'),
+  svgWrap: document.getElementById('svgWrap'),
+  adultSVG: document.getElementById('adultSVG'),
+  pedsSVG: document.getElementById('pedsSVG'),
+  frontBtn: document.getElementById('frontBtn'),
+  backBtn: document.getElementById('backBtn'),
+  newScenarioBtn: document.getElementById('newScenarioBtn'),
+  resetBtn: document.getElementById('resetBtn'),
+  modeOut: document.getElementById('modeOut'),
+  viewOut: document.getElementById('viewOut'),
+  countOut: document.getElementById('countOut'),
+  statusOut: document.getElementById('statusOut'),
+  answerVal: document.getElementById('answerVal'),
+  submitBtn: document.getElementById('submitBtn'),
+  feedback: document.getElementById('feedback'),
+  riskBox: document.getElementById('riskBox')
+};
+
+function pctMap(which){ return which === 'peds' ? PCT_PEDS : PCT_ADULT; }
+
+/* Toggle one model and update header */
+function setPatientMode(newMode){
+  mode = newMode;
+  els.modeOut.textContent = mode==='adult' ? 'Adult' : 'Pediatric';
+  els.title.textContent = `Rule of Nines — ${mode==='adult'?'Adult View':'Pediatric View'}`;
+  els.svgWrap.classList.toggle('peds', mode==='peds');
+  if(mode==='adult'){ els.adultSVG.style.display = ''; els.pedsSVG.style.display = 'none'; }
+  else { els.adultSVG.style.display = 'none'; els.pedsSVG.style.display = ''; }
 }
 
-let scenario = {};
-let currentView = 'front';
-let isPediatric = false;
+/* Front/Back view switch (applies class to active svg) */
+function setView(newView){
+  view = newView;
+  els.viewOut.textContent = (view==='front' ? 'Front' : 'Back');
+  const svg = (mode==='adult'?els.adultSVG:els.pedsSVG);
+  svg.classList.remove('front-only','back-only');
+  svg.classList.add(view==='front' ? 'front-only' : 'back-only');
 
-function startScenario() {
-    isPediatric = Math.random() > 0.5;
-    document.getElementById('viewType').textContent = isPediatric ? "Pediatric View" : "Adult View";
-    const parts = isPediatric ? pediatricParts : adultParts;
-    let selected = [];
-    let total = 0;
-
-    const allParts = [...parts.front, ...parts.back];
-    const difficulty = Math.floor(Math.random() * 5) + 3;
-    while (selected.length < difficulty) {
-        const p = allParts[Math.floor(Math.random() * allParts.length)];
-        if (!selected.includes(p.id)) {
-            selected.push(p.id);
-            total += p.percent;
-        }
-    }
-    scenario = {parts, selected, total};
-    renderView();
+  // Only show % tags that belong to the current side
+  document.querySelectorAll('.pct-tag').forEach(t=>{
+    const side = t.getAttribute('data-side') || 'front';
+    t.style.display = (side === view) ? 'block' : 'none';
+  });
 }
 
-function renderView() {
-    document.getElementById('svg-container').innerHTML = getSVG(currentView, isPediatric);
+/* Utility: robust center for rects */
+function rectCenter(node){
+  const x = parseFloat(node.getAttribute('x')||'0');
+  const y = parseFloat(node.getAttribute('y')||'0');
+  const w = parseFloat(node.getAttribute('width')||'0');
+  const h = parseFloat(node.getAttribute('height')||'0');
+  return {cx: x + w/2, cy: y + h/2};
+}
+function keySide(key){
+  if(key.endsWith('front') || key==='chest' || key==='abdomen' || key==='perineum') return 'front';
+  if(key.endsWith('back')  || key==='upper-back' || key==='lower-back') return 'back';
+  return 'front';
 }
 
-document.getElementById('toggleViewBtn').addEventListener('click', () => {
-    currentView = currentView === 'front' ? 'back' : 'front';
-    document.getElementById('toggleViewBtn').textContent = currentView === 'front' ? "Show Back" : "Show Front";
-    renderView();
-});
+/* Clear all zones & tags */
+function clearAll(){
+  document.querySelectorAll('.zone').forEach(z=>z.setAttribute('data-state','0'));
+  document.querySelectorAll('.pct-tag').forEach(t=>t.remove());
+  els.countOut.textContent = '0';
+  els.riskBox.style.display='none';
+  els.riskBox.innerHTML='';
+}
 
-document.getElementById('submitBtn').addEventListener('click', () => {
-    const userAns = parseFloat(document.getElementById('answer').value);
-    let breakdown = "";
-    let totalCorrect = 0;
+/* Random helpers */
+function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function sample(arr,n){
+  const pool = arr.slice(); const out = [];
+  while(out.length<n && pool.length){
+    const i = Math.floor(Math.random()*pool.length);
+    out.push(pool.splice(i,1)[0]);
+  }
+  return out;
+}
 
-    [...scenario.parts.front, ...scenario.parts.back].forEach(part => {
-        if (scenario.selected.includes(part.id)) {
-            totalCorrect += part.percent;
-            const el = document.getElementById(part.id);
-            if (el) el.classList.add('burned');
-            breakdown += `${part.name}: ${part.percent}%<br>`;
-        }
-    });
+/* New randomized scenario: random patient type, 2–8 zones, 70% full / 30% half */
+function newScenario(){
+  clearAll();
 
-    const feedback = document.getElementById('feedback');
-    if (Math.abs(userAns - totalCorrect) < 0.5) {
-        feedback.innerHTML = `✅ Correct! ${totalCorrect}% TBSA burned.`;
-    } else {
-        feedback.innerHTML = `❌ Incorrect. Correct answer: ${totalCorrect}% TBSA burned.<br><br>
-        <strong>Breakdown:</strong><br>${breakdown}<br>
-        Risks: Burns to the face may indicate airway involvement, burns to hands can cause long-term disability, perineal burns are high risk for infection.`;
-    }
-});
+  const newMode = Math.random() < 0.5 ? 'adult' : 'peds';
+  setPatientMode(newMode);
+  setView('front');
 
-startScenario();
+  const svg = (mode==='adult'?els.adultSVG:els.pedsSVG);
+  const zones = Array.from(svg.querySelectorAll('.zone'));
+  const count = randInt(2,8);
+  const selected = sample(zones, count);
+
+  // apply states
+  selected.forEach(z=>{
+    const st = Math.random() < 0.7 ? 1 : 0.5;
+    z.setAttribute('data-state', String(st));
+  });
+
+  // compute TBSA
+  const map = pctMap(mode);
+  let total = 0;
+  const selections = [];
+  selected.forEach(z=>{
+    const key = z.getAttribute('data-key');
+    const st = parseFloat(z.getAttribute('data-state'));
+    const pct = map[key] || 0;
+    const {cx, cy} = rectCenter(z);
+    const side = keySide(key);
+    total += pct * st;
+    selections.push({key, state:st, percent_each:pct, cx, cy, side});
+  });
+  const tbsa = Math.round(total*100)/100;
+
+  scenario = { mode, selections, tbsa };
+  scenarioActive = true;
+  els.statusOut.textContent = 'Scenario active — enter your answer';
+  els.countOut.textContent = String(selections.length);
+  els.feedback.innerHTML = '';
+  els.answerVal.value = '';
+}
+
+/* Reset then immediately start a new random scenario */
+function resetAll(){
+  scenarioActive = false; scenario = null; clearAll();
+  els.statusOut.textContent = 'Generating scenario...';
+  setTimeout(newScenario, 50);
+}
+
+/* After submit: overlay +% contribution tags (previously hidden) */
+function annotateContributions(scn){
+  // remove old
+  document.querySelectorAll('.pct-tag').forEach(t=>t.remove());
+  const svg = (scn.mode==='adult'?els.adultSVG:els.pedsSVG);
+
+  scn.selections.forEach(sel=>{
+    const contrib = Math.round(sel.percent_each * sel.state * 100)/100;
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('class','pct-tag');
+    t.setAttribute('x', String(sel.cx));
+    t.setAttribute('y', String(sel.cy));
+    t.setAttribute('text-anchor','middle');
+    t.setAttribute('data-side', sel.side);
+    t.textContent = `+${contrib}%`;
+    svg.appendChild(t);
+  });
+
+  // show tags only for current side now that answer was submitted
+  document.querySelectorAll('.pct-tag').forEach(t=>{
+    const side = t.getAttribute('data-side') || 'front';
+    t.style.display = (side === view) ? 'block' : 'none';
+  });
+}
+
+/* Breakdown list for feedback */
+function breakdownHTML(scn){
+  const rows = scn.selections
+    .sort((a,b)=> (b.percent_each*b.state) - (a.percent_each*a.state))
+    .map(sel=>{
+      const name = NAME[sel.key] || sel.key;
+      const mult = sel.state === 1 ? '× full' : '× ½';
+      const contrib = Math.round(sel.percent_each * sel.state * 100)/100;
+      return `<li>${name}: ${sel.percent_each}% ${mult} = <b>${contrib}%</b></li>`;
+    }).join('');
+  return `
+    <div style="margin:.4rem 0 .2rem">Breakdown (${scn.mode==='adult'?'Adult':'Pediatric'}):</div>
+    <ul style="margin:.2rem 0 .4rem 1.1rem">${rows}</ul>
+    <div><b>Total TBSA:</b> ${scn.tbsa}%</div>
+  `;
+}
+
+/* Special considerations based on areas involved */
+function riskAdviceHTML(scn){
+  const keys = scn.selections.map(s=>s.key);
+  const has = (k)=> keys.includes(k);
+  const involves = {
+    faceHead: has('head-front') || has('head-back'),
+    handsArms: has('armL-front') || has('armL-back') || has('armR-front') || has('armR-back'),
+    chestBack: has('chest') || has('upper-back') || has('lower-back') || has('abdomen'),
+    perineum: has('perineum'),
+    legs: has('legL-front') || has('legL-back') || has('legR-front') || has('legR-back')
+  };
+
+  const items = [];
+  if(involves.faceHead){
+    items.push(`<li><b>Face/Head:</b> risk of inhalation injury & airway edema (soot, hoarseness, singed hairs). Early airway planning; humidified O₂; rapid burn-center transport.</li>`);
+  }
+  if(involves.handsArms){
+    items.push(`<li><b>Hands/Arms:</b> high functional impact. Remove rings/watches early; elevate; splint in position of function; consult for deep/circumferential burns.</li>`);
+  }
+  if(involves.chestBack){
+    items.push(`<li><b>Chest/Back/Torso:</b> deep or circumferential burns may restrict ventilation—monitor chest excursion, WOB; consider eschar-related restriction; adequate analgesia; SpO₂/EtCO₂ if available.</li>`);
+  }
+  if(involves.perineum){
+    items.push(`<li><b>Perineum:</b> high contamination/infection risk; meticulous hygiene; early specialty evaluation.</li>`);
+  }
+  if(involves.legs){
+    items.push(`<li><b>Lower extremities:</b> elevate; frequent distal pulse/cap refill checks; beware compartment-like effects in circumferential burns.</li>`);
+  }
+  items.push(`<li><b>General:</b> stop the burning process, prevent hypothermia, dry sterile dressings, good analgesia, tetanus status, follow local protocols for fluids and destination.</li>`);
+
+  return `<h4>Special Considerations</h4><ul>${items.join('')}</ul>`;
+}
+
+/* Submit: grade, then reveal contributions & risks */
+function submitAnswer(){
+  if(!scenarioActive || !scenario){
+    els.feedback.innerHTML = `<div class="bad">Scenario is not ready. Click New Scenario.</div>`;
+    return;
+  }
+  const v = parseFloat(els.answerVal.value);
+  if(isNaN(v)){
+    els.feedback.innerHTML = `<div class="bad">Enter a numeric TBSA value.</div>`;
+    return;
+  }
+  const tol = 0.25;
+  const correct = scenario.tbsa;
+  const diff = Math.abs(v - correct);
+
+  // After submit, show +% tags on the model for burned parts
+  annotateContributions(scenario);
+
+  if(diff <= tol){
+    els.feedback.innerHTML = `<div class="ok"><b>Correct!</b> Your answer ${v.toFixed(2)}% is within ±${tol}% of ${correct.toFixed(2)}%.</div>`;
+  }else{
+    els.feedback.innerHTML = `
+      <div class="bad"><b>Not quite.</b> Correct TBSA is ${correct.toFixed(2)}% (you entered ${v.toFixed(2)}%).</div>
+      ${breakdownHTML(scenario)}
+      <div class="hint">Use <b>Front/Back</b> — burns may be on both sides.</div>
+    `;
+  }
+
+  els.riskBox.innerHTML = riskAdviceHTML(scenario);
+  els.riskBox.style.display = 'block';
+}
+
+/* Wire UI */
+els.frontBtn.addEventListener('click', ()=>setView('front'));
+els.backBtn .addEventListener('click', ()=>setView('back'));
+els.newScenarioBtn.addEventListener('click', newScenario);
+els.resetBtn.addEventListener('click', resetAll);
+els.submitBtn.addEventListener('click', submitAnswer);
+
+/* Init: auto-start random scenario */
+resetAll();
 </script>
 </body>
 </html>
