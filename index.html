@@ -4,23 +4,21 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>EMS Simulators — Index</title>
-<base href="https://emscode.com/">
 <style>
   :root{
     --bg:#0b1f2a; --panel:#0f2a39; --ink:#eaf3f7; --muted:#9fb8c5; --accent:#21c4d7;
-    --card:#123548; --hover:#18465d; --ring:#39d1e1;
+    --card:#123548; --hover:#18465d;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif}
   header{padding:1rem 1.25rem;background:linear-gradient(90deg,#0f2a39,#102f40);border-bottom:1px solid rgba(255,255,255,.06)}
-  header h1{margin:0;font-size:1.15rem;letter-spacing:.3px}
+  header h1{margin:0;font-size:1.15rem}
   .wrap{max-width:900px;margin:0 auto;padding:1rem;display:grid;gap:1rem}
   .menu{background:var(--panel);border-radius:14px;padding:1rem}
   .menu h2{margin:.2rem 0 .6rem;font-size:1rem;color:var(--accent)}
   ul.links{list-style:none;margin:0;padding:0;display:grid;gap:.5rem}
   .link{
-    display:flex; align-items:center; justify-content:space-between; gap:.75rem;
-    background:var(--card); padding:.8rem 1rem; border-radius:10px;
+    display:block; background:var(--card); padding:.8rem 1rem; border-radius:10px;
     text-decoration:none; color:var(--ink); border:1px solid rgba(255,255,255,.06);
   }
   .link:hover{background:var(--hover); border-color:rgba(57,209,225,.3)}
@@ -50,7 +48,7 @@
   <section class="menu" data-section="Main">
     <h2>Main</h2>
     <ul class="links">
-      <li><a class="link" data-title="med sim" href="/med_sim">Medical Simulator</a></li>
+      <li><a class="link" data-title="med sim" href="https://emscodesim.com/med_sim">Medical Simulator</a></li>
     </ul>
   </section>
 
@@ -58,16 +56,16 @@
   <section class="menu" data-section="Vitals">
     <h2>Vitals</h2>
     <ul class="links">
-      <li><a class="link" data-title="aao loc" href="/vitals/aao">AAO (LOC)</a></li>
-      <li><a class="link" data-title="blood glucose bgl" href="/vitals/bgl">Blood Glucose</a></li>
-      <li><a class="link" data-title="blood pressure bp" href="/vitals/bp">Blood Pressure</a></li>
-      <li><a class="link" data-title="breath sound simulator" href="/vitals/breath-sound-simulator">Breath Sound Simulator</a></li>
-      <li><a class="link" data-title="glasgow coma scale gcs" href="/vitals/gcs">Glasgow Coma Scale (GCS)</a></li>
-      <li><a class="link" data-title="rule of nines tbsa" href="/vitals/nines">Rule of Nines (TBSA)</a></li>
-      <li><a class="link" data-title="pulse" href="/vitals/pulse">Pulse</a></li>
-      <li><a class="link" data-title="pupil reaction perl" href="/vitals/pupil">Pupil Reaction</a></li>
-      <li><a class="link" data-title="skin appearance" href="/vitals/skin">Skin Appearance</a></li>
-      <li><a class="link" data-title="stroke assessment" href="/vitals/stroke">Stroke Assessment</a></li>
+      <li><a class="link" data-title="aao loc" href="https://emscodesim.com/vitals/aao">AAO (LOC)</a></li>
+      <li><a class="link" data-title="blood glucose bgl" href="https://emscodesim.com/vitals/bgl">Blood Glucose</a></li>
+      <li><a class="link" data-title="blood pressure bp" href="https://emscodesim.com/vitals/bp">Blood Pressure</a></li>
+      <li><a class="link" data-title="breath sound simulator" href="https://emscodesim.com/vitals/breath-sound-simulator">Breath Sound Simulator</a></li>
+      <li><a class="link" data-title="glasgow coma scale gcs" href="https://emscodesim.com/vitals/gcs">Glasgow Coma Scale (GCS)</a></li>
+      <li><a class="link" data-title="rule of nines tbsa" href="https://emscodesim.com/vitals/nines">Rule of Nines (TBSA)</a></li>
+      <li><a class="link" data-title="pulse" href="https://emscodesim.com/vitals/pulse">Pulse</a></li>
+      <li><a class="link" data-title="pupil reaction perl" href="https://emscodesim.com/vitals/pupil">Pupil Reaction</a></li>
+      <li><a class="link" data-title="skin appearance" href="https://emscodesim.com/vitals/skin">Skin Appearance</a></li>
+      <li><a class="link" data-title="stroke assessment" href="https://emscodesim.com/vitals/stroke">Stroke Assessment</a></li>
     </ul>
   </section>
 </div>
@@ -75,7 +73,6 @@
 <footer>© EMS Training Simulators</footer>
 
 <script>
-  // Simple in-page filter (titles only; URLs are hidden)
   const q = document.getElementById('q');
   const sections = Array.from(document.querySelectorAll('section.menu'));
   function applyFilter(){
