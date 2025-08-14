@@ -13,7 +13,6 @@
       --ink: #eaf3f7;
       --muted: #94b7c6;
       --accent: #21c4d7;
-      --accent-2: #2a9fb0;
       --ring: #39d1e1;
       --shadow: 0 10px 24px rgba(0,0,0,.25);
     }
@@ -53,6 +52,7 @@
         <input id="q" placeholder="Search simulators, e.g., vitals, airway, peds..." />
       </div>
       <div class="filters">
+        <button class="pill active" data-cat="All">All</button>
         <button class="pill" data-cat="Vitals">Vitals</button>
         <button class="pill" data-cat="Assessment">Assessment</button>
         <button class="pill" data-cat="Airway/Breathing">Airway/Breathing</button>
@@ -61,25 +61,30 @@
         <button class="pill" data-cat="Pediatrics/OB">Pediatrics/OB</button>
         <button class="pill" data-cat="Operations">Operations</button>
         <button class="pill" data-cat="Other">Other</button>
-        <button class="pill active" data-cat="All">All</button>
       </div>
     </div>
 
-    <!-- Example category section, repeat for each category -->
+    <!-- START: Dynamic category sections -->
+    <!-- Example: Vitals category -->
     <section class="cat" data-section="Vitals">
       <h2>Vitals</h2>
       <div class="grid">
+        <!-- Replace these with your actual vitals files -->
         <article class="card" data-title="Blood Pressure Simulator" data-cat="Vitals">
           <h3>Blood Pressure Simulator</h3>
           <div class="meta">vitals/blood-pressure.html</div>
           <a class="go" href="vitals/blood-pressure.html">Open</a>
         </article>
-        <!-- Add more Vitals simulators here -->
+        <article class="card" data-title="Pulse Simulator" data-cat="Vitals">
+          <h3>Pulse Simulator</h3>
+          <div class="meta">vitals/pulse.html</div>
+          <a class="go" href="vitals/pulse.html">Open</a>
+        </article>
       </div>
     </section>
 
-    <!-- Repeat the above section block for Assessment, Airway/Breathing, etc. -->
-
+    <!-- Repeat for each populated category -->
+    <!-- END: Dynamic category sections -->
   </div>
 
   <footer>Generated index — edit categories/labels as needed.</footer>
