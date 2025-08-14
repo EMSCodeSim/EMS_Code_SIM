@@ -19,7 +19,6 @@
   button{background:var(--brand);color:#fff;border:none;cursor:pointer;font-weight:600}
   button.secondary{background:#fff;color:var(--brand);border:1px solid var(--brand)}
   button.danger{background:#9f2f2f}
-  .chip{background:var(--chip);border:none;border-radius:.6rem;padding:.5rem .7rem;color:var(--brand);font-weight:600}
 
   .board{background:var(--card);border-radius:.75rem;padding:.5rem;display:grid;justify-items:center;box-shadow:0 1px 2px rgba(0,0,0,.05)}
   .svg-wrap{width:min(520px,100%);height:auto;position:relative;transition:transform .15s ease}
@@ -64,11 +63,18 @@
 <body>
 <div class="wrap">
 
-  <!-- Controls -->
+  <!-- Patient / View / Burned / Status ABOVE the model -->
+  <div class="results">
+    <div class="kv"><span>Patient</span><b id="modeOut">Adult</b></div>
+    <div class="kv"><span>View</span><b id="viewOut">Front</b></div>
+    <div class="kv"><span>Burned Regions</span><b id="countOut">0</b></div>
+    <div class="kv"><span>Status</span><b id="statusOut">Scenario active — enter your answer</b></div>
+  </div>
+
+  <!-- Buttons moved BELOW patient info (and above the model) -->
   <div class="controls">
-    <div class="row">
-      <span class="chip">Random Adult or Pediatric scenario starts on load. Burns may be on BOTH sides — use Front/Back.</span>
-      <div class="seg" style="margin-left:auto">
+    <div class="row" style="justify-content:flex-end">
+      <div class="seg">
         <button id="frontBtn" class="secondary">Front</button>
         <button id="backBtn"  class="secondary">Back</button>
         <button id="newScenarioBtn">New Scenario</button>
@@ -77,15 +83,7 @@
     </div>
   </div>
 
-  <!-- Status/Results NOW ABOVE THE MODEL -->
-  <div class="results">
-    <div class="kv"><span>Patient</span><b id="modeOut">Adult</b></div>
-    <div class="kv"><span>View</span><b id="viewOut">Front</b></div>
-    <div class="kv"><span>Burned Regions</span><b id="countOut">0</b></div>
-    <div class="kv"><span>Status</span><b id="statusOut">Scenario active — enter your answer</b></div>
-  </div>
-
-  <!-- Board -->
+  <!-- Board with model -->
   <div class="board">
     <div id="svgWrap" class="svg-wrap">
       <!-- ADULT MODEL -->
@@ -98,9 +96,9 @@
           <rect class="zone" data-key="perineum"   x="150" y="340" width="20"  height="16"  rx="5" ry="5"></rect>
           <rect class="zone" data-key="armL-front" x="55"  y="120" width="35"  height="250" rx="18" ry="18"></rect>
           <rect class="zone" data-key="armR-front" x="230" y="120" width="35"  height="250" rx="18" ry="18"></rect>
-          <!-- recentered & separated legs; slightly shorter -->
-          <rect class="zone" data-key="legL-front" x="125" y="370" width="60"  height="280" rx="28" ry="28"></rect>
-          <rect class="zone" data-key="legR-front" x="195" y="370" width="60"  height="280" rx="28" ry="28"></rect>
+          <!-- legs centered under torso, slight gap, a bit shorter -->
+          <rect class="zone" data-key="legL-front" x="95"  y="370" width="60"  height="280" rx="28" ry="28"></rect>
+          <rect class="zone" data-key="legR-front" x="165" y="370" width="60"  height="280" rx="28" ry="28"></rect>
         </g>
 
         <!-- BACK -->
@@ -110,9 +108,9 @@
           <rect class="zone" data-key="lower-back"  x="95"  y="245" width="130" height="130"></rect>
           <rect class="zone" data-key="armL-back"   x="55"  y="120" width="35"  height="250" rx="18" ry="18"></rect>
           <rect class="zone" data-key="armR-back"   x="230" y="120" width="35"  height="250" rx="18" ry="18"></rect>
-          <!-- recentered & separated legs; slightly shorter -->
-          <rect class="zone" data-key="legL-back"   x="125" y="370" width="60"  height="280" rx="28" ry="28"></rect>
-          <rect class="zone" data-key="legR-back"   x="195" y="370" width="60"  height="280" rx="28" ry="28"></rect>
+          <!-- legs centered under torso, slight gap, a bit shorter -->
+          <rect class="zone" data-key="legL-back"   x="95"  y="370" width="60"  height="280" rx="28" ry="28"></rect>
+          <rect class="zone" data-key="legR-back"   x="165" y="370" width="60"  height="280" rx="28" ry="28"></rect>
         </g>
       </svg>
 
@@ -126,9 +124,9 @@
           <rect class="zone" data-key="perineum"   x="150" y="322" width="20"  height="16" rx="5" ry="5"></rect>
           <rect class="zone" data-key="armL-front" x="70"  y="120" width="28"  height="230" rx="14" ry="14"></rect>
           <rect class="zone" data-key="armR-front" x="222" y="120" width="28"  height="230" rx="14" ry="14"></rect>
-          <!-- recentered & separated legs; slightly shorter -->
-          <rect class="zone" data-key="legL-front" x="124" y="370" width="56"  height="280" rx="26" ry="26"></rect>
-          <rect class="zone" data-key="legR-front" x="200" y="370" width="56"  height="280" rx="26" ry="26"></rect>
+          <!-- legs centered under torso, slight gap, a bit shorter -->
+          <rect class="zone" data-key="legL-front" x="99"  y="370" width="56"  height="280" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="legR-front" x="165" y="370" width="56"  height="280" rx="26" ry="26"></rect>
         </g>
 
         <!-- BACK -->
@@ -138,9 +136,9 @@
           <rect class="zone" data-key="lower-back"  x="105" y="235" width="110" height="85"></rect>
           <rect class="zone" data-key="armL-back"   x="70"  y="120" width="28"  height="230" rx="14" ry="14"></rect>
           <rect class="zone" data-key="armR-back"   x="222" y="120" width="28"  height="230" rx="14" ry="14"></rect>
-          <!-- recentered & separated legs; slightly shorter -->
-          <rect class="zone" data-key="legL-back"   x="124" y="370" width="56"  height="280" rx="26" ry="26"></rect>
-          <rect class="zone" data-key="legR-back"   x="200" y="370" width="56"  height="280" rx="26" ry="26"></rect>
+          <!-- legs centered under torso, slight gap, a bit shorter -->
+          <rect class="zone" data-key="legL-back"   x="99"  y="370" width="56"  height="280" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="legR-back"   x="165" y="370" width="56"  height="280" rx="26" ry="26"></rect>
         </g>
       </svg>
     </div>
@@ -442,11 +440,11 @@ function submitAnswer(){
 }
 
 /* Wire UI */
-els.frontBtn.addEventListener('click', ()=>setView('front'));
-els.backBtn .addEventListener('click', ()=>setView('back'));
-els.newScenarioBtn.addEventListener('click', newScenario);
-els.resetBtn.addEventListener('click', resetAll);
-els.submitBtn.addEventListener('click', submitAnswer);
+document.getElementById('frontBtn').addEventListener('click', ()=>setView('front'));
+document.getElementById('backBtn') .addEventListener('click', ()=>setView('back'));
+document.getElementById('newScenarioBtn').addEventListener('click', newScenario);
+document.getElementById('resetBtn').addEventListener('click', resetAll);
+document.getElementById('submitBtn').addEventListener('click', submitAnswer);
 
 /* Init: auto-start random scenario */
 resetAll();
