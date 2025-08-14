@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Capnography Simulator</title>
+  <title>Capnography Simulator (EMT-B)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
   <style>
     :root{
@@ -19,9 +19,9 @@
     }
     header{position:sticky; top:0; z-index:5; background:var(--teal); color:#fff; padding:16px; text-align:center; box-shadow:var(--shadow)}
     header h1{margin:0; font-size:22px}
-    .wrap{ max-width:960px; margin:18px auto; padding:12px; display:grid; gap:14px }
+    .wrap{ max-width:980px; margin:18px auto; padding:12px; display:grid; gap:14px }
     .grid{ display:grid; grid-template-columns:1fr; gap:14px }
-    @media(min-width:940px){ .grid{ grid-template-columns: 1.1fr .9fr } }
+    @media(min-width:960px){ .grid{ grid-template-columns: 1.1fr .9fr } }
     .card{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px }
     h2{ margin:0 0 8px 0; font-size:20px }
     .scenario{ font-size:16px; color:#0b2c3a; line-height:1.55 }
@@ -29,18 +29,18 @@
     .badge{ font-size:12px; display:inline-block; padding:2px 8px; border-radius:999px; background:#eaf7ff; color:#0b2c3a; border:1px solid #cfe7ef }
     .device{ display:grid; gap:12px; grid-template-rows:auto auto 1fr auto }
     .screen{ background:#0b2530; color:#e8ffff; border-radius:14px; padding:12px 14px; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.08) }
-    .status-strip{ display:flex; justify-content:space-between; gap:8px; color:#b5dee2; font-size:13px; margin-bottom:6px }
+    .status-strip{ display:flex; justify-content:space-between; gap:8px; color:#b5dee2; font-size:13px; margin-bottom:6px; align-items:center }
     .pill{ display:inline-flex; gap:8px; padding:6px 10px; border-radius:999px; background:#143543; color:#c9ecf5; border:1px solid #2a5b6e; align-items:center }
     .sig-bars{ display:inline-flex; gap:2px; align-items:flex-end; height:12px }
     .sig-bars span{ width:3px; background:#47d1ff; opacity:.4; border-radius:2px }
     .sig-bars span.on{ opacity:1 }
 
-    .big-readings{ display:flex; gap:10px }
-    .reading{ flex:1; display:flex; justify-content:center; align-items:center; gap:10px; background:#102d3a; border-radius:12px; padding:10px 12px; border:1px solid rgba(255,255,255,.06); min-height:72px }
+    .big-readings{ display:grid; grid-template-columns: repeat(3,1fr); gap:10px }
+    .reading{ display:flex; justify-content:center; align-items:center; gap:10px; background:#102d3a; border-radius:12px; padding:10px 12px; border:1px solid rgba(255,255,255,.06); min-height:72px }
     .reading .label{ font-size:13px; color:#9fd7e0; text-transform:uppercase; letter-spacing:.8px }
-    .reading .value{ font-size:36px; font-weight:800; line-height:1 }
+    .reading .value{ font-size:32px; font-weight:800; line-height:1 }
     .reading .units{ font-size:14px; color:#9fd7e0 }
-    .reading.etco2 .value{ color:#6fffb0 } .reading.rr .value{ color:#47d1ff }
+    .et .value{ color:#6fffb0 } .rr .value{ color:#47d1ff } .wf .value{ color:#ffd166; font-size:18px }
 
     .pleth-wrap{ background:#071a22; border-radius:12px; padding:8px; border:1px solid rgba(255,255,255,.06) }
     canvas#capno{ width:100%; height:160px; display:block }
@@ -58,11 +58,17 @@
 
     .explain{ margin-top:10px; padding:12px; border-radius:12px; border:1px solid #dbeff6; background:#f6fcff; color:#073042 }
     .next{ display:inline-flex; gap:10px; align-items:center; background:var(--brand); color:#fff; border:none; border-radius:12px; padding:12px 14px; cursor:pointer; font-weight:700; margin-top:10px; box-shadow:0 4px 12px rgba(0,123,255,.25) }
+
+    /* BVM control */
+    .bvm-box{ display:none; margin-top:10px; padding:12px; border-radius:12px; border:1px solid #dbeff6; background:#f6fcff; color:#073042 }
+    .bvm-row{ display:flex; flex-wrap:wrap; gap:10px; align-items:center }
+    .bvm-row input[type="range"]{ width:260px; }
+    .bvm-chip{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; background:#eef6ff; border-radius:999px; font-size:13px; color:#0b3a5a; border:1px solid #d7ebff }
     .footer-note{ text-align:center; font-size:12px; color:var(--muted); padding:4px 0 10px }
   </style>
 </head>
 <body>
-<header><h1>Capnography Simulator</h1></header>
+<header><h1>Capnography Simulator (EMT-B)</h1></header>
 
 <main class="wrap">
   <section class="grid">
@@ -70,11 +76,11 @@
       <h2>Scenario</h2>
       <div id="scenarioText" class="scenario">Loading case…</div>
       <div style="margin-top:8px">
-        <span class="badge">NREMT Focus: Airway, Ventilation & ETCO₂</span>
+        <span class="badge">NREMT Focus: Airway, Ventilation, Oxygenation & ETCO₂</span>
       </div>
       <p class="tiny" style="margin-top:6px">
-        Review the chief complaint, **RR**, and ETCO₂ waveform/value. Choose the **best EMT action**. The capnogram and ETCO₂ will respond to your choice.
-        <br><strong>General guide:</strong> BVM for inadequate ventilation/apnea; confirm/remove esophageal tubes; treat bronchospasm (assist bronchodilator if allowed); recognize ROSC by sudden ETCO₂ rise; avoid hyperventilation.
+        Pick the <b>best EMT-B action</b>. If you place the patient on a <b>BVM</b>, use the slider to set the ventilation rate and watch ETCO₂ change
+        (aim adult <b>10–12/min</b>; avoid hyperventilation).
       </p>
     </div>
 
@@ -85,7 +91,7 @@
           <div class="sig-bars" id="sigBars"><span></span><span></span><span></span><span></span></div>
         </div>
         <div class="big-readings">
-          <div class="reading etco2">
+          <div class="reading et">
             <div class="label">ETCO₂</div>
             <div class="value" id="etco2Val">--</div>
             <div class="units">mmHg</div>
@@ -95,6 +101,11 @@
             <div class="value" id="rrVal">--</div>
             <div class="units">/min</div>
           </div>
+          <div class="reading wf">
+            <div class="label">Waveform</div>
+            <div class="value" id="shapeLabel">--</div>
+            <div class="units"></div>
+          </div>
         </div>
         <div class="pleth-wrap">
           <canvas id="capno" width="900" height="160" aria-label="Capnogram waveform"></canvas>
@@ -103,6 +114,14 @@
       </div>
 
       <div id="choicesBox" class="choices" aria-live="polite"></div>
+      <div id="bvmBox" class="bvm-box">
+        <div class="bvm-row">
+          <strong>BVM Ventilation Rate:</strong>
+          <input id="bvmRate" type="range" min="4" max="30" step="1" value="12" />
+          <span class="bvm-chip"><b id="bvmRateLbl">12</b> /min</span>
+          <span class="tiny">Adult target: 10–12/min • Too fast ↓ETCO₂ (hypocapnia) • Too slow ↑ETCO₂ (hypercapnia)</span>
+        </div>
+      </div>
       <div id="explainBox" class="explain" style="display:none"></div>
       <button id="nextBtn" class="next" style="display:none">🔀 Next Random Scenario</button>
     </div>
@@ -114,10 +133,11 @@
   // --- Shortcuts ---
   const $ = s => document.querySelector(s);
   const cap = $('#capno'); const ctx = cap.getContext('2d');
-  const etco2El = $('#etco2Val'); const rrEl = $('#rrVal');
+  const etco2El = $('#etco2Val'); const rrEl = $('#rrVal'); const shapeLabel = $('#shapeLabel');
   const sigBarsEl = $('#sigBars'); const alertEl = $('#alert');
   const scenarioText = $('#scenarioText'); const choicesBox = $('#choicesBox');
   const explainBox = $('#explainBox'); const nextBtn = $('#nextBtn');
+  const bvmBox = $('#bvmBox'); const bvmRate = $('#bvmRate'); const bvmRateLbl = $('#bvmRateLbl');
 
   // --- Helpers ---
   const clamp = (v,a,b)=> Math.max(a, Math.min(b,v));
@@ -130,101 +150,110 @@
 
   // --- Capnogram engine state ---
   const state = {
-    // live
     etco2: null, targetEtco2: null, rr: null, signal:3,
     shape: 'normal', // 'normal' | 'sharkfin' | 'rebreathing' | 'flat' | 'rosclive'
-    baseline: 0,     // mmHg at inspiration (rebreathing elevates)
+    baseline: 0,     // inspiratory mmHg (rebreathing elevates)
     plateauTilt: 0,  // slope of phase III (shark-fin)
-    upSlope: 1,      // speed of phase II upstroke
+    upSlope: 1.1,    // speed of phase II upstroke
     quality: 1,      // 0..1, affects noise/clarity
+    // BVM modeling
+    onBvm:false,
+    bvmK:null,       // proportionality constant for ETCO2 ~ K / RR^alpha
+    bvmAlpha:0.95,   // exponent; 1.0 is perfect inverse
     // graph scroll
     phase: 0,
-    anim: null,
     readingShown:false, transitioning:false
   };
 
-  // --- Scenarios ---
-  // Each case defines: title, text, base ranges, waveform style, best option, options list and targets (ETCO2/shape changes and feedback)
+  const SHAPE_LABELS = {
+    normal:'Normal',
+    sharkfin:'Bronchospasm (shark-fin)',
+    rebreathing:'Rebreathing (elev. baseline)',
+    flat:'Flat/No alveolar CO₂',
+    rosclive:'Post-ROSC normal'
+  };
+
+  // --- Scenarios (EMT-B level actions only) ---
   const CASES = [
-    // Inadequate ventilation / Opioid
+    // Hypoventilation (opioid) → BVM best + slider
     {
       id:'opioid_hypovent',
       title:'Opioid overdose with hypoventilation',
       text:'22-year-old with slow, shallow respirations, cyanotic lips, pinpoint pupils. Poor tidal volume.',
-      base:{ etco2:[55,70], rr:[4,8], shape:'normal', baseline:0, tilt:0.02, quality:.9, signal:3 },
+      base:{ etco2:[55,70], rr:[4,8], shape:'normal', baseline:0, tilt:0.02, quality:.95, signal:3 },
       best:'bvm',
       options:[
-        {key:'nrb', label:'Apply NRB O₂ only'},
         {key:'bvm', label:'Assist ventilations with BVM + high-flow O₂ (10–12/min)'},
-        {key:'slow', label:'Decrease ventilation rate further'},
-        {key:'fast', label:'Increase rate slightly without BVM'}
+        {key:'nrb', label:'Apply NRB O₂ only'},
+        {key:'coach', label:'Coach slower breathing'},
+        {key:'nalox', label:'Administer naloxone (after airway/ventilations)'}
       ],
       targets:{
-        nrb:  {etco2: b=> clamp(b+2,50,75), rr: r=> r, shape:'normal', note:'O₂ alone does not correct hypoventilation → CO₂ remains high.'},
-        bvm:  {etco2: b=> clamp(40 + randInt(-2,2), 35,45), rr: _=> 12, shape:'normal', note:'Positive-pressure ventilation corrects hypoventilation and normalizes ETCO₂.'},
-        slow: {etco2: b=> clamp(b+5,55,80), rr: r=> Math.max(3, r-2), shape:'normal', note:'Further hypoventilation worsens hypercapnia.'},
-        fast: {etco2: b=> clamp(b-3,45,60), rr: r=> Math.min(10, r+2), shape:'normal', note:'Slight improvement, but without adequate tidal volume the problem persists. BVM is indicated.'}
+        bvm:  {etco2: _=> 40, rr: _=> 12, shape:'normal', note:'Ventilate with BVM to correct hypoventilation. Then consider naloxone per protocol.' , bvmBase:40},
+        nrb:  {etco2: b=> clamp(b+2,50,80), rr: r=> r, shape:'normal', note:'O₂ alone does not correct hypoventilation → ETCO₂ stays high.'},
+        coach:{etco2: b=> clamp(b+1,50,75), rr: r=> r, shape:'normal', note:'Coaching is inadequate for slow/shallow respirations.'},
+        nalox:{etco2: b=> clamp(b-3,46,65), rr: r=> r+2, shape:'normal', note:'Drug may help but airway/ventilation is priority. Ventilate first.'}
       },
-      why:'NREMT: Inadequate breathing → ventilate with BVM and high-flow O₂. Consider naloxone per protocol after airway/ventilation.'
+      why:'NREMT: Inadequate breathing → BVM ventilations with high-flow O₂. Consider naloxone after airway/ventilation.'
     },
-    // Severe asthma / bronchospasm (shark-fin)
+    // Bronchospasm (asthma/COPD) → assist bronchodilator best (EMT can assist prescribed MDI)
     {
       id:'asthma_sharkfin',
-      title:'Severe asthma exacerbation (bronchospasm)',
-      text:'35-year-old with audible wheezes, prolonged expirations, increased work of breathing. Speaking 2–3 word sentences.',
-      base:{ etco2:[48,58], rr:[22,30], shape:'sharkfin', baseline:0, tilt:0.12, quality:.9, signal:3 },
+      title:'Severe asthma/COPD with bronchospasm',
+      text:'35-year-old with audible wheezes, prolonged expirations, increased work of breathing; speaking 2–3 word sentences.',
+      base:{ etco2:[48,58], rr:[22,30], shape:'sharkfin', baseline:0, tilt:0.12, quality:.95, signal:3 },
       best:'broncho',
       options:[
-        {key:'broncho', label:'Assist bronchodilator (patient’s MDI) / request ALS'},
-        {key:'bvm', label:'Assist ventilations with BVM at 10–12/min'},
-        {key:'nrb', label:'Apply NRB 10–15 L/min only'},
-        {key:'fast', label:'Coach faster breathing'}
+        {key:'broncho', label:"Assist patient's prescribed bronchodilator (MDI) & request ALS"},
+        {key:'nrb', label:'Apply NRB 10–15 L/min'},
+        {key:'bvm', label:'Assist ventilations with BVM (if tiring/poor tidal)'},
+        {key:'coach', label:'Coach faster breathing'}
       ],
       targets:{
-        broncho:{etco2: b=> clamp(b-6, 35, 45), rr: r=> clamp(r-2, 18, 26), shape:'normal', note:'Relieves bronchospasm → improves alveolar emptying (shark-fin resolves) and ETCO₂ moves toward normal.'},
-        bvm:    {etco2: b=> clamp(b-4, 38, 50), rr: _=> 12, shape:'sharkfin', note:'May help if tiring, but first-line is bronchodilator for bronchospasm with adequate effort.'},
-        nrb:    {etco2: b=> b, rr: r=> r, shape:'sharkfin', note:'Adds FiO₂ but does not treat bronchospasm or air trapping.'},
-        fast:   {etco2: b=> clamp(b-2, 44, 56), rr: r=> clamp(r+4, 24, 36), shape:'sharkfin', note:'Faster breathing risks dynamic hyperinflation; not ideal.'}
+        broncho:{etco2: b=> clamp(b-8, 35, 45), rr: r=> clamp(r-2, 18, 26), shape:'normal', note:'Treats cause: bronchodilation resolves shark-fin and normalizes ETCO₂.'},
+        nrb:    {etco2: b=> b, rr: r=> r, shape:'sharkfin', note:'Adds FiO₂ but does not relieve bronchospasm.'},
+        bvm:    {etco2: b=> clamp(b-4, 38, 50), rr: _=> 12, shape:'sharkfin', note:'Use if ventilation becomes inadequate; waveform remains shark-fin until bronchodilation.' , bvmBase:45},
+        coach:  {etco2: b=> clamp(b-2, 44, 56), rr: r=> clamp(r+4, 24, 36), shape:'sharkfin', note:'Risk of dynamic hyperinflation; not ideal.'}
       },
-      why:'NREMT: Treat cause. In bronchospasm, assist with bronchodilator if authorized and request ALS; use BVM if ventilation becomes inadequate.'
+      why:'NREMT: Assist with patient’s bronchodilator when bronchospasm is the cause. Provide O₂. BVM only if ventilation becomes inadequate.'
     },
-    // Esophageal tube (flatline with tiny oscillations)
+    // Esophageal/failed SGA → remove and BVM
     {
-      id:'esophageal_tube',
-      title:'Esophageal intubation (no alveolar CO₂)',
-      text:'Post-intubation capnography shows near-zero ETCO₂ with minimal oscillations despite compressions/ventilations.',
+      id:'failed_airway_flat',
+      title:'Failed supraglottic airway (flat capnogram)',
+      text:'After SGA placement, capnogram is flat with tiny oscillations despite ventilations. Patient unresponsive.',
       base:{ etco2:[0,5], rr:[10,12], shape:'flat', baseline:0, tilt:0, quality:.95, signal:3 },
-      best:'remove',
+      best:'removeBvm',
       options:[
-        {key:'remove', label:'Remove suspect tube, ventilate with BVM, and reattempt with confirmation'},
-        {key:'continue', label:'Continue ventilations and wait for CO₂ to rise'},
-        {key:'nrb', label:'Apply NRB O₂ only'}
+        {key:'removeBvm', label:'Remove suspect device and ventilate with BVM + adjuncts'},
+        {key:'continue', label:'Continue ventilations without changes'},
+        {key:'nrb', label:'Switch to NRB O₂ only'}
       ],
       targets:{
-        remove:  {etco2: _=> randInt(35,45), rr: _=> 12, shape:'normal', note:'Correcting esophageal placement restores capnogram with normal ETCO₂.'},
-        continue:{etco2: b=> b, rr: r=> r, shape:'flat', note:'No alveolar exchange → ETCO₂ remains ~0.'},
-        nrb:     {etco2: b=> b, rr: r=> r, shape:'flat', note:'Does not address misplaced tube.'}
+        removeBvm:{etco2: _=> 42, rr: _=> 12, shape:'normal', note:'Corrects placement error; restores alveolar CO₂ detection.' , bvmBase:42},
+        continue: {etco2: b=> b, rr: r=> r, shape:'flat', note:'No alveolar exchange → ETCO₂ remains ~0.'},
+        nrb:      {etco2: b=> b, rr: r=> r, shape:'flat', note:'Does not address failed airway/ventilation.'}
       },
-      why:'NREMT: Persistent near-zero ETCO₂ after intubation suggests esophageal placement. Remove, ventilate with BVM, and reattempt with confirmation.'
+      why:'NREMT: Persistent near-zero ETCO₂ after airway placement suggests esophageal/failed airway. Remove device, use OPA/NPA and BVM with O₂.'
     },
-    // Rebreathing / Faulty valve or exhausted absorber equivalent
+    // Rebreathing / faulty BVM valve → fix circuit
     {
-      id:'rebreathing',
-      title:'Rebreathing / faulty one-way valve (expired CO₂ baseline elevated)',
-      text:'Capnogram baseline fails to return to zero with rising inspiratory CO₂.',
+      id:'rebreathing_fault',
+      title:'Rebreathing from faulty BVM one-way valve',
+      text:'Capnogram baseline fails to return to zero; inspiratory CO₂ elevated. Patient otherwise ventilating.',
       base:{ etco2:[45,55], rr:[14,18], shape:'rebreathing', baseline:10, tilt:0.03, quality:.9, signal:3 },
       best:'fixCircuit',
       options:[
-        {key:'fixCircuit', label:'Fix/replace circuit or valve; increase fresh gas flow'},
-        {key:'bvm', label:'BVM without addressing the circuit'},
-        {key:'fast', label:'Increase patient ventilation rate'}
+        {key:'fixCircuit', label:'Replace/repair BVM or valve; increase fresh gas flow'},
+        {key:'bvm', label:'Bag faster without fixing valve'},
+        {key:'nrb', label:'Apply NRB O₂ only'}
       ],
       targets:{
-        fixCircuit:{etco2: b=> clamp(b-6, 35,45), rr: r=> r, shape:'normal', baseline:0, note:'Corrects inspiratory CO₂ and restores zero baseline.'},
-        bvm:       {etco2: b=> clamp(b-2, 40,52), rr: _=> 12, shape:'rebreathing', baseline:8, note:'May reduce ETCO₂ modestly but problem persists if circuit fault remains.'},
-        fast:      {etco2: b=> clamp(b-3, 42,50), rr: r=> r+4, shape:'rebreathing', baseline:9, note:'More ventilation helps slightly; does not fix inspiratory CO₂.'}
+        fixCircuit:{etco2: b=> clamp(b-6, 35,45), rr: r=> r, shape:'normal', baseline:0, note:'Fixing equipment restores zero baseline and improves ETCO₂.'},
+        bvm:       {etco2: b=> clamp(b-3, 42,50), rr: _=> 20, shape:'rebreathing', baseline:8, note:'Hyperventilating doesn’t fix inspiratory CO₂.' , bvmBase:45},
+        nrb:       {etco2: b=> b, rr: r=> r, shape:'rebreathing', note:'Does not address equipment fault.'}
       },
-      why:'NREMT: Elevated inspiratory CO₂ indicates rebreathing; fix the equipment/valve and restore zero baseline.'
+      why:'NREMT: Elevated inspiratory CO₂ indicates rebreathing—fix/replace equipment rather than just changing rate.'
     },
     // ROSC recognition
     {
@@ -234,16 +263,16 @@
       base:{ etco2:[12,18], rr:[10,12], shape:'normal', baseline:0, tilt:0.02, quality:.95, signal:3 },
       best:'checkPulse',
       options:[
-        {key:'checkPulse', label:'Check for ROSC (pulse/pressure) and transition to post-ROSC care'},
-        {key:'continueCPR', label:'Continue compressions without checking'},
-        {key:'fast', label:'Increase ventilation rate aggressively'}
+        {key:'checkPulse', label:'Check for ROSC and transition to post-ROSC care'},
+        {key:'continue', label:'Continue compressions without checking'},
+        {key:'hypervent', label:'Increase ventilation rate aggressively'}
       ],
       targets:{
-        checkPulse:   {etco2: _=> randInt(35,45), rr: _=> 12, shape:'rosclive', note:'Sudden sustained ETCO₂ increase suggests ROSC → verify pulse and change care plan.'},
-        continueCPR:  {etco2: b=> clamp(b+1, 14,22), rr: r=> r, shape:'normal', note:'May miss ROSC; reassess when ETCO₂ rises abruptly.'},
-        fast:         {etco2: b=> clamp(b-3, 10,16), rr: r=> Math.min(20, r+6), shape:'normal', note:'Hyperventilation post-ROSC is harmful; avoid.'}
+        checkPulse:{etco2:_=> randInt(35,45), rr:_=> 12, shape:'rosclive', note:'Sudden sustained ETCO₂ rise suggests ROSC → verify pulse and adjust care.'},
+        continue:  {etco2:b=> clamp(b+1, 14,22), rr:r=> r, shape:'normal', note:'May miss ROSC; reassess with ETCO₂ jump.'},
+        hypervent:{etco2:b=> clamp(b-3, 10,16), rr:r=> Math.min(20, r+6), shape:'normal', note:'Avoid hyperventilation—reduces cerebral perfusion post-ROSC.'}
       },
-      why:'NREMT: ETCO₂ is a perfusion marker in arrest; a sudden rise often indicates ROSC. Pause to check for signs of life.'
+      why:'NREMT: Use ETCO₂ to monitor CPR and recognize ROSC; avoid hyperventilation.'
     },
     // Anxiety / hyperventilation
     {
@@ -254,15 +283,15 @@
       best:'coachSlower',
       options:[
         {key:'coachSlower', label:'Coach slower breathing and reassurance'},
-        {key:'bvm', label:'Assist ventilations with BVM'},
-        {key:'nrb', label:'Apply NRB O₂ 10–15 L/min'}
+        {key:'nrb', label:'Apply NRB O₂ 10–15 L/min'},
+        {key:'bvm', label:'Assist ventilations with BVM'}
       ],
       targets:{
-        coachSlower:{etco2: b=> clamp(35+randInt(-3,3), 32, 45), rr: r=> clamp(r-10, 12, 20), shape:'normal', note:'Coached ventilation normalizes ETCO₂.'},
-        bvm:        {etco2: b=> clamp(b-2, 20, 28), rr: _=> 12, shape:'normal', note:'Unnecessary; ventilation is adequate/excessive.'},
-        nrb:        {etco2: b=> b, rr: r=> r, shape:'normal', note:'O₂ not indicated; does not treat cause.'}
+        coachSlower:{etco2: _=> clamp(35+randInt(-3,3), 32,45), rr: r=> clamp(r-10, 12, 20), shape:'normal', note:'Coached breathing normalizes ETCO₂.'},
+        nrb:        {etco2: b=> b, rr: r=> r, shape:'normal', note:'O₂ not indicated; does not treat cause.'},
+        bvm:        {etco2: b=> clamp(b-2, 20,28), rr: _=> 12, shape:'normal', note:'Unnecessary; ventilation is adequate.' , bvmBase:35}
       },
-      why:'NREMT: Avoid unnecessary O₂; coach breathing when oxygenation is adequate and ETCO₂ is low due to hyperventilation.'
+      why:'NREMT: Reassure/coach breathing when ETCO₂ is low from hyperventilation; avoid unnecessary O₂ or BVM.'
     }
   ];
 
@@ -276,12 +305,10 @@
   window.addEventListener('resize', sizeCanvas, {passive:true});
 
   // --- Waveform drawing ---
-  // Map mmHg to pixel height (max ~60 mmHg fills ~80% height)
   function mmHgToY(mm){
     const h = cap.height;
     const maxVis = 60; // mmHg ~ top visual range
     const frac = clamp(mm / maxVis, 0, 1);
-    // 0 at bottom (inspiration), 1 near top
     return h - (h*0.85*frac) - h*0.1; // leave margins
   }
 
@@ -293,49 +320,25 @@
     ctx.globalAlpha = 1;
   }
 
-  // Generate y at local time t in cycle (0..1)
   function capnoShape(t){
-    const base = state.baseline;        // inspiratory baseline mmHg
-    const et = state.etco2 || 40;       // end-tidal mmHg
+    const base = state.baseline;
+    const et = state.etco2 ?? 40;
     const up = clamp(state.upSlope, 0.2, 2.0);
-    const tilt = state.plateauTilt||0;  // 0..~0.2
-    // Phases: upstroke (0-0.25), plateau (0.25-0.65), downstroke/inspiration (0.65-1)
+    const tilt = state.plateauTilt||0;
+
     if(state.shape === 'flat'){
-      // Small cardiogenic oscillations around baseline
       return mmHgToY(base + (Math.sin(t*2*Math.PI*4))*0.6);
     }
+
     if(state.shape === 'rosclive'){
-      // Like normal but slightly higher perfusion
-      const e = et;
-      if(t<0.25){ // Phase II
-        const prog = Math.pow(t/0.25, up);
-        return mmHgToY(base + (e-base)*prog);
-      } else if(t<0.65){
-        const p = (t-0.25)/(0.4);
-        const plateau = e * (1 - tilt*p);
-        return mmHgToY(plateau);
-      } else {
-        const p = (t-0.65)/0.35;
-        const down = base*(p); // back to baseline
-        return mmHgToY(base*(1) * (1-p));
-      }
+      if(t<0.25){ const p=Math.pow(t/0.25, up); return mmHgToY(base+(et-base)*p); }
+      else if(t<0.65){ const p=(t-0.25)/0.4; const plateau = et*(1-tilt*p); return mmHgToY(plateau); }
+      else { const p=(t-0.65)/0.35; const yStart=mmHgToY(et*(1-tilt)); const yEnd=mmHgToY(base); return yStart+(yEnd-yStart)*p; }
     }
-    // Normal / sharkfin / rebreathing variants
-    if(t<0.25){
-      const prog = Math.pow(t/0.25, up); // faster rise with higher upSlope
-      return mmHgToY(base + (et-base)*prog);
-    } else if(t<0.65){
-      const p = (t-0.25)/(0.4);
-      // Plateau tilt creates shark-fin (higher tilt = more slope up)
-      const plateau = et * (1 - tilt*p) + base*tilt*p*0.2;
-      return mmHgToY(plateau);
-    } else {
-      // Inspiration: return to baseline; rebreathing keeps baseline elevated
-      const p = (t-0.65)/0.35;
-      const yStart = mmHgToY(et * (1 - tilt)); // start of inspiratory downstroke
-      const yEnd = mmHgToY(base);
-      return yStart + (yEnd - yStart)*p;
-    }
+
+    if(t<0.25){ const p=Math.pow(t/0.25, up); return mmHgToY(base+(et-base)*p); }
+    else if(t<0.65){ const p=(t-0.25)/0.4; const plateau = et*(1-tilt*p) + base*tilt*p*0.2; return mmHgToY(plateau); }
+    else { const p=(t-0.65)/0.35; const yStart=mmHgToY(et*(1-tilt)); const yEnd=mmHgToY(base); return yStart+(yEnd-yStart)*p; }
   }
 
   function drawWave(){
@@ -343,25 +346,18 @@
     ctx.clearRect(0,0,w,h);
     drawGrid();
 
-    // derive cycle speed from RR
     const rr = clamp(state.rr||12, 2, 40);
     const hz = rr/60;
-    // scroll speed in px per second (visual)
-    const pxPerSec = 120; // how fast trace moves left
-    state.phase += (pxPerSec/60); // approx per frame
+    const pxPerSec = 120;
+    state.phase += (pxPerSec/60);
 
-    // draw scrolling waveform by sampling backwards
-    const stepX = 2; // px step
     ctx.strokeStyle = '#37d1ff';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    for(let x=0; x<w; x+=stepX){
-      // Map x to time position in cycle
-      // Use phase to scroll: older data to the right
-      const tSec = (state.phase + x)/pxPerSec; // seconds ago
-      const cyc = (tSec*hz)%1; // 0..1
-      // small noise if poor quality
-      const noise = (1-state.quality) * (Math.random()-0.5) * 6; // px
+    for(let x=0; x<w; x+=2){
+      const tSec = (state.phase + x)/pxPerSec;
+      const cyc = (tSec*hz)%1;
+      const noise = (1-state.quality) * (Math.random()-0.5) * 6;
       const y = capnoShape(cyc) + noise;
       if(x===0) ctx.moveTo(0,y); else ctx.lineTo(x,y);
     }
@@ -370,12 +366,10 @@
 
   // --- Animation & transitions ---
   function tick(){
-    // gentle drift
     if(state.readingShown && !state.transitioning){
       if(Math.random()<0.02) state.rr = clamp(state.rr + (Math.random()<.5?-1:1), 4, 40);
       if(Math.random()<0.015) state.etco2 = clamp(state.etco2 + (Math.random()<.5?-1:1), 0, 80);
     }
-    // move toward target ETCO2 when transitioning (after an action)
     if(state.transitioning && state.targetEtco2!=null){
       const step = state.etco2 < state.targetEtco2 ? 0.7 : -0.6;
       state.etco2 = Math.round((state.etco2 + step)*10)/10;
@@ -384,15 +378,24 @@
       }
     }
 
-    // update text
+    // Live BVM control: constantly move toward computed target based on slider
+    if(state.onBvm && state.bvmK){
+      const rr = Number(bvmRate.value);
+      const target = clamp(state.bvmK / Math.pow(rr, state.bvmAlpha), 15, 70);
+      state.targetEtco2 = target;
+      state.transitioning = true;
+      state.rr = rr; // RR display reflects bag rate
+    }
+
     etco2El.textContent = state.etco2!=null ? (Number.isInteger(state.etco2)? state.etco2 : state.etco2.toFixed(1)) : '--';
     rrEl.textContent = state.rr!=null ? state.rr : '--';
+    shapeLabel.textContent = SHAPE_LABELS[state.shape] || state.shape;
 
     drawWave();
     requestAnimationFrame(tick);
   }
 
-  // --- UI: building choices & grading ---
+  // --- UI build/grading ---
   function labelFor(def,key){ const f = def.options.find(o=>o.key===key); return f?f.label:key; }
 
   function renderChoices(caseDef){
@@ -410,31 +413,54 @@
   function lockChoices(){ choicesBox.querySelectorAll('button.choice').forEach(b=> b.disabled = true); }
 
   function applyWaveParams(shape, baseline, tilt, upSlope, quality){
-    state.shape = shape ?? state.shape;
+    if(shape!==undefined) state.shape = shape;
     if(baseline!==undefined) state.baseline = baseline;
     if(tilt!==undefined) state.plateauTilt = tilt;
     if(upSlope!==undefined) state.upSlope = upSlope;
     if(quality!==undefined) state.quality = quality;
   }
 
+  function startBvmControl(baseForBvm){
+    state.onBvm = true;
+    bvmBox.style.display = 'block';
+    // Establish proportionality constant K so ETCO2 ≈ K / RR^alpha
+    const base = (baseForBvm || state.etco2 || 40);
+    const rr0 = 12; // default initial bag rate
+    state.bvmK = base * Math.pow(rr0, state.bvmAlpha);
+    bvmRate.value = rr0; bvmRateLbl.textContent = rr0;
+    state.rr = rr0;
+  }
+
+  function stopBvmControl(){
+    state.onBvm = false;
+    state.bvmK = null;
+    bvmBox.style.display = 'none';
+  }
+
   function gradeChoice(caseDef, key, btn){
     lockChoices();
+    stopBvmControl();
+
     const plan = caseDef.targets[key];
-    // target ETCO2 & RR
     const tgtEt = typeof plan.etco2==='function' ? plan.etco2(state.etco2) : plan.etco2;
-    const tgtRr = typeof plan.rr==='function' ? plan.rr(state.rr) : plan.rr ?? state.rr;
+    const tgtRr = typeof plan.rr==='function' ? plan.rr(state.rr) : (plan.rr ?? state.rr);
     state.targetEtco2 = tgtEt;
     state.rr = Math.round(tgtRr);
     state.transitioning = true;
 
-    // wave params
+    // Wave params
     applyWaveParams(plan.shape ?? state.shape,
                     plan.baseline ?? state.baseline,
                     plan.tilt ?? state.plateauTilt,
                     plan.upSlope ?? state.upSlope,
                     plan.quality ?? state.quality);
 
-    // correctness & feedback
+    // If the selection uses BVM, enable slider control
+    if(key==='bvm' || key==='removeBvm'){
+      startBvmControl(plan.bvmBase ?? tgtEt ?? 40);
+    }
+
+    // Correctness & feedback
     const isBest = key === caseDef.best;
     btn.classList.add(isBest ? 'correct' : 'incorrect');
 
@@ -453,6 +479,7 @@
     nextBtn.style.display='none';
     choicesBox.innerHTML='';
     alertEl.textContent = 'Acquiring…'; alertEl.classList.add('show');
+    stopBvmControl();
 
     const def = CASES[Math.floor(Math.random()*CASES.length)];
     const et = randInt(def.base.etco2[0], def.base.etco2[1]);
@@ -460,7 +487,7 @@
 
     // initialize state
     state.etco2 = null; state.targetEtco2 = null; state.rr = null;
-    state.signal = def.base.signal; setSignal(state.signal);
+    setSignal(def.base.signal); // some cases use .signal, some put in base; handle both
     applyWaveParams(def.base.shape, def.base.baseline, def.base.tilt, 1.1, def.base.quality);
     state.readingShown=false; state.transitioning=false;
 
@@ -473,7 +500,7 @@
     }, 1200 + Math.random()*600);
   }
 
-  // --- Init / Resize / Touch zoom guard ---
+  // --- Init / Events ---
   function init(){
     sizeCanvas();
     runRandomCase();
@@ -482,6 +509,13 @@
   document.addEventListener('DOMContentLoaded', init);
   nextBtn.addEventListener('click', runRandomCase);
 
+  bvmRate.addEventListener('input', ()=>{
+    const v = Number(bvmRate.value);
+    bvmRateLbl.textContent = v;
+    // live updates handled in tick() using BVM model
+  });
+
+  // Prevent double-tap zoom on iOS
   let lastTouch=0;
   document.addEventListener('touchend', e=>{
     const now = Date.now();
