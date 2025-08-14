@@ -25,7 +25,7 @@
     .card{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px }
     h2{ margin:0 0 8px 0; font-size:20px }
     .scenario{ font-size:16px; color:#0b2c3a; line-height:1.55 }
-    .tiny{ font-size:12px; color:var(--muted) }
+    .tiny{ font-size:12px; color:#5d7a88 }
     .badge{ font-size:12px; display:inline-block; padding:2px 8px; border-radius:999px; background:#eaf7ff; color:#0b2c3a; border:1px solid #cfe7ef }
     .device{ display:grid; gap:12px; grid-template-rows:auto auto 1fr auto }
     .screen{ background:#0b2530; color:#e8ffff; border-radius:14px; padding:12px 14px; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.08) }
@@ -64,7 +64,7 @@
     .bvm-row{ display:flex; flex-wrap:wrap; gap:10px; align-items:center }
     .bvm-row input[type="range"]{ width:260px; }
     .bvm-chip{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; background:#eef6ff; border-radius:999px; font-size:13px; color:#0b3a5a; border:1px solid #d7ebff }
-    .footer-note{ text-align:center; font-size:12px; color:var(--muted); padding:4px 0 10px }
+    .footer-note{ text-align:center; font-size:12px; color:#5d7a88; padding:4px 0 10px }
   </style>
 </head>
 <body>
@@ -76,11 +76,11 @@
       <h2>Scenario</h2>
       <div id="scenarioText" class="scenario">Loading case…</div>
       <div style="margin-top:8px">
-        <span class="badge">NREMT Focus: Airway, Ventilation, Oxygenation & ETCO₂</span>
+        <span class="badge">NREMT Focus: Airway, Ventilation, Perfusion & ETCO₂</span>
       </div>
       <p class="tiny" style="margin-top:6px">
-        Pick the <b>best EMT-B action</b>. If you place the patient on a <b>BVM</b>, use the slider to set the ventilation rate and watch ETCO₂ change
-        (aim adult <b>10–12/min</b>; avoid hyperventilation).
+        Pick the <b>best EMT-B action</b>. If the patient is <b>on BVM</b>, use the slider to set the ventilation rate and watch ETCO₂ respond
+        (adult target <b>10–12/min</b>; avoid hyperventilation).
       </p>
     </div>
 
@@ -142,11 +142,7 @@
   // --- Helpers ---
   const clamp = (v,a,b)=> Math.max(a, Math.min(b,v));
   const randInt = (a,b)=> Math.floor(Math.random()*(b-a+1))+a;
-
-  function setSignal(n){
-    const bars = sigBarsEl.querySelectorAll('span');
-    bars.forEach((b,i)=> b.classList.toggle('on', i < n));
-  }
+  function setSignal(n){ const bars = sigBarsEl.querySelectorAll('span'); bars.forEach((b,i)=> b.classList.toggle('on', i < n)); }
 
   // --- Capnogram engine state ---
   const state = {
@@ -158,8 +154,8 @@
     quality: 1,      // 0..1, affects noise/clarity
     // BVM modeling
     onBvm:false,
-    bvmK:null,       // proportionality constant for ETCO2 ~ K / RR^alpha
-    bvmAlpha:0.95,   // exponent; 1.0 is perfect inverse
+    bvmK:null,       // ETCO2 ≈ K / RR^alpha
+    bvmAlpha:0.95,   // exponent
     // graph scroll
     phase: 0,
     readingShown:false, transitioning:false
@@ -173,9 +169,9 @@
     rosclive:'Post-ROSC normal'
   };
 
-  // --- Scenarios (EMT-B level actions only) ---
+  // --- Scenarios (EMT-B level) ---
   const CASES = [
-    // Hypoventilation (opioid) → BVM best + slider
+    // Hypoventilation (opioid) → BVM best + naloxone option (label simplified)
     {
       id:'opioid_hypovent',
       title:'Opioid overdose with hypoventilation',
@@ -183,20 +179,21 @@
       base:{ etco2:[55,70], rr:[4,8], shape:'normal', baseline:0, tilt:0.02, quality:.95, signal:3 },
       best:'bvm',
       options:[
-        {key:'bvm', label:'Assist ventilations with BVM + high-flow O₂ (10–12/min)'},
-        {key:'nrb', label:'Apply NRB O₂ only'},
+        {key:'bvm',   label:'Assist ventilations with BVM + high-flow O₂ (10–12/min)'},
+        {key:'nrb',   label:'Apply NRB O₂ only'},
         {key:'coach', label:'Coach slower breathing'},
-        {key:'nalox', label:'Administer naloxone (after airway/ventilations)'}
+        {key:'nalox', label:'Administer naloxone'}
       ],
       targets:{
         bvm:  {etco2: _=> 40, rr: _=> 12, shape:'normal', note:'Ventilate with BVM to correct hypoventilation. Then consider naloxone per protocol.' , bvmBase:40},
         nrb:  {etco2: b=> clamp(b+2,50,80), rr: r=> r, shape:'normal', note:'O₂ alone does not correct hypoventilation → ETCO₂ stays high.'},
         coach:{etco2: b=> clamp(b+1,50,75), rr: r=> r, shape:'normal', note:'Coaching is inadequate for slow/shallow respirations.'},
-        nalox:{etco2: b=> clamp(b-3,46,65), rr: r=> r+2, shape:'normal', note:'Drug may help but airway/ventilation is priority. Ventilate first.'}
+        nalox:{etco2: b=> clamp(b-3,46,65), rr: r=> r+2, shape:'normal', note:'Helpful medication, but airway/ventilation takes priority per NREMT.'}
       },
       why:'NREMT: Inadequate breathing → BVM ventilations with high-flow O₂. Consider naloxone after airway/ventilation.'
     },
-    // Bronchospasm (asthma/COPD) → assist bronchodilator best (EMT can assist prescribed MDI)
+
+    // Bronchospasm (asthma/COPD) → assist bronchodilator best
     {
       id:'asthma_sharkfin',
       title:'Severe asthma/COPD with bronchospasm',
@@ -205,19 +202,20 @@
       best:'broncho',
       options:[
         {key:'broncho', label:"Assist patient's prescribed bronchodilator (MDI) & request ALS"},
-        {key:'nrb', label:'Apply NRB 10–15 L/min'},
-        {key:'bvm', label:'Assist ventilations with BVM (if tiring/poor tidal)'},
-        {key:'coach', label:'Coach faster breathing'}
+        {key:'nrb',     label:'Apply NRB 10–15 L/min'},
+        {key:'bvm',     label:'Assist ventilations with BVM (if tiring/poor tidal)'},
+        {key:'coach',   label:'Coach faster breathing'}
       ],
       targets:{
         broncho:{etco2: b=> clamp(b-8, 35, 45), rr: r=> clamp(r-2, 18, 26), shape:'normal', note:'Treats cause: bronchodilation resolves shark-fin and normalizes ETCO₂.'},
         nrb:    {etco2: b=> b, rr: r=> r, shape:'sharkfin', note:'Adds FiO₂ but does not relieve bronchospasm.'},
-        bvm:    {etco2: b=> clamp(b-4, 38, 50), rr: _=> 12, shape:'sharkfin', note:'Use if ventilation becomes inadequate; waveform remains shark-fin until bronchodilation.' , bvmBase:45},
-        coach:  {etco2: b=> clamp(b-2, 44, 56), rr: r=> clamp(r+4, 24, 36), shape:'sharkfin', note:'Risk of dynamic hyperinflation; not ideal.'}
+        bvm:    {etco2: b=> clamp(b-4, 38, 50), rr: _=> 12, shape:'sharkfin', note:'Use if ventilation becomes inadequate; bronchospasm persists until medicated.' , bvmBase:45},
+        coach:  {etco2: b=> clamp(b-2, 44, 56), rr: r=> clamp(r+4, 24, 36), shape:'sharkfin', note:'Risk of air-trapping; not ideal.'}
       },
-      why:'NREMT: Assist with patient’s bronchodilator when bronchospasm is the cause. Provide O₂. BVM only if ventilation becomes inadequate.'
+      why:'NREMT: Assist with patient’s bronchodilator when bronchospasm is the cause; BVM only if ventilation becomes inadequate.'
     },
-    // Esophageal/failed SGA → remove and BVM
+
+    // Failed airway/SGA → remove and BVM
     {
       id:'failed_airway_flat',
       title:'Failed supraglottic airway (flat capnogram)',
@@ -226,8 +224,8 @@
       best:'removeBvm',
       options:[
         {key:'removeBvm', label:'Remove suspect device and ventilate with BVM + adjuncts'},
-        {key:'continue', label:'Continue ventilations without changes'},
-        {key:'nrb', label:'Switch to NRB O₂ only'}
+        {key:'continue',  label:'Continue ventilations without changes'},
+        {key:'nrb',       label:'Switch to NRB O₂ only'}
       ],
       targets:{
         removeBvm:{etco2: _=> 42, rr: _=> 12, shape:'normal', note:'Corrects placement error; restores alveolar CO₂ detection.' , bvmBase:42},
@@ -236,7 +234,8 @@
       },
       why:'NREMT: Persistent near-zero ETCO₂ after airway placement suggests esophageal/failed airway. Remove device, use OPA/NPA and BVM with O₂.'
     },
-    // Rebreathing / faulty BVM valve → fix circuit
+
+    // Rebreathing/faulty BVM valve → fix circuit
     {
       id:'rebreathing_fault',
       title:'Rebreathing from faulty BVM one-way valve',
@@ -245,8 +244,8 @@
       best:'fixCircuit',
       options:[
         {key:'fixCircuit', label:'Replace/repair BVM or valve; increase fresh gas flow'},
-        {key:'bvm', label:'Bag faster without fixing valve'},
-        {key:'nrb', label:'Apply NRB O₂ only'}
+        {key:'bvm',        label:'Bag faster without fixing valve'},
+        {key:'nrb',        label:'Apply NRB O₂ only'}
       ],
       targets:{
         fixCircuit:{etco2: b=> clamp(b-6, 35,45), rr: r=> r, shape:'normal', baseline:0, note:'Fixing equipment restores zero baseline and improves ETCO₂.'},
@@ -255,6 +254,49 @@
       },
       why:'NREMT: Elevated inspiratory CO₂ indicates rebreathing—fix/replace equipment rather than just changing rate.'
     },
+
+    // Cardiac arrest – low ETCO2 from poor compressions (non-respiratory cause)
+    {
+      id:'cpr_low_quality',
+      title:'Cardiac arrest: low ETCO₂ from poor compressions',
+      text:'Witnessed arrest. Compressions noted shallow/slow with incomplete recoil; BVM attached with O₂.',
+      base:{ etco2:[6,12], rr:[10,12], shape:'normal', baseline:0, tilt:0.02, quality:.95, signal:3 },
+      best:'improveCPR',
+      onBvmStart:true,
+      options:[
+        {key:'improveCPR', label:'Improve CPR quality (depth 2–2.4", rate 100–120, full recoil); switch compressors'},
+        {key:'bvmFaster',  label:'Hyperventilate the patient (increase BVM rate)'},
+        {key:'continue',   label:'Continue current compressions unchanged'}
+      ],
+      targets:{
+        improveCPR:{etco2: _=> randInt(20,30), rr:_=> 10, shape:'normal', note:'ETCO₂ reflects perfusion during CPR—better compressions raise ETCO₂.' , bvmBase:25},
+        bvmFaster: {etco2: b=> clamp(b-2, 4,10), rr:r=> Math.min(20, r+6), shape:'normal', note:'Hyperventilation worsens venous return → lowers ETCO₂.' , bvmBase:8},
+        continue:  {etco2: b=> b, rr:r=> r, shape:'normal', note:'Low-quality CPR keeps ETCO₂ low; switch compressor and improve technique.'}
+      },
+      why:'NREMT: Low ETCO₂ during arrest often indicates poor perfusion from inadequate compressions; improve depth/rate/recoil and avoid hyperventilation.'
+    },
+
+    // Cardiac arrest – prolonged downtime (non-respiratory cause)
+    {
+      id:'cpr_prolonged_downtime',
+      title:'Cardiac arrest: prolonged downtime',
+      text:'Unwitnessed arrest with long downtime. High-quality CPR in progress; BVM with O₂ attached. ETCO₂ remains low.',
+      base:{ etco2:[8,12], rr:[10,12], shape:'normal', baseline:0, tilt:0.02, quality:.95, signal:3 },
+      best:'continueHQ',
+      onBvmStart:true,
+      options:[
+        {key:'continueHQ', label:'Continue high-quality CPR, minimize pauses; rhythm analysis/defib per cycle'},
+        {key:'bvmFaster',  label:'Hyperventilate the patient (increase BVM rate)'},
+        {key:'improveCPR', label:'Change compressor and re-emphasize quality despite already good CPR'}
+      ],
+      targets:{
+        continueHQ:{etco2: b=> clamp(b, 8,14), rr:_=> 10, shape:'normal', note:'Prolonged downtime can keep ETCO₂ low despite HQ-CPR; continue guideline care.' , bvmBase:12},
+        bvmFaster: {etco2: b=> clamp(b-2, 6,10), rr:r=> Math.min(20, r+6), shape:'normal', note:'Hyperventilation reduces ETCO₂ and cerebral perfusion—avoid.' , bvmBase:10},
+        improveCPR:{etco2: b=> clamp(b+3, 10,16), rr:_=> 10, shape:'normal', note:'Switching compressors may help, but care is already high-quality; main focus is minimize pauses and defib when indicated.' , bvmBase:14}
+      },
+      why:'NREMT: Low ETCO₂ can reflect long downtime; maintain high-quality CPR and minimize interruptions. Avoid hyperventilation.'
+    },
+
     // ROSC recognition
     {
       id:'arrest_rosc',
@@ -262,18 +304,20 @@
       text:'During high-quality CPR, ETCO₂ is ~12–18 mmHg. Suddenly ETCO₂ jumps to mid-30s.',
       base:{ etco2:[12,18], rr:[10,12], shape:'normal', baseline:0, tilt:0.02, quality:.95, signal:3 },
       best:'checkPulse',
+      onBvmStart:true,
       options:[
         {key:'checkPulse', label:'Check for ROSC and transition to post-ROSC care'},
-        {key:'continue', label:'Continue compressions without checking'},
-        {key:'hypervent', label:'Increase ventilation rate aggressively'}
+        {key:'continue',   label:'Continue compressions without checking'},
+        {key:'hypervent',  label:'Increase ventilation rate aggressively'}
       ],
       targets:{
-        checkPulse:{etco2:_=> randInt(35,45), rr:_=> 12, shape:'rosclive', note:'Sudden sustained ETCO₂ rise suggests ROSC → verify pulse and adjust care.'},
-        continue:  {etco2:b=> clamp(b+1, 14,22), rr:r=> r, shape:'normal', note:'May miss ROSC; reassess with ETCO₂ jump.'},
-        hypervent:{etco2:b=> clamp(b-3, 10,16), rr:r=> Math.min(20, r+6), shape:'normal', note:'Avoid hyperventilation—reduces cerebral perfusion post-ROSC.'}
+        checkPulse:{etco2:_=> randInt(35,45), rr:_=> 12, shape:'rosclive', note:'Sustained ETCO₂ rise suggests ROSC → verify pulse and change care.' , bvmBase:38},
+        continue:  {etco2:b=> clamp(b+1, 14,22), rr:r=> r, shape:'normal', note:'May miss ROSC; reassess when ETCO₂ rises abruptly.'},
+        hypervent:{etco2:b=> clamp(b-3, 10,16), rr:r=> Math.min(20, r+6), shape:'normal', note:'Avoid hyperventilation—reduces cerebral perfusion post-ROSC.' , bvmBase:16}
       },
-      why:'NREMT: Use ETCO₂ to monitor CPR and recognize ROSC; avoid hyperventilation.'
+      why:'NREMT: Use ETCO₂ to recognize ROSC; pause to check for signs of life when it jumps.'
     },
+
     // Anxiety / hyperventilation
     {
       id:'anxiety_hypervent',
@@ -283,8 +327,8 @@
       best:'coachSlower',
       options:[
         {key:'coachSlower', label:'Coach slower breathing and reassurance'},
-        {key:'nrb', label:'Apply NRB O₂ 10–15 L/min'},
-        {key:'bvm', label:'Assist ventilations with BVM'}
+        {key:'nrb',         label:'Apply NRB O₂ 10–15 L/min'},
+        {key:'bvm',         label:'Assist ventilations with BVM'}
       ],
       targets:{
         coachSlower:{etco2: _=> clamp(35+randInt(-3,3), 32,45), rr: r=> clamp(r-10, 12, 20), shape:'normal', note:'Coached breathing normalizes ETCO₂.'},
@@ -316,7 +360,7 @@
     const w = cap.width, h = cap.height;
     ctx.globalAlpha = 0.12; ctx.strokeStyle = '#bde3ee'; ctx.lineWidth = 1;
     for(let x=0;x<w;x+=40){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
-    for(let y=0;y<h;y+=20){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+    for(let y=0;y<h;y+=20){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(x= w,y); ctx.stroke(); } // keep grid simple
     ctx.globalAlpha = 1;
   }
 
@@ -329,7 +373,6 @@
     if(state.shape === 'flat'){
       return mmHgToY(base + (Math.sin(t*2*Math.PI*4))*0.6);
     }
-
     if(state.shape === 'rosclive'){
       if(t<0.25){ const p=Math.pow(t/0.25, up); return mmHgToY(base+(et-base)*p); }
       else if(t<0.65){ const p=(t-0.25)/0.4; const plateau = et*(1-tilt*p); return mmHgToY(plateau); }
@@ -378,13 +421,13 @@
       }
     }
 
-    // Live BVM control: constantly move toward computed target based on slider
+    // Live BVM control: ETCO₂ ≈ K / RR^alpha
     if(state.onBvm && state.bvmK){
       const rr = Number(bvmRate.value);
       const target = clamp(state.bvmK / Math.pow(rr, state.bvmAlpha), 15, 70);
       state.targetEtco2 = target;
       state.transitioning = true;
-      state.rr = rr; // RR display reflects bag rate
+      state.rr = rr;
     }
 
     etco2El.textContent = state.etco2!=null ? (Number.isInteger(state.etco2)? state.etco2 : state.etco2.toFixed(1)) : '--';
@@ -423,7 +466,6 @@
   function startBvmControl(baseForBvm){
     state.onBvm = true;
     bvmBox.style.display = 'block';
-    // Establish proportionality constant K so ETCO2 ≈ K / RR^alpha
     const base = (baseForBvm || state.etco2 || 40);
     const rr0 = 12; // default initial bag rate
     state.bvmK = base * Math.pow(rr0, state.bvmAlpha);
@@ -448,19 +490,16 @@
     state.rr = Math.round(tgtRr);
     state.transitioning = true;
 
-    // Wave params
     applyWaveParams(plan.shape ?? state.shape,
                     plan.baseline ?? state.baseline,
                     plan.tilt ?? state.plateauTilt,
                     plan.upSlope ?? state.upSlope,
                     plan.quality ?? state.quality);
 
-    // If the selection uses BVM, enable slider control
-    if(key==='bvm' || key==='removeBvm'){
-      startBvmControl(plan.bvmBase ?? tgtEt ?? 40);
+    if(key==='bvm' || key==='removeBvm' || key==='bvmFaster' || caseDef.onBvmStart){
+      startBvmControl(plan.bvmBase ?? tgtEt ?? state.etco2 ?? 40);
     }
 
-    // Correctness & feedback
     const isBest = key === caseDef.best;
     btn.classList.add(isBest ? 'correct' : 'incorrect');
 
@@ -485,18 +524,17 @@
     const et = randInt(def.base.etco2[0], def.base.etco2[1]);
     const rr = randInt(def.base.rr[0], def.base.rr[1]);
 
-    // initialize state
     state.etco2 = null; state.targetEtco2 = null; state.rr = null;
-    setSignal(def.base.signal); // some cases use .signal, some put in base; handle both
+    setSignal(def.base.signal ?? 3);
     applyWaveParams(def.base.shape, def.base.baseline, def.base.tilt, 1.1, def.base.quality);
     state.readingShown=false; state.transitioning=false;
 
     scenarioText.innerHTML = `<strong>${def.title}</strong><br>${def.text}<br><strong>RR:</strong> ${rr}/min`;
-    // simulate acquisition delay
     setTimeout(()=>{
       state.etco2 = et; state.rr = rr; state.readingShown=true;
       alertEl.classList.remove('show');
       renderChoices(def);
+      if(def.onBvmStart){ startBvmControl(et); }
     }, 1200 + Math.random()*600);
   }
 
@@ -512,7 +550,6 @@
   bvmRate.addEventListener('input', ()=>{
     const v = Number(bvmRate.value);
     bvmRateLbl.textContent = v;
-    // live updates handled in tick() using BVM model
   });
 
   // Prevent double-tap zoom on iOS
@@ -522,6 +559,9 @@
     if(now-lastTouch<=300){ e.preventDefault(); }
     lastTouch=now;
   }, {passive:false});
+
+  // Fix minor grid line bug in some browsers
+  (function(){ const canvasFix = cap.getContext('2d'); canvasFix.lineCap='round'; })();
 </script>
 </body>
 </html>
