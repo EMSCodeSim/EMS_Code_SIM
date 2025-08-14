@@ -1,578 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Rule of Nines — TBSA Burn Quiz</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rule of Nines Quiz</title>
 <style>
-  :root{
-    --brand:#007B8A; --bg:#f0f8ff; --ink:#123; --card:#ffffff; --muted:#6b7c85;
-    --chip:#e8f4f6; --full:#d9534f; --half:#f0ad4e; --none:#c8d7df; --stroke:#233;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;display:flex;flex-direction:column}
-  header{background:var(--brand);color:#fff;padding:1rem 1.25rem;text-align:center}
-  header h1{margin:0;font-size:1.2rem}
-  .wrap{width:min(1100px,100%);margin:0 auto;padding:1rem;display:grid;gap:1rem}
-  .controls,.results,.legend,.quiz{background:var(--card);border-radius:.75rem;padding:1rem;box-shadow:0 1px 2px rgba(0,0,0,.05)}
-  .row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
-  .seg{display:flex;gap:.5rem;flex-wrap:wrap}
-  button,input{border:1px solid #cbd5db;border-radius:.6rem;padding:.6rem .8rem;background:#fff;color:var(--ink);outline:0}
-  button{background:var(--brand);color:#fff;border:none;cursor:pointer;font-weight:600}
-  button.secondary{background:#fff;color:var(--brand);border:1px solid var(--brand)}
-  button.danger{background:#9f2f2f}
-  .chip{background:var(--chip);border:none;border-radius:.6rem;padding:.5rem .7rem;color:var(--brand);font-weight:600}
-
-  .board{background:var(--card);border-radius:.75rem;padding:.5rem;display:grid;justify-items:center;box-shadow:0 1px 2px rgba(0,0,0,.05)}
-  .svg-wrap{width:min(560px,100%);height:auto;position:relative;transition:transform .2s ease}
-  .svg-wrap.peds{transform:scale(.92); transform-origin: top center;} /* pediatric slightly smaller */
-  svg{width:100%;height:auto}
-
-  /* Zones (calculation areas) */
-  .zone{fill:#fdfdfd;stroke:var(--none);stroke-width:2;pointer-events:none;transition:fill .15s,stroke .15s}
-  .zone[data-state="0"]{fill:#fdfdfd}
-  .zone[data-state="0.5"]{fill:var(--half);stroke:var(--stroke)}
-  .zone[data-state="1"]{fill:var(--full);stroke:var(--stroke)}
-
-  /* Silhouette base (visual only) */
-  .sil{fill:url(#skinGrad);stroke:#cdb09b;stroke-width:1.1}
-
-  .label{font-size:.72rem;fill:#223;opacity:.85;user-select:none;pointer-events:none}
-  .legend{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
-  .legend .key{display:flex;align-items:center;gap:.4rem}
-  .sw{width:18px;height:12px;border-radius:3px;border:1px solid #9cb0ba}
-  .sw.none{background:#fff}
-  .sw.half{background:var(--half)}
-  .sw.full{background:var(--full)}
-
-  .results{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));align-items:center}
-  .kv{background:var(--chip);padding:.8rem;border-radius:.6rem;display:flex;justify-content:space-between;gap:.5rem;align-items:center}
-  .kv b{font-size:1.05rem}
-
-  .quiz .grid{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-  .feedback{margin-top:.6rem;border-top:1px dashed #d6e3e9;padding-top:.6rem}
-  .ok{color:#116e3a}
-  .bad{color:#9f2f2f}
-  .hint{color:var(--muted);font-size:.9rem}
-
-  .pct-tag{font-size:.72rem;fill:#000;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;font-weight:700;opacity:.95}
-  .risks{margin-top:.6rem;background:#fbfcfe;border:1px solid #e1ebf0;border-radius:.6rem;padding:.6rem}
-  .risks h4{margin:.2rem 0 .4rem;font-size:1rem}
-  .risks ul{margin:.2rem 0 .2rem 1.1rem}
-
-  /* View toggling — only one side visible at a time */
-  .front-group{display:block}
-  .back-group{display:none}
-  .view-back .front-group{display:none}
-  .view-back .back-group{display:block}
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: #f0f8ff;
+        margin: 0;
+    }
+    header {
+        background: #007B8A;
+        color: white;
+        padding: 1rem;
+        font-size: 1.5rem;
+    }
+    svg {
+        max-width: 300px;
+        margin: 1rem auto;
+        display: block;
+    }
+    .burned {
+        fill: orange !important;
+    }
+    input[type="number"] {
+        padding: 0.4rem;
+        font-size: 1rem;
+        width: 80px;
+        text-align: center;
+    }
+    button {
+        padding: 0.5rem 1rem;
+        margin: 0.5rem;
+        font-size: 1rem;
+        background: #007B8A;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #005f65;
+    }
+    #feedback {
+        margin-top: 1rem;
+        font-size: 1rem;
+        font-weight: bold;
+    }
 </style>
 </head>
 <body>
-<header><h1 id="title">Rule of Nines — TBSA Burn Quiz</h1></header>
-<div class="wrap">
+<header id="viewType">Rule of Nines Burn Quiz</header>
 
-  <!-- Controls -->
-  <div class="controls">
-    <div class="row">
-      <span class="chip">Random Adult or Pediatric scenario starts on load. Burns may be on BOTH sides. Use Front/Back.</span>
-      <div class="seg" style="margin-left:auto">
-        <button id="frontBtn" class="secondary">Front</button>
-        <button id="backBtn" class="secondary">Back</button>
-        <button id="newScenarioBtn">New Scenario</button>
-        <button id="resetBtn" class="danger">Reset</button>
-      </div>
-    </div>
-  </div>
+<div id="svg-container"></div>
+<button id="toggleViewBtn">Show Back</button>
 
-  <!-- Board -->
-  <div class="board">
-    <div id="svgWrap" class="svg-wrap">
-      <!-- ADULT MODEL (single outline; back shares SAME footprint as front) -->
-      <svg id="adultSVG" viewBox="0 0 320 720" role="img" aria-label="Adult Burn Map" class="view-front">
-        <defs>
-          <linearGradient id="skinGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#ffe6d1"/>
-            <stop offset="100%" stop-color="#f6d5bf"/>
-          </linearGradient>
-        </defs>
+<div id="question">Estimate the %TBSA burned:</div>
+<input type="number" id="answer" min="0" max="100"> %
+<br>
+<button id="submitBtn">Submit</button>
 
-        <!-- FRONT silhouette -->
-        <g class="front-group">
-          <path class="sil" d="M160 24c-20 0-36 16-36 36s16 36 36 36 36-16 36-36-16-36-36-36z"/>
-          <path class="sil" d="M120 96h80c16 0 28 12 28 28v98c0 16-12 28-28 28h-80c-16 0-28-12-28-28v-98c0-16 12-28 28-28z"/>
-          <path class="sil" d="M64 120c-10 0-18 8-18 18v190c0 10 8 18 18 18 10 0 18-8 18-18V138c0-10-8-18-18-18z"/>
-          <path class="sil" d="M256 120c10 0 18 8 18 18v190c0 10-8 18-18 18-10 0-18-8-18-18V138c0-10 8-18 18-18z"/>
-          <path class="sil" d="M120 324h80c14 0 24 10 24 24v12c0 10-8 18-18 18h-92c-10 0-18-8-18-18v-12c0-14 10-24 24-24z"/>
-          <path class="sil" d="M130 378c-14 0-24 10-24 24v220c0 14 10 24 24 24s24-10 24-24V402c0-14-10-24-24-24z"/>
-          <path class="sil" d="M190 378c14 0 24 10 24 24v220c0 14-10 24-24 24s-24-10-24-24V402c0-14 10-24 24-24z"/>
-        </g>
-
-        <!-- BACK silhouette (same footprint) -->
-        <g class="back-group">
-          <path class="sil" d="M160 24c-20 0-36 16-36 36s16 36 36 36 36-16 36-36-16-36-36-36z"/>
-          <path class="sil" d="M120 96h80c16 0 28 12 28 28v98c0 16-12 28-28 28h-80c-16 0-28-12-28-28v-98c0-16 12-28 28-28z"/>
-          <path class="sil" d="M64 120c-10 0-18 8-18 18v190c0 10 8 18 18 18 10 0 18-8 18-18V138c0-10-8-18-18-18z"/>
-          <path class="sil" d="M256 120c10 0 18 8 18 18v190c0 10-8 18-18 18-10 0-18-8-18-18V138c0-10 8-18 18-18z"/>
-          <path class="sil" d="M120 324h80c14 0 24 10 24 24v12c0 10-8 18-18 18h-92c-10 0-18-8-18-18v-12c0-14 10-24 24-24z"/>
-          <path class="sil" d="M130 378c-14 0-24 10-24 24v220c0 14 10 24 24 24s24-10 24-24V402c0-14 10-24 24-24z"/>
-          <path class="sil" d="M190 378c14 0 24 10 24 24v220c0 14-10 24-24 24s-24-10-24-24V402c0-14 10-24 24-24z"/>
-        </g>
-
-        <!-- FRONT ZONES -->
-        <g class="front-group">
-          <ellipse class="zone" cx="160" cy="60" rx="38" ry="40" data-key="head-front" data-state="0"></ellipse>
-          <path class="zone" data-key="chest" data-state="0"
-                d="M95,115 C105,105 125,102 160,102 C195,102 215,105 225,115
-                   L225,205 C215,212 195,216 160,216 C125,216 105,212 95,205 Z"></path>
-          <path class="zone" data-key="abdomen" data-state="0"
-                d="M95,220 C105,212 125,210 160,210 C195,210 215,212 225,220
-                   L225,325 C210,332 190,336 160,336 C130,336 110,332 95,325 Z"></path>
-          <rect class="zone" x="150" y="340" width="20" height="16" rx="6" ry="6" data-key="perineum" data-state="0"></rect>
-          <path class="zone" data-key="armL-front" data-state="0"
-                d="M70,130 C60,135 56,145 56,160 L56,350 C56,365 62,375 74,378
-                   C86,375 92,365 92,350 L92,160 C92,145 88,135 78,130 Z"></path>
-          <path class="zone" data-key="armR-front" data-state="0"
-                d="M248,130 C238,135 234,145 234,160 L234,350 C234,365 240,375 252,378
-                   C264,375 270,365 270,350 L270,160 C270,145 266,135 256,130 Z"></path>
-          <path class="zone" data-key="legL-front" data-state="0"
-                d="M120,360 C115,385 114,420 114,460 L114,590
-                   C114,615 124,650 150,660 C170,650 176,620 176,590
-                   L176,460 C176,420 175,385 170,360 Z"></path>
-          <path class="zone" data-key="legR-front" data-state="0"
-                d="M144,360 C139,385 138,420 138,460 L138,590
-                   C138,615 148,650 174,660 C194,650 200,620 200,590
-                   L200,460 C200,420 199,385 194,360 Z"></path>
-          <text class="label" x="160" y="100" text-anchor="middle">Front</text>
-        </g>
-
-        <!-- BACK ZONES (same footprint as front) -->
-        <g class="back-group">
-          <ellipse class="zone" cx="160" cy="60" rx="38" ry="40" data-key="head-back" data-state="0"></ellipse>
-          <path class="zone" data-key="upper-back" data-state="0"
-                d="M95,115 C110,105 133,102 160,102 C187,102 210,105 225,115
-                   L225,205 C210,212 187,216 160,216 C133,216 110,212 95,205 Z"></path>
-          <path class="zone" data-key="lower-back" data-state="0"
-                d="M95,220 C110,212 133,210 160,210 C187,210 210,212 225,220
-                   L225,325 C210,332 187,336 160,336 C133,336 110,332 95,325 Z"></path>
-          <path class="zone" data-key="armL-back" data-state="0"
-                d="M70,130 C60,135 56,145 56,160 L56,350 C56,365 62,375 74,378
-                   C86,375 92,365 92,350 L92,160 C92,145 88,135 78,130 Z"></path>
-          <path class="zone" data-key="armR-back" data-state="0"
-                d="M248,130 C238,135 234,145 234,160 L234,350 C234,365 240,375 252,378
-                   C264,375 270,365 270,350 L270,160 C270,145 266,135 256,130 Z"></path>
-          <!-- back legs occupy same footprint as front legs -->
-          <path class="zone" data-key="legL-back" data-state="0"
-                d="M120,360 C115,385 114,420 114,460 L114,590
-                   C114,615 124,650 150,660 C170,650 176,620 176,590
-                   L176,460 C176,420 175,385 170,360 Z"></path>
-          <path class="zone" data-key="legR-back" data-state="0"
-                d="M144,360 C139,385 138,420 138,460 L138,590
-                   C138,615 148,650 174,660 C194,650 200,620 200,590
-                   L200,460 C200,420 199,385 194,360 Z"></path>
-          <text class="label" x="160" y="100" text-anchor="middle">Back</text>
-        </g>
-      </svg>
-
-      <!-- PEDIATRIC MODEL (single outline; back shares SAME footprint) -->
-      <svg id="pedsSVG" viewBox="0 0 320 720" role="img" aria-label="Pediatric Burn Map" style="display:none" class="view-front">
-        <defs>
-          <linearGradient id="skinGradP" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#ffe6d1"/>
-            <stop offset="100%" stop-color="#f6d5bf"/>
-          </linearGradient>
-        </defs>
-
-        <!-- FRONT silhouette -->
-        <g class="front-group">
-          <ellipse class="sil" cx="160" cy="62" rx="42" ry="44" fill="url(#skinGradP)"></ellipse>
-          <path class="sil" d="M128 100h64c14 0 24 10 24 24v100c0 14-10 24-24 24h-64c-14 0-24-10-24-24V124c0-14 10-24 24-24z" fill="url(#skinGradP)"/>
-          <path class="sil" d="M78 118c-9 0-16 7-16 16v180c0 9 7 16 16 16s16-7 16-16V134c0-9-7-16-16-16z" fill="url(#skinGradP)"/>
-          <path class="sil" d="M242 118c9 0 16 7 16 16v180c0 9-7 16-16 16s-16-7-16-16V134c0-9 7-16 16-16z" fill="url(#skinGradP)"/>
-          <path class="sil" d="M136 324h48c12 0 20 8 20 20v16c0 8-6 14-14 14h-60c-8 0-14-6-14-14v-16c0-12 8-20 20-20z" fill="url(#skinGradP)"/>
-          <path class="sil" d="M140 378c-12 0-20 8-20 20v222c0 12 8 20 20 20s20-8 20-20V398c0-12-8-20-20-20z" fill="url(#skinGradP)"/>
-          <path class="sil" d="M180 378c12 0 20 8 20 20v222c0 12-8 20-20 20s-20-8-20-20V398c0-12 8-20 20-20z" fill="url(#skinGradP)"/>
-        </g>
-
-        <!-- BACK silhouette (same footprint) -->
-        <g class="back-group">
-          <ellipse class="sil" cx="160" cy="62" rx="42" ry="44" fill="url(#skinGradP)"></ellipse>
-          <path class="sil" d="M128 100h64c14 0 24 10 24 24v100c0 14-10 24-24 24h-64c-14 0-24-10-24-24v-100c0-14 10-24 24-24z" fill="url(#skinGradP)"/>
-          <path class="sil" d="M78 118c-9 0-16 7-16 16v180c0 9 7 16 16 16s16-7 16-16V134c0-9 7-16-16-16z" fill="url(#skinGradP)"/>
-          <path class="sil" d="M242 118c9 0 16 7 16 16v180c0 9-7 16-16 16s-16-7-16-16V134c0-9 7-16 16-16z" fill="url(#skinGradP)"/>
-        </g>
-
-        <!-- FRONT ZONES -->
-        <g class="front-group">
-          <ellipse class="zone" cx="160" cy="62" rx="42" ry="44" data-key="head-front" data-state="0"></ellipse>
-          <path class="zone" data-key="chest" data-state="0"
-                d="M105,110 C118,102 136,100 160,100 C184,100 202,102 215,110
-                   L215,200 C202,206 184,210 160,210 C136,210 118,206 105,200 Z"></path>
-          <path class="zone" data-key="abdomen" data-state="0"
-                d="M105,215 C118,208 136,206 160,206 C184,206 202,208 215,215
-                   L215,310 C200,318 180,322 160,322 C140,322 120,318 105,310 Z"></path>
-          <rect class="zone" x="150" y="322" width="20" height="16" rx="6" ry="6" data-key="perineum" data-state="0"></rect>
-          <path class="zone" data-key="armL-front" data-state="0"
-                d="M70,120 C62,124 58,132 58,144 L58,330 C58,344 62,352 74,355
-                   C86,352 90,344 90,330 L90,144 C90,132 86,124 78,120 Z"></path>
-          <path class="zone" data-key="armR-front" data-state="0"
-                d="M230,120 C222,124 218,132 218,144 L218,330 C218,344 222,352 234,355
-                   C246,352 250,344 250,330 L250,144 C250,132 246,124 238,120 Z"></path>
-          <path class="zone" data-key="legL-front" data-state="0"
-                d="M126,360 C122,382 121,414 121,450 L121,590
-                   C121,612 129,640 150,648 C166,640 172,614 172,590
-                   L172,450 C172,414 171,382 168,360 Z"></path>
-          <path class="zone" data-key="legR-front" data-state="0"
-                d="M148,360 C144,382 143,414 143,450 L143,590
-                   C143,612 151,640 172,648 C188,640 194,614 194,590
-                   L194,450 C194,414 193,382 190,360 Z"></path>
-          <text class="label" x="160" y="100" text-anchor="middle">Front</text>
-        </g>
-
-        <!-- BACK ZONES (same footprint) -->
-        <g class="back-group">
-          <ellipse class="zone" cx="160" cy="62" rx="42" ry="44" data-key="head-back" data-state="0"></ellipse>
-          <path class="zone" data-key="upper-back" data-state="0"
-                d="M105,110 C120,100 140,98 160,98 C180,98 200,100 215,110
-                   L215,200 C200,206 180,210 160,210 C140,210 120,206 105,200 Z"></path>
-          <path class="zone" data-key="lower-back" data-state="0"
-                d="M105,215 C120,221 140,225 160,225 C180,225 200,221 215,215
-                   L215,310 C200,316 180,320 160,320 C140,320 120,316 105,310 Z"></path>
-          <path class="zone" data-key="armL-back" data-state="0"
-                d="M70,120 C62,124 58,132 58,144 L58,330 C58,344 62,352 74,355
-                   C86,352 90,344 90,330 L90,144 C90,132 86,124 78,120 Z"></path>
-          <path class="zone" data-key="armR-back" data-state="0"
-                d="M230,120 C222,124 218,132 218,144 L218,330 C218,344 222,352 234,355
-                   C246,352 250,344 250,330 L250,144 C250,132 246,124 238,120 Z"></path>
-          <path class="zone" data-key="legL-back" data-state="0"
-                d="M126,360 C122,382 121,414 121,450 L121,590
-                   C121,612 129,640 150,648 C166,640 172,614 172,590
-                   L172,450 C172,414 171,382 168,360 Z"></path>
-          <path class="zone" data-key="legR-back" data-state="0"
-                d="M148,360 C144,382 143,414 143,450 L143,590
-                   C143,612 151,640 172,648 C188,640 194,614 194,590
-                   L194,450 C194,414 193,382 190,360 Z"></path>
-          <text class="label" x="160" y="100" text-anchor="middle">Back</text>
-        </g>
-      </svg>
-    </div>
-
-    <div class="legend">
-      <div class="key"><span class="sw none"></span><span>None</span></div>
-      <div class="key"><span class="sw half"></span><span>Half (½)</span></div>
-      <div class="key"><span class="sw full"></span><span>Full</span></div>
-      <span class="hint">Adult legs = 18% each (9% front + 9% back). Pediatric head proportion is larger.</span>
-    </div>
-  </div>
-
-  <!-- Results / Status -->
-  <div class="results">
-    <div class="kv"><span>Scenario Patient</span><b id="modeOut">Adult</b></div>
-    <div class="kv"><span>View</span><b id="viewOut">Front</b></div>
-    <div class="kv"><span>Burned Regions</span><b id="countOut">0</b></div>
-    <div class="kv"><span>Status</span><b id="statusOut">Scenario active — enter your answer</b></div>
-  </div>
-
-  <!-- Quiz -->
-  <div class="quiz">
-    <div class="grid">
-      <div>
-        <label for="answerVal">Your TBSA (%)</label>
-        <div class="row" style="margin-top:.25rem">
-          <input id="answerVal" type="number" step="0.25" placeholder="e.g., 18.0" style="width:140px">
-          <button id="submitBtn" class="secondary">Submit Answer</button>
-        </div>
-        <div class="hint" style="margin-top:.35rem">Acceptable tolerance: ±0.25%.</div>
-      </div>
-    </div>
-    <div id="feedback" class="feedback"></div>
-    <div id="riskBox" class="risks" style="display:none"></div>
-  </div>
-
-</div>
+<div id="feedback"></div>
 
 <script>
-/* ==== Percent maps ==== */
-const PCT_ADULT = {
-  "head-front": 4.5, "head-back": 4.5,
-  "chest": 9, "abdomen": 9,
-  "upper-back": 9, "lower-back": 9,
-  "armL-front": 4.5, "armR-front": 4.5, "armL-back": 4.5, "armR-back": 4.5,
-  "legL-front": 9, "legR-front": 9, "legL-back": 9, "legR-back": 9,
-  "perineum": 1
-};
-const PCT_PEDS = {
-  "head-front": 9, "head-back": 9,
-  "chest": 9, "abdomen": 9,
-  "upper-back": 9, "lower-back": 9,
-  "armL-front": 4.5, "armR-front": 4.5, "armL-back": 4.5, "armR-back": 4.5,
-  "legL-front": 7, "legR-front": 7, "legL-back": 7, "legR-back": 7,
-  "perineum": 1
-};
-
-const NAME = {
-  "head-front": "Head (front)", "head-back": "Head (back)",
-  "chest": "Chest", "abdomen": "Abdomen",
-  "upper-back": "Upper back (9%)", "lower-back": "Lower back (9%)",
-  "armL-front": "Left arm (front 4.5%)", "armR-front": "Right arm (front 4.5%)",
-  "armL-back": "Left arm (back 4.5%)", "armR-back": "Right arm (back 4.5%)",
-  "legL-front": "Left leg (front 9% adult / 7% peds)",
-  "legR-front": "Right leg (front 9% adult / 7% peds)",
-  "legL-back": "Left leg (back 9% adult / 7% peds)",
-  "legR-back": "Right leg (back 9% adult / 7% peds)",
-  "perineum": "Perineum (1%)"
+const adultParts = {
+    front: [
+        {id:"head-front", percent:4.5, name:"Head (Front)"},
+        {id:"torso-front", percent:18, name:"Torso (Front)"},
+        {id:"arm-left-front", percent:4.5, name:"Left Arm (Front)"},
+        {id:"arm-right-front", percent:4.5, name:"Right Arm (Front)"},
+        {id:"leg-left-front", percent:9, name:"Left Leg (Front)"},
+        {id:"leg-right-front", percent:9, name:"Right Leg (Front)"},
+        {id:"perineum", percent:1, name:"Perineum"}
+    ],
+    back: [
+        {id:"head-back", percent:4.5, name:"Head (Back)"},
+        {id:"torso-back", percent:18, name:"Torso (Back)"},
+        {id:"arm-left-back", percent:4.5, name:"Left Arm (Back)"},
+        {id:"arm-right-back", percent:4.5, name:"Right Arm (Back)"},
+        {id:"leg-left-back", percent:9, name:"Left Leg (Back)"},
+        {id:"leg-right-back", percent:9, name:"Right Leg (Back)"}
+    ]
 };
 
-let mode = 'adult';       // 'adult' | 'peds'
-let scenario = null;      // { mode, selections:[{key, state, percent_each, cx, cy, side}], tbsa }
-let scenarioActive = false;
-let view = 'front';
-
-const els = {
-  title: document.getElementById('title'),
-  svgWrap: document.getElementById('svgWrap'),
-  adultSVG: document.getElementById('adultSVG'),
-  pedsSVG: document.getElementById('pedsSVG'),
-  frontBtn: document.getElementById('frontBtn'),
-  backBtn: document.getElementById('backBtn'),
-  newScenarioBtn: document.getElementById('newScenarioBtn'),
-  resetBtn: document.getElementById('resetBtn'),
-  modeOut: document.getElementById('modeOut'),
-  viewOut: document.getElementById('viewOut'),
-  countOut: document.getElementById('countOut'),
-  statusOut: document.getElementById('statusOut'),
-  answerVal: document.getElementById('answerVal'),
-  submitBtn: document.getElementById('submitBtn'),
-  feedback: document.getElementById('feedback'),
-  riskBox: document.getElementById('riskBox')
+const pediatricParts = {
+    front: [
+        {id:"head-front", percent:9, name:"Head (Front)"},
+        {id:"torso-front", percent:18, name:"Torso (Front)"},
+        {id:"arm-left-front", percent:4.5, name:"Left Arm (Front)"},
+        {id:"arm-right-front", percent:4.5, name:"Right Arm (Front)"},
+        {id:"leg-left-front", percent:7, name:"Left Leg (Front)"},
+        {id:"leg-right-front", percent:7, name:"Right Leg (Front)"},
+        {id:"perineum", percent:1, name:"Perineum"}
+    ],
+    back: [
+        {id:"head-back", percent:9, name:"Head (Back)"},
+        {id:"torso-back", percent:18, name:"Torso (Back)"},
+        {id:"arm-left-back", percent:4.5, name:"Left Arm (Back)"},
+        {id:"arm-right-back", percent:4.5, name:"Right Arm (Back)"},
+        {id:"leg-left-back", percent:7, name:"Left Leg (Back)"},
+        {id:"leg-right-back", percent:7, name:"Right Leg (Back)"}
+    ]
 };
 
-function pctMap(which){ return which === 'peds' ? PCT_PEDS : PCT_ADULT; }
-
-/* One model visible; header text updated */
-function setPatientMode(newMode){
-  mode = newMode;
-  els.modeOut.textContent = mode==='adult' ? 'Adult' : 'Pediatric';
-  els.title.textContent = `Rule of Nines — ${mode==='adult'?'Adult View':'Pediatric View'}`;
-  els.svgWrap.classList.toggle('peds', mode==='peds');
-  if(mode==='adult'){ els.adultSVG.style.display = ''; els.pedsSVG.style.display = 'none'; }
-  else { els.adultSVG.style.display = 'none'; els.pedsSVG.style.display = ''; }
+function getSVG(view, isPediatric) {
+    let scale = isPediatric ? 'scale(0.85)' : '';
+    return `
+    <svg viewBox="0 0 200 500">
+        <g transform="${scale}">
+            <rect id="head-${view}" x="80" y="10" width="40" height="40" fill="#ffe0bd" stroke="#000"/>
+            <rect id="torso-${view}" x="70" y="50" width="60" height="100" fill="#ffe0bd" stroke="#000"/>
+            <rect id="arm-left-${view}" x="40" y="50" width="30" height="100" fill="#ffe0bd" stroke="#000"/>
+            <rect id="arm-right-${view}" x="130" y="50" width="30" height="100" fill="#ffe0bd" stroke="#000"/>
+            <rect id="leg-left-${view}" x="80" y="150" width="30" height="120" fill="#ffe0bd" stroke="#000"/>
+            <rect id="leg-right-${view}" x="110" y="150" width="30" height="120" fill="#ffe0bd" stroke="#000"/>
+            ${view === 'front' ? '<rect id="perineum" x="95" y="270" width="10" height="10" fill="#ffe0bd" stroke="#000"/>' : ''}
+        </g>
+    </svg>`;
 }
 
-/* Front/Back toggle — adds/removes class on the ACTIVE svg only */
-function setView(newView){
-  view = newView;
-  els.viewOut.textContent = (view==='front' ? 'Front' : 'Back');
-  const active = (mode==='adult'?els.adultSVG:els.pedsSVG);
-  active.classList.toggle('view-back', view==='back');
+let scenario = {};
+let currentView = 'front';
+let isPediatric = false;
 
-  // show percentage tags for current side only
-  document.querySelectorAll('.pct-tag').forEach(t=>{
-    const side = t.getAttribute('data-side') || 'front';
-    t.style.display = (side === view) ? '' : 'none';
-  });
+function startScenario() {
+    isPediatric = Math.random() > 0.5;
+    document.getElementById('viewType').textContent = isPediatric ? "Pediatric View" : "Adult View";
+    const parts = isPediatric ? pediatricParts : adultParts;
+    let selected = [];
+    let total = 0;
+
+    const allParts = [...parts.front, ...parts.back];
+    const difficulty = Math.floor(Math.random() * 5) + 3;
+    while (selected.length < difficulty) {
+        const p = allParts[Math.floor(Math.random() * allParts.length)];
+        if (!selected.includes(p.id)) {
+            selected.push(p.id);
+            total += p.percent;
+        }
+    }
+    scenario = {parts, selected, total};
+    renderView();
 }
 
-/* Clear zones & tags */
-function clearAll(){
-  document.querySelectorAll('.zone').forEach(z=>z.setAttribute('data-state','0'));
-  document.querySelectorAll('.pct-tag').forEach(t=>t.remove());
-  els.countOut.textContent = '0';
-  els.riskBox.style.display='none';
-  els.riskBox.innerHTML='';
+function renderView() {
+    document.getElementById('svg-container').innerHTML = getSVG(currentView, isPediatric);
 }
 
-/* Helpers */
-function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
-function sample(arr,n){
-  const pool = arr.slice();
-  const out = [];
-  while(out.length<n && pool.length){
-    const i = Math.floor(Math.random()*pool.length);
-    out.push(pool.splice(i,1)[0]);
-  }
-  return out;
-}
+document.getElementById('toggleViewBtn').addEventListener('click', () => {
+    currentView = currentView === 'front' ? 'back' : 'front';
+    document.getElementById('toggleViewBtn').textContent = currentView === 'front' ? "Show Back" : "Show Front";
+    renderView();
+});
 
-/* Robust center for rect/ellipse/path */
-function zoneCenter(node){
-  const tag = node.tagName.toLowerCase();
-  if(tag==='rect' || tag==='image'){
-    const x = parseFloat(node.getAttribute('x')||'0');
-    const y = parseFloat(node.getAttribute('y')||'0');
-    const w = parseFloat(node.getAttribute('width')||'0');
-    const h = parseFloat(node.getAttribute('height')||'0');
-    return {cx: x + w/2, cy: y + h/2};
-  }
-  if(tag==='ellipse' || tag==='circle'){
-    return {cx: parseFloat(node.getAttribute('cx')), cy: parseFloat(node.getAttribute('cy'))};
-  }
-  const b = node.getBBox();
-  return {cx: b.x + b.width/2, cy: b.y + b.height/2};
-}
+document.getElementById('submitBtn').addEventListener('click', () => {
+    const userAns = parseFloat(document.getElementById('answer').value);
+    let breakdown = "";
+    let totalCorrect = 0;
 
-function keySide(key){
-  if(key.endsWith('front') || key==='chest' || key==='abdomen' || key==='perineum') return 'front';
-  if(key.endsWith('back')  || key==='upper-back' || key==='lower-back') return 'back';
-  return 'front';
-}
+    [...scenario.parts.front, ...scenario.parts.back].forEach(part => {
+        if (scenario.selected.includes(part.id)) {
+            totalCorrect += part.percent;
+            const el = document.getElementById(part.id);
+            if (el) el.classList.add('burned');
+            breakdown += `${part.name}: ${part.percent}%<br>`;
+        }
+    });
 
-/* New random scenario: adult or peds; 2–8 zones; 70% full / 30% half */
-function newScenario(){
-  clearAll();
+    const feedback = document.getElementById('feedback');
+    if (Math.abs(userAns - totalCorrect) < 0.5) {
+        feedback.innerHTML = `✅ Correct! ${totalCorrect}% TBSA burned.`;
+    } else {
+        feedback.innerHTML = `❌ Incorrect. Correct answer: ${totalCorrect}% TBSA burned.<br><br>
+        <strong>Breakdown:</strong><br>${breakdown}<br>
+        Risks: Burns to the face may indicate airway involvement, burns to hands can cause long-term disability, perineal burns are high risk for infection.`;
+    }
+});
 
-  const newMode = Math.random() < 0.5 ? 'adult' : 'peds';
-  setPatientMode(newMode);
-  setView('front');
-
-  const svg = (mode==='adult'?els.adultSVG:els.pedsSVG);
-  const zones = Array.from(svg.querySelectorAll('.zone'));
-  const count = randInt(2,8);
-  const selected = sample(zones, count);
-
-  selected.forEach(z=>{
-    const st = Math.random() < 0.7 ? 1 : 0.5;
-    z.setAttribute('data-state', String(st));
-  });
-
-  const map = pctMap(mode);
-  let total = 0;
-  const selections = [];
-  selected.forEach(z=>{
-    const key = z.getAttribute('data-key');
-    const st = parseFloat(z.getAttribute('data-state'));
-    const pct = map[key] || 0;
-    const {cx,cy} = zoneCenter(z);
-    const side = keySide(key);
-    total += pct * st;
-    selections.push({key, state:st, percent_each:pct, cx, cy, side});
-  });
-  const tbsa = Math.round(total*100)/100;
-
-  scenario = { mode, selections, tbsa };
-  scenarioActive = true;
-  els.statusOut.textContent = 'Scenario active — enter your answer';
-  els.countOut.textContent = String(selections.length);
-  els.feedback.innerHTML = '';
-  els.answerVal.value = '';
-}
-
-/* Reset: wipe and immediately start new */
-function resetAll(){
-  scenarioActive = false; scenario = null; clearAll();
-  els.statusOut.textContent = 'Generating scenario...';
-  setTimeout(newScenario, 50);
-}
-
-/* Draw +% contribution tags (respect side & view) */
-function annotateContributions(scn){
-  document.querySelectorAll('.pct-tag').forEach(t=>t.remove());
-  const svg = (scn.mode==='adult'?els.adultSVG:els.pedsSVG);
-
-  scn.selections.forEach(sel=>{
-    const contrib = Math.round(sel.percent_each * sel.state * 100)/100;
-    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
-    t.setAttribute('class','pct-tag');
-    t.setAttribute('x', String(sel.cx));
-    t.setAttribute('y', String(sel.cy));
-    t.setAttribute('text-anchor','middle');
-    t.setAttribute('data-side', sel.side);
-    t.textContent = `+${contrib}%`;
-    svg.appendChild(t);
-  });
-
-  setView(view); // ensure tags match current side visibility
-}
-
-/* Breakdown list */
-function breakdownHTML(scn){
-  const rows = scn.selections
-    .sort((a,b)=> (b.percent_each*b.state) - (a.percent_each*a.state))
-    .map(sel=>{
-      const name = NAME[sel.key] || sel.key;
-      const mult = sel.state === 1 ? '× full' : '× ½';
-      const contrib = Math.round(sel.percent_each * sel.state * 100)/100;
-      return `<li>${name}: ${sel.percent_each}% ${mult} = <b>${contrib}%</b></li>`;
-    }).join('');
-  return `
-    <div style="margin:.4rem 0 .2rem">Breakdown (${scn.mode==='adult'?'Adult':'Pediatric'}):</div>
-    <ul style="margin:.2rem 0 .4rem 1.1rem">${rows}</ul>
-    <div><b>Total TBSA:</b> ${scn.tbsa}%</div>
-  `;
-}
-
-/* Risk advice */
-function riskAdviceHTML(scn){
-  const keys = scn.selections.map(s=>s.key);
-  const isSelected = (k)=> keys.includes(k);
-  const involves = {
-    faceHead: isSelected('head-front') || isSelected('head-back'),
-    handsArms: isSelected('armL-front') || isSelected('armL-back') || isSelected('armR-front') || isSelected('armR-back'),
-    chestBack: isSelected('chest') || isSelected('upper-back') || isSelected('lower-back') || isSelected('abdomen'),
-    perineum: isSelected('perineum'),
-    legs: isSelected('legL-front') || isSelected('legL-back') || isSelected('legR-front') || isSelected('legR-back')
-  };
-
-  const items = [];
-  if(involves.faceHead){
-    items.push(`<li><b>Face/Head:</b> monitor for inhalation injury & airway edema (soot, hoarseness, singed hairs). Early airway; humidified O₂; rapid burn-center transport.</li>`);
-  }
-  if(involves.handsArms){
-    items.push(`<li><b>Hands/Arms:</b> high functional risk. Remove rings/watches early; elevate; splint in position of function; consult if deep/circumferential.</li>`);
-  }
-  if(involves.chestBack){
-    items.push(`<li><b>Chest/Back/Torso:</b> deep/circumferential burns may restrict ventilation—monitor chest excursion, WOB; consider eschar risk; analgesia; SpO₂/EtCO₂ if available.</li>`);
-  }
-  if(involves.perineum){
-    items.push(`<li><b>Perineum:</b> high contamination/infection risk; meticulous hygiene; early specialty evaluation.</li>`);
-  }
-  if(involves.legs){
-    items.push(`<li><b>Lower extremities:</b> elevate; frequent pulse/cap refill checks; watch for compartment-like effects if circumferential.</li>`);
-  }
-  items.push(`<li><b>General:</b> stop the burning process, prevent hypothermia, dry sterile dressings, analgesia, tetanus up to date, and follow local protocols for fluids/destination.</li>`);
-
-  return `<h4>Clinical Risk Considerations</h4><ul>${items.join('')}</ul>`;
-}
-
-/* Submit answer */
-function submitAnswer(){
-  if(!scenarioActive || !scenario){
-    els.feedback.innerHTML = `<div class="bad">Scenario is not ready. Click New Scenario.</div>`;
-    return;
-  }
-  const v = parseFloat(els.answerVal.value);
-  if(isNaN(v)){
-    els.feedback.innerHTML = `<div class="bad">Enter a numeric TBSA value.</div>`;
-    return;
-  }
-  const tol = 0.25;
-  const correct = scenario.tbsa;
-  const diff = Math.abs(v - correct);
-
-  annotateContributions(scenario);
-
-  if(diff <= tol){
-    els.feedback.innerHTML = `<div class="ok"><b>Correct!</b> Your answer ${v.toFixed(2)}% is within ±${tol}% of ${correct.toFixed(2)}%.</div>`;
-  }else{
-    els.feedback.innerHTML = `
-      <div class="bad"><b>Not quite.</b> Correct TBSA is ${correct.toFixed(2)}% (you entered ${v.toFixed(2)}%).</div>
-      ${breakdownHTML(scenario)}
-      <div class="hint">Use the <b>Front/Back</b> buttons. The <b>+% tags</b> show each region’s contribution.</div>
-    `;
-  }
-
-  els.riskBox.innerHTML = riskAdviceHTML(scenario);
-  els.riskBox.style.display = 'block';
-}
-
-/* Wire UI */
-els.frontBtn.addEventListener('click', ()=>setView('front'));
-els.backBtn.addEventListener('click',  ()=>setView('back'));
-els.newScenarioBtn.addEventListener('click', newScenario);
-els.resetBtn.addEventListener('click', resetAll);
-els.submitBtn.addEventListener('click', submitAnswer);
-
-/* Init: auto-start scenario */
-resetAll();
+startScenario();
 </script>
 </body>
 </html>
