@@ -2,545 +2,417 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Pulse Oximeter Simulator</title>
+  <title>Pulse Ox Scenario Trainer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
   <style>
     :root{
-      --bg:#f0f8ff;          /* page bg */
-      --card:#ffffff;        /* cards */
-      --ink:#0c2a3a;         /* text */
-      --muted:#5d7a88;       /* secondary text */
-      --brand:#007BFF;       /* primary buttons (blue) */
-      --brand-2:#007B8A;     /* header teal (matches your site) */
-      --ok:#0a8754;
-      --warn:#e68a00;
-      --bad:#d7263d;
-      --shadow:0 6px 20px rgba(0,0,0,.12);
-      --radius:18px;
+      --bg:#f0f8ff; --card:#ffffff; --ink:#0c2a3a; --muted:#5d7a88;
+      --brand:#007BFF; --teal:#007B8A; --ok:#0a8754; --warn:#e68a00; --bad:#d7263d;
+      --radius:18px; --shadow:0 6px 20px rgba(0,0,0,.12);
     }
-    * { box-sizing: border-box }
+    *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0;
+      margin:0; background:var(--bg); color:var(--ink);
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
-      background:var(--bg);
-      color:var(--ink);
       -webkit-text-size-adjust:100%;
     }
-    header{
-      width:100%;
-      background:var(--brand-2);
-      color:#fff;
-      padding:16px;
-      text-align:center;
-      box-shadow: var(--shadow);
-      position:sticky; top:0; z-index:5;
-    }
-    header h1{margin:0;font-size:22px;letter-spacing:.3px}
-    .wrap{
-      max-width:880px;
-      margin:18px auto;
-      padding:12px;
-      display:grid;
-      gap:14px;
-    }
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:14px;
-    }
-    @media(min-width:920px){
-      .grid{ grid-template-columns: 1.1fr .9fr; }
-    }
-    .card{
-      background:var(--card);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:16px;
-    }
-    .device{
-      display:grid;
-      grid-template-rows: auto auto 1fr auto;
-      gap:12px;
-    }
-    .screen{
-      background: #0b2530;
-      color: #e8ffff;
-      border-radius:14px;
-      padding:12px 14px;
-      position:relative;
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.08);
-    }
-    .status-strip{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:8px; font-size:13px; color:#b5dee2;
-      margin-bottom:6px;
-    }
+    header{position:sticky; top:0; z-index:5; background:var(--teal); color:#fff; padding:16px; text-align:center; box-shadow:var(--shadow)}
+    header h1{margin:0; font-size:22px}
+    .wrap{ max-width:960px; margin:18px auto; padding:12px; display:grid; gap:14px }
+    .grid{ display:grid; grid-template-columns:1fr; gap:14px }
+    @media(min-width:940px){ .grid{ grid-template-columns: 1.1fr .9fr } }
+    .card{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px }
+    h2{ margin:0 0 8px 0; font-size:20px }
+    .scenario{ font-size:16px; color:#0b2c3a; line-height:1.5 }
+    .tiny{ font-size:12px; color:var(--muted) }
+    .device{ display:grid; gap:12px; grid-template-rows:auto auto 1fr auto }
+    .screen{ background:#0b2530; color:#e8ffff; border-radius:14px; padding:12px 14px; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.08) }
+    .status-strip{ display:flex; justify-content:space-between; gap:8px; color:#b5dee2; font-size:13px; margin-bottom:6px }
+    .pill{ display:inline-flex; gap:8px; padding:6px 10px; border-radius:999px; background:#143543; color:#c9ecf5; border:1px solid #2a5b6e; align-items:center }
     .sig-bars{ display:inline-flex; gap:2px; align-items:flex-end; height:12px }
     .sig-bars span{ width:3px; background:#47d1ff; opacity:.4; border-radius:2px }
     .sig-bars span.on{ opacity:1 }
-    .battery{ display:inline-flex; gap:3px; margin-left:8px }
-    .battery i{ width:8px; height:12px; border:1px solid #47d1ff; border-radius:2px; position:relative }
-    .battery i:after{ content:""; position:absolute; top:-3px; left:50%; transform:translateX(-50%); width:4px; height:2px; background:#47d1ff; border-radius:1px }
-    .battery i.fill{ background:#47d1ff }
-    .big-readings{
-      display:flex; align-items:stretch; justify-content:space-between; gap:10px;
-    }
-    .reading{
-      flex:1;
-      display:flex; align-items:center; justify-content:center; gap:10px;
-      background:#102d3a; border-radius:12px; padding:10px 12px;
-      border:1px solid rgba(255,255,255,.06);
-      min-height:72px;
-    }
+    .big-readings{ display:flex; gap:10px }
+    .reading{ flex:1; display:flex; justify-content:center; align-items:center; gap:10px; background:#102d3a; border-radius:12px; padding:10px 12px; border:1px solid rgba(255,255,255,.06); min-height:72px }
     .reading .label{ font-size:13px; color:#9fd7e0; text-transform:uppercase; letter-spacing:.8px }
     .reading .value{ font-size:36px; font-weight:800; line-height:1 }
     .reading .units{ font-size:14px; color:#9fd7e0 }
-    .reading.spo2 .value{ color:#6fffb0 }
-    .reading.pulse .value{ color:#47d1ff }
-    .alert{
-      position:absolute; inset:0; display:none; align-items:center; justify-content:center;
-      background: rgba(11,37,48,.66);
-      font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:#fff;
-    }
-    .alert.show{ display:flex }
+    .reading.spo2 .value{ color:#6fffb0 } .reading.pulse .value{ color:#47d1ff }
     .pleth-wrap{ background:#071a22; border-radius:12px; padding:8px; border:1px solid rgba(255,255,255,.06) }
     canvas#pleth{ width:100%; height:120px; display:block }
-    .controls{
-      display:grid; gap:10px;
+    .alert{ position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:rgba(11,37,48,.66); color:#fff; font-weight:700; text-transform:uppercase; letter-spacing:.8px }
+    .alert.show{ display:flex }
+    .choices{ display:grid; gap:8px; margin-top:8px }
+    button.choice{
+      font-size:16px; padding:12px; border-radius:12px; border:1px solid #cfe7ef; background:#fff; color:var(--ink);
+      text-align:left; cursor:pointer; touch-action:manipulation; box-shadow:0 2px 8px rgba(0,0,0,.06);
     }
-    .row{ display:flex; flex-wrap:wrap; gap:8px; align-items:center }
-    .row label{ color:var(--muted); font-size:14px }
-    .select, .input, button{
-      font-size:16px; /* prevents iOS zoom */
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid #cfe7ef;
-      background:#fff;
-      color:var(--ink);
-      outline:none;
-      touch-action:manipulation;
-    }
-    button{
-      background: var(--brand);
-      color:#fff;
-      border:none;
-      cursor:pointer;
-      font-weight:700;
-      letter-spacing:.3px;
-      box-shadow: 0 4px 12px rgba(0,123,255,.25);
-      transition: transform .05s ease, filter .15s ease;
-      min-height:44px;
-    }
-    button:active{ transform: translateY(1px) }
-    button[data-active="true"]{ filter: brightness(.93) saturate(1.05) }
-    .pill{
-      display:inline-flex; align-items:center; gap:8px; padding:8px 10px; background:#eef6ff; border-radius:999px; font-size:14px; color:#0b3a5a; border:1px solid #d7ebff;
-    }
-    .tiny{ font-size:12px; color:var(--muted) }
-    /* Probe/Finger zone */
-    .probe-area{
-      display:grid; place-items:center; padding:12px; background:#fbfeff; border:1px dashed #98cbdc; border-radius:14px;
-    }
-    .finger{
-      width:220px; height:84px; position:relative;
-      border-radius:42px;
-      background: linear-gradient(180deg, #ffd3c4, #f7b7a3);
-      box-shadow: inset 0 6px 12px rgba(0,0,0,.08);
-      cursor:pointer;
-      user-select:none;
-      touch-action:manipulation;
-    }
-    .finger:before{ /* fingernail */
-      content:""; position:absolute; right:8px; top:16px; width:54px; height:36px; background:#ffe5d9; border-radius:18px; box-shadow: inset 0 3px 6px rgba(0,0,0,.08);
-    }
-    .clip{ /* probe clip */
-      --w:120px; --h:40px;
-      position:absolute; left:8px; top:50%; transform:translateY(-50%);
-      width:var(--w); height:var(--h); border-radius:12px;
-      background: #0b3a5a; border:2px solid #88c5db; box-shadow: var(--shadow);
-      display:grid; place-items:center; color:#c7ecff; font-weight:700; font-size:12px;
-      transition: left .25s ease, background .25s ease;
-      pointer-events:none;
-    }
-    .clip.on{ left:54px; background:#0f567b }
-    .legend{ display:flex; gap:8px; flex-wrap:wrap; }
-    .legend .k{ display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--muted) }
-    .dot{ width:10px; height:10px; border-radius:50% }
-    .dot.green{ background:#6fffb0 } .dot.blue{ background:#47d1ff } .dot.red{ background:#ff6b6b }
-    .footer-note{ text-align:center; font-size:12px; color:var(--muted); padding:6px 0 2px }
+    button.choice:hover{ border-color:#a8d5e6 }
+    button.choice.correct{ border-color:#1bb56d; background:#ecfff6 }
+    button.choice.incorrect{ border-color:#ffb3b3; background:#fff0f0 }
+    .explain{ margin-top:10px; padding:12px; border-radius:12px; border:1px solid #dbeff6; background:#f6fcff; color:#073042 }
+    .next{ display:inline-flex; gap:10px; align-items:center; background:var(--brand); color:#fff; border:none; border-radius:12px; padding:12px 14px; cursor:pointer; font-weight:700; margin-top:10px; box-shadow:0 4px 12px rgba(0,123,255,.25) }
+    .footer-note{ text-align:center; font-size:12px; color:var(--muted); padding:4px 0 10px }
+    .badge{ font-size:12px; display:inline-block; padding:2px 8px; border-radius:999px; background:#eaf7ff; color:#0b2c3a; border:1px solid #cfe7ef }
   </style>
 </head>
 <body>
-  <header><h1>Pulse Oximeter Simulator</h1></header>
+<header><h1>Pulse Ox Scenario Trainer</h1></header>
 
-  <main class="wrap">
-    <section class="grid">
-      <!-- DEVICE -->
-      <div class="card device" aria-label="Pulse oximeter">
-        <div class="screen" id="screen">
-          <div class="status-strip">
-            <div class="pill" id="status-pill">Sensor: <strong id="sensorState">Disconnected</strong></div>
-            <div>
-              <span class="sig-bars" id="sigBars" aria-label="Signal strength">
-                <span></span><span></span><span></span><span></span>
-              </span>
-              <span class="battery" aria-label="Battery">
-                <i class="fill"></i><i class="fill"></i><i></i>
-              </span>
-            </div>
-          </div>
+<main class="wrap">
+  <section class="grid">
+    <div class="card">
+      <h2>Scenario</h2>
+      <div id="scenarioText" class="scenario">Loading case…</div>
+      <div style="margin-top:8px">
+        <span class="badge" id="hintBadge">NREMT Focus: Oxygenation & Ventilation</span>
+      </div>
+      <p class="tiny" style="margin-top:6px">Read the scenario, review the SpO₂ and waveform, then choose the **best EMT treatment**. SpO₂ will change based on your choice.</p>
+    </div>
 
-          <div class="big-readings">
-            <div class="reading spo2">
-              <div class="label">SpO₂</div>
-              <div class="value" id="spo2Val">--</div>
-              <div class="units">%</div>
-            </div>
-            <div class="reading pulse">
-              <div class="label">Pulse</div>
-              <div class="value" id="pulseVal">--</div>
-              <div class="units">bpm</div>
-            </div>
-          </div>
-
-          <div class="pleth-wrap">
-            <canvas id="pleth" width="700" height="120" aria-label="Pleth waveform"></canvas>
-          </div>
-
-          <div class="alert" id="alert">Searching…</div>
+    <div class="card device" aria-label="Pulse oximeter">
+      <div class="screen">
+        <div class="status-strip">
+          <div class="pill">Sensor: <strong>Attached</strong></div>
+          <div class="sig-bars" id="sigBars"><span></span><span></span><span></span><span></span></div>
         </div>
-
-        <div class="controls">
-          <div class="row">
-            <label for="scenario">Scenario</label>
-            <select id="scenario" class="select">
-              <option value="normal">Adult: Normal</option>
-              <option value="hypoxic" selected>Adult: Hypoxic</option>
-              <option value="copd">Adult: COPD Exacerbation</option>
-              <option value="peds">Pediatric</option>
-            </select>
-            <label for="site">Site</label>
-            <select id="site" class="select">
-              <option value="finger" selected>Finger</option>
-              <option value="ear">Ear</option>
-              <option value="toe">Toe</option>
-              <option value="forehead">Forehead</option>
-            </select>
+        <div class="big-readings">
+          <div class="reading spo2">
+            <div class="label">SpO₂</div>
+            <div class="value" id="spo2Val">--</div>
+            <div class="units">%</div>
           </div>
-
-          <div class="row">
-            <button id="attachBtn">Attach Probe</button>
-            <button id="detachBtn">Detach</button>
-            <button id="motionBtn" aria-pressed="false">Motion Artifact</button>
-            <button id="o2Btn" aria-pressed="false">Apply O₂</button>
-          </div>
-
-          <div class="row">
-            <label class="tiny">Reading delay</label>
-            <input id="delay" class="input" type="range" min="800" max="4000" step="200" value="2000" style="width:200px">
-            <span class="tiny" id="delayLabel">2.0s</span>
-            <span class="tiny" style="margin-left:auto">Tip: Touch the finger to attach too.</span>
-          </div>
-
-          <div class="legend">
-            <span class="k"><span class="dot green"></span>SpO₂</span>
-            <span class="k"><span class="dot blue"></span>Pulse</span>
-            <span class="k"><span class="dot red"></span>Poor signal</span>
+          <div class="reading pulse">
+            <div class="label">Pulse</div>
+            <div class="value" id="pulseVal">--</div>
+            <div class="units">bpm</div>
           </div>
         </div>
+        <div class="pleth-wrap">
+          <canvas id="pleth" width="700" height="120" aria-label="Pleth waveform"></canvas>
+        </div>
+        <div class="alert" id="alert">Searching…</div>
       </div>
 
-      <!-- PROBE / FINGER -->
-      <div class="card">
-        <h3 style="margin-top:0">Place the Probe</h3>
-        <div class="probe-area">
-          <div class="finger" id="finger" title="Tap to place/remove probe">
-            <div class="clip" id="clip">PROBE</div>
-          </div>
-        </div>
-        <p class="tiny" style="margin-top:10px">
-          Place on finger to begin. Motion artifact will degrade signal and distort the waveform. Site selection affects perfusion strength.
-        </p>
-      </div>
-    </section>
+      <div id="choicesBox" class="choices" aria-live="polite"></div>
+      <div id="explainBox" class="explain" style="display:none"></div>
+      <button id="nextBtn" class="next" style="display:none">🔀 Next Random Scenario</button>
+    </div>
+  </section>
+  <div class="footer-note">For training use only. Not a medical device.</div>
+</main>
 
-    <div class="footer-note">For training use only. Not a medical device.</div>
-  </main>
+<script>
+  // Utilities
+  const $ = s => document.querySelector(s);
+  const pleth = $('#pleth'); const ctx = pleth.getContext('2d');
+  const spo2El = $('#spo2Val'); const pulseEl = $('#pulseVal');
+  const alertEl = $('#alert'); const sigBars = $('#sigBars');
+  const scenarioText = $('#scenarioText'); const choicesBox = $('#choicesBox');
+  const explainBox = $('#explainBox'); const nextBtn = $('#nextBtn');
 
-  <script>
-    // ---- State & Config ----
-    const $ = sel => document.querySelector(sel);
-    const spo2El = $('#spo2Val');
-    const pulseEl = $('#pulseVal');
-    const alertEl = $('#alert');
-    const sensorStateEl = $('#sensorState');
-    const sigBarsEl = $('#sigBars');
-    const pleth = $('#pleth');
-    const ctx = pleth.getContext('2d');
-    const attachBtn = $('#attachBtn');
-    const detachBtn = $('#detachBtn');
-    const motionBtn = $('#motionBtn');
-    const o2Btn = $('#o2Btn');
-    const fingerEl = $('#finger');
-    const clipEl = $('#clip');
-    const delayRange = $('#delay');
-    const delayLabel = $('#delayLabel');
-    const scenarioSel = $('#scenario');
-    const siteSel = $('#site');
+  function clamp(v,a,b){ return Math.max(a, Math.min(b,v)); }
+  function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
 
-    const scenarios = {
-      normal: { spo2:[97,99], pulse:[60,90], perf:'good' },
-      hypoxic:{ spo2:[82,88], pulse:[105,130], perf:'poor' },
-      copd:   { spo2:[88,92], pulse:[88,110], perf:'fair' },
-      peds:   { spo2:[94,99], pulse:[100,140], perf:'good' }
-    };
-
-    const sitePerfusion = {
-      finger:1.0, ear:0.8, toe:0.7, forehead:0.9
-    };
-
-    const state = {
-      attached:false,
-      reading:false,
-      spo2:null, pulse:null,
-      baseSpO2:null, basePulse:null,
-      targetSpO2:null,
-      signal:0, // 0-4
-      motion:false,
-      perf:'good', // good/fair/poor
-      site:'finger',
-      delay:2000,
-      t:0,
-      phase:0
-    };
-
-    // ---- Helpers ----
-    const randInt = (a,b)=> Math.floor(Math.random()*(b-a+1))+a;
-    const clamp = (v,a,b)=> Math.max(a, Math.min(b,v));
-
-    function pickScenario(){
-      const s = scenarios[scenarioSel.value];
-      const spo2 = randInt(s.spo2[0], s.spo2[1]);
-      const pulse = randInt(s.pulse[0], s.pulse[1]);
-      state.baseSpO2 = spo2;
-      state.basePulse = pulse;
-      state.spo2 = spo2;
-      state.pulse = pulse;
-      state.perf = s.perf;
-      state.signal = 0;
-      updateReadouts(true);
+  // Core case library (NREMT-aligned oxygenation/ventilation decisions)
+  const CASES = [
+    {
+      id:'asthma_adult',
+      title:'Adult with asthma exacerbation',
+      text:'You find a 28-year-old adult sitting upright, speaking in 2–3 word sentences with audible wheezes, increased work of breathing, and accessory muscle use. Skin cool and diaphoretic.',
+      base:{ spo2:[84,89], pulse:[110,130], perf:'fair' },
+      signal:3,
+      best:'nrb15',
+      alsoCorrect:[],
+      options:[
+        {key:'none', label:'No oxygen; coach breathing only'},
+        {key:'nc2', label:'O₂ via nasal cannula 2–4 L/min'},
+        {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min'},
+        {key:'bvm', label:'Assist ventilations with BVM + high-flow O₂'}
+      ],
+      targets:{
+        none:    {spo2: base=> base-1, note:'Patient is hypoxic; withholding O₂ is inappropriate.'},
+        nc2:     {spo2: base=> clamp(base+3, 80, 93), note:'Low-flow may be insufficient for moderate/severe distress.'},
+        nrb15:   {spo2: base=> clamp(Math.max(base, 86)+8, 90, 97), note:'High-concentration O₂ indicated with distress/hypoxia.'},
+        bvm:     {spo2: base=> clamp(base+6, 88, 96), note:'Useful if tidal volume is poor; here patient is ventilating, so NRB is first choice.'}
+      },
+      whyCorrect:'NREMT: Provide oxygen for signs of hypoxia or SpO₂ < 94%. With moderate respiratory distress and adequate ventilations, high-concentration O₂ via NRB is appropriate. Assist ventilations with BVM if ventilation becomes inadequate.'
+    },
+    {
+      id:'pneumonia_adult',
+      title:'Adult with suspected pneumonia',
+      text:'62-year-old with fever, productive cough, and mild increased work of breathing. Speaking full sentences, mild crackles in right base.',
+      base:{ spo2:[90,93], pulse:[88,104], perf:'good' },
+      signal:3,
+      best:'nc2',
+      alsoCorrect:['nrb15'], // acceptable if patient worsens; we’ll mark as not-best but defensible
+      options:[
+        {key:'none', label:'No oxygen; observe only'},
+        {key:'nc2', label:'O₂ via nasal cannula 2–4 L/min (titrate)'},
+        {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min'}
+      ],
+      targets:{
+        none:   {spo2: base=> base-1, note:'SpO₂ ~91–93% with symptoms → oxygen indicated.'},
+        nc2:    {spo2: base=> clamp(base+4, 92, 98), note:'Titrate to ≥94% if tolerated.'},
+        nrb15:  {spo2: base=> clamp(base+5, 93, 99), note:'Works, but low-flow nasal cannula is typically sufficient for mild distress.'}
+      },
+      whyCorrect:'NREMT: For mild hypoxia with adequate breathing, administer oxygen and titrate to maintain SpO₂ ≥ 94%. Nasal cannula 2–4 L/min is appropriate here.'
+    },
+    {
+      id:'opioid_overdose',
+      title:'Opioid overdose with hypoventilation',
+      text:'22-year-old found with slow, shallow respirations at 6/min, pinpoint pupils, cyanotic lips. Pulse weak and rapid.',
+      base:{ spo2:[76,82], pulse:[100,120], perf:'poor' },
+      signal:2,
+      best:'bvm',
+      alsoCorrect:[],
+      options:[
+        {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min'},
+        {key:'bvm', label:'Assist ventilations with BVM + high-flow O₂'},
+        {key:'nc2', label:'O₂ via nasal cannula 2–4 L/min'}
+      ],
+      targets:{
+        nrb15: {spo2: base=> clamp(base+2, 78, 85), note:'NRB does not correct inadequate ventilation.'},
+        bvm:   {spo2: base=> clamp(base+14, 90, 99), note:'Positive-pressure ventilation corrects hypoventilation and improves oxygenation.'},
+        nc2:   {spo2: base=> clamp(base+1, 77, 84), note:'Insufficient with inadequate breathing.'}
+      },
+      whyCorrect:'NREMT: If breathing is inadequate (slow/shallow), ventilate with BVM and high-flow O₂. Consider naloxone per protocol, but airway/ventilation takes priority.'
+    },
+    {
+      id:'peds_asthma',
+      title:'Pediatric asthma with moderate distress',
+      text:'6-year-old with expiratory wheezes, intercostal retractions, anxious but responsive. Able to speak short phrases.',
+      base:{ spo2:[87,90], pulse:[110,140], perf:'fair' },
+      signal:3,
+      best:'nrb15',
+      alsoCorrect:['blowby'],
+      options:[
+        {key:'blowby', label:'Blow-by O₂ (tolerated)'},
+        {key:'nc2', label:'O₂ via nasal cannula 2–4 L/min'},
+        {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min (if tolerated)'},
+        {key:'none', label:'No oxygen; reassure only'}
+      ],
+      targets:{
+        blowby:{spo2: base=> clamp(base+7, 90, 96), note:'Gentle approach is helpful if mask not tolerated.'},
+        nc2:   {spo2: base=> clamp(base+4, 90, 95), note:'May help, but higher FiO₂ preferable with moderate distress.'},
+        nrb15: {spo2: base=> clamp(base+9, 92, 97), note:'Best if child tolerates the mask.'},
+        none:  {spo2: base=> base-1, note:'Hypoxic child needs oxygen.'}
+      },
+      whyCorrect:'NREMT: Pediatric patients with hypoxia/distress should receive oxygen. Use NRB if tolerated; otherwise blow-by is reasonable. Avoid delaying oxygen.'
+    },
+    {
+      id:'anxiety_hypervent',
+      title:'Anxiety/hyperventilation',
+      text:'19-year-old anxious after an argument, tingling fingers, rapid deep respirations. Clear lungs, normal skin signs.',
+      base:{ spo2:[98,100], pulse:[90,110], perf:'good' },
+      signal:4,
+      best:'none',
+      alsoCorrect:[],
+      options:[
+        {key:'none', label:'No oxygen; coach breathing and reassurance'},
+        {key:'nc2', label:'O₂ via nasal cannula 2–4 L/min'},
+        {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min'}
+      ],
+      targets:{
+        none:  {spo2: base=> clamp(randInt(98,100), 95, 100), note:'SpO₂ already normal. Focus on calming/assessment.'},
+        nc2:   {spo2: base=> clamp(randInt(98,100), 95, 100), note:'Oxygen not indicated; does not treat cause.'},
+        nrb15: {spo2: base=> clamp(randInt(98,100), 95, 100), note:'Unnecessary; may be uncomfortable and waste resources.'}
+      },
+      whyCorrect:'NREMT: Do not give oxygen routinely when SpO₂ is normal and there are no signs of hypoxia. Provide reassurance and monitor.'
+    },
+    {
+      id:'chf_pulmonary_edema',
+      title:'CHF with pulmonary edema',
+      text:'74-year-old with sudden dyspnea, rales bilaterally, JVD, pink frothy sputum, sitting tripod. Speaking 1–2 word phrases.',
+      base:{ spo2:[80,86], pulse:[100,120], perf:'fair' },
+      signal:3,
+      best:'nrb15',
+      alsoCorrect:['bvm'],
+      options:[
+        {key:'nc2', label:'O₂ via nasal cannula 2–4 L/min'},
+        {key:'nrb15', label:'O₂ via nonrebreather 10–15 L/min'},
+        {key:'bvm', label:'Assist ventilations with BVM + high-flow O₂'}
+      ],
+      targets:{
+        nc2:   {spo2: base=> clamp(base+3, 84, 90), note:'Likely inadequate given severity.'},
+        nrb15: {spo2: base=> clamp(base+10, 90, 97), note:'High-concentration O₂ indicated for significant distress.'},
+        bvm:   {spo2: base=> clamp(base+12, 90, 98), note:'Use if ventilations are inadequate or mental status worsens.'}
+      },
+      whyCorrect:'NREMT: Provide high-concentration oxygen for severe respiratory distress/hypoxia. If inadequate ventilation develops, assist with BVM.'
     }
+  ];
 
-    function siteFactor(){
-      return sitePerfusion[state.site] || 1.0;
+  // Signal bar helper
+  function setSignal(n){
+    const bars = sigBars.querySelectorAll('span');
+    bars.forEach((b,i)=> b.classList.toggle('on', i < n));
+  }
+
+  // Canvas sizing
+  function sizeCanvas(){
+    const rect = pleth.getBoundingClientRect();
+    pleth.width = Math.floor(rect.width * devicePixelRatio);
+    pleth.height = Math.floor(rect.height * devicePixelRatio);
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  }
+  window.addEventListener('resize', sizeCanvas, {passive:true});
+
+  // Animation state
+  const state = {
+    spo2: null, pulse: null, baseSpO2: null, targetSpO2: null,
+    perf: 'good', signal: 3, t:0, phase:0, anim: null,
+    readingShown:false, transitioning:false
+  };
+
+  // Pleth drawing
+  function drawPleth(){
+    const w = pleth.width, h = pleth.height;
+    ctx.clearRect(0,0,w,h);
+
+    // grid
+    ctx.globalAlpha = 0.12;
+    ctx.strokeStyle = '#bde3ee'; ctx.lineWidth = 1;
+    for(let x=0;x<w;x+=35){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+    for(let y=0;y<h;y+=30){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+    ctx.globalAlpha = 1;
+
+    // amplitude by perfusion/signal
+    const perfMap={good:1.0,fair:0.7,poor:0.45};
+    const amp = clamp(26*(perfMap[state.perf]||0.7)*(0.6+0.12*state.signal), 6, 40);
+    const bpm = clamp(state.pulse||80,30,220);
+    const hz = bpm/60; const pxPerCycle = Math.max(60, 220-bpm);
+    state.phase += (hz*2.0);
+
+    ctx.strokeStyle = state.signal<=1 ? '#ff6b6b' : '#37d1ff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for(let x=0;x<w;x++){
+      const t = (x + state.phase) / pxPerCycle;
+      let yv = Math.sin(2*Math.PI*t);
+      const saw = ((t%1)<.15 ? 1 : Math.exp(-3*((t%1)-.15)));
+      let shape = 0.65*yv + 0.9*saw + 0.12*Math.sin(4*Math.PI*t+0.5);
+      const noise = (Math.random()-0.5)*0.3;
+      const y = h*0.58 - (shape*amp) - noise*amp*0.4;
+      if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
     }
+    ctx.stroke();
 
-    function updateSigBars(){
-      const bars = sigBarsEl.querySelectorAll('span');
-      bars.forEach((b,i)=> b.classList.toggle('on', i < state.signal));
+    // gentle wandering when not in transition
+    if(state.readingShown && !state.transitioning){
+      if(Math.random()<0.02) state.pulse = clamp(state.pulse + (Math.random()<.5?-1:1), 30, 220);
+      if(Math.random()<0.015) state.spo2 = clamp(state.spo2 + (Math.random()<.5?-1:1), 50, 100);
     }
-
-    function updateReadouts(blank){
-      if(blank){
-        spo2El.textContent = '--';
-        pulseEl.textContent = '--';
-        return;
+    // approach target when transitioning (treatment applied)
+    if(state.transitioning && state.targetSpO2!=null){
+      const step = state.spo2 < state.targetSpO2 ? 0.35 : -0.25;
+      state.spo2 = Math.round((state.spo2 + step)*10)/10;
+      if( (step>0 && state.spo2 >= state.targetSpO2) || (step<0 && state.spo2 <= state.targetSpO2) ){
+        state.transitioning = false;
       }
-      spo2El.textContent = state.spo2.toString();
-      pulseEl.textContent = state.pulse.toString();
     }
 
-    function setStatus(txt){ sensorStateEl.textContent = txt; }
+    spo2El.textContent = state.spo2!=null ? (Number.isInteger(state.spo2)? state.spo2 : state.spo2.toFixed(1)) : '--';
+    pulseEl.textContent = state.pulse!=null ? state.pulse : '--';
 
-    function setAttached(on){
-      state.attached = on;
-      clipEl.classList.toggle('on', on);
-      setStatus(on ? 'Attached' : 'Disconnected');
-      if(!on){
-        state.signal = 0; updateSigBars();
-        showAlert('Disconnected');
-        updateReadouts(true);
-      }
+    requestAnimationFrame(drawPleth);
+  }
+
+  // Build choices UI
+  function renderChoices(caseDef){
+    choicesBox.innerHTML = '';
+    caseDef.options.forEach(opt=>{
+      const btn = document.createElement('button');
+      btn.className = 'choice';
+      btn.textContent = opt.label;
+      btn.dataset.key = opt.key;
+      btn.onclick = () => gradeChoice(caseDef, opt.key, btn);
+      choicesBox.appendChild(btn);
+    });
+  }
+
+  function lockChoices(){
+    choicesBox.querySelectorAll('button.choice').forEach(b=> b.disabled = true);
+  }
+
+  function gradeChoice(caseDef, key, btnEl){
+    lockChoices();
+    const base = state.baseSpO2;
+    const plan = caseDef.targets[key];
+    const target = (typeof plan.spo2 === 'function') ? plan.spo2(base) : plan.spo2;
+    state.targetSpO2 = target;
+    state.transitioning = true;
+
+    // visual correctness
+    const isBest = key === caseDef.best;
+    const isAlso = caseDef.alsoCorrect.includes(key);
+    btnEl.classList.add(isBest ? 'correct' : 'incorrect');
+
+    // feedback
+    let msg = '';
+    if(isBest){
+      msg = `✅ Correct. ${plan.note} ${caseDef.whyCorrect}`;
+    } else if(isAlso){
+      msg = `🟡 Acceptable but not best. ${plan.note} Best initial choice: ${labelFor(caseDef, caseDef.best)}. ${caseDef.whyCorrect}`;
+    } else {
+      msg = `❌ Not the best choice. ${plan.note} The preferred treatment is **${labelFor(caseDef, caseDef.best)}**. ${caseDef.whyCorrect}`;
     }
+    explainBox.style.display = 'block';
+    explainBox.innerHTML = msg;
+    nextBtn.style.display = 'inline-flex';
+  }
 
-    function showAlert(text){
-      alertEl.textContent = text;
-      alertEl.classList.add('show');
-      clearTimeout(showAlert._t);
-      showAlert._t = setTimeout(()=> alertEl.classList.remove('show'), 1000);
-    }
+  function labelFor(caseDef, key){
+    const f = caseDef.options.find(o=>o.key===key);
+    return f ? f.label : key;
+  }
 
-    // ---- Actions ----
-    async function beginReading(){
-      if(!state.attached || state.reading) return;
-      state.reading = true;
-      updateReadouts(true);
-      alertEl.textContent = 'Searching…';
-      alertEl.classList.add('show');
-      setStatus('Acquiring');
-      state.signal = 1; updateSigBars();
+  // Case runner
+  function runRandomCase(){
+    explainBox.style.display='none'; explainBox.innerHTML='';
+    nextBtn.style.display='none';
+    choicesBox.innerHTML='';
+    alertEl.textContent = 'Searching…';
+    alertEl.classList.add('show');
 
-      await new Promise(r=> setTimeout(r, state.delay*0.5));
-      state.signal = 2; updateSigBars();
-      await new Promise(r=> setTimeout(r, state.delay*0.5));
+    // pick a case
+    const caseDef = CASES[Math.floor(Math.random()*CASES.length)];
+    scenarioText.innerHTML = `<strong>${caseDef.title}</strong><br>${caseDef.text}`;
+    setSignal(caseDef.signal);
 
-      // finalize initial reading
-      const perfAdj = siteFactor();
-      let spo2 = Math.round(state.baseSpO2 * (0.94 + 0.12*perfAdj)); // better site -> closer to base
-      spo2 = clamp(spo2, 50, 100);
-      let pulse = Math.round(state.basePulse * (0.95 + 0.1*perfAdj));
-      pulse = clamp(pulse, 30, 220);
+    // establish baseline vitals
+    const baseSpO2 = randInt(caseDef.base.spo2[0], caseDef.base.spo2[1]);
+    const basePulse = randInt(caseDef.base.pulse[0], caseDef.base.pulse[1]);
+    state.baseSpO2 = baseSpO2;
+    state.spo2 = null; state.pulse = null; state.perf = caseDef.base.perf;
+    state.signal = caseDef.signal; state.readingShown=false; state.transitioning=false; state.targetSpO2=null;
 
-      state.spo2 = spo2;
-      state.pulse = pulse;
-      state.signal = Math.max(2, Math.round(4*perfAdj) - (state.motion?1:0));
-      updateSigBars();
+    // simulate acquisition delay
+    setTimeout(()=>{
+      state.spo2 = baseSpO2;
+      state.pulse = basePulse;
+      state.readingShown = true;
       alertEl.classList.remove('show');
-      setStatus(state.signal <= 1 ? 'Poor Signal' : 'Ready');
-      updateReadouts(false);
-      state.reading = false;
-    }
+      renderChoices(caseDef);
+    }, 1600 + Math.random()*800);
+  }
 
-    function detach(){
-      setAttached(false);
-    }
+  // Prevent double-tap zoom on iOS for tap elements
+  let lastTouch=0;
+  document.addEventListener('touchend', e=>{
+    const now = Date.now();
+    if(now - lastTouch <= 300){ e.preventDefault(); }
+    lastTouch = now;
+  }, {passive:false});
 
-    function toggleMotion(){
-      state.motion = !state.motion;
-      motionBtn.dataset.active = state.motion;
-      motionBtn.setAttribute('aria-pressed', String(state.motion));
-      setStatus(state.motion ? 'Motion Detected' : (state.attached ? 'Ready' : 'Disconnected'));
-      // degrade signal while motion
-      state.signal = clamp(state.signal - (state.motion?1:0), 0, 4);
-      updateSigBars();
-    }
-
-    function toggleO2(){
-      const on = o2Btn.getAttribute('aria-pressed') !== 'true';
-      o2Btn.setAttribute('aria-pressed', String(on));
-      o2Btn.dataset.active = on;
-      state.targetSpO2 = on ? clamp(state.baseSpO2 + 8, 90, 99) : state.baseSpO2;
-    }
-
-    // ---- Pleth Animation ----
-    function drawPleth(){
-      const w = pleth.width, h = pleth.height;
-      ctx.clearRect(0,0,w,h);
-
-      // Grid (light)
-      ctx.globalAlpha = 0.12;
-      ctx.strokeStyle = '#bde3ee';
-      ctx.lineWidth = 1;
-      for(let x=0;x<w;x+=35){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
-      for(let y=0;y<h;y+=30){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
-      ctx.globalAlpha = 1;
-
-      // Determine amplitude by perfusion and signal
-      const perfMap = {good:1.0, fair:0.7, poor:0.4};
-      const ampBase = 26 * (perfMap[state.perf] || 0.7) * siteFactor() * (0.6 + 0.12*state.signal);
-      const amp = clamp(ampBase, 6, 40);
-
-      // Frequency from pulse rate
-      const bpm = clamp(state.pulse || 80, 30, 220);
-      const hz = bpm/60; // waves per second
-      const pxPerCycle = Math.max(60, 220 - bpm); // visual scaling
-      state.phase += (hz * 2.0); // scroll speed
-
-      ctx.strokeStyle = state.signal <= 1 ? '#ff6b6b' : '#37d1ff';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      for(let x=0;x<w;x++){
-        const t = (x + state.phase) / pxPerCycle; // cycle position
-        // Pleth-ish shape: fast upstroke, slow down slope with notch
-        let yv = Math.sin(2*Math.PI*t);
-        const saw = ( (t%1) < .15 ? 1 : Math.exp(-3*((t%1)-.15)) ); // quick spike then decay
-        let shape = 0.65*yv + 0.9*saw + 0.12*Math.sin(4*Math.PI*t+0.5); // small notch
-        // Motion noise
-        const noise = state.motion ? (Math.random()-0.5)*1.8 : (Math.random()-0.5)*0.3;
-        const y = h*0.58 - (shape*amp) - noise*amp*0.4;
-        if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-      }
-      ctx.stroke();
-
-      // Slowly wander readings for realism (if attached)
-      if(state.attached && !state.reading){
-        const drift = () => (Math.random()<0.5 ? -1 : 1);
-        if(Math.random()<0.02) state.pulse = clamp(state.pulse + drift(), 30, 220);
-        if(Math.random()<0.015) state.spo2 = clamp(state.spo2 + drift(), 50, 100);
-        // O2 trend
-        if(state.targetSpO2!=null && state.spo2!=null){
-          if(state.spo2 < state.targetSpO2) state.spo2 += 0.2;
-          if(state.spo2 > state.targetSpO2) state.spo2 -= 0.15;
-          state.spo2 = Math.round(state.spo2*10)/10;
-        }
-        updateReadouts(false);
-      }
-      requestAnimationFrame(drawPleth);
-    }
-
-    // ---- Events ----
-    attachBtn.addEventListener('click', async ()=>{
-      setAttached(true);
-      await beginReading();
-    });
-    detachBtn.addEventListener('click', detach);
-    motionBtn.addEventListener('click', toggleMotion);
-    o2Btn.addEventListener('click', toggleO2);
-    delayRange.addEventListener('input', ()=>{
-      state.delay = Number(delayRange.value)||2000;
-      delayLabel.textContent = (state.delay/1000).toFixed(1)+'s';
-    });
-    scenarioSel.addEventListener('change', ()=>{
-      pickScenario();
-      if(state.attached){ beginReading(); }
-    });
-    siteSel.addEventListener('change', ()=>{
-      state.site = siteSel.value;
-      // Recompute signal on site change
-      const perfAdj = siteFactor();
-      state.signal = clamp(Math.round(4*perfAdj) - (state.motion?1:0), 0, 4);
-      updateSigBars();
-      setStatus(state.attached ? (state.signal<=1?'Poor Signal':'Ready') : 'Disconnected');
-    });
-
-    fingerEl.addEventListener('click', async ()=>{
-      if(!state.attached){
-        setAttached(true);
-        await beginReading();
-      }else{
-        detach();
-      }
-    });
-
-    // Prevent double-tap zoom side effects on iOS
-    let lastTouch=0;
-    document.addEventListener('touchend', e=>{
-      const now = Date.now();
-      if(now - lastTouch <= 300){ e.preventDefault(); }
-      lastTouch = now;
-    }, {passive:false});
-
-    // Resize canvas to element css size
-    function sizeCanvas(){
-      const rect = pleth.getBoundingClientRect();
-      pleth.width = Math.floor(rect.width * devicePixelRatio);
-      pleth.height = Math.floor(rect.height * devicePixelRatio);
-      ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
-    }
-    window.addEventListener('resize', sizeCanvas, {passive:true});
-
-    // ---- Init ----
-    function init(){
-      state.site = siteSel.value;
-      pickScenario();
-      sizeCanvas();
-      updateSigBars();
-      updateReadouts(true);
-      drawPleth();
-    }
-    document.addEventListener('DOMContentLoaded', init);
-  </script>
+  // Init
+  function init(){
+    sizeCanvas();
+    runRandomCase();
+    drawPleth();
+  }
+  document.addEventListener('DOMContentLoaded', init);
+  nextBtn.addEventListener('click', runRandomCase);
+</script>
 </body>
 </html>
