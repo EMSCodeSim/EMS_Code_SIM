@@ -14,19 +14,22 @@
     html,body{height:100%}
     body{
       margin:0; background:var(--bg); color:var(--ink);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans","Helvetica Neue",sans-serif;
       -webkit-text-size-adjust:100%;
     }
-    header{position:sticky; top:0; z-index:5; background:var(--teal); color:#fff; padding:16px; text-align:center; box-shadow:var(--shadow)}
-    header h1{margin:0; font-size:22px}
+    header{position:sticky; top:0; z-index:5; background:var(--teal); color:#fff; padding:12px 16px; box-shadow:var(--shadow); display:flex; align-items:center; justify-content:space-between; gap:12px}
+    header h1{margin:0; font-size:20px}
+    .eduBtn{background:#fff; color:#0b3a5a; border:1px solid #cfe7ef; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600}
+    .eduBtn:hover{background:#f2fbff}
     .wrap{ max-width:980px; margin:18px auto; padding:12px; display:grid; gap:14px }
     .grid{ display:grid; grid-template-columns:1fr; gap:14px }
     @media(min-width:960px){ .grid{ grid-template-columns: 1.1fr .9fr } }
     .card{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px }
     h2{ margin:0 0 8px 0; font-size:20px }
     .scenario{ font-size:16px; color:#0b2c3a; line-height:1.55 }
-    .tiny{ font-size:12px; color:#5d7a88 }
+    .tiny{ font-size:12px; color:var(--muted) }
     .badge{ font-size:12px; display:inline-block; padding:2px 8px; border-radius:999px; background:#eaf7ff; color:#0b2c3a; border:1px solid #cfe7ef }
+
     .device{ display:grid; gap:12px; grid-template-rows:auto auto 1fr auto }
     .screen{ background:#0b2530; color:#e8ffff; border-radius:14px; padding:12px 14px; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.08) }
     .status-strip{ display:flex; justify-content:space-between; gap:8px; color:#b5dee2; font-size:13px; margin-bottom:6px; align-items:center }
@@ -64,11 +67,34 @@
     .bvm-row{ display:flex; flex-wrap:wrap; gap:10px; align-items:center }
     .bvm-row input[type="range"]{ width:260px; }
     .bvm-chip{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; background:#eef6ff; border-radius:999px; font-size:13px; color:#0b3a5a; border:1px solid #d7ebff }
-    .footer-note{ text-align:center; font-size:12px; color:#5d7a88; padding:4px 0 10px }
+
+    .footer-note{ text-align:center; font-size:12px; color:var(--muted); padding:4px 0 10px }
+
+    /* --- EDUCATION MODAL --- */
+    .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.45); z-index:50; padding:16px }
+    .modal.show{ display:flex }
+    .modal-card{ max-width:980px; width:100%; max-height:90vh; overflow:auto; background:#fff; border-radius:16px; box-shadow:var(--shadow); padding:16px 16px 2px 16px }
+    .modal-header{ display:flex; align-items:center; justify-content:space-between; gap:10px; position:sticky; top:0; background:#fff; padding:6px 0 10px 0 }
+    .modal-header h3{ margin:0; font-size:18px; color:#0b2c3a }
+    .close{ background:#0b2c3a; color:#fff; border:none; border-radius:10px; padding:8px 12px; cursor:pointer; font-weight:700 }
+    .edu-grid{ display:grid; gap:12px; grid-template-columns:1fr; }
+    @media(min-width:860px){ .edu-grid{ grid-template-columns: 1.1fr .9fr } }
+    .edu-card{ border:1px solid #e6eef5; border-radius:12px; padding:12px; background:#fcfeff }
+    .edu-card h4{ margin:0 0 6px 0; font-size:16px; color:#093246 }
+    .edu-list{ margin:6px 0 0 0; padding-left:18px }
+    .edu-list li{ margin:4px 0 }
+    .gallery{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px }
+    @media(min-width:640px){ .gallery{ grid-template-columns:repeat(3,1fr) } }
+    .mini{ background:#08222c; border:1px solid #dbeff6; border-radius:10px; padding:8px }
+    .mini canvas{ width:100%; height:100px; display:block }
+    .mini label{ display:block; font-size:12px; color:#093246; margin-top:6px; text-align:center }
   </style>
 </head>
 <body>
-<header><h1>Capnography Simulator (EMT-B)</h1></header>
+<header>
+  <h1>Capnography Simulator (EMT-B)</h1>
+  <button id="eduBtn" class="eduBtn">📘 Understand Capnography</button>
+</header>
 
 <main class="wrap">
   <section class="grid">
@@ -129,6 +155,65 @@
   <div class="footer-note">For training use only. Not a medical device.</div>
 </main>
 
+<!-- EDUCATION MODAL -->
+<div id="eduModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="eduTitle">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="eduTitle">Understand Capnography</h3>
+      <button id="closeEdu" class="close" aria-label="Close">Close</button>
+    </div>
+    <div class="edu-grid">
+      <div class="edu-card">
+        <h4>How it works</h4>
+        <ul class="edu-list">
+          <li><b>Capnography</b> measures CO₂ in exhaled air over time; <b>ETCO₂</b> is the peak at end-exhalation.</li>
+          <li>Reflects <b>ventilation</b> (CO₂ removal), <b>perfusion</b> (blood flow), and <b>metabolism</b> (CO₂ production).</li>
+          <li>Use it to confirm airway device placement, titrate BVM rate, monitor CPR quality, and recognize ROSC.</li>
+        </ul>
+        <h4 style="margin-top:10px">Normal readings</h4>
+        <ul class="edu-list">
+          <li>Awake adult: <b>ETCO₂ ~ 35–45 mmHg</b> with a rectangular “square” waveform.</li>
+          <li>During CPR: ETCO₂ often <b>10–20 mmHg</b>. A sudden sustained rise toward the 30s may indicate <b>ROSC</b>.</li>
+          <li>Adult BVM target: <b>10–12 breaths/min</b>. Avoid hyperventilation.</li>
+        </ul>
+        <h4 style="margin-top:10px">High vs Low ETCO₂</h4>
+        <ul class="edu-list">
+          <li><b>High</b> ETCO₂: hypoventilation (slow/ineffective BVM), increased CO₂ production (fever, seizures), <b>ROSC</b>/improved perfusion, or <b>rebreathing/equipment fault</b>.</li>
+          <li><b>Low</b> ETCO₂: hyperventilation, <b>poor perfusion</b> (shock/PE/arrest), <b>low-quality CPR</b>, prolonged downtime, or esophageal/failed airway (near-zero, flatline).</li>
+        </ul>
+      </div>
+
+      <div class="edu-card">
+        <h4>Waveform gallery</h4>
+        <div class="gallery">
+          <div class="mini"><canvas id="mini-normal" width="260" height="100"></canvas><label>Normal</label></div>
+          <div class="mini"><canvas id="mini-sharkfin" width="260" height="100"></canvas><label>Bronchospasm (shark-fin)</label></div>
+          <div class="mini"><canvas id="mini-rebreath" width="260" height="100"></canvas><label>Rebreathing (elevated baseline)</label></div>
+          <div class="mini"><canvas id="mini-flat" width="260" height="100"></canvas><label>Flat / No alveolar CO₂</label></div>
+          <div class="mini"><canvas id="mini-hyper" width="260" height="100"></canvas><label>Hyperventilation (low ETCO₂)</label></div>
+          <div class="mini"><canvas id="mini-hypo" width="260" height="100"></canvas><label>Hypoventilation (high ETCO₂)</label></div>
+        </div>
+        <ul class="edu-list" style="margin-top:10px">
+          <li><b>Shark-fin</b>: slanted Phase III (obstructive disease; asthma/COPD).</li>
+          <li><b>Rebreathing</b>: baseline never returns to zero (faulty valve or inadequate fresh gas flow).</li>
+          <li><b>Flatline</b>: near-zero ETCO₂ (esophageal/failed airway or no perfusion).</li>
+        </ul>
+      </div>
+
+      <div class="edu-card">
+        <h4>EMT-B decision cues</h4>
+        <ul class="edu-list">
+          <li><b>Inadequate breathing</b> (slow/shallow/altered): Ventilate with <b>BVM + O₂</b>, target 10–12/min; titrate by ETCO₂.</li>
+          <li><b>Bronchospasm</b>: Assist patient’s prescribed bronchodilator; consider O₂; BVM only if ventilation fails.</li>
+          <li><b>Airway device check</b>: Persistent near-zero ETCO₂ → suspect esophageal/failed placement; remove and BVM.</li>
+          <li><b>CPR</b>: Use ETCO₂ to gauge compression quality and recognize <b>ROSC</b>. Avoid hyperventilation.</li>
+          <li><b>Rebreathing</b>: Elevated baseline → fix/replace equipment/valve instead of bagging faster.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   // --- Shortcuts ---
   const $ = s => document.querySelector(s);
@@ -138,6 +223,9 @@
   const scenarioText = $('#scenarioText'); const choicesBox = $('#choicesBox');
   const explainBox = $('#explainBox'); const nextBtn = $('#nextBtn');
   const bvmBox = $('#bvmBox'); const bvmRate = $('#bvmRate'); const bvmRateLbl = $('#bvmRateLbl');
+
+  // Education modal
+  const eduBtn = $('#eduBtn'); const eduModal = $('#eduModal'); const closeEdu = $('#closeEdu');
 
   // --- Helpers ---
   const clamp = (v,a,b)=> Math.max(a, Math.min(b,v));
@@ -169,9 +257,8 @@
     rosclive:'Post-ROSC normal'
   };
 
-  // --- Scenarios (EMT-B level) ---
+  // --- Scenarios (EMT-B level, incl. non-respiratory CPR/perfusion causes) ---
   const CASES = [
-    // Hypoventilation (opioid) → BVM best + naloxone option (label simplified)
     {
       id:'opioid_hypovent',
       title:'Opioid overdose with hypoventilation',
@@ -192,8 +279,6 @@
       },
       why:'NREMT: Inadequate breathing → BVM ventilations with high-flow O₂. Consider naloxone after airway/ventilation.'
     },
-
-    // Bronchospasm (asthma/COPD) → assist bronchodilator best
     {
       id:'asthma_sharkfin',
       title:'Severe asthma/COPD with bronchospasm',
@@ -214,8 +299,6 @@
       },
       why:'NREMT: Assist with patient’s bronchodilator when bronchospasm is the cause; BVM only if ventilation becomes inadequate.'
     },
-
-    // Failed airway/SGA → remove and BVM
     {
       id:'failed_airway_flat',
       title:'Failed supraglottic airway (flat capnogram)',
@@ -232,10 +315,8 @@
         continue: {etco2: b=> b, rr: r=> r, shape:'flat', note:'No alveolar exchange → ETCO₂ remains ~0.'},
         nrb:      {etco2: b=> b, rr: r=> r, shape:'flat', note:'Does not address failed airway/ventilation.'}
       },
-      why:'NREMT: Persistent near-zero ETCO₂ after airway placement suggests esophageal/failed airway. Remove device, use OPA/NPA and BVM with O₂.'
+      why:'NREMT: Near-zero ETCO₂ after airway placement suggests esophageal/failed airway. Remove device, use OPA/NPA and BVM with O₂.'
     },
-
-    // Rebreathing/faulty BVM valve → fix circuit
     {
       id:'rebreathing_fault',
       title:'Rebreathing from faulty BVM one-way valve',
@@ -254,29 +335,25 @@
       },
       why:'NREMT: Elevated inspiratory CO₂ indicates rebreathing—fix/replace equipment rather than just changing rate.'
     },
-
-    // Cardiac arrest – low ETCO2 from poor compressions (non-respiratory cause)
     {
       id:'cpr_low_quality',
       title:'Cardiac arrest: low ETCO₂ from poor compressions',
-      text:'Witnessed arrest. Compressions noted shallow/slow with incomplete recoil; BVM attached with O₂.',
+      text:'Witnessed arrest. Compressions shallow/slow with incomplete recoil; BVM attached with O₂.',
       base:{ etco2:[6,12], rr:[10,12], shape:'normal', baseline:0, tilt:0.02, quality:.95, signal:3 },
       best:'improveCPR',
       onBvmStart:true,
       options:[
-        {key:'improveCPR', label:'Improve CPR quality (depth 2–2.4", rate 100–120, full recoil); switch compressors'},
+        {key:'improveCPR', label:'Improve CPR (depth 2–2.4", rate 100–120, full recoil); switch compressors'},
         {key:'bvmFaster',  label:'Hyperventilate the patient (increase BVM rate)'},
         {key:'continue',   label:'Continue current compressions unchanged'}
       ],
       targets:{
-        improveCPR:{etco2: _=> randInt(20,30), rr:_=> 10, shape:'normal', note:'ETCO₂ reflects perfusion during CPR—better compressions raise ETCO₂.' , bvmBase:25},
+        improveCPR:{etco2: _=> randInt(20,30), rr:_=> 10, shape:'normal', note:'ETCO₂ reflects perfusion in CPR—better compressions raise ETCO₂.' , bvmBase:25},
         bvmFaster: {etco2: b=> clamp(b-2, 4,10), rr:r=> Math.min(20, r+6), shape:'normal', note:'Hyperventilation worsens venous return → lowers ETCO₂.' , bvmBase:8},
         continue:  {etco2: b=> b, rr:r=> r, shape:'normal', note:'Low-quality CPR keeps ETCO₂ low; switch compressor and improve technique.'}
       },
-      why:'NREMT: Low ETCO₂ during arrest often indicates poor perfusion from inadequate compressions; improve depth/rate/recoil and avoid hyperventilation.'
+      why:'NREMT: Low ETCO₂ often indicates poor perfusion from inadequate compressions; improve quality and avoid hyperventilation.'
     },
-
-    // Cardiac arrest – prolonged downtime (non-respiratory cause)
     {
       id:'cpr_prolonged_downtime',
       title:'Cardiac arrest: prolonged downtime',
@@ -290,14 +367,12 @@
         {key:'improveCPR', label:'Change compressor and re-emphasize quality despite already good CPR'}
       ],
       targets:{
-        continueHQ:{etco2: b=> clamp(b, 8,14), rr:_=> 10, shape:'normal', note:'Prolonged downtime can keep ETCO₂ low despite HQ-CPR; continue guideline care.' , bvmBase:12},
+        continueHQ:{etco2: b=> clamp(b, 8,14), rr:_=> 10, shape:'normal', note:'Downtime can keep ETCO₂ low despite HQ-CPR; continue guideline care.' , bvmBase:12},
         bvmFaster: {etco2: b=> clamp(b-2, 6,10), rr:r=> Math.min(20, r+6), shape:'normal', note:'Hyperventilation reduces ETCO₂ and cerebral perfusion—avoid.' , bvmBase:10},
-        improveCPR:{etco2: b=> clamp(b+3, 10,16), rr:_=> 10, shape:'normal', note:'Switching compressors may help, but care is already high-quality; main focus is minimize pauses and defib when indicated.' , bvmBase:14}
+        improveCPR:{etco2: b=> clamp(b+3, 10,16), rr:_=> 10, shape:'normal', note:'Switching compressors may help, but care is already HQ; focus on minimal pauses/defib when indicated.' , bvmBase:14}
       },
-      why:'NREMT: Low ETCO₂ can reflect long downtime; maintain high-quality CPR and minimize interruptions. Avoid hyperventilation.'
+      why:'NREMT: Low ETCO₂ can reflect long downtime; maintain high-quality CPR and minimize interruptions.'
     },
-
-    // ROSC recognition
     {
       id:'arrest_rosc',
       title:'Cardiac arrest with sudden ETCO₂ rise (ROSC)',
@@ -317,8 +392,6 @@
       },
       why:'NREMT: Use ETCO₂ to recognize ROSC; pause to check for signs of life when it jumps.'
     },
-
-    // Anxiety / hyperventilation
     {
       id:'anxiety_hypervent',
       title:'Anxiety/hyperventilation (no hypoxia)',
@@ -360,7 +433,7 @@
     const w = cap.width, h = cap.height;
     ctx.globalAlpha = 0.12; ctx.strokeStyle = '#bde3ee'; ctx.lineWidth = 1;
     for(let x=0;x<w;x+=40){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
-    for(let y=0;y<h;y+=20){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(x= w,y); ctx.stroke(); } // keep grid simple
+    for(let y=0;y<h;y+=20){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
     ctx.globalAlpha = 1;
   }
 
@@ -543,6 +616,7 @@
     sizeCanvas();
     runRandomCase();
     requestAnimationFrame(tick);
+    buildMiniGallery();
   }
   document.addEventListener('DOMContentLoaded', init);
   nextBtn.addEventListener('click', runRandomCase);
@@ -552,6 +626,12 @@
     bvmRateLbl.textContent = v;
   });
 
+  // Modal events
+  eduBtn.addEventListener('click', ()=>{ eduModal.classList.add('show'); eduModal.setAttribute('aria-hidden','false'); });
+  closeEdu.addEventListener('click', ()=>{ eduModal.classList.remove('show'); eduModal.setAttribute('aria-hidden','true'); });
+  eduModal.addEventListener('click', (e)=>{ if(e.target===eduModal){ closeEdu.click(); } });
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && eduModal.classList.contains('show')) closeEdu.click(); });
+
   // Prevent double-tap zoom on iOS
   let lastTouch=0;
   document.addEventListener('touchend', e=>{
@@ -560,8 +640,59 @@
     lastTouch=now;
   }, {passive:false});
 
-  // Fix minor grid line bug in some browsers
-  (function(){ const canvasFix = cap.getContext('2d'); canvasFix.lineCap='round'; })();
+  // --- Mini waveform gallery (simple renderer) ---
+  function drawMini(canvas, kind){
+    const c = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    c.clearRect(0,0,w,h);
+    // grid
+    c.globalAlpha = 0.12; c.strokeStyle = '#bde3ee'; c.lineWidth = 1;
+    for(let x=0;x<w;x+=40){ c.beginPath(); c.moveTo(x,0); c.lineTo(x,h); c.stroke(); }
+    for(let y=0;y<h;y+=20){ c.beginPath(); c.moveTo(0,y); c.lineTo(w,y); c.stroke(); }
+    c.globalAlpha = 1;
+
+    // helper: quick capno sample
+    function y(mm){ const max=60; const frac=Math.max(0,Math.min(mm/max,1)); return h - (h*0.8*frac) - h*0.1; }
+
+    let baseline=0, et=40, tilt=0, up=1.1, rr=12;
+    if(kind==='sharkfin'){ tilt=0.13; et=50; }
+    if(kind==='rebreath'){ baseline=10; et=45; tilt=0.03; }
+    if(kind==='flat'){ baseline=0; et=1; }
+    if(kind==='hyper'){ et=25; rr=24; }
+    if(kind==='hypo'){ et=55; rr=6; }
+
+    const hz=rr/60, pxPerSec=120;
+    c.strokeStyle = '#37d1ff'; c.lineWidth=2; c.beginPath();
+    for(let x=0; x<w; x+=2){
+      const tSec = x/pxPerSec;
+      const cyc = (tSec*hz)%1;
+      let yy;
+      if(kind==='flat'){
+        yy = y(baseline + Math.sin(cyc*Math.PI*4)*0.4);
+      } else {
+        if(cyc<0.25){ const p=Math.pow(cyc/0.25, up); yy = y(baseline + (et-baseline)*p); }
+        else if(cyc<0.65){ const p=(cyc-0.25)/0.4; const plateau = et*(1-tilt*p)+baseline*tilt*p*0.2; yy = y(plateau); }
+        else { const p=(cyc-0.65)/0.35; const start= y(et*(1-tilt)); const end = y(baseline); yy = start + (end-start)*p; }
+      }
+      if(x===0) c.moveTo(x,yy); else c.lineTo(x,yy);
+    }
+    c.stroke();
+  }
+
+  function buildMiniGallery(){
+    const kinds = [
+      ['mini-normal','normal'],
+      ['mini-sharkfin','sharkfin'],
+      ['mini-rebreath','rebreath'],
+      ['mini-flat','flat'],
+      ['mini-hyper','hyper'],
+      ['mini-hypo','hypo'],
+    ];
+    kinds.forEach(([id,kind])=>{
+      const el = document.getElementById(id);
+      if(el){ drawMini(el, kind); }
+    });
+  }
 </script>
 </body>
 </html>
