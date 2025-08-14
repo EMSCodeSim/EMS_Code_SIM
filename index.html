@@ -1,129 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EMS Simulator Index</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0b1f2a;
-      --panel: #0f2a39;
-      --card: #123548;
-      --ink: #eaf3f7;
-      --muted: #94b7c6;
-      --accent: #21c4d7;
-      --ring: #39d1e1;
-      --shadow: 0 10px 24px rgba(0,0,0,.25);
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
-    header{padding:1.1rem 1.2rem;background:linear-gradient(90deg,#0f2a39,#102f40);position:sticky;top:0;z-index:5;border-bottom:1px solid rgba(255,255,255,.06)}
-    h1{margin:0;font-size:1.1rem;letter-spacing:.5px}
-    .wrap{max-width:1200px;margin:0 auto;padding:1rem;display:grid;gap:1rem}
-    .toolbar{background:var(--panel);border-radius:14px;padding:.9rem;display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;box-shadow:var(--shadow)}
-    .search{flex:1;min-width:220px;display:flex;gap:.5rem;align-items:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.55rem .75rem}
-    .search input{flex:1;background:transparent;border:none;color:var(--ink);font-size:16px;outline:none}
-    .pill{border:none;background:#1a3f53;color:var(--ink);padding:.5rem .7rem;border-radius:999px;cursor:pointer;font-weight:600}
-    .pill.active{background:var(--accent);color:#02222a}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-    section.cat{background:var(--panel);border-radius:16px;padding:1rem;box-shadow:var(--shadow)}
-    section.cat h2{margin:.2rem 0 .8rem;font-size:1rem;color:var(--accent)}
-    .card{background:var(--card);border-radius:14px;padding:.9rem;display:flex;flex-direction:column;gap:.45rem;border:1px solid rgba(255,255,255,.06)}
-    .card h3{margin:0;font-size:1rem;line-height:1.2}
-    .meta{font-size:.8rem;color:var(--muted)}
-    .go{margin-top:.4rem;display:inline-block;background:var(--accent);color:#02222a;border:none;border-radius:10px;padding:.5rem .7rem;text-decoration:none;font-weight:700;text-align:center}
-    .go:hover{background:var(--ring)}
-    footer{color:var(--muted);text-align:center;padding:1.2rem 1rem}
-    .hide{display:none}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EMS Simulators — Index</title>
+<style>
+  :root{
+    --bg:#0b1f2a; --panel:#0f2a39; --ink:#eaf3f7; --muted:#9fb8c5; --accent:#21c4d7;
+    --card:#123548; --hover:#18465d; --ring:#39d1e1;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  header{padding:1rem 1.25rem;background:linear-gradient(90deg,#0f2a39,#102f40);border-bottom:1px solid rgba(255,255,255,.06)}
+  header h1{margin:0;font-size:1.15rem;letter-spacing:.3px}
+  .wrap{max-width:900px;margin:0 auto;padding:1rem;display:grid;gap:1rem}
+  .note{color:var(--muted);font-size:.9rem}
+  .menu{background:var(--panel);border-radius:14px;padding:1rem}
+  .menu h2{margin:.2rem 0 .6rem;font-size:1rem;color:var(--accent)}
+  ul.links{list-style:none;margin:0;padding:0;display:grid;gap:.5rem}
+  .link{
+    display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+    background:var(--card); padding:.8rem 1rem; border-radius:10px;
+    text-decoration:none; color:var(--ink); border:1px solid rgba(255,255,255,.06);
+  }
+  .link small{color:var(--muted)}
+  .link:hover{background:var(--hover); border-color:rgba(57,209,225,.3)}
+  .grid{display:grid; gap:1rem}
+  .search{
+    display:flex; gap:.6rem; align-items:center; background:#123548b0; border:1px solid rgba(255,255,255,.08);
+    border-radius:10px; padding:.6rem .75rem
+  }
+  .search input{flex:1; background:transparent; border:0; color:var(--ink); outline:0; font-size:16px}
+  .hide{display:none}
+  footer{color:var(--muted);text-align:center;padding:1rem .5rem}
+</style>
 </head>
 <body>
-  <header>
-    <h1>EMS Simulators Index</h1>
-  </header>
+<header>
+  <h1>EMS Simulators — Index</h1>
+</header>
 
-  <div class="wrap">
-    <div class="toolbar">
-      <div class="search">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <input id="q" placeholder="Search simulators, e.g., vitals, airway, peds..." />
-      </div>
-      <div class="filters">
-        <button class="pill active" data-cat="All">All</button>
-        <button class="pill" data-cat="Vitals">Vitals</button>
-        <button class="pill" data-cat="Assessment">Assessment</button>
-        <button class="pill" data-cat="Airway/Breathing">Airway/Breathing</button>
-        <button class="pill" data-cat="Circulation/Fluids">Circulation/Fluids</button>
-        <button class="pill" data-cat="Pharmacology">Pharmacology</button>
-        <button class="pill" data-cat="Pediatrics/OB">Pediatrics/OB</button>
-        <button class="pill" data-cat="Operations">Operations</button>
-        <button class="pill" data-cat="Other">Other</button>
-      </div>
-    </div>
-
-    <!-- START: Dynamic category sections -->
-    <!-- Example: Vitals category -->
-    <section class="cat" data-section="Vitals">
-      <h2>Vitals</h2>
-      <div class="grid">
-        <!-- Replace these with your actual vitals files -->
-        <article class="card" data-title="Blood Pressure Simulator" data-cat="Vitals">
-          <h3>Blood Pressure Simulator</h3>
-          <div class="meta">vitals/blood-pressure.html</div>
-          <a class="go" href="vitals/blood-pressure.html">Open</a>
-        </article>
-        <article class="card" data-title="Pulse Simulator" data-cat="Vitals">
-          <h3>Pulse Simulator</h3>
-          <div class="meta">vitals/pulse.html</div>
-          <a class="go" href="vitals/pulse.html">Open</a>
-        </article>
-      </div>
-    </section>
-
-    <!-- Repeat for each populated category -->
-    <!-- END: Dynamic category sections -->
+<div class="wrap">
+  <div class="search">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <input id="q" placeholder="Quick filter… (e.g., vitals, bp, stroke)" />
   </div>
 
-  <footer>Generated index — edit categories/labels as needed.</footer>
+  <!-- Main -->
+  <section class="menu" data-section="Main">
+    <h2>Main</h2>
+    <ul class="links">
+      <li><a class="link" data-title="med sim" href="EMS_Code_SIM-main/med_sim.html">
+        <span>Medical Simulator</span> <small>EMS_Code_SIM-main/med_sim.html</small>
+      </a></li>
+    </ul>
+  </section>
 
-  <script>
-  const sections = Array.from(document.querySelectorAll('section.cat'));
-  const pills = Array.from(document.querySelectorAll('.pill'));
+  <!-- Vitals -->
+  <section class="menu" data-section="Vitals">
+    <h2>Vitals</h2>
+    <ul class="links">
+      <li><a class="link" data-title="aao" href="EMS_Code_SIM-main/vitals/aao.html">
+        <span>AAO (LOC)</span> <small>EMS_Code_SIM-main/vitals/aao.html</small>
+      </a></li>
+      <li><a class="link" data-title="bgl" href="EMS_Code_SIM-main/vitals/bgl.html">
+        <span>Blood Glucose</span> <small>EMS_Code_SIM-main/vitals/bgl.html</small>
+      </a></li>
+      <li><a class="link" data-title="bp" href="EMS_Code_SIM-main/vitals/bp.html">
+        <span>Blood Pressure</span> <small>EMS_Code_SIM-main/vitals/bp.html</small>
+      </a></li>
+      <li><a class="link" data-title="breath sound simulator" href="EMS_Code_SIM-main/vitals/breath-sound-simulator.html">
+        <span>Breath Sound Simulator</span> <small>EMS_Code_SIM-main/vitals/breath-sound-simulator.html</small>
+      </a></li>
+      <li><a class="link" data-title="gcs" href="EMS_Code_SIM-main/vitals/gcs.html">
+        <span>Glasgow Coma Scale (GCS)</span> <small>EMS_Code_SIM-main/vitals/gcs.html</small>
+      </a></li>
+      <li><a class="link" data-title="nines rule of nines" href="EMS_Code_SIM-main/vitals/nines.html">
+        <span>Rule of Nines (TBSA)</span> <small>EMS_Code_SIM-main/vitals/nines.html</small>
+      </a></li>
+      <li><a class="link" data-title="pulse" href="EMS_Code_SIM-main/vitals/pulse.html">
+        <span>Pulse</span> <small>EMS_Code_SIM-main/vitals/pulse.html</small>
+      </a></li>
+      <li><a class="link" data-title="pupil" href="EMS_Code_SIM-main/vitals/pupil.html">
+        <span>Pupil Reaction</span> <small>EMS_Code_SIM-main/vitals/pupil.html</small>
+      </a></li>
+      <li><a class="link" data-title="skin" href="EMS_Code_SIM-main/vitals/skin.html">
+        <span>Skin Appearance</span> <small>EMS_Code_SIM-main/vitals/skin.html</small>
+      </a></li>
+      <li><a class="link" data-title="stroke" href="EMS_Code_SIM-main/vitals/stroke.html">
+        <span>Stroke Assessment</span> <small>EMS_Code_SIM-main/vitals/stroke.html</small>
+      </a></li>
+    </ul>
+  </section>
+
+  <p class="note">Tip: Use the search box to quickly filter the list.</p>
+</div>
+
+<footer>© EMS Training Simulators</footer>
+
+<script>
+  // Simple in-page filter
   const q = document.getElementById('q');
-
-  function applyFilters() {
-    const active = pills.find(p=>p.classList.contains('active'));
-    const cat = active ? active.dataset.cat : 'All';
+  const sections = Array.from(document.querySelectorAll('section.menu'));
+  function applyFilter(){
     const term = q.value.trim().toLowerCase();
-    sections.forEach(sec => {
-      const inCat = (cat==='All') || (sec.dataset.section===cat);
-      let visibleInSection = 0;
-      sec.querySelectorAll('.card').forEach(card=>{
-        const text = card.innerText.toLowerCase();
-        const matchTerm = term==='' ? true : text.includes(term);
-        const matchCat = (cat==='All') || (card.dataset.cat===cat);
-        const show = matchTerm && matchCat;
-        card.classList.toggle('hide', !show);
-        if (show) visibleInSection++;
+    sections.forEach(sec=>{
+      let visible = 0;
+      sec.querySelectorAll('.link').forEach(a=>{
+        const text = (a.innerText + ' ' + (a.dataset.title||'')).toLowerCase();
+        const show = term==='' ? true : text.includes(term);
+        a.classList.toggle('hide', !show);
+        if(show) visible++;
       });
-      if (cat!=='All') {
-        sec.classList.toggle('hide', sec.dataset.section!==cat);
-      } else {
-        sec.classList.toggle('hide', visibleInSection===0);
-      }
+      // hide whole section if none match
+      sec.classList.toggle('hide', visible===0);
     });
   }
-
-  pills.forEach(p=>p.addEventListener('click', e=>{
-    pills.forEach(x=>x.classList.remove('active'));
-    p.classList.add('active');
-    applyFilters();
-  }));
-  q.addEventListener('input', applyFilters);
-  applyFilters();
-  </script>
+  q.addEventListener('input', applyFilter);
+  applyFilter();
+</script>
 </body>
 </html>
