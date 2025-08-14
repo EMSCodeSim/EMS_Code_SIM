@@ -5,7 +5,444 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Rule of Nines — TBSA Burn Quiz</title>
 <style>
+  :root{<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rule of Nines — TBSA Burn Quiz</title>
+<style>
   :root{
+    --brand:#007B8A; --bg:#f0f8ff; --ink:#123; --card:#ffffff; --muted:#6b7c85;
+    --chip:#e8f4f6; --full:#d9534f; --half:#f0ad4e; --none:#c8d7df; --stroke:#233;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;display:flex;flex-direction:column}
+  header{background:var(--brand);color:#fff;padding:1rem 1.25rem;text-align:center}
+  header h1{margin:0;font-size:1.2rem}
+  .wrap{width:min(1100px,100%);margin:0 auto;padding:1rem;display:grid;gap:1rem}
+  .controls,.results,.legend,.quiz{background:var(--card);border-radius:.75rem;padding:1rem;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+  .seg{display:flex;gap:.5rem;flex-wrap:wrap}
+  button,select,input{border:1px solid #cbd5db;border-radius:.6rem;padding:.6rem .8rem;background:#fff;color:var(--ink);outline:0}
+  button{background:var(--brand);color:#fff;border:none;cursor:pointer;font-weight:600}
+  button.secondary{background:#fff;color:var(--brand);border:1px solid var(--brand)}
+  button.danger{background:#9f2f2f}
+  .chip{background:var(--chip);border:none;border-radius:.6rem;padding:.5rem .7rem;color:var(--brand);font-weight:600}
+  .board{background:var(--card);border-radius:.75rem;padding:.5rem;display:grid;justify-items:center;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .svg-wrap{width:min(520px,100%);height:auto;position:relative;transition:transform .2s ease}
+  .svg-wrap.peds{transform:scale(.88); transform-origin: top center;} /* pediatric smaller */
+  svg{width:100%;height:auto}
+  .zone{fill:#fff;stroke:var(--none);stroke-width:2;transition:fill .15s,stroke .15s,opacity .15s;pointer-events:none}
+  .zone[data-state="0"]{fill:#fff}
+  .zone[data-state="0.5"]{fill:var(--half);stroke:var(--stroke)}
+  .zone[data-state="1"]{fill:var(--full);stroke:var(--stroke)}
+  .label{font-size:.72rem;fill:#223;opacity:.85;user-select:none;pointer-events:none}
+  .legend{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+  .legend .key{display:flex;align-items:center;gap:.4rem}
+  .sw{width:18px;height:12px;border-radius:3px;border:1px solid #9cb0ba}
+  .sw.none{background:#fff}
+  .sw.half{background:var(--half)}
+  .sw.full{background:var(--full)}
+  .results{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));align-items:center}
+  .kv{background:var(--chip);padding:.8rem;border-radius:.6rem;display:flex;justify-content:space-between;gap:.5rem;align-items:center}
+  .kv b{font-size:1.05rem}
+  .quiz .grid{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .feedback{margin-top:.6rem;border-top:1px dashed #d6e3e9;padding-top:.6rem}
+  .ok{color:#116e3a}
+  .bad{color:#9f2f2f}
+  .hint{color:var(--muted);font-size:.9rem}
+  /* Contribution tags drawn after submit */
+  .pct-tag{font-size:.7rem;fill:#000;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;font-weight:700;opacity:.95}
+  /* Risk list */
+  .risks{margin-top:.6rem;background:#fbfcfe;border:1px solid #e1ebf0;border-radius:.6rem;padding:.6rem}
+  .risks h4{margin:.2rem 0 .4rem;font-size:1rem}
+  .risks ul{margin:.2rem 0 .2rem 1.1rem}
+</style>
+</head>
+<body>
+<header><h1>Rule of Nines — TBSA Burn Quiz (Adult & Pediatric)</h1></header>
+<div class="wrap">
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="row">
+      <span class="chip">A random scenario is active. Burns may be on BOTH sides. Pediatric view appears smaller.</span>
+      <div class="seg" style="margin-left:auto">
+        <button id="adultBtn" class="secondary" title="Adult percentages">Adult</button>
+        <button id="pedsBtn" class="secondary" title="Pediatric percentages">Pediatric</button>
+        <button id="frontBtn" class="secondary">Front</button>
+        <button id="backBtn" class="secondary">Back</button>
+        <button id="newScenarioBtn">New Scenario</button>
+        <button id="resetBtn" class="danger">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Board -->
+  <div class="board">
+    <div id="svgWrap" class="svg-wrap">
+      <!-- FRONT -->
+      <svg id="svgFront" viewBox="0 0 320 720" aria-labelledby="titleFront" role="img">
+        <title id="titleFront">Front View Burn Map</title>
+
+        <rect class="zone" id="head-front" x="120" y="20" width="80" height="80" rx="40" ry="40" data-key="head-front" data-state="0"></rect>
+        <text class="label" x="160" y="65" text-anchor="middle">Head (F)</text>
+
+        <rect class="zone" id="chest" x="95" y="110" width="130" height="110" data-key="chest" data-state="0"></rect>
+        <text class="label" x="160" y="165" text-anchor="middle">Chest</text>
+
+        <rect class="zone" id="abdomen" x="95" y="225" width="130" height="110" data-key="abdomen" data-state="0"></rect>
+        <text class="label" x="160" y="280" text-anchor="middle">Abdomen</text>
+
+        <rect class="zone" id="perineum" x="150" y="340" width="20" height="16" rx="5" ry="5" data-key="perineum" data-state="0"></rect>
+        <text class="label" x="160" y="370" text-anchor="middle">Perineum 1%</text>
+
+        <rect class="zone" id="armL-front" x="55" y="120" width="35" height="250" rx="18" ry="18" data-key="armL-front" data-state="0"></rect>
+        <text class="label" x="72" y="255" text-anchor="middle">L Arm (F)</text>
+
+        <rect class="zone" id="armR-front" x="230" y="120" width="35" height="250" rx="18" ry="18" data-key="armR-front" data-state="0"></rect>
+        <text class="label" x="247" y="255" text-anchor="middle">R Arm (F)</text>
+
+        <!-- Re-centered legs (front) -->
+        <rect class="zone" id="legL-front" x="110" y="360" width="60" height="300" rx="28" ry="28" data-key="legL-front" data-state="0"></rect>
+        <text class="label" x="140" y="520" text-anchor="middle">L Leg (F)</text>
+
+        <rect class="zone" id="legR-front" x="150" y="360" width="60" height="300" rx="28" ry="28" data-key="legR-front" data-state="0"></rect>
+        <text class="label" x="180" y="520" text-anchor="middle">R Leg (F)</text>
+      </svg>
+
+      <!-- BACK -->
+      <svg id="svgBack" viewBox="0 0 320 720" aria-labelledby="titleBack" role="img" style="display:none">
+        <title id="titleBack">Back View Burn Map</title>
+
+        <rect class="zone" id="head-back" x="120" y="20" width="80" height="80" rx="40" ry="40" data-key="head-back" data-state="0"></rect>
+        <text class="label" x="160" y="65" text-anchor="middle">Head (B)</text>
+
+        <rect class="zone" id="upper-back" x="95" y="110" width="130" height="130" data-key="upper-back" data-state="0"></rect>
+        <text class="label" x="160" y="175" text-anchor="middle">Upper Back 9%</text>
+
+        <rect class="zone" id="lower-back" x="95" y="245" width="130" height="130" data-key="lower-back" data-state="0"></rect>
+        <text class="label" x="160" y="310" text-anchor="middle">Lower Back 9%</text>
+
+        <rect class="zone" id="armL-back" x="55" y="120" width="35" height="250" rx="18" ry="18" data-key="armL-back" data-state="0"></rect>
+        <text class="label" x="72" y="255" text-anchor="middle">L Arm (B)</text>
+
+        <rect class="zone" id="armR-back" x="230" y="120" width="35" height="250" rx="18" ry="18" data-key="armR-back" data-state="0"></rect>
+        <text class="label" x="247" y="255" text-anchor="middle">R Arm (B)</text>
+
+        <!-- Re-centered legs (back) -->
+        <rect class="zone" id="legL-back" x="110" y="360" width="60" height="300" rx="28" ry="28" data-key="legL-back" data-state="0"></rect>
+        <text class="label" x="140" y="520" text-anchor="middle">L Leg (B)</text>
+
+        <rect class="zone" id="legR-back" x="150" y="360" width="60" height="300" rx="28" ry="28" data-key="legR-back" data-state="0"></rect>
+        <text class="label" x="180" y="520" text-anchor="middle">R Leg (B)</text>
+      </svg>
+    </div>
+
+    <div class="legend">
+      <div class="key"><span class="sw none"></span><span>None</span></div>
+      <div class="key"><span class="sw half"></span><span>Half (½)</span></div>
+      <div class="key"><span class="sw full"></span><span>Full</span></div>
+      <span class="hint">Hint: Legs are 18% each in adults (9% front + 9% back). Pediatric head is larger.</span>
+    </div>
+  </div>
+
+  <!-- Results / Status -->
+  <div class="results">
+    <div class="kv"><span>Scenario Mode</span><b id="modeOut">Adult</b></div>
+    <div class="kv"><span>View</span><b id="viewOut">Front</b></div>
+    <div class="kv"><span>Burned Regions</span><b id="countOut">0</b></div>
+    <div class="kv"><span>Status</span><b id="statusOut">Scenario active — enter your answer</b></div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz">
+    <div class="grid">
+      <div>
+        <label for="answerVal">Your TBSA (%)</label>
+        <div class="row" style="margin-top:.25rem">
+          <input id="answerVal" type="number" step="0.25" placeholder="e.g., 18.0" style="width:140px">
+          <button id="submitBtn" class="secondary">Submit Answer</button>
+        </div>
+        <div class="hint" style="margin-top:.35rem">Acceptable tolerance: ±0.25%.</div>
+      </div>
+    </div>
+    <div id="feedback" class="feedback"></div>
+    <div id="riskBox" class="risks" style="display:none"></div>
+  </div>
+
+</div>
+
+<script>
+/* ==== Percent maps ==== */
+const PCT_ADULT = {
+  "head-front": 4.5, "head-back": 4.5,
+  "chest": 9, "abdomen": 9,
+  "upper-back": 9, "lower-back": 9,
+  "armL-front": 4.5, "armR-front": 4.5, "armL-back": 4.5, "armR-back": 4.5,
+  "legL-front": 9, "legR-front": 9, "legL-back": 9, "legR-back": 9,
+  "perineum": 1
+};
+const PCT_PEDS = {
+  "head-front": 9, "head-back": 9,
+  "chest": 9, "abdomen": 9,
+  "upper-back": 9, "lower-back": 9,
+  "armL-front": 4.5, "armR-front": 4.5, "armL-back": 4.5, "armR-back": 4.5,
+  "legL-front": 7, "legR-front": 7, "legL-back": 7, "legR-back": 7,
+  "perineum": 1
+};
+
+const NAME = {
+  "head-front": "Head (front)", "head-back": "Head (back)",
+  "chest": "Chest", "abdomen": "Abdomen",
+  "upper-back": "Upper back (9%)", "lower-back": "Lower back (9%)",
+  "armL-front": "Left arm (front 4.5%)", "armR-front": "Right arm (front 4.5%)",
+  "armL-back": "Left arm (back 4.5%)", "armR-back": "Right arm (back 4.5%)",
+  "legL-front": "Left leg (front 9% adult / 7% peds)",
+  "legR-front": "Right leg (front 9% adult / 7% peds)",
+  "legL-back": "Left leg (back 9% adult / 7% peds)",
+  "legR-back": "Right leg (back 9% adult / 7% peds)",
+  "perineum": "Perineum (1%)"
+};
+
+let mode = 'adult';       // 'adult' | 'peds'
+let scenario = null;      // { mode, selections:[{key, state, percent_each}], tbsa }
+let scenarioActive = false;
+let view = 'front';
+
+const els = {
+  svgWrap: document.getElementById('svgWrap'),
+  svgFront: document.getElementById('svgFront'),
+  svgBack: document.getElementById('svgBack'),
+  adultBtn: document.getElementById('adultBtn'),
+  pedsBtn: document.getElementById('pedsBtn'),
+  frontBtn: document.getElementById('frontBtn'),
+  backBtn: document.getElementById('backBtn'),
+  newScenarioBtn: document.getElementById('newScenarioBtn'),
+  resetBtn: document.getElementById('resetBtn'),
+  modeOut: document.getElementById('modeOut'),
+  viewOut: document.getElementById('viewOut'),
+  countOut: document.getElementById('countOut'),
+  statusOut: document.getElementById('statusOut'),
+  answerVal: document.getElementById('answerVal'),
+  submitBtn: document.getElementById('submitBtn'),
+  feedback: document.getElementById('feedback'),
+  riskBox: document.getElementById('riskBox')
+};
+
+function pctMap(which){ return which === 'peds' ? PCT_PEDS : PCT_ADULT; }
+
+function setMode(newMode){
+  if(scenarioActive) return; // lock while a scenario is active
+  mode = newMode;
+  [els.adultBtn, els.pedsBtn].forEach(b=>b.classList.add('secondary'));
+  (mode==='adult'?els.adultBtn:els.pedsBtn).classList.remove('secondary');
+  els.modeOut.textContent = mode==='adult' ? 'Adult' : 'Pediatric';
+  els.svgWrap.classList.toggle('peds', mode==='peds'); // smaller peds svg
+}
+
+function setView(newView){
+  view = newView;
+  if(view==='front'){ els.svgFront.style.display=''; els.svgBack.style.display='none'; }
+  else { els.svgFront.style.display='none'; els.svgBack.style.display=''; }
+  [els.frontBtn, els.backBtn].forEach(b=>b.classList.add('secondary'));
+  (view==='front'?els.frontBtn:els.backBtn).classList.remove('secondary');
+  els.viewOut.textContent = view==='front' ? 'Front' : 'Back';
+}
+
+/* Clear all highlighted burns & contribution tags */
+function clearAll(){
+  document.querySelectorAll('.zone').forEach(z=>z.setAttribute('data-state','0'));
+  document.querySelectorAll('.pct-tag').forEach(t=>t.remove());
+  els.countOut.textContent = '0';
+  els.riskBox.style.display='none';
+  els.riskBox.innerHTML='';
+}
+
+/* Random helpers */
+function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+/* Build a new randomized scenario using current mode; random difficulty (2–8 zones) */
+function newScenario(){
+  clearAll();
+  const modeUsed = mode;
+  const zones = Array.from(document.querySelectorAll('.zone'));
+  const count = randInt(2,8); // random difficulty
+  // sample unique zones
+  const pool = zones.map(z=>z.getAttribute('data-key'));
+  const selectedKeys = [];
+  while(selectedKeys.length < count && pool.length){
+    const idx = Math.floor(Math.random()*pool.length);
+    selectedKeys.push(pool.splice(idx,1)[0]);
+  }
+  // Apply states (70% full, 30% half)
+  selectedKeys.forEach(k=>{
+    const z = document.querySelector(`.zone[data-key="${k}"]`);
+    const st = Math.random() < 0.7 ? 1 : 0.5;
+    z.setAttribute('data-state', String(st));
+  });
+
+  // Compute TBSA for scenario
+  const map = pctMap(modeUsed);
+  let total = 0;
+  const selections = [];
+  selectedKeys.forEach(k=>{
+    const st = parseFloat(document.querySelector(`.zone[data-key="${k}"]`).getAttribute('data-state'));
+    const pct = map[k] || 0;
+    total += pct * st;
+    selections.push({key:k, state:st, percent_each:pct});
+  });
+  const tbsa = Math.round(total*100)/100;
+
+  scenario = { mode: modeUsed, selections, tbsa };
+  scenarioActive = true;
+  els.adultBtn.setAttribute('disabled',''); els.pedsBtn.setAttribute('disabled',''); // lock mode
+  els.statusOut.textContent = 'Scenario active — enter your answer';
+  els.countOut.textContent = String(selections.length);
+  els.feedback.innerHTML = '';
+  els.answerVal.value = '';
+  setView('front'); // start front
+}
+
+/* Reset to blank and immediately start a new random scenario */
+function resetAll(){
+  scenarioActive = false; scenario = null; clearAll();
+  els.adultBtn.removeAttribute('disabled'); els.pedsBtn.removeAttribute('disabled');
+  els.statusOut.textContent = 'Generating scenario...';
+  setTimeout(newScenario, 50);
+}
+
+/* Create % contribution tags on the corresponding SVG after submit */
+function annotateContributions(scn){
+  document.querySelectorAll('.pct-tag').forEach(t=>t.remove());
+  const frontSVG = els.svgFront;
+  const backSVG = els.svgBack;
+  const isFrontKey = (key)=>key.includes('front') || ['chest','abdomen','perineum'].includes(key);
+
+  scn.selections.forEach(sel=>{
+    const z = document.querySelector(`.zone[data-key="${sel.key}"]`);
+    if(!z) return;
+    const x = parseFloat(z.getAttribute('x')||'0');
+    const y = parseFloat(z.getAttribute('y')||'0');
+    const w = parseFloat(z.getAttribute('width')||'0');
+    const h = parseFloat(z.getAttribute('height')||'0');
+    const cx = x + w/2;
+    const cy = y + h/2;
+    const contrib = Math.round(sel.percent_each * sel.state * 100)/100;
+
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('class','pct-tag');
+    t.setAttribute('x', String(cx));
+    t.setAttribute('y', String(cy));
+    t.setAttribute('text-anchor','middle');
+    t.textContent = `+${contrib}%`;
+
+    const svg = isFrontKey(sel.key) ? frontSVG : backSVG;
+    svg.appendChild(t);
+  });
+}
+
+/* Breakdown for feedback */
+function breakdownHTML(scn){
+  const rows = scn.selections.map(sel=>{
+    const name = NAME[sel.key] || sel.key;
+    const mult = sel.state === 1 ? '× full' : '× ½';
+    const contrib = Math.round(sel.percent_each * sel.state * 100)/100;
+    return `<li>${name}: ${sel.percent_each}% ${mult} = <b>${contrib}%</b></li>`;
+  }).join('');
+  return `
+    <div style="margin:.4rem 0 .2rem">Breakdown (${scn.mode==='adult'?'Adult':'Pediatric'}):</div>
+    <ul style="margin:.2rem 0 .4rem 1.1rem">${rows}</ul>
+    <div><b>Total TBSA:</b> ${scn.tbsa}%</div>
+  `;
+}
+
+/* Risk advice based on involved regions */
+function riskAdviceHTML(scn){
+  const keys = scn.selections.map(s=>s.key);
+  const isSelected = (k)=> keys.includes(k);
+  const involves = {
+    faceHead: isSelected('head-front') || isSelected('head-back') || isSelected('chest'),
+    handsArms: isSelected('armL-front') || isSelected('armL-back') || isSelected('armR-front') || isSelected('armR-back'),
+    chestBack: isSelected('chest') || isSelected('upper-back') || isSelected('lower-back') || isSelected('abdomen'),
+    perineum: isSelected('perineum'),
+    legs: isSelected('legL-front') || isSelected('legL-back') || isSelected('legR-front') || isSelected('legR-back')
+  };
+
+  const items = [];
+  if(involves.faceHead){
+    items.push(`<li><b>Face/Head:</b> monitor closely for airway edema and inhalation injury (soot, hoarseness, singed hairs). Have a low threshold for advanced airway and early humidified O₂; consider rapid transport to burn center.</li>`);
+  }
+  if(involves.handsArms){
+    items.push(`<li><b>Hands/Arms:</b> high functional risk. Remove rings/watches early. Elevate to limit edema. Splint in position of function; urgent burn center consult if deep or circumferential.</li>`);
+  }
+  if(involves.chestBack){
+    items.push(`<li><b>Chest/Back/Torso:</b> circumferential or deep burns can restrict ventilation. Watch work of breathing and chest excursion; consider eschar risk and pain control; continuous SpO₂/EtCO₂ if available.</li>`);
+  }
+  if(involves.perineum){
+    items.push(`<li><b>Perineum:</b> high infection risk; meticulous hygiene and early specialty evaluation recommended.</li>`);
+  }
+  if(involves.legs){
+    items.push(`<li><b>Lower extremities:</b> elevate for edema, assess distal pulses/cap refill frequently; beware of compartment-like effects with circumferential burns.</li>`);
+  }
+  // General EMS pearls for any significant burn:
+  items.push(`<li><b>General:</b> stop the burning process, keep warm (prevent hypothermia), dry sterile dressings, analgesia, check tetanus history, and follow local protocols for fluids/transport destination (burn center criteria).</li>`);
+
+  return `
+    <h4>Clinical Risk Considerations</h4>
+    <ul>${items.join('')}</ul>
+  `;
+}
+
+/* Submit answer */
+function submitAnswer(){
+  if(!scenarioActive || !scenario){
+    els.feedback.innerHTML = `<div class="bad">Scenario is not ready. (Click New Scenario)</div>`;
+    return;
+  }
+  const v = parseFloat(els.answerVal.value);
+  if(isNaN(v)){
+    els.feedback.innerHTML = `<div class="bad">Enter a numeric TBSA value.</div>`;
+    return;
+  }
+  const tol = 0.25;
+  const correct = scenario.tbsa;
+  const diff = Math.abs(v - correct);
+
+  annotateContributions(scenario); // Visualize on SVG
+
+  if(diff <= tol){
+    els.feedback.innerHTML = `<div class="ok"><b>Correct!</b> Your answer ${v.toFixed(2)}% is within ±${tol}% of ${correct.toFixed(2)}%.</div>`;
+  }else{
+    els.feedback.innerHTML = `
+      <div class="bad"><b>Not quite.</b> Correct TBSA is ${correct.toFixed(2)}% (you entered ${v.toFixed(2)}%).</div>
+      ${breakdownHTML(scenario)}
+      <div class="hint">The <b>+% tags</b> on the diagram show each region’s contribution.</div>
+    `;
+  }
+
+  // Show risk advice for the involved areas
+  els.riskBox.innerHTML = riskAdviceHTML(scenario);
+  els.riskBox.style.display = 'block';
+}
+
+/* Wire UI */
+els.adultBtn.addEventListener('click', ()=>setMode('adult'));
+els.pedsBtn.addEventListener('click', ()=>setMode('peds'));
+els.frontBtn.addEventListener('click', ()=>setView('front'));
+els.backBtn.addEventListener('click', ()=>setView('back'));
+els.newScenarioBtn.addEventListener('click', newScenario);
+els.resetBtn.addEventListener('click', resetAll);
+els.submitBtn.addEventListener('click', submitAnswer);
+
+/* Init: default to Adult/Front and auto-start a scenario */
+setMode('adult'); setView('front');
+resetAll();
+</script>
+</body>
+</html>
+
     --brand:#007B8A; --bg:#f0f8ff; --ink:#123; --card:#ffffff; --muted:#6b7c85;
     --chip:#e8f4f6; --full:#d9534f; --half:#f0ad4e; --none:#c8d7df; --stroke:#233;
   }
