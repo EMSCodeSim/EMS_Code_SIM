@@ -2,23 +2,45 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<!-- Prevent mobile zooming on focus -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
 <title>Rule of Nines — TBSA Burn Quiz</title>
 <style>
   :root{
-    --brand:#007B8A; --bg:#f0f8ff; --ink:#123; --card:#ffffff; --muted:#6b7c85;
+    --brand:#0a7c86;
+    --brand-ink:#ffffff;
+    --brand-active:#085e65;
+    --bg:#f0f8ff; --ink:#123; --card:#ffffff; --muted:#6b7c85;
     --chip:#e8f4f6; --full:#d9534f; --half:#f0ad4e; --none:#c8d7df; --stroke:#233;
+    --focus: #1aa3b0;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;display:flex;flex-direction:column}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  body{min-height:100vh; display:flex; flex-direction:column; -webkit-text-size-adjust:100%}
+
   .wrap{width:min(1100px,100%);margin:0 auto;padding:1rem;display:grid;gap:1rem}
+
   .controls,.results,.legend,.quiz{background:var(--card);border-radius:.75rem;padding:1rem;box-shadow:0 1px 2px rgba(0,0,0,.05)}
   .row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
   .seg{display:flex;gap:.5rem;flex-wrap:wrap}
-  button,input{border:1px solid #cbd5db;border-radius:.6rem;padding:.6rem .8rem;background:#fff;color:var(--ink);outline:0}
-  button{background:var(--brand);color:#fff;border:none;cursor:pointer;font-weight:600}
-  button.secondary{background:#fff;color:var(--brand);border:1px solid var(--brand)}
-  button.danger{background:#9f2f2f}
+
+  /* Buttons: unified color; highlight active view button */
+  .btn{
+    appearance:none; border:none; border-radius:.65rem; padding:.7rem 1rem;
+    background:var(--brand); color:var(--brand-ink); font-weight:700; font-size:16px; /* >=16px stops iOS zoom */
+    cursor:pointer; line-height:1; touch-action:manipulation;
+    box-shadow:0 1px 1px rgba(0,0,0,.06);
+  }
+  .btn:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
+  .btn.active{background:var(--brand-active)}
+  .btn.danger{background:#9f2f2f}
+
+  /* Inputs: keep font-size >=16px to prevent iOS zoom */
+  input{
+    border:1px solid #cbd5db;border-radius:.65rem;padding:.7rem .9rem;background:#fff;color:var(--ink);
+    font-size:16px; /* important for mobile */
+    width:160px; text-align:center; touch-action:manipulation;
+  }
 
   .board{background:var(--card);border-radius:.75rem;padding:.5rem;display:grid;justify-items:center;box-shadow:0 1px 2px rgba(0,0,0,.05)}
   .svg-wrap{width:min(520px,100%);height:auto;position:relative;transition:transform .15s ease}
@@ -32,7 +54,7 @@
   .zone[data-state="1"]{fill:var(--full);stroke:var(--stroke)}
 
   /* Percent contribution tags (hidden until submit) */
-  .pct-tag{display:none;font-size:.72rem;fill:#000;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;font-weight:700;opacity:.95}
+  .pct-tag{display:none;font-size:.8rem;fill:#000;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round;font-weight:700;opacity:.95}
 
   .legend{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
   .legend .key{display:flex;align-items:center;gap:.4rem}
@@ -42,7 +64,7 @@
   .sw.full{background:var(--full)}
 
   .results{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));align-items:center}
-  .kv{background:var(--chip);padding:.8rem;border-radius:.6rem;display:flex;justify-content:space-between;gap:.5rem;align-items:center}
+  .kv{background:var(--chip);padding:.8rem;border-radius:.65rem;display:flex;justify-content:space-between;gap:.5rem;align-items:center}
   .kv b{font-size:1.05rem}
 
   .quiz .grid{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
@@ -51,7 +73,7 @@
   .bad{color:#9f2f2f}
   .hint{color:#6b7c85}
 
-  .risks{margin-top:.6rem;background:#fbfcfe;border:1px solid #e1ebf0;border-radius:.6rem;padding:.6rem}
+  .risks{margin-top:.6rem;background:#fbfcfe;border:1px solid #e1ebf0;border-radius:.65rem;padding:.6rem}
   .risks h4{margin:.2rem 0 .4rem;font-size:1rem}
   .risks ul{margin:.2rem 0 .2rem 1.1rem}
 
@@ -71,14 +93,14 @@
     <div class="kv"><span>Status</span><b id="statusOut">Scenario active — enter your answer</b></div>
   </div>
 
-  <!-- Buttons moved BELOW patient info (and above the model) -->
+  <!-- Buttons BELOW patient info, unified color, active view highlighted -->
   <div class="controls">
     <div class="row" style="justify-content:flex-end">
       <div class="seg">
-        <button id="frontBtn" class="secondary">Front</button>
-        <button id="backBtn"  class="secondary">Back</button>
-        <button id="newScenarioBtn">New Scenario</button>
-        <button id="resetBtn" class="danger">Reset</button>
+        <button id="frontBtn" class="btn">Front</button>
+        <button id="backBtn"  class="btn">Back</button>
+        <button id="newScenarioBtn" class="btn">New Scenario</button>
+        <button id="resetBtn" class="btn danger">Reset</button>
       </div>
     </div>
   </div>
@@ -96,9 +118,9 @@
           <rect class="zone" data-key="perineum"   x="150" y="340" width="20"  height="16"  rx="5" ry="5"></rect>
           <rect class="zone" data-key="armL-front" x="55"  y="120" width="35"  height="250" rx="18" ry="18"></rect>
           <rect class="zone" data-key="armR-front" x="230" y="120" width="35"  height="250" rx="18" ry="18"></rect>
-          <!-- legs centered under torso, slight gap, a bit shorter -->
-          <rect class="zone" data-key="legL-front" x="95"  y="370" width="60"  height="280" rx="28" ry="28"></rect>
-          <rect class="zone" data-key="legR-front" x="165" y="370" width="60"  height="280" rx="28" ry="28"></rect>
+          <!-- centered, not touching, AND slightly shorter (y +10, height -20) -->
+          <rect class="zone" data-key="legL-front" x="100" y="380" width="60"  height="260" rx="28" ry="28"></rect>
+          <rect class="zone" data-key="legR-front" x="170" y="380" width="60"  height="260" rx="28" ry="28"></rect>
         </g>
 
         <!-- BACK -->
@@ -108,9 +130,9 @@
           <rect class="zone" data-key="lower-back"  x="95"  y="245" width="130" height="130"></rect>
           <rect class="zone" data-key="armL-back"   x="55"  y="120" width="35"  height="250" rx="18" ry="18"></rect>
           <rect class="zone" data-key="armR-back"   x="230" y="120" width="35"  height="250" rx="18" ry="18"></rect>
-          <!-- legs centered under torso, slight gap, a bit shorter -->
-          <rect class="zone" data-key="legL-back"   x="95"  y="370" width="60"  height="280" rx="28" ry="28"></rect>
-          <rect class="zone" data-key="legR-back"   x="165" y="370" width="60"  height="280" rx="28" ry="28"></rect>
+          <!-- centered, not touching, AND slightly shorter -->
+          <rect class="zone" data-key="legL-back"   x="100" y="380" width="60"  height="260" rx="28" ry="28"></rect>
+          <rect class="zone" data-key="legR-back"   x="170" y="380" width="60"  height="260" rx="28" ry="28"></rect>
         </g>
       </svg>
 
@@ -124,9 +146,9 @@
           <rect class="zone" data-key="perineum"   x="150" y="322" width="20"  height="16" rx="5" ry="5"></rect>
           <rect class="zone" data-key="armL-front" x="70"  y="120" width="28"  height="230" rx="14" ry="14"></rect>
           <rect class="zone" data-key="armR-front" x="222" y="120" width="28"  height="230" rx="14" ry="14"></rect>
-          <!-- legs centered under torso, slight gap, a bit shorter -->
-          <rect class="zone" data-key="legL-front" x="99"  y="370" width="56"  height="280" rx="26" ry="26"></rect>
-          <rect class="zone" data-key="legR-front" x="165" y="370" width="56"  height="280" rx="26" ry="26"></rect>
+          <!-- centered, not touching, AND slightly shorter -->
+          <rect class="zone" data-key="legL-front" x="104" y="380" width="56"  height="260" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="legR-front" x="170" y="380" width="56"  height="260" rx="26" ry="26"></rect>
         </g>
 
         <!-- BACK -->
@@ -136,9 +158,9 @@
           <rect class="zone" data-key="lower-back"  x="105" y="235" width="110" height="85"></rect>
           <rect class="zone" data-key="armL-back"   x="70"  y="120" width="28"  height="230" rx="14" ry="14"></rect>
           <rect class="zone" data-key="armR-back"   x="222" y="120" width="28"  height="230" rx="14" ry="14"></rect>
-          <!-- legs centered under torso, slight gap, a bit shorter -->
-          <rect class="zone" data-key="legL-back"   x="99"  y="370" width="56"  height="280" rx="26" ry="26"></rect>
-          <rect class="zone" data-key="legR-back"   x="165" y="370" width="56"  height="280" rx="26" ry="26"></rect>
+          <!-- centered, not touching, AND slightly shorter -->
+          <rect class="zone" data-key="legL-back"   x="104" y="380" width="56"  height="260" rx="26" ry="26"></rect>
+          <rect class="zone" data-key="legR-back"   x="170" y="380" width="56"  height="260" rx="26" ry="26"></rect>
         </g>
       </svg>
     </div>
@@ -157,8 +179,8 @@
       <div>
         <label for="answerVal">Your TBSA (%)</label>
         <div class="row" style="margin-top:.25rem">
-          <input id="answerVal" type="number" step="0.25" placeholder="e.g., 18.0" style="width:140px">
-          <button id="submitBtn" class="secondary">Submit Answer</button>
+          <input id="answerVal" type="number" step="0.25" placeholder="e.g., 18.0">
+          <button id="submitBtn" class="btn">Submit Answer</button>
         </div>
         <div class="hint" style="margin-top:.35rem">Tolerance: ±0.25%.</div>
       </div>
@@ -234,7 +256,7 @@ function setPatientMode(newMode){
   else { els.adultSVG.style.display = 'none'; els.pedsSVG.style.display = ''; }
 }
 
-/* Front/Back view switch (applies class to active svg) */
+/* Front/Back view switch (applies class to active svg) + highlight active button */
 function setView(newView){
   view = newView;
   els.viewOut.textContent = (view==='front' ? 'Front' : 'Back');
@@ -242,7 +264,11 @@ function setView(newView){
   svg.classList.remove('front-only','back-only');
   svg.classList.add(view==='front' ? 'front-only' : 'back-only');
 
-  // Only show % tags that belong to the current side
+  // highlight active
+  els.frontBtn.classList.toggle('active', view==='front');
+  els.backBtn.classList.toggle('active',  view==='back');
+
+  // Show % tags only for the current side (after submit)
   document.querySelectorAll('.pct-tag').forEach(t=>{
     const side = t.getAttribute('data-side') || 'front';
     t.style.display = (side === view) ? 'block' : 'none';
@@ -440,14 +466,15 @@ function submitAnswer(){
 }
 
 /* Wire UI */
-document.getElementById('frontBtn').addEventListener('click', ()=>setView('front'));
-document.getElementById('backBtn') .addEventListener('click', ()=>setView('back'));
-document.getElementById('newScenarioBtn').addEventListener('click', newScenario);
-document.getElementById('resetBtn').addEventListener('click', resetAll);
+els.frontBtn.addEventListener('click', ()=>setView('front'));
+els.backBtn .addEventListener('click', ()=>setView('back'));
+els.newScenarioBtn.addEventListener('click', newScenario);
+els.resetBtn.addEventListener('click', resetAll);
 document.getElementById('submitBtn').addEventListener('click', submitAnswer);
 
-/* Init: auto-start random scenario */
+/* Init: auto-start random scenario + set initial active button */
 resetAll();
+els.frontBtn.classList.add('active');
 </script>
 </body>
 </html>
