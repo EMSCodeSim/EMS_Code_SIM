@@ -1,94 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Capnography Simulator (EMT-B)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-  <style>
-    :root{
-      --bg:#f0f8ff; --card:#ffffff; --ink:#0c2a3a; --muted:#5d7a88;
-      --brand:#007BFF; --teal:#007B8A; --ok:#0a8754; --warn:#e68a00; --bad:#d7263d;
-      --radius:18px; --shadow:0 6px 20px rgba(0,0,0,.12);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; background:var(--bg); color:var(--ink);
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans","Helvetica Neue",sans-serif;
-      -webkit-text-size-adjust:100%;
-    }
-    header{position:sticky; top:0; z-index:5; background:var(--teal); color:#fff; padding:12px 16px; box-shadow:var(--shadow); display:flex; align-items:center; justify-content:space-between; gap:12px}
-    header h1{margin:0; font-size:20px}
-    .eduBtn{background:#fff; color:#0b3a5a; border:1px solid #cfe7ef; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600}
-    .eduBtn:hover{background:#f2fbff}
-    .wrap{ max-width:980px; margin:18px auto; padding:12px; display:grid; gap:14px }
-    .grid{ display:grid; grid-template-columns:1fr; gap:14px }
-    @media(min-width:960px){ .grid{ grid-template-columns: 1.1fr .9fr } }
-    .card{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px }
-    h2{ margin:0 0 8px 0; font-size:20px }
-    .scenario{ font-size:16px; color:#0b2c3a; line-height:1.55 }
-    .tiny{ font-size:12px; color:var(--muted) }
-    .badge{ font-size:12px; display:inline-block; padding:2px 8px; border-radius:999px; background:#eaf7ff; color:#0b2c3a; border:1px solid #cfe7ef }
+<meta charset="utf-8" />
+<title>Capnography Simulator (EMT-B) — Stable & Complete</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<style>
+  :root{
+    --bg:#f0f8ff; --card:#ffffff; --ink:#0c2a3a; --muted:#5d7a88;
+    --brand:#007BFF; --teal:#007B8A; --ok:#0a8754; --warn:#e68a00; --bad:#d7263d;
+    --radius:18px; --shadow:0 6px 20px rgba(0,0,0,.12);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans","Helvetica Neue",sans-serif;
+    -webkit-text-size-adjust:100%;
+  }
+  header{position:sticky; top:0; z-index:5; background:var(--teal); color:#fff; padding:12px 16px; box-shadow:var(--shadow); display:flex; align-items:center; justify-content:space-between; gap:12px}
+  header h1{margin:0; font-size:20px}
+  .eduBtn{background:#fff; color:#0b3a5a; border:1px solid #cfe7ef; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600}
+  .eduBtn:hover{background:#f2fbff}
 
-    .device{ display:grid; gap:12px; grid-template-rows:auto auto 1fr auto }
-    .screen{ background:#0b2530; color:#e8ffff; border-radius:14px; padding:12px 14px; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.08) }
-    .status-strip{ display:flex; justify-content:space-between; gap:8px; color:#b5dee2; font-size:13px; margin-bottom:6px; align-items:center }
-    .pill{ display:inline-flex; gap:8px; padding:6px 10px; border-radius:999px; background:#143543; color:#c9ecf5; border:1px solid #2a5b6e; align-items:center }
-    .sig-bars{ display:inline-flex; gap:2px; align-items:flex-end; height:12px }
-    .sig-bars span{ width:3px; background:#47d1ff; opacity:.4; border-radius:2px }
-    .sig-bars span.on{ opacity:1 }
+  .wrap{ max-width:980px; margin:18px auto; padding:12px; display:grid; gap:14px }
+  .grid{ display:grid; grid-template-columns:1fr; gap:14px }
+  @media(min-width:960px){ .grid{ grid-template-columns: 1.1fr .9fr } }
 
-    .big-readings{ display:grid; grid-template-columns: repeat(3,1fr); gap:10px }
-    .reading{ display:flex; justify-content:center; align-items:center; gap:10px; background:#102d3a; border-radius:12px; padding:10px 12px; border:1px solid rgba(255,255,255,.06); min-height:72px }
-    .reading .label{ font-size:13px; color:#9fd7e0; text-transform:uppercase; letter-spacing:.8px }
-    .reading .value{ font-size:32px; font-weight:800; line-height:1 }
-    .reading .units{ font-size:14px; color:#9fd7e0 }
-    .et .value{ color:#6fffb0 } .rr .value{ color:#47d1ff } .wf .value{ color:#ffd166; font-size:18px }
+  .card{ background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px }
+  h2{ margin:0 0 8px 0; font-size:20px }
+  .scenario{ font-size:16px; color:#0b2c3a; line-height:1.55 }
+  .tiny{ font-size:12px; color:var(--muted) }
+  .badge{ font-size:12px; display:inline-block; padding:2px 8px; border-radius:999px; background:#eaf7ff; color:#0b2c3a; border:1px solid #cfe7ef }
 
-    .pleth-wrap{ background:#071a22; border-radius:12px; padding:8px; border:1px solid rgba(255,255,255,.06) }
-    canvas#capno{ width:100%; height:160px; display:block }
-    .alert{ position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:rgba(11,37,48,.66); color:#fff; font-weight:700; text-transform:uppercase; letter-spacing:.8px }
-    .alert.show{ display:flex }
+  .device{ display:grid; gap:12px; grid-template-rows:auto auto 1fr auto }
+  .screen{ background:#0b2530; color:#e8ffff; border-radius:14px; padding:12px 14px; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.08) }
+  .status-strip{ display:flex; justify-content:space-between; gap:8px; color:#b5dee2; font-size:13px; margin-bottom:6px; align-items:center }
+  .pill{ display:inline-flex; gap:8px; padding:6px 10px; border-radius:999px; background:#143543; color:#c9ecf5; border:1px solid #2a5b6e; align-items:center }
+  .sig-bars{ display:inline-flex; gap:2px; align-items:flex-end; height:12px }
+  .sig-bars span{ width:3px; background:#47d1ff; opacity:.4; border-radius:2px }
+  .sig-bars span.on{ opacity:1 }
 
-    .choices{ display:grid; gap:8px; margin-top:8px }
-    button.choice{
-      font-size:16px; padding:12px; border-radius:12px; border:1px solid #cfe7ef; background:#fff; color:var(--ink);
-      text-align:left; cursor:pointer; touch-action:manipulation; box-shadow:0 2px 8px rgba(0,0,0,.06);
-    }
-    button.choice:hover{ border-color:#a8d5e6 }
-    button.choice.correct{ border-color:#1bb56d; background:#ecfff6 }
-    button.choice.incorrect{ border-color:#ffb3b3; background:#fff0f0 }
+  .big-readings{ display:grid; grid-template-columns: repeat(3,1fr); gap:10px }
+  .reading{ display:flex; justify-content:center; align-items:center; gap:10px; background:#102d3a; border-radius:12px; padding:10px 12px; border:1px solid rgba(255,255,255,.06); min-height:72px }
+  .reading .label{ font-size:13px; color:#9fd7e0; text-transform:uppercase; letter-spacing:.8px }
+  .reading .value{ font-size:32px; font-weight:800; line-height:1 }
+  .reading .units{ font-size:14px; color:#9fd7e0 }
+  .et .value{ color:#6fffb0 } .rr .value{ color:#47d1ff } .wf .value{ color:#ffd166; font-size:18px }
 
-    .explain{ margin-top:10px; padding:12px; border-radius:12px; border:1px solid #dbeff6; background:#f6fcff; color:#073042 }
-    .next{ display:inline-flex; gap:10px; align-items:center; background:var(--brand); color:#fff; border:none; border-radius:12px; padding:12px 14px; cursor:pointer; font-weight:700; margin-top:10px; box-shadow:0 4px 12px rgba(0,123,255,.25) }
+  .pleth-wrap{ background:#071a22; border-radius:12px; padding:8px; border:1px solid rgba(255,255,255,.06) }
+  canvas#capno{ width:100%; height:160px; display:block; }
 
-    /* BVM control */
-    .bvm-box{ display:none; margin-top:10px; padding:12px; border-radius:12px; border:1px solid #dbeff6; background:#f6fcff; color:#073042 }
-    .bvm-row{ display:flex; flex-wrap:wrap; gap:10px; align-items:center }
-    .bvm-row input[type="range"]{ width:260px; }
-    .bvm-chip{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; background:#eef6ff; border-radius:999px; font-size:13px; color:#0b3a5a; border:1px solid #d7ebff }
+  .alert{ position:absolute; inset:0; display:none; align-items:center; justify-content:center; background:rgba(11,37,48,.66); color:#fff; font-weight:700; text-transform:uppercase; letter-spacing:.8px }
+  .alert.show{ display:flex }
+  .alert.notice{ background:rgba(11,37,48,.40); color:#ffd166; font-weight:700; text-align:center; line-height:1.4 }
 
-    .footer-note{ text-align:center; font-size:12px; color:var(--muted); padding:4px 0 10px }
+  .choices{ display:grid; gap:8px; margin-top:8px }
+  button.choice{
+    font-size:16px; padding:12px; border-radius:12px; border:1px solid #cfe7ef; background:#fff; color:var(--ink);
+    text-align:left; cursor:pointer; touch-action:manipulation; box-shadow:0 2px 8px rgba(0,0,0,.06);
+  }
+  button.choice:hover{ border-color:#a8d5e6 }
+  button.choice.correct{ border-color:#1bb56d; background:#ecfff6 }
+  button.choice.incorrect{ border-color:#ffb3b3; background:#fff0f0 }
 
-    /* --- EDUCATION MODAL --- */
-    .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.45); z-index:50; padding:16px }
-    .modal.show{ display:flex }
-    .modal-card{ max-width:980px; width:100%; max-height:90vh; overflow:auto; background:#fff; border-radius:16px; box-shadow:var(--shadow); padding:16px 16px 2px 16px }
-    .modal-header{ display:flex; align-items:center; justify-content:space-between; gap:10px; position:sticky; top:0; background:#fff; padding:6px 0 10px 0 }
-    .modal-header h3{ margin:0; font-size:18px; color:#0b2c3a }
-    .close{ background:#0b2c3a; color:#fff; border:none; border-radius:10px; padding:8px 12px; cursor:pointer; font-weight:700 }
-    .edu-grid{ display:grid; gap:12px; grid-template-columns:1fr; }
-    @media(min-width:860px){ .edu-grid{ grid-template-columns: 1.1fr .9fr } }
-    .edu-card{ border:1px solid #e6eef5; border-radius:12px; padding:12px; background:#fcfeff }
-    .edu-card h4{ margin:0 0 6px 0; font-size:16px; color:#093246 }
-    .edu-list{ margin:6px 0 0 0; padding-left:18px }
-    .edu-list li{ margin:4px 0 }
-    .gallery{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px }
-    @media(min-width:640px){ .gallery{ grid-template-columns:repeat(3,1fr) } }
-    .mini{ background:#08222c; border:1px solid #dbeff6; border-radius:10px; padding:8px }
-    .mini canvas{ width:100%; height:100px; display:block }
-    .mini label{ display:block; font-size:12px; color:#093246; margin-top:6px; text-align:center }
-  </style>
+  .explain{ margin-top:10px; padding:12px; border-radius:12px; border:1px solid #dbeff6; background:#f6fcff; color:#073042 }
+  .next{ display:inline-flex; gap:10px; align-items:center; background:var(--brand); color:#fff; border:none; border-radius:12px; padding:12px 14px; cursor:pointer; font-weight:700; margin-top:10px; box-shadow:0 4px 12px rgba(0,123,255,.25) }
+
+  /* BVM control */
+  .bvm-box{ display:none; margin-top:10px; padding:12px; border-radius:12px; border:1px solid #dbeff6; background:#f6fcff; color:#073042 }
+  .bvm-row{ display:flex; flex-wrap:wrap; gap:10px; align-items:center }
+  .bvm-row input[type="range"]{ width:260px; }
+  .bvm-chip{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; background:#eef6ff; border-radius:999px; font-size:13px; color:#0b3a5a; border:1px solid #d7ebff }
+
+  .footer-note{ text-align:center; font-size:12px; color:var(--muted); padding:4px 0 10px }
+
+  /* --- EDUCATION MODAL --- */
+  .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.45); z-index:50; padding:16px }
+  .modal.show{ display:flex }
+  .modal-card{ max-width:980px; width:100%; max-height:90vh; overflow:auto; background:#fff; border-radius:16px; box-shadow:var(--shadow); padding:16px 16px 2px 16px }
+  .modal-header{ display:flex; align-items:center; justify-content:space-between; gap:10px; position:sticky; top:0; background:#fff; padding:6px 0 10px 0 }
+  .modal-header h3{ margin:0; font-size:18px; color:#0b2c3a }
+  .close{ background:#0b2c3a; color:#fff; border:none; border-radius:10px; padding:8px 12px; cursor:pointer; font-weight:700 }
+  .edu-grid{ display:grid; gap:12px; grid-template-columns:1fr; }
+  @media(min-width:860px){ .edu-grid{ grid-template-columns: 1.1fr .9fr } }
+  .edu-card{ border:1px solid #e6eef5; border-radius:12px; padding:12px; background:#fcfeff }
+  .edu-card h4{ margin:0 0 6px 0; font-size:16px; color:#093246 }
+  .edu-list{ margin:6px 0 0 0; padding-left:18px }
+  .edu-list li{ margin:4px 0 }
+  .gallery{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px }
+  @media(min-width:640px){ .gallery{ grid-template-columns:repeat(3,1fr) } }
+  .mini{ background:#08222c; border:1px solid #dbeff6; border-radius:10px; padding:8px }
+  .mini canvas{ width:100%; height:100px; display:block }
+  .mini label{ display:block; font-size:12px; color:#093246; margin-top:6px; text-align:center }
+</style>
 </head>
 <body>
 <header>
@@ -137,9 +141,13 @@
           <canvas id="capno" width="900" height="160" aria-label="Capnogram waveform"></canvas>
         </div>
         <div class="alert" id="alert">Acquiring…</div>
+        <div class="alert notice" id="noTrace" style="display:none">
+          CO₂ TRACE ABSENT<br><span style="font-weight:400; font-size:12px; letter-spacing:0; opacity:.9">ETCO₂ below display threshold</span>
+        </div>
       </div>
 
       <div id="choicesBox" class="choices" aria-live="polite"></div>
+
       <div id="bvmBox" class="bvm-box">
         <div class="bvm-row">
           <strong>BVM Ventilation Rate:</strong>
@@ -148,6 +156,7 @@
           <span class="tiny">Adult target: 10–12/min • Too fast ↓ETCO₂ (hypocapnia) • Too slow ↑ETCO₂ (hypercapnia)</span>
         </div>
       </div>
+
       <div id="explainBox" class="explain" style="display:none"></div>
       <button id="nextBtn" class="next" style="display:none">🔀 Next Random Scenario</button>
     </div>
@@ -167,19 +176,19 @@
         <h4>How it works</h4>
         <ul class="edu-list">
           <li><b>Capnography</b> measures CO₂ in exhaled air over time; <b>ETCO₂</b> is the peak at end-exhalation.</li>
-          <li>Reflects <b>ventilation</b> (CO₂ removal), <b>perfusion</b> (blood flow), and <b>metabolism</b> (CO₂ production).</li>
+          <li>Reflects <b>ventilation</b>, <b>perfusion</b>, and <b>metabolism</b>.</li>
           <li>Use it to confirm airway device placement, titrate BVM rate, monitor CPR quality, and recognize ROSC.</li>
         </ul>
         <h4 style="margin-top:10px">Normal readings</h4>
         <ul class="edu-list">
-          <li>Awake adult: <b>ETCO₂ ~ 35–45 mmHg</b> with a rectangular “square” waveform.</li>
-          <li>During CPR: ETCO₂ often <b>10–20 mmHg</b>. A sudden sustained rise toward the 30s may indicate <b>ROSC</b>.</li>
-          <li>Adult BVM target: <b>10–12 breaths/min</b>. Avoid hyperventilation.</li>
+          <li>Awake adult: <b>35–45 mmHg</b> with a square waveform.</li>
+          <li>CPR: often <b>10–20 mmHg</b>; a sustained jump toward the 30s suggests <b>ROSC</b>.</li>
+          <li>Adult BVM target: <b>10–12/min</b>. Avoid hyperventilation.</li>
         </ul>
         <h4 style="margin-top:10px">High vs Low ETCO₂</h4>
         <ul class="edu-list">
-          <li><b>High</b> ETCO₂: hypoventilation (slow/ineffective BVM), increased CO₂ production (fever, seizures), <b>ROSC</b>/improved perfusion, or <b>rebreathing/equipment fault</b>.</li>
-          <li><b>Low</b> ETCO₂: hyperventilation, <b>poor perfusion</b> (shock/PE/arrest), <b>low-quality CPR</b>, prolonged downtime, or esophageal/failed airway (near-zero, flatline).</li>
+          <li><b>High</b>: hypoventilation, increased CO₂ production (fever/seizures), ROSC/improved perfusion, <b>rebreathing/equipment fault</b>.</li>
+          <li><b>Low</b>: hyperventilation, <b>poor perfusion</b> (shock/PE/arrest), <b>low-quality CPR</b>, prolonged downtime, or esophageal/failed airway (near-zero, flatline).</li>
         </ul>
       </div>
 
@@ -193,21 +202,16 @@
           <div class="mini"><canvas id="mini-hyper" width="260" height="100"></canvas><label>Hyperventilation (low ETCO₂)</label></div>
           <div class="mini"><canvas id="mini-hypo" width="260" height="100"></canvas><label>Hypoventilation (high ETCO₂)</label></div>
         </div>
-        <ul class="edu-list" style="margin-top:10px">
-          <li><b>Shark-fin</b>: slanted Phase III (obstructive disease; asthma/COPD).</li>
-          <li><b>Rebreathing</b>: baseline never returns to zero (faulty valve or inadequate fresh gas flow).</li>
-          <li><b>Flatline</b>: near-zero ETCO₂ (esophageal/failed airway or no perfusion).</li>
-        </ul>
       </div>
 
       <div class="edu-card">
         <h4>EMT-B decision cues</h4>
         <ul class="edu-list">
-          <li><b>Inadequate breathing</b> (slow/shallow/altered): Ventilate with <b>BVM + O₂</b>, target 10–12/min; titrate by ETCO₂.</li>
-          <li><b>Bronchospasm</b>: Assist patient’s prescribed bronchodilator; consider O₂; BVM only if ventilation fails.</li>
-          <li><b>Airway device check</b>: Persistent near-zero ETCO₂ → suspect esophageal/failed placement; remove and BVM.</li>
-          <li><b>CPR</b>: Use ETCO₂ to gauge compression quality and recognize <b>ROSC</b>. Avoid hyperventilation.</li>
-          <li><b>Rebreathing</b>: Elevated baseline → fix/replace equipment/valve instead of bagging faster.</li>
+          <li><b>Inadequate breathing</b>: BVM + O₂ 10–12/min; titrate by ETCO₂.</li>
+          <li><b>Bronchospasm</b>: Assist prescribed bronchodilator; BVM only if ventilation fails.</li>
+          <li><b>Airway device</b>: Near-zero ETCO₂ → remove suspect device, OPA/NPA, BVM.</li>
+          <li><b>CPR</b>: Use ETCO₂ to gauge compression quality & recognize ROSC; avoid hyperventilation.</li>
+          <li><b>Rebreathing</b>: Elevated baseline → fix/replace equipment/valve.</li>
         </ul>
       </div>
     </div>
@@ -215,484 +219,510 @@
 </div>
 
 <script>
-  // --- Shortcuts ---
-  const $ = s => document.querySelector(s);
-  const cap = $('#capno'); const ctx = cap.getContext('2d');
-  const etco2El = $('#etco2Val'); const rrEl = $('#rrVal'); const shapeLabel = $('#shapeLabel');
-  const sigBarsEl = $('#sigBars'); const alertEl = $('#alert');
-  const scenarioText = $('#scenarioText'); const choicesBox = $('#choicesBox');
-  const explainBox = $('#explainBox'); const nextBtn = $('#nextBtn');
-  const bvmBox = $('#bvmBox'); const bvmRate = $('#bvmRate'); const bvmRateLbl = $('#bvmRateLbl');
+/* ================== CONFIG / STABILITY GUARDS ================== */
+const NO_TRACE_THRESHOLD = 5;            // hide trace if ETCO2 < 5 mmHg
+const NO_TRACE_HYSTERESIS = 1;           // require >6 mmHg to re-show
+const NO_TRACE_DEBOUNCE_MS = 350;        // must stay low/high this long to toggle
+const UI_THROTTLE_MS = 100;              // update numbers ~10 Hz
+const ETCO2_SMOOTH_ALPHA = 0.25;         // low-pass smoothing for display value
 
-  // Education modal
-  const eduBtn = $('#eduBtn'); const eduModal = $('#eduModal'); const closeEdu = $('#closeEdu');
+/* ================== ELEMENTS ================== */
+const $ = s => document.querySelector(s);
+const cap = $('#capno'); const ctx = cap.getContext('2d');
+const etco2El = $('#etco2Val'); const rrEl = $('#rrVal'); const shapeLabel = $('#shapeLabel');
+const sigBarsEl = $('#sigBars'); const alertEl = $('#alert'); const noTraceEl = $('#noTrace');
+const scenarioText = $('#scenarioText'); const choicesBox = $('#choicesBox');
+const explainBox = $('#explainBox'); const nextBtn = $('#nextBtn');
+const bvmBox = $('#bvmBox'); const bvmRate = $('#bvmRate'); const bvmRateLbl = $('#bvmRateLbl');
+const eduBtn = $('#eduBtn'); const eduModal = $('#eduModal'); const closeEdu = $('#closeEdu');
 
-  // --- Helpers ---
-  const clamp = (v,a,b)=> Math.max(a, Math.min(b,v));
-  const randInt = (a,b)=> Math.floor(Math.random()*(b-a+1))+a;
-  function setSignal(n){ const bars = sigBarsEl.querySelectorAll('span'); bars.forEach((b,i)=> b.classList.toggle('on', i < n)); }
+/* ================== HELPERS ================== */
+const clamp = (v,a,b)=> Math.max(a, Math.min(b,v));
+const randInt = (a,b)=> Math.floor(Math.random()*(b-a+1))+a;
+function setSignal(n){ sigBarsEl.querySelectorAll('span').forEach((b,i)=> b.classList.toggle('on', i < n)); }
 
-  // --- Capnogram engine state ---
-  const state = {
-    etco2: null, targetEtco2: null, rr: null, signal:3,
-    shape: 'normal', // 'normal' | 'sharkfin' | 'rebreathing' | 'flat' | 'rosclive'
-    baseline: 0,     // inspiratory mmHg (rebreathing elevates)
-    plateauTilt: 0,  // slope of phase III (shark-fin)
-    upSlope: 1.1,    // speed of phase II upstroke
-    quality: 1,      // 0..1, affects noise/clarity
-    // BVM modeling
-    onBvm:false,
-    bvmK:null,       // ETCO2 ≈ K / RR^alpha
-    bvmAlpha:0.95,   // exponent
-    // graph scroll
-    phase: 0,
-    readingShown:false, transitioning:false
-  };
+/* ================== STATE ================== */
+const state = {
+  etco2: null,      // logical ETCO2 (mmHg)
+  rr: null,         // breaths/min
+  targetEtco2: null,
+  // waveform parameters
+  shape:'normal',   // 'normal' | 'sharkfin' | 'rebreathing' | 'flat' | 'rosclive'
+  baseline:0, plateauTilt:0, upSlope:1.1, quality:1, signal:3,
+  // BVM live model
+  onBvm:false, bvmK:null, bvmAlpha:0.95,
+  // animation
+  phase:0, readingShown:false, transitioning:false,
 
-  const SHAPE_LABELS = {
-    normal:'Normal',
-    sharkfin:'Bronchospasm (shark-fin)',
-    rebreathing:'Rebreathing (elev. baseline)',
-    flat:'Flat/No alveolar CO₂',
-    rosclive:'Post-ROSC normal'
-  };
+  // anti-flicker UI
+  displayEtco2:null,        // smoothed value for display
+  lastUiUpdate:0,           // timestamp for throttling
+  lowTraceVisible:false,    // debounced overlay state
+  lowTraceCandidate:null,   // 'show' or 'hide'
+  lowTraceSince:0           // time candidate started
+};
 
-  // --- Scenarios (EMT-B level, incl. non-respiratory CPR/perfusion causes) ---
-  const CASES = [
-    {
-      id:'opioid_hypovent',
-      title:'Opioid overdose with hypoventilation',
-      text:'22-year-old with slow, shallow respirations, cyanotic lips, pinpoint pupils. Poor tidal volume.',
-      base:{ etco2:[55,70], rr:[4,8], shape:'normal', baseline:0, tilt:0.02, quality:.95, signal:3 },
-      best:'bvm',
-      options:[
-        {key:'bvm',   label:'Assist ventilations with BVM + high-flow O₂ (10–12/min)'},
-        {key:'nrb',   label:'Apply NRB O₂ only'},
-        {key:'coach', label:'Coach slower breathing'},
-        {key:'nalox', label:'Administer naloxone'}
-      ],
-      targets:{
-        bvm:  {etco2: _=> 40, rr: _=> 12, shape:'normal', note:'Ventilate with BVM to correct hypoventilation. Then consider naloxone per protocol.' , bvmBase:40},
-        nrb:  {etco2: b=> clamp(b+2,50,80), rr: r=> r, shape:'normal', note:'O₂ alone does not correct hypoventilation → ETCO₂ stays high.'},
-        coach:{etco2: b=> clamp(b+1,50,75), rr: r=> r, shape:'normal', note:'Coaching is inadequate for slow/shallow respirations.'},
-        nalox:{etco2: b=> clamp(b-3,46,65), rr: r=> r+2, shape:'normal', note:'Helpful medication, but airway/ventilation takes priority per NREMT.'}
-      },
-      why:'NREMT: Inadequate breathing → BVM ventilations with high-flow O₂. Consider naloxone after airway/ventilation.'
+const SHAPE_LABELS = {
+  normal:'Normal',
+  sharkfin:'Bronchospasm (shark-fin)',
+  rebreathing:'Rebreathing (elev. baseline)',
+  flat:'Flat/No alveolar CO₂',
+  rosclive:'Post-ROSC normal'
+};
+
+/* ================== SCENARIOS (full set) ================== */
+const CASES = [
+  // Opioid hypoventilation
+  {
+    id:'opioid_hypovent',
+    title:'Opioid overdose with hypoventilation',
+    text:'22-year-old with slow, shallow respirations, cyanotic lips, pinpoint pupils. Poor tidal volume.',
+    base:{ etco2:[55,70], rr:[4,8], shape:'normal', baseline:0, tilt:0.02, quality:.95, signal:3 },
+    best:'bvm',
+    options:[
+      {key:'bvm',   label:'Assist ventilations with BVM + high-flow O₂ (10–12/min)'},
+      {key:'nrb',   label:'Apply NRB O₂ only'},
+      {key:'coach', label:'Coach slower breathing'},
+      {key:'nalox', label:'Administer naloxone'}
+    ],
+    targets:{
+      bvm:  {etco2: _=> 40, rr: _=> 12, shape:'normal', note:'Ventilate with BVM to correct hypoventilation. Then consider naloxone per protocol.' , bvmBase:40},
+      nrb:  {etco2: b=> clamp(b+2,50,80), rr: r=> r, shape:'normal', note:'O₂ alone does not correct hypoventilation.'},
+      coach:{etco2: b=> clamp(b+1,50,75), rr: r=> r, shape:'normal', note:'Coaching is inadequate here.'},
+      nalox:{etco2: b=> clamp(b-3,46,65), rr: r=> r+2, shape:'normal', note:'Helpful medication, but airway/ventilation is priority.'}
     },
-    {
-      id:'asthma_sharkfin',
-      title:'Severe asthma/COPD with bronchospasm',
-      text:'35-year-old with audible wheezes, prolonged expirations, increased work of breathing; speaking 2–3 word sentences.',
-      base:{ etco2:[48,58], rr:[22,30], shape:'sharkfin', baseline:0, tilt:0.12, quality:.95, signal:3 },
-      best:'broncho',
-      options:[
-        {key:'broncho', label:"Assist patient's prescribed bronchodilator (MDI) & request ALS"},
-        {key:'nrb',     label:'Apply NRB 10–15 L/min'},
-        {key:'bvm',     label:'Assist ventilations with BVM (if tiring/poor tidal)'},
-        {key:'coach',   label:'Coach faster breathing'}
-      ],
-      targets:{
-        broncho:{etco2: b=> clamp(b-8, 35, 45), rr: r=> clamp(r-2, 18, 26), shape:'normal', note:'Treats cause: bronchodilation resolves shark-fin and normalizes ETCO₂.'},
-        nrb:    {etco2: b=> b, rr: r=> r, shape:'sharkfin', note:'Adds FiO₂ but does not relieve bronchospasm.'},
-        bvm:    {etco2: b=> clamp(b-4, 38, 50), rr: _=> 12, shape:'sharkfin', note:'Use if ventilation becomes inadequate; bronchospasm persists until medicated.' , bvmBase:45},
-        coach:  {etco2: b=> clamp(b-2, 44, 56), rr: r=> clamp(r+4, 24, 36), shape:'sharkfin', note:'Risk of air-trapping; not ideal.'}
-      },
-      why:'NREMT: Assist with patient’s bronchodilator when bronchospasm is the cause; BVM only if ventilation becomes inadequate.'
+    why:'NREMT: Inadequate breathing → BVM + O₂.'
+  },
+  // Asthma/COPD shark-fin (corrected direction)
+  {
+    id:'asthma_sharkfin',
+    title:'Severe asthma/COPD with bronchospasm',
+    text:'35-year-old with audible wheezes, prolonged expirations, increased work of breathing; speaking 2–3 word sentences.',
+    base:{ etco2:[48,58], rr:[22,30], shape:'sharkfin', baseline:0, tilt:0.13, quality:.95, signal:3 },
+    best:'broncho',
+    options:[
+      {key:'broncho', label:"Assist patient's prescribed bronchodilator (MDI) & request ALS"},
+      {key:'nrb',     label:'Apply NRB 10–15 L/min'},
+      {key:'bvm',     label:'Assist ventilations with BVM (if tiring/poor tidal)'},
+      {key:'coach',   label:'Coach faster breathing'}
+    ],
+    targets:{
+      broncho:{etco2: b=> clamp(b-8, 35, 45), rr: r=> clamp(r-2, 18, 26), shape:'normal', note:'Treats cause: bronchodilation resolves shark-fin.'},
+      nrb:    {etco2: b=> b, rr: r=> r, shape:'sharkfin', note:'Adds FiO₂ but does not relieve obstruction.'},
+      bvm:    {etco2: b=> clamp(b-4, 38, 50), rr: _=> 12, shape:'sharkfin', note:'Use if ventilation becomes inadequate.' , bvmBase:45},
+      coach:  {etco2: b=> clamp(b-2, 44, 56), rr: r=> clamp(r+4, 24, 36), shape:'sharkfin', note:'Risks dynamic hyperinflation.'}
     },
-    {
-      id:'failed_airway_flat',
-      title:'Failed supraglottic airway (flat capnogram)',
-      text:'After SGA placement, capnogram is flat with tiny oscillations despite ventilations. Patient unresponsive.',
-      base:{ etco2:[0,5], rr:[10,12], shape:'flat', baseline:0, tilt:0, quality:.95, signal:3 },
-      best:'removeBvm',
-      options:[
-        {key:'removeBvm', label:'Remove suspect device and ventilate with BVM + adjuncts'},
-        {key:'continue',  label:'Continue ventilations without changes'},
-        {key:'nrb',       label:'Switch to NRB O₂ only'}
-      ],
-      targets:{
-        removeBvm:{etco2: _=> 42, rr: _=> 12, shape:'normal', note:'Corrects placement error; restores alveolar CO₂ detection.' , bvmBase:42},
-        continue: {etco2: b=> b, rr: r=> r, shape:'flat', note:'No alveolar exchange → ETCO₂ remains ~0.'},
-        nrb:      {etco2: b=> b, rr: r=> r, shape:'flat', note:'Does not address failed airway/ventilation.'}
-      },
-      why:'NREMT: Near-zero ETCO₂ after airway placement suggests esophageal/failed airway. Remove device, use OPA/NPA and BVM with O₂.'
+    why:'NREMT: Assist bronchodilator when bronchospasm is the cause.'
+  },
+  // Failed airway / flatline
+  {
+    id:'failed_airway_flat',
+    title:'Failed supraglottic airway (flat capnogram)',
+    text:'After SGA placement, capnogram is flat with tiny oscillations despite ventilations. Patient unresponsive.',
+    base:{ etco2:[0,5], rr:[10,12], shape:'flat', baseline:0, tilt:0, quality:.95, signal:3 },
+    best:'removeBvm',
+    options:[
+      {key:'removeBvm', label:'Remove suspect device and ventilate with BVM + adjuncts'},
+      {key:'continue',  label:'Continue ventilations without changes'},
+      {key:'nrb',       label:'Switch to NRB O₂ only'}
+    ],
+    targets:{
+      removeBvm:{etco2: _=> 42, rr: _=> 12, shape:'normal', note:'Restores alveolar CO₂ detection.' , bvmBase:42},
+      continue: {etco2: b=> b, rr: r=> r, shape:'flat', note:'No alveolar exchange → ETCO₂ remains ~0.'},
+      nrb:      {etco2: b=> b, rr: r=> r, shape:'flat', note:'Does not address failed airway.'}
     },
-    {
-      id:'rebreathing_fault',
-      title:'Rebreathing from faulty BVM one-way valve',
-      text:'Capnogram baseline fails to return to zero; inspiratory CO₂ elevated. Patient otherwise ventilating.',
-      base:{ etco2:[45,55], rr:[14,18], shape:'rebreathing', baseline:10, tilt:0.03, quality:.9, signal:3 },
-      best:'fixCircuit',
-      options:[
-        {key:'fixCircuit', label:'Replace/repair BVM or valve; increase fresh gas flow'},
-        {key:'bvm',        label:'Bag faster without fixing valve'},
-        {key:'nrb',        label:'Apply NRB O₂ only'}
-      ],
-      targets:{
-        fixCircuit:{etco2: b=> clamp(b-6, 35,45), rr: r=> r, shape:'normal', baseline:0, note:'Fixing equipment restores zero baseline and improves ETCO₂.'},
-        bvm:       {etco2: b=> clamp(b-3, 42,50), rr: _=> 20, shape:'rebreathing', baseline:8, note:'Hyperventilating doesn’t fix inspiratory CO₂.' , bvmBase:45},
-        nrb:       {etco2: b=> b, rr: r=> r, shape:'rebreathing', note:'Does not address equipment fault.'}
-      },
-      why:'NREMT: Elevated inspiratory CO₂ indicates rebreathing—fix/replace equipment rather than just changing rate.'
+    why:'NREMT: Near-zero ETCO₂ after placement → suspect esophageal/failed airway.'
+  },
+  // Rebreathing / faulty valve
+  {
+    id:'rebreathing_fault',
+    title:'Rebreathing from faulty BVM one-way valve',
+    text:'Capnogram baseline fails to return to zero; inspiratory CO₂ elevated. Patient otherwise ventilating.',
+    base:{ etco2:[45,55], rr:[14,18], shape:'rebreathing', baseline:10, tilt:0.03, quality:.9, signal:3 },
+    best:'fixCircuit',
+    options:[
+      {key:'fixCircuit', label:'Replace/repair BVM or valve; increase fresh gas flow'},
+      {key:'bvm',        label:'Bag faster without fixing valve'},
+      {key:'nrb',        label:'Apply NRB O₂ only'}
+    ],
+    targets:{
+      fixCircuit:{etco2: b=> clamp(b-6, 35,45), rr: r=> r, shape:'normal', baseline:0, note:'Fix equipment → zero baseline returns.'},
+      bvm:       {etco2: b=> clamp(b-3, 42,50), rr: _=> 20, shape:'rebreathing', baseline:8, note:'Hyperventilating doesn’t fix inspiratory CO₂.' , bvmBase:45},
+      nrb:       {etco2: b=> b, rr: r=> r, shape:'rebreathing', note:'Does not address equipment fault.'}
     },
-    {
-      id:'cpr_low_quality',
-      title:'Cardiac arrest: low ETCO₂ from poor compressions',
-      text:'Witnessed arrest. Compressions shallow/slow with incomplete recoil; BVM attached with O₂.',
-      base:{ etco2:[6,12], rr:[10,12], shape:'normal', baseline:0, tilt:0.02, quality:.95, signal:3 },
-      best:'improveCPR',
-      onBvmStart:true,
-      options:[
-        {key:'improveCPR', label:'Improve CPR (depth 2–2.4", rate 100–120, full recoil); switch compressors'},
-        {key:'bvmFaster',  label:'Hyperventilate the patient (increase BVM rate)'},
-        {key:'continue',   label:'Continue current compressions unchanged'}
-      ],
-      targets:{
-        improveCPR:{etco2: _=> randInt(20,30), rr:_=> 10, shape:'normal', note:'ETCO₂ reflects perfusion in CPR—better compressions raise ETCO₂.' , bvmBase:25},
-        bvmFaster: {etco2: b=> clamp(b-2, 4,10), rr:r=> Math.min(20, r+6), shape:'normal', note:'Hyperventilation worsens venous return → lowers ETCO₂.' , bvmBase:8},
-        continue:  {etco2: b=> b, rr:r=> r, shape:'normal', note:'Low-quality CPR keeps ETCO₂ low; switch compressor and improve technique.'}
-      },
-      why:'NREMT: Low ETCO₂ often indicates poor perfusion from inadequate compressions; improve quality and avoid hyperventilation.'
+    why:'NREMT: Elevated inspiratory CO₂ indicates rebreathing—fix the circuit.'
+  },
+  // CPR — low quality compressions
+  {
+    id:'cpr_low_quality',
+    title:'Cardiac arrest: low ETCO₂ from poor compressions',
+    text:'Witnessed arrest. Compressions shallow/slow with incomplete recoil; BVM attached with O₂.',
+    base:{ etco2:[6,12], rr:[10,12], shape:'normal', baseline:0, tilt:0.02, quality:.95, signal:3 },
+    best:'improveCPR', onBvmStart:true,
+    options:[
+      {key:'improveCPR', label:'Improve CPR (depth 2–2.4", rate 100–120, full recoil); switch compressors'},
+      {key:'bvmFaster',  label:'Hyperventilate the patient (increase BVM rate)'},
+      {key:'continue',   label:'Continue current compressions unchanged'}
+    ],
+    targets:{
+      improveCPR:{etco2: _=> randInt(20,30), rr:_=> 10, shape:'normal', note:'Better perfusion raises ETCO₂.' , bvmBase:25},
+      bvmFaster: {etco2: b=> clamp(b-2, 4,10), rr:r=> Math.min(20, r+6), shape:'normal', note:'Hyperventilation lowers ETCO₂.' , bvmBase:8},
+      continue:  {etco2: b=> b, rr:r=> r, shape:'normal', note:'Low-quality CPR keeps ETCO₂ low.'}
     },
-    {
-      id:'cpr_prolonged_downtime',
-      title:'Cardiac arrest: prolonged downtime',
-      text:'Unwitnessed arrest with long downtime. High-quality CPR in progress; BVM with O₂ attached. ETCO₂ remains low.',
-      base:{ etco2:[8,12], rr:[10,12], shape:'normal', baseline:0, tilt:0.02, quality:.95, signal:3 },
-      best:'continueHQ',
-      onBvmStart:true,
-      options:[
-        {key:'continueHQ', label:'Continue high-quality CPR, minimize pauses; rhythm analysis/defib per cycle'},
-        {key:'bvmFaster',  label:'Hyperventilate the patient (increase BVM rate)'},
-        {key:'improveCPR', label:'Change compressor and re-emphasize quality despite already good CPR'}
-      ],
-      targets:{
-        continueHQ:{etco2: b=> clamp(b, 8,14), rr:_=> 10, shape:'normal', note:'Downtime can keep ETCO₂ low despite HQ-CPR; continue guideline care.' , bvmBase:12},
-        bvmFaster: {etco2: b=> clamp(b-2, 6,10), rr:r=> Math.min(20, r+6), shape:'normal', note:'Hyperventilation reduces ETCO₂ and cerebral perfusion—avoid.' , bvmBase:10},
-        improveCPR:{etco2: b=> clamp(b+3, 10,16), rr:_=> 10, shape:'normal', note:'Switching compressors may help, but care is already HQ; focus on minimal pauses/defib when indicated.' , bvmBase:14}
-      },
-      why:'NREMT: Low ETCO₂ can reflect long downtime; maintain high-quality CPR and minimize interruptions.'
+    why:'Use ETCO₂ to gauge perfusion during arrest; avoid hyperventilation.'
+  },
+  // CPR — prolonged downtime
+  {
+    id:'cpr_prolonged_downtime',
+    title:'Cardiac arrest: prolonged downtime',
+    text:'Unwitnessed arrest with long downtime. HQ-CPR in progress; BVM attached. ETCO₂ remains low.',
+    base:{ etco2:[8,12], rr:[10,12], shape:'normal', baseline:0, tilt:0.02, quality:.95, signal:3 },
+    best:'continueHQ', onBvmStart:true,
+    options:[
+      {key:'continueHQ', label:'Continue high-quality CPR, minimize pauses; rhythm analysis/defib per cycle'},
+      {key:'bvmFaster',  label:'Hyperventilate the patient (increase BVM rate)'},
+      {key:'improveCPR', label:'Change compressor and re-emphasize quality'}
+    ],
+    targets:{
+      continueHQ:{etco2: b=> clamp(b, 8,14), rr:_=> 10, shape:'normal', note:'Downtime can keep ETCO₂ low; continue guideline care.' , bvmBase:12},
+      bvmFaster: {etco2: b=> clamp(b-2, 6,10), rr:r=> Math.min(20, r+6), shape:'normal', note:'Hyperventilation reduces cerebral perfusion.' , bvmBase:10},
+      improveCPR:{etco2: b=> clamp(b+3, 10,16), rr:_=> 10, shape:'normal', note:'Switching compressors may help if fatigue present.' , bvmBase:14}
     },
-    {
-      id:'arrest_rosc',
-      title:'Cardiac arrest with sudden ETCO₂ rise (ROSC)',
-      text:'During high-quality CPR, ETCO₂ is ~12–18 mmHg. Suddenly ETCO₂ jumps to mid-30s.',
-      base:{ etco2:[12,18], rr:[10,12], shape:'normal', baseline:0, tilt:0.02, quality:.95, signal:3 },
-      best:'checkPulse',
-      onBvmStart:true,
-      options:[
-        {key:'checkPulse', label:'Check for ROSC and transition to post-ROSC care'},
-        {key:'continue',   label:'Continue compressions without checking'},
-        {key:'hypervent',  label:'Increase ventilation rate aggressively'}
-      ],
-      targets:{
-        checkPulse:{etco2:_=> randInt(35,45), rr:_=> 12, shape:'rosclive', note:'Sustained ETCO₂ rise suggests ROSC → verify pulse and change care.' , bvmBase:38},
-        continue:  {etco2:b=> clamp(b+1, 14,22), rr:r=> r, shape:'normal', note:'May miss ROSC; reassess when ETCO₂ rises abruptly.'},
-        hypervent:{etco2:b=> clamp(b-3, 10,16), rr:r=> Math.min(20, r+6), shape:'normal', note:'Avoid hyperventilation—reduces cerebral perfusion post-ROSC.' , bvmBase:16}
-      },
-      why:'NREMT: Use ETCO₂ to recognize ROSC; pause to check for signs of life when it jumps.'
+    why:'Maintain HQ-CPR and minimize interruptions.'
+  },
+  // ROSC recognition
+  {
+    id:'arrest_rosc',
+    title:'Cardiac arrest with sudden ETCO₂ rise (ROSC)',
+    text:'During HQ-CPR, ETCO₂ is ~12–18 mmHg. Suddenly ETCO₂ jumps to mid-30s.',
+    base:{ etco2:[12,18], rr:[10,12], shape:'normal', baseline:0, tilt:0.02, quality:.95, signal:3 },
+    best:'checkPulse', onBvmStart:true,
+    options:[
+      {key:'checkPulse', label:'Check for ROSC and transition to post-ROSC care'},
+      {key:'continue',   label:'Continue compressions without checking'},
+      {key:'hypervent',  label:'Increase ventilation rate aggressively'}
+    ],
+    targets:{
+      checkPulse:{etco2:_=> randInt(35,45), rr:_=> 12, shape:'rosclive', note:'Sustained ETCO₂ rise suggests ROSC—verify pulse.' , bvmBase:38},
+      continue:  {etco2:b=> clamp(b+1, 14,22), rr:r=> r, shape:'normal', note:'May miss ROSC; reassess with ETCO₂ jump.'},
+      hypervent:{etco2:b=> clamp(b-3, 10,16), rr:r=> Math.min(20, r+6), shape:'normal', note:'Avoid hyperventilation post-ROSC.' , bvmBase:16}
     },
-    {
-      id:'anxiety_hypervent',
-      title:'Anxiety/hyperventilation (no hypoxia)',
-      text:'19-year-old anxious, rapid deep respirations, normal skin signs. No signs of hypoxia.',
-      base:{ etco2:[22,30], rr:[26,34], shape:'normal', baseline:0, tilt:0.02, quality:1, signal:4 },
-      best:'coachSlower',
-      options:[
-        {key:'coachSlower', label:'Coach slower breathing and reassurance'},
-        {key:'nrb',         label:'Apply NRB O₂ 10–15 L/min'},
-        {key:'bvm',         label:'Assist ventilations with BVM'}
-      ],
-      targets:{
-        coachSlower:{etco2: _=> clamp(35+randInt(-3,3), 32,45), rr: r=> clamp(r-10, 12, 20), shape:'normal', note:'Coached breathing normalizes ETCO₂.'},
-        nrb:        {etco2: b=> b, rr: r=> r, shape:'normal', note:'O₂ not indicated; does not treat cause.'},
-        bvm:        {etco2: b=> clamp(b-2, 20,28), rr: _=> 12, shape:'normal', note:'Unnecessary; ventilation is adequate.' , bvmBase:35}
-      },
-      why:'NREMT: Reassure/coach breathing when ETCO₂ is low from hyperventilation; avoid unnecessary O₂ or BVM.'
+    why:'ETCO₂ helps recognize ROSC quickly.'
+  },
+  // Anxiety / hyperventilation
+  {
+    id:'anxiety_hypervent',
+    title:'Anxiety/hyperventilation (no hypoxia)',
+    text:'19-year-old anxious, rapid deep respirations, normal skin signs. No signs of hypoxia.',
+    base:{ etco2:[22,30], rr:[26,34], shape:'normal', baseline:0, tilt:0.02, quality:1, signal:4 },
+    best:'coachSlower',
+    options:[
+      {key:'coachSlower', label:'Coach slower breathing and reassurance'},
+      {key:'nrb',         label:'Apply NRB O₂ 10–15 L/min'},
+      {key:'bvm',         label:'Assist ventilations with BVM'}
+    ],
+    targets:{
+      coachSlower:{etco2: _=> clamp(35+randInt(-3,3), 32,45), rr: r=> clamp(r-10, 12, 20), shape:'normal', note:'Coached breathing normalizes ETCO₂.'},
+      nrb:        {etco2: b=> b, rr: r=> r, shape:'normal', note:'O₂ not indicated here.'},
+      bvm:        {etco2: b=> clamp(b-2, 20,28), rr: _=> 12, shape:'normal', note:'Unnecessary; ventilation is adequate.' , bvmBase:35}
+    },
+    why:'Reassure/coach when ETCO₂ is low from hyperventilation.'
+  }
+];
+
+/* ================== CANVAS SIZING ================== */
+function sizeCanvas(){
+  const rect = cap.getBoundingClientRect();
+  cap.width = Math.floor(rect.width * devicePixelRatio);
+  cap.height = Math.floor(rect.height * devicePixelRatio);
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+}
+window.addEventListener('resize', sizeCanvas, {passive:true});
+
+/* ================== WAVEFORM ENGINE ================== */
+function mmHgToY(mm){
+  const h = cap.height, maxVis = 60;
+  const frac = clamp(mm / maxVis, 0, 1);
+  return h - (h*0.85*frac) - h*0.1;
+}
+function drawGrid(){
+  const w = cap.width, h = cap.height;
+  ctx.globalAlpha = 0.12; ctx.strokeStyle = '#bde3ee'; ctx.lineWidth = 1;
+  for(let x=0;x<w;x+=40){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+  for(let y=0;y<h;y+=20){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+  ctx.globalAlpha = 1;
+}
+// Corrected obstructive plateau: slopes upward to the right
+function plateauVal(et, base, p, tilt){
+  const start = et * (1 - tilt); // start a bit below ET
+  const end   = et;              // end at ET
+  return start + (end - start) * p;
+}
+function capnoShape(t){
+  const base = state.baseline;
+  const et   = state.etco2 ?? 40;
+  const up   = clamp(state.upSlope, 0.2, 2.0);
+  const tilt = state.plateauTilt || 0;
+
+  if(state.shape === 'flat'){
+    return mmHgToY(base + (Math.sin(t*2*Math.PI*4))*0.6);
+  }
+  // Phase II upstroke, Phase III plateau, Inspiration
+  if(t<0.25){
+    const prog = Math.pow(t/0.25, up);
+    return mmHgToY(base + (et-base)*prog);
+  } else if(t<0.65){
+    const p = (t-0.25)/0.4;
+    return mmHgToY( plateauVal(et, base, p, tilt) );
+  } else {
+    const p = (t-0.65)/0.35;
+    const yStart = mmHgToY( plateauVal(et, base, 1, tilt) );
+    const yEnd   = mmHgToY(base);
+    return yStart + (yEnd - yStart)*p;
+  }
+}
+function drawWave(){
+  const w = cap.width;
+  ctx.clearRect(0,0,cap.width,cap.height);
+  drawGrid();
+
+  const rr = clamp(state.rr||12, 2, 40);
+  const hz = rr/60;
+  const pxPerSec = 120;
+  state.phase += (pxPerSec/60);
+
+  // Low-trace suppression with hysteresis/debounce (handled in UI too)
+  const et = state.etco2 ?? 0;
+  const below = et < NO_TRACE_THRESHOLD;
+  const above = et > (NO_TRACE_THRESHOLD + NO_TRACE_HYSTERESIS);
+  // draw nothing if low trace currently visible (UI toggled separately)
+  if(state.lowTraceVisible){
+    return;
+  }
+
+  ctx.strokeStyle = '#37d1ff';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  for(let x=0; x<w; x+=2){
+    const tSec = (state.phase + x)/pxPerSec;
+    const cyc = (tSec*hz)%1;
+    const noise = (1-state.quality) * (Math.random()-0.5) * 6;
+    const y = capnoShape(cyc) + noise;
+    if(x===0) ctx.moveTo(0,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+}
+
+/* ================== ANIMATION LOOP ================== */
+let lastNumberEt = null, lastNumberRr = null;
+
+function updateLowTraceOverlay(now){
+  const et = state.etco2 ?? 0;
+  const wantShow = et < NO_TRACE_THRESHOLD;
+  const wantHide = et > (NO_TRACE_THRESHOLD + NO_TRACE_HYSTERESIS);
+
+  // decide candidate if different from current visible state
+  const desired = state.lowTraceVisible ? (wantHide ? 'hide' : null) : (wantShow ? 'show' : null);
+  if(desired && state.lowTraceCandidate !== desired){
+    state.lowTraceCandidate = desired;
+    state.lowTraceSince = now;
+  }
+  // if candidate sustained long enough, toggle
+  if(state.lowTraceCandidate && (now - state.lowTraceSince) >= NO_TRACE_DEBOUNCE_MS){
+    state.lowTraceVisible = (state.lowTraceCandidate === 'show');
+    state.lowTraceCandidate = null;
+  }
+  noTraceEl.style.display = (state.readingShown && !alertEl.classList.contains('show') && state.lowTraceVisible) ? 'flex' : 'none';
+}
+
+function tick(now){
+  // gentle wander
+  if(state.readingShown && !state.transitioning){
+    if(Math.random()<0.02) state.rr = clamp(state.rr + (Math.random()<.5?-1:1), 4, 40);
+    if(Math.random()<0.015) state.etco2 = clamp(state.etco2 + (Math.random()<.5?-1:1), 0, 80);
+  }
+  // step toward target
+  if(state.transitioning && state.targetEtco2!=null){
+    const step = state.etco2 < state.targetEtco2 ? 0.7 : -0.6;
+    state.etco2 = Math.round((state.etco2 + step)*10)/10;
+    if( (step>0 && state.etco2 >= state.targetEtco2) || (step<0 && state.etco2 <= state.targetEtco2) ){
+      state.transitioning = false;
     }
-  ];
-
-  // --- Canvas sizing ---
-  function sizeCanvas(){
-    const rect = cap.getBoundingClientRect();
-    cap.width = Math.floor(rect.width * devicePixelRatio);
-    cap.height = Math.floor(rect.height * devicePixelRatio);
-    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
   }
-  window.addEventListener('resize', sizeCanvas, {passive:true});
-
-  // --- Waveform drawing ---
-  function mmHgToY(mm){
-    const h = cap.height;
-    const maxVis = 60; // mmHg ~ top visual range
-    const frac = clamp(mm / maxVis, 0, 1);
-    return h - (h*0.85*frac) - h*0.1; // leave margins
-  }
-
-  function drawGrid(){
-    const w = cap.width, h = cap.height;
-    ctx.globalAlpha = 0.12; ctx.strokeStyle = '#bde3ee'; ctx.lineWidth = 1;
-    for(let x=0;x<w;x+=40){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
-    for(let y=0;y<h;y+=20){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
-    ctx.globalAlpha = 1;
-  }
-
-  function capnoShape(t){
-    const base = state.baseline;
-    const et = state.etco2 ?? 40;
-    const up = clamp(state.upSlope, 0.2, 2.0);
-    const tilt = state.plateauTilt||0;
-
-    if(state.shape === 'flat'){
-      return mmHgToY(base + (Math.sin(t*2*Math.PI*4))*0.6);
-    }
-    if(state.shape === 'rosclive'){
-      if(t<0.25){ const p=Math.pow(t/0.25, up); return mmHgToY(base+(et-base)*p); }
-      else if(t<0.65){ const p=(t-0.25)/0.4; const plateau = et*(1-tilt*p); return mmHgToY(plateau); }
-      else { const p=(t-0.65)/0.35; const yStart=mmHgToY(et*(1-tilt)); const yEnd=mmHgToY(base); return yStart+(yEnd-yStart)*p; }
-    }
-
-    if(t<0.25){ const p=Math.pow(t/0.25, up); return mmHgToY(base+(et-base)*p); }
-    else if(t<0.65){ const p=(t-0.25)/0.4; const plateau = et*(1-tilt*p) + base*tilt*p*0.2; return mmHgToY(plateau); }
-    else { const p=(t-0.65)/0.35; const yStart=mmHgToY(et*(1-tilt)); const yEnd=mmHgToY(base); return yStart+(yEnd-yStart)*p; }
-  }
-
-  function drawWave(){
-    const w = cap.width, h = cap.height;
-    ctx.clearRect(0,0,w,h);
-    drawGrid();
-
-    const rr = clamp(state.rr||12, 2, 40);
-    const hz = rr/60;
-    const pxPerSec = 120;
-    state.phase += (pxPerSec/60);
-
-    ctx.strokeStyle = '#37d1ff';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    for(let x=0; x<w; x+=2){
-      const tSec = (state.phase + x)/pxPerSec;
-      const cyc = (tSec*hz)%1;
-      const noise = (1-state.quality) * (Math.random()-0.5) * 6;
-      const y = capnoShape(cyc) + noise;
-      if(x===0) ctx.moveTo(0,y); else ctx.lineTo(x,y);
-    }
-    ctx.stroke();
-  }
-
-  // --- Animation & transitions ---
-  function tick(){
-    if(state.readingShown && !state.transitioning){
-      if(Math.random()<0.02) state.rr = clamp(state.rr + (Math.random()<.5?-1:1), 4, 40);
-      if(Math.random()<0.015) state.etco2 = clamp(state.etco2 + (Math.random()<.5?-1:1), 0, 80);
-    }
-    if(state.transitioning && state.targetEtco2!=null){
-      const step = state.etco2 < state.targetEtco2 ? 0.7 : -0.6;
-      state.etco2 = Math.round((state.etco2 + step)*10)/10;
-      if( (step>0 && state.etco2 >= state.targetEtco2) || (step<0 && state.etco2 <= state.targetEtco2) ){
-        state.transitioning = false;
-      }
-    }
-
-    // Live BVM control: ETCO₂ ≈ K / RR^alpha
-    if(state.onBvm && state.bvmK){
-      const rr = Number(bvmRate.value);
-      const target = clamp(state.bvmK / Math.pow(rr, state.bvmAlpha), 15, 70);
-      state.targetEtco2 = target;
-      state.transitioning = true;
-      state.rr = rr;
-    }
-
-    etco2El.textContent = state.etco2!=null ? (Number.isInteger(state.etco2)? state.etco2 : state.etco2.toFixed(1)) : '--';
-    rrEl.textContent = state.rr!=null ? state.rr : '--';
-    shapeLabel.textContent = SHAPE_LABELS[state.shape] || state.shape;
-
-    drawWave();
-    requestAnimationFrame(tick);
-  }
-
-  // --- UI build/grading ---
-  function labelFor(def,key){ const f = def.options.find(o=>o.key===key); return f?f.label:key; }
-
-  function renderChoices(caseDef){
-    choicesBox.innerHTML = '';
-    caseDef.options.forEach(opt=>{
-      const btn = document.createElement('button');
-      btn.className = 'choice';
-      btn.textContent = opt.label;
-      btn.dataset.key = opt.key;
-      btn.onclick = () => gradeChoice(caseDef, opt.key, btn);
-      choicesBox.appendChild(btn);
-    });
-  }
-
-  function lockChoices(){ choicesBox.querySelectorAll('button.choice').forEach(b=> b.disabled = true); }
-
-  function applyWaveParams(shape, baseline, tilt, upSlope, quality){
-    if(shape!==undefined) state.shape = shape;
-    if(baseline!==undefined) state.baseline = baseline;
-    if(tilt!==undefined) state.plateauTilt = tilt;
-    if(upSlope!==undefined) state.upSlope = upSlope;
-    if(quality!==undefined) state.quality = quality;
-  }
-
-  function startBvmControl(baseForBvm){
-    state.onBvm = true;
-    bvmBox.style.display = 'block';
-    const base = (baseForBvm || state.etco2 || 40);
-    const rr0 = 12; // default initial bag rate
-    state.bvmK = base * Math.pow(rr0, state.bvmAlpha);
-    bvmRate.value = rr0; bvmRateLbl.textContent = rr0;
-    state.rr = rr0;
-  }
-
-  function stopBvmControl(){
-    state.onBvm = false;
-    state.bvmK = null;
-    bvmBox.style.display = 'none';
-  }
-
-  function gradeChoice(caseDef, key, btn){
-    lockChoices();
-    stopBvmControl();
-
-    const plan = caseDef.targets[key];
-    const tgtEt = typeof plan.etco2==='function' ? plan.etco2(state.etco2) : plan.etco2;
-    const tgtRr = typeof plan.rr==='function' ? plan.rr(state.rr) : (plan.rr ?? state.rr);
-    state.targetEtco2 = tgtEt;
-    state.rr = Math.round(tgtRr);
+  // live BVM model
+  if(state.onBvm && state.bvmK){
+    const rr = Number(bvmRate.value);
+    const target = clamp(state.bvmK / Math.pow(rr, state.bvmAlpha), 15, 70);
+    state.targetEtco2 = target;
     state.transitioning = true;
+    state.rr = rr;
+  }
 
-    applyWaveParams(plan.shape ?? state.shape,
-                    plan.baseline ?? state.baseline,
-                    plan.tilt ?? state.plateauTilt,
-                    plan.upSlope ?? state.upSlope,
-                    plan.quality ?? state.quality);
+  // Smooth ETCO2 for display (anti-flicker)
+  if(state.etco2!=null){
+    if(state.displayEtco2==null){ state.displayEtco2 = state.etco2; }
+    else { state.displayEtco2 = (1-ETCO2_SMOOTH_ALPHA)*state.displayEtco2 + ETCO2_SMOOTH_ALPHA*state.etco2; }
+  }
 
-    if(key==='bvm' || key==='removeBvm' || key==='bvmFaster' || caseDef.onBvmStart){
-      startBvmControl(plan.bvmBase ?? tgtEt ?? state.etco2 ?? 40);
+  // Throttle numeric UI updates
+  if(now - state.lastUiUpdate >= UI_THROTTLE_MS){
+    const etDisp = state.displayEtco2!=null ? Math.round(state.displayEtco2) : null;
+    const rrDisp = state.rr!=null ? Math.round(state.rr) : null;
+    if(etDisp !== lastNumberEt){
+      etco2El.textContent = (etDisp!=null ? etDisp : '--');
+      lastNumberEt = etDisp;
     }
-
-    const isBest = key === caseDef.best;
-    btn.classList.add(isBest ? 'correct' : 'incorrect');
-
-    const msg = isBest
-      ? `✅ Correct. ${plan.note} ${caseDef.why}`
-      : `❌ Not the best choice. ${plan.note} Preferred: <b>${labelFor(caseDef, caseDef.best)}</b>. ${caseDef.why}`;
-
-    explainBox.style.display = 'block';
-    explainBox.innerHTML = msg;
-    nextBtn.style.display = 'inline-flex';
+    if(rrDisp !== lastNumberRr){
+      rrEl.textContent = (rrDisp!=null ? rrDisp : '--');
+      lastNumberRr = rrDisp;
+    }
+    shapeLabel.textContent = state.lowTraceVisible ? 'No trace' : (SHAPE_LABELS[state.shape] || state.shape);
+    state.lastUiUpdate = now;
   }
 
-  // --- Run a random case ---
-  function runRandomCase(){
-    explainBox.style.display='none'; explainBox.innerHTML='';
-    nextBtn.style.display='none';
-    choicesBox.innerHTML='';
-    alertEl.textContent = 'Acquiring…'; alertEl.classList.add('show');
-    stopBvmControl();
+  updateLowTraceOverlay(now);
+  drawWave();
 
-    const def = CASES[Math.floor(Math.random()*CASES.length)];
-    const et = randInt(def.base.etco2[0], def.base.etco2[1]);
-    const rr = randInt(def.base.rr[0], def.base.rr[1]);
+  requestAnimationFrame(tick);
+}
 
-    state.etco2 = null; state.targetEtco2 = null; state.rr = null;
-    setSignal(def.base.signal ?? 3);
-    applyWaveParams(def.base.shape, def.base.baseline, def.base.tilt, 1.1, def.base.quality);
-    state.readingShown=false; state.transitioning=false;
-
-    scenarioText.innerHTML = `<strong>${def.title}</strong><br>${def.text}<br><strong>RR:</strong> ${rr}/min`;
-    setTimeout(()=>{
-      state.etco2 = et; state.rr = rr; state.readingShown=true;
-      alertEl.classList.remove('show');
-      renderChoices(def);
-      if(def.onBvmStart){ startBvmControl(et); }
-    }, 1200 + Math.random()*600);
-  }
-
-  // --- Init / Events ---
-  function init(){
-    sizeCanvas();
-    runRandomCase();
-    requestAnimationFrame(tick);
-    buildMiniGallery();
-  }
-  document.addEventListener('DOMContentLoaded', init);
-  nextBtn.addEventListener('click', runRandomCase);
-
-  bvmRate.addEventListener('input', ()=>{
-    const v = Number(bvmRate.value);
-    bvmRateLbl.textContent = v;
+/* ================== UI BUILD / CHOICES ================== */
+function labelFor(def,key){ const f = def.options.find(o=>o.key===key); return f?f.label:key; }
+function renderChoices(def){
+  choicesBox.innerHTML = '';
+  def.options.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.textContent = opt.label;
+    btn.onclick = ()=> gradeChoice(def, opt.key, btn);
+    choicesBox.appendChild(btn);
   });
+}
+function lockChoices(){ choicesBox.querySelectorAll('button.choice').forEach(b=> b.disabled = true); }
+function applyWaveParams(shape, baseline, tilt, upSlope, quality){
+  if(shape!==undefined) state.shape = shape;
+  if(baseline!==undefined) state.baseline = baseline;
+  if(tilt!==undefined) state.plateauTilt = tilt;
+  if(upSlope!==undefined) state.upSlope = upSlope;
+  if(quality!==undefined) state.quality = quality;
+}
+function startBvmControl(baseEt){
+  state.onBvm = true; bvmBox.style.display='block';
+  const rr0 = 12;
+  state.bvmK = (baseEt || state.etco2 || 40) * Math.pow(rr0, state.bvmAlpha);
+  bvmRate.value = rr0; bvmRateLbl.textContent = rr0; state.rr = rr0;
+}
+function stopBvmControl(){ state.onBvm=false; state.bvmK=null; bvmBox.style.display='none'; }
 
-  // Modal events
-  eduBtn.addEventListener('click', ()=>{ eduModal.classList.add('show'); eduModal.setAttribute('aria-hidden','false'); });
-  closeEdu.addEventListener('click', ()=>{ eduModal.classList.remove('show'); eduModal.setAttribute('aria-hidden','true'); });
-  eduModal.addEventListener('click', (e)=>{ if(e.target===eduModal){ closeEdu.click(); } });
-  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && eduModal.classList.contains('show')) closeEdu.click(); });
+function gradeChoice(def, key, btn){
+  lockChoices(); stopBvmControl();
+  const plan = def.targets[key];
+  state.targetEtco2 = typeof plan.etco2==='function' ? plan.etco2(state.etco2) : plan.etco2;
+  state.rr = Math.round(typeof plan.rr==='function' ? plan.rr(state.rr) : (plan.rr ?? state.rr));
+  state.transitioning = true;
 
-  // Prevent double-tap zoom on iOS
-  let lastTouch=0;
-  document.addEventListener('touchend', e=>{
-    const now = Date.now();
-    if(now-lastTouch<=300){ e.preventDefault(); }
-    lastTouch=now;
-  }, {passive:false});
+  applyWaveParams(plan.shape ?? state.shape, plan.baseline ?? state.baseline, plan.tilt ?? state.plateauTilt, plan.upSlope ?? state.upSlope, plan.quality ?? state.quality);
 
-  // --- Mini waveform gallery (simple renderer) ---
-  function drawMini(canvas, kind){
-    const c = canvas.getContext('2d');
-    const w = canvas.width, h = canvas.height;
-    c.clearRect(0,0,w,h);
-    // grid
-    c.globalAlpha = 0.12; c.strokeStyle = '#bde3ee'; c.lineWidth = 1;
-    for(let x=0;x<w;x+=40){ c.beginPath(); c.moveTo(x,0); c.lineTo(x,h); c.stroke(); }
-    for(let y=0;y<h;y+=20){ c.beginPath(); c.moveTo(0,y); c.lineTo(w,y); c.stroke(); }
-    c.globalAlpha = 1;
+  if(key==='bvm' || key==='removeBvm' || key==='bvmFaster' || def.onBvmStart){
+    startBvmControl(plan.bvmBase ?? state.targetEtco2 ?? state.etco2 ?? 40);
+  }
 
-    // helper: quick capno sample
-    function y(mm){ const max=60; const frac=Math.max(0,Math.min(mm/max,1)); return h - (h*0.8*frac) - h*0.1; }
+  const isBest = key === def.best;
+  btn.classList.add(isBest ? 'correct' : 'incorrect');
 
-    let baseline=0, et=40, tilt=0, up=1.1, rr=12;
-    if(kind==='sharkfin'){ tilt=0.13; et=50; }
-    if(kind==='rebreath'){ baseline=10; et=45; tilt=0.03; }
-    if(kind==='flat'){ baseline=0; et=1; }
-    if(kind==='hyper'){ et=25; rr=24; }
-    if(kind==='hypo'){ et=55; rr=6; }
+  explainBox.style.display = 'block';
+  explainBox.innerHTML = (isBest? '✅ Correct. ' : '❌ Not the best choice. ')
+    + (plan.note||'') + ' ' + (def.why||'');
+  nextBtn.style.display = 'inline-flex';
+}
 
-    const hz=rr/60, pxPerSec=120;
-    c.strokeStyle = '#37d1ff'; c.lineWidth=2; c.beginPath();
-    for(let x=0; x<w; x+=2){
-      const tSec = x/pxPerSec;
-      const cyc = (tSec*hz)%1;
-      let yy;
-      if(kind==='flat'){
-        yy = y(baseline + Math.sin(cyc*Math.PI*4)*0.4);
-      } else {
-        if(cyc<0.25){ const p=Math.pow(cyc/0.25, up); yy = y(baseline + (et-baseline)*p); }
-        else if(cyc<0.65){ const p=(cyc-0.25)/0.4; const plateau = et*(1-tilt*p)+baseline*tilt*p*0.2; yy = y(plateau); }
-        else { const p=(cyc-0.65)/0.35; const start= y(et*(1-tilt)); const end = y(baseline); yy = start + (end-start)*p; }
-      }
-      if(x===0) c.moveTo(x,yy); else c.lineTo(x,yy);
+/* ================== RUN RANDOM CASE ================== */
+function runRandomCase(){
+  explainBox.style.display='none'; explainBox.innerHTML='';
+  nextBtn.style.display='none'; choicesBox.innerHTML='';
+  alertEl.textContent='Acquiring…'; alertEl.classList.add('show'); stopBvmControl();
+
+  const def = CASES[Math.floor(Math.random()*CASES.length)];
+  const et = randInt(def.base.etco2[0], def.base.etco2[1]);
+  const rr = randInt(def.base.rr[0], def.base.rr[1]);
+
+  state.etco2=null; state.displayEtco2=null; state.targetEtco2=null; state.rr=null;
+  state.lowTraceVisible=false; state.lowTraceCandidate=null; state.lowTraceSince=0;
+  setSignal(def.base.signal ?? 3);
+  applyWaveParams(def.base.shape, def.base.baseline, def.base.tilt, 1.1, def.base.quality);
+  state.readingShown=false; state.transitioning=false;
+
+  scenarioText.innerHTML = `<strong>${def.title}</strong><br>${def.text}<br><strong>RR:</strong> ${rr}/min`;
+  setTimeout(()=>{
+    state.etco2 = et; state.displayEtco2 = et; state.rr = rr; state.readingShown=true;
+    alertEl.classList.remove('show');
+    renderChoices(def);
+    if(def.onBvmStart){ startBvmControl(et); }
+  }, 1100 + Math.random()*500);
+}
+
+/* ================== MINI GALLERY FOR MODAL ================== */
+function drawMini(canvas, kind){
+  const c = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  c.clearRect(0,0,w,h);
+  // grid
+  c.globalAlpha = 0.12; c.strokeStyle = '#bde3ee'; c.lineWidth = 1;
+  for(let x=0;x<w;x+=40){ c.beginPath(); c.moveTo(x,0); c.lineTo(x,h); c.stroke(); }
+  for(let y=0;y<h;y+=20){ c.beginPath(); c.moveTo(0,y); c.lineTo(w,y); c.stroke(); }
+  c.globalAlpha = 1;
+
+  function y(mm){ const max=60; const frac=Math.max(0,Math.min(mm/max,1)); return h - (h*0.8*frac) - h*0.1; }
+  let baseline=0, et=40, tilt=0.0, rr=12, up=1.1;
+
+  if(kind==='sharkfin'){ tilt=0.13; et=50; }
+  if(kind==='rebreath'){ baseline=10; et=45; tilt=0.03; }
+  if(kind==='flat'){ baseline=0; et=1; }
+  if(kind==='hyper'){ et=25; rr=24; }
+  if(kind==='hypo'){ et=55; rr=6; }
+
+  const hz=rr/60, pxPerSec=120;
+  c.strokeStyle = '#37d1ff'; c.lineWidth=2; c.beginPath();
+  for(let x=0; x<w; x+=2){
+    const tSec = x/pxPerSec;
+    const cyc = (tSec*hz)%1;
+    let yy;
+    if(kind==='flat'){
+      yy = y(baseline + Math.sin(cyc*Math.PI*4)*0.4);
+    } else {
+      if(cyc<0.25){ const p=Math.pow(cyc/0.25, up); yy = y(baseline + (et-baseline)*p); }
+      else if(cyc<0.65){ const p=(cyc-0.25)/0.4; const plat = (et*(1-tilt)) + ((et - (et*(1-tilt))) * p); yy = y(plat); }
+      else { const p=(cyc-0.65)/0.35; const start= y(et); const end = y(baseline); yy = start + (end-start)*p; }
     }
-    c.stroke();
+    if(x===0) c.moveTo(x,yy); else c.lineTo(x,yy);
   }
+  c.stroke();
+}
+function buildMiniGallery(){
+  [['mini-normal','normal'],['mini-sharkfin','sharkfin'],['mini-rebreath','rebreath'],['mini-flat','flat'],['mini-hyper','hyper'],['mini-hypo','hypo']]
+    .forEach(([id,kind])=>{ const el=document.getElementById(id); if(el) drawMini(el, kind); });
+}
 
-  function buildMiniGallery(){
-    const kinds = [
-      ['mini-normal','normal'],
-      ['mini-sharkfin','sharkfin'],
-      ['mini-rebreath','rebreath'],
-      ['mini-flat','flat'],
-      ['mini-hyper','hyper'],
-      ['mini-hypo','hypo'],
-    ];
-    kinds.forEach(([id,kind])=>{
-      const el = document.getElementById(id);
-      if(el){ drawMini(el, kind); }
-    });
-  }
+/* ================== INIT / EVENTS ================== */
+function init(){
+  sizeCanvas();
+  runRandomCase();
+  requestAnimationFrame(tick);
+  buildMiniGallery();
+}
+document.addEventListener('DOMContentLoaded', init);
+
+nextBtn.addEventListener('click', runRandomCase);
+bvmRate.addEventListener('input', ()=>{ bvmRateLbl.textContent = Number(bvmRate.value); });
+
+// Modal events
+eduBtn.addEventListener('click', ()=>{ eduModal.classList.add('show'); eduModal.setAttribute('aria-hidden','false'); });
+closeEdu.addEventListener('click', ()=>{ eduModal.classList.remove('show'); eduModal.setAttribute('aria-hidden','true'); });
+eduModal.addEventListener('click', (e)=>{ if(e.target===eduModal){ closeEdu.click(); } });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && eduModal.classList.contains('show')) closeEdu.click(); });
+
+// Prevent double-tap zoom on iOS
+let lastTouch=0; document.addEventListener('touchend', e=>{ const now=Date.now(); if(now-lastTouch<=300){ e.preventDefault(); } lastTouch=now; }, {passive:false});
 </script>
 </body>
 </html>
