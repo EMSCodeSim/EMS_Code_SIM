@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <title>EMS Code Sim — Train Smart</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="EMS & Fire training simulators: vitals, respiratory, neurological, burns and more." />
+  <meta name="description" content="EMS & Fire training simulators: vitals, respiratory, neuro, burns, and more." />
   <link rel="icon" href="/favicon.ico" />
 
   <style>
@@ -32,17 +32,8 @@
       max-width:1100px; margin:0 auto; padding:10px 20px;
       display:flex; align-items:center; gap:14px; flex-wrap:wrap;
     }
-    .brandmini{
-      display:flex; align-items:center; gap:10px; font-weight:700;
-      letter-spacing:.4px;
-    }
-    .brandmini .chip{
-      width:28px; height:28px; border-radius:8px; position:relative;
-      background: radial-gradient(circle at 35% 30%, #19a1ff, #0062ff 60%),
-                  linear-gradient(145deg, #ff6b6b, #c81d1d);
-      box-shadow:var(--shadow)
-    }
-    .brandmini .chip svg{position:absolute; inset:0; width:100%; height:100%}
+    .brandmini{display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.4px;}
+    .brandmini img{width:28px; height:28px; border-radius:8px; box-shadow:var(--shadow); background:#fff}
     .menu{display:flex; gap:8px; flex:1; flex-wrap:wrap}
     .menu button{
       background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.12);
@@ -62,24 +53,15 @@
       border-bottom:1px solid rgba(255,255,255,.06);
     }
     .hero-inner{max-width:1100px; margin:0 auto; display:flex; gap:18px; align-items:center}
-    .logo-big{
-      width:96px; height:96px; border-radius:20px; position:relative; flex:0 0 96px;
-      background: radial-gradient(circle at 35% 30%, #19a1ff, #0062ff 60%),
-                  linear-gradient(145deg, #ff6b6b, #c81d1d);
-      box-shadow:var(--shadow)
-    }
-    .logo-big svg{position:absolute; inset:0; width:100%; height:100%}
+    .hero-logo{width:96px; height:96px; border-radius:20px; overflow:hidden; flex:0 0 96px; box-shadow:var(--shadow); background:#fff; display:grid; place-items:center}
+    .hero-logo img{width:100%; height:100%; object-fit:contain}
     .hero-text h1{margin:0 0 8px; font-size:clamp(22px, 3.6vw, 36px)}
     .hero-text p{margin:6px 0 0; font-size:clamp(14px, 2vw, 18px); color:#e9f1ff}
-    .tagline{opacity:.95}
 
     /* Sections & cards */
     main{max-width:1100px; margin:24px auto 80px; padding:0 20px}
     section{margin-top:28px}
-    section h2{
-      margin:0 0 14px; color:#d7e6ff; font-size:clamp(18px, 2.6vw, 22px);
-      display:flex; align-items:center; gap:10px
-    }
+    section h2{margin:0 0 14px; color:#d7e6ff; font-size:clamp(18px, 2.6vw, 22px); display:flex; align-items:center; gap:10px}
     .grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fit, minmax(220px,1fr))}
     .card{
       position:relative; border-radius:var(--radius); background:var(--card);
@@ -113,7 +95,7 @@
     }
   </style>
 
-  <!-- GA4 (your ID) + click tracking -->
+  <!-- GA4 (G-5QLPK4025C) + click tracking -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -140,15 +122,7 @@
   <div class="topbar">
     <div class="topnav">
       <div class="brandmini">
-        <span class="chip" aria-hidden="true">
-          <!-- Star-of-Life + flame -->
-          <svg viewBox="0 0 100 100">
-            <path d="M50 15 l7 12 14-8 6 10-14 8 14 8-6 10-14-8-7 12-7-12-14 8-6-10 14-8-14-8 6-10 14 8z"
-                  fill="rgba(234,246,255,.96)" opacity=".95"/>
-            <path d="M68 66c0 10-8 18-18 18s-18-8-18-18c0-8 5-14 11-17-1 7 4 11 9 13 0-6 3-11 8-14-2 7 2 10 8 18z"
-                  fill="rgba(255,80,80,.92)"/>
-          </svg>
-        </span>
+        <img src="/assets/ems-logo.webp" alt="EMS Code Sim logo" onerror="this.src='/assets/ems-logo.png'">
         <span>EMS Code Sim</span>
       </div>
       <div class="menu" role="navigation" aria-label="Primary">
@@ -166,17 +140,10 @@
   <!-- Hero -->
   <header class="hero">
     <div class="hero-inner">
-      <div class="logo-big" aria-hidden="true">
-        <svg viewBox="0 0 100 100">
-          <path d="M50 15 l7 12 14-8 6 10-14 8 14 8-6 10-14-8-7 12-7-12-14 8-6-10 14-8-14-8 6-10 14 8z"
-                fill="rgba(234,246,255,.96)" opacity=".95"/>
-          <path d="M68 66c0 10-8 18-18 18s-18-8-18-18c0-8 5-14 11-17-1 7 4 11 9 13 0-6 3-11 8-14-2 7 2 10 8 18z"
-                fill="rgba(255,80,80,.92)"/>
-        </svg>
-      </div>
+      <div class="hero-logo"><img src="/assets/ems-logo.webp" alt="EMS Code Sim" onerror="this.src='/assets/ems-logo.png'"></div>
       <div class="hero-text">
         <h1>EMS CODE SIM</h1>
-        <p class="tagline">You’ve mastered the book—now master the skills.</p>
+        <p>You’ve mastered the book—now master the skills.</p>
       </div>
     </div>
   </header>
@@ -186,16 +153,15 @@
 
     <!-- VITALS -->
     <section id="vitals" aria-labelledby="vitals-h">
-      <h2 id="vitals-h">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M2 6h20v12H2V6zm2 2v8h16V8H4zm2.5 4h2l1.5-3 2.5 6 2-4h3v2h-2.5l-1.5 3-2.5-6-2 4h-2V12z"/></svg>
-        Vitals
-      </h2>
+      <h2 id="vitals-h">Vitals</h2>
       <div class="grid">
         <!-- Blood Pressure -->
         <article class="card"><span class="pill">EMS</span>
           <button data-ga-event="open_sim" data-ga-params='{"sim":"Blood Pressure"}'
-                  onclick="location.href='/vitals/blood-pressure'" aria-label="Open Blood Pressure Simulator">
-            <span class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M4 7h8a3 3 0 0 1 0 6H9v2h3a5 5 0 0 0 0-10H4v2zM3 9h4v6H3V9zm12 7h2a2 2 0 1 0 0-4h-2v4z"/></svg></span>
+                  onclick="location.href='/vitals/bp'" aria-label="Open Blood Pressure">
+            <span class="icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M4 7h8a3 3 0 0 1 0 6H9v2h3a5 5 0 0 0 0-10H4v2zM3 9h4v6H3V9zm12 7h2a2 2 0 1 0 0-4h-2v4z"/></svg>
+            </span>
             <div><h3>Blood Pressure</h3><p>Korotkoff sounds, realistic cuff flow.</p></div>
           </button>
         </article>
@@ -204,7 +170,9 @@
         <article class="card"><span class="pill">EMS</span>
           <button data-ga-event="open_sim" data-ga-params='{"sim":"Pulse Trainer"}'
                   onclick="location.href='/vitals/pulse'" aria-label="Open Pulse Trainer">
-            <span class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M3 12h3l2-5 3 10 2-6h6v2h-4l-3 8-3-10-1 3H3v-2z"/></svg></span>
+            <span class="icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M3 12h3l2-5 3 10 2-6h6v2h-4l-3 8-3-10-1 3H3v-2z"/></svg>
+            </span>
             <div><h3>Pulse Trainer</h3><p>Randomized rates, tap/assess practice.</p></div>
           </button>
         </article>
@@ -212,8 +180,10 @@
         <!-- Pulse Oximeter -->
         <article class="card"><span class="pill">EMS</span>
           <button data-ga-event="open_sim" data-ga-params='{"sim":"Pulse Oximeter"}'
-                  onclick="location.href='/vitals/pulse-ox'" aria-label="Open Pulse Oximeter Simulator">
-            <span class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M5 6h14a2 2 0 0 1 2 2v6a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8a2 2 0 0 1 2-2zm2 3h3v6H7V9zm7 0h3v3h-3V9z"/></svg></span>
+                  onclick="location.href='/vitals/pulse-ox'" aria-label="Open Pulse Oximeter">
+            <span class="icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M5 6h14a2 2 0 0 1 2 2v6a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8a2 2 0 0 1 2-2zm2 3h3v6H7V9zm7 0h3v3h-3V9z"/></svg>
+            </span>
             <div><h3>Pulse Oximeter</h3><p>SpO₂/HR display with artifacts.</p></div>
           </button>
         </article>
@@ -221,8 +191,10 @@
         <!-- Blood Glucose -->
         <article class="card"><span class="pill">EMS</span>
           <button data-ga-event="open_sim" data-ga-params='{"sim":"Blood Glucose"}'
-                  onclick="location.href='/vitals/blood-glucose'" aria-label="Open Blood Glucose Simulator">
-            <span class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M7 3h10v6H7V3zm-2 8h14v10H5V11zm9-6v2H10V5h4z"/></svg></span>
+                  onclick="location.href='/vitals/bgl'" aria-label="Open Blood Glucose">
+            <span class="icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M7 3h10v6H7V3zm-2 8h14v10H5V11zm9-6v2H10V5h4z"/></svg>
+            </span>
             <div><h3>Blood Glucose</h3><p>Glucometer workflow & readings.</p></div>
           </button>
         </article>
@@ -231,25 +203,26 @@
 
     <!-- RESPIRATORY -->
     <section id="resp" aria-labelledby="resp-h">
-      <h2 id="resp-h">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2v8l-4-3c-1-1-2 1-2 3v8H4v-8c0-4 2-7 5-7l3 2V2h2v3l3-2c3 0 5 3 5 7v8h-2v-8c0-2-1-4-2-3l-4 3V2h-2z"/></svg>
-        Respiratory
-      </h2>
+      <h2 id="resp-h">Respiratory</h2>
       <div class="grid">
         <!-- Breath Sounds -->
         <article class="card"><span class="pill">EMS</span>
           <button data-ga-event="open_sim" data-ga-params='{"sim":"Breath Sounds"}'
                   onclick="location.href='/vitals/breath-sound-simulator'" aria-label="Open Breath Sound Simulator">
-            <span class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M11 2v8L7 7C6 6 5 8 5 10v8H3v-8c0-4 2-7 5-7l3 2V2h2v3l3-2c3 0 5 3 5 7v8h-2v-8c0-2-1-4-2-3l-4 3V2h-2z"/></svg></span>
-            <div><h3>Breath Sounds</h3><p>Hotspots with wheezes, rales, stridor.</p></div>
+            <span class="icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M11 2v8L7 7C6 6 5 8 5 10v8H3v-8c0-4 2-7 5-7l3 2V2h2v3l3-2c3 0 5 3 5 7v8h-2v-8c0-2-1-4-2-3l-4 3V2h-2z"/></svg>
+            </span>
+            <div><h3>Breath Sound Simulator</h3><p>Hotspots with wheezes, rales, stridor.</p></div>
           </button>
         </article>
 
         <!-- Capnography -->
         <article class="card"><span class="pill">EMS</span>
           <button data-ga-event="open_sim" data-ga-params='{"sim":"Capnography"}'
-                  onclick="location.href='/vitals/capnography'" aria-label="Open Capnography Simulator">
-            <span class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M3 6h18v2H3V6zm0 10h5l2-6 2 6 2-4h7v2h-5l-1 2h-4l-2-6-1 4H3v-2z"/></svg></span>
+                  onclick="location.href='/vitals/capno'" aria-label="Open Capnography">
+            <span class="icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M3 6h18v2H3V6zm0 10h5l2-6 2 6 2-4h7v2h-5l-1 2h-4l-2-6-1 4H3v-2z"/></svg>
+            </span>
             <div><h3>Capnography (ETCO₂)</h3><p>Waveforms: normal, asthma, CPR, hypovent.</p></div>
           </button>
         </article>
@@ -258,16 +231,15 @@
 
     <!-- NEURO -->
     <section id="neuro" aria-labelledby="neuro-h">
-      <h2 id="neuro-h">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 6a4 4 0 1 1 8 0h1a3 3 0 1 1 0 6h-1v2a3 3 0 1 1-6 0V9H8a3 3 0 1 1 0-6z"/></svg>
-        Neurological
-      </h2>
+      <h2 id="neuro-h">Neurological</h2>
       <div class="grid">
         <!-- GCS -->
         <article class="card"><span class="pill">EMS</span>
           <button data-ga-event="open_sim" data-ga-params='{"sim":"GCS Trainer"}'
-                  onclick="location.href='/assessment/gcs'" aria-label="Open GCS Trainer">
-            <span class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a4 4 0 014 4v2h2v6h-2v4H8v-4H6V8h2V6a4 4 0 014-4z"/></svg></span>
+                  onclick="location.href='/vitals/gcs'" aria-label="Open GCS Trainer">
+            <span class="icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a4 4 0 014 4v2h2v6h-2v4H8v-4H6V8h2V6a4 4 0 014-4z"/></svg>
+            </span>
             <div><h3>GCS Trainer</h3><p>Eyes • Verbal • Motor with scoring.</p></div>
           </button>
         </article>
@@ -275,8 +247,10 @@
         <!-- AAOx4 -->
         <article class="card"><span class="pill">EMS</span>
           <button data-ga-event="open_sim" data-ga-params='{"sim":"AAOx4"}'
-                  onclick="location.href='/assessment/aao'" aria-label="Open AAOx4 Simulator">
-            <span class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a5 5 0 110 10A5 5 0 0112 3zm-6 16a6 6 0 0112 0v2H6v-2z"/></svg></span>
+                  onclick="location.href='/vitals/aao'" aria-label="Open AAOx4">
+            <span class="icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a5 5 0 110 10A5 5 0 0112 3zm-6 16a6 6 0 0112 0v2H6v-2z"/></svg>
+            </span>
             <div><h3>AAOx4 (LOC)</h3><p>Person • Place • Time • Event checks.</p></div>
           </button>
         </article>
@@ -284,8 +258,10 @@
         <!-- PERL -->
         <article class="card"><span class="pill">EMS</span>
           <button data-ga-event="open_sim" data-ga-params='{"sim":"PERL Pupils"}'
-                  onclick="location.href='/skills/perl'" aria-label="Open PERL Pupils">
-            <span class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4a8 8 0 100 16 8 8 0 000-16zm0 3a5 5 0 110 10A5 5 0 0112 7z"/></svg></span>
+                  onclick="location.href='/vitals/pupil'" aria-label="Open PERL Pupils">
+            <span class="icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4a8 8 0 100 16 8 8 0 000-16zm0 3a5 5 0 110 10A5 5 0 0112 7z"/></svg>
+            </span>
             <div><h3>PERL (Pupils)</h3><p>Equal, round, reactive to light.</p></div>
           </button>
         </article>
@@ -294,70 +270,43 @@
 
     <!-- ASSESSMENT -->
     <section id="assessment" aria-labelledby="assessment-h">
-      <h2 id="assessment-h">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 2h6v2h4v18H5V4h4V2zm2 6h6v2h-6V8zm0 4h6v2h-6v-2zm0 4h6v2h-6v-2zM7 10l1.5 1.5L11 9l-1-1-1.5 1.5L7 8l-1 1 1 1z"/></svg>
-        Assessment
-      </h2>
+      <h2 id="assessment-h">Assessment</h2>
       <div class="grid">
         <!-- Stroke -->
         <article class="card"><span class="pill">EMS</span>
           <button data-ga-event="open_sim" data-ga-params='{"sim":"Stroke Assessment"}'
                   onclick="location.href='/vitals/stroke'" aria-label="Open Stroke Assessment">
-            <span class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M8 6a4 4 0 0 1 4-4 4 4 0 0 1 4 4h1a3 3 0 1 1 0 6h-1v2a3 3 0 1 1-6 0V9H8a3 3 0 1 1 0-6z"/></svg></span>
+            <span class="icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M8 6a4 4 0 0 1 4-4 4 4 0 0 1 4 4h1a3 3 0 1 1 0 6h-1v2a3 3 0 1 1-6 0V9H8a3 3 0 1 1 0-6z"/></svg>
+            </span>
             <div><h3>Stroke Assessment (BE-FAST)</h3><p>Face droop, arm drift, gaze & speech.</p></div>
           </button>
         </article>
       </div>
     </section>
 
-    <!-- SKIN & MEDS -->
+    <!-- SKIN & BURNS -->
     <section id="skinmeds" aria-labelledby="skinmeds-h">
-      <h2 id="skinmeds-h">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4h10v6H7zM5 12h14v8H5z"/></svg>
-        Skin & Meds
-      </h2>
+      <h2 id="skinmeds-h">Skin & Burns</h2>
       <div class="grid">
         <!-- Skin Signs -->
         <article class="card"><span class="pill">EMS</span>
           <button data-ga-event="open_sim" data-ga-params='{"sim":"Skin Signs"}'
-                  onclick="location.href='/skills/skin'" aria-label="Open Skin Signs">
-            <span class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a3 3 0 110 6 3 3 0 010-6zM9 9h6l1 6-2 7h-4l-2-7 1-6z"/></svg></span>
+                  onclick="location.href='/vitals/skin'" aria-label="Open Skin Signs">
+            <span class="icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a3 3 0 110 6 3 3 0 010-6zM9 9h6l1 6-2 7h-4l-2-7 1-6z"/></svg>
+            </span>
             <div><h3>Skin Signs</h3><p>Color, temperature, moisture.</p></div>
           </button>
         </article>
 
-        <!-- Capillary Refill -->
-        <article class="card"><span class="pill">EMS</span>
-          <button data-ga-event="open_sim" data-ga-params='{"sim":"Capillary Refill"}'
-                  onclick="location.href='/skills/capillary-refill'" aria-label="Open Capillary Refill">
-            <span class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M4 12h6l2-3 2 3h6v2h-7l-1 2h-2l-1-2H4v-2z"/></svg></span>
-            <div><h3>Capillary Refill</h3><p>Time-to-blanch training.</p></div>
-          </button>
-        </article>
-
-        <!-- Medication Identification -->
-        <article class="card"><span class="pill">EMS</span>
-          <button data-ga-event="open_sim" data-ga-params='{"sim":"Medication ID"}'
-                  onclick="location.href='/skills/meds'" aria-label="Open Medication ID">
-            <span class="icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M7 3h10v8H7V3zm-2 10h14v8H5v-8zm3-8h8v4H8V5z"/></svg></span>
-            <div><h3>Medication Identification</h3><p>Pill/bottle matching & safety checks.</p></div>
-          </button>
-        </article>
-      </div>
-    </section>
-
-    <!-- BURNS -->
-    <section id="burns" aria-labelledby="burns-h">
-      <h2 id="burns-h">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2s4 4 4 8-2 6-4 8-4-3-4-6 2-6 4-10z"/></svg>
-        Burns
-      </h2>
-      <div class="grid">
         <!-- Rule of Nines -->
         <article class="card"><span class="pill">EMS</span>
           <button data-ga-event="open_sim" data-ga-params='{"sim":"Rule of Nines"}'
                   onclick="location.href='/vitals/nines'" aria-label="Open Rule of Nines">
-            <span class="icon fire"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a3 3 0 110 6 3 3 0 010-6zM9 9h6l1 6-2 7h-4l-2-7 1-6z"/></svg></span>
+            <span class="icon fire">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s4 4 4 8-2 6-4 8-4-3-4-6 2-6 4-10z"/></svg>
+            </span>
             <div><h3>Rule of Nines</h3><p>Front/back regions with percent calculator.</p></div>
           </button>
         </article>
