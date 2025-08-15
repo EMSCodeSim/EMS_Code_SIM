@@ -5,13 +5,13 @@
   <title>Blood Pressure Simulator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
 
-  <!-- Google Analytics (GA4) — replace G-XXXXXXXXXX with your Measurement ID -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
+    function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-XXXXXXXXXX'); // Pageview fires automatically
+    gtag('config', 'G-5QLPK4025C');
   </script>
 
   <style>
@@ -19,6 +19,8 @@
       --bg:#f7fafc; --card:#ffffff; --text:#0f172a; --muted:#334155;
       --accent:#0284c7; --accent-2:#dc2626; --ring: rgba(2,132,199,.35);
       --shadow: 0 10px 28px rgba(15,23,42,.12); --overlay: rgba(15,23,42,.48);
+      --nudge-mobile:-8px; /* tweak if needed */
+      --ok:#16a34a; --bad:#b91c1c;
     }
     *{box-sizing:border-box}
     html,body{height:100%; touch-action: manipulation;}
@@ -70,7 +72,7 @@
     }
     /* MOBILE NUDGE: slight shift left to correct visual offset on phones */
     @media (max-width: 480px){
-      #gauge-container{ transform: translateX(-8px); } /* adjust -8px as needed */
+      #gauge-container{ transform: translateX(var(--nudge-mobile)); }
     }
 
     #dial{
@@ -126,6 +128,19 @@
       border:1px solid rgba(0,0,0,.2); box-shadow: 0 8px 18px rgba(0,0,0,.18); margin-top:-8px;
     }
 
+    /* Answer card */
+    .answer-wrap{ display:grid; grid-template-columns: 1fr auto 1fr auto; gap:10px; align-items:center; }
+    .answer-wrap input{
+      width:100%; font-size:1.05rem; padding:12px 12px; border-radius:12px;
+      border:1px solid rgba(15,23,42,.14); background:#fff; outline:none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+    }
+    .answer-wrap input:focus{ outline:2px solid var(--ring); outline-offset:2px; }
+    .slash{ text-align:center; font-weight:800; color:var(--muted); }
+    .result{ margin-top:10px; font-weight:800; }
+    .result.ok{ color:var(--ok); }
+    .result.bad{ color:var(--bad); }
+
     .footer{ margin-top:auto; text-align:center; color:var(--muted); font-size:.85rem; opacity:.9; padding-bottom:6px; }
 
     /* Info modal */
@@ -175,7 +190,8 @@
 
       <div class="readouts">
         <div>Pressure: <b id="pressureDisplay">0</b> mmHg</div>
-        <div>BP: <b id="bpReading">—/—</b></div>
+        <!-- Removed live BP reveal by request -->
+        <div>&nbsp;</div>
       </div>
 
       <div class="controls">
@@ -193,7 +209,19 @@
       </div>
     </div>
 
-    <div class="footer">v1.4 • Readability pass • Scenario persists • Low-latency beat</div>
+    <!-- Answer entry (no BP display until submit) -->
+    <div class="card" aria-labelledby="answerTitle">
+      <div id="answerTitle" class="slider-label"><b>Enter the blood pressure you heard</b><span class="muted">Format: SYS / DIA</span></div>
+      <div class="answer-wrap">
+        <input type="number" id="sysInput" inputmode="numeric" min="60" max="260" placeholder="Systolic" aria-label="Systolic (SYS)">
+        <div class="slash">/</div>
+        <input type="number" id="diaInput" inputmode="numeric" min="30" max="160" placeholder="Diastolic" aria-label="Diastolic (DIA)">
+        <button class="btn btn-primary" id="submitBtn" aria-label="Submit answer">Submit</button>
+      </div>
+      <div id="result" class="result" role="status" aria-live="polite"></div>
+    </div>
+
+    <div class="footer">v1.5 • Mobile audio unlock • Manual answer mode</div>
   </div>
 
   <!-- Info Modal -->
@@ -246,7 +274,8 @@
     infoModal.addEventListener('click', (e)=>{ if(e.target === infoModal) closeModal(); });
     window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
 
-    // ---------- Blood Pressure Simulator (logic unchanged) ----------
+    // ---------- Blood Pressure Simulator ----------
+    // State
     let currentPressure = 0;
     let systolic = 120;
     let diastolic = 80;
@@ -254,33 +283,65 @@
     let releasing = false;
     let beatStarted = false;
 
+    // Elements
     const needle = document.getElementById("needle");
     const pressureDisplay = document.getElementById("pressureDisplay");
-    const bpReading = document.getElementById("bpReading");
     const speedSlider = document.getElementById("speedSlider");
     const speedValueText = document.getElementById("speedValue");
     const pumpBtn = document.getElementById("pumpBtn");
     const releaseBtn = document.getElementById("releaseBtn");
     const resetBtn = document.getElementById("resetBtn");
 
+    const sysInput = document.getElementById("sysInput");
+    const diaInput = document.getElementById("diaInput");
+    const submitBtn = document.getElementById("submitBtn");
+    const resultEl = document.getElementById("result");
+
+    // ---- Mobile audio unlock + WebAudio setup ----
     let audioCtx = null, beatBuffer = null, beatTimer = null;
 
-    function ensureAudio() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === "suspended") audioCtx.resume();
-      if (!beatBuffer) {
-        const duration = 0.18, sr = audioCtx.sampleRate;
-        const length = Math.floor(duration * sr);
-        beatBuffer = audioCtx.createBuffer(1, length, sr);
-        const ch = beatBuffer.getChannelData(0), freq = 1000;
-        const attack = Math.floor(0.01 * sr), release = Math.floor(0.16 * sr);
-        for (let i = 0; i < length; i++) {
-          const t = i / sr;
-          let env = i < attack ? i / attack : Math.exp(-4 * (i - attack) / release);
-          ch[i] = Math.sin(2 * Math.PI * freq * t) * 0.9 * env;
-        }
+    function createBeatBuffer(ctx){
+      const duration = 0.18, sr = ctx.sampleRate;
+      const length = Math.floor(duration * sr);
+      const buffer = ctx.createBuffer(1, length, sr);
+      const ch = buffer.getChannelData(0), freq = 1000;
+      const attack = Math.floor(0.01 * sr), release = Math.floor(0.16 * sr);
+      for (let i = 0; i < length; i++) {
+        const t = i / sr;
+        const env = i < attack ? i / attack : Math.exp(-4 * (i - attack) / release);
+        ch[i] = Math.sin(2 * Math.PI * freq * t) * 0.9 * env;
       }
+      return buffer;
     }
+
+    function ensureAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === "suspended") { audioCtx.resume(); }
+      if (!beatBuffer) { beatBuffer = createBeatBuffer(audioCtx); }
+    }
+
+    // iOS/Safari unlock: first pointer tap anywhere
+    function unlockAudioOnce(){
+      ensureAudio();
+      // play an inaudible tick to fully unlock on iOS
+      const silent = audioCtx.createBuffer(1, 1, audioCtx.sampleRate);
+      const src = audioCtx.createBufferSource();
+      src.buffer = silent; src.connect(audioCtx.destination);
+      try { src.start(0); } catch(e){}
+    }
+    document.addEventListener('pointerdown', unlockAudioOnce, { once:true, passive:true });
+    // Resume if tab regains focus or becomes visible again
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    });
+    window.addEventListener('focus', () => {
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    });
+
     function playBeat() {
       if (!audioCtx || !beatBuffer) return;
       const src = audioCtx.createBufferSource();
@@ -291,7 +352,7 @@
     function startHeartbeat() {
       if (beatStarted) return;
       beatStarted = true;
-      playBeat();
+      playBeat();                   // immediate first beat
       beatTimer = setInterval(playBeat, 666); // ~90 bpm
     }
     function stopHeartbeat() {
@@ -300,6 +361,7 @@
       beatTimer = null;
     }
 
+    // Dial math (0–280 mmHg mapped to -180..180 degrees)
     function pressureToAngle(p) { return (p / 280) * 360 - 180; }
 
     function updateNeedle() {
@@ -326,11 +388,11 @@
       if (!scenarioActive) {
         scenarioActive = true;
         systolic = Math.floor(Math.random() * (222 - 100 + 1)) + 100;  // 100–222
-        diastolic = Math.max(40, Math.floor(systolic * 0.6));
+        diastolic = Math.max(40, Math.floor(systolic * 0.6));          // ~60–70% of SYS
         if (diastolic >= systolic) diastolic = systolic - 10;
-        bpReading.textContent = `${systolic}/${diastolic}`;
         releasing = true;
         releaseBtn.textContent = "Pause Release";
+        resultEl.textContent = ""; resultEl.className = "result";
         return;
       }
       releasing = !releasing;
@@ -341,8 +403,9 @@
       stopHeartbeat();
       scenarioActive = false; releasing = false;
       currentPressure = 0; updateNeedle();
-      bpReading.textContent = "—/—";
       releaseBtn.textContent = "Release";
+      sysInput.value = ""; diaInput.value = "";
+      resultEl.textContent = ""; resultEl.className = "result";
     });
 
     const TICK_MS = 90;
@@ -351,8 +414,8 @@
 
       if (currentPressure <= 0) {
         currentPressure = 0; updateNeedle();
-        releasing = false; scenarioActive = false;
-        stopHeartbeat(); bpReading.textContent = "—/—";
+        releasing = false;
+        stopHeartbeat();
         releaseBtn.textContent = "Release";
         return;
       }
@@ -365,17 +428,40 @@
 
       if (!scenarioActive) return;
 
+      // On deflation, start when crossing SYS downward; stop when <= DIA
       if (!beatStarted && prev >= systolic && currentPressure <= systolic) startHeartbeat();
       if (beatStarted && currentPressure <= diastolic) stopHeartbeat();
     }, TICK_MS);
 
+    // Answer submit (exact match by default)
+    submitBtn.addEventListener("click", () => {
+      const sys = parseInt(sysInput.value, 10);
+      const dia = parseInt(diaInput.value, 10);
+      if (Number.isNaN(sys) || Number.isNaN(dia)) {
+        resultEl.textContent = "Enter both SYS and DIA.";
+        resultEl.className = "result bad";
+        return;
+      }
+      // exact match
+      if (sys === systolic && dia === diastolic) {
+        resultEl.textContent = "✅ Correct!";
+        resultEl.className = "result ok";
+      } else {
+        resultEl.textContent = `❌ Not quite. Correct: ${systolic}/${diastolic}`;
+        resultEl.className = "result bad";
+      }
+    });
+
+    // Init
     updateNeedle();
     updateSpeedDisplay(speedSlider.value);
 
-    ["touchstart","mousedown"].forEach(evt=>{
+    // Extra: also prime audio on the sim buttons (in case the doc-level tap didn't fire)
+    ["touchstart","mousedown","pointerdown","click"].forEach(evt=>{
       pumpBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
       releaseBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
       resetBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
+      submitBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
     });
   </script>
 </body>
