@@ -19,7 +19,7 @@
       --bg:#f7fafc; --card:#ffffff; --text:#0f172a; --muted:#334155;
       --accent:#0284c7; --accent-2:#dc2626; --ring: rgba(2,132,199,.35);
       --shadow: 0 10px 28px rgba(15,23,42,.12); --overlay: rgba(15,23,42,.48);
-      --nudge-mobile:-12px; /* slight left shift on phones */
+      --nudge-mobile:-16px; /* moved a bit more left on phones */
       --ok:#16a34a; --bad:#b91c1c;
     }
     *{box-sizing:border-box}
@@ -41,12 +41,13 @@
     .iconbtn{
       appearance:none; border:0; background:transparent; color:#fff;
       display:flex; align-items:center; justify-content:center;
-      width:40px; height:40px; border-radius:12px;
+      height:40px; border-radius:12px; padding:0 10px; gap:8px;
       transition: background .2s ease, transform .04s ease;
       -webkit-tap-highlight-color: transparent;
     }
     .iconbtn:active{ transform: translateY(1px) scale(.98); }
     .iconbtn:hover{ background: rgba(255,255,255,.12); }
+    .iconbtn .btn-label{ font-weight:800; font-size:.95rem; letter-spacing:.2px; }
     .topbar-title{ flex:1; text-align:center; font-weight:800; letter-spacing:.2px; font-size:1.15rem; }
 
     .app{
@@ -69,8 +70,12 @@
       height:min(94vw, 420px);
       margin: 4px auto 0; /* centered by default */
     }
+    /* MOBILE NUDGE */
     @media (max-width: 480px){
       #gauge-container{ transform: translateX(var(--nudge-mobile)); }
+    }
+    @media (max-width: 360px){
+      :root{ --nudge-mobile:-22px; }
     }
 
     #dial{
@@ -168,10 +173,11 @@
       </button>
       <div class="topbar-title">Blood Pressure</div>
       <button class="iconbtn" id="infoBtn" aria-label="Blood pressure info" title="Info">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
           <path d="M12 8h.01M11 11h2v6h-2z" fill="currentColor"/>
         </svg>
+        <span class="btn-label">Info</span>
       </button>
     </div>
   </div>
@@ -218,7 +224,7 @@
       <div id="result" class="result" role="status" aria-live="polite"></div>
     </div>
 
-    <div class="footer">v1.7 • iPhone-compatible audio (original logic) • instant pump • ±4 tolerance • even numbers</div>
+    <div class="footer">v1.8 • iPhone audio • instant pump • ±4 tolerance • even numbers • Info labeled</div>
   </div>
 
   <!-- Info Modal -->
@@ -296,7 +302,7 @@
     const submitBtn = document.getElementById("submitBtn");
     const resultEl = document.getElementById("result");
 
-    // ---------- AUDIO (Original logic from your working file) ----------
+    // ---------- AUDIO (original working pattern) ----------
     let audioCtx = null, beatBuffer = null, beatTimer = null;
 
     function ensureAudio() {
@@ -364,24 +370,20 @@
       return dia;
     }
 
-    // ---------- Controls (instant pump; audio created ahead of time) ----------
+    // ---------- Controls (instant pump; audio prepared) ----------
     function handlePump(){
-      // 1) Immediate visual response
       currentPressure = Math.min(280, currentPressure + 10);
       updateNeedle();
-
-      // 2) Audio work after UI update
       if (scenarioActive) {
         ensureAudio();
         if (currentPressure <= systolic && currentPressure >= diastolic) startHeartbeat();
         else stopHeartbeat();
       }
     }
-    // Use pointerdown for instant response on touch; no click to avoid double-firing
     pumpBtn.addEventListener("pointerdown", handlePump, {passive:true});
 
     releaseBtn.addEventListener("pointerdown", () => {
-      ensureAudio(); // from original logic, prep audio when releasing
+      ensureAudio();
       if (!scenarioActive) {
         scenarioActive = true;
         systolic = generateSystolicEven();
@@ -429,7 +431,7 @@
       if (beatStarted && currentPressure <= diastolic) stopHeartbeat();
     }, TICK_MS);
 
-    // ---------- Answer submit (±4 mmHg tolerance) ----------
+    // ---------- Answer submit (±4 mmHg tolerance + tip when not exact) ----------
     submitBtn.addEventListener("click", () => {
       const sysRaw = parseInt(sysInput.value, 10);
       const diaRaw = parseInt(diaInput.value, 10);
@@ -442,12 +444,18 @@
       const sysOK = Math.abs(sysRaw - systolic) <= tol;
       const diaOK = Math.abs(diaRaw - diastolic) <= tol;
 
+      const tip = " Tip: For the most accurate reading, deflate the cuff slowly.";
       if (sysOK && diaOK) {
         const exact = (sysRaw === systolic && diaRaw === diastolic);
-        resultEl.textContent = exact ? "✅ Correct!" : `✅ Close enough (±${tol} mmHg). Correct: ${systolic}/${diastolic}`;
-        resultEl.className = "result ok";
+        if (exact) {
+          resultEl.textContent = "✅ Correct!";
+          resultEl.className = "result ok";
+        } else {
+          resultEl.textContent = `✅ Close enough (±${tol} mmHg). Correct: ${systolic}/${diastolic}.${tip}`;
+          resultEl.className = "result ok";
+        }
       } else {
-        resultEl.textContent = `❌ Not quite. Correct: ${systolic}/${diastolic}`;
+        resultEl.textContent = `❌ Not quite. Correct: ${systolic}/${diastolic}.${tip}`;
         resultEl.className = "result bad";
       }
     });
@@ -456,7 +464,7 @@
     updateNeedle();
     updateSpeedDisplay(speedSlider.value);
 
-    // Prime audio on first touch/click on the main controls (original working pattern)
+    // Prime audio on first touch/click on main controls
     ["touchstart","mousedown"].forEach(evt=>{
       pumpBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
       releaseBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
