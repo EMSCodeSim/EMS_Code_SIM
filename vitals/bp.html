@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
   <style>
     :root{
-      /* High-contrast, easy-to-read theme */
+      /* High-contrast, easy-to-read theme (aligned with index) */
       --bg:#f7fafc;           /* very light page background */
       --card:#ffffff;         /* white card */
       --text:#0f172a;         /* slate-900 for headings/labels */
@@ -15,6 +15,7 @@
       --accent-2:#dc2626;     /* red-600 for release */
       --ring: rgba(2,132,199,.35);
       --shadow: 0 10px 28px rgba(15,23,42,.12);
+      --overlay: rgba(15,23,42,.48);
     }
     *{box-sizing:border-box}
     html,body{height:100%; touch-action: manipulation;}
@@ -26,15 +27,46 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    /* Sticky top header (matches index look & feel) */
+    .topbar{
+      position: sticky; top: 0; z-index: 50;
+      padding: calc(env(safe-area-inset-top) + 8px) 14px 10px 14px;
+      background: linear-gradient(180deg, #06b6d4 0%, var(--accent) 100%);
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,.15);
+      box-shadow: 0 8px 18px rgba(2,132,199,.25);
+    }
+    .topbar-inner{
+      max-width: 720px; margin: 0 auto;
+      display:flex; align-items:center; gap:10px;
+    }
+    .iconbtn{
+      appearance:none; border:0; background:transparent; color:#fff;
+      display:flex; align-items:center; justify-content:center;
+      width:40px; height:40px; border-radius:12px;
+      transition: background .2s ease, transform .04s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .iconbtn:active{ transform: translateY(1px) scale(.98); }
+    .iconbtn:hover{ background: rgba(255,255,255,.12); }
+    .topbar-title{
+      flex:1; text-align:center; font-weight:800; letter-spacing:.2px;
+      font-size:1.15rem;
+    }
+    .topbar-spacer{ width:40px; height:40px; } /* balances layout when no right icon */
+
+    /* App shell */
     .app{
       max-width:540px;
       margin:0 auto;
-      padding:env(safe-area-inset-top) 18px env(safe-area-inset-bottom);
+      padding: 12px 18px calc(env(safe-area-inset-bottom) + 12px);
       display:flex; flex-direction:column; min-height:100dvh; gap:18px;
     }
-    .header{text-align:center; padding-top:6px;}
-    .title{margin:4px 0 0; font-weight:800; font-size:1.35rem; letter-spacing:.2px;}
-    .subtitle{margin-top:6px; color:var(--muted); font-size:1rem;}
+
+    /* Page intro (kept minimal to avoid duplicate headers) */
+    .subtitle{
+      margin-top:2px; color:var(--muted); font-size:.98rem; text-align:center;
+    }
 
     .card{
       background:var(--card);
@@ -134,14 +166,65 @@
     }
 
     .footer{ margin-top:auto; text-align:center; color:var(--muted); font-size:.85rem; opacity:.9; padding-bottom:6px; }
+
+    /* Info modal */
+    .modal{
+      position: fixed; inset: 0; display:none; align-items:center; justify-content:center;
+      background: var(--overlay);
+      z-index: 60;
+      padding: 24px;
+    }
+    .modal[aria-hidden="false"]{ display:flex; }
+    .modal-card{
+      width:min(680px, 100%);
+      background:#fff; border-radius:18px; padding:18px;
+      box-shadow: var(--shadow);
+      border:1px solid rgba(15,23,42,.08);
+      max-height: 85dvh; overflow:auto;
+    }
+    .modal-header{
+      display:flex; align-items:center; justify-content:space-between; gap:8px;
+      padding-bottom:8px; border-bottom:1px solid rgba(15,23,42,.08);
+    }
+    .modal-title{ font-weight:800; font-size:1.15rem; }
+    .badge{
+      display:inline-block; padding:4px 10px; border-radius:999px; font-size:.8rem; font-weight:700;
+      background: rgba(2,132,199,.12); color: var(--accent); border:1px solid rgba(2,132,199,.25);
+    }
+    .legend{
+      display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin:12px 0;
+      font-size:.95rem;
+    }
+    .legend div{ background:#f8fafc; border:1px solid rgba(15,23,42,.08); padding:10px; border-radius:12px; }
+    .muted{ color: var(--muted); font-size:.92rem; }
+    .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:10px; }
   </style>
 </head>
 <body>
-  <div class="app">
-    <div class="header">
-      <div class="title">Blood Pressure Simulator</div>
-      <div class="subtitle">Pump to inflate • Toggle release • Beat plays between SYS→DIA</div>
+  <!-- Sticky Top Header -->
+  <div class="topbar" role="banner">
+    <div class="topbar-inner">
+      <button class="iconbtn" id="backBtn" aria-label="Go back" title="Back">
+        <!-- Back arrow -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <div class="topbar-title">Blood Pressure</div>
+
+      <button class="iconbtn" id="infoBtn" aria-label="Blood pressure info" title="Info">
+        <!-- Info icon -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 8h.01M11 11h2v6h-2z" fill="currentColor"/>
+        </svg>
+      </button>
     </div>
+  </div>
+
+  <div class="app" role="main">
+    <div class="subtitle">Pump to inflate • Toggle release • Beat plays between SYS→DIA</div>
 
     <div class="card">
       <div id="gauge-container">
@@ -166,14 +249,66 @@
           <span>Deflation speed</span>
           <span><b id="speedValue">0.5</b> mmHg/step</span>
         </div>
-        <input type="range" id="speedSlider" min="0.2" max="5" step="0.1" value="0.5">
+        <input type="range" id="speedSlider" min="0.2" max="5" step="0.1" value="0.5" aria-label="Deflation speed">
       </div>
     </div>
 
     <div class="footer">v1.4 • Readability pass • Scenario persists • Low-latency beat</div>
   </div>
 
+  <!-- Info Modal -->
+  <div class="modal" id="infoModal" aria-hidden="true" aria-labelledby="bpInfoTitle" role="dialog">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title" id="bpInfoTitle">Understanding Blood Pressure <span class="badge">SYS/DIA (mmHg)</span></div>
+        <button class="iconbtn" id="closeModalBtn" aria-label="Close info" title="Close">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div>
+        <p><strong>Systolic (SYS)</strong> is the pressure when the heart contracts. <strong>Diastolic (DIA)</strong> is the pressure when the heart relaxes. In this simulator, you’ll hear beats while the cuff pressure is between the patient’s SYS and DIA.</p>
+
+        <div class="legend" aria-label="Common categories (adults)">
+          <div><strong>Normal:</strong> &lt;120 and &lt;80</div>
+          <div><strong>Elevated:</strong> 120–129 and &lt;80</div>
+          <div><strong>Stage 1 HTN:</strong> 130–139 or 80–89</div>
+          <div><strong>Stage 2 HTN:</strong> ≥140 or ≥90</div>
+          <div><strong>Crisis:</strong> ≥180 and/or ≥120 <em>→ evaluate promptly</em></div>
+          <div><strong>Notes:</strong> Single readings don’t diagnose; use clinical context.</div>
+        </div>
+
+        <p class="muted">Training use only. Always follow your local protocols and device instructions.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="modalOkBtn">Got it</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // ---------- Topbar actions (new; simulator logic below unchanged) ----------
+    const backBtn = document.getElementById('backBtn');
+    const infoBtn = document.getElementById('infoBtn');
+    const infoModal = document.getElementById('infoModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const modalOkBtn = document.getElementById('modalOkBtn');
+
+    function openModal(){ infoModal.setAttribute('aria-hidden','false'); }
+    function closeModal(){ infoModal.setAttribute('aria-hidden','true'); }
+
+    backBtn.addEventListener('click', () => {
+      if (window.history.length > 1) { window.history.back(); }
+      else { window.location.href = '/'; }
+    });
+    infoBtn.addEventListener('click', openModal);
+    closeModalBtn.addEventListener('click', closeModal);
+    modalOkBtn.addEventListener('click', closeModal);
+    infoModal.addEventListener('click', (e)=>{ if(e.target === infoModal) closeModal(); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
+
+    // ---------- Blood Pressure Simulator (kept the same) ----------
     // --- State ---
     let currentPressure = 0;
     let systolic = 120;
