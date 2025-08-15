@@ -6,42 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
   <style>
     :root{
-      /* Match BP sim’s easy-to-read theme */
-      --bg:#f7fafc;           /* page background */
-      --card:#ffffff;         /* card background */
-      --text:#0f172a;         /* headings/labels (slate-900) */
-      --muted:#334155;        /* secondary text (slate-700) */
-      --accent:#0284c7;       /* primary (sky-700) */
-      --accent-light:#06b6d4; /* sky-500 */
-      --ring: rgba(2,132,199,.35);
-      --shadow: 0 10px 28px rgba(15,23,42,.12);
-      --border: rgba(15,23,42,.10);
-      --green:#16a34a;
-      --blue:#0ea5e9;
+      --bg:#f7fafc; --card:#ffffff; --text:#0f172a; --muted:#334155;
+      --accent:#0284c7; --accent-light:#06b6d4; --ring: rgba(2,132,199,.35);
+      --shadow: 0 10px 28px rgba(15,23,42,.12); --border: rgba(15,23,42,.10);
+      --green:#16a34a; --blue:#0ea5e9;
     }
     *{box-sizing:border-box}
     html,body{height:100%; touch-action: manipulation;}
     body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background:var(--bg);
-      color:var(--text);
-      -webkit-tap-highlight-color: transparent;
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:var(--bg); color:var(--text); -webkit-tap-highlight-color: transparent;
     }
 
-    /* Sticky top header (like BP sim) */
+    /* Sticky top header */
     .topbar{
       position: sticky; top: 0; z-index: 50;
       padding: calc(env(safe-area-inset-top) + 8px) 14px 10px 14px;
       background: linear-gradient(180deg, var(--accent-light) 0%, var(--accent) 100%);
-      color: #fff;
-      border-bottom: 1px solid rgba(255,255,255,.15);
+      color: #fff; border-bottom: 1px solid rgba(255,255,255,.15);
       box-shadow: 0 8px 18px rgba(2,132,199,.25);
     }
-    .topbar-inner{
-      max-width: 640px; margin: 0 auto;
-      display:flex; align-items:center; gap:10px;
-    }
+    .topbar-inner{ max-width: 640px; margin: 0 auto; display:flex; align-items:center; gap:10px; }
     .iconbtn{
       appearance:none; border:0; background:transparent; color:#fff;
       display:flex; align-items:center; justify-content:center;
@@ -52,154 +37,59 @@
     .iconbtn:hover{ background: rgba(255,255,255,.12); }
     .iconbtn:active{ transform: translateY(1px) scale(.98); }
     .btn-label{ font-weight:800; font-size:.95rem; letter-spacing:.2px; }
-    .topbar-title{
-      flex:1; text-align:center; font-weight:800; letter-spacing:.2px;
-      font-size:1.15rem;
-    }
+    .topbar-title{ flex:1; text-align:center; font-weight:800; letter-spacing:.2px; font-size:1.15rem; }
 
-    .app{
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 12px 18px calc(env(safe-area-inset-bottom) + 12px);
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
+    .app{ max-width: 640px; margin: 0 auto; padding: 12px 18px calc(env(safe-area-inset-bottom) + 12px); min-height: 100dvh; display:flex; flex-direction:column; gap:16px; }
     .subtitle{ margin:2px 0 0; color:var(--muted); font-size:1rem; text-align:center; }
+    .card{ background:var(--card); border:1px solid var(--border); border-radius:18px; padding:16px; box-shadow:var(--shadow); }
 
-    .card{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 16px;
-      box-shadow: var(--shadow);
-    }
-
-    /* View + diagram */
-    .view-row{
-      display:flex; flex-direction:column; gap:12px; align-items:center;
-    }
-    .view-actions{
-      display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
-    }
-
+    .view-row{ display:flex; flex-direction:column; gap:12px; align-items:center; }
+    .view-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
     .btn{
-      appearance:none;
-      border-radius:12px;
-      padding:12px 14px;
-      font-weight:800;
-      font-size:1rem;
-      letter-spacing:.2px;
-      border:1px solid var(--border);
-      color:var(--text);
+      appearance:none; border-radius:12px; padding:12px 14px; font-weight:800; font-size:1rem; letter-spacing:.2px;
+      border:1px solid var(--border); color:var(--text);
       background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
       box-shadow: 0 6px 16px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.8);
       transition: transform .04s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
-      -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation; cursor:pointer;
+      -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; cursor:pointer;
     }
     .btn:active{ transform: translateY(1px) scale(.99); }
     .btn:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; }
-    .btn-primary{
-      color:#fff;
-      border-color: rgba(2,132,199,.55);
-      background: linear-gradient(180deg, var(--accent-light) 0%, var(--accent) 100%);
-    }
+    .btn-primary{ color:#fff; border-color: rgba(2,132,199,.55); background: linear-gradient(180deg, var(--accent-light) 0%, var(--accent) 100%); }
 
     .image-container{
-      position:relative;
-      width:min(94vw, 420px);
-      border-radius:16px;
-      overflow:hidden;
-      border:1px solid var(--border);
-      box-shadow: 0 6px 16px rgba(15,23,42,.08);
-      background:#fff;
+      position:relative; width:min(94vw, 420px); border-radius:16px; overflow:hidden; border:1px solid var(--border);
+      box-shadow: 0 6px 16px rgba(15,23,42,.08); background:#fff;
     }
-    .image-container img{
-      display:block; width:100%; height:auto;
-      user-select:none; -webkit-user-drag:none;
-    }
+    .image-container img{ display:block; width:100%; height:auto; user-select:none; -webkit-user-drag:none; }
 
-    /* Tap points */
     .point{
-      position:absolute;
-      border:none;
-      border-radius:10px;
-      padding:10px 12px;
-      font-size:.9rem;
-      font-weight:800;
-      color:#fff;
+      position:absolute; border:none; border-radius:10px; padding:10px 12px; font-size:.9rem; font-weight:800; color:#fff;
       background: linear-gradient(180deg, #38bdf8 0%, #0ea5e9 100%);
       box-shadow: 0 6px 16px rgba(14,165,233,.25), inset 0 1px 0 rgba(255,255,255,.7);
-      cursor:pointer;
-      transition: transform .04s ease;
-      -webkit-tap-highlight-color: transparent;
+      cursor:pointer; transition: transform .04s ease; -webkit-tap-highlight-color: transparent;
     }
     .point:active{ transform: translateY(1px) scale(.985); }
 
-    /* Selectors */
-    .selectors{
-      display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:14px;
-    }
+    .selectors{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:14px; }
     @media (max-width: 440px){ .selectors{ grid-template-columns: 1fr; } }
-
-    .select-block{
-      background: linear-gradient(180deg, #ffffff 0%, #f3f6fb 100%);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      box-shadow: 0 6px 16px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.8);
-    }
+    .select-block{ background: linear-gradient(180deg, #ffffff 0%, #f3f6fb 100%); border: 1px solid var(--border); border-radius: 12px; padding: 12px; box-shadow: 0 6px 16px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.8); }
     .select-block label{ display:block; font-weight:800; margin-bottom:8px; color:var(--muted); }
-    select{
-      width:100%;
-      padding:10px 12px;
-      font-size:1rem;
-      border-radius:10px;
-      border:1px solid var(--border);
-      background:#fff;
-      color:var(--text);
-    }
+    select{ width:100%; padding:10px 12px; font-size:1rem; border-radius:10px; border:1px solid var(--border); background:#fff; color:var(--text); }
 
-    /* Audio player */
-    .audio-card{
-      margin-top:14px;
-      background: linear-gradient(180deg, #ffffff 0%, #f3f6fb 100%);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      box-shadow: 0 6px 16px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.8);
-      display:flex; flex-direction:column; gap:10px;
-    }
-    .audio-row{
-      display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;
-    }
+    .audio-card{ margin-top:14px; background: linear-gradient(180deg, #ffffff 0%, #f3f6fb 100%); border: 1px solid var(--border); border-radius: 12px; padding: 12px; box-shadow: 0 6px 16px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.8); display:flex; flex-direction:column; gap:8px; }
+    .audio-row{ display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
     .audio-row strong{ color:var(--muted); }
+    .note{ font-size:.92rem; color:var(--muted); min-height:1.2em; }
     audio{ width:100%; }
 
-    footer{
-      margin-top:auto; text-align:center; color:var(--muted); font-size:.85rem; opacity:.9; padding:8px 0 6px;
-    }
+    footer{ margin-top:auto; text-align:center; color:var(--muted); font-size:.85rem; opacity:.9; padding:8px 0 6px; }
 
-    /* Info modal */
-    .modal{
-      position: fixed; inset: 0; display:none; align-items:center; justify-content:center;
-      background: rgba(0,0,0,.48); z-index: 60; padding: 24px;
-    }
+    /* Modal */
+    .modal{ position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,.48); z-index: 60; padding: 24px; }
     .modal[aria-hidden="false"]{ display:flex; }
-    .modal-card{
-      width:min(680px, 100%); background:#fff; border-radius:18px; padding:18px;
-      box-shadow: var(--shadow);
-      border:1px solid var(--border);
-      max-height: 85dvh; overflow:auto;
-      color: var(--text);
-    }
-    .modal-header{
-      display:flex; align-items:center; justify-content:space-between; gap:8px;
-      padding-bottom:8px; border-bottom:1px solid var(--border);
-    }
+    .modal-card{ width:min(680px, 100%); background:#fff; border-radius:18px; padding:18px; box-shadow: var(--shadow); border:1px solid var(--border); max-height: 85dvh; overflow:auto; color: var(--text); }
+    .modal-header{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding-bottom:8px; border-bottom:1px solid var(--border); }
     .modal-title{ font-weight:800; font-size:1.1rem; }
     .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:10px; }
     .modal .btn{ font-weight:800; }
@@ -241,25 +131,25 @@
         <div class="image-container">
           <img id="currentImage" src="front.png" alt="Front">
 
-          <!-- FRONT (URL, ULL, LRL, LLL) -->
-          <button class="point" data-view="front" style="top:26%; left:24%;"  onclick="play('left')">ULL</button>
-          <button class="point" data-view="front" style="top:26%; right:24%;" onclick="play('right')">URL</button>
-          <button class="point" data-view="front" style="top:64%; left:24%;"  onclick="play('left')">LLL</button>
-          <button class="point" data-view="front" style="top:64%; right:24%;" onclick="play('right')">LRL</button>
+          <!-- FRONT (thorax regions) -->
+          <button class="point" data-view="front" data-region="thorax" style="top:26%; left:24%;"  onclick="play('left',  this.dataset.region)">ULL</button>
+          <button class="point" data-view="front" data-region="thorax" style="top:26%; right:24%;" onclick="play('right', this.dataset.region)">URL</button>
+          <button class="point" data-view="front" data-region="thorax" style="top:64%; left:24%;"  onclick="play('left',  this.dataset.region)">LLL</button>
+          <button class="point" data-view="front" data-region="thorax" style="top:64%; right:24%;" onclick="play('right', this.dataset.region)">LRL</button>
 
-          <!-- BACK (URL, ULL, LRL, LLL) -->
-          <button class="point" data-view="back" style="top:26%; left:24%;"  onclick="play('left')">ULL</button>
-          <button class="point" data-view="back" style="top:26%; right:24%;" onclick="play('right')">URL</button>
-          <button class="point" data-view="back" style="top:64%; left:24%;"  onclick="play('left')">LLL</button>
-          <button class="point" data-view="back" style="top:64%; right:24%;" onclick="play('right')">LRL</button>
+          <!-- BACK (thorax regions) -->
+          <button class="point" data-view="back" data-region="thorax" style="top:26%; left:24%;"  onclick="play('left',  this.dataset.region)">ULL</button>
+          <button class="point" data-view="back" data-region="thorax" style="top:26%; right:24%;" onclick="play('right', this.dataset.region)">URL</button>
+          <button class="point" data-view="back" data-region="thorax" style="top:64%; left:24%;"  onclick="play('left',  this.dataset.region)">LLL</button>
+          <button class="point" data-view="back" data-region="thorax" style="top:64%; right:24%;" onclick="play('right', this.dataset.region)">LRL</button>
 
-          <!-- RIGHT (Neck/Stridor + Midaxillary) -->
-          <button class="point" data-view="right" style="top:22%; left:40%;" onclick="play('right')">Neck</button>
-          <button class="point" data-view="right" style="top:62%; left:40%;" onclick="play('right')">Midaxillary</button>
+          <!-- RIGHT view -->
+          <button class="point" data-view="right" data-region="neck"      style="top:22%; left:40%;" onclick="play('right', this.dataset.region)">Neck</button>
+          <button class="point" data-view="right" data-region="thorax"    style="top:62%; left:40%;" onclick="play('right', this.dataset.region)">Midaxillary</button>
 
-          <!-- LEFT (Neck/Stridor + Midaxillary) -->
-          <button class="point" data-view="left" style="top:22%; left:40%;" onclick="play('left')">Neck</button>
-          <button class="point" data-view="left" style="top:62%; left:40%;" onclick="play('left')">Midaxillary</button>
+          <!-- LEFT view -->
+          <button class="point" data-view="left"  data-region="neck"      style="top:22%; left:40%;" onclick="play('left',  this.dataset.region)">Neck</button>
+          <button class="point" data-view="left"  data-region="thorax"    style="top:62%; left:40%;" onclick="play('left',  this.dataset.region)">Midaxillary</button>
         </div>
       </div>
 
@@ -267,16 +157,20 @@
         <div class="select-block">
           <label for="leftSound">Left sound</label>
           <select id="leftSound" onchange="setSide('left', this.value)">
-            <option value="normal">Normal</option>
-            <option value="wheeze">Wheeze</option>
+            <option value="normal">Normal vesicular</option>
+            <option value="wheeze">Wheezing</option>
+            <option value="crackles">Coarse crackles</option>
+            <option id="leftStridorOpt" value="stridor" disabled>Stridor (neck only)</option>
           </select>
         </div>
 
         <div class="select-block">
           <label for="rightSound">Right sound</label>
           <select id="rightSound" onchange="setSide('right', this.value)">
-            <option value="normal">Normal</option>
-            <option value="wheeze">Wheeze</option>
+            <option value="normal">Normal vesicular</option>
+            <option value="wheeze">Wheezing</option>
+            <option value="crackles">Coarse crackles</option>
+            <option id="rightStridorOpt" value="stridor" disabled>Stridor (neck only)</option>
           </select>
         </div>
       </div>
@@ -286,6 +180,7 @@
           <strong>Audio</strong>
           <button class="btn" onclick="document.getElementById('breathAudio').pause()">Pause</button>
         </div>
+        <div id="note" class="note"></div>
         <audio id="breathAudio" controls>
           <source src="" type="audio/mpeg">
           Your browser does not support the audio element.
@@ -309,10 +204,9 @@
       </div>
       <div>
         <ul>
-          <li><strong>Rotate Body:</strong> Switch among FRONT → RIGHT → BACK → LEFT views.</li>
-          <li><strong>Tap Regions:</strong> Press a labeled spot (ULL/URL/LLL/LRL, Neck, Midaxillary) to play sounds.</li>
-          <li><strong>Choose Sounds:</strong> Set <em>Left</em> and <em>Right</em> to Normal or Wheeze, then tap a side.</li>
-          <li><strong>Tip (iPhone):</strong> First tap unlocks audio; use the on-screen controls as needed.</li>
+          <li><strong>Rotate Body:</strong> FRONT → RIGHT → BACK → LEFT views.</li>
+          <li><strong>Tap Regions:</strong> Neck (upper airway) or thorax points.</li>
+          <li><strong>Sounds:</strong> Normal vesicular, Wheezing, Coarse crackles, <em>Stridor (neck only)</em>.</li>
         </ul>
       </div>
       <div class="modal-actions">
@@ -342,37 +236,72 @@
     infoModal.addEventListener('click', (e)=>{ if(e.target === infoModal) closeModal(); });
     window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
 
-    // ----- Existing app logic (unchanged) -----
-    // Views/images (place images in same folder: front.png/right.png/back.png/left.png)
+    // ----- Simulator logic -----
     const views = ["front", "right", "back", "left"];
     const images = { front:"front.png", right:"right.png", back:"back.png", left:"left.png" };
 
-    // Map your sound types to files (put mp3s next to this HTML)
+    // Map to your uploaded mp3 filenames (same folder as this HTML)
     const SOUND_FILES = {
-      normal: "normal_sound.mp3",
-      wheeze: "wheezing_sound.mp3"
+      normal:  "Lung-NormalVesicular.mp3",
+      wheeze:  "Lung-Wheezing.mp3",
+      crackles:"Lung-CoarseCrackles.mp3",
+      stridor: "Lung-InspiratoryStridor.mp3" // neck only
     };
 
-    // Current per-side sound choices
     let sideSound = { left: "normal", right: "normal" };
+    const audio = document.getElementById("breathAudio");
+    const note  = document.getElementById("note");
 
-    function setSide(side, soundType) { sideSound[side] = soundType; }
+    function setSide(side, soundType) {
+      sideSound[side] = soundType;
+      note.textContent = ""; // clear tips when user changes selection
+    }
 
-    function play(side) {
-      const type = sideSound[side];
-      const file = SOUND_FILES[type];
-      const audio = document.getElementById("breathAudio");
-      audio.src = file;
+    function setStridorAvailability(side, enabled){
+      const opt = document.getElementById(side + "StridorOpt");
+      const select = document.getElementById(side + "Sound");
+      if (!opt || !select) return;
+      opt.disabled = !enabled;
+      if (!enabled && select.value === "stridor") {
+        // Revert gracefully to normal if user leaves neck
+        select.value = "normal";
+        sideSound[side] = "normal";
+        note.textContent = "Stridor is only available at the neck. Reverted to Normal vesicular.";
+      }
+    }
+
+    function play(side, region){
+      // Enable/disable Stridor depending on region tapped
+      const isNeck = (region === "neck");
+      setStridorAvailability(side, isNeck);
+
+      // Resolve the sound to play
+      let chosen = sideSound[side];
+      if (chosen === "stridor" && !isNeck) {
+        // Safety: shouldn't happen because we revert when leaving neck, but guard anyway
+        chosen = "normal";
+        note.textContent = "Stridor is only available when listening to the neck.";
+      } else {
+        note.textContent = ""; // clean message on valid play
+      }
+
+      const file = SOUND_FILES[chosen] || SOUND_FILES.normal;
+      if (audio.src.endsWith(file)) {
+        // restart from beginning if same file tapped again
+        try { audio.currentTime = 0; } catch(e){}
+      } else {
+        audio.src = file;
+      }
       audio.play();
     }
 
     let currentViewIndex = 0;
-
     function rotateView() {
       currentViewIndex = (currentViewIndex + 1) % views.length;
       const view = views[currentViewIndex];
-      document.getElementById("currentImage").src = images[view];
-      document.getElementById("currentImage").alt = view.charAt(0).toUpperCase() + view.slice(1);
+      const img = document.getElementById("currentImage");
+      img.src = images[view];
+      img.alt = view.charAt(0).toUpperCase() + view.slice(1);
       document.getElementById("viewLabel").textContent = `View: ${view.toUpperCase()}`;
       togglePoints(view);
     }
@@ -381,6 +310,9 @@
       document.querySelectorAll(".point").forEach(btn => {
         btn.style.display = (btn.dataset.view === view) ? "inline-block" : "none";
       });
+      // On view change, disable Stridor by default (until a Neck point is tapped)
+      setStridorAvailability("left", false);
+      setStridorAvailability("right", false);
     }
 
     // Init to front view
