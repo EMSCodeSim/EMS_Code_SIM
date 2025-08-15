@@ -5,6 +5,17 @@
   <!-- Prevent pinch/double-tap zoom so taps don't zoom the page on phones -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Daily Beat | DailyEMSQuiz</title>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-5QLPK4025C');
+  </script>
+
   <style>
     :root{
       --bg:#f0f8ff;
@@ -25,16 +36,39 @@
       -webkit-text-size-adjust:100%;
     }
     body{ display:flex; flex-direction:column; align-items:center; }
+
+    /* Top fixed header like BP sim */
     header{
       width:100%;
+      position: sticky; top:0; z-index:10;
       background: var(--brand);
       color:#fff;
-      padding: 14px 16px;
-      text-align:center;
-      position:sticky; top:0; z-index:5;
+      padding: 10px 12px;
       box-shadow: 0 2px 8px #0001;
     }
-    header h1{ margin:0; font-size: clamp(1.1rem, 2.5vw, 1.4rem); font-weight:700; letter-spacing:.3px;}
+    .topbar-inner{
+      max-width: 520px;
+      margin: 0 auto;
+      display:flex; align-items:center; gap:10px;
+    }
+    .iconbtn{
+      appearance:none; border:0; background:transparent; color:#fff;
+      display:flex; align-items:center; justify-content:center;
+      height:40px; border-radius:12px; padding:0 10px; gap:8px;
+      transition: background .2s ease, transform .04s ease;
+      -webkit-tap-highlight-color: transparent;
+      cursor:pointer;
+    }
+    .iconbtn:hover{ background: rgba(255,255,255,.12); }
+    .iconbtn:active{ transform: translateY(1px) scale(.98); }
+    .btn-label{ font-weight:800; font-size:.95rem; letter-spacing:.2px; }
+    .topbar-title{
+      flex:1; text-align:center;
+      margin:0;
+      font-size: clamp(1.05rem, 2.5vw, 1.25rem);
+      font-weight:800; letter-spacing:.3px;
+    }
+
     .container{
       width:100%;
       max-width: 520px;
@@ -128,18 +162,55 @@
       text-align:center;
       min-height: 1.4em;
     }
-    .footer-link{
-      display:block; text-align:center; margin: 10px auto 0;
-      color: var(--brand); text-decoration:none; font-weight:600;
+
+    /* Modal for Info */
+    .modal{
+      position: fixed; inset:0; display:none;
+      align-items:center; justify-content:center;
+      background: rgba(0,0,0,.48); z-index: 20; padding: 24px;
     }
+    .modal[aria-hidden="false"]{ display:flex; }
+    .modal-card{
+      width:min(640px, 100%);
+      background:#fff; color:var(--text);
+      border-radius:16px; padding:16px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.2);
+      border:1px solid #e9eef0;
+      max-height:85dvh; overflow:auto;
+    }
+    .modal-head{
+      display:flex; align-items:center; justify-content:space-between; gap:8px;
+      padding-bottom:8px; border-bottom:1px solid #e9eef0;
+    }
+    .modal-title{ font-weight:800; font-size:1.1rem; }
+    .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:10px; }
+    .btn.small{ padding:10px 14px; font-size:.95rem; }
 
     /* Reduce accidental text selection on mobile */
     button, input, a, #heart{ -webkit-user-select: none; user-select: none; }
   </style>
 </head>
 <body>
+  <!-- Sticky top header with Back + Info -->
   <header>
-    <h1>❤️ The Daily Beat</h1>
+    <div class="topbar-inner">
+      <button class="iconbtn" id="backBtn" aria-label="Go back" title="Back">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="btn-label">Back</span>
+      </button>
+
+      <h1 class="topbar-title">❤️ The Daily Beat</h1>
+
+      <button class="iconbtn" id="infoBtn" aria-label="How to use" title="Info">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 8h.01M11 11h2v6h-2z" fill="currentColor"/>
+        </svg>
+        <span class="btn-label">Info</span>
+      </button>
+    </div>
   </header>
 
   <main class="container">
@@ -169,11 +240,57 @@
       <div id="result" role="status" aria-live="polite"></div>
     </div>
 
-    <a href="index.html" class="footer-link">← Back to DailyEMSQuiz</a>
+    <!-- Removed the footer back link per request -->
   </main>
 
+  <!-- Info Modal -->
+  <div class="modal" id="infoModal" aria-hidden="true" aria-labelledby="infoTitle" role="dialog">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div class="modal-title" id="infoTitle">How this works</div>
+        <button class="iconbtn" id="closeModalBtn" aria-label="Close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div>
+        <p>Press <strong>Start</strong> to generate a random heart rhythm (30–200 BPM). Listen to the beeps and watch the heart animation, then pick your best guess with the slider and tap <strong>Check Answer</strong>.</p>
+        <ul>
+          <li><strong>&lt;60</strong> BPM: bradycardic range</li>
+          <li><strong>60–100</strong> BPM: normal resting range</li>
+          <li><strong>&gt;100</strong> BPM: tachycardic range</li>
+        </ul>
+        <p>Tap <strong>New Rhythm</strong> for another try. Audio unlocks on your first tap (iOS friendly).</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn small secondary" id="modalOkBtn">Got it</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Elements
+    // ----- Header buttons -----
+    const backBtn = document.getElementById('backBtn');
+    const infoBtn = document.getElementById('infoBtn');
+    const infoModal = document.getElementById('infoModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const modalOkBtn = document.getElementById('modalOkBtn');
+
+    function openModal(){ infoModal.setAttribute('aria-hidden','false'); }
+    function closeModal(){ infoModal.setAttribute('aria-hidden','true'); }
+
+    backBtn.addEventListener('click', () => {
+      if (history.length > 1) history.back();
+      else window.location.href = '/';
+    }, {passive:true});
+    infoBtn.addEventListener('click', openModal, {passive:true});
+    closeModalBtn.addEventListener('click', closeModal, {passive:true});
+    modalOkBtn.addEventListener('click', closeModal, {passive:true});
+    infoModal.addEventListener('click', (e)=>{ if(e.target === infoModal) closeModal(); }, {passive:true});
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
+
+    // ----- Existing app logic (unchanged) -----
     const heart = document.getElementById('heart');
     const slider = document.getElementById('slider');
     const bpmDisplay = document.getElementById('bpmValue');
@@ -183,7 +300,6 @@
     const newBtn   = document.getElementById('newBtn');
     const guessUI  = document.getElementById('guessUI');
 
-    // Audio
     let audioCtx = null;
     let beatTimer = null;
 
@@ -210,20 +326,15 @@
       osc.stop(t+0.09);
     }
 
-    // Game state
     let actualBPM = null;
     let beatIntervalMs = null;
 
-    // Random BPM each time Start is pressed (30–200 inclusive)
     function getRandomBPM(){
-      return Math.floor(Math.random() * 171) + 30;
+      return Math.floor(Math.random() * 171) + 30; // 30–200
     }
 
     function startBeat(){
-      // Init audio on user gesture
       const ctx = ensureAudioContext();
-
-      // Pick a fresh random BPM and set up UI
       actualBPM = getRandomBPM();
       beatIntervalMs = (60 / actualBPM) * 1000;
 
@@ -234,15 +345,12 @@
       newBtn.style.display   = 'block';
       result.textContent = '';
 
-      // Set heart animation speed
       heart.style.animation = `beat ${60/actualBPM}s infinite ease-in-out`;
 
-      // Color cue on slider by range
       updateSliderAccent(actualBPM);
-      // Trigger beeps repeatedly until a new rhythm is started
+
       if(beatTimer){ clearInterval(beatTimer); }
-      // Fire the first beat immediately for faster feedback
-      clickSound(ctx);
+      clickSound(ctx); // immediate first click
       beatTimer = setInterval(()=> clickSound(ctx), beatIntervalMs);
     }
 
@@ -253,7 +361,7 @@
 
     function newRhythm(){
       stopBeat();
-      startBeat(); // picks a new random BPM again
+      startBeat();
     }
 
     function checkAnswer(){
@@ -277,7 +385,6 @@
       slider.style.accentColor = color;
     }
 
-    // Listeners
     startBtn.addEventListener('click', startBeat, {passive:true});
     newBtn.addEventListener('click', newRhythm, {passive:true});
     checkBtn.addEventListener('click', checkAnswer, {passive:true});
@@ -288,12 +395,10 @@
       updateSliderAccent(bpm);
     }, {passive:true});
 
-    // Clean up on page hide to save battery
     document.addEventListener('visibilitychange', () => {
       if(document.hidden){ stopBeat(); }
     });
 
-    // Optional: resume audio context on user interaction (iOS Safari)
     ['touchstart','mousedown'].forEach(evt=>{
       window.addEventListener(evt, ()=> {
         if(audioCtx && audioCtx.state === 'suspended'){ audioCtx.resume(); }
