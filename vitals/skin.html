@@ -33,9 +33,9 @@
   .topbar-title{flex:1;text-align:center;font-weight:800;letter-spacing:.2px;font-size:1.05rem}
 
   main{width:100%;max-width:900px;padding:12px;margin:0 auto;display:grid;gap:12px}
-  .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
 
-  /* One-square split stage */
+  /* Stage */
+  .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
   .stage{display:grid;gap:10px;justify-items:center;background:var(--muted);border-radius:14px;padding:12px}
   .skin{
     position:relative; width:var(--skin-size); aspect-ratio:1/1; border-radius:18px; overflow:hidden;
@@ -47,9 +47,9 @@
     background: radial-gradient(120% 120% at 50% 20%, var(--tone-hi), var(--tone) 45%, var(--tone-lo) 85%);
     transition: filter 160ms ease, background 160ms ease;
   }
-  .left  {clip-path: inset(0 50% 0 0)}   /* left half */
-  .right {clip-path: inset(0 0 0 50%)}   /* right half */
-  .splitbar {position:absolute; top:0; bottom:0; left:50%; width:2px; background:rgba(0,0,0,.12)}
+  .left{clip-path: inset(0 50% 0 0)}   /* left half */
+  .right{clip-path: inset(0 0 0 50%)}  /* right half */
+  .splitbar{position:absolute; top:0; bottom:0; left:50%; width:2px; background:rgba(0,0,0,.12)}
 
   /* Overlays (RIGHT/NOW only) */
   .ov{position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity 140ms ease}
@@ -68,21 +68,20 @@
   .badge.left {left:6px}
   .badge.right{right:6px}
   .dot{width:16px;height:16px;border-radius:6px;border:1px solid #bfcbd1}
-  .legends{display:flex;gap:10px;justify-content:center;font-size:.9rem;opacity:.9}
-  .legends span{font-weight:800}
-  .label-left::before{content:"Sample (patient) • Left half"}
-  .label-right::before{content:"Now (changes) • Right half"}
 
-  /* Controls */
-  .controls{display:grid;gap:12px}
-  .control{background:#fff;border-radius:12px;padding:10px;border:1px solid #e8eef0}
-  .control h3{margin:.2rem 0 .6rem;font-size:.95rem}
-
-  .row{display:grid;gap:10px}
-  @media(min-width:640px){ .row{grid-template-columns:1fr 1fr} }
-
-  input[type="color"]{width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
-
+  /* Compact controls under the square */
+  .under-skin{width:100%;max-width:var(--skin-size);display:grid;gap:10px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .tbtn{
+    appearance:none; border:1px solid #d4e5ea; background:#fff; color:var(--text);
+    padding:10px 12px; font-weight:800; border-radius:10px; cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,.04);
+  }
+  .tbtn[aria-pressed="true"]{ background:#ffe; border-color:#f2d48b; color:#8a6800; }
+  .btn{
+    appearance:none; border:0; background:var(--accent); color:#fff; padding:10px 14px;
+    border-radius:10px; font-weight:800; cursor:pointer;
+  }
   .seg{
     display:inline-flex; gap:0; border:1px solid #d4e5ea; border-radius:10px; overflow:hidden; background:#f7fbfd;
   }
@@ -90,21 +89,8 @@
     appearance:none; border:0; background:transparent; padding:10px 12px; font-weight:800; cursor:pointer;
   }
   .seg button[aria-pressed="true"]{ background:#e7f4f9; color:var(--accent-dk); }
-
-  .toggles{ display:flex; gap:8px; flex-wrap:wrap; }
-  .tbtn{
-    appearance:none; border:1px solid #d4e5ea; background:#fff; color:var(--text);
-    padding:10px 12px; font-weight:800; border-radius:10px; cursor:pointer;
-    box-shadow:0 2px 8px rgba(0,0,0,.04);
-  }
-  .tbtn[aria-pressed="true"]{
-    background:#ffe; border-color:#f2d48b; color:#8a6800;
-  }
-
-  .btn{
-    appearance:none; border:0; background:var(--accent); color:#fff; padding:12px 14px;
-    border-radius:12px; font-weight:800; cursor:pointer; width:100%;
-  }
+  .picker{display:flex;justify-content:center}
+  .picker input[type="color"]{width:140px;height:44px;border-radius:10px;border:1px solid #cfe3e8;padding:4px;background:#fff}
 </style>
 </head>
 <body>
@@ -124,12 +110,11 @@
   </div>
 
   <main>
-    <!-- Stage -->
+    <!-- Stage (square + controls directly underneath) -->
     <section class="card stage">
       <div class="skin" id="skin">
         <div class="pane left"  id="paneLeft"></div>
         <div class="pane right" id="paneRight">
-          <!-- RIGHT/NOW overlays -->
           <div class="ov ov-flush"  id="ovFlush"></div>
           <div class="ov ov-cyan"   id="ovCyan"></div>
           <div class="ov ov-jaund"  id="ovJaund"></div>
@@ -137,61 +122,77 @@
         </div>
         <div class="splitbar"></div>
 
-        <!-- Badges -->
-        <div class="badge left"><span class="dot" id="dotLeft"></span><span id="hexLeft">#e5bda1</span></div>
+        <!-- Color badges -->
+        <div class="badge left"><span class="dot" id="dotLeft"></span><span id="hexLeft">#f2d6c0</span></div>
         <div class="badge right"><span class="dot" id="dotRight"></span><span id="hexRight">Now</span></div>
       </div>
-      <div class="legends">
-        <div class="label-left"></div>
-        <div class="label-right"></div>
-      </div>
-    </section>
 
-    <!-- Controls -->
-    <section class="card controls">
-      <div class="control">
-        <h3>Patient skin color</h3>
+      <!-- Controls directly under the square -->
+      <!-- Row 1: three toggles + Cap Refill button -->
+      <div class="under-skin">
         <div class="row">
-          <label>Pick baseline color
-            <input id="tonePicker" type="color" value="#e5bda1"/>
-          </label>
-          <div>
-            <label>Cap refill speed</label><br/>
-            <div class="seg" role="group" aria-label="Cap refill speed">
-              <button id="speedFast" type="button" aria-pressed="true"  data-ms="1200">&lt; 2 sec</button>
-              <button id="speedSlow" type="button" aria-pressed="false" data-ms="4000">&gt; 2 sec (4s)</button>
-            </div>
-          </div>
-        </div>
-        <div class="row" style="margin-top:8px;">
-          <button id="crtBtn" class="btn">▶️ Run Cap Refill (right half)</button>
-        </div>
-      </div>
-
-      <div class="control">
-        <h3>Toggle skin signs (right half)</h3>
-        <div class="toggles">
           <button class="tbtn" id="btnFlush"  type="button" aria-pressed="false">Flushed</button>
           <button class="tbtn" id="btnCyan"   type="button" aria-pressed="false">Cyanotic</button>
           <button class="tbtn" id="btnJaund"  type="button" aria-pressed="false">Jaundice</button>
+          <button class="btn"  id="crtBtn"    type="button">▶️ Cap Refill</button>
+        </div>
+
+        <!-- Row 2: cap refill time selector -->
+        <div class="row" aria-label="Cap refill time">
+          <div class="seg" role="group">
+            <button id="speedFast" type="button" aria-pressed="true"  data-ms="1200">&lt; 2 sec</button>
+            <button id="speedSlow" type="button" aria-pressed="false" data-ms="4000">&gt; 2 sec (4s)</button>
+          </div>
+        </div>
+
+        <!-- Row 3: skin tone picker -->
+        <div class="row picker">
+          <input id="tonePicker" title="Patient skin color" type="color" value="#f2d6c0"/>
         </div>
       </div>
     </section>
   </main>
 
   <!-- Info Modal -->
-  <div class="modal" id="infoModal" aria-hidden="true" aria-labelledby="infoTitle" role="dialog">
-    <div class="modal-card" tabindex="-1">
-      <div class="modal-header">
-        <div class="modal-title" id="infoTitle">How this works</div>
+  <div class="modal" id="infoModal" aria-hidden="true" aria-labelledby="infoTitle" role="dialog" style="position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,.48); z-index: 60; padding: 24px;">
+    <div class="modal-card" tabindex="-1" style="width:min(760px, 100%); background:#fff; border-radius:18px; padding:18px; box-shadow:var(--shadow); border:1px solid #e8eef0; max-height:85dvh; overflow:auto; color:var(--text);">
+      <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding-bottom:8px; border-bottom:1px solid #e8eef0;">
+        <div class="modal-title" id="infoTitle" style="font-weight:800; font-size:1.1rem;">How this works & why colors change</div>
         <button class="iconbtn" id="closeModalBtn" aria-label="Close" title="Close">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
       </div>
-      <div>
-        <p>The square is split: <strong>left</strong> shows the patient’s baseline color; <strong>right</strong> shows the current skin with changes. Use the three buttons to toggle <em>Flushed</em>, <em>Cyanotic</em>, or <em>Jaundice</em> on/off. “Cap Refill” blanches the right half, then refills at the selected speed.</p>
+      <div class="modal-body" style="display:grid; gap:12px;">
+        <div>
+          <p>The square is split: <strong>left</strong> shows the patient’s baseline tone; <strong>right</strong> shows the “now” appearance with any change toggled on. Pick the baseline that best matches your patient.</p>
+        </div>
+        <div>
+          <h4>Color changes</h4>
+          <ul>
+            <li><strong>Flushed</strong>: Vasodilation (fever, early sepsis, exertion, CO₂ retention, anaphylaxis). Often accentuated on the face/cheeks.</li>
+            <li><strong>Cyanotic</strong>: Deoxygenated hemoglobin. <em>Central</em> (tongue/lips) suggests hypoxemia; <em>peripheral</em> (nails) can be cold exposure, low cardiac output, vasoconstriction.</li>
+            <li><strong>Jaundice</strong>: Elevated bilirubin (liver disease, biliary obstruction, hemolysis). Check sclerae and mucous membranes; may appear subtle on darker skin.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Capillary refill</h4>
+          <p>Pressing “Cap Refill” briefly blanches the right half, then it returns to baseline at the selected speed.</p>
+          <ul>
+            <li><strong>&lt; 2 sec</strong>: Typically normal in warm environments.</li>
+            <li><strong>&gt; 2 sec (4s)</strong>: Can indicate poor perfusion (shock, dehydration), hypothermia, or intense vasoconstriction. Interpret with overall clinical context and temperature of the extremity.</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Assessment tips</h4>
+          <ul>
+            <li>Always compare to areas less affected by pigmentation (palms, soles, mucosa, sclerae).</li>
+            <li>Consider ambient light, ambient temperature, and the patient’s baseline pigmentation.</li>
+          </ul>
+        </div>
       </div>
-      <div class="modal-actions"><button class="btn small" id="modalOkBtn">Got it</button></div>
+      <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
+        <button class="btn" id="modalOkBtn" style="padding:10px 14px; font-size:.95rem;">Got it</button>
+      </div>
     </div>
   </div>
 
@@ -203,8 +204,8 @@
   const infoModal = document.getElementById('infoModal');
   const closeModalBtn = document.getElementById('closeModalBtn');
   const modalOkBtn = document.getElementById('modalOkBtn');
-  function openModal(){ infoModal.setAttribute('aria-hidden','false'); setTimeout(()=>infoModal.querySelector('.modal-card')?.focus?.(),0); }
-  function closeModal(){ infoModal.setAttribute('aria-hidden','true'); }
+  function openModal(){ infoModal.style.display='flex'; setTimeout(()=>infoModal.querySelector('.modal-card')?.focus?.(),0); }
+  function closeModal(){ infoModal.style.display='none'; }
   ['pointerdown','click'].forEach(evt=>infoBtn.addEventListener(evt, openModal, {passive:true}));
   closeModalBtn.addEventListener('click', closeModal, {passive:true});
   modalOkBtn.addEventListener('click', closeModal, {passive:true});
@@ -219,24 +220,19 @@
   const dotRight  = document.getElementById('dotRight');
   const hexLeft   = document.getElementById('hexLeft');
   const hexRight  = document.getElementById('hexRight');
+  const tonePicker= document.getElementById('tonePicker');
 
-  const tonePicker = document.getElementById('tonePicker');
-
-  // Overlays
+  // Overlays & buttons
   const ovFlush = document.getElementById('ovFlush');
   const ovCyan  = document.getElementById('ovCyan');
   const ovJaund = document.getElementById('ovJaund');
   const blanch  = document.getElementById('blanch');
-
-  // Toggle buttons
-  const btnFlush = document.getElementById('btnFlush');
-  const btnCyan  = document.getElementById('btnCyan');
-  const btnJaund = document.getElementById('btnJaund');
-
-  // Cap refill controls
+  const btnFlush= document.getElementById('btnFlush');
+  const btnCyan = document.getElementById('btnCyan');
+  const btnJaund= document.getElementById('btnJaund');
+  const crtBtn  = document.getElementById('crtBtn');
   const speedFast = document.getElementById('speedFast');
   const speedSlow = document.getElementById('speedSlow');
-  const crtBtn    = document.getElementById('crtBtn');
 
   // Utils
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
@@ -244,21 +240,7 @@
     const f=parseInt(hex.slice(1),16), t=percent<0?0:255, p=Math.abs(percent)/100;
     const R=f>>16, G=(f>>8)&255, B=f&255;
     const r=Math.round((t-R)*p)+R, g=Math.round((t-G)*p)+G, b=Math.round((t-B)*p)+B;
-    return `#${(0x1000000 + (r<<16) + (g<<8) + b).toString(16).slice(1)}`
-  }
-  function hslToHex(h,s,l){
-    s/=100; l/=100;
-    const k=n=> (n + h/30) % 12;
-    const a=s*Math.min(l,1-l);
-    const f=n=> l - a*Math.max(-1, Math.min(k(n)-3, Math.min(9-k(n),1)));
-    const toHex=x=> Math.round(x*255).toString(16).padStart(2,'0');
-    return `#${toHex(f(0))}${toHex(f(8))}${toHex(f(4))}`;
-  }
-  function randomSkinTone(){
-    const h = 14 + Math.random()*26; // 14–40
-    const s = 25 + Math.random()*40; // 25–65%
-    const l = 22 + Math.random()*56; // 22–78%
-    return hslToHex(h,s,l);
+    return `#${(0x1000000 + (r<<16) + (g<<8) + b).toString(16).slice(1)}`;
   }
   function applyTone(el, hex){
     el.style.setProperty('--tone', hex);
@@ -266,8 +248,8 @@
     el.style.setProperty('--tone-lo', shade(hex, -6));
   }
 
-  // Init baseline skin color (random, user can set)
-  let base = randomSkinTone();
+  // Start with a LIGHT tone (not random)
+  let base = '#f2d6c0';
   tonePicker.value = base;
   applyTone(paneLeft,  base);
   applyTone(paneRight, base);
