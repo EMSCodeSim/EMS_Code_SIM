@@ -9,37 +9,21 @@
       --bg:#f7fafc; --card:#ffffff; --text:#0f172a; --muted:#334155;
       --accent:#0284c7; --accent-light:#06b6d4; --ring: rgba(2,132,199,.35);
       --shadow: 0 10px 28px rgba(15,23,42,.12); --border: rgba(15,23,42,.10);
-      --green:#16a34a; --blue:#0ea5e9;
     }
     *{box-sizing:border-box}
     html,body{height:100%; touch-action: manipulation;}
-    body{
-      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background:var(--bg); color:var(--text); -webkit-tap-highlight-color: transparent;
-    }
+    body{ margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background:var(--bg); color:var(--text); -webkit-tap-highlight-color: transparent; }
 
     /* Sticky top header */
-    .topbar{
-      position: sticky; top: 0; z-index: 50;
-      padding: calc(env(safe-area-inset-top) + 8px) 14px 10px 14px;
-      background: linear-gradient(180deg, var(--accent-light) 0%, var(--accent) 100%);
-      color: #fff; border-bottom: 1px solid rgba(255,255,255,.15);
-      box-shadow: 0 8px 18px rgba(2,132,199,.25);
-    }
-    .topbar-inner{ max-width: 640px; margin: 0 auto; display:flex; align-items:center; gap:10px; }
-    .iconbtn{
-      appearance:none; border:0; background:transparent; color:#fff;
-      display:flex; align-items:center; justify-content:center;
-      height:40px; border-radius:12px; padding:0 10px; gap:8px;
-      transition: background .2s ease, transform .04s ease;
-      -webkit-tap-highlight-color: transparent; cursor:pointer;
-    }
-    .iconbtn:hover{ background: rgba(255,255,255,.12); }
-    .iconbtn:active{ transform: translateY(1px) scale(.98); }
+    .topbar{ position: sticky; top: 0; z-index: 50; padding: calc(env(safe-area-inset-top) + 8px) 14px 10px 14px;
+      background: linear-gradient(180deg, var(--accent-light) 0%, var(--accent) 100%); color:#fff; border-bottom:1px solid rgba(255,255,255,.15); box-shadow:0 8px 18px rgba(2,132,199,.25);}
+    .topbar-inner{ max-width:640px; margin:0 auto; display:flex; align-items:center; gap:10px; }
+    .iconbtn{ appearance:none; border:0; background:transparent; color:#fff; display:flex; align-items:center; justify-content:center; height:40px; border-radius:12px; padding:0 10px; gap:8px; transition:background .2s ease, transform .04s ease; cursor:pointer; }
+    .iconbtn:hover{ background:rgba(255,255,255,.12) } .iconbtn:active{ transform:translateY(1px) scale(.98) }
     .btn-label{ font-weight:800; font-size:.95rem; letter-spacing:.2px; }
     .topbar-title{ flex:1; text-align:center; font-weight:800; letter-spacing:.2px; font-size:1.15rem; }
 
-    .app{ max-width: 640px; margin: 0 auto; padding: 12px 18px calc(env(safe-area-inset-bottom) + 12px); min-height: 100dvh; display:flex; flex-direction:column; gap:16px; }
+    .app{ max-width:640px; margin:0 auto; padding:12px 18px calc(env(safe-area-inset-bottom) + 12px); min-height:100dvh; display:flex; flex-direction:column; gap:16px; }
     .subtitle{ margin:2px 0 0; color:var(--muted); font-size:1rem; text-align:center; }
     .card{ background:var(--card); border:1px solid var(--border); border-radius:18px; padding:16px; box-shadow:var(--shadow); }
 
@@ -50,17 +34,12 @@
       border:1px solid var(--border); color:var(--text);
       background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
       box-shadow: 0 6px 16px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.8);
-      transition: transform .04s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
-      -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; cursor:pointer;
+      transition: transform .04s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease; cursor:pointer;
     }
     .btn:active{ transform: translateY(1px) scale(.99); }
-    .btn:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; }
     .btn-primary{ color:#fff; border-color: rgba(2,132,199,.55); background: linear-gradient(180deg, var(--accent-light) 0%, var(--accent) 100%); }
 
-    .image-container{
-      position:relative; width:min(94vw, 420px); border-radius:16px; overflow:hidden; border:1px solid var(--border);
-      box-shadow: 0 6px 16px rgba(15,23,42,.08); background:#fff;
-    }
+    .image-container{ position:relative; width:min(94vw, 420px); border-radius:16px; overflow:hidden; border:1px solid var(--border); box-shadow:0 6px 16px rgba(15,23,42,.08); background:#fff; }
     .image-container img{ display:block; width:100%; height:auto; user-select:none; -webkit-user-drag:none; }
 
     .point{
@@ -84,15 +63,6 @@
     audio{ width:100%; }
 
     footer{ margin-top:auto; text-align:center; color:var(--muted); font-size:.85rem; opacity:.9; padding:8px 0 6px; }
-
-    /* Modal */
-    .modal{ position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,.48); z-index: 60; padding: 24px; }
-    .modal[aria-hidden="false"]{ display:flex; }
-    .modal-card{ width:min(680px, 100%); background:#fff; border-radius:18px; padding:18px; box-shadow: var(--shadow); border:1px solid var(--border); max-height: 85dvh; overflow:auto; color: var(--text); }
-    .modal-header{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding-bottom:8px; border-bottom:1px solid var(--border); }
-    .modal-title{ font-weight:800; font-size:1.1rem; }
-    .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:10px; }
-    .modal .btn{ font-weight:800; }
   </style>
 </head>
 <body>
@@ -131,25 +101,31 @@
         <div class="image-container">
           <img id="currentImage" src="front.png" alt="Front">
 
-          <!-- FRONT (thorax regions) -->
-          <button class="point" data-view="front" data-region="thorax" style="top:26%; left:24%;"  onclick="play('left',  this.dataset.region)">ULL</button>
-          <button class="point" data-view="front" data-region="thorax" style="top:26%; right:24%;" onclick="play('right', this.dataset.region)">URL</button>
-          <button class="point" data-view="front" data-region="thorax" style="top:64%; left:24%;"  onclick="play('left',  this.dataset.region)">LLL</button>
-          <button class="point" data-view="front" data-region="thorax" style="top:64%; right:24%;" onclick="play('right', this.dataset.region)">LRL</button>
+          <!-- FRONT (patient facing you): screen-left = patient RIGHT  -->
+          <!-- Upper lobes -->
+          <button class="point" data-view="front" data-region="thorax" style="top:26%; left:24%;"  onclick="play('right', this.dataset.region)">RUL</button>
+          <button class="point" data-view="front" data-region="thorax" style="top:26%; right:24%;" onclick="play('left',  this.dataset.region)">LUL</button>
+          <!-- Lower lobes -->
+          <button class="point" data-view="front" data-region="thorax" style="top:64%; left:24%;"  onclick="play('right', this.dataset.region)">RLL</button>
+          <button class="point" data-view="front" data-region="thorax" style="top:64%; right:24%;" onclick="play('left',  this.dataset.region)">LLL</button>
 
-          <!-- BACK (thorax regions) -->
-          <button class="point" data-view="back" data-region="thorax" style="top:26%; left:24%;"  onclick="play('left',  this.dataset.region)">ULL</button>
-          <button class="point" data-view="back" data-region="thorax" style="top:26%; right:24%;" onclick="play('right', this.dataset.region)">URL</button>
+          <!-- BACK (viewer behind patient): screen-left = patient LEFT -->
+          <button class="point" data-view="back" data-region="thorax" style="top:26%; left:24%;"  onclick="play('left',  this.dataset.region)">LUL</button>
+          <button class="point" data-view="back" data-region="thorax" style="top:26%; right:24%;" onclick="play('right', this.dataset.region)">RUL</button>
           <button class="point" data-view="back" data-region="thorax" style="top:64%; left:24%;"  onclick="play('left',  this.dataset.region)">LLL</button>
-          <button class="point" data-view="back" data-region="thorax" style="top:64%; right:24%;" onclick="play('right', this.dataset.region)">LRL</button>
+          <button class="point" data-view="back" data-region="thorax" style="top:64%; right:24%;" onclick="play('right', this.dataset.region)">RLL</button>
 
-          <!-- RIGHT view -->
-          <button class="point" data-view="right" data-region="neck"      style="top:22%; left:40%;" onclick="play('right', this.dataset.region)">Neck</button>
-          <button class="point" data-view="right" data-region="thorax"    style="top:62%; left:40%;" onclick="play('right', this.dataset.region)">Midaxillary</button>
+          <!-- RIGHT view (patient’s right side) -->
+          <button class="point" data-view="right" data-region="neck"   style="top:22%; left:40%;" onclick="play('right', this.dataset.region)">Neck</button>
+          <button class="point" data-view="right" data-region="thorax" style="top:62%; left:40%;" onclick="play('right', this.dataset.region)">Midaxillary</button>
 
-          <!-- LEFT view -->
-          <button class="point" data-view="left"  data-region="neck"      style="top:22%; left:40%;" onclick="play('left',  this.dataset.region)">Neck</button>
-          <button class="point" data-view="left"  data-region="thorax"    style="top:62%; left:40%;" onclick="play('left',  this.dataset.region)">Midaxillary</button>
+          <!-- LEFT view (patient’s left side) -->
+          <button class="point" data-view="left"  data-region="neck"   style="top:22%; left:40%;" onclick="play('left',  this.dataset.region)">Neck</button>
+          <button class="point" data-view="left"  data-region="thorax" style="top:62%; left:40%;" onclick="play('left',  this.dataset.region)">Midaxillary</button>
+        </div>
+
+        <div class="subtitle" style="font-size:.9rem; opacity:.85;">
+          Front view is mirrored to patient: screen-left = patient’s <strong>RIGHT</strong>.
         </div>
       </div>
 
@@ -204,9 +180,9 @@
       </div>
       <div>
         <ul>
-          <li><strong>Rotate Body:</strong> FRONT → RIGHT → BACK → LEFT views.</li>
-          <li><strong>Tap Regions:</strong> Neck (upper airway) or thorax points.</li>
-          <li><strong>Sounds:</strong> Normal vesicular, Wheezing, Coarse crackles, <em>Stridor (neck only)</em>.</li>
+          <li><strong>Front view:</strong> Left/right reflect the <em>patient’s</em> left/right (mirrored on screen).</li>
+          <li><strong>Back/Side views:</strong> Oriented anatomically as shown.</li>
+          <li><strong>Stridor:</strong> Only available at the <em>Neck</em> landmarks.</li>
         </ul>
       </div>
       <div class="modal-actions">
@@ -240,7 +216,7 @@
     const views = ["front", "right", "back", "left"];
     const images = { front:"front.png", right:"right.png", back:"back.png", left:"left.png" };
 
-    // Map to your uploaded mp3 filenames (same folder as this HTML)
+    // Sound files (placed alongside this HTML)
     const SOUND_FILES = {
       normal:  "Lung-NormalVesicular.mp3",
       wheeze:  "Lung-Wheezing.mp3",
@@ -254,7 +230,7 @@
 
     function setSide(side, soundType) {
       sideSound[side] = soundType;
-      note.textContent = ""; // clear tips when user changes selection
+      note.textContent = "";
     }
 
     function setStridorAvailability(side, enabled){
@@ -263,7 +239,6 @@
       if (!opt || !select) return;
       opt.disabled = !enabled;
       if (!enabled && select.value === "stridor") {
-        // Revert gracefully to normal if user leaves neck
         select.value = "normal";
         sideSound[side] = "normal";
         note.textContent = "Stridor is only available at the neck. Reverted to Normal vesicular.";
@@ -273,21 +248,19 @@
     function play(side, region){
       // Enable/disable Stridor depending on region tapped
       const isNeck = (region === "neck");
-      setStridorAvailability(side, isNeck);
+      setStridorAvailability("left",  isNeck && side === "left");
+      setStridorAvailability("right", isNeck && side === "right");
 
-      // Resolve the sound to play
       let chosen = sideSound[side];
       if (chosen === "stridor" && !isNeck) {
-        // Safety: shouldn't happen because we revert when leaving neck, but guard anyway
         chosen = "normal";
         note.textContent = "Stridor is only available when listening to the neck.";
       } else {
-        note.textContent = ""; // clean message on valid play
+        note.textContent = "";
       }
 
       const file = SOUND_FILES[chosen] || SOUND_FILES.normal;
       if (audio.src.endsWith(file)) {
-        // restart from beginning if same file tapped again
         try { audio.currentTime = 0; } catch(e){}
       } else {
         audio.src = file;
@@ -310,7 +283,7 @@
       document.querySelectorAll(".point").forEach(btn => {
         btn.style.display = (btn.dataset.view === view) ? "inline-block" : "none";
       });
-      // On view change, disable Stridor by default (until a Neck point is tapped)
+      // Disable Stridor by default after view change; it re-enables when tapping a Neck point
       setStridorAvailability("left", false);
       setStridorAvailability("right", false);
     }
