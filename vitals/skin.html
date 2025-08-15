@@ -2,19 +2,47 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no"/>
 <title>Skin Signs + Cap Refill + Turgor</title>
 <style>
   :root{
     --brand:#007B8A; --brand-dark:#0a616c;
     --bg:#f0f8ff; --panel:#fff; --muted:#e7f4f7; --text:#0f2b33;
     --shadow:0 10px 24px rgba(0,0,0,.08); --radius:16px;
+    --accent:#0284c7; --accent-2:#06b6d4;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);
-       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-       display:flex;flex-direction:column;align-items:center;min-height:100vh}
-  header{width:100%;background:var(--brand);color:#fff;text-align:center;padding:14px 16px;font-weight:600}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    display:flex;flex-direction:column;align-items:center;min-height:100vh
+  }
+
+  /* Fixed/Sticky header with Back + Info */
+  .topbar{
+    position: sticky; top: 0; z-index: 50;
+    padding: calc(env(safe-area-inset-top) + 8px) 14px 10px 14px;
+    width:100%;
+    background: linear-gradient(180deg, var(--accent-2) 0%, var(--accent) 100%);
+    color:#fff; border-bottom:1px solid rgba(255,255,255,.15);
+    box-shadow:0 8px 18px rgba(2,132,199,.25);
+  }
+  .topbar-inner{
+    max-width:1100px; margin:0 auto; display:flex; align-items:center; gap:10px;
+  }
+  .iconbtn{
+    appearance:none; border:0; background:transparent; color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    height:40px; border-radius:12px; padding:0 10px; gap:8px;
+    transition: background .2s ease, transform .04s ease; cursor:pointer;
+  }
+  .iconbtn:hover{ background: rgba(255,255,255,.12); }
+  .iconbtn:active{ transform: translateY(1px) scale(.98); }
+  .btn-label{ font-weight:800; font-size:.95rem; letter-spacing:.2px; }
+  .topbar-title{
+    flex:1; text-align:center; font-weight:800; letter-spacing:.2px; font-size:1.05rem;
+  }
+
   main{width:100%;max-width:1100px;padding:12px;display:grid;gap:12px}
   .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
   .layout{display:grid;gap:12px}
@@ -33,8 +61,24 @@
     background: radial-gradient(120% 120% at 50% 20%, var(--tone-hi), var(--tone) 45%, var(--tone-lo) 85%);
     transition: filter 160ms ease, background 160ms ease;
   }
+
+  /* Baseline tone badge (upper-left) */
+  .tone-badge{
+    position:absolute; top:8px; left:8px; z-index:3;
+    background:#ffffffd9; border:1px solid #dbe7ec; border-radius:12px;
+    display:flex; align-items:center; gap:8px; padding:6px 9px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.10);
+    font-weight:700; font-size:.9rem;
+  }
+  .tone-dot{
+    width:18px; height:18px; border-radius:6px; border:1px solid #bfcbd1;
+    background:#e5bda1;
+  }
+  .tone-hex{ font-variant-numeric: tabular-nums; }
+
   .label{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
-         background:#ffffffcc;padding:4px 10px;border-radius:999px;font-size:.9rem}
+         background:#ffffffcc;padding:4px 10px;border-radius:999px;font-size:.9rem;z-index:2}
+
   /* Overlays (signs) */
   .ov{position:absolute; inset:0; border-radius:18px; pointer-events:none; opacity:0; transition:opacity 140ms ease}
   .ov-pale{background:radial-gradient(120% 120% at 50% 20%, rgba(255,255,255,.20), rgba(255,255,255,.08) 50%, transparent 75%)}
@@ -42,7 +86,7 @@
   .ov-cyan{ background:radial-gradient(120% 120% at 50% 25%, rgba(40,100,180,.22), rgba(40,100,180,.10) 55%, transparent 80%)}
   .ov-jaund{background:radial-gradient(120% 120% at 50% 25%, rgba(240,210,60,.22), rgba(240,210,60,.10) 55%, transparent 80%)}
 
-  /* Mottling: noise-based to avoid perfect circles */
+  /* Mottling and rash textures */
   .ov-mottle{
     background-image:
       radial-gradient(8px 8px at 20% 30%, rgba(120,60,60,.20), transparent 60%),
@@ -50,11 +94,8 @@
       radial-gradient(7px 7px at 35% 70%, rgba(120,60,60,.16), transparent 60%),
       radial-gradient(9px 9px at 80% 40%, rgba(120,60,60,.18), transparent 60%),
       radial-gradient(6px 6px at 55% 50%, rgba(120,60,60,.16), transparent 60%);
-    mix-blend-mode:multiply;
-    filter: blur(0.5px);
+    mix-blend-mode:multiply; filter: blur(0.5px);
   }
-
-  /* Rash: speckled maculopapular look via multi-layer noise */
   .ov-rash{
     background-image:
       radial-gradient(3px 3px at 25% 30%, rgba(180,40,40,.45), transparent 60%),
@@ -62,8 +103,7 @@
       radial-gradient(2.8px 2.8px at 40% 65%, rgba(180,40,40,.35), transparent 60%),
       radial-gradient(3.2px 3.2px at 78% 75%, rgba(180,40,40,.35), transparent 60%),
       radial-gradient(2.4px 2.4px at 18% 72%, rgba(180,40,40,.35), transparent 60%);
-    mix-blend-mode:multiply;
-    filter: blur(.2px);
+    mix-blend-mode:multiply; filter: blur(.2px);
   }
 
   /* Moisture/Temp */
@@ -81,7 +121,7 @@
            background: radial-gradient(140% 140% at 50% 35%, rgba(255,255,255,.65), rgba(255,255,255,.25) 45%, transparent 75%);
            transition: opacity 120ms ease; }
 
-  /* Turgor “tent” indicator (simple ridge that relaxes) */
+  /* Turgor ridge */
   .turgor{
     position:absolute; left:50%; top:40%; width:46%; height:12%;
     transform:translateX(-50%) scaleY(0); transform-origin:center bottom;
@@ -106,18 +146,46 @@
   .btn{appearance:none;border:0;background:var(--brand);color:#fff;padding:12px 14px;border-radius:12px;
        font-weight:700;cursor:pointer;width:100%}
   .btn.alt{background:#124b54}
-  .btn.warn{background:#c77b00}
   .btn.bad{background:#b81e2b}
-  .btn.ghost{background:#fff; color:var(--brand); border:2px solid var(--brand)}
-  .btn:active{transform:translateY(1px)}
-  .status{font-size:.9rem;padding:8px 10px;border-radius:10px;background:#fff;border:1px solid #e8eef0;color:#0b3b44}
-  .swatch{display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:center;background:#fff;border:1px solid #e8eef0;border-radius:12px;padding:8px}
-  .chip{width:64px;height:40px;border-radius:8px;border:1px solid #dfe7ea}
   footer{opacity:.7;font-size:.85rem;padding:12px}
+
+  /* Info modal */
+  .modal{ position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,.48); z-index: 60; padding: 24px; }
+  .modal[aria-hidden="false"]{ display:flex; }
+  .modal-card{ width:min(760px, 100%); background:#fff; border-radius:18px; padding:18px; box-shadow:var(--shadow); border:1px solid #e8eef0; max-height: 85dvh; overflow:auto; color: var(--text); }
+  .modal-header{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding-bottom:8px; border-bottom:1px solid #e8eef0; }
+  .modal-title{ font-weight:800; font-size:1.1rem; }
+  .modal-grid{ display:grid; grid-template-columns: 1fr; gap:12px; }
+  @media(min-width:700px){ .modal-grid{ grid-template-columns: 1fr 1fr; } }
+  .info-card{ border:1px solid #e8eef0; border-radius:12px; padding:12px; }
+  .chips{ display:flex; gap:6px; flex-wrap:wrap; margin:6px 0 2px; }
+  .chip{ background:#eef6ff; color:#0b5cab; padding:4px 8px; border-radius:999px; font-weight:700; font-size:.8rem; }
+  .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+  .btn.small{ padding:10px 14px; font-size:.95rem; background:var(--brand); }
 </style>
 </head>
 <body>
-<header>Skin Signs + Cap Refill + Turgor</header>
+  <!-- Fixed/Sticky Top Header -->
+  <div class="topbar" role="banner">
+    <div class="topbar-inner">
+      <button class="iconbtn" id="backBtn" aria-label="Go back" title="Back">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="btn-label">Back</span>
+      </button>
+
+      <div class="topbar-title">Skin Signs • Cap Refill • Turgor</div>
+
+      <button class="iconbtn" id="infoBtn" aria-label="Info" title="Info">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 8h.01M11 11h2v6h-2z" fill="currentColor"/>
+        </svg>
+        <span class="btn-label">Info</span>
+      </button>
+    </div>
+  </div>
 
 <main>
   <section class="card layout">
@@ -125,6 +193,12 @@
     <div class="stage">
       <div class="skin-wrap">
         <div class="skin" id="skin">
+          <!-- Baseline tone badge (random on load) -->
+          <div class="tone-badge" id="toneBadge">
+            <span class="tone-dot" id="toneDot"></span>
+            <span class="tone-hex" id="toneHex">#e5bda1</span>
+          </div>
+
           <!-- Signs overlays -->
           <div class="ov ov-pale"   id="ovPale"></div>
           <div class="ov ov-flush"  id="ovFlush"></div>
@@ -151,10 +225,10 @@
     <!-- CONTROLS -->
     <div class="controls">
       <div class="control">
-        <h3>Baseline Tone (Static)</h3>
+        <h3>Baseline Tone</h3>
         <div class="row">
           <div>
-            <label>Pick tone once
+            <label>Pick tone
               <input id="tonePicker" type="color" value="#e5bda1"/>
             </label>
           </div>
@@ -162,12 +236,6 @@
             <label>Lock baseline
               <button id="lockBtn" class="btn">🔒 Lock Baseline</button>
             </label>
-          </div>
-        </div>
-        <div class="swatch" aria-live="polite">
-          <div class="chip" id="chip"></div>
-          <div>
-            <div class="status" id="toneHex">#e5bda1</div>
           </div>
         </div>
       </div>
@@ -255,27 +323,84 @@
         </div>
       </div>
 
-      <div class="control">
-        <h3>Scenario & Export</h3>
-        <div class="row">
-          <button id="randomizeBtn" class="btn warn">🎲 Randomize Signs</button>
-          <button id="resetBtn" class="btn bad">Reset All</button>
-        </div>
-        <div class="row" style="margin-top:8px">
-          <button id="emitBtn" class="btn">Emit Result (window.dispatchEvent)</button>
-          <button id="tipsBtn" class="btn ghost">Tips</button>
-        </div>
-        <div class="status" id="status">Pick & lock a tone. Move sliders to set signs. CRT: press/hold on skin. Turgor: press/hold Pinch.</div>
-      </div>
+      <!-- Scenario & Export card removed per request -->
     </div>
   </section>
 </main>
 
 <footer>© EMS Code Sim — Skin Signs Trainer</footer>
 
+<!-- Info Modal -->
+<div class="modal" id="infoModal" aria-hidden="true" aria-labelledby="infoTitle" role="dialog">
+  <div class="modal-card" tabindex="-1">
+    <div class="modal-header">
+      <div class="modal-title" id="infoTitle">Using this simulator</div>
+      <button class="iconbtn" id="closeModalBtn" aria-label="Close" title="Close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-grid">
+      <div class="info-card">
+        <div class="chips"><span class="chip">Baseline tone</span><span class="chip">Randomized</span></div>
+        <p>Pick a tone that matches the patient and <strong>Lock</strong> it before timing CRT or turgor. Baseline swatch is shown in the skin’s upper-left.</p>
+      </div>
+      <div class="info-card">
+        <div class="chips"><span class="chip">Skin signs</span></div>
+        <ul>
+          <li><strong>Pallor:</strong> low perfusion/shock, anemia.</li>
+          <li><strong>Cyanosis:</strong> hypoxemia.</li>
+          <li><strong>Flushed:</strong> fever, vasodilation, CO₂ retention.</li>
+          <li><strong>Jaundice:</strong> bilirubin elevation.</li>
+          <li><strong>Mottled:</strong> poor perfusion/cold stress.</li>
+          <li><strong>Rash:</strong> infection, allergy, drug reaction (pattern dependent).</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <div class="chips"><span class="chip">CRT</span></div>
+        <p><strong>Press & hold</strong> the skin to blanch, then release. The timer stops at ~90% recovery. Adjust “Target refill” and “Abnormal ≥” as needed.</p>
+      </div>
+      <div class="info-card">
+        <div class="chips"><span class="chip">Turgor</span></div>
+        <p>Use <strong>Pinch Skin</strong> to raise a ridge; release to time recoil. Longer recoil suggests dehydration/aging skin changes.</p>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn small" id="modalOkBtn">Got it</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
-  // --- DOM
+  // ----- Header actions & Info modal -----
+  const backBtn = document.getElementById('backBtn');
+  const infoBtn = document.getElementById('infoBtn');
+  const infoModal = document.getElementById('infoModal');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const modalOkBtn = document.getElementById('modalOkBtn');
+
+  function openModal(){
+    infoModal.setAttribute('aria-hidden','false');
+    setTimeout(()=>{ infoModal.querySelector('.modal-card')?.focus?.(); }, 0);
+  }
+  function closeModal(){ infoModal.setAttribute('aria-hidden','true'); }
+
+  ['pointerdown','click'].forEach(evt=>{
+    infoBtn.addEventListener(evt, openModal, {passive:true});
+  });
+  closeModalBtn.addEventListener('click', closeModal, {passive:true});
+  modalOkBtn.addEventListener('click', closeModal, {passive:true});
+  infoModal.addEventListener('click', (e)=>{ if(e.target === infoModal) closeModal(); }, {passive:true});
+  window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
+
+  backBtn.addEventListener('click', () => {
+    if (window.history.length > 1) { window.history.back(); }
+    else { window.location.href = '/'; }
+  }, {passive:true});
+
+  // ----- DOM
   const skin = document.getElementById('skin');
   const ovPale = document.getElementById('ovPale');
   const ovFlush = document.getElementById('ovFlush');
@@ -292,7 +417,7 @@
 
   const tonePicker = document.getElementById('tonePicker');
   const lockBtn = document.getElementById('lockBtn');
-  const chip = document.getElementById('chip');
+  const toneDot = document.getElementById('toneDot');
   const toneHex = document.getElementById('toneHex');
 
   const pallor = document.getElementById('pallor');
@@ -323,12 +448,6 @@
   const crtSecEl = document.getElementById('crtSec');
   const crtStatus = document.getElementById('crtStatus');
 
-  const randomizeBtn = document.getElementById('randomizeBtn');
-  const resetBtn = document.getElementById('resetBtn');
-  const emitBtn = document.getElementById('emitBtn');
-  const tipsBtn = document.getElementById('tipsBtn');
-  const statusEl = document.getElementById('status');
-
   // --- Model
   let baseline = '#e5bda1';
   let locked = false;
@@ -343,34 +462,56 @@
 
   // Utils
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
-  const lerp=(a,b,t)=>a+(b-a)*t;
   function shade(hex,percent){
     const f=parseInt(hex.slice(1),16), t=percent<0?0:255, p=Math.abs(percent)/100;
     const R=f>>16, G=(f>>8)&255, B=f&255;
     const r=Math.round((t-R)*p)+R, g=Math.round((t-G)*p)+G, b=Math.round((t-B)*p)+B;
     return `#${(0x1000000 + (r<<16) + (g<<8) + b).toString(16).slice(1)}`
   }
-  function mapCurve(v){ return Math.pow(v/100, 0.85) } // slider -> opacity curve
+  const mapCurve=v=>Math.pow(v/100, 0.85);
 
   function applyTone(hex){
     skin.style.setProperty('--tone', hex);
     skin.style.setProperty('--tone-hi', shade(hex, +6));
     skin.style.setProperty('--tone-lo', shade(hex, -6));
-    chip.style.background = hex;
+    toneDot.style.background = hex;
     toneHex.textContent = hex.toLowerCase();
+    tonePicker.value = hex;
+  }
+
+  // Random realistic skin tone (HSL → HEX)
+  function hslToHex(h,s,l){
+    s/=100; l/=100;
+    const k=n=> (n + h/30) % 12;
+    const a=s*Math.min(l,1-l);
+    const f=n=> l - a*Math.max(-1, Math.min(k(n)-3, Math.min(9-k(n),1)));
+    const toHex=x=> Math.round(x*255).toString(16).padStart(2,'0');
+    return `#${toHex(f(0))}${toHex(f(8))}${toHex(f(4))}`;
+  }
+  function randomSkinTone(){
+    // Broad, inclusive range of human skin tones
+    const h = 14 + Math.random()*26;         // 14–40 (peach→tan/olive)
+    const s = 25 + Math.random()*40;         // 25–65%
+    const l = 22 + Math.random()*56;         // 22–78% (dark → light)
+    return hslToHex(h, s, l);
   }
 
   // Tone picking & lock
-  applyTone(baseline);
+  function initTone(){
+    baseline = randomSkinTone();   // randomized on load
+    applyTone(baseline);
+  }
+  initTone();
+
   tonePicker.addEventListener('input', ()=>{
-    if(locked){ status('Baseline locked. Unlock to change.'); tonePicker.value = baseline; return; }
+    if(locked){ status(''); tonePicker.value = baseline; return; }
     baseline = tonePicker.value; applyTone(baseline);
   });
   lockBtn.addEventListener('click', ()=>{
     locked = !locked;
     lockBtn.textContent = locked ? '🔓 Unlock Baseline' : '🔒 Lock Baseline';
     tonePicker.disabled = locked;
-    status(locked ? 'Baseline locked.' : 'Baseline unlocked.');
+    status('');
   });
 
   // Signs rendering
@@ -380,16 +521,14 @@
     ovCyan.style.opacity   = mapCurve(Number(cyan.value));
     ovJaund.style.opacity  = mapCurve(Number(jaund.value));
     ovMottle.style.opacity = mapCurve(Number(mottle.value))*0.9;
-    ovRash.style.opacity   = mapCurve(Number(rash.value))*0.95;
+    ovRash .style.opacity  = mapCurve(Number(rash.value))*0.95;
 
-    // Temp tints
     ovCool.style.opacity = tempSel.value==='cool' ? .35 : 0;
     ovWarm.style.opacity = tempSel.value==='warm' ? .35 : 0;
 
-    // Moisture visuals
     const m = Number(moist.value)/100;
-    ovSheen.style.opacity = clamp(m*0.9, 0, 0.9);
-    ovDrops.style.opacity = m>0.6 ? clamp((m-0.6)/0.4, 0, 1) : 0;
+    ovSheen.style.opacity = Math.min(m*0.9, 0.9);
+    ovDrops.style.opacity = m>0.6 ? Math.min((m-0.6)/0.4, 1) : 0;
 
     moistLabel.textContent = m<.1?'Dry': m<.4?'Slight': m<.7?'Clammy':'Diaphoretic';
     tempLabel.textContent = tempSel.value[0].toUpperCase()+tempSel.value.slice(1);
@@ -412,7 +551,7 @@
 
   // CRT interaction (press skin)
   function startPress(){
-    if(!locked){ status('Lock baseline before CRT.'); return; }
+    if(!locked){ return; } // require locked baseline for timing
     if(pressingCRT) return;
     pressingCRT = true; crtMeasured=null; pressStart=performance.now(); releaseStart=0; refillPct=0;
     blanchAmt=0; requestAnimationFrame(stepPressIn);
@@ -441,7 +580,6 @@
     else{
       blanchAmt=0; renderBlanch();
       if(crtMeasured===null){ crtMeasured = now - releaseStart; showCRT(crtMeasured); }
-      status('Cap refill complete.');
     }
   }
   function renderBlanch(){
@@ -470,7 +608,7 @@
   window.addEventListener('touchend', (e)=>{ e.preventDefault(); endPinch(); }, {passive:false});
 
   function startPinch(){
-    if(!locked){ status('Lock baseline before turgor.'); return; }
+    if(!locked){ return; } // require locked baseline
     if(pinching) return;
     pinching=true; turgorMeasured=null; pinchStart=performance.now(); turgorStart=0;
     ridgeScale=0; requestAnimationFrame(stepPinchIn);
@@ -499,7 +637,6 @@
     else{
       ridgeScale = 0; renderRidge();
       if(turgorMeasured===null){ turgorMeasured = now - turgorStart; showTurgor(turgorMeasured); }
-      status('Turgor recoil complete.');
     }
   }
   function renderRidge(){
@@ -514,94 +651,25 @@
     turgorStatus.style.color = ok ? '#0a8f5b' : '#b81e2b';
   }
 
-  // Scenario + export
-  function updateScenario(){
+  // Timing settings (remain configurable)
+  function updateTiming(){
     crtTargetMs = Number(crtTarget.value)||1500;
-    crtAbnMs = Number(crtThresh.value)||2000;
+    crtAbnMs    = Number(crtThresh.value)||2000;
     turgorTargetMs = Number(turgorTarget.value)||600;
-    turgorAbnMs = Number(turgorThresh.value)||2000;
+    turgorAbnMs    = Number(turgorThresh.value)||2000;
   }
-  [crtTarget,crtThresh,turgorTarget,turgorThresh].forEach(el=>el.addEventListener('input', updateScenario));
-  updateScenario();
+  [crtTarget,crtThresh,turgorTarget,turgorThresh].forEach(el=>el.addEventListener('input', updateTiming));
+  updateTiming();
 
-  randomizeBtn.addEventListener('click', ()=>{
-    const rand=()=>Math.floor(Math.random()*101);
-    pallor.value=rand(); flush.value=rand(); cyan.value=rand();
-    jaund.value=rand(); mottle.value=rand(); rash.value=rand();
-    tempSel.value = Math.random()<.33?'cool':(Math.random()<.5?'normal':'warm');
-    moist.value = rand();
-    renderSigns();
-    status('Randomized skin signs.');
-  });
-
-  resetBtn.addEventListener('click', ()=>{
-    pallor.value=0; flush.value=0; cyan.value=0; jaund.value=0; mottle.value=0; rash.value=0;
-    tempSel.value='normal'; moist.value=0; renderSigns();
-    // CRT reset
-    pressingCRT=false; blanchAmt=0; skin.style.filter='none'; blanch.style.opacity=0;
-    crtMeasured=null; crtMsEl.textContent='—'; crtSecEl.textContent='—'; crtStatus.textContent='Ready'; crtStatus.style.color='';
-    // Turgor reset
-    pinching=false; ridgeScale=0; turgorRidge.style.opacity=0; turgorMeasured=null;
-    turgorMsEl.textContent='—'; turgorSecEl.textContent='—'; turgorStatus.textContent='Ready'; turgorStatus.style.color='';
-    status('Reset all.');
-  });
-
-  turgorReset.addEventListener('click', ()=>{
+  document.getElementById('turgorReset').addEventListener('click', ()=>{
     pinching=false; ridgeScale=0; renderRidge();
     turgorMeasured=null; turgorMsEl.textContent='—'; turgorSecEl.textContent='—'; turgorStatus.textContent='Ready'; turgorStatus.style.color='';
-    status('Turgor reset.');
   });
 
-  emitBtn.addEventListener('click', ()=>{
-    const payload = {
-      baseline_hex: baseline,
-      signs: {
-        pallor: Number(pallor.value),
-        flushed: Number(flush.value),
-        cyanosis: Number(cyan.value),
-        jaundice: Number(jaund.value),
-        mottled: Number(mottle.value),
-        rash: Number(rash.value)
-      },
-      temp: tempSel.value,
-      moisture: Number(moist.value),
-      crt: {
-        target_ms: crtTargetMs,
-        threshold_ms: crtAbnMs,
-        measured_ms: crtMeasured==null?null:Math.round(crtMeasured),
-        normal: crtMeasured==null?null:(crtMeasured<crtAbnMs)
-      },
-      turgor: {
-        target_ms: turgorTargetMs,
-        threshold_ms: turgorAbnMs,
-        measured_ms: turgorMeasured==null?null:Math.round(turgorMeasured),
-        normal: turgorMeasured==null?null:(turgorMeasured<turgorAbnMs)
-      },
-      summary: summarize(),
-      timestamp: Date.now()
-    };
-    window.dispatchEvent(new CustomEvent('skin-sim-result',{ detail: payload }));
-    console.log('[skin-sim-result]', payload);
-    status('Emitted skin-sim-result.');
-  });
+  function status(_msg){ /* no-op (status panel removed) */ }
 
-  tipsBtn.addEventListener('click', ()=>{
-    alert(
-`How to use:
-• Pick a baseline skin tone that matches your patient, then LOCK it.
-• Set skin signs with the sliders: pale, cyanotic, flushed, jaundice, mottled, rash.
-• Temperature & moisture update visuals and KPIs.
-• Capillary refill: press & hold on the skin to blanch; release to time refill (90% recovery).
-• Turgor: press & hold “Pinch Skin”; release to time recoil.
-• “Emit Result” sends a skin-sim-result event with all values for grading/recording.`
-    );
-  });
-
-  function status(msg){ statusEl.textContent = msg }
-
-  // Initial tone
-  tonePicker.addEventListener('change', ()=>{ baseline = tonePicker.value; });
-  applyTone(baseline);
+  // Initial render
+  renderSigns();
 })();
 </script>
 </body>
