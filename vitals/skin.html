@@ -3,13 +3,23 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no"/>
-<title>Skin Signs • One-Screen Split View</title>
+<title>Skin Signs • Split View</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-5QLPK4025C');
+</script>
+
 <style>
   :root{
     --bg:#f0f8ff; --panel:#fff; --text:#0f2b33; --muted:#e7f4f7;
-    --accent:#0284c7; --accent-2:#06b6d4;
+    --accent:#0284c7; --accent-2:#06b6d4; --accent-dk:#0b6a9e;
     --shadow:0 10px 24px rgba(0,0,0,.08); --radius:16px;
-    --skin-size: min(92vw, 380px);
+    --skin-size: min(92vw, 420px);
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
@@ -37,72 +47,64 @@
     background: radial-gradient(120% 120% at 50% 20%, var(--tone-hi), var(--tone) 45%, var(--tone-lo) 85%);
     transition: filter 160ms ease, background 160ms ease;
   }
-  .left     {clip-path: inset(0 50% 0 0)}   /* show left half */
-  .right    {clip-path: inset(0 0 0 50%)}   /* show right half */
+  .left  {clip-path: inset(0 50% 0 0)}   /* left half */
+  .right {clip-path: inset(0 0 0 50%)}   /* right half */
   .splitbar {position:absolute; top:0; bottom:0; left:50%; width:2px; background:rgba(0,0,0,.12)}
 
-  /* Overlays (apply to RIGHT/NOW only) */
+  /* Overlays (RIGHT/NOW only) */
   .ov{position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity 140ms ease}
-  .ov-pale  {background:radial-gradient(120% 120% at 50% 20%, rgba(255,255,255,.22), rgba(255,255,255,.1) 50%, transparent 75%)}
-  .ov-flush {background:radial-gradient(120% 120% at 50% 25%, rgba(240,64,64,.22), rgba(240,64,64,.1) 55%, transparent 80%)}
-  .ov-cyan  {background:radial-gradient(120% 120% at 50% 25%, rgba(40,100,180,.24), rgba(40,100,180,.12) 55%, transparent 80%)}
-  .ov-jaund {background:radial-gradient(120% 120% at 50% 25%, rgba(240,210,60,.24), rgba(240,210,60,.12) 55%, transparent 80%)}
-  .ov-mottle{background-image:
-      radial-gradient(8px 8px at 20% 30%, rgba(120,60,60,.22), transparent 60%),
-      radial-gradient(10px 10px at 70% 60%, rgba(120,60,60,.2),  transparent 60%),
-      radial-gradient(7px 7px at 35% 70%, rgba(120,60,60,.18),  transparent 60%),
-      radial-gradient(9px 9px at 80% 40%, rgba(120,60,60,.2),   transparent 60%),
-      radial-gradient(6px 6px at 55% 50%, rgba(120,60,60,.18),  transparent 60%); mix-blend-mode:multiply; filter:blur(.5px)}
-  .ov-rash  {background-image:
-      radial-gradient(3px 3px at 25% 30%, rgba(180,40,40,.5), transparent 60%),
-      radial-gradient(2.6px 2.6px at 60% 40%, rgba(180,40,40,.42), transparent 60%),
-      radial-gradient(2.8px 2.8px at 40% 65%, rgba(180,40,40,.42), transparent 60%),
-      radial-gradient(3.2px 3.2px at 78% 75%, rgba(180,40,40,.42), transparent 60%),
-      radial-gradient(2.4px 2.4px at 18% 72%, rgba(180,40,40,.42), transparent 60%); mix-blend-mode:multiply; filter:blur(.2px)}
-
-  .ov-sheen{ background:linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,0) 35%, rgba(255,255,255,.08) 60%, rgba(255,255,255,0) 80%); opacity:0 }
-  .ov-drops{ background:
-      radial-gradient(circle at 20% 25%, rgba(255,255,255,.45) 0 4px, rgba(255,255,255,0) 5px),
-      radial-gradient(circle at 68% 32%, rgba(255,255,255,.45) 0 4px, rgba(255,255,255,0) 5px),
-      radial-gradient(circle at 40% 70%, rgba(255,255,255,.45) 0 4px, rgba(255,255,255,0) 5px),
-      radial-gradient(circle at 78% 74%, rgba(255,255,255,.45) 0 4px, rgba(255,255,255,0) 5px); opacity:0 }
-  .ov-cool { box-shadow: inset 0 0 0 9999px rgba(40,120,220,.14); opacity:0 }
-  .ov-warm { box-shadow: inset 0 0 0 9999px rgba(220,70,40,.14); opacity:0 }
+  .ov-flush {background:radial-gradient(120% 120% at 50% 25%, rgba(240,64,64,.24), rgba(240,64,64,.12) 55%, transparent 80%)}
+  .ov-cyan  {background:radial-gradient(120% 120% at 50% 25%, rgba(40,100,180,.26), rgba(40,100,180,.12) 55%, transparent 80%)}
+  .ov-jaund {background:radial-gradient(120% 120% at 50% 25%, rgba(240,210,60,.26), rgba(240,210,60,.12) 55%, transparent 80%)}
 
   /* Cap refill (RIGHT only) */
   .blanch{ position:absolute; inset:0; pointer-events:none; opacity:0;
            background: radial-gradient(140% 140% at 50% 35%, rgba(255,255,255,.7), rgba(255,255,255,.3) 45%, transparent 75%);
            transition: opacity 120ms ease; }
 
-  /* Labels & badges */
+  /* Badges */
   .badge{position:absolute; top:6px; z-index:3; display:flex; align-items:center; gap:6px;
          background:#ffffffd9; border:1px solid #dbe7ec; border-radius:12px; padding:5px 9px; box-shadow:0 6px 16px rgba(0,0,0,.10); font-weight:700; font-size:.86rem}
   .badge.left {left:6px}
   .badge.right{right:6px}
   .dot{width:16px;height:16px;border-radius:6px;border:1px solid #bfcbd1}
-
   .legends{display:flex;gap:10px;justify-content:center;font-size:.9rem;opacity:.9}
   .legends span{font-weight:800}
   .label-left::before{content:"Sample (patient) • Left half"}
-  .label-right::before{content:"Now (with changes) • Right half"}
+  .label-right::before{content:"Now (changes) • Right half"}
 
-  /* Controls condensed */
-  .controls{display:grid;gap:10px}
-  .row{display:grid;gap:10px}
-  @media(min-width:640px){.row{grid-template-columns:1fr 1fr}}
+  /* Controls */
+  .controls{display:grid;gap:12px}
   .control{background:#fff;border-radius:12px;padding:10px;border:1px solid #e8eef0}
   .control h3{margin:.2rem 0 .6rem;font-size:.95rem}
-  select,input[type="color"]{width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
-  .btn{appearance:none;border:0;background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;font-weight:700;cursor:pointer;width:100%}
 
-  /* Info modal */
-  .modal{ position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,.48); z-index: 60; padding: 24px; }
-  .modal[aria-hidden="false"]{ display:flex; }
-  .modal-card{ width:min(760px, 100%); background:#fff; border-radius:18px; padding:18px; box-shadow:var(--shadow); border:1px solid #e8eef0; max-height: 85dvh; overflow:auto; color: var(--text); }
-  .modal-header{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding-bottom:8px; border-bottom:1px solid #e8eef0; }
-  .modal-title{ font-weight:800; font-size:1.1rem; }
-  .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
-  .btn.small{ padding:10px 14px; font-size:.95rem; background:var(--accent); }
+  .row{display:grid;gap:10px}
+  @media(min-width:640px){ .row{grid-template-columns:1fr 1fr} }
+
+  input[type="color"]{width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
+
+  .seg{
+    display:inline-flex; gap:0; border:1px solid #d4e5ea; border-radius:10px; overflow:hidden; background:#f7fbfd;
+  }
+  .seg button{
+    appearance:none; border:0; background:transparent; padding:10px 12px; font-weight:800; cursor:pointer;
+  }
+  .seg button[aria-pressed="true"]{ background:#e7f4f9; color:var(--accent-dk); }
+
+  .toggles{ display:flex; gap:8px; flex-wrap:wrap; }
+  .tbtn{
+    appearance:none; border:1px solid #d4e5ea; background:#fff; color:var(--text);
+    padding:10px 12px; font-weight:800; border-radius:10px; cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,.04);
+  }
+  .tbtn[aria-pressed="true"]{
+    background:#ffe; border-color:#f2d48b; color:#8a6800;
+  }
+
+  .btn{
+    appearance:none; border:0; background:var(--accent); color:#fff; padding:12px 14px;
+    border-radius:12px; font-weight:800; cursor:pointer; width:100%;
+  }
 </style>
 </head>
 <body>
@@ -128,16 +130,9 @@
         <div class="pane left"  id="paneLeft"></div>
         <div class="pane right" id="paneRight">
           <!-- RIGHT/NOW overlays -->
-          <div class="ov ov-pale"   id="ovPale"></div>
           <div class="ov ov-flush"  id="ovFlush"></div>
           <div class="ov ov-cyan"   id="ovCyan"></div>
           <div class="ov ov-jaund"  id="ovJaund"></div>
-          <div class="ov ov-mottle" id="ovMottle"></div>
-          <div class="ov ov-rash"   id="ovRash"></div>
-          <div class="ov ov-sheen"  id="ovSheen"></div>
-          <div class="ov ov-drops"  id="ovDrops"></div>
-          <div class="ov ov-cool"   id="ovCool"></div>
-          <div class="ov ov-warm"   id="ovWarm"></div>
           <div class="blanch"       id="blanch"></div>
         </div>
         <div class="splitbar"></div>
@@ -160,84 +155,25 @@
           <label>Pick baseline color
             <input id="tonePicker" type="color" value="#e5bda1"/>
           </label>
-          <label>Cap refill speed
-            <select id="crtSpeed">
-              <option value="1200">Normal</option>
-              <option value="2000" selected>Moderate</option>
-              <option value="3000">Severe</option>
-            </select>
-          </label>
+          <div>
+            <label>Cap refill speed</label><br/>
+            <div class="seg" role="group" aria-label="Cap refill speed">
+              <button id="speedFast" type="button" aria-pressed="true"  data-ms="1200">&lt; 2 sec</button>
+              <button id="speedSlow" type="button" aria-pressed="false" data-ms="4000">&gt; 2 sec (4s)</button>
+            </div>
+          </div>
         </div>
-        <div class="row">
+        <div class="row" style="margin-top:8px;">
           <button id="crtBtn" class="btn">▶️ Run Cap Refill (right half)</button>
         </div>
       </div>
 
       <div class="control">
-        <h3>Skin signs (apply to right half)</h3>
-        <div class="row">
-          <label>Pallor
-            <select id="pallor">
-              <option value="0" selected>Normal</option>
-              <option value="0.55">Moderate</option>
-              <option value="1">Severe</option>
-            </select>
-          </label>
-          <label>Flushed
-            <select id="flush">
-              <option value="0" selected>Normal</option>
-              <option value="0.5">Moderate</option>
-              <option value="1">Severe</option>
-            </select>
-          </label>
-        </div>
-        <div class="row">
-          <label>Cyanotic
-            <select id="cyan">
-              <option value="0" selected>Normal</option>
-              <option value="0.55">Moderate</option>
-              <option value="1">Severe</option>
-            </select>
-          </label>
-          <label>Jaundice
-            <select id="jaund">
-              <option value="0" selected>Normal</option>
-              <option value="0.55">Moderate</option>
-              <option value="1">Severe</option>
-            </select>
-          </label>
-        </div>
-        <div class="row">
-          <label>Mottled
-            <select id="mottle">
-              <option value="0" selected>Normal</option>
-              <option value="0.5">Moderate</option>
-              <option value="1">Severe</option>
-            </select>
-          </label>
-          <label>Rash
-            <select id="rash">
-              <option value="0" selected>Normal</option>
-              <option value="0.5">Moderate</option>
-              <option value="1">Severe</option>
-            </select>
-          </label>
-        </div>
-        <div class="row">
-          <label>Moisture
-            <select id="moist">
-              <option value="0" selected>Normal</option>
-              <option value="0.5">Moderate</option>
-              <option value="1">Severe</option>
-            </select>
-          </label>
-          <label>Temperature
-            <select id="temp">
-              <option value="normal" selected>Normal</option>
-              <option value="cool">Cool</option>
-              <option value="warm">Warm</option>
-            </select>
-          </label>
+        <h3>Toggle skin signs (right half)</h3>
+        <div class="toggles">
+          <button class="tbtn" id="btnFlush"  type="button" aria-pressed="false">Flushed</button>
+          <button class="tbtn" id="btnCyan"   type="button" aria-pressed="false">Cyanotic</button>
+          <button class="tbtn" id="btnJaund"  type="button" aria-pressed="false">Jaundice</button>
         </div>
       </div>
     </section>
@@ -253,7 +189,7 @@
         </button>
       </div>
       <div>
-        <p>The square is split: <strong>left</strong> shows the patient’s baseline color; <strong>right</strong> shows the current skin with changes. Use the dropdowns to set severity (Normal/Moderate/Severe). “Cap Refill” briefly blanches the right side, then refills at the selected speed.</p>
+        <p>The square is split: <strong>left</strong> shows the patient’s baseline color; <strong>right</strong> shows the current skin with changes. Use the three buttons to toggle <em>Flushed</em>, <em>Cyanotic</em>, or <em>Jaundice</em> on/off. “Cap Refill” blanches the right half, then refills at the selected speed.</p>
       </div>
       <div class="modal-actions"><button class="btn small" id="modalOkBtn">Got it</button></div>
     </div>
@@ -286,28 +222,20 @@
 
   const tonePicker = document.getElementById('tonePicker');
 
-  const ovPale   = document.getElementById('ovPale');
-  const ovFlush  = document.getElementById('ovFlush');
-  const ovCyan   = document.getElementById('ovCyan');
-  const ovJaund  = document.getElementById('ovJaund');
-  const ovMottle = document.getElementById('ovMottle');
-  const ovRash   = document.getElementById('ovRash');
-  const ovSheen  = document.getElementById('ovSheen');
-  const ovDrops  = document.getElementById('ovDrops');
-  const ovCool   = document.getElementById('ovCool');
-  const ovWarm   = document.getElementById('ovWarm');
-  const blanch   = document.getElementById('blanch');
+  // Overlays
+  const ovFlush = document.getElementById('ovFlush');
+  const ovCyan  = document.getElementById('ovCyan');
+  const ovJaund = document.getElementById('ovJaund');
+  const blanch  = document.getElementById('blanch');
 
-  const pallorSel = document.getElementById('pallor');
-  const flushSel  = document.getElementById('flush');
-  const cyanSel   = document.getElementById('cyan');
-  const jaundSel  = document.getElementById('jaund');
-  const mottleSel = document.getElementById('mottle');
-  const rashSel   = document.getElementById('rash');
-  const moistSel  = document.getElementById('moist');
-  const tempSel   = document.getElementById('temp');
+  // Toggle buttons
+  const btnFlush = document.getElementById('btnFlush');
+  const btnCyan  = document.getElementById('btnCyan');
+  const btnJaund = document.getElementById('btnJaund');
 
-  const crtSpeed  = document.getElementById('crtSpeed');
+  // Cap refill controls
+  const speedFast = document.getElementById('speedFast');
+  const speedSlow = document.getElementById('speedSlow');
   const crtBtn    = document.getElementById('crtBtn');
 
   // Utils
@@ -338,7 +266,7 @@
     el.style.setProperty('--tone-lo', shade(hex, -6));
   }
 
-  // Init baseline skin color (random, but user can set)
+  // Init baseline skin color (random, user can set)
   let base = randomSkinTone();
   tonePicker.value = base;
   applyTone(paneLeft,  base);
@@ -357,47 +285,40 @@
     hexLeft.textContent = base.toLowerCase();
   });
 
-  // Severity → opacity helpers
-  function setOpacity(el, val){ el.style.opacity = Number(val) || 0; }
-
-  function renderSigns(){
-    setOpacity(ovPale,   pallorSel.value);
-    setOpacity(ovFlush,  flushSel.value);
-    setOpacity(ovCyan,   cyanSel.value);
-    setOpacity(ovJaund,  jaundSel.value);
-    setOpacity(ovMottle, mottleSel.value);
-    setOpacity(ovRash,   rashSel.value);
-
-    // Moisture: sheen + drops together
-    const m = Number(moistSel.value)||0;
-    ovSheen.style.opacity = m ? Math.min(m*1.0, 1) : 0;         // 0 / .5 / 1
-    ovDrops.style.opacity = m >= 0.5 ? (m === 1 ? 1 : 0.5) : 0; // only for moderate/severe
-
-    // Temperature tint (mutually exclusive)
-    ovCool.style.opacity = tempSel.value === 'cool' ? .35 : 0;
-    ovWarm.style.opacity = tempSel.value === 'warm' ? .35 : 0;
+  // Toggle helpers (max or none)
+  function toggle(btn, overlay){
+    const pressed = btn.getAttribute('aria-pressed') === 'true';
+    const next = !pressed;
+    btn.setAttribute('aria-pressed', String(next));
+    overlay.style.opacity = next ? 1 : 0;
   }
+  btnFlush.addEventListener('click', ()=> toggle(btnFlush, ovFlush));
+  btnCyan .addEventListener('click', ()=> toggle(btnCyan,  ovCyan ));
+  btnJaund.addEventListener('click', ()=> toggle(btnJaund, ovJaund));
 
-  [pallorSel,flushSel,cyanSel,jaundSel,mottleSel,rashSel,moistSel,tempSel].forEach(sel=>{
-    sel.addEventListener('change', renderSigns);
-  });
-  renderSigns();
+  // Cap refill speed select
+  let crtDuration = +speedFast.dataset.ms; // default <2 sec
+  function setSpeed(selectedBtn, otherBtn){
+    selectedBtn.setAttribute('aria-pressed','true');
+    otherBtn.setAttribute('aria-pressed','false');
+    crtDuration = +selectedBtn.dataset.ms;
+  }
+  speedFast.addEventListener('click', ()=> setSpeed(speedFast, speedSlow));
+  speedSlow.addEventListener('click', ()=> setSpeed(speedSlow, speedFast));
 
-  // Cap refill on RIGHT half
+  // Cap refill animation (RIGHT half)
   let running=false, start=0;
   crtBtn.addEventListener('click', ()=>{
     if(running) return;
     running = true;
-    const duration = parseInt(crtSpeed.value, 10) || 2000;
 
-    // quick blanch spike then refill over selected duration
     let amt = 1;
     paneRight.style.filter = `saturate(${1 - amt*0.25}) brightness(${1 + amt*0.05})`;
     blanch.style.opacity = amt;
 
     start = performance.now();
     function step(now){
-      const t = clamp((now - start)/duration, 0, 1);
+      const t = clamp((now - start)/crtDuration, 0, 1);
       const a = 1 - t;
       blanch.style.opacity = a;
       paneRight.style.filter = `saturate(${1 - a*0.25}) brightness(${1 + a*0.05})`;
