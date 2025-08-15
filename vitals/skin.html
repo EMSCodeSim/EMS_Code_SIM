@@ -3,98 +3,97 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no"/>
-<title>Skin Signs + Cap Refill</title>
+<title>Skin Signs • One-Screen Split View</title>
 <style>
   :root{
     --bg:#f0f8ff; --panel:#fff; --text:#0f2b33; --muted:#e7f4f7;
     --accent:#0284c7; --accent-2:#06b6d4;
     --shadow:0 10px 24px rgba(0,0,0,.08); --radius:16px;
-    --skin-size: 280px; /* half-ish of the previous large sample */
+    --skin-size: min(92vw, 380px);
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
 
   /* Fixed header */
   .topbar{position:sticky;top:0;z-index:50;padding:calc(env(safe-area-inset-top)+8px) 14px 10px;background:linear-gradient(180deg,var(--accent-2),var(--accent));color:#fff;border-bottom:1px solid rgba(255,255,255,.15);box-shadow:0 8px 18px rgba(2,132,199,.25)}
-  .topbar-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px}
+  .topbar-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:10px}
   .iconbtn{appearance:none;border:0;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;height:40px;border-radius:12px;padding:0 10px;gap:8px;transition:background .2s,transform .04s;cursor:pointer}
   .iconbtn:hover{background:rgba(255,255,255,.12)} .iconbtn:active{transform:translateY(1px) scale(.98)}
   .btn-label{font-weight:800;font-size:.95rem;letter-spacing:.2px}
   .topbar-title{flex:1;text-align:center;font-weight:800;letter-spacing:.2px;font-size:1.05rem}
 
-  main{width:100%;max-width:1100px;padding:12px;margin:0 auto;display:grid;gap:12px}
+  main{width:100%;max-width:900px;padding:12px;margin:0 auto;display:grid;gap:12px}
   .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px}
 
-  /* Stage: two small samples side-by-side */
-  .stage{background:var(--muted);border-radius:14px;padding:12px}
-  .skin-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
-  @media(max-width:640px){ .skin-grid{grid-template-columns:1fr} }
-
+  /* One-square split stage */
+  .stage{display:grid;gap:10px;justify-items:center;background:var(--muted);border-radius:14px;padding:12px}
   .skin{
-    width:min(92%, var(--skin-size)); aspect-ratio:1/1; border-radius:18px; position:relative; overflow:hidden;
+    position:relative; width:var(--skin-size); aspect-ratio:1/1; border-radius:18px; overflow:hidden;
     box-shadow:inset 0 0 60px rgba(0,0,0,.18), inset 0 0 140px rgba(0,0,0,.12);
   }
-  .skin::before{
-    content:""; position:absolute; inset:0; border-radius:18px;
+  .pane{position:absolute; inset:0}
+  .pane::before{
+    content:""; position:absolute; inset:0;
     background: radial-gradient(120% 120% at 50% 20%, var(--tone-hi), var(--tone) 45%, var(--tone-lo) 85%);
     transition: filter 160ms ease, background 160ms ease;
   }
+  .left     {clip-path: inset(0 50% 0 0)}   /* show left half */
+  .right    {clip-path: inset(0 0 0 50%)}   /* show right half */
+  .splitbar {position:absolute; top:0; bottom:0; left:50%; width:2px; background:rgba(0,0,0,.12)}
 
-  .skin-title{margin:4px 0 6px 2px;font-weight:800}
-  .tone-badge{
-    position:absolute; top:6px; left:6px; z-index:3;
-    background:#ffffffd9; border:1px solid #dbe7ec; border-radius:12px;
-    display:flex; align-items:center; gap:8px; padding:5px 9px; box-shadow:0 6px 16px rgba(0,0,0,.10); font-weight:700; font-size:.86rem;
-  }
-  .tone-dot{width:16px;height:16px;border-radius:6px;border:1px solid #bfcbd1;background:#e5bda1}
-  .tone-hex{font-variant-numeric:tabular-nums}
-  .label{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);background:#ffffffcc;padding:3px 10px;border-radius:999px;font-size:.88rem;z-index:2}
-
-  /* Overlays on LEFT sample only */
-  .ov{position:absolute; inset:0; border-radius:18px; pointer-events:none; opacity:0; transition:opacity 140ms ease}
-  .ov-pale {background:radial-gradient(120% 120% at 50% 20%, rgba(255,255,255,.20), rgba(255,255,255,.08) 50%, transparent 75%)}
-  .ov-flush{background:radial-gradient(120% 120% at 50% 25%, rgba(240,64,64,.20), rgba(240,64,64,.08) 55%, transparent 80%)}
-  .ov-cyan {background:radial-gradient(120% 120% at 50% 25%, rgba(40,100,180,.22), rgba(40,100,180,.10) 55%, transparent 80%)}
-  .ov-jaund{background:radial-gradient(120% 120% at 50% 25%, rgba(240,210,60,.22), rgba(240,210,60,.10) 55%, transparent 80%)}
+  /* Overlays (apply to RIGHT/NOW only) */
+  .ov{position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity 140ms ease}
+  .ov-pale  {background:radial-gradient(120% 120% at 50% 20%, rgba(255,255,255,.22), rgba(255,255,255,.1) 50%, transparent 75%)}
+  .ov-flush {background:radial-gradient(120% 120% at 50% 25%, rgba(240,64,64,.22), rgba(240,64,64,.1) 55%, transparent 80%)}
+  .ov-cyan  {background:radial-gradient(120% 120% at 50% 25%, rgba(40,100,180,.24), rgba(40,100,180,.12) 55%, transparent 80%)}
+  .ov-jaund {background:radial-gradient(120% 120% at 50% 25%, rgba(240,210,60,.24), rgba(240,210,60,.12) 55%, transparent 80%)}
   .ov-mottle{background-image:
-      radial-gradient(8px 8px at 20% 30%, rgba(120,60,60,.20), transparent 60%),
-      radial-gradient(10px 10px at 70% 60%, rgba(120,60,60,.18), transparent 60%),
-      radial-gradient(7px 7px at 35% 70%, rgba(120,60,60,.16), transparent 60%),
-      radial-gradient(9px 9px at 80% 40%, rgba(120,60,60,.18), transparent 60%),
-      radial-gradient(6px 6px at 55% 50%, rgba(120,60,60,.16), transparent 60%); mix-blend-mode:multiply; filter:blur(.5px)}
+      radial-gradient(8px 8px at 20% 30%, rgba(120,60,60,.22), transparent 60%),
+      radial-gradient(10px 10px at 70% 60%, rgba(120,60,60,.2),  transparent 60%),
+      radial-gradient(7px 7px at 35% 70%, rgba(120,60,60,.18),  transparent 60%),
+      radial-gradient(9px 9px at 80% 40%, rgba(120,60,60,.2),   transparent 60%),
+      radial-gradient(6px 6px at 55% 50%, rgba(120,60,60,.18),  transparent 60%); mix-blend-mode:multiply; filter:blur(.5px)}
   .ov-rash  {background-image:
-      radial-gradient(3px 3px at 25% 30%, rgba(180,40,40,.45), transparent 60%),
-      radial-gradient(2.5px 2.5px at 60% 40%, rgba(180,40,40,.35), transparent 60%),
-      radial-gradient(2.8px 2.8px at 40% 65%, rgba(180,40,40,.35), transparent 60%),
-      radial-gradient(3.2px 3.2px at 78% 75%, rgba(180,40,40,.35), transparent 60%),
-      radial-gradient(2.4px 2.4px at 18% 72%, rgba(180,40,40,.35), transparent 60%); mix-blend-mode:multiply; filter:blur(.2px)}
+      radial-gradient(3px 3px at 25% 30%, rgba(180,40,40,.5), transparent 60%),
+      radial-gradient(2.6px 2.6px at 60% 40%, rgba(180,40,40,.42), transparent 60%),
+      radial-gradient(2.8px 2.8px at 40% 65%, rgba(180,40,40,.42), transparent 60%),
+      radial-gradient(3.2px 3.2px at 78% 75%, rgba(180,40,40,.42), transparent 60%),
+      radial-gradient(2.4px 2.4px at 18% 72%, rgba(180,40,40,.42), transparent 60%); mix-blend-mode:multiply; filter:blur(.2px)}
 
-  .ov-sheen{ background:linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,0) 35%, rgba(255,255,255,.06) 60%, rgba(255,255,255,0) 80%); opacity:0 }
+  .ov-sheen{ background:linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,0) 35%, rgba(255,255,255,.08) 60%, rgba(255,255,255,0) 80%); opacity:0 }
   .ov-drops{ background:
-      radial-gradient(circle at 20% 25%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px),
-      radial-gradient(circle at 68% 32%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px),
-      radial-gradient(circle at 40% 70%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px),
-      radial-gradient(circle at 78% 74%, rgba(255,255,255,.35) 0 4px, rgba(255,255,255,0) 5px); opacity:0 }
-  .ov-cool{ box-shadow: inset 0 0 0 9999px rgba(40,120,220,.12); opacity:0 }
-  .ov-warm{ box-shadow: inset 0 0 0 9999px rgba(220,70,40,.12); opacity:0 }
+      radial-gradient(circle at 20% 25%, rgba(255,255,255,.45) 0 4px, rgba(255,255,255,0) 5px),
+      radial-gradient(circle at 68% 32%, rgba(255,255,255,.45) 0 4px, rgba(255,255,255,0) 5px),
+      radial-gradient(circle at 40% 70%, rgba(255,255,255,.45) 0 4px, rgba(255,255,255,0) 5px),
+      radial-gradient(circle at 78% 74%, rgba(255,255,255,.45) 0 4px, rgba(255,255,255,0) 5px); opacity:0 }
+  .ov-cool { box-shadow: inset 0 0 0 9999px rgba(40,120,220,.14); opacity:0 }
+  .ov-warm { box-shadow: inset 0 0 0 9999px rgba(220,70,40,.14); opacity:0 }
 
-  /* Cap refill blanch overlay (left) */
-  .blanch{ position:absolute; inset:0; border-radius:18px; pointer-events:none; opacity:0;
-           background: radial-gradient(140% 140% at 50% 35%, rgba(255,255,255,.65), rgba(255,255,255,.25) 45%, transparent 75%);
+  /* Cap refill (RIGHT only) */
+  .blanch{ position:absolute; inset:0; pointer-events:none; opacity:0;
+           background: radial-gradient(140% 140% at 50% 35%, rgba(255,255,255,.7), rgba(255,255,255,.3) 45%, transparent 75%);
            transition: opacity 120ms ease; }
 
-  /* Controls */
+  /* Labels & badges */
+  .badge{position:absolute; top:6px; z-index:3; display:flex; align-items:center; gap:6px;
+         background:#ffffffd9; border:1px solid #dbe7ec; border-radius:12px; padding:5px 9px; box-shadow:0 6px 16px rgba(0,0,0,.10); font-weight:700; font-size:.86rem}
+  .badge.left {left:6px}
+  .badge.right{right:6px}
+  .dot{width:16px;height:16px;border-radius:6px;border:1px solid #bfcbd1}
+
+  .legends{display:flex;gap:10px;justify-content:center;font-size:.9rem;opacity:.9}
+  .legends span{font-weight:800}
+  .label-left::before{content:"Sample (patient) • Left half"}
+  .label-right::before{content:"Now (with changes) • Right half"}
+
+  /* Controls condensed */
   .controls{display:grid;gap:10px}
+  .row{display:grid;gap:10px}
+  @media(min-width:640px){.row{grid-template-columns:1fr 1fr}}
   .control{background:#fff;border-radius:12px;padding:10px;border:1px solid #e8eef0}
   .control h3{margin:.2rem 0 .6rem;font-size:.95rem}
-  .signs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-  .row{display:grid;gap:10px}
-  @media(min-width:560px){.row{grid-template-columns:1fr 1fr}}
-  input[type="range"],select,input[type="color"]{width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
+  select,input[type="color"]{width:100%;padding:10px;border:1px solid #cfe3e8;border-radius:10px;background:#fff}
   .btn{appearance:none;border:0;background:var(--accent);color:#fff;padding:12px 14px;border-radius:12px;font-weight:700;cursor:pointer;width:100%}
-  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
-  .kpi{background:#fff;border:1px solid #e8eef0;border-radius:10px;padding:8px;text-align:center}
-  .kpi strong{display:block;font-size:1.05rem}
 
   /* Info modal */
   .modal{ position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,.48); z-index: 60; padding: 24px; }
@@ -114,7 +113,7 @@
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         <span class="btn-label">Back</span>
       </button>
-      <div class="topbar-title">Skin Signs • Cap Refill</div>
+      <div class="topbar-title">Skin Signs • Split View</div>
       <button class="iconbtn" id="infoBtn" aria-label="Info" title="Info">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 8h.01M11 11h2v6h-2z" fill="currentColor"/></svg>
         <span class="btn-label">Info</span>
@@ -125,90 +124,119 @@
   <main>
     <!-- Stage -->
     <section class="card stage">
-      <div class="skin-grid">
-        <!-- LEFT: Sample (random baseline) -->
-        <div>
-          <div class="skin-title">Sample (left)</div>
-          <div class="skin" id="skinLeft">
-            <div class="tone-badge"><span class="tone-dot" id="dotLeft"></span><span class="tone-hex" id="hexLeft">#e5bda1</span></div>
-            <!-- Overlays & CRT on LEFT only -->
-            <div class="ov ov-pale"   id="ovPale"></div>
-            <div class="ov ov-flush"  id="ovFlush"></div>
-            <div class="ov ov-cyan"   id="ovCyan"></div>
-            <div class="ov ov-jaund"  id="ovJaund"></div>
-            <div class="ov ov-mottle" id="ovMottle"></div>
-            <div class="ov ov-rash"   id="ovRash"></div>
-            <div class="ov ov-sheen"  id="ovSheen"></div>
-            <div class="ov ov-drops"  id="ovDrops"></div>
-            <div class="ov ov-cool"   id="ovCool"></div>
-            <div class="ov ov-warm"   id="ovWarm"></div>
-            <div class="blanch" id="blanch"></div>
-
-            <div class="label">Cap refill demo</div>
-          </div>
+      <div class="skin" id="skin">
+        <div class="pane left"  id="paneLeft"></div>
+        <div class="pane right" id="paneRight">
+          <!-- RIGHT/NOW overlays -->
+          <div class="ov ov-pale"   id="ovPale"></div>
+          <div class="ov ov-flush"  id="ovFlush"></div>
+          <div class="ov ov-cyan"   id="ovCyan"></div>
+          <div class="ov ov-jaund"  id="ovJaund"></div>
+          <div class="ov ov-mottle" id="ovMottle"></div>
+          <div class="ov ov-rash"   id="ovRash"></div>
+          <div class="ov ov-sheen"  id="ovSheen"></div>
+          <div class="ov ov-drops"  id="ovDrops"></div>
+          <div class="ov ov-cool"   id="ovCool"></div>
+          <div class="ov ov-warm"   id="ovWarm"></div>
+          <div class="blanch"       id="blanch"></div>
         </div>
+        <div class="splitbar"></div>
 
-        <!-- RIGHT: New tone reference -->
-        <div>
-          <div class="skin-title">New tone (right)</div>
-          <div class="skin" id="skinRight">
-            <div class="tone-badge"><span class="tone-dot" id="dotRight"></span><span class="tone-hex" id="hexRight">#e5bda1</span></div>
-            <div class="label">Reference only</div>
-          </div>
-        </div>
+        <!-- Badges -->
+        <div class="badge left"><span class="dot" id="dotLeft"></span><span id="hexLeft">#e5bda1</span></div>
+        <div class="badge right"><span class="dot" id="dotRight"></span><span id="hexRight">Now</span></div>
+      </div>
+      <div class="legends">
+        <div class="label-left"></div>
+        <div class="label-right"></div>
       </div>
     </section>
 
     <!-- Controls -->
     <section class="card controls">
       <div class="control">
-        <h3>New Tone (controls the right swatch)</h3>
+        <h3>Patient skin color</h3>
         <div class="row">
-          <label>Pick color
+          <label>Pick baseline color
             <input id="tonePicker" type="color" value="#e5bda1"/>
           </label>
-        </div>
-      </div>
-
-      <div class="control">
-        <h3>Capillary Refill (left swatch)</h3>
-        <div class="row">
-          <label>Refill speed (ms)
-            <input id="crtSpeed" type="range" min="300" max="4000" step="50" value="1500">
-          </label>
-          <button id="crtBtn" class="btn">▶️ Cap Refill</button>
-        </div>
-        <div class="kpis">
-          <div class="kpi"><small>Speed setting</small><strong id="speedLabel">1500 ms</strong></div>
-          <div class="kpi"><small>Last cycle</small><strong id="crtMs">—</strong></div>
-          <div class="kpi"><small>Status</small><strong id="crtStatus">Ready</strong></div>
-        </div>
-      </div>
-
-      <div class="control">
-        <h3>Skin Signs (left swatch)</h3>
-        <div class="signs">
-          <label>Pallor <input id="pallor" type="range" min="0" max="100" value="0"></label>
-          <label>Flushed <input id="flush" type="range" min="0" max="100" value="0"></label>
-          <label>Cyanotic <input id="cyan" type="range" min="0" max="100" value="0"></label>
-          <label>Jaundice <input id="jaund" type="range" min="0" max="100" value="0"></label>
-          <label>Mottled <input id="mottle" type="range" min="0" max="100" value="0"></label>
-          <label>Rash <input id="rash" type="range" min="0" max="100" value="0"></label>
-        </div>
-      </div>
-
-      <div class="control">
-        <h3>Temp & Moisture (left swatch)</h3>
-        <div class="row">
-          <label>Temperature
-            <select id="temp">
-              <option value="cool">Cool</option>
-              <option value="normal" selected>Normal</option>
-              <option value="warm">Warm</option>
+          <label>Cap refill speed
+            <select id="crtSpeed">
+              <option value="1200">Normal</option>
+              <option value="2000" selected>Moderate</option>
+              <option value="3000">Severe</option>
             </select>
           </label>
-          <label>Moisture (0 Dry → 100 Diaphoretic)
-            <input id="moist" type="range" min="0" max="100" value="0">
+        </div>
+        <div class="row">
+          <button id="crtBtn" class="btn">▶️ Run Cap Refill (right half)</button>
+        </div>
+      </div>
+
+      <div class="control">
+        <h3>Skin signs (apply to right half)</h3>
+        <div class="row">
+          <label>Pallor
+            <select id="pallor">
+              <option value="0" selected>Normal</option>
+              <option value="0.55">Moderate</option>
+              <option value="1">Severe</option>
+            </select>
+          </label>
+          <label>Flushed
+            <select id="flush">
+              <option value="0" selected>Normal</option>
+              <option value="0.5">Moderate</option>
+              <option value="1">Severe</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>Cyanotic
+            <select id="cyan">
+              <option value="0" selected>Normal</option>
+              <option value="0.55">Moderate</option>
+              <option value="1">Severe</option>
+            </select>
+          </label>
+          <label>Jaundice
+            <select id="jaund">
+              <option value="0" selected>Normal</option>
+              <option value="0.55">Moderate</option>
+              <option value="1">Severe</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>Mottled
+            <select id="mottle">
+              <option value="0" selected>Normal</option>
+              <option value="0.5">Moderate</option>
+              <option value="1">Severe</option>
+            </select>
+          </label>
+          <label>Rash
+            <select id="rash">
+              <option value="0" selected>Normal</option>
+              <option value="0.5">Moderate</option>
+              <option value="1">Severe</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>Moisture
+            <select id="moist">
+              <option value="0" selected>Normal</option>
+              <option value="0.5">Moderate</option>
+              <option value="1">Severe</option>
+            </select>
+          </label>
+          <label>Temperature
+            <select id="temp">
+              <option value="normal" selected>Normal</option>
+              <option value="cool">Cool</option>
+              <option value="warm">Warm</option>
+            </select>
           </label>
         </div>
       </div>
@@ -219,17 +247,13 @@
   <div class="modal" id="infoModal" aria-hidden="true" aria-labelledby="infoTitle" role="dialog">
     <div class="modal-card" tabindex="-1">
       <div class="modal-header">
-        <div class="modal-title" id="infoTitle">How to use</div>
+        <div class="modal-title" id="infoTitle">How this works</div>
         <button class="iconbtn" id="closeModalBtn" aria-label="Close" title="Close">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
       </div>
       <div>
-        <p><strong>Left swatch</strong> is your sample with skin signs and capillary refill simulation. <strong>Right swatch</strong> shows a reference “new tone” you pick to compare appearance across tones.</p>
-        <ul>
-          <li>Press <strong>Cap Refill</strong> to blanch then refill at the selected speed.</li>
-          <li>Use <strong>Skin Signs</strong> and <strong>Temp & Moisture</strong> to layer changes on the left only.</li>
-        </ul>
+        <p>The square is split: <strong>left</strong> shows the patient’s baseline color; <strong>right</strong> shows the current skin with changes. Use the dropdowns to set severity (Normal/Moderate/Severe). “Cap Refill” briefly blanches the right side, then refills at the selected speed.</p>
       </div>
       <div class="modal-actions"><button class="btn small" id="modalOkBtn">Got it</button></div>
     </div>
@@ -253,42 +277,38 @@
   backBtn.addEventListener('click', ()=>{ if(history.length>1) history.back(); else location.href='/'; }, {passive:true});
 
   // Elements
-  const skinLeft  = document.getElementById('skinLeft');
-  const skinRight = document.getElementById('skinRight');
-  const hexLeft   = document.getElementById('hexLeft');
+  const paneLeft  = document.getElementById('paneLeft');
+  const paneRight = document.getElementById('paneRight');
   const dotLeft   = document.getElementById('dotLeft');
-  const hexRight  = document.getElementById('hexRight');
   const dotRight  = document.getElementById('dotRight');
-
-  const ovPale = document.getElementById('ovPale');
-  const ovFlush= document.getElementById('ovFlush');
-  const ovCyan = document.getElementById('ovCyan');
-  const ovJaund= document.getElementById('ovJaund');
-  const ovMottle=document.getElementById('ovMottle');
-  const ovRash = document.getElementById('ovRash');
-  const ovSheen= document.getElementById('ovSheen');
-  const ovDrops= document.getElementById('ovDrops');
-  const ovCool = document.getElementById('ovCool');
-  const ovWarm = document.getElementById('ovWarm');
-  const blanch = document.getElementById('blanch');
+  const hexLeft   = document.getElementById('hexLeft');
+  const hexRight  = document.getElementById('hexRight');
 
   const tonePicker = document.getElementById('tonePicker');
 
-  const pallor = document.getElementById('pallor');
-  const flush  = document.getElementById('flush');
-  const cyan   = document.getElementById('cyan');
-  const jaund  = document.getElementById('jaund');
-  const mottle = document.getElementById('mottle');
-  const rash   = document.getElementById('rash');
+  const ovPale   = document.getElementById('ovPale');
+  const ovFlush  = document.getElementById('ovFlush');
+  const ovCyan   = document.getElementById('ovCyan');
+  const ovJaund  = document.getElementById('ovJaund');
+  const ovMottle = document.getElementById('ovMottle');
+  const ovRash   = document.getElementById('ovRash');
+  const ovSheen  = document.getElementById('ovSheen');
+  const ovDrops  = document.getElementById('ovDrops');
+  const ovCool   = document.getElementById('ovCool');
+  const ovWarm   = document.getElementById('ovWarm');
+  const blanch   = document.getElementById('blanch');
 
-  const tempSel= document.getElementById('temp');
-  const moist  = document.getElementById('moist');
+  const pallorSel = document.getElementById('pallor');
+  const flushSel  = document.getElementById('flush');
+  const cyanSel   = document.getElementById('cyan');
+  const jaundSel  = document.getElementById('jaund');
+  const mottleSel = document.getElementById('mottle');
+  const rashSel   = document.getElementById('rash');
+  const moistSel  = document.getElementById('moist');
+  const tempSel   = document.getElementById('temp');
 
-  const crtSpeed = document.getElementById('crtSpeed');
-  const crtBtn   = document.getElementById('crtBtn');
-  const speedLabel = document.getElementById('speedLabel');
-  const crtMsEl  = document.getElementById('crtMs');
-  const crtStatus= document.getElementById('crtStatus');
+  const crtSpeed  = document.getElementById('crtSpeed');
+  const crtBtn    = document.getElementById('crtBtn');
 
   // Utils
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
@@ -318,74 +338,74 @@
     el.style.setProperty('--tone-lo', shade(hex, -6));
   }
 
-  // Initialize tones
-  const leftTone = randomSkinTone(); // random baseline on left
-  applyTone(skinLeft, leftTone);
-  hexLeft.textContent = leftTone.toLowerCase();
-  dotLeft.style.background = leftTone;
-
-  applyTone(skinRight, tonePicker.value);
-  hexRight.textContent = tonePicker.value.toLowerCase();
-  dotRight.style.background = tonePicker.value;
+  // Init baseline skin color (random, but user can set)
+  let base = randomSkinTone();
+  tonePicker.value = base;
+  applyTone(paneLeft,  base);
+  applyTone(paneRight, base);
+  dotLeft.style.background = base;
+  dotRight.style.background = base;
+  hexLeft.textContent = base.toLowerCase();
+  hexRight.textContent = 'Now';
 
   tonePicker.addEventListener('input', ()=>{
-    const hex = tonePicker.value;
-    applyTone(skinRight, hex);
-    hexRight.textContent = hex.toLowerCase();
-    dotRight.style.background = hex;
+    base = tonePicker.value;
+    applyTone(paneLeft,  base);
+    applyTone(paneRight, base);
+    dotLeft.style.background = base;
+    dotRight.style.background = base;
+    hexLeft.textContent = base.toLowerCase();
   });
 
-  // Skin signs render (left only)
-  const mapCurve=v=>Math.pow(v/100, 0.85);
+  // Severity → opacity helpers
+  function setOpacity(el, val){ el.style.opacity = Number(val) || 0; }
+
   function renderSigns(){
-    ovPale .style.opacity = mapCurve(+pallor.value);
-    ovFlush.style.opacity = mapCurve(+flush.value);
-    ovCyan .style.opacity = mapCurve(+cyan.value);
-    ovJaund.style.opacity = mapCurve(+jaund.value);
-    ovMottle.style.opacity= mapCurve(+mottle.value)*0.9;
-    ovRash .style.opacity = mapCurve(+rash.value)*0.95;
+    setOpacity(ovPale,   pallorSel.value);
+    setOpacity(ovFlush,  flushSel.value);
+    setOpacity(ovCyan,   cyanSel.value);
+    setOpacity(ovJaund,  jaundSel.value);
+    setOpacity(ovMottle, mottleSel.value);
+    setOpacity(ovRash,   rashSel.value);
 
-    ovCool .style.opacity = tempSel.value==='cool' ? .35 : 0;
-    ovWarm .style.opacity = tempSel.value==='warm' ? .35 : 0;
+    // Moisture: sheen + drops together
+    const m = Number(moistSel.value)||0;
+    ovSheen.style.opacity = m ? Math.min(m*1.0, 1) : 0;         // 0 / .5 / 1
+    ovDrops.style.opacity = m >= 0.5 ? (m === 1 ? 1 : 0.5) : 0; // only for moderate/severe
 
-    const m = +moist.value/100;
-    ovSheen.style.opacity = Math.min(m*0.9, 0.9);
-    ovDrops.style.opacity = m>0.6 ? Math.min((m-0.6)/0.4, 1) : 0;
+    // Temperature tint (mutually exclusive)
+    ovCool.style.opacity = tempSel.value === 'cool' ? .35 : 0;
+    ovWarm.style.opacity = tempSel.value === 'warm' ? .35 : 0;
   }
-  [pallor,flush,cyan,jaund,mottle,rash,tempSel,moist].forEach(el=>el.addEventListener('input', renderSigns));
+
+  [pallorSel,flushSel,cyanSel,jaundSel,mottleSel,rashSel,moistSel,tempSel].forEach(sel=>{
+    sel.addEventListener('change', renderSigns);
+  });
   renderSigns();
 
-  // Cap refill animation (button + speed slider) on left swatch
-  let crtRunning=false, crtStart=0, lastCycleMs=null;
-  speedLabel.textContent = crtSpeed.value + ' ms';
-  crtSpeed.addEventListener('input', ()=>{ speedLabel.textContent = crtSpeed.value + ' ms'; });
-
+  // Cap refill on RIGHT half
+  let running=false, start=0;
   crtBtn.addEventListener('click', ()=>{
-    if(crtRunning) return;
-    crtRunning = true;
-    crtStatus.textContent = 'Blanching...';
+    if(running) return;
+    running = true;
+    const duration = parseInt(crtSpeed.value, 10) || 2000;
+
     // quick blanch spike then refill over selected duration
-    let blanchAmt = 1;
-    skinLeft.style.filter = `saturate(${1 - blanchAmt*0.25}) brightness(${1 + blanchAmt*0.05})`;
-    blanch.style.opacity = blanchAmt;
+    let amt = 1;
+    paneRight.style.filter = `saturate(${1 - amt*0.25}) brightness(${1 + amt*0.05})`;
+    blanch.style.opacity = amt;
 
-    const duration = parseInt(crtSpeed.value,10) || 1500;
-    crtStart = performance.now();
-
+    start = performance.now();
     function step(now){
-      const t = clamp((now - crtStart)/duration, 0, 1);
-      const amt = 1 - t;
-      blanch.style.opacity = amt;
-      skinLeft.style.filter = `saturate(${1 - amt*0.25}) brightness(${1 + amt*0.05})`;
-      if(t < 1){
-        requestAnimationFrame(step);
-      } else {
+      const t = clamp((now - start)/duration, 0, 1);
+      const a = 1 - t;
+      blanch.style.opacity = a;
+      paneRight.style.filter = `saturate(${1 - a*0.25}) brightness(${1 + a*0.05})`;
+      if(t < 1){ requestAnimationFrame(step); }
+      else{
         blanch.style.opacity = 0;
-        skinLeft.style.filter = '';
-        lastCycleMs = Math.round(now - crtStart);
-        crtMsEl.textContent = lastCycleMs + ' ms';
-        crtStatus.textContent = 'Ready';
-        crtRunning = false;
+        paneRight.style.filter = '';
+        running = false;
       }
     }
     requestAnimationFrame(step);
