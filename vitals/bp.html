@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
 
   <!-- Google tag (gtag.js) -->
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -20,7 +19,7 @@
       --bg:#f7fafc; --card:#ffffff; --text:#0f172a; --muted:#334155;
       --accent:#0284c7; --accent-2:#dc2626; --ring: rgba(2,132,199,.35);
       --shadow: 0 10px 28px rgba(15,23,42,.12); --overlay: rgba(15,23,42,.48);
-      --nudge-mobile:-12px; /* moved slightly more left on phones */
+      --nudge-mobile:-12px; /* slight left shift on phones */
       --ok:#16a34a; --bad:#b91c1c;
     }
     *{box-sizing:border-box}
@@ -49,7 +48,6 @@
     .iconbtn:active{ transform: translateY(1px) scale(.98); }
     .iconbtn:hover{ background: rgba(255,255,255,.12); }
     .topbar-title{ flex:1; text-align:center; font-weight:800; letter-spacing:.2px; font-size:1.15rem; }
-    .topbar-spacer{ width:40px; height:40px; }
 
     .app{
       max-width:540px; margin:0 auto;
@@ -69,9 +67,8 @@
       position:relative;
       width:min(94vw, 420px);
       height:min(94vw, 420px);
-      margin: 4px auto 0; /* center by default */
+      margin: 4px auto 0; /* centered by default */
     }
-    /* MOBILE NUDGE */
     @media (max-width: 480px){
       #gauge-container{ transform: translateX(var(--nudge-mobile)); }
     }
@@ -191,7 +188,7 @@
 
       <div class="readouts">
         <div>Pressure: <b id="pressureDisplay">0</b> mmHg</div>
-        <div>&nbsp;</div>
+        <div>&nbsp;</div> <!-- no live BP reveal -->
       </div>
 
       <div class="controls">
@@ -221,7 +218,7 @@
       <div id="result" class="result" role="status" aria-live="polite"></div>
     </div>
 
-    <div class="footer">v1.6 • iPhone audio unlock • ±4 mmHg tolerance • Even-number answers • Skewed SYS distribution</div>
+    <div class="footer">v1.7 • iPhone-compatible audio (original logic) • instant pump • ±4 tolerance • even numbers</div>
   </div>
 
   <!-- Info Modal -->
@@ -276,10 +273,9 @@
 
     // ---------- Helpers ----------
     const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
-    const toEven = (n) => (n % 2 === 0 ? n : n + 1); // display answers as even
+    const toEven = (n) => (n % 2 === 0 ? n : n + 1); // ensure even display
 
-    // ---------- Blood Pressure Simulator ----------
-    // State
+    // ---------- BP sim state ----------
     let currentPressure = 0;
     let systolic = 120;   // even
     let diastolic = 80;   // even
@@ -295,75 +291,36 @@
     const pumpBtn = document.getElementById("pumpBtn");
     const releaseBtn = document.getElementById("releaseBtn");
     const resetBtn = document.getElementById("resetBtn");
-
     const sysInput = document.getElementById("sysInput");
     const diaInput = document.getElementById("diaInput");
     const submitBtn = document.getElementById("submitBtn");
     const resultEl = document.getElementById("result");
 
-    // ---- Mobile audio unlock + WebAudio setup (iPhone safe) ----
+    // ---------- AUDIO (Original logic from your working file) ----------
     let audioCtx = null, beatBuffer = null, beatTimer = null;
 
-    function createBeatBuffer(ctx){
-      const duration = 0.18, sr = ctx.sampleRate;
-      const length = Math.floor(duration * sr);
-      const buffer = ctx.createBuffer(1, length, sr);
-      const ch = buffer.getChannelData(0), freq = 1000;
-      const attack = Math.floor(0.01 * sr), release = Math.floor(0.16 * sr);
-      for (let i = 0; i < length; i++) {
-        const t = i / sr;
-        const env = i < attack ? i / attack : Math.exp(-4 * (i - attack) / release);
-        ch[i] = Math.sin(2 * Math.PI * freq * t) * 0.9 * env;
+    function ensureAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      if (!beatBuffer) {
+        const duration = 0.18, sr = audioCtx.sampleRate;
+        const length = Math.floor(duration * sr);
+        beatBuffer = audioCtx.createBuffer(1, length, sr);
+        const ch = beatBuffer.getChannelData(0), freq = 1000;
+        const attack = Math.floor(0.01 * sr), release = Math.floor(0.16 * sr);
+        for (let i = 0; i < length; i++) {
+          const t = i / sr;
+          const env = i < attack ? i / attack : Math.exp(-4 * (i - attack) / release);
+          ch[i] = Math.sin(2 * Math.PI * freq * t) * 0.9 * env;
+        }
       }
-      return buffer;
     }
-
-    function ensureAudioInGesture() {
-      // MUST be called from a user gesture on iOS
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === "suspended") { audioCtx.resume(); }
-      if (!beatBuffer) { beatBuffer = createBeatBuffer(audioCtx); }
-
-      // ultra-short primer to satisfy iOS gesture requirement
-      try {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.02);
-        osc.connect(gain).connect(audioCtx.destination);
-        osc.frequency.value = 440;
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.02);
-      } catch(e) { /* no-op */ }
-    }
-
-    // Bind multiple gesture events for reliability on iPhone
-    ["touchstart","touchend","pointerdown","click"].forEach(evt=>{
-      document.addEventListener(evt, ensureAudioInGesture, { once:true, passive:true });
-      pumpBtn.addEventListener(evt, ensureAudioInGesture, { once:true, passive:true });
-      releaseBtn.addEventListener(evt, ensureAudioInGesture, { once:true, passive:true });
-      resetBtn.addEventListener(evt, ensureAudioInGesture, { once:true, passive:true });
-      submitBtn.addEventListener(evt, ensureAudioInGesture, { once:true, passive:true });
-    });
-
-    // Resume if tab regains focus / becomes visible
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-    });
-    window.addEventListener('focus', () => {
-      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-    });
-
     function playBeat() {
       if (!audioCtx || !beatBuffer) return;
       const src = audioCtx.createBufferSource();
       src.buffer = beatBuffer;
       src.connect(audioCtx.destination);
-      try { src.start(); } catch(e){}
+      src.start();
     }
     function startHeartbeat() {
       if (beatStarted) return;
@@ -377,53 +334,54 @@
       beatTimer = null;
     }
 
-    // Dial math (0–280 mmHg mapped to -180..180 degrees)
+    // ---------- Dial math ----------
     function pressureToAngle(p) { return (p / 280) * 360 - 180; }
-
     function updateNeedle() {
-      const angle = pressureToAngle(currentPressure);
-      needle.style.transform = `rotate(${angle}deg)`;
+      needle.style.transform = `rotate(${pressureToAngle(currentPressure)}deg)`;
       pressureDisplay.textContent = Math.round(currentPressure);
     }
-
     function updateSpeedDisplay(val) { speedValueText.textContent = val; }
     speedSlider.addEventListener("input", e => updateSpeedDisplay(e.target.value));
 
-    // Skewed SYS distribution: mostly <180 even; occasional 220–240 even
+    // ---------- Generate even-number answers (skewed distribution) ----------
     function generateSystolicEven(){
       const r = Math.random();
       let sys;
       if (r < 0.85) {
-        // 85% normal range 100–178, even
-        sys = 100 + Math.floor(Math.random() * 40) * 2; // 100..178 even
+        // 85% 100–178 even
+        sys = 100 + Math.floor(Math.random() * 40) * 2;
       } else {
-        // 15% high outliers 220–240, even (can adjust upper bound)
-        sys = 220 + Math.floor(Math.random() * 11) * 2; // 220..240 even
+        // 15% 220–240 even
+        sys = 220 + Math.floor(Math.random() * 11) * 2;
       }
       return clamp(sys, 100, 240);
     }
-
     function generateDiastolicEven(sys){
-      // 58–68% of sys, even, min 40 and at least 10 below sys
-      const ratio = 0.58 + Math.random() * 0.10;
-      let dia = Math.round(sys * ratio);
-      dia = toEven(dia);
+      const ratio = 0.58 + Math.random() * 0.10; // 58–68% of SYS
+      let dia = toEven(Math.round(sys * ratio));
       dia = clamp(dia, 40, sys - 10);
-      // ensure even after clamp
       if (dia % 2 !== 0) dia = clamp(dia - 1, 40, sys - 10);
       return dia;
     }
 
-    pumpBtn.addEventListener("click", () => {
+    // ---------- Controls (instant pump; audio created ahead of time) ----------
+    function handlePump(){
+      // 1) Immediate visual response
       currentPressure = Math.min(280, currentPressure + 10);
       updateNeedle();
+
+      // 2) Audio work after UI update
       if (scenarioActive) {
+        ensureAudio();
         if (currentPressure <= systolic && currentPressure >= diastolic) startHeartbeat();
         else stopHeartbeat();
       }
-    });
+    }
+    // Use pointerdown for instant response on touch; no click to avoid double-firing
+    pumpBtn.addEventListener("pointerdown", handlePump, {passive:true});
 
-    releaseBtn.addEventListener("click", () => {
+    releaseBtn.addEventListener("pointerdown", () => {
+      ensureAudio(); // from original logic, prep audio when releasing
       if (!scenarioActive) {
         scenarioActive = true;
         systolic = generateSystolicEven();
@@ -435,17 +393,18 @@
       }
       releasing = !releasing;
       releaseBtn.textContent = releasing ? "Pause Release" : "Resume Release";
-    });
+    }, {passive:true});
 
-    resetBtn.addEventListener("click", () => {
+    resetBtn.addEventListener("pointerdown", () => {
       stopHeartbeat();
       scenarioActive = false; releasing = false;
       currentPressure = 0; updateNeedle();
       releaseBtn.textContent = "Release";
       sysInput.value = ""; diaInput.value = "";
       resultEl.textContent = ""; resultEl.className = "result";
-    });
+    }, {passive:true});
 
+    // ---------- Deflation loop ----------
     const TICK_MS = 90;
     setInterval(() => {
       if (!releasing) return;
@@ -466,12 +425,11 @@
 
       if (!scenarioActive) return;
 
-      // Start when crossing SYS downward; stop when <= DIA
       if (!beatStarted && prev >= systolic && currentPressure <= systolic) startHeartbeat();
       if (beatStarted && currentPressure <= diastolic) stopHeartbeat();
     }, TICK_MS);
 
-    // Answer submit (±4 mmHg tolerance; display correct even numbers)
+    // ---------- Answer submit (±4 mmHg tolerance) ----------
     submitBtn.addEventListener("click", () => {
       const sysRaw = parseInt(sysInput.value, 10);
       const diaRaw = parseInt(diaInput.value, 10);
@@ -494,9 +452,16 @@
       }
     });
 
-    // Init
+    // ---------- Init ----------
     updateNeedle();
     updateSpeedDisplay(speedSlider.value);
+
+    // Prime audio on first touch/click on the main controls (original working pattern)
+    ["touchstart","mousedown"].forEach(evt=>{
+      pumpBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
+      releaseBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
+      resetBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
+    });
   </script>
 </body>
 </html>
