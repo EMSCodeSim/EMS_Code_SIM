@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Stroke Assessment – Single SVG, Per-Test Auto Start</title>
+<title>Stroke Assessment – BEFAST Layout</title>
 <style>
   :root{
     --bg:#f4f8fb; --card:#fff; --ink:#122230; --muted:#5c6a78;
@@ -12,14 +12,18 @@
   html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"Helvetica Neue",sans-serif}
   .wrap{max-width:1100px;margin:0 auto;padding:14px;display:grid;gap:12px}
 
-  header.card{background:linear-gradient(180deg,#0a76d3,#095fb0);color:#fff;border-radius:16px;padding:12px 14px}
-  .headerbar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:6px}
+  /* Sticky header */
+  header.card{
+    position: sticky; top: 0; z-index: 50;
+    background:linear-gradient(180deg,#0a76d3,#095fb0);color:#fff;border-radius:16px;padding:12px 14px;
+    box-shadow:0 6px 14px rgba(10,30,60,.12)
+  }
+  .headerbar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:0}
   .h-left{display:flex;align-items:center;gap:8px}
   .h-right{display:flex;align-items:center;gap:8px}
   .iconbtn{appearance:none;border:0;background:rgba(255,255,255,.15);color:#fff;padding:8px 10px;border-radius:10px;font-weight:700;cursor:pointer}
   .iconbtn:active{transform:translateY(1px)}
-  header h1{margin:0 0 2px;font-size:1.2rem}
-  header p{margin:0;opacity:.95}
+  header h1{margin:0;font-size:1.2rem}
 
   .grid{display:grid;gap:12px}
   @media(min-width:980px){ .grid{grid-template-columns:1.35fr .65fr} }
@@ -52,11 +56,17 @@
   .results .box{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:10px}
   .results ul{margin:.4rem 0 0 1.1rem}
   .results li{margin:.18rem 0}
+
+  /* Patient speech strip */
+  .speech-strip{
+    background:#fff; border:1px solid var(--border); border-radius:12px; padding:10px 12px; margin-bottom:10px;
+  }
+  .speech-strip strong{margin-right:.25rem}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <!-- HEADER with Back + Info -->
+  <!-- HEADER (sticky) with Back + Info -->
   <header class="card">
     <div class="headerbar">
       <div class="h-left">
@@ -67,10 +77,9 @@
         <button id="btnInfo" class="iconbtn" title="Info">ℹ️ Info</button>
       </div>
     </div>
-    <p>Neutral on load. Press any test to start. Pupils stay equal and are not part of findings.</p>
   </header>
 
-  <!-- PATIENT INFO moved to just under header -->
+  <!-- PATIENT INFO just under header -->
   <section class="card" aria-labelledby="ptinfo-title">
     <h2 id="ptinfo-title">Patient Information</h2>
     <div class="body">
@@ -83,12 +92,16 @@
     <section class="card">
       <h2>Simulator</h2>
       <div class="body">
+        <!-- Patient says (text version) -->
+        <div class="speech-strip" id="speechStrip"><strong>Patient says:</strong><span id="spokenText">…</span></div>
+
         <div class="toolbar">
+          <!-- BEFAST order: Balance, Eyes, Face, Arms, Speech -->
           <div class="seg" role="tablist" aria-label="Test selector">
             <button id="tab-balance" role="tab" aria-selected="false" title="Arms down">Balance</button>
-            <button id="tab-drift"   role="tab" aria-selected="false" title="Arms up, palms up">Arm Drift</button>
-            <button id="tab-face"    role="tab" aria-selected="false">Face</button>
             <button id="tab-eyes"    role="tab" aria-selected="false">Eyes</button>
+            <button id="tab-face"    role="tab" aria-selected="false">Face</button>
+            <button id="tab-drift"   role="tab" aria-selected="false" title="Arms up, palms up">Arm Drift</button>
             <button id="tab-speech"  role="tab" aria-selected="false">Speech</button>
           </div>
           <div class="btn-row">
@@ -253,10 +266,9 @@
     <div style="padding:14px 16px">
       <p>This tool simulates BE-FAST stroke checks: Balance, Eyes, Face, Arm drift, and Speech.</p>
       <ul>
-        <li>Press a test to auto-start the animation.</li>
+        <li>Press a test to start the animation.</li>
         <li>Use <strong>Reset View</strong> to return to neutral.</li>
-        <li>Pupils remain equal and are not part of findings.</li>
-        <li>Use the right panel to record your findings and show results.</li>
+        <li>Use the right panel to record findings and show results.</li>
       </ul>
     </div>
     <div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
@@ -279,12 +291,13 @@
   });
   btnInfo.addEventListener('click', ()=> infoDialog.showModal());
 
-  /* Tabs */
+  /* Tabs (BEFAST order) */
   const tabBalance = $('#tab-balance');
-  const tabDrift   = $('#tab-drift');
-  const tabFace    = $('#tab-face');
   const tabEyes    = $('#tab-eyes');
+  const tabFace    = $('#tab-face');
+  const tabDrift   = $('#tab-drift');
   const tabSpeech  = $('#tab-speech');
+
   const btnResetVisual = $('#btn-reset-visual');
   const timerEl = $('#timer');
   const testDesc = $('#testDesc');
@@ -313,8 +326,11 @@
   const gradeSummary = $('#gradeSummary');
   const meaning = $('#meaning');
 
-  /* Patient info (now at top) */
+  /* Patient info (top) */
   const ptInfo = $('#ptInfo');
+
+  /* Patient says (text) */
+  const spokenText = $('#spokenText');
 
   /* State */
   let running = false;
@@ -328,6 +344,16 @@
   function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
   function coin(p=0.5){ return Math.random() < p; }
   function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
+
+  /* ---------- Scenario speech helper ---------- */
+  function speechTextFor(kind){
+    if(kind==='normal')    return "The early bird catches the worm. Today is a sunny day.";
+    if(kind==='slurred')   return "Thuhh earrly burd catchezz the werm. Tuhday ishh a shunny day.";
+    if(kind==='expressive')return "Uh... sky... uh... blue... um... grass... uh... uh...";
+    if(kind==='receptive') return "Yes, okay, I understand. Happy sofa banana elbow, absolutely.";
+    if(kind==='mute')      return "…";
+    return "…";
+  }
 
   /* ---------- Scenario generation ---------- */
   function newCase(){
@@ -368,6 +394,9 @@
       <div><strong>History:</strong> ${scenario.hx}</div>
     `;
 
+    // preload the current scenario's speech text into the strip
+    spokenText.textContent = speechTextFor(scenario.speech);
+
     resetForm();
     resetVisuals();
     clearActive();
@@ -397,7 +426,7 @@
   }
 
   function clearActive(){
-    for(const el of [tabBalance,tabDrift,tabFace,tabEyes,tabSpeech]){
+    for(const el of [tabBalance,tabEyes,tabFace,tabDrift,tabSpeech]){
       el.classList.remove('active'); el.setAttribute('aria-selected','false');
     }
   }
@@ -426,6 +455,58 @@
       // rotate whole body group around the feet (pivot)
       bodyAll.setAttribute('transform', `rotate(${sway/2},${pivotX},${pivotY})`);
     },80);
+  }
+
+  function doEyes(){
+    setActive(tabEyes);
+    resetVisuals();
+    setTestDesc('Eyes: Ask the person to follow your finger left and right. Look for slow eye movement or eyes pulled to one side.');
+
+    const kind = scenario.gaze; // 'normal'|'slow'|'deviationLeft'|'deviationRight'
+    const speed = (kind==='slow') ? 140 : 75;
+    const amp = 3.5;
+    let tick=0;
+    gazeTimer=setInterval(()=>{
+      tick++;
+      let pos = Math.sin(tick/10)*amp;
+      if(kind==='deviationLeft'){ pos = Math.min(pos,0) - 1.2; }
+      if(kind==='deviationRight'){ pos = Math.max(pos,0) + 1.2; }
+      pL.style.transform = `translate(${pos}px,0)`;
+      pR.style.transform = `translate(${pos}px,0)`;
+    }, speed);
+  }
+
+  function doFace(){
+    setActive(tabFace);
+    resetVisuals();
+    setTestDesc('Face: Ask the person to smile. Look to see if one side of the mouth is lower. The eyebrow on that side may also look lower.');
+
+    const droop = scenario.faceDroop; // 'left'|'right'|'none'
+    // Build an asymmetric smile path so droop shows in the mouth
+    const Lx0=-7, Rx0=7, Ly0=8, Ry0=8, Cx0=0, Cy0=10;
+    const LySmile = (droop==='left') ? 11 : 6.5;   // lower side has larger y
+    const RySmile = (droop==='right') ? 11 : 6.5;
+
+    const steps=24; let i=0;
+    const id = setInterval(()=>{
+      i++;
+      const t = i/steps;
+      const e = t<.5 ? 2*t*t : -1+(4-2*t)*t;
+      const Ly = Ly0 + (LySmile - Ly0)*e;
+      const Ry = Ry0 + (RySmile - Ry0)*e;
+      const Cy = Cy0 + (13 - Cy0)*e; // bigger smile arc
+      mouth.setAttribute('d', `M ${Lx0} ${Ly} Q ${Cx0} ${Cy} ${Rx0} ${Ry}`);
+      if(i>=steps) clearInterval(id);
+    }, 16);
+
+    // Eyebrow droop
+    if(droop==='left'){
+      browL.setAttribute('d','M -12 -6 Q -6 -6 -1 -7');
+      browR.setAttribute('d','M 1 -10 Q 6 -11 12 -9');
+    }else if(droop==='right'){
+      browR.setAttribute('d','M 1 -6 Q 6 -6 12 -7');
+      browL.setAttribute('d','M -12 -9 Q -6 -11 -1 -10');
+    }
   }
 
   function doDrift(){
@@ -463,80 +544,18 @@
     driftRAF=requestAnimationFrame(tick);
   }
 
-  function doFace(){
-    setActive(tabFace);
-    resetVisuals();
-    setTestDesc('Face: Ask the person to smile. Look to see if one side of the mouth is lower. The eyebrow on that side may also look lower.');
-
-    const droop = scenario.faceDroop; // 'left'|'right'|'none'
-    // Build an asymmetric smile path so droop shows in the mouth
-    const Lx0=-7, Rx0=7, Ly0=8, Ry0=8, Cx0=0, Cy0=10;
-    const LySmile = (droop==='left') ? 11 : 6.5;   // lower side has larger y
-    const RySmile = (droop==='right') ? 11 : 6.5;
-
-    const steps=24; let i=0;
-    const id = setInterval(()=>{
-      i++;
-      const t = i/steps;
-      const e = t<.5 ? 2*t*t : -1+(4-2*t)*t;
-      const Ly = Ly0 + (LySmile - Ly0)*e;
-      const Ry = Ry0 + (RySmile - Ry0)*e;
-      const Cy = Cy0 + (13 - Cy0)*e; // bigger smile arc
-      mouth.setAttribute('d', `M ${Lx0} ${Ly} Q ${Cx0} ${Cy} ${Rx0} ${Ry}`);
-      if(i>=steps) clearInterval(id);
-    }, 16);
-
-    // Eyebrow droop
-    if(droop==='left'){
-      browL.setAttribute('d','M -12 -6 Q -6 -6 -1 -7');
-      browR.setAttribute('d','M 1 -10 Q 6 -11 12 -9');
-    }else if(droop==='right'){
-      browR.setAttribute('d','M 1 -6 Q 6 -6 12 -7');
-      browL.setAttribute('d','M -12 -9 Q -6 -11 -1 -10');
-    }
-  }
-
-  function doEyes(){
-    setActive(tabEyes);
-    resetVisuals();
-    setTestDesc('Eyes: Ask the person to follow your finger left and right. Look for slow eye movement or eyes pulled to one side.');
-
-    const kind = scenario.gaze; // 'normal'|'slow'|'deviationLeft'|'deviationRight'
-    const speed = (kind==='slow') ? 140 : 75;
-    const amp = 3.5;
-    let tick=0;
-    gazeTimer=setInterval(()=>{
-      tick++;
-      let pos = Math.sin(tick/10)*amp;
-      if(kind==='deviationLeft'){ pos = Math.min(pos,0) - 1.2; }
-      if(kind==='deviationRight'){ pos = Math.max(pos,0) + 1.2; }
-      pL.style.transform = `translate(${pos}px,0)`;
-      pR.style.transform = `translate(${pos}px,0)`;
-    }, speed);
-  }
-
   function doSpeech(){
     setActive(tabSpeech);
     resetVisuals();
     setTestDesc('Speech: Ask the person to repeat a simple sentence. Listen for slurred words, trouble getting words out, trouble understanding, or no speech.');
 
     const s = scenario.speech; // 'normal' | 'slurred' | 'expressive' | 'receptive' | 'mute'
-    const u = new SpeechSynthesisUtterance();
-    u.rate = 1.0; u.pitch = 1.0; u.lang = 'en-US';
+    const text = speechTextFor(s);
+    // Update text strip to mirror the audio
+    spokenText.textContent = text;
 
-    let text = "The sky is blue and the grass is green.";
-    if(s==='normal'){
-      text = "The early bird catches the worm. Today is a sunny day.";
-    }else if(s==='slurred'){
-      text = "Thuhh earrly burd catchezz the werm. Tuhday ishh a shunny day.";
-    }else if(s==='expressive'){
-      text = "Uh... sky... uh... blue... um... grass... uh... uh...";
-    }else if(s==='receptive'){
-      text = "Yes, okay, I understand. Happy sofa banana elbow, absolutely.";
-    }else if(s==='mute'){
-      text = "...";
-    }
-    u.text = text;
+    const u = new SpeechSynthesisUtterance();
+    u.rate = 1.0; u.pitch = 1.0; u.lang = 'en-US'; u.text = text;
     speechSynthesis.cancel();
     speechSynthesis.speak(u);
   }
@@ -604,9 +623,9 @@
 
   /* ---------- Events ---------- */
   tabBalance.addEventListener('click', doBalance);
-  tabDrift  .addEventListener('click', doDrift);
-  tabFace   .addEventListener('click', doFace);
   tabEyes   .addEventListener('click', doEyes);
+  tabFace   .addEventListener('click', doFace);
+  tabDrift  .addEventListener('click', doDrift);
   tabSpeech .addEventListener('click', doSpeech);
 
   btnResetVisual.addEventListener('click', resetVisuals);
@@ -614,7 +633,7 @@
   btnNew.addEventListener('click', newCase);
   btnResetForm.addEventListener('click', resetForm);
 
-  // init: neutral
+  // init: load a case and preload the text strip to current scenario speech
   newCase();
 })();
 </script>
