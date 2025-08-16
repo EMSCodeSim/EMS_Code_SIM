@@ -11,8 +11,14 @@
   }
   html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"Helvetica Neue",sans-serif}
   .wrap{max-width:1100px;margin:0 auto;padding:14px;display:grid;gap:12px}
-  header{background:linear-gradient(180deg,#0a76d3,#095fb0);color:#fff;border-radius:16px;padding:16px}
-  header h1{margin:0 0 6px;font-size:1.2rem}
+
+  header.card{background:linear-gradient(180deg,#0a76d3,#095fb0);color:#fff;border-radius:16px;padding:12px 14px}
+  .headerbar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:6px}
+  .h-left{display:flex;align-items:center;gap:8px}
+  .h-right{display:flex;align-items:center;gap:8px}
+  .iconbtn{appearance:none;border:0;background:rgba(255,255,255,.15);color:#fff;padding:8px 10px;border-radius:10px;font-weight:700;cursor:pointer}
+  .iconbtn:active{transform:translateY(1px)}
+  header h1{margin:0 0 2px;font-size:1.2rem}
   header p{margin:0;opacity:.95}
 
   .grid{display:grid;gap:12px}
@@ -46,19 +52,34 @@
   .results .box{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:10px}
   .results ul{margin:.4rem 0 0 1.1rem}
   .results li{margin:.18rem 0}
-  .infoGrid{display:grid;gap:8px;grid-template-columns:1fr}
-  @media (max-width:760px){ .infoGrid{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
 <div class="wrap">
+  <!-- HEADER with Back + Info -->
   <header class="card">
-    <h1>Stroke Assessment</h1>
+    <div class="headerbar">
+      <div class="h-left">
+        <button id="btnBack" class="iconbtn" title="Back">← Back</button>
+        <h1 style="margin:0">Stroke Assessment</h1>
+      </div>
+      <div class="h-right">
+        <button id="btnInfo" class="iconbtn" title="Info">ℹ️ Info</button>
+      </div>
+    </div>
     <p>Neutral on load. Press any test to start. Pupils stay equal and are not part of findings.</p>
   </header>
 
+  <!-- PATIENT INFO moved to just under header -->
+  <section class="card" aria-labelledby="ptinfo-title">
+    <h2 id="ptinfo-title">Patient Information</h2>
+    <div class="body">
+      <div id="ptInfo"></div>
+    </div>
+  </section>
+
   <div class="grid">
-    <!-- LEFT: Simulator + Patient Info -->
+    <!-- LEFT: Simulator -->
     <section class="card">
       <h2>Simulator</h2>
       <div class="body">
@@ -140,13 +161,6 @@
               </g>
             </g>
           </svg>
-        </div>
-
-        <div class="infoGrid" style="margin-top:10px">
-          <div class="box" style="background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:10px">
-            <div style="font-weight:800;margin-bottom:4px">Patient Information</div>
-            <div id="ptInfo"></div>
-          </div>
         </div>
 
         <div id="testDesc" class="muted" style="margin-top:10px"></div>
@@ -232,9 +246,38 @@
   </div>
 </div>
 
+<!-- Simple Info dialog -->
+<dialog id="infoDialog" style="max-width:640px;border:1px solid var(--border);border-radius:16px;padding:0">
+  <form method="dialog" style="margin:0">
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">About this Simulator</div>
+    <div style="padding:14px 16px">
+      <p>This tool simulates BE-FAST stroke checks: Balance, Eyes, Face, Arm drift, and Speech.</p>
+      <ul>
+        <li>Press a test to auto-start the animation.</li>
+        <li>Use <strong>Reset View</strong> to return to neutral.</li>
+        <li>Pupils remain equal and are not part of findings.</li>
+        <li>Use the right panel to record your findings and show results.</li>
+      </ul>
+    </div>
+    <div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
+      <button class="btn">Close</button>
+    </div>
+  </form>
+</dialog>
+
 <script>
 (function(){
   const $ = s => document.querySelector(s);
+
+  /* Header buttons */
+  const btnBack = $('#btnBack');
+  const btnInfo = $('#btnInfo');
+  const infoDialog = $('#infoDialog');
+  btnBack.addEventListener('click', ()=> {
+    if (document.referrer) history.back();
+    else window.location.href = '/';
+  });
+  btnInfo.addEventListener('click', ()=> infoDialog.showModal());
 
   /* Tabs */
   const tabBalance = $('#tab-balance');
@@ -270,7 +313,7 @@
   const gradeSummary = $('#gradeSummary');
   const meaning = $('#meaning');
 
-  /* Patient info */
+  /* Patient info (now at top) */
   const ptInfo = $('#ptInfo');
 
   /* State */
@@ -402,7 +445,6 @@
       timerEl.textContent = elapsed.toFixed(1);
 
       if(side!=='none'){
-        // FIXED TYPO BELOW (removed stray space in "driftTriggeredAt")
         if(!driftTriggeredAt && elapsed>=3.0){ driftTriggeredAt = elapsed; }
         if(driftTriggeredAt){
           const d = clamp((elapsed - driftTriggeredAt)/0.6, 0, 1);
