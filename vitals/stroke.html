@@ -4,6 +4,16 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Stroke Assessment – BEFAST Layout</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-5QLPK4025C');
+</script>
+
 <style>
   :root{
     --bg:#f4f8fb; --card:#fff; --ink:#122230; --muted:#5c6a78;
@@ -341,10 +351,6 @@
   const speechStrip = $('#speechStrip');
   const spokenText = $('#spokenText');
 
-  /* State */
-  let running = false;
-  let scenario = null;
-
   // timers / animation handles
   let swayTimer = null, swayTick = 0;
   let driftRAF = null, driftRunning = false, driftStart = 0, driftTriggeredAt = null;
@@ -375,12 +381,12 @@
 
     const hasStroke = coin(0.7);
     const face = hasStroke ? rand(['left','right','none','none']) : 'none';
-    aconst arm  = hasStroke ? rand(['left','right','none']) : 'none';
+    const arm  = hasStroke ? rand(['left','right','none']) : 'none';  /* <-- fixed typo here */
     const eyes = hasStroke ? rand(['deviationLeft','deviationRight','slow','normal']) : 'normal';
     const bal  = hasStroke ? rand(['unsteady','leansLeft','leansRight','normal']) : 'normal';
     const speech = hasStroke ? rand(['slurred','expressive','receptive','mute','normal']) : 'normal';
 
-    scenario = {
+    const scenario = {
       age: rand(ages),
       sex: rand(sexes),
       cco: rand(complaints),
@@ -394,6 +400,9 @@
       speech: speech
     };
 
+    // stash on window for quick inspection if needed
+    window.__scenario = scenario;
+
     const onset = scenario.lkwMin<=60 ? `${scenario.lkwMin} minutes ago` : `${Math.round(scenario.lkwMin/60)} hours ago`;
     ptInfo.innerHTML = `
       <div><strong>Age/Sex:</strong> ${scenario.age} / ${scenario.sex}</div>
@@ -403,15 +412,21 @@
       <div><strong>History:</strong> ${scenario.hx}</div>
     `;
 
-    // Ensure speech text is hidden until Speech is pressed
+    // Hide speech text until Speech is pressed
     speechStrip.style.display = 'none';
     spokenText.textContent = '…';
+
+    // attach handlers access
+    state.scenario = scenario;
 
     resetForm();
     resetVisuals();
     clearActive();
     setTestDesc('');
   }
+
+  /* keep shared state in an object to ensure handler access */
+  const state = { scenario: null };
 
   /* ---------- Visual reset ---------- */
   function resetVisuals(){
@@ -428,7 +443,6 @@
   }
 
   function stopAll(){
-    running=false;
     if(swayTimer){ clearInterval(swayTimer); swayTimer=null; }
     if(gazeTimer){ clearInterval(gazeTimer); gazeTimer=null; }
     if(driftRAF){ cancelAnimationFrame(driftRAF); driftRAF=null; }
@@ -452,7 +466,7 @@
     resetVisuals();
     setTestDesc('Balance: Ask the person to stand with feet together and arms at the sides. Watch the whole body. It may lean or sway. The feet stay on the ground.');
 
-    const bal = scenario.balance;
+    const bal = state.scenario.balance;
     if(bal==='normal'){ return; }
 
     swayTick=0;
@@ -471,7 +485,7 @@
     resetVisuals();
     setTestDesc('Eyes: Ask the person to follow your finger left and right. Look for slow eye movement or eyes pulled to one side.');
 
-    const kind = scenario.gaze; // 'normal'|'slow'|'deviationLeft'|'deviationRight'
+    const kind = state.scenario.gaze; // 'normal'|'slow'|'deviationLeft'|'deviationRight'
     const speed = (kind==='slow') ? 140 : 75;
     const amp = 3.5;
     let tick=0;
@@ -490,7 +504,7 @@
     resetVisuals();
     setTestDesc('Face: Ask the person to smile. Look to see if one side of the mouth is lower. The eyebrow on that side may also look lower.');
 
-    const droop = scenario.faceDroop; // 'left'|'right'|'none'
+    const droop = state.scenario.faceDroop; // 'left'|'right'|'none'
     const Lx0=-7, Rx0=7, Ly0=8, Ry0=8, Cx0=0, Cy0=10;
     const LySmile = (droop==='left') ? 11 : 6.5;
     const RySmile = (droop==='right') ? 11 : 6.5;
@@ -525,7 +539,7 @@
     armsUp.setAttribute('visibility','visible');
 
     driftRunning=true; driftStart=performance.now(); driftTriggeredAt=null;
-    const side = scenario.armDrift; // 'left'|'right'|'none'
+    const side = state.scenario.armDrift; // 'left'|'right'|'none'
     function tick(ts){
       if(!driftRunning) return;
       const elapsed=(ts - driftStart)/1000;
@@ -555,17 +569,19 @@
     resetVisuals();
     setTestDesc('Speech: Ask the person to repeat a simple sentence. Listen for slurred words, trouble getting words out, trouble understanding, or no speech.');
 
-    const s = scenario.speech;
+    const s = state.scenario.speech;
     const text = speechTextFor(s);
 
     // Unhide and update text strip only when Speech is pressed
     speechStrip.style.display = 'block';
     spokenText.textContent = text;
 
-    const u = new SpeechSynthesisUtterance();
-    u.rate = 1.0; u.pitch = 1.0; u.lang = 'en-US'; u.text = text;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(u);
+    if ('speechSynthesis' in window) {
+      const u = new SpeechSynthesisUtterance();
+      u.rate = 1.0; u.pitch = 1.0; u.lang = 'en-US'; u.text = text;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(u);
+    }
   }
 
   /* ---------- Findings, grading ---------- */
@@ -575,14 +591,15 @@
   }
 
   function grade(){
+    const s = state.scenario;
     const user = { balance:fBalance.value, eyes:fEyes.value, face:fFace.value, arms:fArms.value, speech:fSpeech.value, time:fTime.value };
     const truth = {
-      balance: (scenario.balance==='unsteady'||scenario.balance==='leansLeft'||scenario.balance==='leansRight') ? scenario.balance : 'normal',
-      eyes: scenario.gaze,
-      face: scenario.faceDroop,
-      arms: scenario.armDrift,
-      speech: scenario.speech,
-      time: scenario.lkwMin
+      balance: (s.balance==='unsteady'||s.balance==='leansLeft'||s.balance==='leansRight') ? s.balance : 'normal',
+      eyes: s.gaze,
+      face: s.faceDroop,
+      arms: s.armDrift,
+      speech: s.speech,
+      time: s.lkwMin
     };
     const fields = [['Balance','balance'],['Eyes (gaze)','eyes'],['Face','face'],['Arms','arms'],['Speech','speech']];
     gradeList.innerHTML=''; let correct=0;
