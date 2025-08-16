@@ -97,6 +97,7 @@
               <label for="rightPatient">Right Patient</label>
               <select id="rightPatient">
                 <option value="">— choose —</option>
+                <option>No (not the right patient)</option>
               </select>
             </div>
 
@@ -143,7 +144,7 @@
               </select>
             </div>
 
-            <!-- Follow-up items used in scoring Right Dose/Time -->
+            <!-- Follow-ups (affect Right Dose/Time scoring) -->
             <div id="followups" class="line" hidden>
               <strong>Follow-up Questions</strong>
               <div id="fuNitro" class="split" hidden style="margin-top:8px">
@@ -202,13 +203,13 @@
       <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">The 5 Rights (EMS)</div>
       <div style="padding:14px 16px">
         <ol>
-          <li><strong>Right Patient</strong> — Correct identity <em>and</em> the medication is indicated for this patient; if assisting, the bottle label name matches the patient.</li>
+          <li><strong>Right Patient</strong> — Identity confirmed <em>and</em> med is indicated for this patient; if assisting, bottle label name matches the patient. If not, answer “No (not the right patient)”.</li>
           <li><strong>Right Medication</strong> — Correct drug and correct formulation/concentration/device.</li>
           <li><strong>Right Dose</strong> — Correct amount for age/weight and correct total/count when applicable (e.g., Nitro max, Albuterol puffs).</li>
           <li><strong>Right Route</strong> — Correct route and delivery device for the medication.</li>
           <li><strong>Right Time</strong> — Appropriate to give now; not expired; proper interval since last dose; not over maximum total doses.</li>
         </ol>
-        <p>Always also check <strong>Contraindications</strong> and document the medication, dose, route, time, and patient response.</p>
+        <p>Always check <strong>Contraindications</strong> and document medication, dose, route, time, and patient response.</p>
       </div>
       <div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
         <button class="iconbtn" style="background:#eee;color:#111">Close</button>
@@ -272,7 +273,7 @@
     return [correctName, decoy].sort(()=>Math.random()-0.5);
   }
 
-  /* Scenarios — include bottle labels, last dose, max doses, and expiry flags to test Right Time */
+  /* Scenarios */
   const SCENARIOS = [
     // Aspirin
     ()=> {
@@ -284,7 +285,7 @@
         vitals: {hr:96, sbp:138, dbp:84, rr:18, spo2:98},
         flags: {asaAllergy: coin(0.15), activeBleed: coin(0.1)},
         bottle: null,
-        medMeta: { expired:false, lastDoseMins:null, maxDosesGiven:0, maxAllowed:null }, // N/A for ASA
+        medMeta: { expired:false, lastDoseMins:null, maxDosesGiven:0, maxAllowed:null },
         rights: {
           patient: patient,
           med: 'Aspirin (chewable)',
@@ -296,24 +297,25 @@
         followups: null
       };
     },
-    // Nitro (assist) — tests bottle label ownership, BP, ED meds, last dose spacing, max total
+    // Nitro (assist) — label ownership matters
     ()=> {
       const patient = 'Jamie Chen';
       const owner = coin(0.5) ? patient : 'Taylor Brooks';
       const hypotensive = coin(0.25);
       const tookED = coin(0.3);
-      const lastDoseMins = coin(0.4) ? rand([2,4,7]) : null; // sometimes took a dose recently
+      const lastDoseMins = coin(0.4) ? rand([2,4,7]) : null;
       const maxGiven = coin(0.3) ? 3 : rand([0,1,2]);
+      const bottle = { med: 'Nitroglycerin (SL)', ownerName: owner, expired: coin(0.1) };
       return {
         id:'nitro',
         title:`${patient} (64) with pressure-like chest pain radiating to jaw. Prescribed SL Nitroglycerin.`,
         patientName: patient,
         vitals: {hr:84, sbp: hypotensive? 92:132, dbp: hypotensive? 58:86, rr:16, spo2:97},
         flags: {edMeds48h: tookED},
-        bottle: { med: 'Nitroglycerin (SL)', ownerName: owner, expired: coin(0.1) },
+        bottle,
         medMeta: { expired: coin(0.05), lastDoseMins, maxDosesGiven: maxGiven, maxAllowed: 3 },
         rights: {
-          patient: patient,
+          patient: (bottle.ownerName !== patient) ? 'No (not the right patient)' : patient,
           med: 'Nitroglycerin (SL)',
           dose: '0.4 mg tablet/spray',
           route: 'SL (sublingual)',
@@ -323,20 +325,21 @@
         followups: 'nitro'
       };
     },
-    // Albuterol (assist) — label ownership & initial puffs
+    // Albuterol (assist)
     ()=> {
       const patient = 'Riley Thompson';
       const owner = coin(0.25) ? 'Alex Rivera' : patient;
+      const bottle = { med: 'Albuterol (MDI)', ownerName: owner, expired: coin(0.1) };
       return {
         id:'albuterol',
         title:`${patient} (28) with wheezing and difficulty speaking full sentences. Has Albuterol MDI.`,
         patientName: patient,
         vitals: {hr:104, sbp:122, dbp:78, rr:26, spo2:92},
         flags: {},
-        bottle: { med: 'Albuterol (MDI)', ownerName: owner, expired: coin(0.1) },
+        bottle,
         medMeta: { expired: coin(0.05), lastDoseMins: null, maxDosesGiven: null, maxAllowed: null },
         rights: {
-          patient: patient,
+          patient: (bottle.ownerName !== patient) ? 'No (not the right patient)' : patient,
           med: 'Albuterol (MDI)',
           dose: '1–2 puffs (90 mcg each)',
           route: 'Inhalation (MDI)',
@@ -419,26 +422,25 @@
   function newScenario(){
     current = SCENARIOS[Math.floor(Math.random()*SCENARIOS.length)]();
 
-    // Render scenario (no tips/notes)
+    // Render scenario
     const v = current.vitals;
-    scenarioBox.innerHTML = `
-      <p><strong>Chief complaint:</strong> ${current.title}</p>
-    `;
-    vitalsPill.textContent = `HR ${v.hr}, BP ${v.sbp}/${v.dbp}, RR ${v.rr}, SpO₂ ${v.spo2}%`;
+    scenarioBox.innerHTML = `<p><strong>Chief complaint:</strong> ${current.title}</p>`;
     allergyPill.textContent = 'Allergies: ' + (current.flags.asaAllergy ? 'Aspirin sensitivity reported' : 'NKDA');
+    vitalsPill.textContent = `HR ${v.hr}, BP ${v.sbp}/${v.dbp}, RR ${v.rr}, SpO₂ ${v.spo2}%`;
 
     if(current.bottle){
       bottlePill.hidden = false;
       const expTag = (current.bottle.expired ? ' — EXPIRED' : '');
       bottlePill.textContent = `${current.bottle.med} bottle label: ${current.bottle.ownerName}${expTag}`;
     }else{
-      bottlePill.hidden = true;
-      bottlePill.textContent = '';
+      bottlePill.hidden = true; bottlePill.textContent = '';
     }
 
     // Populate patient choices
     const names = makePatients(current.patientName);
-    selPatient.innerHTML = `<option value="">— choose —</option>` + names.map(n=>`<option>${n}</option>`).join('');
+    selPatient.innerHTML =
+      `<option value="">— choose —</option><option>No (not the right patient)</option>` +
+      names.map(n=>`<option>${n}</option>`).join('');
 
     // Med-dependent dose options
     selDose.innerHTML = `<option value="">— choose —</option>` + current.doseOptions.map(d=>`<option>${d}</option>`).join('');
@@ -469,6 +471,7 @@
     }
   });
 
+  /* Helpers */
   function line(ok, label, expected, got, extraNote=''){
     const cls = ok ? 'good' : 'bad';
     const icon = ok ? '✅' : '❌';
@@ -479,30 +482,7 @@
       ${extraNote ? `<div class="muted" style="margin-top:4px">${extraNote}</div>` : ''}
     </div>`;
   }
-
-  function warn(label, text){
-    return `<div class="line warn"><strong>⚠️ ${label}:</strong> ${text}</div>`;
-  }
-
-  /* Expanded Right checks */
-  function checkRightPatient(user){
-    // Identity AND indication; if assisting, bottle label must match patient name
-    let ok = true; const notes=[];
-    if(!user.patient || user.patient !== current.patientName){ ok=false; notes.push('Identity mismatch.'); }
-    // Indication (based on scenario/med selected)
-    if(user.med){
-      const idOK = indicationMatches(user.med);
-      if(!idOK){ ok=false; notes.push('Medication not indicated for this presentation.'); }
-      // Bottle label match for assist meds
-      const assisted = ['Nitroglycerin (SL)','Albuterol (MDI)'];
-      if(current.bottle && assisted.includes(user.med)){
-        if(current.bottle.ownerName !== current.patientName){
-          ok=false; notes.push('Bottle label name does not match the patient.');
-        }
-      }
-    }
-    return {ok, note: notes.join(' ')};
-  }
+  function warn(label, text){ return `<div class="line warn"><strong>⚠️ ${label}:</strong> ${text}</div>`; }
 
   function indicationMatches(med){
     const v = current.vitals; const f=current.flags||{};
@@ -517,8 +497,35 @@
     }
   }
 
+  /* Expanded Right checks */
+  function checkRightPatient(user){
+    // Identity/indication + (if assisting) bottle label match.
+    let ok = true; const notes=[];
+    const expect = current.rights.patient;
+
+    // If expected is "No", then user must select the No option.
+    if(expect === 'No (not the right patient)'){
+      if(user.patient !== 'No (not the right patient)'){ ok=false; notes.push('Bottle label name does not match the patient; correct answer is “No”.'); }
+      // also ensure they didn’t try to select a name here
+      return {ok, note: notes.join(' ')};
+    }
+
+    // Otherwise, expect the actual patient name and med indication
+    if(!user.patient || user.patient !== expect){ ok=false; notes.push('Identity mismatch.'); }
+    if(user.med && !indicationMatches(user.med)){ ok=false; notes.push('Medication not indicated for this presentation.'); }
+
+    // If assisting and label exists but mismatched, then even if they picked the name, it’s not the right patient for that medication assist
+    const assisted = ['Nitroglycerin (SL)','Albuterol (MDI)'];
+    if(current.bottle && assisted.includes(user.med)){
+      if(current.bottle.ownerName !== current.patientName){
+        ok=false; notes.push('Bottle label name does not match the patient.');
+      }
+    }
+    return {ok, note: notes.join(' ')};
+  }
+
   function checkRightMed(user){
-    // Correct drug and proper device/form
+    // Correct drug + proper device/route pairing
     let ok = (user.med === current.rights.med);
     let formOK = true;
     if(user.med){
@@ -529,26 +536,22 @@
   }
 
   function checkRightDose(user){
-    // Correct amount and follow-up dose knowledge (where applicable)
     let ok = (user.dose === current.rights.dose);
     let followOK = true;
 
-    if(user.med === 'Nitroglycerin (SL)'){
-      // Follow-ups count toward "Right Dose" knowledge block
+    if(user.med === 'Nitroglycerin (SL)' && current.followups === 'nitro'){
       followOK = (fuNitroMax.value === '3') && (fuNitroInterval.value === '5 minutes');
     }
-    if(user.med === 'Albuterol (MDI)'){
+    if(user.med === 'Albuterol (MDI)' && current.followups === 'albuterol'){
       followOK = (fuAlbuterolPuffs.value === '1–2 puffs');
     }
     return {ok: ok && followOK};
   }
 
-  function checkRightRoute(user){
-    return {ok: (user.route === current.rights.route)};
-  }
+  function checkRightRoute(user){ return {ok: (user.route === current.rights.route)}; }
 
   function checkRightTime(user){
-    // Give now; not expired; spacing since last dose; not over max total
+    // Give now; not expired; proper interval; not over max
     let ok = (user.time === current.rights.time);
     const mm = current.medMeta || {};
     const b = current.bottle || {};
@@ -568,7 +571,6 @@
     const issues = [];
     const notes = [];
 
-    // Assisted meds must match label owner
     const assistedMeds = ['Nitroglycerin (SL)','Albuterol (MDI)'];
     if(b && assistedMeds.includes(user.med)){
       if(b.ownerName !== current.patientName){
@@ -577,7 +579,6 @@
       if(b.expired) issues.push(`${user.med} bottle is expired.`);
     }
 
-    // Medication-specific
     switch(user.med){
       case 'Aspirin (chewable)':
         if(f.asaAllergy) issues.push('Aspirin allergy/sensitivity reported.');
@@ -586,9 +587,8 @@
       case 'Nitroglycerin (SL)':
         if(v.sbp < 100) issues.push(`Hypotension: SBP ${v.sbp}.`);
         if(f.edMeds48h) issues.push('ED medication taken within 48 hours.');
-        // time/max handled in Right Time but list if violated
         if(current.medMeta.lastDoseMins !== null && current.medMeta.lastDoseMins < 5){
-          issues.push(`Last Nitro dose ${current.medMeta.lastDoseMins} minutes ago (minimum 5 minutes).`);
+          issues.push(`Last Nitro dose ${current.medMeta.lastDoseMins} minutes ago (min 5).`);
         }
         if(current.medMeta.maxDosesGiven >= 3){
           issues.push('Max total Nitro doses already given.');
@@ -598,21 +598,55 @@
         if(b && b.expired) issues.push('Inhaler is expired.');
         break;
       case 'Oral Glucose (gel)':
-        if(f.gagIntact === false || f.canSwallow === false){
-          issues.push('No intact gag or unable to swallow.');
-        }
+        if(f.gagIntact === false || f.canSwallow === false) issues.push('No intact gag or unable to swallow.');
         break;
       case 'Epinephrine (auto-injector)':
-        // few true contraindications in anaphylaxis
+        // no absolute CI in anaphylaxis; proceed if indicated
         break;
       case 'Naloxone (IN)':
-        // emphasize ventilations first if needed
         if(v.rr <= 6) notes.push('Support ventilation first; titrate Naloxone to respirations.');
         break;
     }
 
     const contraindicated = issues.length > 0;
     return {contraindicated, issues, notes};
+  }
+
+  function precautionsFor(med){
+    switch(med){
+      case 'Aspirin (chewable)':
+        return [
+          'Observe for nausea, vomiting, or signs of bleeding.',
+          'Reassess pain scale and vitals; watch for allergy reaction.'
+        ];
+      case 'Nitroglycerin (SL)':
+        return [
+          'Monitor BP every 3–5 minutes; expect headache/flushing.',
+          'Assess for relief of chest pain and changes on repeat ECG if available.'
+        ];
+      case 'Albuterol (MDI)':
+        return [
+          'Watch for tremor and tachycardia; reassess breath sounds and work of breathing.',
+          'Recheck SpO₂ and peak flow (if available).'
+        ];
+      case 'Epinephrine (auto-injector)':
+        return [
+          'Expect HR and BP to rise; watch for arrhythmias.',
+          'Reassess airway/ventilation; prepare for repeat dose per protocol.'
+        ];
+      case 'Oral Glucose (gel)':
+        return [
+          'Maintain airway; position to reduce aspiration risk.',
+          'Recheck mental status and glucose in ~10–15 minutes.'
+        ];
+      case 'Naloxone (IN)':
+        return [
+          'Protect from acute withdrawal; patient may become agitated.',
+          'Monitor respirations; re-sedation possible as Naloxone wears off.'
+        ];
+      default:
+        return ['Monitor ABCs and reassess vitals frequently.'];
+    }
   }
 
   function assess(){
@@ -625,22 +659,14 @@
     };
     const key = current.rights;
 
-    // Expanded checks (each returns {ok,...})
+    // Expanded checks
     const rp = checkRightPatient(user);
     const rm = checkRightMed(user);
     const rd = checkRightDose(user);
     const rr = checkRightRoute(user);
     const rt = checkRightTime(user);
 
-    const blocks = [
-      line(rp.ok, 'Right Patient', `${key.patient} & indicated; bottle (if assisting) matches patient`, `${user.patient||''}`, rp.note||''),
-      line(rm.ok, 'Right Medication', `${key.med} (correct formulation/device)`, `${user.med||''}`),
-      line(rd.ok, 'Right Dose', `${key.dose}${user.med==='Nitroglycerin (SL)'?' + max 3, 5 min apart':''}${user.med==='Albuterol (MDI)'?' + 1–2 initial puffs':''}`, `${user.dose||''}`),
-      line(rr.ok, 'Right Route', `${key.route}`, `${user.route||''}`),
-      line(rt.ok, 'Right Time', `${key.time}; not expired; proper interval; not over max`, `${user.time||''}`)
-    ];
-
-    // Contraindications box
+    // 1) CONTRAINDICATIONS FIRST
     const CI = contraindicationsAssessment(user);
     let ciHtml = '';
     if(user.med){
@@ -652,17 +678,32 @@
       if(CI.notes.length){
         ciHtml += `<div class="line warn"><strong>ℹ️ Considerations:</strong><br>${CI.notes.map(x=>'• '+x).join('<br>')}</div>`;
       }
+    } else {
+      ciHtml = `<div class="muted">Select a medication to evaluate contraindications.</div>`;
     }
 
+    // 2) THEN THE 5 RIGHTS RESULTS
+    const blocks = [
+      line(rp.ok, 'Right Patient', `${key.patient} & indicated; bottle (if assisting) matches patient`, `${user.patient||''}`, rp.note||''),
+      line(rm.ok, 'Right Medication', `${key.med} (correct formulation/device)`, `${user.med||''}`),
+      line(rd.ok, 'Right Dose', `${key.dose}${user.med==='Nitroglycerin (SL)'?' + max 3, 5 min apart':''}${user.med==='Albuterol (MDI)'?' + 1–2 initial puffs':''}`, `${user.dose||''}`),
+      line(rr.ok, 'Right Route', `${key.route}`, `${user.route||''}`),
+      line(rt.ok, 'Right Time', `${key.time}; not expired; proper interval; not over max`, `${user.time||''}`)
+    ];
     const score = [rp.ok,rm.ok,rd.ok,rr.ok,rt.ok].filter(Boolean).length;
 
+    // 3) PRECAUTIONS & WHAT TO LOOK FOR (after results)
+    const prec = precautionsFor(user.med);
+    const precautionsHtml = user.med
+      ? `<div class="line warn"><strong>Precautions & What to Look For</strong><br>${prec.map(x=>'• '+x).join('<br>')}</div>`
+      : '';
+
     results.innerHTML = `
-      <p><strong>Score:</strong> ${score}/5</p>
+      <div class="line" style="margin-bottom:8px"><strong>Contraindications Check</strong></div>
+      ${ciHtml}
+      <p style="margin-top:10px"><strong>Score:</strong> ${score}/5</p>
       ${blocks.join('')}
-      <div class="line" style="margin-top:8px">
-        <strong>Contraindications Check</strong>
-      </div>
-      ${ciHtml || '<div class="muted">Select a medication to evaluate contraindications.</div>'}
+      ${precautionsHtml}
     `;
   }
 
