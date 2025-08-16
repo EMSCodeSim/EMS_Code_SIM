@@ -60,6 +60,13 @@
   .good{border-color:#bbf7d0;background:#f0fdf4}
   .bad{border-color:#fecaca;background:#fff1f2}
   .warn{border-color:#fde68a;background:#fffbeb}
+
+  /* Tabs */
+  .tabs{display:flex;gap:6px;margin-bottom:8px}
+  .tabbtn{appearance:none;border:1px solid var(--border);background:#fff;padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:700}
+  .tabbtn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .tabpanel{display:none}
+  .tabpanel.active{display:block}
 </style>
 </head>
 <body>
@@ -190,26 +197,44 @@
     </div>
 
     <section class="card">
-      <h2>Results</h2>
-      <div class="body" id="results" aria-live="polite">
-        <div class="muted">Pick your answers and hit <strong>Submit</strong> to see feedback.</div>
+      <h2>Review</h2>
+      <div class="body">
+        <div class="tabs" role="tablist" aria-label="Results tabs">
+          <button class="tabbtn active" id="tab-contra" role="tab" aria-selected="true">Contraindications</button>
+          <button class="tabbtn" id="tab-rights" role="tab" aria-selected="false">5 Rights Results</button>
+        </div>
+
+        <div id="panel-contra" class="tabpanel active" role="tabpanel" aria-labelledby="tab-contra">
+          <div class="line"><strong>Contraindications Check</strong></div>
+          <div id="contraBox"><div class="muted">Select a medication and click Submit to evaluate contraindications.</div></div>
+        </div>
+
+        <div id="panel-rights" class="tabpanel" role="tabpanel" aria-labelledby="tab-rights">
+          <div id="results"><div class="muted">Pick your answers and hit <strong>Submit</strong> to see feedback.</div></div>
+        </div>
       </div>
     </section>
   </div>
 
-  <!-- Info dialog: lays out the 5 Rights in EMS context -->
-  <dialog id="infoDialog" style="max-width:720px;border:1px solid var(--border);border-radius:16px;padding:0">
+  <!-- Info dialog: 5 Rights + Standing vs Call-in -->
+  <dialog id="infoDialog" style="max-width:760px;border:1px solid var(--border);border-radius:16px;padding:0">
     <form method="dialog" style="margin:0">
-      <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">The 5 Rights (EMS)</div>
+      <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">The 5 Rights (EMS) & Authority</div>
       <div style="padding:14px 16px">
         <ol>
-          <li><strong>Right Patient</strong> — Identity confirmed <em>and</em> med is indicated for this patient; if assisting, bottle label name matches the patient. If not, answer “No (not the right patient)”.</li>
+          <li><strong>Right Patient</strong> — Identity confirmed and medication indicated for this patient; if assisting, bottle label name matches the patient.</li>
           <li><strong>Right Medication</strong> — Correct drug and correct formulation/concentration/device.</li>
-          <li><strong>Right Dose</strong> — Correct amount for age/weight and correct total/count when applicable (e.g., Nitro max, Albuterol puffs).</li>
+          <li><strong>Right Dose</strong> — Correct amount for age/weight and correct total/count where applicable (e.g., Nitro max, Albuterol puffs).</li>
           <li><strong>Right Route</strong> — Correct route and delivery device for the medication.</li>
           <li><strong>Right Time</strong> — Appropriate to give now; not expired; proper interval since last dose; not over maximum total doses.</li>
         </ol>
-        <p>Always check <strong>Contraindications</strong> and document medication, dose, route, time, and patient response.</p>
+        <hr style="border:none;border-top:1px solid var(--border);margin:12px 0">
+        <p style="margin:.2rem 0"><strong>Standing Orders vs Medical Control (varies by region)</strong></p>
+        <ul style="margin:.4rem 0 .6rem 1.2rem">
+          <li><strong>Typically Standing Orders:</strong> Oxygen, Oral Glucose, Aspirin, Naloxone (IN/auto-injector), Epinephrine (auto-injector).</li>
+          <li><strong>Often Call-In / Online Medical Direction:</strong> Nitroglycerin (assist with patient’s Rx), Bronchodilator Inhalers/Nebulized Albuterol (assist with patient’s Rx), Activated Charcoal (if carried).</li>
+        </ul>
+        <p class="muted">Always follow your state, local, and agency protocols. This trainer illustrates common patterns but is not a substitute for your medical director’s guidance.</p>
       </div>
       <div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
         <button class="iconbtn" style="background:#eee;color:#111">Close</button>
@@ -227,6 +252,24 @@
     else location.href = '/';
   });
   $('#btnInfo').addEventListener('click', ()=> $('#infoDialog').showModal());
+
+  /* Tabs */
+  const tabContra = $('#tab-contra');
+  const tabRights = $('#tab-rights');
+  const panelContra = $('#panel-contra');
+  const panelRights = $('#panel-rights');
+
+  function activateTab(which){
+    const isContra = which === 'contra';
+    tabContra.classList.toggle('active', isContra);
+    tabRights.classList.toggle('active', !isContra);
+    tabContra.setAttribute('aria-selected', String(isContra));
+    tabRights.setAttribute('aria-selected', String(!isContra));
+    panelContra.classList.toggle('active', isContra);
+    panelRights.classList.toggle('active', !isContra);
+  }
+  tabContra.addEventListener('click', ()=>activateTab('contra'));
+  tabRights.addEventListener('click', ()=>activateTab('rights'));
 
   /* UI refs */
   const scenarioBox = $('#scenario');
@@ -247,9 +290,11 @@
   const btnSubmit = $('#btnSubmit');
   const btnNew = $('#btnNew');
   const btnReset = $('#btnReset');
+
+  const contraBox = $('#contraBox');
   const results = $('#results');
 
-  /* Canonical med expectations */
+  /* Canon data */
   const MED_CANON = {
     'Aspirin (chewable)': { route: 'PO (by mouth)', dose: '324 mg (4 x 81 mg chewable)'},
     'Nitroglycerin (SL)': { route: 'SL (sublingual)', dose: '0.4 mg tablet/spray'},
@@ -275,7 +320,6 @@
 
   /* Scenarios */
   const SCENARIOS = [
-    // Aspirin
     ()=> {
       const patient = 'Pat Morgan';
       return {
@@ -287,17 +331,13 @@
         bottle: null,
         medMeta: { expired:false, lastDoseMins:null, maxDosesGiven:0, maxAllowed:null },
         rights: {
-          patient: patient,
-          med: 'Aspirin (chewable)',
-          dose: '324 mg (4 x 81 mg chewable)',
-          route: 'PO (by mouth)',
-          time: 'Now'
+          patient: patient, med: 'Aspirin (chewable)', dose: '324 mg (4 x 81 mg chewable)',
+          route: 'PO (by mouth)', time: 'Now'
         },
-        doseOptions: ['162 mg (2 x 81 mg)', '324 mg (4 x 81 mg chewable)', '650 mg', '0.4 mg'],
+        doseOptions: ['162 mg (2 x 81 mg)','324 mg (4 x 81 mg chewable)','650 mg','0.4 mg'],
         followups: null
       };
     },
-    // Nitro (assist) — label ownership matters
     ()=> {
       const patient = 'Jamie Chen';
       const owner = coin(0.5) ? patient : 'Taylor Brooks';
@@ -316,16 +356,12 @@
         medMeta: { expired: coin(0.05), lastDoseMins, maxDosesGiven: maxGiven, maxAllowed: 3 },
         rights: {
           patient: (bottle.ownerName !== patient) ? 'No (not the right patient)' : patient,
-          med: 'Nitroglycerin (SL)',
-          dose: '0.4 mg tablet/spray',
-          route: 'SL (sublingual)',
-          time: 'Now'
+          med: 'Nitroglycerin (SL)', dose: '0.4 mg tablet/spray', route: 'SL (sublingual)', time: 'Now'
         },
-        doseOptions: ['0.3 mg', '0.4 mg tablet/spray', '324 mg', '1 mg IM'],
+        doseOptions: ['0.3 mg','0.4 mg tablet/spray','324 mg','1 mg IM'],
         followups: 'nitro'
       };
     },
-    // Albuterol (assist)
     ()=> {
       const patient = 'Riley Thompson';
       const owner = coin(0.25) ? 'Alex Rivera' : patient;
@@ -337,19 +373,15 @@
         vitals: {hr:104, sbp:122, dbp:78, rr:26, spo2:92},
         flags: {},
         bottle,
-        medMeta: { expired: coin(0.05), lastDoseMins: null, maxDosesGiven: null, maxAllowed: null },
+        medMeta: { expired: coin(0.05), lastDoseMins:null, maxDosesGiven:null, maxAllowed:null },
         rights: {
           patient: (bottle.ownerName !== patient) ? 'No (not the right patient)' : patient,
-          med: 'Albuterol (MDI)',
-          dose: '1–2 puffs (90 mcg each)',
-          route: 'Inhalation (MDI)',
-          time: 'Now'
+          med: 'Albuterol (MDI)', dose: '1–2 puffs (90 mcg each)', route: 'Inhalation (MDI)', time: 'Now'
         },
-        doseOptions: ['1 puff', '1–2 puffs (90 mcg each)', '0.4 mg', '324 mg'],
+        doseOptions: ['1 puff','1–2 puffs (90 mcg each)','0.4 mg','324 mg'],
         followups: 'albuterol'
       };
     },
-    // Epi
     ()=> {
       const patient = 'Alex Rivera';
       return {
@@ -361,17 +393,12 @@
         bottle: null,
         medMeta: { expired:false, lastDoseMins:null, maxDosesGiven:0, maxAllowed:null },
         rights: {
-          patient: patient,
-          med: 'Epinephrine (auto-injector)',
-          dose: '0.3 mg adult IM',
-          route: 'IM (intramuscular)',
-          time: 'Now'
+          patient: patient, med: 'Epinephrine (auto-injector)', dose: '0.3 mg adult IM', route: 'IM (intramuscular)', time: 'Now'
         },
-        doseOptions: ['0.15 mg pediatric IM', '0.3 mg adult IM', '324 mg', '2 mg IN'],
+        doseOptions: ['0.15 mg pediatric IM','0.3 mg adult IM','324 mg','2 mg IN'],
         followups: null
       };
     },
-    // Oral Glucose
     ()=> {
       const patient = 'Casey Patel';
       return {
@@ -383,17 +410,12 @@
         bottle: null,
         medMeta: { expired:false, lastDoseMins:null, maxDosesGiven:0, maxAllowed:null },
         rights: {
-          patient: patient,
-          med: 'Oral Glucose (gel)',
-          dose: '15–25 g buccal',
-          route: 'PO (by mouth)',
-          time: 'Now'
+          patient: patient, med: 'Oral Glucose (gel)', dose: '15–25 g buccal', route: 'PO (by mouth)', time: 'Now'
         },
-        doseOptions: ['5 g', '15–25 g buccal', '0.4 mg', '2 mg IN'],
+        doseOptions: ['5 g','15–25 g buccal','0.4 mg','2 mg IN'],
         followups: null
       };
     },
-    // Naloxone
     ()=> {
       const patient = 'Jordan Lee';
       return {
@@ -405,13 +427,9 @@
         bottle: null,
         medMeta: { expired:false, lastDoseMins:null, maxDosesGiven:0, maxAllowed:null },
         rights: {
-          patient: patient,
-          med: 'Naloxone (IN)',
-          dose: '2 mg IN (1 mg each nostril)',
-          route: 'IN (intranasal)',
-          time: 'Now'
+          patient: patient, med: 'Naloxone (IN)', dose: '2 mg IN (1 mg each nostril)', route: 'IN (intranasal)', time: 'Now'
         },
-        doseOptions: ['0.4 mg IM', '2 mg IN (1 mg each nostril)', '324 mg', '0.3 mg IM'],
+        doseOptions: ['0.4 mg IM','2 mg IN (1 mg each nostril)','324 mg','0.3 mg IM'],
         followups: null
       };
     }
@@ -420,6 +438,7 @@
   let current = null;
 
   function newScenario(){
+    activateTab('contra'); // default to contraindications tab
     current = SCENARIOS[Math.floor(Math.random()*SCENARIOS.length)]();
 
     // Render scenario
@@ -436,7 +455,7 @@
       bottlePill.hidden = true; bottlePill.textContent = '';
     }
 
-    // Populate patient choices
+    // Populate patient choices (include "No")
     const names = makePatients(current.patientName);
     selPatient.innerHTML =
       `<option value="">— choose —</option><option>No (not the right patient)</option>` +
@@ -455,20 +474,16 @@
     fuNitro.hidden = true; fuAlbuterol.hidden = true;
     fuNitroMax.value = ''; fuNitroInterval.value = ''; fuAlbuterolPuffs.value = '';
 
+    contraBox.innerHTML = `<div class="muted">Select a medication and click <strong>Submit</strong> to evaluate contraindications.</div>`;
     results.innerHTML = `<div class="muted">Pick your answers and hit <strong>Submit</strong> to see feedback.</div>`;
   }
 
   // Show follow-ups when a med that needs them is selected
   selMed.addEventListener('change', ()=>{
     const med = selMed.value;
-    followups.hidden = true;
-    fuNitro.hidden = true; fuAlbuterol.hidden = true;
-
-    if(med === 'Nitroglycerin (SL)' && current.followups === 'nitro'){
-      followups.hidden = false; fuNitro.hidden = false;
-    } else if(med === 'Albuterol (MDI)' && current.followups === 'albuterol'){
-      followups.hidden = false; fuAlbuterol.hidden = false;
-    }
+    followups.hidden = true; fuNitro.hidden = true; fuAlbuterol.hidden = true;
+    if(med === 'Nitroglycerin (SL)' && current.followups === 'nitro'){ followups.hidden = false; fuNitro.hidden = false; }
+    else if(med === 'Albuterol (MDI)' && current.followups === 'albuterol'){ followups.hidden = false; fuAlbuterol.hidden = false; }
   });
 
   /* Helpers */
@@ -499,22 +514,17 @@
 
   /* Expanded Right checks */
   function checkRightPatient(user){
-    // Identity/indication + (if assisting) bottle label match.
     let ok = true; const notes=[];
     const expect = current.rights.patient;
 
-    // If expected is "No", then user must select the No option.
     if(expect === 'No (not the right patient)'){
       if(user.patient !== 'No (not the right patient)'){ ok=false; notes.push('Bottle label name does not match the patient; correct answer is “No”.'); }
-      // also ensure they didn’t try to select a name here
       return {ok, note: notes.join(' ')};
     }
 
-    // Otherwise, expect the actual patient name and med indication
     if(!user.patient || user.patient !== expect){ ok=false; notes.push('Identity mismatch.'); }
     if(user.med && !indicationMatches(user.med)){ ok=false; notes.push('Medication not indicated for this presentation.'); }
 
-    // If assisting and label exists but mismatched, then even if they picked the name, it’s not the right patient for that medication assist
     const assisted = ['Nitroglycerin (SL)','Albuterol (MDI)'];
     if(current.bottle && assisted.includes(user.med)){
       if(current.bottle.ownerName !== current.patientName){
@@ -525,7 +535,6 @@
   }
 
   function checkRightMed(user){
-    // Correct drug + proper device/route pairing
     let ok = (user.med === current.rights.med);
     let formOK = true;
     if(user.med){
@@ -538,7 +547,6 @@
   function checkRightDose(user){
     let ok = (user.dose === current.rights.dose);
     let followOK = true;
-
     if(user.med === 'Nitroglycerin (SL)' && current.followups === 'nitro'){
       followOK = (fuNitroMax.value === '3') && (fuNitroInterval.value === '5 minutes');
     }
@@ -551,7 +559,6 @@
   function checkRightRoute(user){ return {ok: (user.route === current.rights.route)}; }
 
   function checkRightTime(user){
-    // Give now; not expired; proper interval; not over max
     let ok = (user.time === current.rights.time);
     const mm = current.medMeta || {};
     const b = current.bottle || {};
@@ -573,9 +580,7 @@
 
     const assistedMeds = ['Nitroglycerin (SL)','Albuterol (MDI)'];
     if(b && assistedMeds.includes(user.med)){
-      if(b.ownerName !== current.patientName){
-        issues.push(`${user.med} bottle is labeled for ${b.ownerName}, not the patient ${current.patientName}.`);
-      }
+      if(b.ownerName !== current.patientName) issues.push(`${user.med} bottle is labeled for ${b.ownerName}, not the patient ${current.patientName}.`);
       if(b.expired) issues.push(`${user.med} bottle is expired.`);
     }
 
@@ -587,12 +592,8 @@
       case 'Nitroglycerin (SL)':
         if(v.sbp < 100) issues.push(`Hypotension: SBP ${v.sbp}.`);
         if(f.edMeds48h) issues.push('ED medication taken within 48 hours.');
-        if(current.medMeta.lastDoseMins !== null && current.medMeta.lastDoseMins < 5){
-          issues.push(`Last Nitro dose ${current.medMeta.lastDoseMins} minutes ago (min 5).`);
-        }
-        if(current.medMeta.maxDosesGiven >= 3){
-          issues.push('Max total Nitro doses already given.');
-        }
+        if(current.medMeta.lastDoseMins !== null && current.medMeta.lastDoseMins < 5) issues.push(`Last Nitro dose ${current.medMeta.lastDoseMins} minutes ago (min 5).`);
+        if(current.medMeta.maxDosesGiven >= 3) issues.push('Max total Nitro doses already given.');
         break;
       case 'Albuterol (MDI)':
         if(b && b.expired) issues.push('Inhaler is expired.');
@@ -601,7 +602,6 @@
         if(f.gagIntact === false || f.canSwallow === false) issues.push('No intact gag or unable to swallow.');
         break;
       case 'Epinephrine (auto-injector)':
-        // no absolute CI in anaphylaxis; proceed if indicated
         break;
       case 'Naloxone (IN)':
         if(v.rr <= 6) notes.push('Support ventilation first; titrate Naloxone to respirations.');
@@ -615,41 +615,25 @@
   function precautionsFor(med){
     switch(med){
       case 'Aspirin (chewable)':
-        return [
-          'Observe for nausea, vomiting, or signs of bleeding.',
-          'Reassess pain scale and vitals; watch for allergy reaction.'
-        ];
+        return ['Observe for nausea/vomiting or bleeding','Reassess pain and vitals; monitor for allergic reaction'];
       case 'Nitroglycerin (SL)':
-        return [
-          'Monitor BP every 3–5 minutes; expect headache/flushing.',
-          'Assess for relief of chest pain and changes on repeat ECG if available.'
-        ];
+        return ['Monitor BP q3–5 min; expect headache/flushing','Reassess chest pain and perfusion'];
       case 'Albuterol (MDI)':
-        return [
-          'Watch for tremor and tachycardia; reassess breath sounds and work of breathing.',
-          'Recheck SpO₂ and peak flow (if available).'
-        ];
+        return ['Watch for tremor/tachycardia','Reassess breath sounds, work of breathing, SpO₂'];
       case 'Epinephrine (auto-injector)':
-        return [
-          'Expect HR and BP to rise; watch for arrhythmias.',
-          'Reassess airway/ventilation; prepare for repeat dose per protocol.'
-        ];
+        return ['Expect ↑HR/↑BP; watch for arrhythmias','Reassess airway/ventilation; consider repeat per protocol'];
       case 'Oral Glucose (gel)':
-        return [
-          'Maintain airway; position to reduce aspiration risk.',
-          'Recheck mental status and glucose in ~10–15 minutes.'
-        ];
+        return ['Maintain airway; position to reduce aspiration risk','Recheck mental status and glucose in ~10–15 min'];
       case 'Naloxone (IN)':
-        return [
-          'Protect from acute withdrawal; patient may become agitated.',
-          'Monitor respirations; re-sedation possible as Naloxone wears off.'
-        ];
+        return ['Prepare for acute withdrawal/agitation','Monitor respirations; watch for re-sedation'];
       default:
-        return ['Monitor ABCs and reassess vitals frequently.'];
+        return ['Monitor ABCs and reassess vitals frequently'];
     }
   }
 
   function assess(){
+    activateTab('contra'); // after submit, show Contraindications first
+
     const user = {
       patient: selPatient.value,
       med: selMed.value,
@@ -659,14 +643,13 @@
     };
     const key = current.rights;
 
-    // Expanded checks
     const rp = checkRightPatient(user);
     const rm = checkRightMed(user);
     const rd = checkRightDose(user);
     const rr = checkRightRoute(user);
     const rt = checkRightTime(user);
 
-    // 1) CONTRAINDICATIONS FIRST
+    // CONTRAINDICATIONS (panel 1)
     const CI = contraindicationsAssessment(user);
     let ciHtml = '';
     if(user.med){
@@ -681,8 +664,9 @@
     } else {
       ciHtml = `<div class="muted">Select a medication to evaluate contraindications.</div>`;
     }
+    contraBox.innerHTML = ciHtml;
 
-    // 2) THEN THE 5 RIGHTS RESULTS
+    // 5 RIGHTS RESULTS (panel 2)
     const blocks = [
       line(rp.ok, 'Right Patient', `${key.patient} & indicated; bottle (if assisting) matches patient`, `${user.patient||''}`, rp.note||''),
       line(rm.ok, 'Right Medication', `${key.med} (correct formulation/device)`, `${user.med||''}`),
@@ -692,16 +676,13 @@
     ];
     const score = [rp.ok,rm.ok,rd.ok,rr.ok,rt.ok].filter(Boolean).length;
 
-    // 3) PRECAUTIONS & WHAT TO LOOK FOR (after results)
     const prec = precautionsFor(user.med);
     const precautionsHtml = user.med
       ? `<div class="line warn"><strong>Precautions & What to Look For</strong><br>${prec.map(x=>'• '+x).join('<br>')}</div>`
       : '';
 
     results.innerHTML = `
-      <div class="line" style="margin-bottom:8px"><strong>Contraindications Check</strong></div>
-      ${ciHtml}
-      <p style="margin-top:10px"><strong>Score:</strong> ${score}/5</p>
+      <p><strong>Score:</strong> ${score}/5</p>
       ${blocks.join('')}
       ${precautionsHtml}
     `;
@@ -719,7 +700,9 @@
     followups.hidden = true;
     fuNitro.hidden = true; fuAlbuterol.hidden = true;
     fuNitroMax.value = ''; fuNitroInterval.value = ''; fuAlbuterolPuffs.value = '';
+    contraBox.innerHTML = `<div class="muted">Choices cleared. Select a medication and Submit to evaluate contraindications.</div>`;
     results.innerHTML = `<div class="muted">Choices cleared. Submit when ready.</div>`;
+    activateTab('contra');
   });
 
   // Initialize
