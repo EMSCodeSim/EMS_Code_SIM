@@ -10,7 +10,7 @@
     --accent:#0a76d3; --accent-2:#0db37d; --border:#e6edf3;
   }
   html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"Helvetica Neue",sans-serif}
-  .wrap{max-width:1100px;margin:0 auto;padding:14px;display:grid;gap:12px}
+  .wrap{max-width:1100px;margin:0 auto;padding:12px;display:grid;gap:12px}
 
   /* Sticky header */
   header.card{
@@ -18,7 +18,7 @@
     background:linear-gradient(180deg,#0a76d3,#095fb0);color:#fff;border-radius:16px;padding:12px 14px;
     box-shadow:0 6px 14px rgba(10,30,60,.12)
   }
-  .headerbar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:0}
+  .headerbar{display:flex;align-items:center;gap:10px;justify-content:space-between}
   .h-left{display:flex;align-items:center;gap:8px}
   .h-right{display:flex;align-items:center;gap:8px}
   .iconbtn{appearance:none;border:0;background:rgba(255,255,255,.15);color:#fff;padding:8px 10px;border-radius:10px;font-weight:700;cursor:pointer}
@@ -32,7 +32,7 @@
   .card h2{font-size:1rem;margin:0;padding:12px;border-bottom:1px solid var(--border)}
   .card .body{padding:12px}
 
-  .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
   .seg{display:flex;border:1px solid var(--border);border-radius:12px;overflow:hidden}
   .seg button{padding:9px 11px;border:0;background:#fff;color:var(--ink);font-weight:700;cursor:pointer}
   .seg button.active{background:var(--accent);color:#fff}
@@ -44,8 +44,16 @@
   .btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .pill{display:inline-block;background:#eef6ff;border:1px solid #d9e9fb;border-radius:999px;padding:4px 10px;font-weight:700}
 
-  .panel{aspect-ratio: 3/4;background:linear-gradient(180deg,#f9fcff,#f1f6fb);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-  svg{width:100%;max-width:480px;height:auto}
+  /* Tightened panel to reduce empty space above/below figure */
+  .panel{
+    height:clamp(320px, 52vh, 440px);
+    background:linear-gradient(180deg,#f9fcff,#f1f6fb);
+    border:1px solid var(--border);border-radius:12px;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+    padding:6px;
+  }
+  /* Make SVG use full panel height with minimal margins */
+  svg{height:100%;width:auto;display:block}
 
   .muted{color:var(--muted)}
   label{font-weight:700}
@@ -57,9 +65,9 @@
   .results ul{margin:.4rem 0 0 1.1rem}
   .results li{margin:.18rem 0}
 
-  /* Patient speech strip */
+  /* Patient speech strip – hidden by default until Speech is pressed */
   .speech-strip{
-    background:#fff; border:1px solid var(--border); border-radius:12px; padding:10px 12px; margin-bottom:10px;
+    background:#fff; border:1px solid var(--border); border-radius:12px; padding:10px 12px; margin-bottom:8px; display:none;
   }
   .speech-strip strong{margin-right:.25rem}
 </style>
@@ -92,7 +100,7 @@
     <section class="card">
       <h2>Simulator</h2>
       <div class="body">
-        <!-- Patient says (text version) -->
+        <!-- Patient says (text version) — hidden until Speech test is pressed -->
         <div class="speech-strip" id="speechStrip"><strong>Patient says:</strong><span id="spokenText">…</span></div>
 
         <div class="toolbar">
@@ -111,21 +119,21 @@
         </div>
 
         <div class="panel" id="panel">
-          <!-- One reusable SVG person for all tests -->
-          <svg id="person" viewBox="0 0 200 280" aria-labelledby="title desc" role="img">
+          <!-- Reusable SVG person for all tests -->
+          <svg id="person" viewBox="0 0 200 280" aria-labelledby="title desc" role="img" preserveAspectRatio="xMidYMid meet">
             <title id="title">Patient Figure</title>
             <desc id="desc">Front view human figure used in stroke assessment animations (balance, drift, face, eyes).</desc>
 
-            <!-- Ground -->
-            <ellipse cx="100" cy="262" rx="58" ry="10" fill="#e7eef6"/>
+            <!-- Ground (slightly higher to reduce bottom whitespace) -->
+            <ellipse cx="100" cy="255" rx="58" ry="9" fill="#e7eef6"/>
 
             <!-- Wrap lower+upper so we can rotate the WHOLE body around the feet for Balance -->
             <g id="bodyAll">
               <!-- LOWER (legs/feet) -->
               <g id="lower">
-                <path d="M 92 162 V 228" stroke="#2f3d56" stroke-width="14" stroke-linecap="round"/>
-                <path d="M 108 162 V 228" stroke="#2f3d56" stroke-width="14" stroke-linecap="round"/>
-                <rect x="84" y="228" width="32" height="10" rx="3" fill="#2f3d56"/>
+                <path d="M 92 162 V 225" stroke="#2f3d56" stroke-width="14" stroke-linecap="round"/>
+                <path d="M 108 162 V 225" stroke="#2f3d56" stroke-width="14" stroke-linecap="round"/>
+                <rect x="84" y="225" width="32" height="10" rx="3" fill="#2f3d56"/>
               </g>
 
               <!-- UPPER (head + torso + arms) -->
@@ -176,7 +184,7 @@
           </svg>
         </div>
 
-        <div id="testDesc" class="muted" style="margin-top:10px"></div>
+        <div id="testDesc" class="muted" style="margin-top:8px"></div>
       </div>
     </section>
 
@@ -329,7 +337,8 @@
   /* Patient info (top) */
   const ptInfo = $('#ptInfo');
 
-  /* Patient says (text) */
+  /* Patient says (text) — hidden until Speech */
+  const speechStrip = $('#speechStrip');
   const spokenText = $('#spokenText');
 
   /* State */
@@ -342,7 +351,7 @@
   let gazeTimer = null;
 
   function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
-  function coin(p=0.5){ return Math.random() < p; }
+  function coin(p=0.7){ return Math.random() < p; }
   function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
 
   /* ---------- Scenario speech helper ---------- */
@@ -366,7 +375,7 @@
 
     const hasStroke = coin(0.7);
     const face = hasStroke ? rand(['left','right','none','none']) : 'none';
-    const arm  = hasStroke ? rand(['left','right','none']) : 'none';
+    aconst arm  = hasStroke ? rand(['left','right','none']) : 'none';
     const eyes = hasStroke ? rand(['deviationLeft','deviationRight','slow','normal']) : 'normal';
     const bal  = hasStroke ? rand(['unsteady','leansLeft','leansRight','normal']) : 'normal';
     const speech = hasStroke ? rand(['slurred','expressive','receptive','mute','normal']) : 'normal';
@@ -394,8 +403,9 @@
       <div><strong>History:</strong> ${scenario.hx}</div>
     `;
 
-    // preload the current scenario's speech text into the strip
-    spokenText.textContent = speechTextFor(scenario.speech);
+    // Ensure speech text is hidden until Speech is pressed
+    speechStrip.style.display = 'none';
+    spokenText.textContent = '…';
 
     resetForm();
     resetVisuals();
@@ -413,8 +423,8 @@
     browL.setAttribute('d','M -12 -9 Q -6 -11 -1 -10');
     browR.setAttribute('d','M 1 -10 Q 6 -11 12 -9');
     timerEl.textContent='0.0';
-    // Whole body reset (rotate around feet pivot at ~y=238)
-    bodyAll.setAttribute('transform','rotate(0,100,238)');
+    // Whole body reset (rotate around feet pivot at ~y=235 to match lower ellipse)
+    bodyAll.setAttribute('transform','rotate(0,100,235)');
   }
 
   function stopAll(){
@@ -445,14 +455,13 @@
     const bal = scenario.balance;
     if(bal==='normal'){ return; }
 
-    running=true; swayTick=0;
+    swayTick=0;
     const baseAmp = bal==='unsteady' ? 8 : 10;
     const bias = (bal==='leansLeft') ? -12 : (bal==='leansRight' ? 12 : 0);
-    const pivotX = 100, pivotY = 238; // around bottom of feet
+    const pivotX = 100, pivotY = 235; // near bottom of feet
     swayTimer=setInterval(()=>{
       swayTick++;
-      const sway = Math.sin(swayTick/10)*baseAmp + bias; // degrees-ish feel
-      // rotate whole body group around the feet (pivot)
+      const sway = Math.sin(swayTick/10)*baseAmp + bias;
       bodyAll.setAttribute('transform', `rotate(${sway/2},${pivotX},${pivotY})`);
     },80);
   }
@@ -482,9 +491,8 @@
     setTestDesc('Face: Ask the person to smile. Look to see if one side of the mouth is lower. The eyebrow on that side may also look lower.');
 
     const droop = scenario.faceDroop; // 'left'|'right'|'none'
-    // Build an asymmetric smile path so droop shows in the mouth
     const Lx0=-7, Rx0=7, Ly0=8, Ry0=8, Cx0=0, Cy0=10;
-    const LySmile = (droop==='left') ? 11 : 6.5;   // lower side has larger y
+    const LySmile = (droop==='left') ? 11 : 6.5;
     const RySmile = (droop==='right') ? 11 : 6.5;
 
     const steps=24; let i=0;
@@ -494,12 +502,11 @@
       const e = t<.5 ? 2*t*t : -1+(4-2*t)*t;
       const Ly = Ly0 + (LySmile - Ly0)*e;
       const Ry = Ry0 + (RySmile - Ry0)*e;
-      const Cy = Cy0 + (13 - Cy0)*e; // bigger smile arc
+      const Cy = Cy0 + (13 - Cy0)*e;
       mouth.setAttribute('d', `M ${Lx0} ${Ly} Q ${Cx0} ${Cy} ${Rx0} ${Ry}`);
       if(i>=steps) clearInterval(id);
     }, 16);
 
-    // Eyebrow droop
     if(droop==='left'){
       browL.setAttribute('d','M -12 -6 Q -6 -6 -1 -7');
       browR.setAttribute('d','M 1 -10 Q 6 -11 12 -9');
@@ -517,7 +524,6 @@
     armsDown.setAttribute('visibility','hidden');
     armsUp.setAttribute('visibility','visible');
 
-    running=true;
     driftRunning=true; driftStart=performance.now(); driftTriggeredAt=null;
     const side = scenario.armDrift; // 'left'|'right'|'none'
     function tick(ts){
@@ -549,9 +555,11 @@
     resetVisuals();
     setTestDesc('Speech: Ask the person to repeat a simple sentence. Listen for slurred words, trouble getting words out, trouble understanding, or no speech.');
 
-    const s = scenario.speech; // 'normal' | 'slurred' | 'expressive' | 'receptive' | 'mute'
+    const s = scenario.speech;
     const text = speechTextFor(s);
-    // Update text strip to mirror the audio
+
+    // Unhide and update text strip only when Speech is pressed
+    speechStrip.style.display = 'block';
     spokenText.textContent = text;
 
     const u = new SpeechSynthesisUtterance();
@@ -633,7 +641,7 @@
   btnNew.addEventListener('click', newCase);
   btnResetForm.addEventListener('click', resetForm);
 
-  // init: load a case and preload the text strip to current scenario speech
+  // init
   newCase();
 })();
 </script>
