@@ -381,7 +381,7 @@
 
     const hasStroke = coin(0.7);
     const face = hasStroke ? rand(['left','right','none','none']) : 'none';
-    const arm  = hasStroke ? rand(['left','right','none']) : 'none';  /* <-- fixed typo here */
+    const arm  = hasStroke ? rand(['left','right','none']) : 'none';
     const eyes = hasStroke ? rand(['deviationLeft','deviationRight','slow','normal']) : 'normal';
     const bal  = hasStroke ? rand(['unsteady','leansLeft','leansRight','normal']) : 'normal';
     const speech = hasStroke ? rand(['slurred','expressive','receptive','mute','normal']) : 'normal';
@@ -400,8 +400,7 @@
       speech: speech
     };
 
-    // stash on window for quick inspection if needed
-    window.__scenario = scenario;
+    window.__scenario = scenario; // optional debug
 
     const onset = scenario.lkwMin<=60 ? `${scenario.lkwMin} minutes ago` : `${Math.round(scenario.lkwMin/60)} hours ago`;
     ptInfo.innerHTML = `
@@ -416,7 +415,6 @@
     speechStrip.style.display = 'none';
     spokenText.textContent = '…';
 
-    // attach handlers access
     state.scenario = scenario;
 
     resetForm();
@@ -438,8 +436,7 @@
     browL.setAttribute('d','M -12 -9 Q -6 -11 -1 -10');
     browR.setAttribute('d','M 1 -10 Q 6 -11 12 -9');
     timerEl.textContent='0.0';
-    // Whole body reset (rotate around feet pivot at ~y=235 to match lower ellipse)
-    bodyAll.setAttribute('transform','rotate(0,100,235)');
+    bodyAll.setAttribute('transform','rotate(0,100,235)'); // pivot near feet
   }
 
   function stopAll(){
@@ -472,7 +469,7 @@
     swayTick=0;
     const baseAmp = bal==='unsteady' ? 8 : 10;
     const bias = (bal==='leansLeft') ? -12 : (bal==='leansRight' ? 12 : 0);
-    const pivotX = 100, pivotY = 235; // near bottom of feet
+    const pivotX = 100, pivotY = 235;
     swayTimer=setInterval(()=>{
       swayTick++;
       const sway = Math.sin(swayTick/10)*baseAmp + bias;
@@ -584,6 +581,28 @@
     }
   }
 
+  /* ---------- Helpers for grading ---------- */
+  function sideOf(v){
+    if(v==='left' || v==='right') return v;
+    if(v==='leansLeft' || v==='deviationLeft') return 'left';
+    if(v==='leansRight' || v==='deviationRight') return 'right';
+    return null;
+  }
+
+  function pretty(v){
+    return v
+      .replace('leansLeft','Leans or falls to the left')
+      .replace('leansRight','Leans or falls to the right')
+      .replace('deviationLeft','Eyes pulled to the left')
+      .replace('deviationRight','Eyes pulled to the right')
+      .replace('slow','Follows slowly')
+      .replace('none','None')
+      .replace('expressive','Trouble speaking')
+      .replace('receptive','Trouble understanding')
+      .replace('mute','No speech')
+      .replace(/^./,c=>c.toUpperCase());
+  }
+
   /* ---------- Findings, grading ---------- */
   function resetForm(){
     fBalance.value='normal'; fEyes.value='normal'; fFace.value='none'; fArms.value='none'; fSpeech.value='normal'; fTime.value='unknown';
@@ -601,21 +620,33 @@
       speech: s.speech,
       time: s.lkwMin
     };
-    const fields = [['Balance','balance'],['Eyes (gaze)','eyes'],['Face','face'],['Arms','arms'],['Speech','speech']];
+
+    const fields = [
+      ['Balance','balance'],
+      ['Eyes (gaze)','eyes'],
+      ['Face','face'],
+      ['Arms','arms'],
+      ['Speech','speech']
+    ];
+
     gradeList.innerHTML=''; let correct=0;
+
     for(const [label,key] of fields){
       const li=document.createElement('li');
-      if(user[key]===truth[key]){ correct++; li.innerHTML=`✅ <strong>${label}</strong> correct.`; }
-      else{
-        const norm=v=>v.replace('leansLeft','Leans or falls to the left')
-                       .replace('leansRight','Leans or falls to the right')
-                       .replace('slow','Follows slowly')
-                       .replace('none','None')
-                       .replace('expressive','Trouble speaking')
-                       .replace('receptive','Trouble understanding')
-                       .replace('mute','No speech')
-                       .replace(/^./,c=>c.toUpperCase());
-        li.innerHTML=`❌ <strong>${label}</strong> expected: <em>${norm(truth[key])}</em>.`;
+      if(user[key]===truth[key]){
+        correct++;
+        li.innerHTML=`✅ <strong>${label}</strong> correct.`;
+      } else {
+        // Detect "side confusion": user picked the opposite side of the correct answer
+        const uSide = sideOf(user[key]);
+        const tSide = sideOf(truth[key]);
+        const sideConfusion = !!(uSide && tSide && uSide !== tSide);
+
+        li.innerHTML=`❌ <strong>${label}</strong> expected: <em>${pretty(truth[key])}</em>.`;
+
+        if(sideConfusion){
+          li.innerHTML += `<div class="muted" style="margin-top:2px"><em>Note:</em> Sides are from the <strong>patient’s</strong> perspective. Patient’s right appears on the <strong>left</strong> side of the screen, and patient’s left appears on the <strong>right</strong>.</div>`;
+        }
       }
       gradeList.appendChild(li);
     }
