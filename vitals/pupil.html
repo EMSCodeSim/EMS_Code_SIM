@@ -4,18 +4,27 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Pupil Simulator</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-5QLPK4025C');
+</script>
+
 <style>
   :root{
     --brand:#007B8A; --brand-600:#066371;
     --bg:#f0f8ff; --panel:#ffffff; --ink:#0f2b33; --muted:#46636a;
     --border:#e2e8f0; --shadow:0 10px 28px rgba(2,8,23,.08);
-    /* Responsive eye size: stays side-by-side on phones without overflow */
     --eye-size: 220px;
+    --purple:#6d28d9; --purple-2:#8b5cf6; --purple-3:#a78bfa;
   }
   @media (max-width: 700px){
     :root{ --eye-size: clamp(160px, 44vw, 190px); }
   }
-
   *{box-sizing:border-box}
   html,body{height:100%}
   html,body{overflow-x:hidden}
@@ -24,26 +33,36 @@
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; line-height:1.45;
     -webkit-text-size-adjust:100%;
   }
-  header{background:var(--brand); color:#fff; padding:14px 16px; font-weight:800; letter-spacing:.2px; position:sticky; top:0; z-index:10}
+
+  /* Topbar */
+  .topbar{
+    position:sticky; top:0; z-index:20;
+    background:linear-gradient(180deg,#0791a3,var(--brand)); color:#fff;
+    border-bottom:1px solid rgba(255,255,255,.2);
+    padding:calc(env(safe-area-inset-top)+8px) 12px 10px;
+    box-shadow:0 10px 22px rgba(0,0,0,.18);
+  }
+  .topbar-inner{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:8px}
+  .iconbtn{
+    appearance:none;border:0;background:transparent;color:#fff;display:flex;align-items:center;gap:8px;
+    height:40px;padding:0 10px;border-radius:12px;cursor:pointer;transition:background .2s, transform .04s
+  }
+  .iconbtn:hover{background:rgba(255,255,255,.14)} .iconbtn:active{transform:translateY(1px) scale(.98)}
+  .btn-label{font-weight:800;font-size:.95rem;letter-spacing:.2px}
+  .topbar-title{flex:1;text-align:center;font-weight:900;letter-spacing:.25px}
+
   main{max-width:980px; margin:0 auto; padding:12px}
   h2{margin:.25rem 0 .75rem}
   .card{background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:14px; box-shadow:var(--shadow); margin-bottom:12px}
 
-  /* Eyes stay on same plane (two columns) at ALL sizes */
-  .face{
-    display:grid; gap:10px; grid-template-columns: repeat(2, minmax(0,1fr));
-    align-items:center; justify-items:center; padding:6px;
-  }
-
+  /* Eyes stay side-by-side at all sizes */
+  .face{ display:grid; gap:10px; grid-template-columns: repeat(2, minmax(0,1fr)); align-items:center; justify-items:center; padding:6px; }
   .eye{
     width:var(--eye-size); height:var(--eye-size);
     background:#fdebd0; border-radius:50%; border:2px solid #d7ccc8; position:relative;
     box-shadow:inset 0 8px 24px rgba(0,0,0,.12);
   }
-  .sclera{
-    position:absolute; inset:calc(var(--eye-size) * 0.10); background:#fff; border-radius:50%;
-    box-shadow:inset 0 0 0 1px #e5e7eb;
-  }
+  .sclera{ position:absolute; inset:calc(var(--eye-size) * 0.10); background:#fff; border-radius:50%; box-shadow:inset 0 0 0 1px #e5e7eb; }
   .iris{
     position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
     width:calc(var(--eye-size) * 0.545); height:calc(var(--eye-size) * 0.545);
@@ -57,22 +76,14 @@
     box-shadow:0 0 10px rgba(0,0,0,.35);
     transition: width .18s ease, height .18s ease;
   }
-  .corneal-gloss{
-    position:absolute; top:38%; left:42%;
-    width:calc(var(--eye-size) * 0.12); height:calc(var(--eye-size) * 0.07);
-    border-radius:50%; background:rgba(255,255,255,.6);
-    filter:blur(1px);
-  }
+  .corneal-gloss{ position:absolute; top:38%; left:42%; width:calc(var(--eye-size) * 0.12); height:calc(var(--eye-size) * 0.07); border-radius:50%; background:rgba(255,255,255,.6); filter:blur(1px); }
 
   .row{display:grid; gap:10px; grid-template-columns:1fr}
   .controls{display:grid; gap:10px; grid-template-columns:1fr 1fr}
   @media (max-width:560px){ .controls{ grid-template-columns:1fr } }
 
   label{font-weight:700}
-  select{
-    width:100%; padding:.6rem .7rem; border-radius:10px; border:1px solid var(--border);
-    background:#fff;
-  }
+  select{ width:100%; padding:.6rem .7rem; border-radius:10px; border:1px solid var(--border); background:#fff; }
   .btn{
     appearance:none; border:0; background:var(--brand); color:#fff;
     padding:.7rem 1rem; border-radius:12px; font-weight:800; cursor:pointer;
@@ -85,38 +96,80 @@
   .resp{margin:.5rem 0 0 0; padding:.6rem .7rem; border-radius:10px; background:#f8fafc; border:1px solid var(--border)}
   .results-list{margin:.5rem 0 0 1rem}
   .results-list li{margin:.2rem 0}
+
+  /* Purple pupil-size scale */
+  .pupil-scale{
+    display:flex; align-items:flex-end; justify-content:center; gap:10px; flex-wrap:wrap;
+    margin:.25rem auto .25rem;
+  }
+  .scale-item{display:flex; flex-direction:column; align-items:center; gap:6px}
+  .dot{
+    width:calc(var(--d) * 6px); height:calc(var(--d) * 6px); border-radius:999px;
+    background: radial-gradient(circle at 30% 30%, var(--purple-3), var(--purple-2) 50%, var(--purple) 100%);
+    box-shadow:0 2px 8px rgba(109,40,217,.35), inset 0 0 6px rgba(0,0,0,.25);
+    border:1px solid rgba(109,40,217,.35);
+  }
+  .mm{ font-weight:800; font-size:.8rem; color:#4b5563 }
+  .scale-title{ text-align:center; font-weight:900; color:#5b21b6; margin:.25rem 0 -.2rem; letter-spacing:.2px }
 </style>
 </head>
 <body>
-<header>Pupil Simulator</header>
+
+<!-- Top fixed bar -->
+<div class="topbar" role="banner">
+  <div class="topbar-inner">
+    <button class="iconbtn" id="backBtn" aria-label="Go back" title="Back">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="btn-label">Back</span>
+    </button>
+    <div class="topbar-title">Pupil Simulator</div>
+    <button class="iconbtn" id="infoBtn" aria-label="Info" title="Info">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 8h.01M11 11h2v6h-2z" fill="currentColor"/></svg>
+      <span class="btn-label">Info</span>
+    </button>
+  </div>
+</div>
 
 <main>
   <!-- Visual exam -->
   <section class="card">
     <h2>Examine Pupils</h2>
-    <p class="muted" style="margin-top:-4px">Use the <strong>Light</strong> toggle to check reactivity. Then select the condition for each eye.</p>
+
+    <!-- Purple pupil-size scale replaces the instruction text -->
+    <div class="scale-title">Pupil Size (mm)</div>
+    <div class="pupil-scale" aria-label="Pupil size reference in millimeters">
+      <div class="scale-item"><span class="dot" style="--d:1"></span><span class="mm">1</span></div>
+      <div class="scale-item"><span class="dot" style="--d:2"></span><span class="mm">2</span></div>
+      <div class="scale-item"><span class="dot" style="--d:3"></span><span class="mm">3</span></div>
+      <div class="scale-item"><span class="dot" style="--d:4"></span><span class="mm">4</span></div>
+      <div class="scale-item"><span class="dot" style="--d:5"></span><span class="mm">5</span></div>
+      <div class="scale-item"><span class="dot" style="--d:6"></span><span class="mm">6</span></div>
+      <div class="scale-item"><span class="dot" style="--d:7"></span><span class="mm">7</span></div>
+      <div class="scale-item"><span class="dot" style="--d:8"></span><span class="mm">8</span></div>
+      <div class="scale-item"><span class="dot" style="--d:9"></span><span class="mm">9</span></div>
+    </div>
 
     <div class="face" aria-label="Eyes">
-      <!-- Left eye -->
+      <!-- LEFT ON SCREEN = PATIENT RIGHT -->
       <div>
-        <div class="eye" id="eyeL" aria-label="Left eye">
+        <div class="eye" id="eyeL" aria-label="Patient right eye">
           <div class="sclera"></div>
           <div class="iris"></div>
           <div class="pupil" id="pupilL"></div>
           <div class="corneal-gloss"></div>
         </div>
-        <p style="text-align:center;margin:.4rem 0 0"><strong>Left</strong></p>
+        <p style="text-align:center;margin:.4rem 0 0"><strong>Right (patient)</strong></p>
       </div>
 
-      <!-- Right eye -->
+      <!-- RIGHT ON SCREEN = PATIENT LEFT -->
       <div>
-        <div class="eye" id="eyeR" aria-label="Right eye">
+        <div class="eye" id="eyeR" aria-label="Patient left eye">
           <div class="sclera"></div>
           <div class="iris"></div>
           <div class="pupil" id="pupilR"></div>
           <div class="corneal-gloss"></div>
         </div>
-        <p style="text-align:center;margin:.4rem 0 0"><strong>Right</strong></p>
+        <p style="text-align:center;margin:.4rem 0 0"><strong>Left (patient)</strong></p>
       </div>
     </div>
 
@@ -130,7 +183,7 @@
     <h2>Your Assessment</h2>
     <div class="controls">
       <div>
-        <label for="selL">Left eye</label>
+        <label for="selL">Right eye (patient)</label>
         <select id="selL">
           <option value="" selected>Select condition…</option>
           <option value="normal">Normal / reactive</option>
@@ -142,7 +195,7 @@
         </select>
       </div>
       <div>
-        <label for="selR">Right eye</label>
+        <label for="selR">Left eye (patient)</label>
         <select id="selR">
           <option value="" selected>Select condition…</option>
           <option value="normal">Normal / reactive</option>
@@ -176,6 +229,41 @@
   </section>
 </main>
 
+<!-- Info Modal -->
+<div class="modal" id="infoModal" aria-hidden="true" aria-labelledby="infoTitle" role="dialog" style="position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,.48); z-index: 60; padding: 24px;">
+  <div class="modal-card" tabindex="-1" style="width:min(760px, 100%); background:#fff; border-radius:18px; padding:18px; box-shadow:var(--shadow); border:1px solid #e8eef0; max-height:85dvh; overflow:auto; color:var(--ink);">
+    <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding-bottom:8px; border-bottom:1px solid #e8eef0;">
+      <div class="modal-title" id="infoTitle" style="font-weight:800; font-size:1.1rem;">How to use & clinical notes</div>
+      <button class="iconbtn" id="closeModalBtn" aria-label="Close" title="Close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" style="display:grid; gap:12px;">
+      <p>Eyes are labeled from the patient’s perspective: the eye on your left is the patient’s <strong>right</strong>, and vice versa. Toggle light to assess reactivity; choose conditions for each eye, then “Show Results.” The purple scale provides a visual mm reference for pupil size (approx. 6 px ≈ 1 mm in this sim).</p>
+      <div>
+        <h4 style="margin:.2rem 0">Common patterns</h4>
+        <ul>
+          <li><strong>Pinpoint</strong>: opioids, pontine lesion, cholinergic agents.</li>
+          <li><strong>Dilated reactive</strong>: sympathomimetics, anticholinergics, dark environment.</li>
+          <li><strong>Fixed dilated</strong>: CN III compression (uncal herniation), mydriatic drops, severe anoxia.</li>
+          <li><strong>Sluggish</strong>: rising ICP, hypoxia, hypothermia, sedatives.</li>
+          <li><strong>Fixed mid</strong>: severe midbrain injury, deep anesthesia.</li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="margin:.2rem 0">Anisocoria tips</h4>
+        <ul>
+          <li>Compare in light and dark. Worse in <em>light</em> → larger pupil is abnormal (parasympathetic issue). Worse in <em>dark</em> → smaller pupil is abnormal (sympathetic issue).</li>
+          <li>Consider trauma, eye drops, headache/neck pain (carotid dissection), and neuro deficits.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
+      <button class="btn" id="modalOkBtn" style="padding:10px 14px; font-size:.95rem;">Got it</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   // --- DOM
@@ -193,7 +281,23 @@
   const reasonsBox = document.getElementById('reasons');
   const anisocoriaBox = document.getElementById('anisocoria');
 
-  // --- Condition model
+  // Topbar buttons + modal
+  const backBtn = document.getElementById('backBtn');
+  const infoBtn = document.getElementById('infoBtn');
+  const infoModal = document.getElementById('infoModal');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const modalOkBtn = document.getElementById('modalOkBtn');
+
+  backBtn.addEventListener('click', ()=>{ if(history.length>1) history.back(); else location.href='/'; }, {passive:true});
+  function openModal(){ infoModal.style.display='flex'; setTimeout(()=>infoModal.querySelector('.modal-card')?.focus?.(),0); }
+  function closeModal(){ infoModal.style.display='none'; }
+  ['pointerdown','click'].forEach(evt=>infoBtn.addEventListener(evt, openModal, {passive:true}));
+  closeModalBtn.addEventListener('click', closeModal, {passive:true});
+  modalOkBtn.addEventListener('click', closeModal, {passive:true});
+  infoModal.addEventListener('click', (e)=>{ if(e.target === infoModal) closeModal(); }, {passive:true});
+  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+
+  // --- Condition model (unchanged)
   const CONDITIONS = {
     normal:         { label:"Normal / reactive",        base:38, constrict:22, reactive:true,  sluggish:false },
     pinpoint:       { label:"Pinpoint",                 base:16, constrict:12, reactive:true,  sluggish:false },
@@ -249,7 +353,7 @@
   ];
 
   // State
-  let truth = { L:null, R:null };
+  let truth = { L:null, R:null }; // L/R = left/right ON SCREEN
   let lightOn = false;
 
   function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
@@ -268,6 +372,7 @@
   }
 
   function pxToMm(px){ return Math.round((px/6)*10)/10; } // ~6px ≈ 1 mm visual approximation
+
   function render(){
     applyPupil(pupilL, truth.L, lightOn);
     applyPupil(pupilR, truth.R, lightOn);
@@ -306,22 +411,17 @@
     render();
   }
 
-  toggleLightBtn.addEventListener('click', ()=>{
-    lightOn = !lightOn;
-    render();
-  });
-
+  toggleLightBtn.addEventListener('click', ()=>{ lightOn = !lightOn; render(); });
   newCaseBtn.addEventListener('click', newCase);
-
-  resetChoicesBtn.addEventListener('click', ()=>{
-    selL.value = ""; selR.value = "";
-    resultsWrap.hidden = true;
-  });
+  resetChoicesBtn.addEventListener('click', ()=>{ selL.value=""; selR.value=""; resultsWrap.hidden=true; });
 
   function conditionLabel(key){ return CONDITIONS[key].label; }
 
+  function patientSideFromScreen(side){ // 'L' (screen-left) => patient right
+    return side === 'L' ? "Right (patient)" : "Left (patient)";
+  }
+
   function anisocoriaAnalysis(){
-    // Compute size difference in dark and in light regardless of current toggle
     const L_dark = pupilSizePx(truth.L, false);
     const R_dark = pupilSizePx(truth.R, false);
     const L_light= pupilSizePx(truth.L, true);
@@ -336,55 +436,45 @@
     const THRESH = 6; // px ≈ 1 mm — clinically meaningful
     const hasAniso = (diffDark >= THRESH) || (diffLight >= THRESH);
 
-    if(!hasAniso) return ""; // nothing to report
+    if(!hasAniso) return "";
 
-    // Determine which setting magnifies anisocoria
     let context;
     if(diffLight - diffDark > 2){ context = "greater in light"; }
     else if(diffDark - diffLight > 2){ context = "greater in dark"; }
     else { context = "similar in light and dark"; }
 
-    // Which eye is larger in light/dark
-    const largerLight = (L_light > R_light) ? "Left" : "Right";
-    const largerDark  = (L_dark  > R_dark ) ? "Left" : "Right";
+    const largerLight = (L_light > R_light) ? 'L' : 'R';
+    const largerDark  = (L_dark  > R_dark ) ? 'L' : 'R';
 
-    // Build cause lists by context
     let bullets = [];
     if(context === "greater in light"){
       bullets = [
         "Larger pupil likely abnormal (parasympathetic problem).",
         "Consider CN III palsy (e.g., compressive lesion), pharmacologic dilation, iris sphincter injury.",
-        "If fixed and dilated with decreased LOC or focal deficits → concern for **uncal herniation**; treat per head injury/ICP protocol and expedite transport."
+        "If fixed and dilated with decreased LOC or focal deficits → concern for uncal herniation; manage ICP and expedite transport."
       ];
     }else if(context === "greater in dark"){
       bullets = [
         "Smaller pupil likely abnormal (sympathetic problem).",
-        "Consider **Horner syndrome** (ptosis, miosis, anhidrosis), carotid dissection, cluster headache.",
+        "Consider Horner syndrome (ptosis, miosis, anhidrosis), carotid dissection, cluster headache.",
         "Correlate with trauma to neck/face and new-onset headache or neuro deficits."
       ];
     }else{
       bullets = [
         "Anisocoria is similar in light and dark.",
-        "May be **physiologic anisocoria** (~20% of people) if longstanding and reactive.",
-        "If one pupil is **fixed** or markedly sluggish, or findings are acute with trauma/AMS, treat as **pathologic** until proven otherwise."
+        "May be physiologic anisocoria (~20%) if longstanding and reactive.",
+        "If one pupil is fixed or markedly sluggish, or findings are acute with trauma/AMS, treat as pathologic until proven otherwise."
       ];
-    }
-
-    // Extra hints for specific one-sided pathologies from our truth states
-    if((truth.L === "fixedDilated" && truth.R !== "fixedDilated") || (truth.R === "fixedDilated" && truth.L !== "fixedDilated")){
-      bullets.unshift("Unilateral **fixed dilated** pupil is highly concerning for CN III compression or herniation pattern in the right clinical context.");
-    }
-    if((truth.L === "pinpoint" && truth.R !== "pinpoint") || (truth.R === "pinpoint" && truth.L !== "pinpoint")){
-      bullets.push("Unilateral pinpoint pupil may reflect topical miotic exposure or focal brainstem lesion; bilateral pinpoint is more typical of opioids.");
     }
 
     const mmText = `≈${Math.max(mmDark, mmLight).toFixed(1)} mm (dark: ${mmDark.toFixed(1)} mm; light: ${mmLight.toFixed(1)} mm)`;
 
     return `
       <p><strong>Inter-eye differences (anisocoria):</strong> Present, ${context}. Estimated difference ${mmText}.
-      ${context==="greater in light" ? `Larger in light: <em>${largerLight}</em> eye.` : context==="greater in dark" ? `Larger in dark: <em>${largerDark}</em> eye.` : ""}</p>
+      ${context==="greater in light" ? `Larger in light: <em>${patientSideFromScreen(largerLight)}</em> eye.` :
+         context==="greater in dark"  ? `Larger in dark: <em>${patientSideFromScreen(largerDark)}</em> eye.` : ""}</p>
       <ul>${bullets.map(b=>`<li>${b}</li>`).join("")}</ul>
-      <p class="muted">Always correlate with history (trauma, medications/eye drops), vitals, neuro exam, and glucose. When in doubt, manage ABCs and transport per protocol.</p>
+      <p class="muted">Correlate with history (trauma, medications/eye drops), vitals, neuro exam, and glucose.</p>
     `;
   }
 
@@ -402,24 +492,23 @@
     const correctR = selR.value === truth.R;
 
     summary.innerHTML =
-      `<strong>Results:</strong> Left: ${correctL?'✅ Correct':'❌ Incorrect'} • Right: ${correctR?'✅ Correct':'❌ Incorrect'}`;
+      `<strong>Results:</strong> ${patientSideFromScreen('L')}: ${correctL?'✅ Correct':'❌ Incorrect'} • ${patientSideFromScreen('R')}: ${correctR?'✅ Correct':'❌ Incorrect'}`;
 
     detailList.innerHTML = "";
     const liL = document.createElement('li');
-    liL.innerHTML = `<strong>Left:</strong> You chose <em>${conditionLabel(selL.value)}</em>. Actual: <em>${conditionLabel(truth.L)}</em>.`;
+    liL.innerHTML = `<strong>${patientSideFromScreen('L')}:</strong> You chose <em>${conditionLabel(selL.value)}</em>. Actual: <em>${conditionLabel(truth.L)}</em>.`;
     const liR = document.createElement('li');
-    liR.innerHTML = `<strong>Right:</strong> You chose <em>${conditionLabel(selR.value)}</em>. Actual: <em>${conditionLabel(truth.R)}</em>.`;
+    liR.innerHTML = `<strong>${patientSideFromScreen('R')}:</strong> You chose <em>${conditionLabel(selR.value)}</em>. Actual: <em>${conditionLabel(truth.R)}</em>.`;
     detailList.appendChild(liL);
     detailList.appendChild(liR);
 
-    function listReasons(side, cond){
-      const title = side + " eye – " + conditionLabel(cond);
+    function listReasons(sideLabel, cond){
+      const title = sideLabel + " – " + conditionLabel(cond);
       const items = (REASONS[cond]||[]).map(r=>`<li>${r}</li>`).join('');
       return `<p><strong>${title}</strong></p><ul>${items}</ul>`;
     }
-    reasonsBox.innerHTML = listReasons("Left", truth.L) + listReasons("Right", truth.R);
+    reasonsBox.innerHTML = listReasons(patientSideFromScreen('L'), truth.L) + listReasons(patientSideFromScreen('R'), truth.R);
 
-    // New: anisocoria explanation
     anisocoriaBox.innerHTML = anisocoriaAnalysis();
 
     resultsWrap.hidden = false;
@@ -427,14 +516,6 @@
   });
 
   // Init
-  function render(){ /* overwritten earlier; keep latest */ }
-  // Re-define render with latest references
-  function render(){
-    applyPupil(pupilL, truth.L, lightOn);
-    applyPupil(pupilR, truth.R, lightOn);
-    toggleLightBtn.textContent = lightOn ? "🔦 Light: ON" : "🔦 Light: OFF";
-  }
-
   newCase();
 })();
 </script>
