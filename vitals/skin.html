@@ -56,6 +56,17 @@
   .ov-flush {background:radial-gradient(120% 120% at 50% 25%, rgba(240,64,64,.24), rgba(240,64,64,.12) 55%, transparent 80%)}
   .ov-cyan  {background:radial-gradient(120% 120% at 50% 25%, rgba(40,100,180,.26), rgba(40,100,180,.12) 55%, transparent 80%)}
   .ov-jaund {background:radial-gradient(120% 120% at 50% 25%, rgba(240,210,60,.26), rgba(240,210,60,.12) 55%, transparent 80%)}
+  .ov-pale  {background:radial-gradient(120% 120% at 50% 20%, rgba(255,255,255,.24), rgba(255,255,255,.10) 50%, transparent 75%)}
+
+  /* Moisture & Temp overlays (RIGHT) */
+  .ov-sheen{ background:linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,0) 35%, rgba(255,255,255,.08) 60%, rgba(255,255,255,0) 80%); opacity:0 }
+  .ov-drops{ background:
+      radial-gradient(circle at 20% 25%, rgba(255,255,255,.45) 0 4px, rgba(255,255,255,0) 5px),
+      radial-gradient(circle at 68% 32%, rgba(255,255,255,.45) 0 4px, rgba(255,255,255,0) 5px),
+      radial-gradient(circle at 40% 70%, rgba(255,255,255,.45) 0 4px, rgba(255,255,255,0) 5px),
+      radial-gradient(circle at 78% 74%, rgba(255,255,255,.45) 0 4px, rgba(255,255,255,0) 5px); opacity:0 }
+  .ov-cool { box-shadow: inset 0 0 0 9999px rgba(40,120,220,.14); opacity:0 }
+  .ov-warm { box-shadow: inset 0 0 0 9999px rgba(220,70,40,.14); opacity:0 }
 
   /* Cap refill (RIGHT only) */
   .blanch{ position:absolute; inset:0; pointer-events:none; opacity:0;
@@ -72,6 +83,7 @@
   /* Compact controls under the square */
   .under-skin{width:100%;max-width:var(--skin-size);display:grid;gap:10px}
   .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+
   .tbtn{
     appearance:none; border:1px solid #d4e5ea; background:#fff; color:var(--text);
     padding:10px 12px; font-weight:800; border-radius:10px; cursor:pointer;
@@ -82,15 +94,32 @@
     appearance:none; border:0; background:var(--accent); color:#fff; padding:10px 14px;
     border-radius:10px; font-weight:800; cursor:pointer;
   }
-  .seg{
-    display:inline-flex; gap:0; border:1px solid #d4e5ea; border-radius:10px; overflow:hidden; background:#f7fbfd;
-  }
-  .seg button{
-    appearance:none; border:0; background:transparent; padding:10px 12px; font-weight:800; cursor:pointer;
-  }
+  .seg{ display:inline-flex; gap:0; border:1px solid #d4e5ea; border-radius:10px; overflow:hidden; background:#f7fbfd; }
+  .seg button{ appearance:none; border:0; background:transparent; padding:10px 12px; font-weight:800; cursor:pointer; }
   .seg button[aria-pressed="true"]{ background:#e7f4f9; color:var(--accent-dk); }
-  .picker{display:flex;justify-content:center}
-  .picker input[type="color"]{width:140px;height:44px;border-radius:10px;border:1px solid #cfe3e8;padding:4px;background:#fff}
+
+  /* Moisture control */
+  .moisture{ display:flex; align-items:center; gap:12px; }
+  .moisture-track{
+    position:relative; width:220px; height:8px; border-radius:999px;
+    background:linear-gradient(90deg, #e7eef5, #e7eef5);
+    box-shadow:inset 0 1px 2px rgba(0,0,0,.06);
+  }
+  .moisture-arrow{
+    position:absolute; top:-10px; width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-bottom:10px solid var(--accent-dk);
+    transform:translateX(-50%); left:0%;
+  }
+  .moisture-labels{ display:flex; justify-content:space-between; font-weight:800; font-size:.9rem; width:220px; margin-top:4px; color:#425466; }
+  .moist-opt{ appearance:none; background:transparent; border:0; font-weight:800; cursor:pointer; padding:2px 6px; border-radius:6px; }
+  .moist-opt[aria-pressed="true"]{ background:#eef7ff; color:var(--accent-dk); }
+
+  /* Temp display */
+  .temp{ display:flex; align-items:center; gap:8px; }
+  .temp .display{
+    min-width:84px; text-align:center; font-weight:900; letter-spacing:.5px;
+    padding:8px 10px; border-radius:10px; border:1px solid #d4e5ea; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.04);
+  }
+  .temp button{ appearance:none; border:1px solid #d4e5ea; background:#fff; border-radius:10px; padding:8px 12px; font-weight:900; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -118,6 +147,11 @@
           <div class="ov ov-flush"  id="ovFlush"></div>
           <div class="ov ov-cyan"   id="ovCyan"></div>
           <div class="ov ov-jaund"  id="ovJaund"></div>
+          <div class="ov ov-pale"   id="ovPale"></div>
+          <div class="ov ov-sheen"  id="ovSheen"></div>
+          <div class="ov ov-drops"  id="ovDrops"></div>
+          <div class="ov ov-cool"   id="ovCool"></div>
+          <div class="ov ov-warm"   id="ovWarm"></div>
           <div class="blanch"       id="blanch"></div>
         </div>
         <div class="splitbar"></div>
@@ -128,26 +162,49 @@
       </div>
 
       <!-- Controls directly under the square -->
-      <!-- Row 1: three toggles + Cap Refill button -->
       <div class="under-skin">
+        <!-- Row 1: four toggles -->
         <div class="row">
           <button class="tbtn" id="btnFlush"  type="button" aria-pressed="false">Flushed</button>
           <button class="tbtn" id="btnCyan"   type="button" aria-pressed="false">Cyanotic</button>
           <button class="tbtn" id="btnJaund"  type="button" aria-pressed="false">Jaundice</button>
-          <button class="btn"  id="crtBtn"    type="button">▶️ Cap Refill</button>
+          <button class="tbtn" id="btnPale"   type="button" aria-pressed="false">Pale</button>
         </div>
 
-        <!-- Row 2: cap refill time selector -->
-        <div class="row" aria-label="Cap refill time">
+        <!-- Row 2: cap refill time selector + button side-by-side -->
+        <div class="row" aria-label="Cap refill time & run">
           <div class="seg" role="group">
             <button id="speedFast" type="button" aria-pressed="true"  data-ms="1200">&lt; 2 sec</button>
             <button id="speedSlow" type="button" aria-pressed="false" data-ms="4000">&gt; 2 sec (4s)</button>
           </div>
+          <button class="btn" id="crtBtn" type="button">▶️ Cap Refill</button>
         </div>
 
-        <!-- Row 3: skin tone picker -->
-        <div class="row picker">
-          <input id="tonePicker" title="Patient skin color" type="color" value="#f2d6c0"/>
+        <!-- Row 3: Moisture (arrow) + Temp display -->
+        <div class="row" style="align-items:flex-start;">
+          <div>
+            <div class="moisture">
+              <div class="moisture-track" id="moistTrack">
+                <div class="moisture-arrow" id="moistArrow" style="left:50%"></div>
+              </div>
+            </div>
+            <div class="moisture-labels">
+              <button class="moist-opt" id="moistDry"    type="button" aria-pressed="false" data-level="0">Dry</button>
+              <button class="moist-opt" id="moistNormal" type="button" aria-pressed="true"  data-level="1">Normal</button>
+              <button class="moist-opt" id="moistWet"    type="button" aria-pressed="false" data-level="2">Wet</button>
+            </div>
+          </div>
+
+          <div class="temp" aria-label="Digital temperature">
+            <button id="tempMinus" type="button">–</button>
+            <div class="display" id="tempDisplay">98.6°F</div>
+            <button id="tempPlus" type="button">+</button>
+          </div>
+        </div>
+
+        <!-- Row 4: patient skin tone picker -->
+        <div class="row" style="justify-content:center">
+          <input id="tonePicker" title="Patient skin color" type="color" value="#f2d6c0" style="width:140px;height:44px;border-radius:10px;border:1px solid #cfe3e8;padding:4px;background:#fff"/>
         </div>
       </div>
     </section>
@@ -164,29 +221,26 @@
       </div>
       <div class="modal-body" style="display:grid; gap:12px;">
         <div>
-          <p>The square is split: <strong>left</strong> shows the patient’s baseline tone; <strong>right</strong> shows the “now” appearance with any change toggled on. Pick the baseline that best matches your patient.</p>
+          <p>Left half is the patient’s baseline tone; right half shows the “now” appearance. Toggle color changes and run cap refill to visualize perfusion.</p>
         </div>
         <div>
           <h4>Color changes</h4>
           <ul>
-            <li><strong>Flushed</strong>: Vasodilation (fever, early sepsis, exertion, CO₂ retention, anaphylaxis). Often accentuated on the face/cheeks.</li>
-            <li><strong>Cyanotic</strong>: Deoxygenated hemoglobin. <em>Central</em> (tongue/lips) suggests hypoxemia; <em>peripheral</em> (nails) can be cold exposure, low cardiac output, vasoconstriction.</li>
-            <li><strong>Jaundice</strong>: Elevated bilirubin (liver disease, biliary obstruction, hemolysis). Check sclerae and mucous membranes; may appear subtle on darker skin.</li>
+            <li><strong>Flushed</strong>: vasodilation (fever, early sepsis, exertion, anaphylaxis, CO₂ retention).</li>
+            <li><strong>Cyanotic</strong>: deoxygenated Hb. Central (tongue/lips) → hypoxemia; peripheral (nails) → cold/low cardiac output.</li>
+            <li><strong>Jaundice</strong>: elevated bilirubin (liver disease, obstruction, hemolysis). Check sclerae/mucosa; subtle on darker skin.</li>
+            <li><strong>Pale</strong>: anemia, shock/low perfusion, vasoconstriction, cold exposure.</li>
           </ul>
         </div>
         <div>
           <h4>Capillary refill</h4>
-          <p>Pressing “Cap Refill” briefly blanches the right half, then it returns to baseline at the selected speed.</p>
-          <ul>
-            <li><strong>&lt; 2 sec</strong>: Typically normal in warm environments.</li>
-            <li><strong>&gt; 2 sec (4s)</strong>: Can indicate poor perfusion (shock, dehydration), hypothermia, or intense vasoconstriction. Interpret with overall clinical context and temperature of the extremity.</li>
-          </ul>
+          <p>Blanches then returns to baseline. &lt;2 s often normal (warm). &gt;2 s (4 s demo) suggests poor perfusion, hypothermia, or vasoconstriction—interpret with overall context.</p>
         </div>
         <div>
-          <h4>Assessment tips</h4>
+          <h4>Moisture & Temperature</h4>
           <ul>
-            <li>Always compare to areas less affected by pigmentation (palms, soles, mucosa, sclerae).</li>
-            <li>Consider ambient light, ambient temperature, and the patient’s baseline pigmentation.</li>
+            <li><strong>Dry→Wet</strong>: from dehydration/fever chills (dry) to diaphoresis (wet) in shock, fever, pain, anxiety.</li>
+            <li><strong>Temp</strong>: low skin temp (cool) can reflect vasoconstriction/exposure; fever may cause warmth/flushing.</li>
           </ul>
         </div>
       </div>
@@ -226,13 +280,32 @@
   const ovFlush = document.getElementById('ovFlush');
   const ovCyan  = document.getElementById('ovCyan');
   const ovJaund = document.getElementById('ovJaund');
+  const ovPale  = document.getElementById('ovPale');
+  const ovSheen = document.getElementById('ovSheen');
+  const ovDrops = document.getElementById('ovDrops');
+  const ovCool  = document.getElementById('ovCool');
+  const ovWarm  = document.getElementById('ovWarm');
   const blanch  = document.getElementById('blanch');
+
   const btnFlush= document.getElementById('btnFlush');
   const btnCyan = document.getElementById('btnCyan');
   const btnJaund= document.getElementById('btnJaund');
-  const crtBtn  = document.getElementById('crtBtn');
+  const btnPale = document.getElementById('btnPale');
+
   const speedFast = document.getElementById('speedFast');
   const speedSlow = document.getElementById('speedSlow');
+  const crtBtn    = document.getElementById('crtBtn');
+
+  // Moisture controls
+  const moistArrow = document.getElementById('moistArrow');
+  const moistDry   = document.getElementById('moistDry');
+  const moistNorm  = document.getElementById('moistNormal');
+  const moistWet   = document.getElementById('moistWet');
+
+  // Temp controls
+  const tempMinus = document.getElementById('tempMinus');
+  const tempPlus  = document.getElementById('tempPlus');
+  const tempDisplay = document.getElementById('tempDisplay');
 
   // Utils
   const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
@@ -277,6 +350,7 @@
   btnFlush.addEventListener('click', ()=> toggle(btnFlush, ovFlush));
   btnCyan .addEventListener('click', ()=> toggle(btnCyan,  ovCyan ));
   btnJaund.addEventListener('click', ()=> toggle(btnJaund, ovJaund));
+  btnPale .addEventListener('click', ()=> toggle(btnPale,  ovPale ));
 
   // Cap refill speed select
   let crtDuration = +speedFast.dataset.ms; // default <2 sec
@@ -313,6 +387,39 @@
     }
     requestAnimationFrame(step);
   });
+
+  // Moisture arrow logic: 0=Dry, 1=Normal, 2=Wet
+  let moisture = 1; // start at Normal
+  function setMoist(level){
+    moisture = level;
+    // move arrow (0%, 50%, 100%)
+    const pos = level===0 ? 0 : level===1 ? 50 : 100;
+    moistArrow.style.left = pos + '%';
+
+    // update pressed states
+    [moistDry, moistNorm, moistWet].forEach(btn=>btn.setAttribute('aria-pressed','false'));
+    (level===0?moistDry:level===1?moistNorm:moistWet).setAttribute('aria-pressed','true');
+
+    // render overlays
+    ovSheen.style.opacity = level===0 ? 0 : level===1 ? 0.45 : 1;
+    ovDrops.style.opacity = level===2 ? 1 : 0;
+  }
+  moistDry .addEventListener('click', ()=> setMoist(0));
+  moistNorm.addEventListener('click', ()=> setMoist(1));
+  moistWet .addEventListener('click', ()=> setMoist(2));
+  setMoist(1);
+
+  // Temperature display & tint
+  let tempF = 98.6;
+  function renderTemp(){
+    tempDisplay.textContent = tempF.toFixed(1) + '°F';
+    ovCool.style.opacity = tempF <= 96.0 ? .35 : 0;
+    ovWarm.style.opacity = tempF >= 100.4 ? .35 : 0;
+  }
+  function adjustTemp(delta){ tempF = clamp(tempF + delta, 90, 105); renderTemp(); }
+  tempMinus.addEventListener('click', ()=> adjustTemp(-0.5));
+  tempPlus .addEventListener('click', ()=> adjustTemp(+0.5));
+  renderTemp();
 
 })();
 </script>
