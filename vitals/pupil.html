@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pupil & Gaze — Penlight Chart, PERL, Patient-Sided Labels</title>
+<!-- Lock phone view: no pinch zoom, no side scroll -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Pupil & Gaze — True-Scale Chart, Extra Size/Reaction Inputs</title>
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
@@ -17,24 +19,21 @@
 <style>
   :root{
     --bg:#f6f9fc; --card:#fff; --ink:#122230; --muted:#637589; --accent:#0a76d3;
-    --accent-2:#0db37d; --border:#e6edf3; --skin:#f2d5c4; --skin-shadow:#e8c4b2;
+    --border:#e6edf3; --skin:#f2d5c4; --skin-shadow:#e8c4b2;
   }
-  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"Helvetica Neue",sans-serif}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"Helvetica Neue",sans-serif;
+    -webkit-text-size-adjust:100%; overflow-x:hidden}
+  *,*::before,*::after{box-sizing:border-box}
 
   /* Edge-to-edge sticky banner */
-  header{
-    position:sticky; top:0; z-index:20;
-    background:linear-gradient(180deg,#0a76d3,#095fb0); color:#fff;
-    padding:12px 16px; box-shadow:0 8px 16px rgba(10,30,60,.15);
-    border-radius:0; width:100%;
-  }
+  header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#0a76d3,#095fb0);color:#fff;
+    padding:12px 16px;box-shadow:0 8px 16px rgba(10,30,60,.15)}
   .headerbar{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px}
   .iconbtn{appearance:none;border:0;background:rgba(255,255,255,.15);color:#fff;padding:8px 12px;border-radius:10px;font-weight:700;cursor:pointer}
-  .iconbtn:active{transform:translateY(1px)}
   h1{margin:0;font-size:1.05rem}
 
   .wrap{max-width:1100px;margin:0 auto;padding:14px;display:grid;gap:12px}
-
   .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 2px 10px rgba(10,20,40,.05)}
   .card h2{margin:0;font-size:1rem;border-bottom:1px solid var(--border);padding:12px}
   .card .body{padding:12px}
@@ -44,16 +43,15 @@
   select{width:100%;padding:.6rem .7rem;border-radius:10px;border:1px solid var(--border);background:#fff}
   input[type="range"]{width:100%;accent-color:var(--accent)}
 
-  /* Eyes always in one row, even on phones */
-  .panel{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  /* Eyes always two columns; no sideways scroll on phones */
+  .panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
   .eyeBox{border:1px solid var(--border);border-radius:12px;padding:10px;background:#f8fbff;min-width:0}
   .labelAbove{display:flex;justify-content:center;gap:10px;margin-bottom:6px;font-weight:800;flex-wrap:wrap}
-  .svgwrap{display:flex;justify-content:center;align-items:center;aspect-ratio:4/3;background:var(--skin);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .svgwrap{display:flex;justify-content:center;align-items:center;aspect-ratio:4/3;background:var(--skin);
+    border:1px solid var(--border);border-radius:12px;overflow:hidden}
   svg{width:100%;height:100%}
 
-  /* Buttons */
   .btn{appearance:none;border:1px solid var(--border);background:#fff;color:#122230;padding:10px 12px;border-radius:12px;font-weight:800;cursor:pointer}
-  .btn:active{transform:translateY(1px)}
   .btn.pin{background:linear-gradient(180deg,#ffe082,#ffd54f); border-color:#f1c232; color:#3b2f00; box-shadow:0 2px 8px rgba(60,40,0,.18)}
   .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
   .btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -62,10 +60,11 @@
   .bad{border-color:#fecaca;background:#fff1f2}
   .warn{border-color:#fde68a;background:#fffbeb}
 
-  /* Penlight chart */
+  /* True-scale penlight chart */
   .chart{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;justify-content:center}
-  .tick{display:flex;flex-direction:column;align-items:center;gap:6px}
-  .disc{background:#111;border:none;border-radius:9999px} /* removed border to match live pupils */
+  .tick{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+  .disc{background:#111;border:none;border-radius:9999px;flex:0 0 auto}
+  small{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -74,7 +73,7 @@
   <div class="headerbar">
     <div style="display:flex;gap:8px;align-items:center">
       <button id="btnBack" class="iconbtn">← Back</button>
-      <h1>Pupil & Gaze Trainer — Penlight + PERL</h1>
+      <h1>Pupil & Gaze Trainer — True-Scale Chart + Extra Inputs</h1>
     </div>
     <div><button id="btnInfo" class="iconbtn">ℹ️ Info</button></div>
   </div>
@@ -85,7 +84,7 @@
   <section class="card">
     <h2>Penlight Pupil Size Chart (True Scale)</h2>
     <div class="body">
-      <div id="sizeChart" class="chart"></div>
+      <div id="sizeChart" class="chart" aria-label="Pupil size reference 1–7 mm"></div>
       <div style="text-align:center;margin-top:10px">
         <span class="line" style="display:inline-block">
           <strong>Reference:</strong>
@@ -93,13 +92,13 @@
         </span>
       </div>
       <div class="muted" style="text-align:center;margin-top:6px">
-        Discs are drawn with the <strong>same pixel mapping</strong> as the live pupils (mm → ratio → px).
+        Discs use the <strong>same on-screen pixel scale</strong> as the live pupils (auto-adjusts on resize/orientation).
       </div>
     </div>
   </section>
 
   <section class="card">
-    <h2>Eyes</h2> <!-- removed “patient facing you” label -->
+    <h2>Eyes</h2>
     <div class="body">
       <!-- Eyes: patient RIGHT on the left; patient LEFT on the right -->
       <div class="panel">
@@ -112,9 +111,7 @@
           <div class="svgwrap">
             <svg id="svgR" viewBox="0 0 240 170" aria-label="Patient right eye">
               <defs>
-                <clipPath id="openR">
-                  <path d="M20,85 Q120,32 220,85 Q120,138 20,85 Z"/>
-                </clipPath>
+                <clipPath id="openR"><path d="M20,85 Q120,32 220,85 Q120,138 20,85 Z"/></clipPath>
                 <radialGradient id="gradIrisR" cx="50%" cy="50%" r="50%">
                   <stop offset="0%" stop-color="#6aa0ff"/><stop offset="80%" stop-color="#3065c9"/><stop offset="100%" stop-color="#20407f"/>
                 </radialGradient>
@@ -151,9 +148,7 @@
           <div class="svgwrap">
             <svg id="svgL" viewBox="0 0 240 170" aria-label="Patient left eye">
               <defs>
-                <clipPath id="openL">
-                  <path d="M20,85 Q120,32 220,85 Q120,138 20,85 Z"/>
-                </clipPath>
+                <clipPath id="openL"><path d="M20,85 Q120,32 220,85 Q120,138 20,85 Z"/></clipPath>
                 <radialGradient id="gradIrisL" cx="50%" cy="50%" r="50%">
                   <stop offset="0%" stop-color="#6aa0ff"/><stop offset="80%" stop-color="#3065c9"/><stop offset="100%" stop-color="#20407f"/>
                 </radialGradient>
@@ -188,10 +183,10 @@
         <input id="gaze" type="range" min="-100" max="100" value="0"/>
       </div>
 
-      <!-- Findings inputs -->
+      <!-- Findings -->
       <div class="line warn"><strong>Record findings (patient’s sides!)</strong></div>
 
-      <!-- PERL moved to just below "Record findings" -->
+      <!-- PERL just below "Record findings" -->
       <div class="line" style="margin-top:0">
         <label for="perl">PERL (Pupils Equal & Reactive to Light)</label>
         <select id="perl">
@@ -201,18 +196,24 @@
         </select>
       </div>
 
+      <!-- New: Extra dropdowns per eye for Size and Reaction (plus Tracking) -->
       <div class="panel">
-        <!-- Patient RIGHT selections -->
+        <!-- Patient RIGHT -->
         <div>
-          <label for="condR">Patient RIGHT — Condition</label>
-          <select id="condR">
+          <label for="sizeR">Patient RIGHT — Size</label>
+          <select id="sizeR">
+            <option value="">— choose —</option>
+            <option>Pinpoint</option>
+            <option>Normal</option>
+            <option>Dilated</option>
+          </select>
+          <div style="height:8px"></div>
+          <label for="reactR">Patient RIGHT — Reaction</label>
+          <select id="reactR">
             <option value="">— choose —</option>
             <option>Normal</option>
-            <option>Pinpoint</option>
-            <option>Dilated</option>
-            <option>Sluggish to light</option>
-            <option>Non-reactive / blown</option>
-            <option>Unequal vs left</option>
+            <option>Sluggish</option>
+            <option>Non-reactive</option>
           </select>
           <div style="height:8px"></div>
           <label for="trackR">Patient RIGHT — Tracking</label>
@@ -228,17 +229,22 @@
           </select>
         </div>
 
-        <!-- Patient LEFT selections -->
+        <!-- Patient LEFT -->
         <div>
-          <label for="condL">Patient LEFT — Condition</label>
-          <select id="condL">
+          <label for="sizeL">Patient LEFT — Size</label>
+          <select id="sizeL">
+            <option value="">— choose —</option>
+            <option>Pinpoint</option>
+            <option>Normal</option>
+            <option>Dilated</option>
+          </select>
+          <div style="height:8px"></div>
+          <label for="reactL">Patient LEFT — Reaction</label>
+          <select id="reactL">
             <option value="">— choose —</option>
             <option>Normal</option>
-            <option>Pinpoint</option>
-            <option>Dilated</option>
-            <option>Sluggish to light</option>
-            <option>Non-reactive / blown</option>
-            <option>Unequal vs right</option>
+            <option>Sluggish</option>
+            <option>Non-reactive</option>
           </select>
           <div style="height:8px"></div>
           <label for="trackL">Patient LEFT — Tracking</label>
@@ -262,7 +268,6 @@
       <div id="gradeBox" class="line" style="display:none"></div>
       <div id="whyBox" class="line" style="display:none"></div>
 
-      <!-- New case at the very bottom -->
       <div class="btnrow" style="margin-top:14px">
         <button class="btn" id="btnNewCase">New Random Case</button>
       </div>
@@ -276,12 +281,11 @@
     <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">About</div>
     <div style="padding:14px 16px">
       <ul>
-        <li>Penlight chart discs use the <strong>same pixel mapping</strong> as the live pupils (mm → ratio → px).</li>
-        <li>Patient RIGHT is displayed on the <strong>left</strong> of the screen; Patient LEFT on the <strong>right</strong>.</li>
-        <li>Use the per-eye <strong>Penlight</strong> buttons to test constriction/redilation.</li>
-        <li>PERL is recorded under <strong>Record findings</strong>. “Yes” requires appropriate reactivity and near-equal size.</li>
+        <li>The chart uses the <strong>same on-screen scale</strong> as the live pupils. If you rotate the phone, it re-scales.</li>
+        <li>Patient RIGHT is shown on the <strong>left</strong>; Patient LEFT is on the <strong>right</strong>.</li>
+        <li>Use per-eye <strong>Penlight</strong> to test constriction/redilation; then record Size, Reaction, and Tracking.</li>
+        <li>PERL is recorded under <strong>Record findings</strong>.</li>
       </ul>
-      <p class="muted">Training visual only — correlate with neuro exam, meds, lighting, trauma, and local protocols.</p>
     </div>
     <div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
       <button class="iconbtn" style="background:#eee;color:#111">Close</button>
@@ -297,67 +301,83 @@
   $('#btnBack').addEventListener('click', ()=>{ if (document.referrer) history.back(); else location.href='/'; });
   $('#btnInfo').addEventListener('click', ()=> $('#infoDialog').showModal());
 
-  // Geometry / constants
-  const IRIS_MM = 11.5;            // iris diameter (mm) reference for mm<->ratio
-  const IRIS_R = 44;               // iris radius in SVG (px)
-  const PUPIL_MIN = 6, PUPIL_MAX = 28; // px radius bounds for simulation drawing
+  // Geometry / constants (SVG units)
+  const IRIS_MM = 11.5;     // real iris diameter ref (mm)
+  const IRIS_R  = 44;       // iris radius in SVG units
+  const PUPIL_MIN = 6, PUPIL_MAX = 28; // pupil radius in SVG units
   const P_CENTER = {x:120,y:85};
   const GAZE_RANGE = 16;
 
   // Elements
   const sizeChart = $('#sizeChart');
+  const irisL = $('#irisL'), irisR = $('#irisR');
   const pupilL = $('#pupilL'), pupilR = $('#pupilR');
   const ratioL = $('#ratioL'), ratioR = $('#ratioR');
   const mmL = $('#mmL'), mmR = $('#mmR');
   const btnLightL = $('#btnLightL'), btnLightR = $('#btnLightR');
   const gaze = $('#gaze');
-  const condL = $('#condL'), condR = $('#condR');
-  const trackL = $('#trackL'), trackR = $('#trackR');
+  const sizeLsel = $('#sizeL'), sizeRsel = $('#sizeR');
+  const reactLsel = $('#reactL'), reactRsel = $('#reactR');
+  const trackLsel = $('#trackL'), trackRsel = $('#trackR');
   const perlSel = $('#perl');
   const btnGrade = $('#btnGrade'), gradeBox = $('#gradeBox'), whyBox = $('#whyBox');
   const btnNewCase = $('#btnNewCase');
 
   // State
   let casePupils = null; // {L:{ratio,react}, R:{ratio,react}}
-  let caseTracking = null; // {id,label,L:{...},R:{...}}
+  let caseTracking = null;
   let eyePos = {L:0,R:0};
   let anim = {L:false,R:false};
+  let scaleFactor = 1; // converts SVG 'px' to rendered CSS px
 
   // Helpers
   const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
   const rand = a => a[Math.floor(Math.random()*a.length)];
   const easeOutCubic = x => 1 - Math.pow(1 - x, 3);
 
-  // Mapping
-  function mmFromRatio(ratioPct){ return (ratioPct/100)*IRIS_MM; }
-  function ratioFromMm(mm){ return clamp((mm/IRIS_MM)*100, 0, 100); }
-  function pupilPxFromRatio(r){ return Math.round(PUPIL_MIN + (PUPIL_MAX - PUPIL_MIN) * (r/100)); }
+  // Ratio <-> mm
+  const mmFromRatio = r => (r/100)*IRIS_MM;
+  const ratioFromMm = mm => clamp((mm/IRIS_MM)*100, 0, 100);
+
+  // Apply pupil size by ratio (SVG units; SVG scales visually)
   function applyPupil(side, ratioPct){
-    const px = pupilPxFromRatio(ratioPct);
+    const pxRadiusSvg = Math.round(PUPIL_MIN + (PUPIL_MAX - PUPIL_MIN) * (ratioPct/100));
     const el = side==='L'?pupilL:pupilR;
-    el.setAttribute('r', String(px));
+    el.setAttribute('r', String(pxRadiusSvg));
     el.setAttribute('cx', String(P_CENTER.x));
     el.setAttribute('cy', String(P_CENTER.y));
     (side==='L'?ratioL:ratioR).textContent = ratioPct + '%';
     (side==='L'?mmL:mmR).textContent = mmFromRatio(ratioPct).toFixed(1)+' mm';
   }
 
-  // Chart (true scale): 1–7 mm only; no borders so it matches live pupils
+  // --- True-scale chart: compute live scale factor and render discs accordingly ---
+  function computeScaleFactor(){
+    // Use the rendered LEFT iris to compute actual on-screen pixel scale (SVG scales responsively)
+    const bbox = irisL.getBoundingClientRect(); // width ~ diameter in CSS px
+    const irisRenderedRadiusPx = bbox.width / 2;
+    scaleFactor = irisRenderedRadiusPx / IRIS_R; // CSS px per SVG 'px'
+  }
   function renderSizeChart(){
+    computeScaleFactor();
     sizeChart.innerHTML='';
-    const mmList = [1,2,3,4,5,6,7]; // removed 8 mm per request
+    const mmList = [1,2,3,4,5,6,7]; // 8 mm removed
     mmList.forEach(mm=>{
       const tick = document.createElement('div'); tick.className='tick';
       const disc = document.createElement('div'); disc.className='disc';
+      // Convert mm -> ratio -> pupil radius in SVG units -> convert to CSS px with scaleFactor
       const ratio = ratioFromMm(mm);
-      const radiusPx = pupilPxFromRatio(ratio);     // identical mapping
-      const diameterPx = radiusPx*2;
-      disc.style.width = diameterPx+'px';
-      disc.style.height = diameterPx+'px';
+      const pupilR_svg = (PUPIL_MIN + (PUPIL_MAX - PUPIL_MIN) * (ratio/100));
+      const diameter_css_px = Math.max(2, Math.round(pupilR_svg * 2 * scaleFactor)); // min 2px so 1mm remains visible
+      disc.style.width = diameter_css_px+'px';
+      disc.style.height = diameter_css_px+'px';
       const label = document.createElement('small'); label.textContent = mm+' mm';
-      tick.appendChild(disc); tick.appendChild(label); sizeChart.appendChild(tick);
+      tick.appendChild(disc); tick.appendChild(label);
+      sizeChart.appendChild(tick);
     });
   }
+  // Keep chart matched on resize/orientation
+  window.addEventListener('resize', renderSizeChart);
+  window.addEventListener('orientationchange', renderSizeChart);
 
   // Cases
   const PUPIL_CASES = [
@@ -384,7 +404,7 @@
       L:{gain:0.4, limitLeft:-1, limitRight:1, bias:0, jitter:0}, R:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0} },
   ];
 
-  // Light reflex
+  // Light reflex per eye
   function lightEye(side){
     if(anim[side]) return;
     const cfg = casePupils[side];
@@ -399,17 +419,15 @@
 
     function constrict(ts){
       const t = Math.min(1,(ts-t0)/dur);
-      const val = Math.round(base + (minTarget - base)*easeOutCubic(t));
-      cfg.ratio = val; applyPupil(side, val);
-      if(t<1) requestAnimationFrame(constrict);
+      const val = Math.round(base + (minTarget - base)*(1 - Math.pow(1 - t, 3)));
+      cfg.ratio = val; applyPupil(side, val); if(t<1) requestAnimationFrame(constrict);
       else{
         const t1 = performance.now();
         function redilate(ts2){
           const t2 = Math.min(1,(ts2 - t1)/dur);
-          const val2 = Math.round(minTarget + (base - minTarget)*easeOutCubic(t2));
+          const val2 = Math.round(minTarget + (base - minTarget)*(1 - Math.pow(1 - t2, 3)));
           cfg.ratio = val2; applyPupil(side, val2);
-          if(t2<1) requestAnimationFrame(redilate);
-          else anim[side]=false;
+          if(t2<1) requestAnimationFrame(redilate); else anim[side]=false;
         }
         requestAnimationFrame(redilate);
       }
@@ -417,13 +435,12 @@
     requestAnimationFrame(constrict);
   }
 
-  // Tracking animation
+  // Tracking engine
   function target(){ return parseInt(gaze.value,10)/100; } // -1..1
   function stepEye(side, dt){
     const cfg = caseTracking[side];
     const desired = clamp(target() + (cfg.bias||0), cfg.limitLeft, cfg.limitRight);
     const speed = (cfg.gain||0.8)*dt*6;
-    if(!isFinite(speed)) return;
     eyePos[side] += clamp(desired - eyePos[side], -speed, speed);
     if(cfg.jitter && Math.abs(target())>0.4){
       eyePos[side] += Math.sin(performance.now()/50)*0.015*cfg.jitter;
@@ -440,20 +457,28 @@
     requestAnimationFrame(raf);
   }
 
-  // Reasons (for grading explanations)
+  // Grading helpers
+  function sizeClass(mm){
+    if(mm < 2.5) return 'Pinpoint';
+    if(mm >= 5.5) return 'Dilated';
+    return 'Normal';
+  }
+  function respClass(react){ return react==='none'?'Non-reactive':(react==='sluggish'?'Sluggish':'Normal'); }
   const REASONS_SIZE = {
-    'Pinpoint': ['Opioid intoxication (fentanyl, heroin)','Pontine lesion/hemorrhage','Cholinergic/organophosphate exposure'],
-    'Dilated': ['Stimulant/anticholinergic effect (cocaine, atropine)','Hypoxia/anoxia','Post-ictal state or ↑ICP'],
-    'Sluggish': ['Hypoxia or hypothermia','Sedatives/opioids or CNS depressants','Early ↑ICP'],
-    'Non-reactive': ['Uncal herniation or severe head injury','Third-nerve palsy','Recent ocular surgery/trauma']
+    'Pinpoint': ['Opioids','Pontine lesion/bleed','Cholinergic/OP exposure'],
+    'Dilated': ['Stimulant/anticholinergic','Hypoxia/anoxia','Post-ictal or ↑ICP'],
+  };
+  const REASONS_REACT = {
+    'Sluggish': ['Hypoxia/hypothermia','Sedative/opioid/CNS depressant','Early ↑ICP'],
+    'Non-reactive': ['Uncal herniation/severe head injury','CN III palsy','Recent ocular surgery/trauma']
   };
   const REASONS_TRACK = {
-    'Restricted toward patient’s left': ['Left gaze palsy (brainstem/supranuclear)','EOM/CN VI impairment'],
-    'Restricted toward patient’s right': ['Right gaze palsy (brainstem/supranuclear)','EOM/CN VI impairment'],
-    'Conjugate deviation — left': ['Acute cerebral lesion with gaze preference','Seizure/post-ictal'],
-    'Conjugate deviation — right': ['Acute cerebral lesion with gaze preference','Seizure/post-ictal'],
-    'Nystagmus': ['Vestibular disorder or intoxication','Cerebellar/brainstem involvement'],
-    'Disconjugate/lag': ['INO or cranial nerve palsy','Orbital trauma/muscle entrapment']
+    'Restricted toward patient’s left': ['Left gaze palsy','CN VI/EOM issue'],
+    'Restricted toward patient’s right': ['Right gaze palsy','CN VI/EOM issue'],
+    'Conjugate deviation — left': ['Acute cerebral lesion','Seizure/post-ictal'],
+    'Conjugate deviation — right': ['Acute cerebral lesion','Seizure/post-ictal'],
+    'Nystagmus': ['Vestibular disorder/intoxication','Cerebellar/brainstem'],
+    'Disconjugate/lag': ['INO or CN palsy','Orbital trauma/entrapment']
   };
 
   function trackingExpected(){
@@ -468,78 +493,69 @@
     return {L:'Normal tracking', R:'Normal tracking'};
   }
 
-  function sizeClass(mm){
-    if(mm < 2.5) return 'Pinpoint';
-    if(mm >= 5.5) return 'Dilated';
-    return 'Normal';
-  }
-  function respClass(react){ return react==='none'?'Non-reactive':(react==='sluggish'?'Sluggish':'Normal'); }
-
+  // Grade
   function grade(){
+    // Actual case values
     const l_mm = parseFloat(mmL.textContent) || 0;
     const r_mm = parseFloat(mmR.textContent) || 0;
     const l_size = sizeClass(l_mm), r_size = sizeClass(r_mm);
     const l_resp = respClass(casePupils.L.react), r_resp = respClass(casePupils.R.react);
-
-    const user = {
-      perl: perlSel.value,
-      L_cond: condL.value, R_cond: condR.value,
-      L_track: trackL.value, R_track: trackR.value
-    };
     const expTrack = trackingExpected();
 
-    // PERL expectation: near equal size + both reactive (not 'none')
-    const sizeClose = Math.abs(l_mm - r_mm) < 1.0;
-    const perlExpected = (sizeClose && casePupils.L.react!=='none' && casePupils.R.react!=='none') ? 'Yes' : 'No';
+    // User entries (extra dropdowns)
+    const user = {
+      perl: perlSel.value,
+      sizeL: sizeLsel.value, sizeR: sizeRsel.value,
+      reactL: reactLsel.value, reactR: reactRsel.value,
+      trackL: trackLsel.value, trackR: trackRsel.value
+    };
 
-    function checkCond(userCond, size, resp){
-      const msgs = []; let ok=false;
-      if(!userCond){ msgs.push('No condition selected.'); return {ok,msgs}; }
-      if(userCond==='Normal'){ ok = (size==='Normal' && resp==='Normal'); if(!ok) msgs.push(`Not fully normal (size=${size}, resp=${resp}).`); }
-      if(userCond==='Pinpoint'){ ok = (size==='Pinpoint'); if(!ok) msgs.push(`Size is ${size.toLowerCase()}, not pinpoint.`); }
-      if(userCond==='Dilated'){ ok = (size==='Dilated'); if(!ok) msgs.push(`Size is ${size.toLowerCase()}, not dilated.`); }
-      if(userCond==='Sluggish to light'){ ok = (resp==='Sluggish'); if(!ok) msgs.push(`Response is ${resp.toLowerCase()}.`); }
-      if(userCond==='Non-reactive / blown'){ ok = (resp==='Non-reactive'); if(!ok) msgs.push(`Response is ${resp.toLowerCase()}, not non-reactive.`); }
-      if(userCond.startsWith('Unequal')){ ok = !sizeClose; if(!ok) msgs.push('Pupils not unequal by ~≥1 mm.'); }
-      return {ok,msgs};
-    }
-    function checkTrack(userPick, expected){
-      if(!userPick) return {ok:false, msg:'No tracking selection.'};
-      return {ok:userPick===expected, msg: userPick===expected ? 'Correct.' : `Expected <strong>${expected}</strong>.`};
+    // PERL expectation: near equal size + both reactive (not 'Non-reactive')
+    const perlExpected = (Math.abs(l_mm - r_mm) < 1.0 &&
+                          l_resp !== 'Non-reactive' && r_resp !== 'Non-reactive') ? 'Yes' : 'No';
+
+    function check(val, exp, label){
+      if(!val) return {ok:false, msg:`No ${label} selected.`};
+      return {ok: val===exp, msg: val===exp ? 'Correct.' : `Expected <strong>${exp}</strong>.`};
     }
 
-    const leftC  = checkCond(user.L_cond, l_size, l_resp);
-    const rightC = checkCond(user.R_cond, r_size, r_resp);
-    const leftT  = checkTrack(user.L_track,  expTrack.L);
-    const rightT = checkTrack(user.R_track, expTrack.R);
+    const sizeLchk = user.sizeL ? check(user.sizeL, l_size, 'size (L)') : {ok:false,msg:`No size selected.`};
+    const sizeRchk = user.sizeR ? check(user.sizeR, r_size, 'size (R)') : {ok:false,msg:`No size selected.`};
+    const reactLchk = user.reactL ? check(user.reactL, l_resp==='Normal'?'Normal':l_resp, 'reaction (L)') : {ok:false,msg:`No reaction selected.`};
+    const reactRchk = user.reactR ? check(user.reactR, r_resp==='Normal'?'Normal':r_resp, 'reaction (R)') : {ok:false,msg:`No reaction selected.`};
+    const trackLchk = user.trackL ? check(user.trackL, expTrack.L, 'tracking (L)') : {ok:false,msg:`No tracking selected.`};
+    const trackRchk = user.trackR ? check(user.trackR, expTrack.R, 'tracking (R)') : {ok:false,msg:`No tracking selected.`};
     const perlOk = (user.perl && user.perl===perlExpected);
 
-    const out = [];
-    out.push(`<strong>Patient LEFT</strong> — size: <em>${l_size}</em> (${l_mm.toFixed(1)} mm), response: <em>${l_resp}</em>.`);
-    out.push(leftC.ok ? '✅ Condition: correct.' : `❌ Condition: ${leftC.msgs.join(' ')}`);
-    out.push(leftT.ok ? '✅ Tracking: correct.'  : `❌ Tracking: ${leftT.msg}`);
+    // Output
+    const o = [];
+    o.push(`<strong>Patient LEFT</strong> — actual: size <em>${l_size}</em> (${l_mm.toFixed(1)} mm), reaction <em>${l_resp}</em>, tracking <em>${expTrack.L}</em>.`);
+    o.push(sizeLchk.ok ? '✅ Size: correct.' : `❌ Size: ${sizeLchk.msg}`);
+    o.push(reactLchk.ok ? '✅ Reaction: correct.' : `❌ Reaction: ${reactLchk.msg}`);
+    o.push(trackLchk.ok ? '✅ Tracking: correct.' : `❌ Tracking: ${trackLchk.msg}`);
 
-    out.push(`<br><strong>Patient RIGHT</strong> — size: <em>${r_size}</em> (${r_mm.toFixed(1)} mm), response: <em>${r_resp}</em>.`);
-    out.push(rightC.ok ? '✅ Condition: correct.' : `❌ Condition: ${rightC.msgs.join(' ')}`);
-    out.push(rightT.ok ? '✅ Tracking: correct.'  : `❌ Tracking: ${rightT.msg}`);
+    o.push(`<br><strong>Patient RIGHT</strong> — actual: size <em>${r_size}</em> (${r_mm.toFixed(1)} mm), reaction <em>${r_resp}</em>, tracking <em>${expTrack.R}</em>.`);
+    o.push(sizeRchk.ok ? '✅ Size: correct.' : `❌ Size: ${sizeRchk.msg}`);
+    o.push(reactRchk.ok ? '✅ Reaction: correct.' : `❌ Reaction: ${reactRchk.msg}`);
+    o.push(trackRchk.ok ? '✅ Tracking: correct.' : `❌ Tracking: ${trackRchk.msg}`);
 
-    out.push(`<br><strong>PERL</strong>: you chose <em>${user.perl||'—'}</em>. `
-      + (perlOk ? '✅ Correct.' : `❌ Expected: <strong>${perlExpected}</strong>.`));
+    o.push(`<br><strong>PERL</strong>: you chose <em>${user.perl||'—'}</em>. ` +
+           (perlOk ? '✅ Correct.' : `❌ Expected: <strong>${perlExpected}</strong>.`));
 
-    gradeBox.className = 'line ' + (leftC.ok && rightC.ok && leftT.ok && rightT.ok && perlOk ? 'good' : 'bad');
-    gradeBox.innerHTML = out.join('<br>');
+    const allOk = sizeLchk.ok && sizeRchk.ok && reactLchk.ok && reactRchk.ok && trackLchk.ok && trackRchk.ok && perlOk;
+    gradeBox.className = 'line ' + (allOk ? 'good' : 'bad');
+    gradeBox.innerHTML = o.join('<br>');
     gradeBox.style.display='block';
 
-    // Why abnormal (based on actual case)
+    // Why abnormal
     const why = [];
     if(l_size==='Pinpoint' || r_size==='Pinpoint') why.push('<strong>Pinpoint</strong>: '+REASONS_SIZE.Pinpoint.join('; '));
     if(l_size==='Dilated'  || r_size==='Dilated')  why.push('<strong>Dilated</strong>: '+REASONS_SIZE.Dilated.join('; '));
-    if(l_resp==='Sluggish' || r_resp==='Sluggish') why.push('<strong>Sluggish</strong>: '+REASONS_SIZE.Sluggish.join('; '));
-    if(l_resp==='Non-reactive' || r_resp==='Non-reactive') why.push('<strong>Non-reactive</strong>: '+REASONS_SIZE['Non-reactive'].join('; '));
-
-    const tr = [expTrack.L, expTrack.R];
-    tr.forEach(t=>{ if(t!=='Normal tracking'){ const arr = (REASONS_TRACK[t]||[]).join('; '); why.push(`<strong>${t}</strong>: ${arr}`); } });
-
+    if(l_resp==='Sluggish' || r_resp==='Sluggish') why.push('<strong>Sluggish reaction</strong>: '+REASONS_REACT.Sluggish.join('; '));
+    if(l_resp==='Non-reactive' || r_resp==='Non-reactive') why.push('<strong>Non-reactive</strong>: '+REASONS_REACT['Non-reactive'].join('; '));
+    [expTrack.L, expTrack.R].forEach(t=>{
+      if(t!=='Normal tracking'){ const arr = (REASONS_TRACK[t]||[]).join('; '); why.push(`<strong>${t}</strong>: ${arr}`); }
+    });
     if(why.length){
       whyBox.className='line warn';
       whyBox.innerHTML = '<strong>Why these may be abnormal:</strong><br>' + why.map(s=>'• '+s).join('<br>');
@@ -549,39 +565,37 @@
     }
   }
 
+  // New case
   function newCase(){
     casePupils = rand(PUPIL_CASES);
     caseTracking = rand(TRACK_CASES);
     eyePos.L = eyePos.R = 0; gaze.value = 0;
 
-    // Apply pupils (note: left card shows patient RIGHT, right card shows patient LEFT)
-    applyPupil('L', casePupils.L.ratio); // patient LEFT
-    applyPupil('R', casePupils.R.ratio); // patient RIGHT
+    // Apply (note: right card shows Patient LEFT, left card shows Patient RIGHT)
+    applyPupil('L', casePupils.L.ratio); // Patient LEFT
+    applyPupil('R', casePupils.R.ratio); // Patient RIGHT
 
-    // Reset UI
-    condL.value = condR.value = trackL.value = trackR.value = perlSel.value = '';
+    // Reset inputs/outputs
+    sizeLsel.value = sizeRsel.value = reactLsel.value = reactRsel.value = trackLsel.value = trackRsel.value = perlSel.value = '';
     gradeBox.style.display='none'; whyBox.style.display='none';
+
+    // Re-sync chart scale after new layout tick
+    requestAnimationFrame(renderSizeChart);
   }
 
   // RAF loop
-  let last=0;
-  function raf(ts){
-    const dt = Math.min(0.04, (ts-last)/1000 || 0.016);
-    stepEye('L', dt); stepEye('R', dt);
-    last = ts;
-    requestAnimationFrame(raf);
-  }
+  function start(){ requestAnimationFrame(function loop(ts){ raf(ts); requestAnimationFrame(loop); }); }
 
   // Events
-  btnLightL.addEventListener('click', ()=> lightEye('L')); // patient LEFT
-  btnLightR.addEventListener('click', ()=> lightEye('R')); // patient RIGHT
+  btnLightL.addEventListener('click', ()=> lightEye('L')); // Patient LEFT
+  btnLightR.addEventListener('click', ()=> lightEye('R')); // Patient RIGHT
   btnGrade.addEventListener('click', grade);
   btnNewCase.addEventListener('click', newCase);
 
   // Init
-  renderSizeChart();
   newCase();
-  requestAnimationFrame(raf);
+  renderSizeChart();
+  start();
 })();
 </script>
 </body>
