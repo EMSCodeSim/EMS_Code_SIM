@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pupil & Gaze — Single Pair, Sizes Above, Filled Eyelids</title>
+<title>Pupil & Gaze — One Row, Per-Eye Conditions, Pin Light</title>
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
@@ -21,9 +21,9 @@
     --ok:#16a34a; --warn:#b45309; --bad:#dc2626;
   }
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"Helvetica Neue",sans-serif}
-  .wrap{max-width:950px;margin:0 auto;padding:14px;display:grid;gap:12px}
+  .wrap{max-width:980px;margin:0 auto;padding:14px;display:grid;gap:12px}
 
-  /* Block sticky header */
+  /* Sticky block header */
   header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,#0a76d3,#095fb0);color:#fff;
     border-radius:16px;padding:12px 14px;box-shadow:0 8px 16px rgba(10,30,60,.15)}
   .headerbar{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -35,23 +35,33 @@
   .card h2{margin:0;font-size:1rem;border-bottom:1px solid var(--border);padding:12px}
   .card .body{padding:12px}
 
+  /* Always one row (two columns) even on phones */
   .panel{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media(max-width:760px){ .panel{grid-template-columns:1fr} }
 
-  .eyeBox{border:1px solid var(--border);border-radius:12px;padding:10px;background:#f8fbff}
-  .labelAbove{display:flex;justify-content:center;gap:10px;margin-bottom:6px;font-weight:800}
-  .svgwrap{display:flex;justify-content:center;align-items:center;height:260px;background:var(--skin);border:1px solid var(--border);border-radius:12px}
+  .eyeBox{border:1px solid var(--border);border-radius:12px;padding:8px;background:#f8fbff;min-width:0}
+  .labelAbove{display:flex;justify-content:center;gap:10px;margin-bottom:6px;font-weight:800;flex-wrap:wrap}
+  .svgwrap{display:flex;justify-content:center;align-items:center;aspect-ratio:4/3;background:var(--skin);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  svg{width:100%;height:100%}
 
-  .pill{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:800}
+  .pill{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:800;white-space:nowrap}
   .pill.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#065f46}
   .pill.warn{background:#fffbeb;border:1px solid #fde68a;color:#78350f}
+  .pill.bad{background:#fff1f2;border:1px solid #fecaca;color:#7f1d1d}
+
   .line{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:#f8fafc;margin:8px 0}
   .muted{color:var(--muted)}
   label{font-weight:700}
   input[type="range"],select{width:100%}
   input[type="range"]{accent-color:var(--accent)}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media(max-width:760px){ .row{grid-template-columns:1fr} }
+  @media(min-width:901px){ .row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px } }
+  @media(max-width:900px){ .row,.row-3{grid-template-columns:1fr 1fr} }
+  @media(max-width:540px){ .row,.row-3{grid-template-columns:1fr} }
+
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .btn{appearance:none;border:1px solid var(--border);background:#fff;color:#122230;padding:10px 12px;border-radius:12px;font-weight:700;cursor:pointer}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn:active{transform:translateY(1px)}
 </style>
 </head>
 <body>
@@ -60,7 +70,7 @@
     <div class="headerbar">
       <div style="display:flex;gap:8px;align-items:center">
         <button id="btnBack" class="iconbtn">← Back</button>
-        <h1>Pupil & Gaze Trainer — Single Pair</h1>
+        <h1>Pupil & Gaze Trainer — One Row</h1>
       </div>
       <div><button id="btnInfo" class="iconbtn">ℹ️ Info</button></div>
     </div>
@@ -69,106 +79,134 @@
   <section class="card">
     <h2>Eyes</h2>
     <div class="body">
+      <!-- EYES always in one row -->
       <div class="panel">
-        <!-- LEFT EYE -->
+        <!-- LEFT -->
         <div class="eyeBox">
-          <div class="labelAbove">Left Pupil: <span id="mmL">—</span> <span class="muted">(ratio <span id="ratioL">—</span>)</span></div>
+          <div class="labelAbove">
+            Left Pupil: <span id="mmL">—</span>
+            <span class="muted">(ratio <span id="ratioL">—</span>)</span>
+          </div>
           <div class="svgwrap">
-            <svg id="svgL" viewBox="0 0 240 170" width="100%" height="100%" aria-label="Left eye">
-              <!-- Sclera -->
-              <ellipse cx="120" cy="85" rx="100" ry="62" fill="#ffffff" stroke="#d8e5f3" stroke-width="2"/>
-
-              <!-- Eyelid fills (skin-colored) -->
-              <!-- Upper lid -->
-              <path d="M 20 85 Q 120 32 220 85 L 220 0 L 20 0 Z" fill="url(#upperSkinL)"/>
-              <!-- Lower lid -->
-              <path d="M 20 85 Q 120 138 220 85 L 220 170 L 20 170 Z" fill="url(#lowerSkinL)"/>
-
-              <!-- Iris (on top so a bit visible between lids) -->
-              <circle id="irisL" cx="120" cy="85" r="44" fill="url(#gradIrisL)" stroke="#2f4f7f" stroke-width="2"/>
-              <!-- Pupil -->
-              <circle id="pupilL" cx="120" cy="85" r="12" fill="#0b0b0b"/>
-
-              <!-- Lid edges for crispness -->
-              <path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
-              <path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
-              <!-- Corneal highlight -->
-              <circle cx="105" cy="72" r="6" fill="#fff" opacity=".9"/>
-
-              <!-- Gradients -->
+            <svg id="svgL" viewBox="0 0 240 170" aria-label="Left eye">
+              <!-- Palpebral fissure clip: only show globe between lids -->
               <defs>
+                <clipPath id="openL">
+                  <path d="M20,85 Q120,32 220,85 Q120,138 20,85 Z"/>
+                </clipPath>
                 <radialGradient id="gradIrisL" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#6aa0ff"/>
-                  <stop offset="80%" stop-color="#3065c9"/>
-                  <stop offset="100%" stop-color="#20407f"/>
+                  <stop offset="0%" stop-color="#6aa0ff"/><stop offset="80%" stop-color="#3065c9"/><stop offset="100%" stop-color="#20407f"/>
                 </radialGradient>
                 <linearGradient id="upperSkinL" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--skin)"/>
-                  <stop offset="100%" stop-color="var(--skin-shadow)"/>
+                  <stop offset="0%" stop-color="var(--skin)"/><stop offset="100%" stop-color="var(--skin-shadow)"/>
                 </linearGradient>
                 <linearGradient id="lowerSkinL" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--skin-shadow)"/>
-                  <stop offset="100%" stop-color="var(--skin)"/>
+                  <stop offset="0%" stop-color="var(--skin-shadow)"/><stop offset="100%" stop-color="var(--skin)"/>
                 </linearGradient>
               </defs>
+
+              <!-- Globe (clipped between lids) -->
+              <g clip-path="url(#openL)">
+                <ellipse cx="120" cy="85" rx="100" ry="62" fill="#ffffff" stroke="#d8e5f3" stroke-width="2"/>
+                <circle id="irisL" cx="120" cy="85" r="44" fill="url(#gradIrisL)" stroke="#2f4f7f" stroke-width="2"/>
+                <circle id="pupilL" cx="120" cy="85" r="12" fill="#0b0b0b"/>
+                <circle cx="105" cy="72" r="6" fill="#fff" opacity=".9"/>
+              </g>
+
+              <!-- Filled eyelids that cover the round parts -->
+              <path d="M 20 85 Q 120 32 220 85 L 220 0 L 20 0 Z" fill="url(#upperSkinL)"/>
+              <path d="M 20 85 Q 120 138 220 85 L 220 170 L 20 170 Z" fill="url(#lowerSkinL)"/>
+
+              <!-- Crisp lid edges -->
+              <path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
+              <path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
             </svg>
           </div>
         </div>
 
-        <!-- RIGHT EYE -->
+        <!-- RIGHT -->
         <div class="eyeBox">
-          <div class="labelAbove">Right Pupil: <span id="mmR">—</span> <span class="muted">(ratio <span id="ratioR">—</span>)</span></div>
+          <div class="labelAbove">
+            Right Pupil: <span id="mmR">—</span>
+            <span class="muted">(ratio <span id="ratioR">—</span>)</span>
+          </div>
           <div class="svgwrap">
-            <svg id="svgR" viewBox="0 0 240 170" width="100%" height="100%" aria-label="Right eye">
-              <ellipse cx="120" cy="85" rx="100" ry="62" fill="#ffffff" stroke="#d8e5f3" stroke-width="2"/>
-
-              <!-- Eyelid fills -->
-              <path d="M 20 85 Q 120 32 220 85 L 220 0 L 20 0 Z" fill="url(#upperSkinR)"/>
-              <path d="M 20 85 Q 120 138 220 85 L 220 170 L 20 170 Z" fill="url(#lowerSkinR)"/>
-
-              <circle id="irisR" cx="120" cy="85" r="44" fill="url(#gradIrisR)" stroke="#2f4f7f" stroke-width="2"/>
-              <circle id="pupilR" cx="120" cy="85" r="12" fill="#0b0b0b"/>
-
-              <path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
-              <path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
-              <circle cx="105" cy="72" r="6" fill="#fff" opacity=".9"/>
-
+            <svg id="svgR" viewBox="0 0 240 170" aria-label="Right eye">
               <defs>
+                <clipPath id="openR">
+                  <path d="M20,85 Q120,32 220,85 Q120,138 20,85 Z"/>
+                </clipPath>
                 <radialGradient id="gradIrisR" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#6aa0ff"/>
-                  <stop offset="80%" stop-color="#3065c9"/>
-                  <stop offset="100%" stop-color="#20407f"/>
+                  <stop offset="0%" stop-color="#6aa0ff"/><stop offset="80%" stop-color="#3065c9"/><stop offset="100%" stop-color="#20407f"/>
                 </radialGradient>
                 <linearGradient id="upperSkinR" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--skin)"/>
-                  <stop offset="100%" stop-color="var(--skin-shadow)"/>
+                  <stop offset="0%" stop-color="var(--skin)"/><stop offset="100%" stop-color="var(--skin-shadow)"/>
                 </linearGradient>
                 <linearGradient id="lowerSkinR" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--skin-shadow)"/>
-                  <stop offset="100%" stop-color="var(--skin)"/>
+                  <stop offset="0%" stop-color="var(--skin-shadow)"/><stop offset="100%" stop-color="var(--skin)"/>
                 </linearGradient>
               </defs>
+
+              <g clip-path="url(#openR)">
+                <ellipse cx="120" cy="85" rx="100" ry="62" fill="#ffffff" stroke="#d8e5f3" stroke-width="2"/>
+                <circle id="irisR" cx="120" cy="85" r="44" fill="url(#gradIrisR)" stroke="#2f4f7f" stroke-width="2"/>
+                <circle id="pupilR" cx="120" cy="85" r="12" fill="#0b0b0b"/>
+                <circle cx="105" cy="72" r="6" fill="#fff" opacity=".9"/>
+              </g>
+
+              <path d="M 20 85 Q 120 32 220 85 L 220 0 L 20 0 Z" fill="url(#upperSkinR)"/>
+              <path d="M 20 85 Q 120 138 220 85 L 220 170 L 20 170 Z" fill="url(#lowerSkinR)"/>
+              <path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
+              <path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
             </svg>
           </div>
         </div>
       </div>
 
-      <!-- GAZE / CONTROLS -->
+      <!-- Controls -->
       <div class="line" style="margin-top:10px">
         <label for="gaze">Tracking (examiner’s finger): <span class="muted">Left ⇄ Right (starts centered)</span></label>
         <input id="gaze" type="range" min="-100" max="100" value="0"/>
       </div>
 
-      <div class="row" style="align-items:end">
+      <div class="btnrow">
+        <button class="btn" id="btnLight">💡 Pin Light</button>
+        <button class="btn" id="btnNewCase">New Random Case</button>
+        <span class="pill" id="anisocoriaPill">Anisocoria: —</span>
+        <span class="pill" id="trackPill">Tracking: —</span>
+      </div>
+
+      <!-- Per-eye condition picks & explanations -->
+      <div class="row" style="margin-top:8px">
         <div>
-          <button class="iconbtn" id="btnLight">💡 Test Light</button>
-          <button class="iconbtn" id="btnNewCase" style="background:#fff;color:#0a76d3;border:1px solid var(--border)">New Random Case</button>
+          <label for="condL">Your finding — Left eye</label>
+          <select id="condL">
+            <option value="">— choose —</option>
+            <option>Normal</option>
+            <option>Pinpoint</option>
+            <option>Dilated</option>
+            <option>Sluggish to light</option>
+            <option>Non-reactive / blown</option>
+            <option>Unequal vs right</option>
+          </select>
         </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end">
-          <span class="pill" id="anisocoriaPill">Anisocoria: —</span>
-          <span class="pill" id="trackPill">Tracking: —</span>
+        <div>
+          <label for="condR">Your finding — Right eye</label>
+          <select id="condR">
+            <option value="">— choose —</option>
+            <option>Normal</option>
+            <option>Pinpoint</option>
+            <option>Dilated</option>
+            <option>Sluggish to light</option>
+            <option>Non-reactive / blown</option>
+            <option>Unequal vs left</option>
+          </select>
         </div>
       </div>
+      <div class="btnrow" style="margin-top:8px">
+        <button class="btn primary" id="btnExplain">Show Explanations</button>
+      </div>
+      <div id="explainBox" class="line" style="display:none"></div>
     </div>
   </section>
 </div>
@@ -179,12 +217,13 @@
     <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">About</div>
     <div style="padding:14px 16px">
       <ul>
-        <li>Single pair of eyes with randomized pupil sizes/reactivity and tracking behavior.</li>
-        <li>Pupil sizes shown <strong>above each eye</strong> in both <em>mm</em> and <em>ratio</em>.</li>
-        <li><strong>Eyelids are filled</strong> with skin tone to cover the palpebral regions.</li>
-        <li>Use the slider to move your “finger” left↔right; eyes track based on case pathology.</li>
+        <li>Eyes stay side-by-side in one row on all screens.</li>
+        <li>Pupil sizes shown above each eye (mm & ratio). Eyelids are filled and mask the globe outside the opening.</li>
+        <li>Use the slider to move your “finger” left↔right; eyes track based on a randomized case profile.</li>
+        <li>Use the per-eye dropdowns to record your findings, then “Show Explanations” for likely causes.</li>
+        <li>Left/right are the <strong>patient’s</strong> sides (patient is facing you).</li>
       </ul>
-      <p class="muted">Sidedness is the <strong>patient’s</strong> (patient is facing you).</p>
+      <p class="muted">Training visual only — correlate with neuro exam, meds, lighting, and your protocols.</p>
     </div>
     <div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
       <button class="iconbtn" style="background:#eee;color:#111">Close</button>
@@ -197,43 +236,69 @@
   const $ = s => document.querySelector(s);
 
   // Header
-  $('#btnBack').addEventListener('click', ()=>{ if (document.referrer) history.back(); else location.href='/'; });
+  $('#btnBack').addEventListener('click', ()=>{ if (document.referrer) history.back(); else location.href = '/'; });
   $('#btnInfo').addEventListener('click', ()=> $('#infoDialog').showModal());
 
   // Geometry & constants
-  const IRIS_R = 44;               // px radius used in SVG
-  const IRIS_MM = 11.5;            // typical real iris diameter (mm); used to estimate pupil mm
-  const P_CENTER = {x:120,y:85};   // center of eye
-  const PUPIL_MIN = 6;             // px radius
-  const PUPIL_MAX = 28;            // px radius
-  const GAZE_RANGE = 16;           // px max horizontal excursion inside iris
-  const ANISO_THRESHOLD = 10;      // ratio percentage points
+  const IRIS_R = 44;               // px radius
+  const IRIS_MM = 11.5;            // assumed real iris diameter (mm)
+  const P_CENTER = {x:120,y:85};
+  const PUPIL_MIN = 6, PUPIL_MAX = 28; // px radius bounds
+  const GAZE_RANGE = 16;           // px max horizontal excursion
+  const ANISO_THRESHOLD = 10;      // ratio % points
 
   // Elements
-  const pupilL = $('#pupilL'), pupilR = $('#pupilR');
+  const pL = $('#pupilL'), pR = $('#pupilR');
   const ratioL = $('#ratioL'), ratioR = $('#ratioR');
   const mmL = $('#mmL'), mmR = $('#mmR');
   const anisocoriaPill = $('#anisocoriaPill'), trackPill = $('#trackPill');
-  const gazeSlider = $('#gaze');
+  const gaze = $('#gaze');
   const btnLight = $('#btnLight'), btnNewCase = $('#btnNewCase');
+  const condL = $('#condL'), condR = $('#condR');
+  const btnExplain = $('#btnExplain'), explainBox = $('#explainBox');
 
-  // Case state
+  // State
   let casePupils = null; // {L:{ratio,react}, R:{ratio,react}}
-  let caseTracking = null; // tracking profile
+  let caseTracking = null; // behavior profiles
   let anim = {L:false, R:false};
+  let eyePos = {L:0,R:0};
 
+  // Helpers
   function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
+  function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+  function pupilPxFromRatio(ratioPct){
+    return Math.round(PUPIL_MIN + (PUPIL_MAX - PUPIL_MIN) * (ratioPct/100));
+  }
+  function pupilMmFromRatio(ratioPct){
+    return ((ratioPct/100)*IRIS_MM).toFixed(1) + ' mm';
+  }
+  function applyPupil(side, ratioPct){
+    const px = pupilPxFromRatio(ratioPct);
+    const el = (side==='L'?pL:pR);
+    el.setAttribute('r', String(px));
+    el.setAttribute('cx', String(P_CENTER.x));
+    el.setAttribute('cy', String(P_CENTER.y));
+    (side==='L'?ratioL:ratioR).textContent = ratioPct + '%';
+    (side==='L'?mmL:mmR).textContent = pupilMmFromRatio(ratioPct);
+  }
+  function updateAniso(){
+    const l = parseInt(ratioL.textContent,10);
+    const r = parseInt(ratioR.textContent,10);
+    const diff = Math.abs(l - r);
+    if(diff >= ANISO_THRESHOLD){ anisocoriaPill.className='pill bad'; anisocoriaPill.textContent=`Anisocoria: YES (Δ ${diff}%)`; }
+    else if(diff >= ANISO_THRESHOLD/2){ anisocoriaPill.className='pill warn'; anisocoriaPill.textContent=`Anisocoria: borderline (Δ ${diff}%)`; }
+    else{ anisocoriaPill.className='pill ok'; anisocoriaPill.textContent='Anisocoria: no'; }
+  }
+  function setTrackText(t){ trackPill.textContent = 'Tracking: ' + t; }
 
-  // Pupil size/reactivity cases
+  // Case libraries
   const PUPIL_CASES = [
     { L:{ratio:30, react:'normal'}, R:{ratio:30, react:'normal'} },              // normal
-    { L:{ratio:10, react:'normal'}, R:{ratio:10, react:'normal'} },              // pinpoint (opioids/pontine)
-    { L:{ratio:55, react:'sluggish'}, R:{ratio:55, react:'sluggish'} },          // hypoxia/sluggish
+    { L:{ratio:10, react:'normal'}, R:{ratio:10, react:'normal'} },              // pinpoint
+    { L:{ratio:55, react:'sluggish'}, R:{ratio:55, react:'sluggish'} },          // sluggish larger
     { L:{ratio:25, react:'normal'}, R:{ratio:80, react:'none'} },                // one blown R
     { L:{ratio:20, react:'normal'}, R:{ratio:45, react:'normal'} }               // anisocoria reactive
   ];
-
-  // Tracking behavior cases — one pair total
   const TRACK_CASES = [
     { id:'normal', label:'Normal tracking',
       L:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0}, R:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0} },
@@ -249,65 +314,66 @@
       L:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0.6}, R:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0.6} },
     { id:'disconj', label:'Disconjugate tracking (one eye lags)',
       L:{gain:0.4, limitLeft:-1, limitRight:1, bias:0, jitter:0}, R:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0} },
-    { id:'ino_left', label:'INO — left (poor left adduction)',
-      L:{gain:0.5, limitLeft:-1, limitRight:0.15, bias:0, jitter:0}, R:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0.4} },
-    { id:'ino_right', label:'INO — right (poor right adduction)',
-      L:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0.4}, R:{gain:0.5, limitLeft:-0.15, limitRight:1, bias:0, jitter:0} },
   ];
 
-  // Internal tracking positions (normalized -1..1)
-  let eyePos = {L:0, R:0};
-  function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+  // Explanations mapping (used after user picks)
+  const REASONS = {
+    'Normal': [
+      'Appropriate for ambient light; compare bilaterally.',
+      'Consider baseline variations; correlate with neuro exam.'
+    ],
+    'Pinpoint': [
+      'Opioid intoxication (e.g., fentanyl, heroin).',
+      'Pontine hemorrhage/lesion.',
+      'Cholinergic/organophosphate exposure.'
+    ],
+    'Dilated': [
+      'Stimulant or anticholinergic effect (e.g., cocaine, atropine).',
+      'Hypoxia/anoxia.',
+      'Post-ictal state or increased ICP.'
+    ],
+    'Sluggish to light': [
+      'Hypoxia or hypothermia.',
+      'Sedatives/opioids or other CNS depressants.',
+      'Early increased intracranial pressure.'
+    ],
+    'Non-reactive / blown': [
+      'Uncal herniation or severe head injury.',
+      'Third-nerve palsy.',
+      'Recent ocular surgery/trauma.'
+    ],
+    'Unequal vs right': [
+      'Physiologic anisocoria (benign) vs focal neurologic cause.',
+      'Consider stroke, mass effect, or increased ICP with other signs.'
+    ],
+    'Unequal vs left': [
+      'Physiologic anisocoria (benign) vs focal neurologic cause.',
+      'Consider stroke, mass effect, or increased ICP with other signs.'
+    ]
+  };
 
-  // New randomized case
+  // Randomized case
   function newCase(){
     casePupils = rand(PUPIL_CASES);
     caseTracking = rand(TRACK_CASES);
     eyePos.L = eyePos.R = 0;
-    gazeSlider.value = 0;
-    // apply
+    gaze.value = 0;
+
     applyPupil('L', casePupils.L.ratio);
     applyPupil('R', casePupils.R.ratio);
-    updateAnisoPill();
-    updateTrackPill('Move the slider to assess tracking.');
+    updateAniso();
+    setTrackText('Move the slider to assess tracking.');
+
+    condL.value=''; condR.value='';
+    explainBox.style.display='none';
   }
 
-  // Convert ratio% to px pupil radius
-  function pupilPxFromRatio(ratioPct){
-    return Math.round(PUPIL_MIN + (PUPIL_MAX - PUPIL_MIN) * (ratioPct/100));
-  }
-  // Convert ratio% to estimated mm (using iris 11.5mm)
-  function pupilMmFromRatio(ratioPct){
-    const pupil_mm = (ratioPct/100) * IRIS_MM;
-    return pupil_mm.toFixed(1) + ' mm';
-  }
-
-  function applyPupil(side, ratioPct){
-    const px = pupilPxFromRatio(ratioPct);
-    (side==='L'?pupilL:pupilR).setAttribute('r', String(px));
-    (side==='L'?ratioL:ratioR).textContent = ratioPct + '%';
-    (side==='L'?mmL:mmR).textContent = pupilMmFromRatio(ratioPct);
-    // reset pupil centers to midline
-    (side==='L'?pupilL:pupilR).setAttribute('cx', String(P_CENTER.x));
-    (side==='L'?pupilL:pupilR).setAttribute('cy', String(P_CENTER.y));
-  }
-
-  function updateAnisoPill(){
-    const l = parseInt(ratioL.textContent,10);
-    const r = parseInt(ratioR.textContent,10);
-    const diff = Math.abs(l - r);
-    if(diff >= ANISO_THRESHOLD){ anisocoriaPill.className='pill ok'; anisocoriaPill.textContent=`Anisocoria: YES (Δ ${diff}%)`; }
-    else if(diff >= ANISO_THRESHOLD/2){ anisocoriaPill.className='pill warn'; anisocoriaPill.textContent=`Anisocoria: borderline (Δ ${diff}%)`; }
-    else{ anisocoriaPill.className='pill ok'; anisocoriaPill.textContent='Anisocoria: no'; }
-  }
-  function updateTrackPill(txt){ trackPill.textContent='Tracking: ' + txt; }
-
-  // Light reflex (both eyes; uses case react flags)
+  // Light reflex (both)
   function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
   function lightEye(side){
     if(anim[side]) return;
     const cfg = casePupils[side];
-    if(cfg.react==='none') return; // no change
+    if(cfg.react==='none') return; // no response
 
     anim[side]=true;
     const base = cfg.ratio;
@@ -319,14 +385,14 @@
     function constrict(ts){
       const t = Math.min(1,(ts-t0)/dur);
       const val = Math.round(base + (minTarget - base)*easeOutCubic(t));
-      cfg.ratio = val; applyPupil(side, val); updateAnisoPill();
+      cfg.ratio = val; applyPupil(side, val); updateAniso();
       if(t<1) requestAnimationFrame(constrict);
       else{
         const t1 = performance.now();
         function redilate(ts2){
           const t2 = Math.min(1,(ts2 - t1)/dur);
           const val2 = Math.round(minTarget + (base - minTarget)*easeOutCubic(t2));
-          cfg.ratio = val2; applyPupil(side, val2); updateAnisoPill();
+          cfg.ratio = val2; applyPupil(side, val2); updateAniso();
           if(t2<1) requestAnimationFrame(redilate);
           else anim[side]=false;
         }
@@ -335,37 +401,49 @@
     }
     requestAnimationFrame(constrict);
   }
-  function lightBoth(){ lightEye('L'); lightEye('R'); }
+  function pinLight(){ lightEye('L'); lightEye('R'); }
 
-  // Gaze tracking loop
-  function targetFromSlider(){ return parseInt(gazeSlider.value,10)/100; } // -1..1
-
+  // Tracking engine
+  function target(){ return parseInt(gaze.value,10)/100; } // -1..1
   function stepEye(side, dt){
     const cfg = caseTracking[side];
-    const t = targetFromSlider();
-    const desired = clamp(t + (cfg.bias||0), cfg.limitLeft, cfg.limitRight);
+    const desired = clamp(target() + (cfg.bias||0), cfg.limitLeft, cfg.limitRight);
     const speed = (cfg.gain||0.8)*dt*6;
     eyePos[side] += clamp(desired - eyePos[side], -speed, speed);
-    if(cfg.jitter && Math.abs(t) > 0.4){
+    if(cfg.jitter && Math.abs(target())>0.4){
       eyePos[side] += Math.sin(performance.now()/50)*0.015*cfg.jitter;
     }
     const cx = P_CENTER.x + eyePos[side]*GAZE_RANGE;
-    (side==='L'?pupilL:pupilR).setAttribute('cx', String(cx));
-    (side==='L'?pupilL:pupilR).setAttribute('cy', String(P_CENTER.y));
+    (side==='L'?pL:pR).setAttribute('cx', String(cx));
+    (side==='L'?pL:pR).setAttribute('cy', String(P_CENTER.y));
+  }
+  let last=0;
+  function raf(ts){
+    const dt = Math.min(0.04, (ts - last)/1000 || 0.016);
+    stepEye('L', dt); stepEye('R', dt);
+    last = ts;
+    requestAnimationFrame(raf);
   }
 
-  let lastTs=0;
-  function raf(ts){
-    const dt = Math.min(0.04, (ts - lastTs)/1000 || 0.016);
-    stepEye('L', dt); stepEye('R', dt);
-    lastTs = ts;
-    requestAnimationFrame(raf);
+  // Explanations based on user selections
+  function explain(){
+    const l = condL.value, r = condR.value;
+    const lines = [];
+    function block(side, val){
+      if(!val){ lines.push(`<strong>${side} eye:</strong> no selection.`); return; }
+      const arr = REASONS[val] || ['No common causes cataloged.'];
+      lines.push(`<strong>${side} eye — ${val}:</strong><br>• ${arr.join('<br>• ')}`);
+    }
+    block('Left', l); block('Right', r);
+    explainBox.innerHTML = lines.join('<br><br>');
+    explainBox.style.display='block';
   }
 
   // Events
   btnNewCase.addEventListener('click', newCase);
-  btnLight.addEventListener('click', ()=>{ lightBoth(); updateTrackPill('Light tested — move slider to assess tracking.'); });
-  gazeSlider.addEventListener('input', ()=> updateTrackPill(gazeSlider.value==0?'Center':'Following…'));
+  btnLight.addEventListener('click', ()=>{ pinLight(); setTrackText('Light tested. Move slider to assess tracking.'); });
+  gaze.addEventListener('input', ()=> setTrackText(gaze.value==0?'Center':'Following…'));
+  btnExplain.addEventListener('click', explain);
 
   // Init
   newCase();
