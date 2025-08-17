@@ -3,20 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pupil Simulator — Random Cases & Per-Eye Findings</title>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-5QLPK4025C');<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pupil & Gaze Simulator — Random Cases + Tracking Quiz</title>
+<title>Pupil & Gaze — Single Pair, Sizes Above, Filled Eyelids</title>
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
@@ -30,16 +17,16 @@
 <style>
   :root{
     --bg:#f6f9fc; --card:#fff; --ink:#122230; --muted:#637589; --accent:#0a76d3;
-    --border:#e6edf3; --ok:#16a34a; --warn:#b45309; --bad:#dc2626; --skin:#f2d5c4;
+    --border:#e6edf3; --skin:#f2d5c4; --skin-shadow:#e8c4b2;
+    --ok:#16a34a; --warn:#b45309; --bad:#dc2626;
   }
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"Helvetica Neue",sans-serif}
-  .wrap{max-width:1100px;margin:0 auto;padding:14px;display:grid;gap:12px}
+  .wrap{max-width:950px;margin:0 auto;padding:14px;display:grid;gap:12px}
 
   /* Block sticky header */
-  header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#0a76d3,#095fb0);color:#fff;
+  header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,#0a76d3,#095fb0);color:#fff;
     border-radius:16px;padding:12px 14px;box-shadow:0 8px 16px rgba(10,30,60,.15)}
   .headerbar{display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .h-left,.h-right{display:flex;align-items:center;gap:8px}
   .iconbtn{appearance:none;border:0;background:rgba(255,255,255,.15);color:#fff;padding:8px 10px;border-radius:10px;font-weight:700;cursor:pointer}
   .iconbtn:active{transform:translateY(1px)}
   h1{margin:0;font-size:1.05rem}
@@ -47,156 +34,157 @@
   .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 2px 10px rgba(10,20,40,.05)}
   .card h2{margin:0;font-size:1rem;border-bottom:1px solid var(--border);padding:12px}
   .card .body{padding:12px}
-  .panel{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .eyeBox{border:1px solid var(--border);border-radius:12px;padding:8px;background:#f8fbff}
-  .svgwrap{display:flex;justify-content:center;align-items:center;height:260px;background:var(--skin);border:1px solid var(--border);border-radius:10px}
 
-  .readout{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-weight:700}
-  .readout small{font-weight:600;color:var(--muted)}
-  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .panel{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:760px){ .panel{grid-template-columns:1fr} }
+
+  .eyeBox{border:1px solid var(--border);border-radius:12px;padding:10px;background:#f8fbff}
+  .labelAbove{display:flex;justify-content:center;gap:10px;margin-bottom:6px;font-weight:800}
+  .svgwrap{display:flex;justify-content:center;align-items:center;height:260px;background:var(--skin);border:1px solid var(--border);border-radius:12px}
+
   .pill{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:800}
   .pill.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#065f46}
   .pill.warn{background:#fffbeb;border:1px solid #fde68a;color:#78350f}
-  .pill.bad{background:#fff1f2;border:1px solid #fecaca;color:#7f1d1d}
   .line{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:#f8fafc;margin:8px 0}
-  .good{border-color:#bbf7d0;background:#f0fdf4}
-  .bad{border-color:#fecaca;background:#fff1f2}
   .muted{color:var(--muted)}
   label{font-weight:700}
-  select,input[type="range"]{width:100%}
+  input[type="range"],select{width:100%}
   input[type="range"]{accent-color:var(--accent)}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media(max-width:760px){ .panel,.row{grid-template-columns:1fr} }
+  @media(max-width:760px){ .row{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div class="headerbar">
-      <div class="h-left">
+      <div style="display:flex;gap:8px;align-items:center">
         <button id="btnBack" class="iconbtn">← Back</button>
-        <h1>Pupil & Gaze Simulator</h1>
+        <h1>Pupil & Gaze Trainer — Single Pair</h1>
       </div>
-      <div class="h-right">
-        <button id="btnInfo" class="iconbtn">ℹ️ Info</button>
-      </div>
+      <div><button id="btnInfo" class="iconbtn">ℹ️ Info</button></div>
     </div>
   </header>
 
-  <!-- EYES -->
   <section class="card">
     <h2>Eyes</h2>
     <div class="body">
       <div class="panel">
         <!-- LEFT EYE -->
         <div class="eyeBox">
+          <div class="labelAbove">Left Pupil: <span id="mmL">—</span> <span class="muted">(ratio <span id="ratioL">—</span>)</span></div>
           <div class="svgwrap">
             <svg id="svgL" viewBox="0 0 240 170" width="100%" height="100%" aria-label="Left eye">
+              <!-- Sclera -->
               <ellipse cx="120" cy="85" rx="100" ry="62" fill="#ffffff" stroke="#d8e5f3" stroke-width="2"/>
+
+              <!-- Eyelid fills (skin-colored) -->
+              <!-- Upper lid -->
+              <path d="M 20 85 Q 120 32 220 85 L 220 0 L 20 0 Z" fill="url(#upperSkinL)"/>
+              <!-- Lower lid -->
+              <path d="M 20 85 Q 120 138 220 85 L 220 170 L 20 170 Z" fill="url(#lowerSkinL)"/>
+
+              <!-- Iris (on top so a bit visible between lids) -->
               <circle id="irisL" cx="120" cy="85" r="44" fill="url(#gradIrisL)" stroke="#2f4f7f" stroke-width="2"/>
+              <!-- Pupil -->
+              <circle id="pupilL" cx="120" cy="85" r="12" fill="#0b0b0b"/>
+
+              <!-- Lid edges for crispness -->
+              <path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
+              <path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
+              <!-- Corneal highlight -->
+              <circle cx="105" cy="72" r="6" fill="#fff" opacity=".9"/>
+
+              <!-- Gradients -->
               <defs>
                 <radialGradient id="gradIrisL" cx="50%" cy="50%" r="50%">
                   <stop offset="0%" stop-color="#6aa0ff"/>
                   <stop offset="80%" stop-color="#3065c9"/>
                   <stop offset="100%" stop-color="#20407f"/>
                 </radialGradient>
+                <linearGradient id="upperSkinL" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--skin)"/>
+                  <stop offset="100%" stop-color="var(--skin-shadow)"/>
+                </linearGradient>
+                <linearGradient id="lowerSkinL" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--skin-shadow)"/>
+                  <stop offset="100%" stop-color="var(--skin)"/>
+                </linearGradient>
               </defs>
-              <!-- PUPIL (drawn as circle; size & offset animated) -->
-              <circle id="pupilL" cx="120" cy="85" r="12" fill="#0b0b0b"/>
-              <!-- Lids -->
-              <path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6"/>
-              <path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6"/>
-              <circle cx="105" cy="72" r="6" fill="#fff" opacity=".9"/>
             </svg>
-          </div>
-          <div class="readout">
-            <span>Left Ratio: <span id="ratioL">—</span></span>
-            <small id="reactL" class="muted">Reactivity: —</small>
           </div>
         </div>
 
         <!-- RIGHT EYE -->
         <div class="eyeBox">
+          <div class="labelAbove">Right Pupil: <span id="mmR">—</span> <span class="muted">(ratio <span id="ratioR">—</span>)</span></div>
           <div class="svgwrap">
             <svg id="svgR" viewBox="0 0 240 170" width="100%" height="100%" aria-label="Right eye">
               <ellipse cx="120" cy="85" rx="100" ry="62" fill="#ffffff" stroke="#d8e5f3" stroke-width="2"/>
+
+              <!-- Eyelid fills -->
+              <path d="M 20 85 Q 120 32 220 85 L 220 0 L 20 0 Z" fill="url(#upperSkinR)"/>
+              <path d="M 20 85 Q 120 138 220 85 L 220 170 L 20 170 Z" fill="url(#lowerSkinR)"/>
+
               <circle id="irisR" cx="120" cy="85" r="44" fill="url(#gradIrisR)" stroke="#2f4f7f" stroke-width="2"/>
+              <circle id="pupilR" cx="120" cy="85" r="12" fill="#0b0b0b"/>
+
+              <path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
+              <path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
+              <circle cx="105" cy="72" r="6" fill="#fff" opacity=".9"/>
+
               <defs>
                 <radialGradient id="gradIrisR" cx="50%" cy="50%" r="50%">
                   <stop offset="0%" stop-color="#6aa0ff"/>
                   <stop offset="80%" stop-color="#3065c9"/>
                   <stop offset="100%" stop-color="#20407f"/>
                 </radialGradient>
+                <linearGradient id="upperSkinR" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--skin)"/>
+                  <stop offset="100%" stop-color="var(--skin-shadow)"/>
+                </linearGradient>
+                <linearGradient id="lowerSkinR" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--skin-shadow)"/>
+                  <stop offset="100%" stop-color="var(--skin)"/>
+                </linearGradient>
               </defs>
-              <circle id="pupilR" cx="120" cy="85" r="12" fill="#0b0b0b"/>
-              <path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6"/>
-              <path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6"/>
-              <circle cx="105" cy="72" r="6" fill="#fff" opacity=".9"/>
             </svg>
-          </div>
-          <div class="readout">
-            <span>Right Ratio: <span id="ratioR">—</span></span>
-            <small id="reactR" class="muted">Reactivity: —</small>
           </div>
         </div>
       </div>
 
-      <!-- Tracking slider -->
+      <!-- GAZE / CONTROLS -->
       <div class="line" style="margin-top:10px">
         <label for="gaze">Tracking (examiner’s finger): <span class="muted">Left ⇄ Right (starts centered)</span></label>
         <input id="gaze" type="range" min="-100" max="100" value="0"/>
       </div>
 
-      <div class="btnrow">
-        <button class="iconbtn" id="btnLight">💡 Test Light (Both)</button>
-        <button class="iconbtn" id="btnNewCase" style="background:#fff;color:#0a76d3;border:1px solid var(--border)">New Random Case</button>
-        <span class="pill" id="anisocoriaPill">Anisocoria: —</span>
-        <span class="pill" id="trackPill">Tracking: —</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- QUIZ: Tracking problem -->
-  <section class="card">
-    <h2>Tracking Quiz</h2>
-    <div class="body">
-      <div class="row">
+      <div class="row" style="align-items:end">
         <div>
-          <label for="trackingPick">Select the tracking problem</label>
-          <select id="trackingPick">
-            <option value="">— choose —</option>
-            <option>Normal tracking</option>
-            <option>Left gaze palsy (can’t track to patient’s left)</option>
-            <option>Right gaze palsy (can’t track to patient’s right)</option>
-            <option>Conjugate gaze deviation — left</option>
-            <option>Conjugate gaze deviation — right</option>
-            <option>Nystagmus</option>
-            <option>Disconjugate tracking (one eye lags)</option>
-            <option>INO — left (poor left adduction)</option>
-            <option>INO — right (poor right adduction)</option>
-          </select>
+          <button class="iconbtn" id="btnLight">💡 Test Light</button>
+          <button class="iconbtn" id="btnNewCase" style="background:#fff;color:#0a76d3;border:1px solid var(--border)">New Random Case</button>
         </div>
-        <div style="display:flex;align-items:end">
-          <button id="btnGrade" class="iconbtn" style="background:#0a76d3">Grade</button>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <span class="pill" id="anisocoriaPill">Anisocoria: —</span>
+          <span class="pill" id="trackPill">Tracking: —</span>
         </div>
       </div>
-      <div id="gradeBox" class="line" style="display:none"></div>
     </div>
   </section>
 </div>
 
 <!-- Info -->
-<dialog id="infoDialog" style="max-width:760px;border:1px solid var(--border);border-radius:16px;padding:0">
+<dialog id="infoDialog" style="max-width:740px;border:1px solid var(--border);border-radius:16px;padding:0">
   <form method="dialog" style="margin:0">
-    <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">About this Trainer</div>
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">About</div>
     <div style="padding:14px 16px">
       <ul>
-        <li>Pupil sizes/reactivity and tracking behavior are randomized per case.</li>
-        <li>Use the slider to move your “finger” left/right; eyes will track based on case pathology.</li>
-        <li>Tracking problems included: normal, gaze palsies, conjugate deviations, nystagmus, disconjugate tracking, and INO (internuclear ophthalmoplegia).</li>
-        <li>Remember: left/right are the <strong>patient’s</strong> sides (patient is facing you).</li>
+        <li>Single pair of eyes with randomized pupil sizes/reactivity and tracking behavior.</li>
+        <li>Pupil sizes shown <strong>above each eye</strong> in both <em>mm</em> and <em>ratio</em>.</li>
+        <li><strong>Eyelids are filled</strong> with skin tone to cover the palpebral regions.</li>
+        <li>Use the slider to move your “finger” left↔right; eyes track based on case pathology.</li>
       </ul>
-      <p class="muted">Training visualization only; correlate with neuro exam, meds, trauma, and protocols.</p>
+      <p class="muted">Sidedness is the <strong>patient’s</strong> (patient is facing you).</p>
     </div>
     <div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
       <button class="iconbtn" style="background:#eee;color:#111">Close</button>
@@ -212,723 +200,176 @@
   $('#btnBack').addEventListener('click', ()=>{ if (document.referrer) history.back(); else location.href='/'; });
   $('#btnInfo').addEventListener('click', ()=> $('#infoDialog').showModal());
 
-  // SVG / Elements
-  const IRIS_R = 44; // px
-  const P_CENTER = {x:120, y:85};
-  const PUPIL_MIN = 6; // radius in px
-  const PUPIL_MAX = 28;
-  const GAZE_RANGE = 16; // max horizontal offset of pupil center within iris
-  const ANISO_THRESHOLD = 10; // ratio% points
+  // Geometry & constants
+  const IRIS_R = 44;               // px radius used in SVG
+  const IRIS_MM = 11.5;            // typical real iris diameter (mm); used to estimate pupil mm
+  const P_CENTER = {x:120,y:85};   // center of eye
+  const PUPIL_MIN = 6;             // px radius
+  const PUPIL_MAX = 28;            // px radius
+  const GAZE_RANGE = 16;           // px max horizontal excursion inside iris
+  const ANISO_THRESHOLD = 10;      // ratio percentage points
+
+  // Elements
   const pupilL = $('#pupilL'), pupilR = $('#pupilR');
   const ratioL = $('#ratioL'), ratioR = $('#ratioR');
-  const reactL = $('#reactL'), reactR = $('#reactR');
-  const anisocoriaPill = $('#anisocoriaPill');
-  const trackPill = $('#trackPill');
+  const mmL = $('#mmL'), mmR = $('#mmR');
+  const anisocoriaPill = $('#anisocoriaPill'), trackPill = $('#trackPill');
   const gazeSlider = $('#gaze');
-  const btnLight = $('#btnLight');
-  const btnNewCase = $('#btnNewCase');
-  const trackingPick = $('#trackingPick');
-  const btnGrade = $('#btnGrade');
-  const gradeBox = $('#gradeBox');
+  const btnLight = $('#btnLight'), btnNewCase = $('#btnNewCase');
 
   // Case state
-  let casePupils = null;  // sizes + light reactivity
-  let caseTracking = null; // tracking behavior + label
+  let casePupils = null; // {L:{ratio,react}, R:{ratio,react}}
+  let caseTracking = null; // tracking profile
   let anim = {L:false, R:false};
-  let reactive = {L:false, R:false}; // if a light test occurred and returned
 
-  // -------- Random pupil configurations (sizes/reactivity only) --------
   function rand(a){ return a[Math.floor(Math.random()*a.length)]; }
-  function coin(p=0.5){ return Math.random()<p; }
 
+  // Pupil size/reactivity cases
   const PUPIL_CASES = [
-    // Basic normals
-    { L:{ratio:30, react:'normal'}, R:{ratio:30, react:'normal'} },
-    // Opioid (pinpoint, usually reactive)
-    { L:{ratio:10, react:'normal'}, R:{ratio:10, react:'normal'} },
-    // Hypoxia (bigger & sluggish)
-    { L:{ratio:55, react:'sluggish'}, R:{ratio:55, react:'sluggish'} },
-    // One blown/non-reactive (right)
-    { L:{ratio:25, react:'normal'}, R:{ratio:80, react:'none'} },
-    // Anisocoria benign vs neuro (reactive both)
-    { L:{ratio:20, react:'normal'}, R:{ratio:45, react:'normal'} }
+    { L:{ratio:30, react:'normal'}, R:{ratio:30, react:'normal'} },              // normal
+    { L:{ratio:10, react:'normal'}, R:{ratio:10, react:'normal'} },              // pinpoint (opioids/pontine)
+    { L:{ratio:55, react:'sluggish'}, R:{ratio:55, react:'sluggish'} },          // hypoxia/sluggish
+    { L:{ratio:25, react:'normal'}, R:{ratio:80, react:'none'} },                // one blown R
+    { L:{ratio:20, react:'normal'}, R:{ratio:45, react:'normal'} }               // anisocoria reactive
   ];
 
-  // -------- Tracking cases (behavioral) --------
-  // "target" = slider value normalized to [-1,1]
-  // Each eye moves toward target with: gain (0..1), limitLeft/Right, bias, jitter (for nystagmus)
+  // Tracking behavior cases — one pair total
   const TRACK_CASES = [
     { id:'normal', label:'Normal tracking',
       L:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0}, R:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0} },
-
     { id:'left_palsy', label:"Left gaze palsy (can’t track to patient’s left)",
       L:{gain:0.9, limitLeft:-0.1, limitRight:1, bias:0, jitter:0}, R:{gain:0.9, limitLeft:-0.1, limitRight:1, bias:0, jitter:0} },
-
     { id:'right_palsy', label:"Right gaze palsy (can’t track to patient’s right)",
       L:{gain:0.9, limitLeft:-1, limitRight:0.1, bias:0, jitter:0}, R:{gain:0.9, limitLeft:-1, limitRight:0.1, bias:0, jitter:0} },
-
     { id:'dev_left', label:'Conjugate gaze deviation — left',
       L:{gain:0.6, limitLeft:-1, limitRight:1, bias:-0.6, jitter:0}, R:{gain:0.6, limitLeft:-1, limitRight:1, bias:-0.6, jitter:0} },
-
     { id:'dev_right', label:'Conjugate gaze deviation — right',
       L:{gain:0.6, limitLeft:-1, limitRight:1, bias:0.6, jitter:0}, R:{gain:0.6, limitLeft:-1, limitRight:1, bias:0.6, jitter:0} },
-
     { id:'nystagmus', label:'Nystagmus',
       L:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0.6}, R:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0.6} },
-
-    // Disconjugate: one eye laggy
     { id:'disconj', label:'Disconjugate tracking (one eye lags)',
       L:{gain:0.4, limitLeft:-1, limitRight:1, bias:0, jitter:0}, R:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0} },
-
-    // INO: impaired adduction of ipsilateral eye (L = poor left adduction when looking RIGHT)
     { id:'ino_left', label:'INO — left (poor left adduction)',
       L:{gain:0.5, limitLeft:-1, limitRight:0.15, bias:0, jitter:0}, R:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0.4} },
-
     { id:'ino_right', label:'INO — right (poor right adduction)',
       L:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0.4}, R:{gain:0.5, limitLeft:-0.15, limitRight:1, bias:0, jitter:0} },
   ];
 
-  // Internal tracking state (current eye offsets in [-1..1])
-  let eyePos = {L:0, R:0}; // normalized
+  // Internal tracking positions (normalized -1..1)
+  let eyePos = {L:0, R:0};
   function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
 
+  // New randomized case
   function newCase(){
     casePupils = rand(PUPIL_CASES);
     caseTracking = rand(TRACK_CASES);
-    reactive.L = reactive.R = false;
     eyePos.L = eyePos.R = 0;
-    trackingPick.value = '';
-    gradeBox.style.display='none';
-
-    // apply pupil sizes
-    setPupilSize('L', casePupils.L.ratio);
-    setPupilSize('R', casePupils.R.ratio);
-    reactL.textContent = 'Reactivity: ' + (casePupils.L.react==='none'?'none':casePupils.L.react);
-    reactR.textContent = 'Reactivity: ' + (casePupils.R.react==='none'?'none':casePupils.R.react);
-
-    // update pills
+    gazeSlider.value = 0;
+    // apply
+    applyPupil('L', casePupils.L.ratio);
+    applyPupil('R', casePupils.R.ratio);
     updateAnisoPill();
-    updateTrackPill('Try moving the slider.');
+    updateTrackPill('Move the slider to assess tracking.');
   }
 
-  // ------- Pupil size / anisocoria -------
-  function setPupilSize(side, ratioPct){
-    const r = Math.round(PUPIL_MIN + (PUPIL_MAX - PUPIL_MIN) * (ratioPct/100));
-    (side==='L' ? pupilL : pupilR).setAttribute('r', String(r));
-    (side==='L' ? ratioL : ratioR).textContent = ratioPct + '%';
+  // Convert ratio% to px pupil radius
+  function pupilPxFromRatio(ratioPct){
+    return Math.round(PUPIL_MIN + (PUPIL_MAX - PUPIL_MIN) * (ratioPct/100));
+  }
+  // Convert ratio% to estimated mm (using iris 11.5mm)
+  function pupilMmFromRatio(ratioPct){
+    const pupil_mm = (ratioPct/100) * IRIS_MM;
+    return pupil_mm.toFixed(1) + ' mm';
+  }
+
+  function applyPupil(side, ratioPct){
+    const px = pupilPxFromRatio(ratioPct);
+    (side==='L'?pupilL:pupilR).setAttribute('r', String(px));
+    (side==='L'?ratioL:ratioR).textContent = ratioPct + '%';
+    (side==='L'?mmL:mmR).textContent = pupilMmFromRatio(ratioPct);
+    // reset pupil centers to midline
+    (side==='L'?pupilL:pupilR).setAttribute('cx', String(P_CENTER.x));
+    (side==='L'?pupilL:pupilR).setAttribute('cy', String(P_CENTER.y));
   }
 
   function updateAnisoPill(){
     const l = parseInt(ratioL.textContent,10);
     const r = parseInt(ratioR.textContent,10);
     const diff = Math.abs(l - r);
-    if(diff >= ANISO_THRESHOLD){ anisocoriaPill.className='pill bad'; anisocoriaPill.textContent=`Anisocoria: YES (Δ ${diff}%)`; }
+    if(diff >= ANISO_THRESHOLD){ anisocoriaPill.className='pill ok'; anisocoriaPill.textContent=`Anisocoria: YES (Δ ${diff}%)`; }
     else if(diff >= ANISO_THRESHOLD/2){ anisocoriaPill.className='pill warn'; anisocoriaPill.textContent=`Anisocoria: borderline (Δ ${diff}%)`; }
     else{ anisocoriaPill.className='pill ok'; anisocoriaPill.textContent='Anisocoria: no'; }
   }
+  function updateTrackPill(txt){ trackPill.textContent='Tracking: ' + txt; }
 
-  // ------- Light reflex -------
+  // Light reflex (both eyes; uses case react flags)
   function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
   function lightEye(side){
     if(anim[side]) return;
     const cfg = casePupils[side];
-    if(cfg.react==='none'){ reactive[side]=false; return; }
+    if(cfg.react==='none') return; // no change
 
     anim[side]=true;
     const base = cfg.ratio;
     const factor = (cfg.react==='sluggish') ? 0.75 : 0.45;
     const dur = (cfg.react==='sluggish') ? 1400 : 900;
     const minTarget = Math.max(6, Math.round(base*factor));
-
     const t0 = performance.now();
+
     function constrict(ts){
       const t = Math.min(1,(ts-t0)/dur);
       const val = Math.round(base + (minTarget - base)*easeOutCubic(t));
-      cfg.ratio = val; setPupilSize(side, val); updateAnisoPill();
+      cfg.ratio = val; applyPupil(side, val); updateAnisoPill();
       if(t<1) requestAnimationFrame(constrict);
       else{
         const t1 = performance.now();
         function redilate(ts2){
           const t2 = Math.min(1,(ts2 - t1)/dur);
           const val2 = Math.round(minTarget + (base - minTarget)*easeOutCubic(t2));
-          cfg.ratio = val2; setPupilSize(side, val2); updateAnisoPill();
+          cfg.ratio = val2; applyPupil(side, val2); updateAnisoPill();
           if(t2<1) requestAnimationFrame(redilate);
-          else{ anim[side]=false; reactive[side]=true; }
+          else anim[side]=false;
         }
         requestAnimationFrame(redilate);
       }
     }
     requestAnimationFrame(constrict);
   }
-
   function lightBoth(){ lightEye('L'); lightEye('R'); }
 
-  // ------- Gaze tracking engine -------
-  function updateTrackPill(text){
-    trackPill.className = 'pill warn';
-    trackPill.textContent = 'Tracking: ' + text;
-  }
-
-  function targetFromSlider(){
-    // normalize [-100..100] to [-1..1]
-    return parseInt(gazeSlider.value,10) / 100;
-  }
+  // Gaze tracking loop
+  function targetFromSlider(){ return parseInt(gazeSlider.value,10)/100; } // -1..1
 
   function stepEye(side, dt){
     const cfg = caseTracking[side];
     const t = targetFromSlider();
-    // desired = target + bias, clamped to permitted range
     const desired = clamp(t + (cfg.bias||0), cfg.limitLeft, cfg.limitRight);
-    // move current toward desired with gain and dt
-    const speed = (cfg.gain||0.8) * dt * 6; // proportional
+    const speed = (cfg.gain||0.8)*dt*6;
     eyePos[side] += clamp(desired - eyePos[side], -speed, speed);
-
-    // add nystagmus jitter if any
     if(cfg.jitter && Math.abs(t) > 0.4){
-      eyePos[side] += Math.sin(performance.now()/50) * 0.015 * cfg.jitter;
+      eyePos[side] += Math.sin(performance.now()/50)*0.015*cfg.jitter;
     }
-
-    // convert normalized eyePos to pixel offset and apply
-    const cx = P_CENTER.x + eyePos[side] * GAZE_RANGE;
-    (side==='L' ? pupilL : pupilR).setAttribute('cx', String(cx));
-    (side==='L' ? pupilL : pupilR).setAttribute('cy', String(P_CENTER.y));
+    const cx = P_CENTER.x + eyePos[side]*GAZE_RANGE;
+    (side==='L'?pupilL:pupilR).setAttribute('cx', String(cx));
+    (side==='L'?pupilL:pupilR).setAttribute('cy', String(P_CENTER.y));
   }
 
-  let lastTs = 0;
+  let lastTs=0;
   function raf(ts){
     const dt = Math.min(0.04, (ts - lastTs)/1000 || 0.016);
-    stepEye('L', dt);
-    stepEye('R', dt);
+    stepEye('L', dt); stepEye('R', dt);
     lastTs = ts;
     requestAnimationFrame(raf);
   }
 
-  // ------- Tracking grading -------
-  function gradeTracking(){
-    const pick = trackingPick.value;
-    if(!pick){
-      gradeBox.className='line bad';
-      gradeBox.innerHTML='Please choose a tracking problem from the dropdown.';
-      gradeBox.style.display='block';
-      return;
-    }
-    const expected = caseTracking.label;
-    const ok = (pick === expected);
-    gradeBox.className = 'line ' + (ok ? 'good' : 'bad');
-    gradeBox.innerHTML = (ok ? '✅ Correct.' : `❌ Incorrect. Expected: <strong>${expected}</strong>.`) +
-      `<br><span class="muted">Remember: sides refer to the <strong>patient’s</strong> left/right while facing you.</span>`;
-    gradeBox.style.display='block';
-  }
-
   // Events
   btnNewCase.addEventListener('click', newCase);
-  btnLight.addEventListener('click', ()=>{
-    lightBoth();
-    updateTrackPill('Light tested; adjust slider to assess tracking.');
-  });
-  gazeSlider.addEventListener('input', ()=>{
-    // just updates movement; pill hint:
-    updateTrackPill(gazeSlider.value==0?'Center':'Following…');
-  });
-  btnGrade.addEventListener('click', gradeTracking);
+  btnLight.addEventListener('click', ()=>{ lightBoth(); updateTrackPill('Light tested — move slider to assess tracking.'); });
+  gazeSlider.addEventListener('input', ()=> updateTrackPill(gazeSlider.value==0?'Center':'Following…'));
 
   // Init
   newCase();
   requestAnimationFrame(raf);
-})();
-</script>
-</body>
-</html>
-
-</script>
-
-<style>
-  :root{
-    --bg:#f6f9fc; --card:#fff; --ink:#122230; --muted:#637589; --accent:#0a76d3; --border:#e6edf3;
-    --ok:#16a34a; --warn:#b45309; --bad:#dc2626; --skin:#f2d5c4;
-  }
-  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"Helvetica Neue",sans-serif}
-
-  .wrap{max-width:1100px;margin:0 auto;padding:14px;display:grid;gap:12px}
-
-  /* Block sticky header */
-  header{
-    position:sticky;top:0;z-index:20;
-    background:linear-gradient(180deg,#0a76d3,#095fb0);color:#fff;
-    border-radius:16px;padding:12px 14px;box-shadow:0 8px 16px rgba(10,30,60,.15)
-  }
-  .headerbar{display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .h-left,.h-right{display:flex;align-items:center;gap:8px}
-  .iconbtn{appearance:none;border:0;background:rgba(255,255,255,.15);color:#fff;padding:8px 10px;border-radius:10px;font-weight:700;cursor:pointer}
-  .iconbtn:active{transform:translateY(1px)}
-  h1{margin:0;font-size:1.05rem}
-
-  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 2px 10px rgba(10,20,40,.05)}
-  .card h2{margin:0;font-size:1rem;border-bottom:1px solid var(--border);padding:12px}
-  .card .body{padding:12px}
-
-  .panel{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .eyeBox{border:1px solid var(--border);border-radius:12px;padding:8px;background:#f8fbff}
-  .svgwrap{display:flex;justify-content:center;align-items:center;height:260px;background:var(--skin);border:1px solid var(--border);border-radius:10px}
-
-  .readout{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-weight:700}
-  .readout small{font-weight:600;color:var(--muted)}
-
-  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-  .btn{appearance:none;border:1px solid var(--border);background:#fff;color:#122230;padding:10px 12px;border-radius:12px;font-weight:700;cursor:pointer}
-  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-  .btn:active{transform:translateY(1px)}
-
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media(max-width:720px){ .row{grid-template-columns:1fr} }
-
-  label{font-weight:700}
-  select{width:100%;padding:.6rem .7rem;border-radius:10px;border:1px solid var(--border);background:#fff}
-
-  .pill{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:800}
-  .pill.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#065f46}
-  .pill.warn{background:#fffbeb;border:1px solid #fde68a;color:#78350f}
-  .pill.bad{background:#fff1f2;border:1px solid #fecaca;color:#7f1d1d}
-
-  .muted{color:var(--muted)}
-  .line{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:#f8fafc;margin:8px 0}
-  .good{border-color:#bbf7d0;background:#f0fdf4}
-  .bad{border-color:#fecaca;background:#fff1f2}
-  .warn{border-color:#fde68a;background:#fffbeb}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <header>
-    <div class="headerbar">
-      <div class="h-left">
-        <button id="btnBack" class="iconbtn">← Back</button>
-        <h1>Pupil Simulator — Random Cases, Per-Eye Findings</h1>
-      </div>
-      <div class="h-right">
-        <button id="btnInfo" class="iconbtn">ℹ️ Info</button>
-      </div>
-    </div>
-  </header>
-
-  <section class="card">
-    <h2>Eyes</h2>
-    <div class="body">
-      <div class="panel">
-        <!-- LEFT EYE -->
-        <div class="eyeBox">
-          <div class="svgwrap">
-            <svg id="svgL" viewBox="0 0 240 170" width="100%" height="100%" aria-label="Left eye">
-              <!-- Skin fill background already provided by container -->
-              <!-- Sclera -->
-              <ellipse cx="120" cy="85" rx="100" ry="62" fill="#ffffff" stroke="#d8e5f3" stroke-width="2"/>
-              <!-- Iris -->
-              <circle id="irisL" cx="120" cy="85" r="44" fill="url(#gradIrisL)" stroke="#2f4f7f" stroke-width="2"/>
-              <defs>
-                <radialGradient id="gradIrisL" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#6aa0ff"/>
-                  <stop offset="80%" stop-color="#3065c9"/>
-                  <stop offset="100%" stop-color="#20407f"/>
-                </radialGradient>
-              </defs>
-              <!-- Pupil group -->
-              <g id="pupilGroupL"></g>
-              <!-- Lids -->
-              <path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6"/>
-              <path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6"/>
-              <!-- Corneal highlight -->
-              <circle cx="105" cy="72" r="6" fill="#fff" opacity=".9"/>
-            </svg>
-          </div>
-          <div class="readout">
-            <span>Left: <span id="ratioL">—</span></span>
-            <small id="shapeLblL" class="muted">Shape: —</small>
-          </div>
-        </div>
-
-        <!-- RIGHT EYE -->
-        <div class="eyeBox">
-          <div class="svgwrap">
-            <svg id="svgR" viewBox="0 0 240 170" width="100%" height="100%" aria-label="Right eye">
-              <ellipse cx="120" cy="85" rx="100" ry="62" fill="#ffffff" stroke="#d8e5f3" stroke-width="2"/>
-              <circle id="irisR" cx="120" cy="85" r="44" fill="url(#gradIrisR)" stroke="#2f4f7f" stroke-width="2"/>
-              <defs>
-                <radialGradient id="gradIrisR" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#6aa0ff"/>
-                  <stop offset="80%" stop-color="#3065c9"/>
-                  <stop offset="100%" stop-color="#20407f"/>
-                </radialGradient>
-              </defs>
-              <g id="pupilGroupR"></g>
-              <path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6"/>
-              <path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6"/>
-              <circle cx="105" cy="72" r="6" fill="#fff" opacity=".9"/>
-            </svg>
-          </div>
-          <div class="readout">
-            <span>Right: <span id="ratioR">—</span></span>
-            <small id="shapeLblR" class="muted">Shape: —</small>
-          </div>
-        </div>
-      </div>
-
-      <div class="btnrow" style="margin-top:8px">
-        <button class="btn primary" id="btnNewCase">New Random Case</button>
-        <button class="btn" id="btnLightBoth">Test Light (Both)</button>
-        <button class="btn" id="btnReveal">Reveal/Grade</button>
-      </div>
-
-      <div class="row" style="margin-top:8px">
-        <div>
-          <label for="findingL">Your Finding — Left</label>
-          <select id="findingL">
-            <option value="">— choose —</option>
-            <option>Normal</option>
-            <option>Pinpoint</option>
-            <option>Dilated</option>
-            <option>Sluggish to light</option>
-            <option>Non-reactive / blown</option>
-            <option>Unequal vs right</option>
-            <option>Irregular shape</option>
-          </select>
-        </div>
-        <div>
-          <label for="findingR">Your Finding — Right</label>
-          <select id="findingR">
-            <option value="">— choose —</option>
-            <option>Normal</option>
-            <option>Pinpoint</option>
-            <option>Dilated</option>
-            <option>Sluggish to light</option>
-            <option>Non-reactive / blown</option>
-            <option>Unequal vs left</option>
-            <option>Irregular shape</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="statusPills" class="btnrow" style="margin-top:8px">
-        <span class="pill" id="anisocoriaPill">Anisocoria: —</span>
-        <span class="pill" id="reactPill">Reactivity: —</span>
-      </div>
-
-      <div id="gradeBox" class="line" style="display:none"></div>
-      <div id="reasonsBox" class="line warn" style="display:none"></div>
-    </div>
-  </section>
-</div>
-
-<!-- Info dialog -->
-<dialog id="infoDialog" style="max-width:740px;border:1px solid var(--border);border-radius:16px;padding:0">
-  <form method="dialog" style="margin:0">
-    <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">About this Simulator</div>
-    <div style="padding:14px 16px">
-      <p>This trainer randomizes realistic, protocol-aligned pupil findings per eye (no manual controls). Test light response and select the correct finding for each eye.</p>
-      <ul>
-        <li>Findings include: Normal, Pinpoint, Dilated, Sluggish, Non-reactive/Blown, Unequal, Irregular.</li>
-        <li>Cases map to patterns seen with opioid OD, stimulant OD, head injury, stroke, hypoxia, 3rd nerve palsy, post-surgical pupils, etc.</li>
-        <li>Results include likely <strong>reasons/associations</strong> for your chosen findings.</li>
-      </ul>
-      <p class="muted">Educational use only — correlate with full neuro exam, lighting conditions, medications, and your local protocols.</p>
-    </div>
-    <div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
-      <button class="iconbtn" style="background:#eee;color:#111">Close</button>
-    </div>
-  </form>
-</dialog>
-
-<script>
-(function(){
-  const $ = s => document.querySelector(s);
-
-  // Header
-  $('#btnBack').addEventListener('click', ()=>{
-    if (document.referrer) history.back();
-    else location.href = '/';
-  });
-  $('#btnInfo').addEventListener('click', ()=> $('#infoDialog').showModal());
-
-  // Constants
-  const IRIS_R = 44; // px (same for both eyes)
-  const ANISO_THRESHOLD = 10; // percentage points difference
-
-  // Elements
-  const groupL = document.getElementById('pupilGroupL');
-  const groupR = document.getElementById('pupilGroupR');
-  const ratioL = $('#ratioL'); const ratioR = $('#ratioR');
-  const shapeLblL = $('#shapeLblL'); const shapeLblR = $('#shapeLblR');
-
-  const btnNewCase = $('#btnNewCase');
-  const btnLightBoth = $('#btnLightBoth');
-  const btnReveal = $('#btnReveal');
-
-  const findingL = $('#findingL'); const findingR = $('#findingR');
-  const anisocoriaPill = $('#anisocoriaPill'); const reactPill = $('#reactPill');
-  const gradeBox = $('#gradeBox'); const reasonsBox = $('#reasonsBox');
-
-  // State
-  let current = null;
-  let animating = {L:false, R:false};
-  let reactive = {L:false, R:false};
-
-  // SVG draw helpers
-  function drawPupil(group, ratioPct, shape){
-    group.innerHTML = '';
-    const cx=120, cy=85;
-    const r = Math.max(1.5, IRIS_R*(ratioPct/100));
-    const ns='http://www.w3.org/2000/svg';
-
-    function ellipse(rx, ry){
-      const e = document.createElementNS(ns,'ellipse');
-      e.setAttribute('cx',cx); e.setAttribute('cy',cy);
-      e.setAttribute('rx',rx); e.setAttribute('ry',ry);
-      e.setAttribute('fill','#0b0b0b');
-      group.appendChild(e);
-    }
-
-    if(shape==='round'){
-      const c = document.createElementNS(ns,'circle');
-      c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',r);
-      c.setAttribute('fill','#0b0b0b'); group.appendChild(c);
-    }else if(shape==='vslit'){
-      ellipse(Math.max(1.2,r*0.35), Math.max(2.0,r*1.1));
-    }else if(shape==='h_oval'){
-      ellipse(Math.max(2.0,r*1.25), Math.max(1.2,r*0.7));
-    }else if(shape==='irregular'){
-      const steps=24; let d='';
-      for(let i=0;i<=steps;i++){
-        const t=(i/steps)*Math.PI*2;
-        const jitter=(i%2===0?0.12:-0.12)*r;
-        const rr=r+jitter;
-        const x=cx+rr*Math.cos(t), y=cy+rr*Math.sin(t);
-        d+=(i===0?'M':'L')+x.toFixed(2)+' '+y.toFixed(2)+' ';
-      }
-      d+='Z';
-      const p=document.createElementNS(ns,'path');
-      p.setAttribute('d',d); p.setAttribute('fill','#0b0b0b'); group.appendChild(p);
-    }
-  }
-
-  // Case library (each defines ratio%, shape, and light reactivity per eye)
-  const CASES = [
-    // Opioid overdose — pinpoint, typically reactive but small
-    { dx:'Opioid overdose', L:{ratio:10, shape:'vslit', react:'normal'}, R:{ratio:10, shape:'vslit', react:'normal'},
-      expectL:'Pinpoint', expectR:'Pinpoint' },
-    // Stimulant or anticholinergic — dilated, brisk
-    { dx:'Stimulant/Anticholinergic', L:{ratio:65, shape:'round', react:'normal'}, R:{ratio:65, shape:'round', react:'normal'},
-      expectL:'Dilated', expectR:'Dilated' },
-    // Hypoxia — dilated, sluggish
-    { dx:'Hypoxia', L:{ratio:55, shape:'round', react:'sluggish'}, R:{ratio:55, shape:'round', react:'sluggish'},
-      expectL:'Sluggish to light', expectR:'Sluggish to light' },
-    // Head injury (uncal herniation) — one blown, non-reactive
-    { dx:'Head injury (possible uncal herniation)', L:{ratio:25, shape:'round', react:'normal'}, R:{ratio:80, shape:'round', react:'none'},
-      expectL:'Normal', expectR:'Non-reactive / blown' },
-    // Stroke (unequal, both reactive)
-    { dx:'Possible stroke', L:{ratio:30, shape:'round', react:'normal'}, R:{ratio:50, shape:'round', react:'normal'},
-      expectL:'Unequal vs right', expectR:'Unequal vs left' },
-    // Third-nerve palsy — one blown, non-reactive
-    { dx:'Third nerve palsy', L:{ratio:70, shape:'round', react:'none'}, R:{ratio:30, shape:'round', react:'normal'},
-      expectL:'Non-reactive / blown', expectR:'Normal' },
-    // Post-surgical/trauma — irregular shape one side
-    { dx:'Post-surgical/Trauma pupil', L:{ratio:30, shape:'irregular', react:'normal'}, R:{ratio:30, shape:'round', react:'normal'},
-      expectL:'Irregular shape', expectR:'Normal' },
-    // Pontine lesion — pinpoint, often nonreactive or minimally reactive (simulate sluggish)
-    { dx:'Pontine lesion', L:{ratio:10, shape:'vslit', react:'sluggish'}, R:{ratio:10, shape:'vslit', react:'sluggish'},
-      expectL:'Sluggish to light', expectR:'Sluggish to light' },
-  ];
-
-  function pickCase(){ return CASES[Math.floor(Math.random()*CASES.length)]; }
-
-  // Render state to UI
-  function render(){
-    drawPupil(groupL, current.L.ratio, current.L.shape);
-    drawPupil(groupR, current.R.ratio, current.R.shape);
-    ratioL.textContent = current.L.ratio + '%';
-    ratioR.textContent = current.R.ratio + '%';
-    shapeLblL.textContent = 'Shape: ' + labelShape(current.L.shape);
-    shapeLblR.textContent = 'Shape: ' + labelShape(current.R.shape);
-
-    reactive.L = false; reactive.R = false;
-    updateStatusPills();
-  }
-
-  function labelShape(s){
-    if(s==='round') return 'Round';
-    if(s==='vslit') return 'Vertical Slit';
-    if(s==='h_oval') return 'Horizontal Oval';
-    if(s==='irregular') return 'Irregular';
-    return s;
-  }
-
-  function updateStatusPills(){
-    const diff = Math.abs(current.L.ratio - current.R.ratio);
-    if(diff >= ANISO_THRESHOLD){ anisocoriaPill.className='pill bad'; anisocoriaPill.textContent=`Anisocoria: YES (Δ ${diff}%)`; }
-    else if(diff >= ANISO_THRESHOLD/2){ anisocoriaPill.className='pill warn'; anisocoriaPill.textContent=`Anisocoria: borderline (Δ ${diff}%)`; }
-    else{ anisocoriaPill.className='pill ok'; anisocoriaPill.textContent='Anisocoria: no'; }
-
-    const anyTested = reactive.L || reactive.R;
-    reactPill.className = 'pill ' + (anyTested ? 'ok' : 'warn');
-    reactPill.textContent = 'Reactivity: ' + (anyTested ? 'tested' : 'not tested');
-  }
-
-  // Light test (uses case's react flags)
-  function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
-  function animateEye(side){
-    if(animating[side]) return;
-    animating[side]=true;
-
-    const cfg = current[side];
-    const base = cfg.ratio;
-    let react = cfg.react; // 'normal'|'sluggish'|'none'
-
-    if(react==='none'){
-      // No constriction at all
-      animating[side]=false;
-      reactive[side]=false; // confirms non-reactive
-      updateStatusPills();
-      return;
-    }
-
-    let factor = (react==='sluggish') ? 0.75 : 0.45; // target is closer to base if sluggish
-    let dur = (react==='sluggish') ? 1400 : 900;
-
-    const minTarget = Math.max(6, Math.round(base*factor));
-    const t0 = performance.now();
-    function constrict(ts){
-      const t = Math.min(1,(ts-t0)/dur);
-      const val = Math.round(base + (minTarget - base)*easeOutCubic(t));
-      cfg.ratio = val; renderPupilOnly(side);
-      if(t<1) requestAnimationFrame(constrict);
-      else{
-        const t1 = performance.now();
-        function redilate(ts2){
-          const t2 = Math.min(1,(ts2 - t1)/dur);
-          const val2 = Math.round(minTarget + (base - minTarget)*easeOutCubic(t2));
-          cfg.ratio = val2; renderPupilOnly(side);
-          if(t2<1) requestAnimationFrame(redilate);
-          else { animating[side]=false; reactive[side]=true; updateStatusPills(); }
-        }
-        requestAnimationFrame(redilate);
-      }
-    }
-    requestAnimationFrame(constrict);
-  }
-
-  function renderPupilOnly(side){
-    if(side==='L'){
-      drawPupil(groupL, current.L.ratio, current.L.shape);
-      ratioL.textContent = current.L.ratio + '%';
-    }else{
-      drawPupil(groupR, current.R.ratio, current.R.shape);
-      ratioR.textContent = current.R.ratio + '%';
-    }
-  }
-
-  function lightBoth(){ animateEye('L'); animateEye('R'); }
-
-  // Reasons mapping (what you show AFTER user picks)
-  const REASONS = {
-    'Normal': [
-      'Appropriate for ambient light and no focal neurologic deficit apparent.',
-      'Consider baseline variations; always compare bilaterally.'
-    ],
-    'Pinpoint': [
-      'Opioid intoxication (e.g., heroin, fentanyl).',
-      'Pontine hemorrhage/lesion.',
-      'Organophosphate/cholinergic exposure.'
-    ],
-    'Dilated': [
-      'Stimulant/anticholinergic use (e.g., cocaine, atropine).',
-      'Hypoxia/anoxia.',
-      'Post-ictal state or increased ICP.'
-    ],
-    'Sluggish to light': [
-      'Hypoxia or hypothermia.',
-      'Toxin/med effect (sedatives, opioids).',
-      'CNS compromise or increased ICP.'
-    ],
-    'Non-reactive / blown': [
-      'Uncal herniation or severe head injury.',
-      'Third-nerve palsy.',
-      'Recent ocular surgery/trauma.'
-    ],
-    'Unequal vs right': [
-      'Physiologic anisocoria (benign) vs focal neuro cause.',
-      'Early stroke or increased ICP (evaluate in context).'
-    ],
-    'Unequal vs left': [
-      'Physiologic anisocoria (benign) vs focal neuro cause.',
-      'Early stroke or increased ICP (evaluate in context).'
-    ],
-    'Irregular shape': [
-      'Past ocular surgery (e.g., cataract) or trauma.',
-      'Adhesions (posterior synechiae) or iris damage.'
-    ]
-  };
-
-  // Build reasons HTML for both eyes (based on user selections)
-  function reasonsFor(userL, userR){
-    const list = [];
-    function pushFor(label, side){
-      const arr = REASONS[label] || [];
-      if(arr.length){
-        list.push(`<strong>${side} eye — ${label}:</strong><br>• ${arr.join('<br>• ')}`);
-      }
-    }
-    pushFor(userL,'Left');
-    pushFor(userR,'Right');
-    return list.join('<br><br>');
-  }
-
-  // Grading
-  function grade(){
-    if(!current){
-      gradeBox.className='line bad';
-      gradeBox.innerHTML='No case loaded. Click <strong>New Random Case</strong> first.';
-      gradeBox.style.display='block';
-      reasonsBox.style.display='none';
-      return;
-    }
-    const userL = findingL.value, userR = findingR.value;
-
-    const expL = current.expectL, expR = current.expectR;
-    let okL = (userL === expL), okR = (userR === expR);
-
-    const msgs = [];
-    if(!userL) msgs.push('Left: no selection.');
-    if(!userR) msgs.push('Right: no selection.');
-    if(userL && !okL) msgs.push(`Left expected: <strong>${expL}</strong>. You chose: ${userL}.`);
-    if(userR && !okR) msgs.push(`Right expected: <strong>${expR}</strong>. You chose: ${userR}.`);
-
-    const allCorrect = okL && okR && userL && userR;
-
-    gradeBox.className = 'line ' + (allCorrect ? 'good' : 'bad');
-    gradeBox.innerHTML = allCorrect ? `✅ Correct — Pattern: <em>${current.dx}</em>.`
-                                    : `❌ Check again.${msgs.length?'<br><span class="muted">'+msgs.join(' ')+'</span>':''}`;
-    gradeBox.style.display='block';
-
-    // Reasons (based on what user selected — reinforces learning even if wrong)
-    const reasonsHTML = reasonsFor(userL||'Normal', userR||'Normal');
-    reasonsBox.innerHTML = `<strong>Possible reasons for your selected findings:</strong><br>${reasonsHTML}`;
-    reasonsBox.style.display='block';
-  }
-
-  // New case
-  function newCase(){
-    current = pickCase();
-    // Reset picks
-    findingL.value=''; findingR.value='';
-    gradeBox.style.display='none'; reasonsBox.style.display='none';
-    render();
-  }
-
-  // Events
-  btnNewCase.addEventListener('click', newCase);
-  btnLightBoth.addEventListener('click', lightBoth);
-  btnReveal.addEventListener('click', grade);
-
-  // Init
-  newCase();
 })();
 </script>
 </body>
