@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Pupil & Gaze — Penlight Chart, Per-Eye Light/Tracking, PERL, Detailed Grading</title>
+<title>Pupil & Gaze — Penlight Chart, PERL, Patient-Sided Labels</title>
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
@@ -17,135 +17,104 @@
 <style>
   :root{
     --bg:#f6f9fc; --card:#fff; --ink:#122230; --muted:#637589; --accent:#0a76d3;
-    --border:#e6edf3; --skin:#f2d5c4; --skin-shadow:#e8c4b2;
-    --ok:#16a34a; --warn:#b45309; --bad:#dc2626;
+    --accent-2:#0db37d; --border:#e6edf3; --skin:#f2d5c4; --skin-shadow:#e8c4b2;
   }
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,"Helvetica Neue",sans-serif}
-  .wrap{max-width:1000px;margin:0 auto;padding:14px;display:grid;gap:12px}
 
-  /* Sticky block header */
-  header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,#0a76d3,#095fb0);color:#fff;
-    border-radius:16px;padding:12px 14px;box-shadow:0 8px 16px rgba(10,30,60,.15)}
-  .headerbar{display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .iconbtn{appearance:none;border:0;background:rgba(255,255,255,.15);color:#fff;padding:8px 10px;border-radius:10px;font-weight:700;cursor:pointer}
+  /* Edge-to-edge sticky banner */
+  header{
+    position:sticky; top:0; z-index:20;
+    background:linear-gradient(180deg,#0a76d3,#095fb0); color:#fff;
+    padding:12px 16px; box-shadow:0 8px 16px rgba(10,30,60,.15);
+    border-radius:0; width:100%;
+  }
+  .headerbar{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .iconbtn{appearance:none;border:0;background:rgba(255,255,255,.15);color:#fff;padding:8px 12px;border-radius:10px;font-weight:700;cursor:pointer}
   .iconbtn:active{transform:translateY(1px)}
   h1{margin:0;font-size:1.05rem}
+
+  .wrap{max-width:1100px;margin:0 auto;padding:14px;display:grid;gap:12px}
 
   .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 2px 10px rgba(10,20,40,.05)}
   .card h2{margin:0;font-size:1rem;border-bottom:1px solid var(--border);padding:12px}
   .card .body{padding:12px}
-  .line{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:#f8fafc;margin:8px 0}
+  .line{padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:#f8fafc;margin:10px 0}
   .muted{color:var(--muted)}
-  .btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .btn{appearance:none;border:1px solid var(--border);background:#fff;color:#122230;padding:10px 12px;border-radius:12px;font-weight:700;cursor:pointer}
-  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-  .btn:active{transform:translateY(1px)}
-  .pill{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:800;white-space:nowrap}
-  .pill.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#065f46}
-  .pill.warn{background:#fffbeb;border:1px solid #fde68a;color:#78350f}
-  .pill.bad{background:#fff1f2;border:1px solid #fecaca;color:#7f1d1d}
   label{font-weight:700}
   select{width:100%;padding:.6rem .7rem;border-radius:10px;border:1px solid var(--border);background:#fff}
   input[type="range"]{width:100%;accent-color:var(--accent)}
 
-  /* Eyes always in one row (two columns), even on phones */
+  /* Eyes always in one row, even on phones */
   .panel{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .eyeBox{border:1px solid var(--border);border-radius:12px;padding:8px;background:#f8fbff;min-width:0}
+  .eyeBox{border:1px solid var(--border);border-radius:12px;padding:10px;background:#f8fbff;min-width:0}
   .labelAbove{display:flex;justify-content:center;gap:10px;margin-bottom:6px;font-weight:800;flex-wrap:wrap}
   .svgwrap{display:flex;justify-content:center;align-items:center;aspect-ratio:4/3;background:var(--skin);border:1px solid var(--border);border-radius:12px;overflow:hidden}
   svg{width:100%;height:100%}
 
-  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-  @media(max-width:600px){ .row3{grid-template-columns:1fr} .row2{grid-template-columns:1fr 1fr} }
+  /* Buttons */
+  .btn{appearance:none;border:1px solid var(--border);background:#fff;color:#122230;padding:10px 12px;border-radius:12px;font-weight:800;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  .btn.pin{background:linear-gradient(180deg,#ffe082,#ffd54f); border-color:#f1c232; color:#3b2f00; box-shadow:0 2px 8px rgba(60,40,0,.18)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 
   .good{border-color:#bbf7d0;background:#f0fdf4}
   .bad{border-color:#fecaca;background:#fff1f2}
-  .warnbox{border-color:#fde68a;background:#fffbeb}
-  .chart{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;justify-content:center}
-  .tick{display:flex;flex-direction:column;align-items:center;gap:4px}
+  .warn{border-color:#fde68a;background:#fffbeb}
+
+  /* Penlight chart */
+  .chart{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;justify-content:center}
+  .tick{display:flex;flex-direction:column;align-items:center;gap:6px}
   .disc{background:#111;border:2px solid #e5e7eb;border-radius:9999px}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="headerbar">
-      <div style="display:flex;gap:8px;align-items:center">
-        <button id="btnBack" class="iconbtn">← Back</button>
-        <h1>Pupil & Gaze Trainer — Penlight + PERL</h1>
-      </div>
-      <div><button id="btnInfo" class="iconbtn">ℹ️ Info</button></div>
-    </div>
-  </header>
 
-  <!-- Penlight pupil size chart -->
+<header>
+  <div class="headerbar">
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="btnBack" class="iconbtn">← Back</button>
+      <h1>Pupil & Gaze Trainer — Penlight + PERL</h1>
+    </div>
+    <div><button id="btnInfo" class="iconbtn">ℹ️ Info</button></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- Penlight pupil size chart (same scale as simulation) -->
   <section class="card">
-    <h2>Penlight Pupil Size Chart</h2>
+    <h2>Penlight Pupil Size Chart (True Scale)</h2>
     <div class="body">
-      <div class="chart" id="sizeChart"></div>
+      <div id="sizeChart" class="chart"></div>
       <div class="muted" style="text-align:center;margin-top:6px">
-        Quick reference for room-light pupils. Typical: <strong>Pinpoint</strong> ~1–2 mm, <strong>Normal</strong> ~3–4 mm, <strong>Dilated</strong> ≥6 mm.
+        Discs are drawn to <strong>the same pixel scale</strong> used in the simulator (mapped from mm → px by the iris reference).
       </div>
     </div>
   </section>
 
   <section class="card">
-    <h2>Eyes</h2>
+    <h2>Eyes (patient facing you)</h2>
     <div class="body">
-      <!-- eyes always in one row -->
-      <div class="panel">
-        <!-- LEFT -->
-        <div class="eyeBox">
-          <div class="labelAbove">
-            Left Pupil: <span id="mmL">—</span>
-            <span class="muted">(ratio <span id="ratioL">—</span>)</span>
-          </div>
-          <div class="svgwrap">
-            <svg id="svgL" viewBox="0 0 240 170" aria-label="Left eye">
-              <defs>
-                <!-- Palpebral opening: only show globe between lids -->
-                <clipPath id="openL">
-                  <path d="M20,85 Q120,32 220,85 Q120,138 20,85 Z"/>
-                </clipPath>
-                <radialGradient id="gradIrisL" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#6aa0ff"/><stop offset="80%" stop-color="#3065c9"/><stop offset="100%" stop-color="#20407f"/>
-                </radialGradient>
-                <linearGradient id="upperSkinL" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--skin)"/><stop offset="100%" stop-color="var(--skin-shadow)"/>
-                </linearGradient>
-                <linearGradient id="lowerSkinL" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--skin-shadow)"/><stop offset="100%" stop-color="var(--skin)"/>
-                </linearGradient>
-              </defs>
-              <!-- Globe within lids -->
-              <g clip-path="url(#openL)">
-                <ellipse cx="120" cy="85" rx="100" ry="62" fill="#ffffff" stroke="#d8e5f3" stroke-width="2"/>
-                <circle id="irisL" cx="120" cy="85" r="44" fill="url(#gradIrisL)" stroke="#2f4f7f" stroke-width="2"/>
-                <circle id="pupilL" cx="120" cy="85" r="12" fill="#0b0b0b"/>
-                <circle cx="105" cy="72" r="6" fill="#fff" opacity=".9"/>
-              </g>
-              <!-- Filled lids covering round globe -->
-              <path d="M 20 85 Q 120 32 220 85 L 220 0 L 20 0 Z" fill="url(#upperSkinL)"/>
-              <path d="M 20 85 Q 120 138 220 85 L 220 170 L 20 170 Z" fill="url(#lowerSkinL)"/>
-              <!-- Lid edges -->
-              <path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
-              <path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
-            </svg>
-          </div>
-          <div class="btnrow" style="margin-top:6px">
-            <button class="btn" id="btnLightL">💡 Pin Light — Left</button>
-          </div>
-        </div>
+      <!-- PERL first -->
+      <div class="line">
+        <label for="perl">PERL (Pupils Equal & Reactive to Light)</label>
+        <select id="perl">
+          <option value="">— choose —</option>
+          <option>Yes</option>
+          <option>No</option>
+        </select>
+      </div>
 
-        <!-- RIGHT -->
+      <!-- Eyes: patient RIGHT on the LEFT; patient LEFT on the RIGHT -->
+      <div class="panel">
+        <!-- LEFT CARD controls PATIENT RIGHT eye -->
         <div class="eyeBox">
           <div class="labelAbove">
-            Right Pupil: <span id="mmR">—</span>
+            Patient <span style="text-transform:uppercase">RIGHT</span> Pupil: <span id="mmR">—</span>
             <span class="muted">(ratio <span id="ratioR">—</span>)</span>
           </div>
           <div class="svgwrap">
-            <svg id="svgR" viewBox="0 0 240 170" aria-label="Right eye">
+            <svg id="svgR" viewBox="0 0 240 170" aria-label="Patient right eye">
               <defs>
                 <clipPath id="openR">
                   <path d="M20,85 Q120,32 220,85 Q120,138 20,85 Z"/>
@@ -172,63 +141,66 @@
               <path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
             </svg>
           </div>
-          <div class="btnrow" style="margin-top:6px">
-            <button class="btn" id="btnLightR">💡 Pin Light — Right</button>
+          <div class="btnrow" style="margin-top:8px">
+            <button class="btn pin" id="btnLightR">💡 Penlight — Patient RIGHT</button>
+          </div>
+        </div>
+
+        <!-- RIGHT CARD controls PATIENT LEFT eye -->
+        <div class="eyeBox">
+          <div class="labelAbove">
+            Patient <span style="text-transform:uppercase">LEFT</span> Pupil: <span id="mmL">—</span>
+            <span class="muted">(ratio <span id="ratioL">—</span>)</span>
+          </div>
+          <div class="svgwrap">
+            <svg id="svgL" viewBox="0 0 240 170" aria-label="Patient left eye">
+              <defs>
+                <clipPath id="openL">
+                  <path d="M20,85 Q120,32 220,85 Q120,138 20,85 Z"/>
+                </clipPath>
+                <radialGradient id="gradIrisL" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#6aa0ff"/><stop offset="80%" stop-color="#3065c9"/><stop offset="100%" stop-color="#20407f"/>
+                </radialGradient>
+                <linearGradient id="upperSkinL" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--skin)"/><stop offset="100%" stop-color="var(--skin-shadow)"/>
+                </linearGradient>
+                <linearGradient id="lowerSkinL" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--skin-shadow)"/><stop offset="100%" stop-color="var(--skin)"/>
+                </linearGradient>
+              </defs>
+              <g clip-path="url(#openL)">
+                <ellipse cx="120" cy="85" rx="100" ry="62" fill="#ffffff" stroke="#d8e5f3" stroke-width="2"/>
+                <circle id="irisL" cx="120" cy="85" r="44" fill="url(#gradIrisL)" stroke="#2f4f7f" stroke-width="2"/>
+                <circle id="pupilL" cx="120" cy="85" r="12" fill="#0b0b0b"/>
+                <circle cx="105" cy="72" r="6" fill="#fff" opacity=".9"/>
+              </g>
+              <path d="M 20 85 Q 120 32 220 85 L 220 0 L 20 0 Z" fill="url(#upperSkinL)"/>
+              <path d="M 20 85 Q 120 138 220 85 L 220 170 L 20 170 Z" fill="url(#lowerSkinL)"/>
+              <path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
+              <path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
+            </svg>
+          </div>
+          <div class="btnrow" style="margin-top:8px">
+            <button class="btn pin" id="btnLightL">💡 Penlight — Patient LEFT</button>
           </div>
         </div>
       </div>
 
-      <!-- Gaze / status -->
+      <!-- Tracking control -->
       <div class="line" style="margin-top:10px">
         <label for="gaze">Tracking (examiner’s finger): <span class="muted">Left ⇄ Right (starts centered)</span></label>
         <input id="gaze" type="range" min="-100" max="100" value="0"/>
       </div>
-      <div class="btnrow">
-        <button class="btn" id="btnNewCase">New Random Case</button>
-        <span class="pill" id="anisocoriaPill">Anisocoria: —</span>
-        <span class="pill" id="trackPill">Tracking: —</span>
-      </div>
 
       <!-- Findings inputs -->
-      <div class="row3" style="margin-top:10px">
-        <div>
-          <label for="condL">Left — Condition</label>
-          <select id="condL">
-            <option value="">— choose —</option>
-            <option>Normal</option>
-            <option>Pinpoint</option>
-            <option>Dilated</option>
-            <option>Sluggish to light</option>
-            <option>Non-reactive / blown</option>
-            <option>Unequal vs right</option>
-          </select>
-        </div>
-        <div>
-          <label for="trackL">Left — Tracking</label>
-          <select id="trackL">
-            <option value="">— choose —</option>
-            <option>Normal tracking</option>
-            <option>Restricted toward patient’s left</option>
-            <option>Restricted toward patient’s right</option>
-            <option>Conjugate deviation — left</option>
-            <option>Conjugate deviation — right</option>
-            <option>Nystagmus</option>
-            <option>Disconjugate/lag</option>
-          </select>
-        </div>
-        <div>
-          <label for="perl">PERL (Pupils Equal & Reactive to Light)</label>
-          <select id="perl">
-            <option value="">— choose —</option>
-            <option>Yes</option>
-            <option>No</option>
-          </select>
-        </div>
+      <div class="line warn">
+        <strong>Record findings (patient’s sides!)</strong>
       </div>
 
-      <div class="row2" style="margin-top:10px">
+      <div class="panel">
+        <!-- Patient RIGHT (left card) selections -->
         <div>
-          <label for="condR">Right — Condition</label>
+          <label for="condR">Patient RIGHT — Condition</label>
           <select id="condR">
             <option value="">— choose —</option>
             <option>Normal</option>
@@ -238,9 +210,8 @@
             <option>Non-reactive / blown</option>
             <option>Unequal vs left</option>
           </select>
-        </div>
-        <div>
-          <label for="trackR">Right — Tracking</label>
+          <div style="height:8px"></div>
+          <label for="trackR">Patient RIGHT — Tracking</label>
           <select id="trackR">
             <option value="">— choose —</option>
             <option>Normal tracking</option>
@@ -252,31 +223,61 @@
             <option>Disconjugate/lag</option>
           </select>
         </div>
+
+        <!-- Patient LEFT (right card) selections -->
+        <div>
+          <label for="condL">Patient LEFT — Condition</label>
+          <select id="condL">
+            <option value="">— choose —</option>
+            <option>Normal</option>
+            <option>Pinpoint</option>
+            <option>Dilated</option>
+            <option>Sluggish to light</option>
+            <option>Non-reactive / blown</option>
+            <option>Unequal vs right</option>
+          </select>
+          <div style="height:8px"></div>
+          <label for="trackL">Patient LEFT — Tracking</label>
+          <select id="trackL">
+            <option value="">— choose —</option>
+            <option>Normal tracking</option>
+            <option>Restricted toward patient’s left</option>
+            <option>Restricted toward patient’s right</option>
+            <option>Conjugate deviation — left</option>
+            <option>Conjugate deviation — right</option>
+            <option>Nystagmus</option>
+            <option>Disconjugate/lag</option>
+          </select>
+        </div>
       </div>
 
-      <div class="btnrow" style="margin-top:10px">
+      <div class="btnrow" style="margin-top:12px">
         <button class="btn primary" id="btnGrade">Grade Findings</button>
       </div>
 
       <div id="gradeBox" class="line" style="display:none"></div>
-      <div id="whyBox" class="line warnbox" style="display:none"></div>
+      <div id="whyBox" class="line" style="display:none"></div>
+
+      <!-- New case at the very bottom -->
+      <div class="btnrow" style="margin-top:14px">
+        <button class="btn" id="btnNewCase">New Random Case</button>
+      </div>
     </div>
   </section>
 </div>
 
-<!-- Info dialog -->
+<!-- Info -->
 <dialog id="infoDialog" style="max-width:760px;border:1px solid var(--border);border-radius:16px;padding:0">
   <form method="dialog" style="margin:0">
-    <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">About this Trainer</div>
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">About</div>
     <div style="padding:14px 16px">
       <ul>
-        <li><strong>Penlight chart</strong> gives a quick 1–8 mm reference.</li>
-        <li>Pupils are randomized for size & light response; tracking behavior is randomized per case.</li>
-        <li>Use the per-eye <strong>Pin Light</strong> buttons to observe constriction/redilation.</li>
-        <li>Record per-eye <em>Condition</em> and <em>Tracking</em>, and mark <strong>PERL</strong> (Yes/No).</li>
-        <li>Left/right are the <strong>patient’s</strong> sides (patient is facing you).</li>
+        <li>Penlight chart discs are drawn to the <strong>same scale</strong> as the live pupils.</li>
+        <li>Patient RIGHT is shown on the <strong>left</strong> of the screen; Patient LEFT on the <strong>right</strong>.</li>
+        <li>Use the per-eye <strong>Penlight</strong> buttons to test constriction/redilation.</li>
+        <li>PERL is recorded above per-eye findings. “Yes” generally requires equal size and appropriate reactivity in both eyes.</li>
       </ul>
-      <p class="muted">Training visual only — correlate with neuro exam, meds, lighting, trauma, and your protocols.</p>
+      <p class="muted">Training visual only — correlate with neuro exam, meds, lighting, trauma, and local protocols.</p>
     </div>
     <div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
       <button class="iconbtn" style="background:#eee;color:#111">Close</button>
@@ -292,71 +293,76 @@
   $('#btnBack').addEventListener('click', ()=>{ if (document.referrer) history.back(); else location.href='/'; });
   $('#btnInfo').addEventListener('click', ()=> $('#infoDialog').showModal());
 
-  // --- Constants / geometry ---
-  const IRIS_R = 44;               // px (SVG)
-  const IRIS_MM = 11.5;            // typical real iris diameter (mm)
-  const P_CENTER = {x:120,y:85};   // pupil center
-  const PUPIL_MIN = 6, PUPIL_MAX = 28; // px radius bounds
-  const GAZE_RANGE = 16;           // px allowed pupil center offset
-  const ANISO_THRESHOLD = 10;      // ratio % difference triggers anisocoria
+  // Geometry / constants
+  const IRIS_MM = 11.5;            // real-world iris diameter (mm) reference
+  const IRIS_R = 44;               // px radius used in SVG drawings
+  const PUPIL_MIN = 6, PUPIL_MAX = 28; // px radius bounds for simulation
+  const P_CENTER = {x:120,y:85};
+  const GAZE_RANGE = 16;           // px max excursion for tracking
 
-  // --- DOM ---
-  const pL = $('#pupilL'), pR = $('#pupilR');
+  // Elements
+  const sizeChart = $('#sizeChart');
+  const pupilL = $('#pupilL'), pupilR = $('#pupilR');
   const ratioL = $('#ratioL'), ratioR = $('#ratioR');
   const mmL = $('#mmL'), mmR = $('#mmR');
-  const anisocoriaPill = $('#anisocoriaPill'), trackPill = $('#trackPill');
-  const sizeChart = $('#sizeChart');
 
-  const gaze = $('#gaze');
-  const btnNewCase = $('#btnNewCase');
   const btnLightL = $('#btnLightL'), btnLightR = $('#btnLightR');
+  const gaze = $('#gaze');
   const condL = $('#condL'), condR = $('#condR');
   const trackL = $('#trackL'), trackR = $('#trackR');
   const perlSel = $('#perl');
   const btnGrade = $('#btnGrade'), gradeBox = $('#gradeBox'), whyBox = $('#whyBox');
+  const btnNewCase = $('#btnNewCase');
 
-  // --- Case state ---
+  // State
   let casePupils = null; // {L:{ratio,react}, R:{ratio,react}}
-  let caseTracking = null; // behavior per eye
-  let eyePos = {L:0,R:0};  // normalized -1..1
-  let anim = {L:false, R:false};
+  let caseTracking = null; // {id,label,L:{...},R:{...}}
+  let eyePos = {L:0,R:0};
+  let anim = {L:false,R:false};
 
-  // --- Utilities ---
+  // Helpers
   const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
   const rand = a => a[Math.floor(Math.random()*a.length)];
   const easeOutCubic = x => 1 - Math.pow(1 - x, 3);
-  function pupilPxFromRatio(r){ return Math.round(PUPIL_MIN + (PUPIL_MAX - PUPIL_MIN) * (r/100)); }
-  function pupilMmFromRatio(r){ return ((r/100)*IRIS_MM).toFixed(1) + ' mm'; }
 
-  // --- Penlight size chart ----
+  // Mapping ratio% ↔ mm ↔ px (kept identical to simulator for true scale)
+  function mmFromRatio(ratioPct){ return (ratioPct/100)*IRIS_MM; }
+  function ratioFromMm(mm){ return clamp((mm/IRIS_MM)*100, 0, 100); }
+  function pupilPxFromRatio(r){ return Math.round(PUPIL_MIN + (PUPIL_MAX - PUPIL_MIN) * (r/100)); }
+  function applyPupil(side, ratioPct){
+    const px = pupilPxFromRatio(ratioPct);
+    (side==='L'?pupilL:pupilR).setAttribute('r', String(px));
+    (side==='L'?pupilL:pupilR).setAttribute('cx', String(P_CENTER.x));
+    (side==='L'?pupilL:pupilR).setAttribute('cy', String(P_CENTER.y));
+    (side==='L'?ratioL:ratioR).textContent = ratioPct + '%';
+    (side==='L'?mmL:mmR).textContent = mmFromRatio(ratioPct).toFixed(1)+' mm';
+  }
+
+  // True-scale Penlight chart (1–8 mm mapped to same px as live pupils)
   function renderSizeChart(){
     sizeChart.innerHTML='';
-    const mm = [1,2,3,4,5,6,7,8];
-    mm.forEach(n=>{
-      const tick = document.createElement('div');
-      tick.className='tick';
-      const d = document.createElement('div');
-      d.className='disc';
-      d.style.width = (n*6)+'px';
-      d.style.height = (n*6)+'px';
-      const label = document.createElement('small');
-      label.textContent = n+' mm';
-      tick.appendChild(d); tick.appendChild(label);
-      sizeChart.appendChild(tick);
+    const mmList = [1,2,3,4,5,6,7,8];
+    mmList.forEach(mm=>{
+      const tick = document.createElement('div'); tick.className='tick';
+      const disc = document.createElement('div'); disc.className='disc';
+      const ratio = ratioFromMm(mm);                 // same math as simulator
+      const radiusPx = pupilPxFromRatio(ratio);      // px radius
+      const diameterPx = radiusPx*2;                 // px diameter shown
+      disc.style.width = diameterPx+'px';
+      disc.style.height = diameterPx+'px';
+      const label = document.createElement('small'); label.textContent = mm+' mm';
+      tick.appendChild(disc); tick.appendChild(label); sizeChart.appendChild(tick);
     });
   }
 
-  // --- Cases ---
-  // Pupil size/reactivity patterns
+  // Cases
   const PUPIL_CASES = [
-    { L:{ratio:30, react:'normal'}, R:{ratio:30, react:'normal'} },              // normal
-    { L:{ratio:10, react:'normal'}, R:{ratio:10, react:'normal'} },              // pinpoint (e.g., opioids/pontine)
-    { L:{ratio:55, react:'sluggish'}, R:{ratio:55, react:'sluggish'} },          // sluggish larger (e.g., hypoxia)
-    { L:{ratio:25, react:'normal'}, R:{ratio:80, react:'none'} },                // one blown R (e.g., uncal herniation/3rd nerve)
-    { L:{ratio:20, react:'normal'}, R:{ratio:45, react:'normal'} }               // anisocoria reactive
+    { L:{ratio:30, react:'normal'}, R:{ratio:30, react:'normal'} },   // normal
+    { L:{ratio:10, react:'normal'}, R:{ratio:10, react:'normal'} },   // pinpoint
+    { L:{ratio:55, react:'sluggish'}, R:{ratio:55, react:'sluggish'} }, // sluggish large
+    { L:{ratio:25, react:'normal'}, R:{ratio:80, react:'none'} },     // one blown R
+    { L:{ratio:20, react:'normal'}, R:{ratio:45, react:'normal'} }    // anisocoria reactive
   ];
-
-  // Tracking behavior (per eye)
   const TRACK_CASES = [
     { id:'normal', label:'Normal tracking',
       L:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0}, R:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0} },
@@ -374,99 +380,11 @@
       L:{gain:0.4, limitLeft:-1, limitRight:1, bias:0, jitter:0}, R:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0} },
   ];
 
-  // Reasons / associations
-  const REASONS_SIZE = {
-    'Pinpoint': [
-      'Opioid intoxication (fentanyl, heroin).',
-      'Pontine hemorrhage/lesion.',
-      'Cholinergic/organophosphate exposure.'
-    ],
-    'Dilated': [
-      'Stimulant or anticholinergic effect (cocaine, atropine).',
-      'Hypoxia/anoxia.',
-      'Post-ictal state or increased ICP.'
-    ],
-    'Sluggish': [
-      'Hypoxia or hypothermia.',
-      'Sedatives/opioids or other CNS depressants.',
-      'Early increased intracranial pressure.'
-    ],
-    'Non-reactive': [
-      'Uncal herniation or severe head injury.',
-      'Third-nerve palsy.',
-      'Recent ocular surgery/trauma.'
-    ],
-    'Anisocoria': [
-      'Physiologic anisocoria (benign) vs focal neurologic cause.',
-      'Consider stroke, mass effect, or increased ICP when correlated with other signs.'
-    ]
-  };
-  const REASONS_TRACK = {
-    'Restricted toward patient’s left': [
-      'Left gaze palsy (brainstem/supranuclear lesion).',
-      'Extraocular muscle/nerve impairment (e.g., CN VI).'
-    ],
-    'Restricted toward patient’s right': [
-      'Right gaze palsy (brainstem/supranuclear lesion).',
-      'Extraocular muscle/nerve impairment (e.g., CN VI).'
-    ],
-    'Conjugate deviation — left': [
-      'Acute cerebral lesion with gaze preference.',
-      'Seizure/post-ictal phenomenon.'
-    ],
-    'Conjugate deviation — right': [
-      'Acute cerebral lesion with gaze preference.',
-      'Seizure/post-ictal phenomenon.'
-    ],
-    'Nystagmus': [
-      'Vestibular disorder or intoxication.',
-      'Cerebellar/brainstem involvement.'
-    ],
-    'Disconjugate/lag': [
-      'Internuclear ophthalmoplegia or CN palsy.',
-      'Orbital trauma or muscular entrapment.'
-    ]
-  };
-
-  // --- Case / rendering ---
-  function applyPupil(side, ratioPct){
-    const el = side==='L'?pL:pR;
-    const px = pupilPxFromRatio(ratioPct);
-    el.setAttribute('r', String(px));
-    el.setAttribute('cx', String(P_CENTER.x));
-    el.setAttribute('cy', String(P_CENTER.y));
-    (side==='L'?ratioL:ratioR).textContent = ratioPct + '%';
-    (side==='L'?mmL:mmR).textContent = pupilMmFromRatio(ratioPct);
-  }
-
-  function updateAnisoPill(){
-    const l = parseInt(ratioL.textContent,10), r = parseInt(ratioR.textContent,10);
-    const diff = Math.abs(l-r);
-    if(diff >= ANISO_THRESHOLD){ anisocoriaPill.className='pill bad'; anisocoriaPill.textContent=`Anisocoria: YES (Δ ${diff}%)`; }
-    else if(diff >= ANISO_THRESHOLD/2){ anisocoriaPill.className='pill warn'; anisocoriaPill.textContent=`Anisocoria: borderline (Δ ${diff}%)`; }
-    else{ anisocoriaPill.className='pill ok'; anisocoriaPill.textContent='Anisocoria: no'; }
-  }
-  function setTrackText(t){ trackPill.textContent='Tracking: '+t; }
-
-  function newCase(){
-    casePupils = rand(PUPIL_CASES);
-    caseTracking = rand(TRACK_CASES);
-    eyePos.L = eyePos.R = 0;
-    gaze.value = 0;
-
-    applyPupil('L', casePupils.L.ratio);
-    applyPupil('R', casePupils.R.ratio);
-    updateAnisoPill();
-    setTrackText('Move slider to assess.');
-    condL.value=condR.value=trackL.value=trackR.value=perlSel.value='';
-    gradeBox.style.display='none'; whyBox.style.display='none';
-  }
-
-  // --- Light reflex (per eye) ---
+  // Light reflex for one eye
   function lightEye(side){
     if(anim[side]) return;
     const cfg = casePupils[side];
-    if(cfg.react==='none') return; // no response
+    if(cfg.react==='none') return; // no change
 
     anim[side]=true;
     const base = cfg.ratio;
@@ -477,15 +395,15 @@
 
     function constrict(ts){
       const t = Math.min(1,(ts-t0)/dur);
-      const val = Math.round(base + (minTarget - base)*easeOutCubic(t));
-      cfg.ratio = val; applyPupil(side, val); updateAnisoPill();
+      const val = Math.round(base + (minTarget - base)* (1 - Math.pow(1 - t, 3)));
+      cfg.ratio = val; applyPupil(side, val);
       if(t<1) requestAnimationFrame(constrict);
       else{
         const t1 = performance.now();
         function redilate(ts2){
           const t2 = Math.min(1,(ts2 - t1)/dur);
-          const val2 = Math.round(minTarget + (base - minTarget)*easeOutCubic(t2));
-          cfg.ratio = val2; applyPupil(side, val2); updateAnisoPill();
+          const val2 = Math.round(minTarget + (base - minTarget)* (1 - Math.pow(1 - t2, 3)));
+          cfg.ratio = val2; applyPupil(side, val2);
           if(t2<1) requestAnimationFrame(redilate);
           else anim[side]=false;
         }
@@ -495,7 +413,7 @@
     requestAnimationFrame(constrict);
   }
 
-  // --- Tracking engine ---
+  // Tracking engine
   function target(){ return parseInt(gaze.value,10)/100; } // -1..1
   function stepEye(side, dt){
     const cfg = caseTracking[side];
@@ -506,141 +424,168 @@
       eyePos[side] += Math.sin(performance.now()/50)*0.015*cfg.jitter;
     }
     const cx = P_CENTER.x + eyePos[side]*GAZE_RANGE;
-    (side==='L'?pL:pR).setAttribute('cx', String(cx));
-    (side==='L'?pL:pR).setAttribute('cy', String(P_CENTER.y));
+    (side==='L'?pupilL:pupilR).setAttribute('cx', String(cx));
+    (side==='L'?pupilL:pupilR).setAttribute('cy', String(P_CENTER.y));
   }
   let lastTs=0;
   function raf(ts){
-    const dt = Math.min(0.04, (ts-lastTs)/1000 || 0.016);
+    const dt = Math.min(0.04, (ts - lastTs)/1000 || 0.016);
     stepEye('L', dt); stepEye('R', dt);
     lastTs = ts;
     requestAnimationFrame(raf);
   }
 
-  // --- Grading helpers ---
-  function mmFromRatioStr(s){ return (parseInt(s,10)/100)*IRIS_MM; }
+  // Reasons
+  const REASONS_SIZE = {
+    'Pinpoint': ['Opioid intoxication (fentanyl, heroin)','Pontine lesion/hemorrhage','Cholinergic/organophosphate exposure'],
+    'Dilated': ['Stimulant/anticholinergic effect (cocaine, atropine)','Hypoxia/anoxia','Post-ictal state or ↑ICP'],
+    'Sluggish': ['Hypoxia or hypothermia','Sedatives/opioids or CNS depressants','Early ↑ICP'],
+    'Non-reactive': ['Uncal herniation or severe head injury','Third-nerve palsy','Recent ocular surgery/trauma'],
+    'Anisocoria': ['Physiologic anisocoria vs focal neuro cause','Consider stroke/mass/↑ICP if other signs present']
+  };
+  const REASONS_TRACK = {
+    'Restricted toward patient’s left': ['Left gaze palsy (brainstem/supranuclear)','EOM/CN VI impairment'],
+    'Restricted toward patient’s right': ['Right gaze palsy (brainstem/supranuclear)','EOM/CN VI impairment'],
+    'Conjugate deviation — left': ['Acute cerebral lesion with gaze preference','Seizure/post-ictal'],
+    'Conjugate deviation — right': ['Acute cerebral lesion with gaze preference','Seizure/post-ictal'],
+    'Nystagmus': ['Vestibular disorder or intoxication','Cerebellar/brainstem involvement'],
+    'Disconjugate/lag': ['INO or cranial nerve palsy','Orbital trauma/muscle entrapment']
+  };
+
+  // Expected tracking labels per eye
+  function trackingExpected(){
+    const id = caseTracking.id;
+    if(id==='normal')     return {L:'Normal tracking', R:'Normal tracking'};
+    if(id==='left_palsy') return {L:'Restricted toward patient’s left', R:'Restricted toward patient’s left'};
+    if(id==='right_palsy')return {L:'Restricted toward patient’s right', R:'Restricted toward patient’s right'};
+    if(id==='dev_left')   return {L:'Conjugate deviation — left', R:'Conjugate deviation — left'};
+    if(id==='dev_right')  return {L:'Conjugate deviation — right', R:'Conjugate deviation — right'};
+    if(id==='nystagmus')  return {L:'Nystagmus', R:'Nystagmus'};
+    if(id==='disconj')    return {L:'Disconjugate/lag', R:'Normal tracking'};
+    return {L:'Normal tracking', R:'Normal tracking'};
+  }
+
+  // Size class from mm
   function sizeClass(mm){
     if(mm < 2.5) return 'Pinpoint';
     if(mm >= 5.5) return 'Dilated';
     return 'Normal';
   }
-  function respClass(react){ return react==='none' ? 'Non-reactive' : (react==='sluggish' ? 'Sluggish' : 'Normal'); }
+  function respClass(react){ return react==='none'?'Non-reactive':(react==='sluggish'?'Sluggish':'Normal'); }
 
-  function trackingExpectedLabels(){
-    // per-eye expected strings matching dropdown options
-    const id = caseTracking.id;
-    if(id==='normal') return {L:'Normal tracking', R:'Normal tracking'};
-    if(id==='left_palsy') return {L:'Restricted toward patient’s left', R:'Restricted toward patient’s left'};
-    if(id==='right_palsy') return {L:'Restricted toward patient’s right', R:'Restricted toward patient’s right'};
-    if(id==='dev_left') return {L:'Conjugate deviation — left', R:'Conjugate deviation — left'};
-    if(id==='dev_right') return {L:'Conjugate deviation — right', R:'Conjugate deviation — right'};
-    if(id==='nystagmus') return {L:'Nystagmus', R:'Nystagmus'};
-    if(id==='disconj') return {L:'Disconjugate/lag', R:'Normal tracking'};
-    return {L:'Normal tracking', R:'Normal tracking'};
-  }
-
+  // Grade
   function grade(){
-    const l_mm = mmFromRatioStr(ratioL.textContent);
-    const r_mm = mmFromRatioStr(ratioR.textContent);
+    const l_mm = parseFloat(mmL.textContent) || 0;
+    const r_mm = parseFloat(mmR.textContent) || 0;
     const l_size = sizeClass(l_mm), r_size = sizeClass(r_mm);
     const l_resp = respClass(casePupils.L.react), r_resp = respClass(casePupils.R.react);
-    const aniso = Math.abs(parseInt(ratioL.textContent,10)-parseInt(ratioR.textContent,10)) >= ANISO_THRESHOLD;
 
     const user = {
+      perl: perlSel.value,
       L_cond: condL.value, R_cond: condR.value,
-      L_track: trackL.value, R_track: trackR.value,
-      perl: perlSel.value
+      L_track: trackL.value, R_track: trackR.value
     };
-    const expTrack = trackingExpectedLabels();
-    const expectedPERL = (!aniso) && (casePupils.L.react!=='none') && (casePupils.R.react!=='none') ? 'Yes' : 'No';
+    const expTrack = trackingExpected();
 
-    // Evaluate condition selections against size/resp/aniso
-    function checkCond(side, userCond, size, resp){
+    // PERL expectation: equal enough size + both reactive (not 'none')
+    const sizeClose = Math.abs(l_mm - r_mm) < 1.0; // ~1 mm tolerance for “equal”
+    const perlExpected = (sizeClose && casePupils.L.react!=='none' && casePupils.R.react!=='none') ? 'Yes' : 'No';
+
+    // Check helpers
+    function checkCond(which, userCond, size, resp){
       const msgs = [];
-      let correctAny=false, sizeOk=false, respOk=false, anisoOk=false;
-
-      if(!userCond){ msgs.push('No condition selected.'); return {correctAny:false,sizeOk,respOk,anisoOk,msgs}; }
-
-      if(userCond==='Pinpoint'){ sizeOk = (size==='Pinpoint'); correctAny |= sizeOk; if(!sizeOk) msgs.push(`Size is ${size.toLowerCase()}, not pinpoint.`); }
-      if(userCond==='Dilated'){ sizeOk = (size==='Dilated'); correctAny |= sizeOk; if(!sizeOk) msgs.push(`Size is ${size.toLowerCase()}, not dilated.`); }
-      if(userCond==='Normal'){ sizeOk = (size==='Normal') && (resp==='Normal') && !aniso; correctAny |= sizeOk; if(!sizeOk) msgs.push('Not fully normal (consider size, reactivity, or anisocoria).'); }
-      if(userCond==='Sluggish to light'){ respOk = (resp==='Sluggish'); correctAny |= respOk; if(!respOk) msgs.push(`Light response is ${resp.toLowerCase()}.`); }
-      if(userCond==='Non-reactive / blown'){ respOk = (resp==='Non-reactive'); correctAny |= respOk; if(!respOk) msgs.push(`This eye is ${resp.toLowerCase()}, not non-reactive.`); }
-      if(userCond==='Unequal vs right' && side==='L'){ anisoOk = aniso; correctAny |= anisoOk; if(!anisoOk) msgs.push('Anisocoria not present.'); }
-      if(userCond==='Unequal vs left' && side==='R'){ anisoOk = aniso; correctAny |= anisoOk; if(!anisoOk) msgs.push('Anisocoria not present.'); }
-
-      return {correctAny,sizeOk,respOk,anisoOk,msgs};
+      let ok=false;
+      if(!userCond){ msgs.push('No condition selected.'); return {ok,msgs}; }
+      if(userCond==='Normal'){ ok = (size==='Normal' && resp==='Normal'); if(!ok) msgs.push(`Not fully normal (size=${size}, resp=${resp}).`); }
+      if(userCond==='Pinpoint'){ ok = (size==='Pinpoint'); if(!ok) msgs.push(`Size is ${size.toLowerCase()}, not pinpoint.`); }
+      if(userCond==='Dilated'){ ok = (size==='Dilated'); if(!ok) msgs.push(`Size is ${size.toLowerCase()}, not dilated.`); }
+      if(userCond==='Sluggish to light'){ ok = (resp==='Sluggish'); if(!ok) msgs.push(`Response is ${resp.toLowerCase()}.`); }
+      if(userCond==='Non-reactive / blown'){ ok = (resp==='Non-reactive'); if(!ok) msgs.push(`Response is ${resp.toLowerCase()}, not non-reactive.`); }
+      if(userCond.startsWith('Unequal')){ ok = !sizeClose; if(!ok) msgs.push('Pupils are not unequal by ~≥1 mm.'); }
+      return {ok,msgs};
     }
-
-    const Lc = checkCond('L', user.L_cond, l_size, l_resp);
-    const Rc = checkCond('R', user.R_cond, r_size, r_resp);
-
-    // Tracking checks
     function checkTrack(userPick, expected){
-      if(!userPick) return {ok:false,msg:'No tracking selection.'};
-      return {ok: userPick===expected, msg: userPick===expected ? 'Correct.' : `Expected: <strong>${expected}</strong>.`};
-    }
-    const Lt = checkTrack(user.L_track, expTrack.L);
-    const Rt = checkTrack(user.R_track, expTrack.R);
-
-    // PERL check
-    const perlOk = (user.perl && user.perl===expectedPERL);
-
-    // Build grade output
-    const b = [];
-    b.push(`<strong>Left eye</strong> — size: <em>${l_size}</em> (${l_mm.toFixed(1)} mm), response: <em>${l_resp}</em>.`);
-    b.push(Lc.correctAny ? '✅ Condition: correct.' : `❌ Condition: ${Lc.msgs.join(' ')}`);
-    b.push(Lt.ok ? '✅ Tracking: correct.' : `❌ Tracking: ${Lt.msg}`);
-
-    b.push(`<br><strong>Right eye</strong> — size: <em>${r_size}</em> (${r_mm.toFixed(1)} mm), response: <em>${r_resp}</em>.`);
-    b.push(Rc.correctAny ? '✅ Condition: correct.' : `❌ Condition: ${Rc.msgs.join(' ')}`);
-    b.push(Rt.ok ? '✅ Tracking: correct.' : `❌ Tracking: ${Rt.msg}`);
-
-    b.push(`<br><strong>PERL</strong>: you said <em>${user.perl||'—'}</em>. ` +
-           (perlOk ? '✅ Correct.' : `❌ Expected: <strong>${expectedPERL}</strong>.`));
-
-    if(aniso){
-      b.push(`<br><strong>Anisocoria:</strong> present (≥ ${ANISO_THRESHOLD}% ratio difference).`);
+      if(!userPick) return {ok:false, msg:'No tracking selection.'};
+      return {ok:userPick===expected, msg: userPick===expected ? 'Correct.' : `Expected <strong>${expected}</strong>.`};
     }
 
-    gradeBox.className='line '+(Lc.correctAny && Rc.correctAny && Lt.ok && Rt.ok && perlOk ? 'good':'bad');
-    gradeBox.innerHTML = b.join('<br>');
+    const leftC  = checkCond('L', user.L_cond, l_size, l_resp);
+    const rightC = checkCond('R', user.R_cond, r_size, r_resp);
+    const leftT  = checkTrack(user.L_track,  expTrack.L);
+    const rightT = checkTrack(user.R_track, expTrack.R);
+    const perlOk = (user.perl && user.perl===perlExpected);
+
+    // Build grade text
+    const parts = [];
+    parts.push(`<strong>Patient LEFT</strong> — size: <em>${l_size}</em> (${l_mm.toFixed(1)} mm), response: <em>${l_resp}</em>.`);
+    parts.push(leftC.ok ? '✅ Condition: correct.' : `❌ Condition: ${leftC.msgs.join(' ')}`);
+    parts.push(leftT.ok ? '✅ Tracking: correct.'  : `❌ Tracking: ${leftT.msg}`);
+
+    parts.push(`<br><strong>Patient RIGHT</strong> — size: <em>${r_size}</em> (${r_mm.toFixed(1)} mm), response: <em>${r_resp}</em>.`);
+    parts.push(rightC.ok ? '✅ Condition: correct.' : `❌ Condition: ${rightC.msgs.join(' ')}`);
+    parts.push(rightT.ok ? '✅ Tracking: correct.'  : `❌ Tracking: ${rightT.msg}`);
+
+    parts.push(`<br><strong>PERL</strong>: you chose <em>${user.perl||'—'}</em>. `
+      + (perlOk ? '✅ Correct.' : `❌ Expected: <strong>${perlExpected}</strong>.`));
+
+    gradeBox.className = 'line ' + (leftC.ok && rightC.ok && leftT.ok && rightT.ok && perlOk ? 'good' : 'bad');
+    gradeBox.innerHTML = parts.join('<br>');
     gradeBox.style.display='block';
 
-    // Why abnormal (based on the actual case)
-    const whys = [];
-    if(l_size==='Pinpoint' || r_size==='Pinpoint') whys.push('Pinpoint: • '+REASONS_SIZE['Pinpoint'].join(' • '));
-    if(l_size==='Dilated' || r_size==='Dilated') whys.push('Dilated: • '+REASONS_SIZE['Dilated'].join(' • '));
-    if(l_resp==='Sluggish' || r_resp==='Sluggish') whys.push('Sluggish: • '+REASONS_SIZE['Sluggish'].join(' • '));
-    if(l_resp==='Non-reactive' || r_resp==='Non-reactive') whys.push('Non-reactive: • '+REASONS_SIZE['Non-reactive'].join(' • '));
-    if(aniso) whys.push('Anisocoria: • '+REASONS_SIZE['Anisocoria'].join(' • '));
+    // Why abnormal (based on actual case)
+    const why = [];
+    if(l_size==='Pinpoint' || r_size==='Pinpoint') why.push('<strong>Pinpoint</strong>: '+REASONS_SIZE.Pinpoint.join('; '));
+    if(l_size==='Dilated'  || r_size==='Dilated')  why.push('<strong>Dilated</strong>: '+REASONS_SIZE.Dilated.join('; '));
+    if(l_resp==='Sluggish' || r_resp==='Sluggish') why.push('<strong>Sluggish</strong>: '+REASONS_SIZE.Sluggish.join('; '));
+    if(l_resp==='Non-reactive' || r_resp==='Non-reactive') why.push('<strong>Non-reactive</strong>: '+REASONS_SIZE['Non-reactive'].join('; '));
 
-    const expT = [expTrack.L, expTrack.R];
-    expT.forEach(t=>{
-      if(t!=='Normal tracking'){ whys.push(`${t}: • ${(REASONS_TRACK[t]||['Pathologic tracking pattern.']).join(' • ')}`); }
-    });
+    const tr = [expTrack.L, expTrack.R];
+    tr.forEach(t=>{ if(t!=='Normal tracking'){ why.push(`<strong>${t}</strong>: ${(REASONS_TRACK[t]||[]).join('; ')}`); } });
 
-    if(whys.length){
-      whyBox.innerHTML = `<strong>Why these may be abnormal:</strong><br>${whys.map(s=>'• '+s).join('<br>')}`;
+    if(why.length){
+      whyBox.className='line warn';
+      whyBox.innerHTML = '<strong>Why these may be abnormal:</strong><br>' + why.map(s=>'• '+s).join('<br>');
       whyBox.style.display='block';
-    } else {
+    }else{
       whyBox.style.display='none';
     }
   }
 
-  // --- Events / init ---
-  btnNewCase.addEventListener('click', newCase);
-  btnLightL.addEventListener('click', ()=> lightEye('L'));
-  btnLightR.addEventListener('click', ()=> lightEye('R'));
-  gaze.addEventListener('input', ()=> setTrackText(gaze.value==0?'Center':'Following…'));
-  btnGrade.addEventListener('click', grade);
+  // New case
+  function newCase(){
+    casePupils = rand(PUPIL_CASES);
+    caseTracking = rand(TRACK_CASES);
+    eyePos.L = eyePos.R = 0; gaze.value = 0;
 
-  function renderInit(){
-    renderSizeChart();
-    newCase();
+    // Apply pupils (remember: right card = patient LEFT; left card = patient RIGHT)
+    applyPupil('L', casePupils.L.ratio); // patient LEFT (right card)
+    applyPupil('R', casePupils.R.ratio); // patient RIGHT (left card)
+
+    // Reset inputs and results
+    condL.value = condR.value = trackL.value = trackR.value = perlSel.value = '';
+    gradeBox.style.display='none'; whyBox.style.display='none';
+  }
+
+  // Animation loop
+  let last=0;
+  function raf(ts){
+    const dt = Math.min(0.04, (ts-last)/1000 || 0.016);
+    stepEye('L', dt); stepEye('R', dt);
+    last = ts;
     requestAnimationFrame(raf);
   }
-  renderInit();
+
+  // Events
+  btnLightL.addEventListener('click', ()=> lightEye('L')); // patient LEFT
+  btnLightR.addEventListener('click', ()=> lightEye('R')); // patient RIGHT
+  gaze.addEventListener('input', ()=> {/* visual updates handled each frame */});
+  btnGrade.addEventListener('click', grade);
+  btnNewCase.addEventListener('click', newCase);
+
+  // Init
+  renderSizeChart();
+  newCase();
+  requestAnimationFrame(raf);
 })();
 </script>
 </body>
