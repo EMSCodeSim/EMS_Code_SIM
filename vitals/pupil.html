@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>EMS Simulator — Bilateral Pupils & Dilation Ratio</title>
+<title>EMS Simulator — Pupils Quiz + Dilation Ratio</title>
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
@@ -65,6 +65,17 @@
   .pill.bad{background:#fff1f2;border:1px solid #fecaca;color:#7f1d1d}
 
   .muted{color:var(--muted)}
+
+  /* Quiz panel lines */
+  .line{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:#f8fafc;margin:8px 0}
+  .good{border-color:#bbf7d0;background:#f0fdf4}
+  .bad{border-color:#fecaca;background:#fff1f2}
+
+  /* Size chart */
+  .chart{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+  .chart .tick{display:flex;flex-direction:column;align-items:center;gap:4px}
+  .chart .disc{background:#1f2937;border:2px solid #e5e7eb;border-radius:9999px}
+  .chart small{color:#334155;font-weight:700}
 </style>
 </head>
 <body>
@@ -73,7 +84,7 @@
     <div class="headerbar">
       <div class="h-left">
         <button id="btnBack" class="iconbtn">← Back</button>
-        <h1>Bilateral Pupil Simulator — Dilation Ratio & Shapes</h1>
+        <h1>Pupil Simulator — Quiz & Dilation Ratio</h1>
       </div>
       <div class="h-right">
         <button id="btnInfo" class="iconbtn">ℹ️ Info</button>
@@ -89,9 +100,7 @@
         <div class="eyeBox">
           <div class="svgwrap">
             <svg id="svgL" viewBox="0 0 220 160" width="100%" height="100%" aria-label="Left eye">
-              <!-- sclera -->
               <ellipse cx="110" cy="80" rx="95" ry="58" fill="#ffffff" stroke="#d8e5f3" stroke-width="2"/>
-              <!-- iris -->
               <circle id="irisL" cx="110" cy="80" r="42" fill="url(#gradIrisL)" stroke="#2f4f7f" stroke-width="2"/>
               <defs>
                 <radialGradient id="gradIrisL" cx="50%" cy="50%" r="50%">
@@ -100,12 +109,9 @@
                   <stop offset="100%" stop-color="#20407f"/>
                 </radialGradient>
               </defs>
-              <!-- pupil group (shape swaps inside here) -->
               <g id="pupilGroupL"></g>
-              <!-- eyelids (optional aesthetic) -->
               <path d="M20,80 Q110,30 200,80" fill="none" stroke="#c9d7e6"/>
               <path d="M20,80 Q110,130 200,80" fill="none" stroke="#c9d7e6"/>
-              <!-- highlight -->
               <circle cx="95" cy="68" r="6" fill="#fff" opacity=".9"/>
             </svg>
           </div>
@@ -194,24 +200,72 @@
         <span class="pill" id="reactPill">Reactivity: —</span>
       </div>
       <div class="muted" style="margin-top:6px">
-        Ratios shown are pupil diameter ÷ iris diameter. Threshold for anisocoria flag is a ≥10% ratio difference (adjustable in code).
+        Ratios shown are pupil diameter ÷ iris diameter. Anisocoria flag trips at ≥10% ratio difference (you can tweak in code).
+      </div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="card">
+    <h2>Quiz Mode</h2>
+    <div class="body">
+      <div class="btnrow">
+        <button class="btn primary" id="btnNewCase">New Random Case</button>
+        <button class="btn" id="btnReveal">Reveal/Grade</button>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <div>
+          <label for="finding">Your finding</label>
+          <select id="finding">
+            <option value="">— choose —</option>
+            <option>Normal pupils</option>
+            <option>Pinpoint pupils</option>
+            <option>Dilated pupils</option>
+            <option>Unequal pupils (anisocoria)</option>
+            <option>Sluggish reaction to light</option>
+            <option>Non-reactive / blown pupil</option>
+            <option>Irregular pupil shape</option>
+          </select>
+        </div>
+        <div>
+          <label for="sideDetail">Side (if applicable)</label>
+          <select id="sideDetail">
+            <option value="">Both / not specific</option>
+            <option>Left</option>
+            <option>Right</option>
+          </select>
+        </div>
+      </div>
+      <div id="quizResult" class="line" style="display:none"></div>
+    </div>
+  </section>
+
+  <!-- PUPIL SIZE CHART -->
+  <section class="card">
+    <h2>Pupil Size Chart (mm)</h2>
+    <div class="body">
+      <div class="chart" id="sizeChart"></div>
+      <div class="muted" style="margin-top:6px">
+        Typical approximations: <strong>Pinpoint</strong> ~1–2 mm, <strong>Normal (room light)</strong> ~3–4 mm,
+        <strong>Dilated</strong> ~6–8 mm+. Always interpret with lighting and meds in mind.
       </div>
     </div>
   </section>
 </div>
 
 <!-- Info dialog -->
-<dialog id="infoDialog" style="max-width:720px;border:1px solid var(--border);border-radius:16px;padding:0">
+<dialog id="infoDialog" style="max-width:760px;border:1px solid var(--border);border-radius:16px;padding:0">
   <form method="dialog" style="margin:0">
     <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">About this Pupil Simulator</div>
     <div style="padding:14px 16px">
       <ul>
-        <li><strong>Dilation Ratio</strong> = pupil diameter ÷ iris diameter (shown for each eye).</li>
-        <li><strong>Shapes</strong>: Round, Vertical Slit (very constricted), Horizontal Oval (trauma/pressure variant), Irregular (post-surgical/trauma).</li>
-        <li><strong>Light Reflex</strong> animates constriction then redilation. Use per eye or for both.</li>
-        <li><strong>Anisocoria</strong> flag trips when left/right ratios differ by ≥10 percentage points.</li>
+        <li><strong>Dilation Ratio</strong> = pupil diameter ÷ iris diameter (shown per eye).</li>
+        <li><strong>Shapes</strong>: Round, Vertical Slit, Horizontal Oval, Irregular.</li>
+        <li><strong>Light Reflex</strong>: constrict → redilate; can be set to sluggish or non-reactive by the case.</li>
+        <li><strong>Quiz Mode</strong>: Randomized cases (pinpoint, dilated, anisocoria, sluggish, non-reactive/blown, irregular).</li>
+        <li><strong>Pupil Size Chart</strong>: quick visual for 1–8 mm reference.</li>
       </ul>
-      <p class="muted">Use clinically with context (lighting, medications, trauma, neuro exam). This is a training visual, not a diagnostic device.</p>
+      <p class="muted">Training visual only—use clinically with full neuro exam, context, and protocols.</p>
     </div>
     <div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
       <button class="iconbtn" style="background:#eee;color:#111">Close</button>
@@ -230,16 +284,37 @@
   });
   $('#btnInfo').addEventListener('click', ()=> $('#infoDialog').showModal());
 
-  // Config
-  const IRIS_R = 42; // px in SVG space (same for both eyes)
-  const ANISO_THRESHOLD = 10; // percentage points (ratio% difference)
+  // Constants
+  const IRIS_R = 42; // px in SVG space
+  const ANISO_THRESHOLD = 10; // ratio percentage points
+  const CASES = [
+    // Normal
+    { id:'normal', label:'Normal pupils', L:{ratio:30, shape:'round', reactivity:'normal'}, R:{ratio:30, shape:'round', reactivity:'normal'} },
+    // Pinpoint both
+    { id:'pinpoint', label:'Pinpoint pupils', L:{ratio:10, shape:'vslit', reactivity:'normal'}, R:{ratio:10, shape:'vslit', reactivity:'normal'} },
+    // Dilated both
+    { id:'dilated', label:'Dilated pupils', L:{ratio:65, shape:'round', reactivity:'normal'}, R:{ratio:65, shape:'round', reactivity:'normal'} },
+    // Anisocoria (R larger)
+    { id:'anisocoriaR', label:'Unequal pupils (anisocoria)', side:'Right',
+      L:{ratio:20, shape:'round', reactivity:'normal'}, R:{ratio:50, shape:'round', reactivity:'normal'} },
+    // Anisocoria (L larger)
+    { id:'anisocoriaL', label:'Unequal pupils (anisocoria)', side:'Left',
+      L:{ratio:50, shape:'round', reactivity:'normal'}, R:{ratio:20, shape:'round', reactivity:'normal'} },
+    // Sluggish both
+    { id:'sluggish', label:'Sluggish reaction to light', L:{ratio:35, shape:'round', reactivity:'sluggish'}, R:{ratio:35, shape:'round', reactivity:'sluggish'} },
+    // Non-reactive/blown (R)
+    { id:'blownR', label:'Non-reactive / blown pupil', side:'Right',
+      L:{ratio:25, shape:'round', reactivity:'normal'}, R:{ratio:70, shape:'round', reactivity:'none'} },
+    // Irregular (L)
+    { id:'irregularL', label:'Irregular pupil shape', side:'Left',
+      L:{ratio:30, shape:'irregular', reactivity:'normal'}, R:{ratio:30, shape:'round', reactivity:'normal'} },
+  ];
 
   // Elements
   const shapeL = $('#shapeL'), shapeR = $('#shapeR');
-  const sizeL = $('#sizeL'), sizeR = $('#sizeR');
+  const sizeL  = $('#sizeL'),  sizeR  = $('#sizeR');
   const ratioL = $('#ratioL'), ratioR = $('#ratioR');
   const shapeLblL = $('#shapeLblL'), shapeLblR = $('#shapeLblR');
-
   const groupL = document.getElementById('pupilGroupL');
   const groupR = document.getElementById('pupilGroupR');
 
@@ -249,57 +324,53 @@
   const anisocoriaPill = $('#anisocoriaPill');
   const reactPill = $('#reactPill');
 
+  const btnNewCase = $('#btnNewCase'), btnReveal = $('#btnReveal');
+  const findingSel = $('#finding'), sideSel = $('#sideDetail');
+  const quizResult = $('#quizResult');
+
   // State
   let reactiveL = false, reactiveR = false;
   let animating = { L:false, R:false };
+  let currentCase = null; // holds the active randomized case (or null for free mode)
 
-  // Helpers to create shapes inside a given group (center 110,80)
+  /* ------- Drawing helpers ------- */
   function drawPupil(group, ratioPct, shape){
-    group.innerHTML = ''; // clear
+    group.innerHTML = '';
     const cx=110, cy=80;
-
-    // pupil diameter relative to iris
-    const pupilR = (IRIS_R * (ratioPct/100));
-    // Guarantee a minimum visible radius
-    const r = Math.max(1.5, pupilR);
+    const r = Math.max(1.5, IRIS_R * (ratioPct/100));
+    const ns = 'http://www.w3.org/2000/svg';
 
     if(shape==='round'){
-      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
-      c.setAttribute('cx',cx); c.setAttribute('cy',cy);
-      c.setAttribute('r', r);
-      c.setAttribute('fill','#0b0b0b');
+      const c = document.createElementNS(ns,'circle');
+      c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',r); c.setAttribute('fill','#0b0b0b');
       group.appendChild(c);
     } else if(shape==='vslit'){
-      // vertical slender ellipse
-      const e = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+      const e = document.createElementNS(ns,'ellipse');
       e.setAttribute('cx',cx); e.setAttribute('cy',cy);
       e.setAttribute('rx', Math.max(1.2, r*0.35));
       e.setAttribute('ry', Math.max(2.0, r*1.1));
       e.setAttribute('fill','#0b0b0b');
       group.appendChild(e);
     } else if(shape==='h_oval'){
-      const e = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+      const e = document.createElementNS(ns,'ellipse');
       e.setAttribute('cx',cx); e.setAttribute('cy',cy);
       e.setAttribute('rx', Math.max(2.0, r*1.2));
       e.setAttribute('ry', Math.max(1.2, r*0.7));
       e.setAttribute('fill','#0b0b0b');
       group.appendChild(e);
     } else if(shape==='irregular'){
-      // slightly wavy circle path
-      const steps = 24;
-      let d='';
+      const steps = 24; let d='';
       for(let i=0;i<=steps;i++){
         const t = (i/steps)*Math.PI*2;
-        const jitter = (i%2===0 ? 0.12 : -0.12) * r; // alternating wobble
+        const jitter = (i%2===0 ? 0.12 : -0.12) * r;
         const rr = r + jitter;
         const x = cx + rr * Math.cos(t);
         const y = cy + rr * Math.sin(t);
         d += (i===0 ? 'M':'L') + x.toFixed(2) + ' ' + y.toFixed(2) + ' ';
       }
       d += 'Z';
-      const p = document.createElementNS('http://www.w3.org/2000/svg','path');
-      p.setAttribute('d', d);
-      p.setAttribute('fill','#0b0b0b');
+      const p = document.createElementNS(ns,'path');
+      p.setAttribute('d', d); p.setAttribute('fill','#0b0b0b');
       group.appendChild(p);
     }
   }
@@ -311,8 +382,6 @@
     const group = isL ? groupL : groupR;
 
     drawPupil(group, ratioPct, shape);
-
-    // readouts
     (isL ? ratioL : ratioR).textContent = ratioPct + '%';
     (isL ? shapeLblL : shapeLblR).textContent = 'Shape: ' + (
       shape==='round' ? 'Round' :
@@ -320,7 +389,6 @@
       shape==='h_oval' ? 'Horizontal Oval' :
       'Irregular'
     );
-
     updateStatus();
   }
 
@@ -329,7 +397,6 @@
     const r = parseInt(sizeR.value,10);
     const diff = Math.abs(l - r);
 
-    // anisocoria pill
     if(diff >= ANISO_THRESHOLD){
       anisocoriaPill.className = 'pill bad';
       anisocoriaPill.textContent = `Anisocoria: YES (Δ ${diff}%)`;
@@ -341,45 +408,50 @@
       anisocoriaPill.textContent = 'Anisocoria: no';
     }
 
-    // reactivity pill
     const anyReactive = reactiveL || reactiveR;
     reactPill.className = 'pill ' + (anyReactive ? 'ok' : 'warn');
     reactPill.textContent = 'Reactivity: ' + (anyReactive ? 'present (tested)' : 'not tested');
   }
 
-  // Light reflex animation (constrict then redilate)
-  function lightReflex(which){
-    if(which==='L' || which==='both'){
-      animateEye('L');
-    }
-    if(which==='R' || which==='both'){
-      animateEye('R');
-    }
-  }
+  function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
 
+  // Light reflex animation (case-aware for sluggish/none)
   function animateEye(which){
     if(animating[which]) return;
     animating[which] = true;
 
     const slider = which==='L' ? sizeL : sizeR;
     const base = parseInt(slider.value,10);
-    const minTarget = Math.max(6, Math.round(base * 0.35)); // constrict to ~35% of current
-    const maxBack = base; // return to original
-    const duration = 900; // ms each phase
 
-    // phase 1: constrict
+    // Determine case-specific reactivity
+    let mode = 'normal';
+    if(currentCase){
+      const cfg = (which==='L') ? currentCase.L : currentCase.R;
+      mode = cfg.reactivity || 'normal';
+    }
+
+    let constrictFactor = 0.35; // normal constrict to 35% of current
+    let dur = 900;
+    if(mode==='sluggish'){ constrictFactor = 0.65; dur = 1400; } // smaller change, slower
+    if(mode==='none'){ // no reaction
+      animating[which] = false;
+      if(which==='L') reactiveL=false; else reactiveR=false;
+      updateStatus();
+      return;
+    }
+
+    const minTarget = Math.max(6, Math.round(base * constrictFactor));
     const t0 = performance.now();
     function constrict(ts){
-      const t = Math.min(1, (ts - t0)/duration);
+      const t = Math.min(1, (ts - t0)/dur);
       const val = Math.round(base + (minTarget - base) * easeOutCubic(t));
       slider.value = val; updateEye(which);
       if(t<1) requestAnimationFrame(constrict);
       else {
-        // phase 2: redilate
         const t1 = performance.now();
         function redilate(ts2){
-          const t2 = Math.min(1, (ts2 - t1)/duration);
-          const val2 = Math.round(minTarget + (maxBack - minTarget) * easeOutCubic(t2));
+          const t2 = Math.min(1, (ts2 - t1)/dur);
+          const val2 = Math.round(minTarget + (base - minTarget) * easeOutCubic(t2));
           slider.value = val2; updateEye(which);
           if(t2<1) requestAnimationFrame(redilate);
           else {
@@ -395,7 +467,10 @@
     requestAnimationFrame(constrict);
   }
 
-  function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
+  function lightReflex(which){
+    if(which==='L' || which==='both'){ animateEye('L'); }
+    if(which==='R' || which==='both'){ animateEye('R'); }
+  }
 
   // Equalize & reset helpers
   function equalize(){
@@ -413,10 +488,85 @@
   function resetAll(){
     resetEye('L'); resetEye('R');
     reactiveL=false; reactiveR=false;
+    currentCase = null; // exit quiz case specifics (free mode until New Case)
+    quizResult.style.display='none';
+    findingSel.value=''; sideSel.value='';
     updateStatus();
   }
 
-  // Events
+  // Apply a case to the UI & lock in defaults
+  function applyCase(c){
+    currentCase = JSON.parse(JSON.stringify(c)); // clone
+    // Set sliders/shapes
+    sizeL.value = c.L.ratio; sizeR.value = c.R.ratio;
+    shapeL.value = c.L.shape; shapeR.value = c.R.shape;
+    reactiveL = reactiveR = false;
+    updateEye('L'); updateEye('R');
+    // Clear quiz selections
+    findingSel.value=''; sideSel.value='';
+    quizResult.style.display='none';
+  }
+
+  function pickCase(){
+    const i = Math.floor(Math.random() * CASES.length);
+    return CASES[i];
+  }
+
+  // Grade logic
+  function expectedAnswerForCase(c){
+    let label = c.label, side = c.side || '';
+    return {label, side};
+  }
+
+  function grade(){
+    if(!currentCase){
+      quizResult.className = 'line bad';
+      quizResult.innerHTML = 'No randomized case active. Click <strong>New Random Case</strong> first.';
+      quizResult.style.display='block';
+      return;
+    }
+    const user = { label: findingSel.value, side: sideSel.value };
+    const exp  = expectedAnswerForCase(currentCase);
+
+    let correct = true;
+    const notes = [];
+
+    if(!user.label){ correct = false; notes.push('No selection made.'); }
+    if(user.label !== exp.label){ correct = false; notes.push(`Expected: <strong>${exp.label}</strong>.`); }
+    // If expected has side specificity, require it
+    if(exp.side){
+      if(user.side !== exp.side){
+        correct = false; notes.push(`Side should be <strong>${exp.side}</strong>.`);
+      }
+    }
+
+    quizResult.className = 'line ' + (correct ? 'good' : 'bad');
+    quizResult.innerHTML = (correct ? '✅ Correct.' : '❌ Incorrect.') + (notes.length? ('<br><span class="muted">' + notes.join(' ') + '</span>') : '');
+    quizResult.style.display='block';
+  }
+
+  // Size chart (1–8 mm discs)
+  function renderSizeChart(){
+    const host = $('#sizeChart');
+    host.innerHTML = '';
+    const mm = [1,2,3,4,5,6,7,8];
+    mm.forEach(n=>{
+      const tick = document.createElement('div');
+      tick.className = 'tick';
+      const disc = document.createElement('div');
+      // scale: 6px per mm for on-screen reference
+      const px = n * 6;
+      disc.style.width = px+'px';
+      disc.style.height = px+'px';
+      disc.className = 'disc';
+      const label = document.createElement('small');
+      label.textContent = n+' mm';
+      tick.appendChild(disc); tick.appendChild(label);
+      host.appendChild(tick);
+    });
+  }
+
+  // Event wiring
   shapeL.addEventListener('change', ()=>updateEye('L'));
   shapeR.addEventListener('change', ()=>updateEye('R'));
   sizeL.addEventListener('input', ()=>updateEye('L'));
@@ -428,11 +578,17 @@
 
   btnResetL.addEventListener('click', ()=>resetEye('L'));
   btnResetR.addEventListener('click', ()=>resetEye('R'));
-  btnResetAll.addEventListener('click', resetAll);
   btnEqualize.addEventListener('click', equalize);
+  btnResetAll.addEventListener('click', resetAll);
+
+  btnNewCase.addEventListener('click', ()=>{
+    applyCase(pickCase());
+  });
+  btnReveal.addEventListener('click', grade);
 
   // Init
   updateEye('L'); updateEye('R');
+  renderSizeChart();
 })();
 </script>
 </body>
