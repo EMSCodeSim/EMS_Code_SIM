@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<!-- Lock phone view: no pinch zoom, no side scroll -->
+<!-- Lock phone view: no pinch zoom, no sideways scroll -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Pupil & Gaze — True-Scale Chart, Extra Size/Reaction Inputs</title>
+<title>Pupil & Gaze — True-Scale Chart, Clear Nystagmus, Auto-Center Tracking</title>
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
@@ -43,7 +43,7 @@
   select{width:100%;padding:.6rem .7rem;border-radius:10px;border:1px solid var(--border);background:#fff}
   input[type="range"]{width:100%;accent-color:var(--accent)}
 
-  /* Eyes always two columns; no sideways scroll on phones */
+  /* Layout */
   .panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
   .eyeBox{border:1px solid var(--border);border-radius:12px;padding:10px;background:#f8fbff;min-width:0}
   .labelAbove{display:flex;justify-content:center;gap:10px;margin-bottom:6px;font-weight:800;flex-wrap:wrap}
@@ -51,6 +51,7 @@
     border:1px solid var(--border);border-radius:12px;overflow:hidden}
   svg{width:100%;height:100%}
 
+  /* Buttons */
   .btn{appearance:none;border:1px solid var(--border);background:#fff;color:#122230;padding:10px 12px;border-radius:12px;font-weight:800;cursor:pointer}
   .btn.pin{background:linear-gradient(180deg,#ffe082,#ffd54f); border-color:#f1c232; color:#3b2f00; box-shadow:0 2px 8px rgba(60,40,0,.18)}
   .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -60,7 +61,7 @@
   .bad{border-color:#fecaca;background:#fff1f2}
   .warn{border-color:#fde68a;background:#fffbeb}
 
-  /* True-scale penlight chart */
+  /* Chart */
   .chart{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;justify-content:center}
   .tick{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
   .disc{background:#111;border:none;border-radius:9999px;flex:0 0 auto}
@@ -73,7 +74,7 @@
   <div class="headerbar">
     <div style="display:flex;gap:8px;align-items:center">
       <button id="btnBack" class="iconbtn">← Back</button>
-      <h1>Pupil & Gaze Trainer — True-Scale Chart + Extra Inputs</h1>
+      <h1>Pupil & Gaze Trainer — True-Scale Chart + Clear Nystagmus</h1>
     </div>
     <div><button id="btnInfo" class="iconbtn">ℹ️ Info</button></div>
   </div>
@@ -90,9 +91,6 @@
           <strong>Reference:</strong>
           Pinpoint ≈ <em>1–2 mm</em> • Normal (room light) ≈ <em>3–4 mm</em> • Dilated ≥ <em>6 mm</em>
         </span>
-      </div>
-      <div class="muted" style="text-align:center;margin-top:6px">
-        Discs use the <strong>same on-screen pixel scale</strong> as the live pupils (auto-adjusts on resize/orientation).
       </div>
     </div>
   </section>
@@ -179,14 +177,12 @@
 
       <!-- Tracking control -->
       <div class="line" style="margin-top:10px">
-        <label for="gaze">Tracking (examiner’s finger): <span class="muted">Left ⇄ Right (starts centered)</span></label>
+        <label for="gaze">Tracking (examiner’s finger): <span class="muted">Left ⇄ Right (auto-centers on release)</span></label>
         <input id="gaze" type="range" min="-100" max="100" value="0"/>
       </div>
 
       <!-- Findings -->
       <div class="line warn"><strong>Record findings (patient’s sides!)</strong></div>
-
-      <!-- PERL just below "Record findings" -->
       <div class="line" style="margin-top:0">
         <label for="perl">PERL (Pupils Equal & Reactive to Light)</label>
         <select id="perl">
@@ -196,7 +192,7 @@
         </select>
       </div>
 
-      <!-- New: Extra dropdowns per eye for Size and Reaction (plus Tracking) -->
+      <!-- Per-eye inputs (size, reaction, tracking) -->
       <div class="panel">
         <!-- Patient RIGHT -->
         <div>
@@ -222,9 +218,9 @@
             <option>Normal tracking</option>
             <option>Restricted toward patient’s left</option>
             <option>Restricted toward patient’s right</option>
-            <option>Conjugate deviation — left</option>
-            <option>Conjugate deviation — right</option>
-            <option>Nystagmus</option>
+            <option>Conjugate deviation — patient left</option>
+            <option>Conjugate deviation — patient right</option>
+            <option>Nystagmus (clearly visible)</option>
             <option>Disconjugate/lag</option>
           </select>
         </div>
@@ -253,9 +249,9 @@
             <option>Normal tracking</option>
             <option>Restricted toward patient’s left</option>
             <option>Restricted toward patient’s right</option>
-            <option>Conjugate deviation — left</option>
-            <option>Conjugate deviation — right</option>
-            <option>Nystagmus</option>
+            <option>Conjugate deviation — patient left</option>
+            <option>Conjugate deviation — patient right</option>
+            <option>Nystagmus (clearly visible)</option>
             <option>Disconjugate/lag</option>
           </select>
         </div>
@@ -281,10 +277,9 @@
     <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">About</div>
     <div style="padding:14px 16px">
       <ul>
-        <li>The chart uses the <strong>same on-screen scale</strong> as the live pupils. If you rotate the phone, it re-scales.</li>
-        <li>Patient RIGHT is shown on the <strong>left</strong>; Patient LEFT is on the <strong>right</strong>.</li>
+        <li>Patient RIGHT is shown on the <strong>left</strong> of the screen; Patient LEFT on the <strong>right</strong>.</li>
         <li>Use per-eye <strong>Penlight</strong> to test constriction/redilation; then record Size, Reaction, and Tracking.</li>
-        <li>PERL is recorded under <strong>Record findings</strong>.</li>
+        <li>The tracking slider auto-centers when released to mimic bringing your finger back to midline.</li>
       </ul>
     </div>
     <div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
@@ -338,10 +333,10 @@
   // Ratio <-> mm
   const mmFromRatio = r => (r/100)*IRIS_MM;
   const ratioFromMm = mm => clamp((mm/IRIS_MM)*100, 0, 100);
+  const pupilPxFromRatio = r => Math.round(PUPIL_MIN + (PUPIL_MAX - PUPIL_MIN) * (r/100));
 
-  // Apply pupil size by ratio (SVG units; SVG scales visually)
   function applyPupil(side, ratioPct){
-    const pxRadiusSvg = Math.round(PUPIL_MIN + (PUPIL_MAX - PUPIL_MIN) * (ratioPct/100));
+    const pxRadiusSvg = pupilPxFromRatio(ratioPct);
     const el = side==='L'?pupilL:pupilR;
     el.setAttribute('r', String(pxRadiusSvg));
     el.setAttribute('cx', String(P_CENTER.x));
@@ -352,10 +347,10 @@
 
   // --- True-scale chart: compute live scale factor and render discs accordingly ---
   function computeScaleFactor(){
-    // Use the rendered LEFT iris to compute actual on-screen pixel scale (SVG scales responsively)
-    const bbox = irisL.getBoundingClientRect(); // width ~ diameter in CSS px
+    // Measure the rendered LEFT iris for scale (SVG scales responsively)
+    const bbox = $('#irisL').getBoundingClientRect();
     const irisRenderedRadiusPx = bbox.width / 2;
-    scaleFactor = irisRenderedRadiusPx / IRIS_R; // CSS px per SVG 'px'
+    scaleFactor = irisRenderedRadiusPx / IRIS_R; // CSS px per SVG unit
   }
   function renderSizeChart(){
     computeScaleFactor();
@@ -364,10 +359,9 @@
     mmList.forEach(mm=>{
       const tick = document.createElement('div'); tick.className='tick';
       const disc = document.createElement('div'); disc.className='disc';
-      // Convert mm -> ratio -> pupil radius in SVG units -> convert to CSS px with scaleFactor
       const ratio = ratioFromMm(mm);
-      const pupilR_svg = (PUPIL_MIN + (PUPIL_MAX - PUPIL_MIN) * (ratio/100));
-      const diameter_css_px = Math.max(2, Math.round(pupilR_svg * 2 * scaleFactor)); // min 2px so 1mm remains visible
+      const pupilR_svg = pupilPxFromRatio(ratio);
+      const diameter_css_px = Math.max(2, Math.round(pupilR_svg * 2 * scaleFactor));
       disc.style.width = diameter_css_px+'px';
       disc.style.height = diameter_css_px+'px';
       const label = document.createElement('small'); label.textContent = mm+' mm';
@@ -375,17 +369,18 @@
       sizeChart.appendChild(tick);
     });
   }
-  // Keep chart matched on resize/orientation
+  // Keep chart matched on load/resize/orientation/font-settle
   window.addEventListener('resize', renderSizeChart);
   window.addEventListener('orientationchange', renderSizeChart);
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(renderSizeChart); }
 
   // Cases
   const PUPIL_CASES = [
-    { L:{ratio:30, react:'normal'}, R:{ratio:30, react:'normal'} },   // normal
-    { L:{ratio:10, react:'normal'}, R:{ratio:10, react:'normal'} },   // pinpoint
-    { L:{ratio:55, react:'sluggish'}, R:{ratio:55, react:'sluggish'} }, // sluggish large
-    { L:{ratio:25, react:'normal'}, R:{ratio:80, react:'none'} },     // one blown R
-    { L:{ratio:20, react:'normal'}, R:{ratio:45, react:'normal'} }    // anisocoria reactive
+    { L:{ratio:30, react:'normal'}, R:{ratio:30, react:'normal'} },    // normal
+    { L:{ratio:10, react:'normal'}, R:{ratio:10, react:'normal'} },    // pinpoint
+    { L:{ratio:55, react:'sluggish'}, R:{ratio:55, react:'sluggish'} },// sluggish large
+    { L:{ratio:25, react:'normal'}, R:{ratio:80, react:'none'} },      // one blown R
+    { L:{ratio:20, react:'normal'}, R:{ratio:45, react:'normal'} }     // anisocoria reactive
   ];
   const TRACK_CASES = [
     { id:'normal', label:'Normal tracking',
@@ -394,12 +389,13 @@
       L:{gain:0.9, limitLeft:-0.1, limitRight:1, bias:0, jitter:0}, R:{gain:0.9, limitLeft:-0.1, limitRight:1, bias:0, jitter:0} },
     { id:'right_palsy', label:"Restricted toward patient’s right",
       L:{gain:0.9, limitLeft:-1, limitRight:0.1, bias:0, jitter:0}, R:{gain:0.9, limitLeft:-1, limitRight:0.1, bias:0, jitter:0} },
-    { id:'dev_left', label:'Conjugate deviation — left',
+    { id:'dev_left', label:'Conjugate deviation — patient left',
       L:{gain:0.6, limitLeft:-1, limitRight:1, bias:-0.6, jitter:0}, R:{gain:0.6, limitLeft:-1, limitRight:1, bias:-0.6, jitter:0} },
-    { id:'dev_right', label:'Conjugate deviation — right',
+    { id:'dev_right', label:'Conjugate deviation — patient right',
       L:{gain:0.6, limitLeft:-1, limitRight:1, bias:0.6, jitter:0}, R:{gain:0.6, limitLeft:-1, limitRight:1, bias:0.6, jitter:0} },
-    { id:'nystagmus', label:'Nystagmus',
-      L:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0.6}, R:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0.6} },
+    // Stronger/clearer nystagmus: large, fast, visible on small screens
+    { id:'nystagmus', label:'Nystagmus (clearly visible)',
+      L:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:2.0}, R:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:2.0} },
     { id:'disconj', label:'Disconjugate/lag (L lags)',
       L:{gain:0.4, limitLeft:-1, limitRight:1, bias:0, jitter:0}, R:{gain:0.9, limitLeft:-1, limitRight:1, bias:0, jitter:0} },
   ];
@@ -435,16 +431,25 @@
     requestAnimationFrame(constrict);
   }
 
-  // Tracking engine
+  // Tracking engine (with clear nystagmus)
   function target(){ return parseInt(gaze.value,10)/100; } // -1..1
   function stepEye(side, dt){
     const cfg = caseTracking[side];
     const desired = clamp(target() + (cfg.bias||0), cfg.limitLeft, cfg.limitRight);
     const speed = (cfg.gain||0.8)*dt*6;
     eyePos[side] += clamp(desired - eyePos[side], -speed, speed);
-    if(cfg.jitter && Math.abs(target())>0.4){
+
+    // Enhanced nystagmus: large amplitude + fast beat, independent of slider
+    if(caseTracking.id==='nystagmus'){
+      // ~3px amplitude at center, increases slightly toward extremes
+      const amp = 3 + Math.abs(target())*1.5;
+      const freq = 18; // Hz-ish visual rate; we sample each RAF so feels quick
+      const t = performance.now()/1000;
+      eyePos[side] += Math.sin(t*2*Math.PI*freq)* (amp/GAZE_RANGE);
+    } else if (cfg.jitter && Math.abs(target())>0.3){
       eyePos[side] += Math.sin(performance.now()/50)*0.015*cfg.jitter;
     }
+
     const cx = P_CENTER.x + eyePos[side]*GAZE_RANGE;
     (side==='L'?pupilL:pupilR).setAttribute('cx', String(cx));
     (side==='L'?pupilL:pupilR).setAttribute('cy', String(P_CENTER.y));
@@ -455,6 +460,35 @@
     stepEye('L', dt); stepEye('R', dt);
     lastTs = ts;
     requestAnimationFrame(raf);
+  }
+
+  // Auto-center the tracking slider on release (mouse & touch)
+  function smoothCenter(){
+    const start = parseInt(gaze.value,10);
+    const dur = 250;
+    const t0 = performance.now();
+    function tick(ts){
+      const t = Math.min(1,(ts - t0)/dur);
+      const v = Math.round(start * (1 - t));
+      gaze.value = String(v);
+      if(t<1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  const endEvents = ['mouseup','touchend','pointerup'];
+  endEvents.forEach(ev => gaze.addEventListener(ev, smoothCenter, {passive:true}));
+
+  // Expected tracking labels per eye
+  function trackingExpected(){
+    const id = caseTracking.id;
+    if(id==='normal')     return {L:'Normal tracking', R:'Normal tracking'};
+    if(id==='left_palsy') return {L:'Restricted toward patient’s left', R:'Restricted toward patient’s left'};
+    if(id==='right_palsy')return {L:'Restricted toward patient’s right', R:'Restricted toward patient’s right'};
+    if(id==='dev_left')   return {L:'Conjugate deviation — patient left', R:'Conjugate deviation — patient left'};
+    if(id==='dev_right')  return {L:'Conjugate deviation — patient right', R:'Conjugate deviation — patient right'};
+    if(id==='nystagmus')  return {L:'Nystagmus (clearly visible)', R:'Nystagmus (clearly visible)'};
+    if(id==='disconj')    return {L:'Disconjugate/lag', R:'Normal tracking'};
+    return {L:'Normal tracking', R:'Normal tracking'};
   }
 
   // Grading helpers
@@ -475,23 +509,11 @@
   const REASONS_TRACK = {
     'Restricted toward patient’s left': ['Left gaze palsy','CN VI/EOM issue'],
     'Restricted toward patient’s right': ['Right gaze palsy','CN VI/EOM issue'],
-    'Conjugate deviation — left': ['Acute cerebral lesion','Seizure/post-ictal'],
-    'Conjugate deviation — right': ['Acute cerebral lesion','Seizure/post-ictal'],
-    'Nystagmus': ['Vestibular disorder/intoxication','Cerebellar/brainstem'],
+    'Conjugate deviation — patient left': ['Acute cerebral lesion','Seizure/post-ictal'],
+    'Conjugate deviation — patient right': ['Acute cerebral lesion','Seizure/post-ictal'],
+    'Nystagmus (clearly visible)': ['Vestibular disorder/intoxication','Cerebellar/brainstem'],
     'Disconjugate/lag': ['INO or CN palsy','Orbital trauma/entrapment']
   };
-
-  function trackingExpected(){
-    const id = caseTracking.id;
-    if(id==='normal')     return {L:'Normal tracking', R:'Normal tracking'};
-    if(id==='left_palsy') return {L:'Restricted toward patient’s left', R:'Restricted toward patient’s left'};
-    if(id==='right_palsy')return {L:'Restricted toward patient’s right', R:'Restricted toward patient’s right'};
-    if(id==='dev_left')   return {L:'Conjugate deviation — left', R:'Conjugate deviation — left'};
-    if(id==='dev_right')  return {L:'Conjugate deviation — right', R:'Conjugate deviation — right'};
-    if(id==='nystagmus')  return {L:'Nystagmus', R:'Nystagmus'};
-    if(id==='disconj')    return {L:'Disconjugate/lag', R:'Normal tracking'};
-    return {L:'Normal tracking', R:'Normal tracking'};
-  }
 
   // Grade
   function grade(){
@@ -502,15 +524,15 @@
     const l_resp = respClass(casePupils.L.react), r_resp = respClass(casePupils.R.react);
     const expTrack = trackingExpected();
 
-    // User entries (extra dropdowns)
+    // User entries
     const user = {
       perl: perlSel.value,
-      sizeL: sizeLsel.value, sizeR: sizeRsel.value,
-      reactL: reactLsel.value, reactR: reactRsel.value,
-      trackL: trackLsel.value, trackR: trackRsel.value
+      sizeL: $('#sizeL').value, sizeR: $('#sizeR').value,
+      reactL: $('#reactL').value, reactR: $('#reactR').value,
+      trackL: $('#trackL').value, trackR: $('#trackR').value
     };
 
-    // PERL expectation: near equal size + both reactive (not 'Non-reactive')
+    // PERL expectation: near equal size + both reactive (not Non-reactive)
     const perlExpected = (Math.abs(l_mm - r_mm) < 1.0 &&
                           l_resp !== 'Non-reactive' && r_resp !== 'Non-reactive') ? 'Yes' : 'No';
 
@@ -523,11 +545,10 @@
     const sizeRchk = user.sizeR ? check(user.sizeR, r_size, 'size (R)') : {ok:false,msg:`No size selected.`};
     const reactLchk = user.reactL ? check(user.reactL, l_resp==='Normal'?'Normal':l_resp, 'reaction (L)') : {ok:false,msg:`No reaction selected.`};
     const reactRchk = user.reactR ? check(user.reactR, r_resp==='Normal'?'Normal':r_resp, 'reaction (R)') : {ok:false,msg:`No reaction selected.`};
-    const trackLchk = user.trackL ? check(user.trackL, expTrack.L, 'tracking (L)') : {ok:false,msg:`No tracking selected.`};
-    const trackRchk = user.trackR ? check(user.trackR, expTrack.R, 'tracking (R)') : {ok:false,msg:`No tracking selected.`};
+    const trackLchk = user.trackL ? check(user.trackL,  expTrack.L, 'tracking (L)') : {ok:false,msg:`No tracking selected.`};
+    const trackRchk = user.trackR ? check(user.trackR,  expTrack.R, 'tracking (R)') : {ok:false,msg:`No tracking selected.`};
     const perlOk = (user.perl && user.perl===perlExpected);
 
-    // Output
     const o = [];
     o.push(`<strong>Patient LEFT</strong> — actual: size <em>${l_size}</em> (${l_mm.toFixed(1)} mm), reaction <em>${l_resp}</em>, tracking <em>${expTrack.L}</em>.`);
     o.push(sizeLchk.ok ? '✅ Size: correct.' : `❌ Size: ${sizeLchk.msg}`);
@@ -579,7 +600,7 @@
     sizeLsel.value = sizeRsel.value = reactLsel.value = reactRsel.value = trackLsel.value = trackRsel.value = perlSel.value = '';
     gradeBox.style.display='none'; whyBox.style.display='none';
 
-    // Re-sync chart scale after new layout tick
+    // Re-sync chart scale after layout settles
     requestAnimationFrame(renderSizeChart);
   }
 
