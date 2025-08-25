@@ -1,412 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>FireOps SIM — Geo Scenarios Viewer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0f14" />
-  <link rel="icon" href="data:," />
-  <style>
-    :root{ --bg:#0b0f14; --bg2:#101726; --card:#121823; --muted:#8ea0b3; --text:#eaf2ff; --blue:#0a84ff; --shadow:0 12px 34px rgba(0,0,0,.38); --radius:18px; }
-    *{box-sizing:border-box}
-    html,body{
-      margin:0; padding:0; color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-      background:
-        radial-gradient(1400px 700px at 15% -15%, rgba(10,132,255,.28), transparent 60%),
-        radial-gradient(1200px 600px at 110% 0%, rgba(255,59,48,.22), transparent 60%),
-        linear-gradient(165deg, var(--bg2), var(--bg) 55%);
-      -webkit-text-size-adjust:100%; scroll-behavior:smooth;
-    }
-    a{color:inherit; text-decoration:none} img{max-width:100%; height:auto; display:block}
-
-    .topbar{position:sticky; top:0; z-index:20; background:rgba(12,15,22,.75);
-      backdrop-filter:saturate(120%) blur(6px); border-bottom:1px solid rgba(255,255,255,.07)}
-    .topnav{max-width:1100px; margin:0 auto; padding:10px 20px; display:flex; align-items:center; gap:14px}
-    .brandmini{display:flex; align-items:center; gap:12px; font-weight:800}
-    .logo img{width:40px; height:40px; border-radius:10px; box-shadow:var(--shadow); object-fit:cover; background:#0f1624}
-
-    .wrap{max-width:1100px; margin:0 auto; padding:18px 20px 100px}
-    .grid{display:grid; gap:14px; grid-template-columns:1fr}
-    .card{border-radius:var(--radius); background:var(--card); border:1px solid rgba(255,255,255,.07);
-      box-shadow:var(--shadow); overflow:hidden; transition:transform .15s ease, border-color .2s ease}
-    .card:hover{transform:translateY(-2px); border-color:rgba(10,132,255,.35)}
-    .card-inner{padding:18px}
-    .eyebrow{font-size:12px; color:var(--muted); margin-bottom:8px}
-    h1,h2,h3{margin:0} h2{font-size:20px} p,.status{color:var(--muted); font-size:14px; margin:6px 0 0}
-
-    #viewer .card-inner{padding:12px}
-    #photoWrap{ margin-top:10px; border-radius:16px; border:1px solid rgba(255,255,255,.12); background:#000; overflow:hidden; }
-    #photo{ width:100%; height:min(78vh, calc(100vh - 220px)); object-fit:contain; background:#000; }
-    #caption{font-size:15px; color:#e9f1ff}
-
-    footer{max-width:1100px; margin:34px auto; padding:0 20px; color:#a9b6c9; font-size:13px;
-      border-top:1px solid rgba(255,255,255,.06); display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap}
-
-    #runTimer{font-size:13px; color:#cfe1ff}
-    #debug{font-size:12px; color:#ffdede; margin-top:6px; white-space:pre-wrap}
-
-    .btn{appearance:none; border:0; border-radius:12px; cursor:pointer; padding:14px 16px; font-weight:800; font-size:16px;
-      color:#03131b; background:linear-gradient(180deg,#54a6ff,var(--blue)); box-shadow:var(--shadow); text-align:center}
-    .btn[disabled]{opacity:.65; cursor:not-allowed}
-    .btn.secondary{background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.14)}
-    select{width:100%; padding:14px 12px; font-size:16px; border-radius:12px; border:1px solid rgba(255,255,255,.14);
-      background:#0f1624; color:var(--text); outline:none}
-    input[type="range"]{accent-color:#54a6ff}
-    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>A&O×4 Orientation Simulator</title>
+<style>
+  :root{
+    --brand:#007B8A; --brand-600:#066371;
+    --bg:#f0f8ff; --panel:#ffffff; --ink:#0f2b33; --muted:#46636a;
+    --ok:#0a8f5b; --bad:#b81e2b; --warn:#c77b00;
+    --border:#e2e8f0; --shadow:0 10px 28px rgba(2,8,23,.08);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif;
+    -webkit-text-size-adjust:100%;}
+  a{color:var(--brand-600); text-decoration:none}
+  .wrap{max-width:1100px; margin:0 auto; padding:18px 16px 60px;}
+  .top{position:sticky; top:0; z-index:10; background:rgba(240,248,255,.75); backdrop-filter:saturate(120%) blur(6px); border-bottom:1px solid var(--border);}
+  .topnav{max-width:1100px; margin:0 auto; padding:10px 16px; display:flex; align-items:center; gap:14px}
+  .brand{font-weight:900; letter-spacing:.2px;}
+  .grid{display:grid; gap:12px; grid-template-columns:1fr}
+  .card{background:var(--panel); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow); overflow:hidden}
+  .card .inner{padding:16px}
+  h1,h2,h3{margin:0 0 6px 0}
+  small{color:var(--muted)}
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  .btn{appearance:none; border:0; border-radius:12px; cursor:pointer; padding:12px 14px; font-weight:800; color:#fff; background:linear-gradient(180deg, #1db4c7, var(--brand));}
+  .btn.secondary{background:transparent; color:var(--brand-600); border:1px solid var(--border)}
+  .btn.warn{background:linear-gradient(180deg, #ffbf65, var(--warn)); color:#2b1900}
+  .btn:disabled{opacity:.65; cursor:not-allowed}
+  select,input[type="text"]{padding:12px; border-radius:12px; border:1px solid var(--border); outline:none; background:#f7fbff}
+  .cols{display:grid; grid-template-columns:1fr; gap:12px}
+  @media(min-width:940px){ .cols{grid-template-columns:1.2fr .8fr} }
+  .big{font-size:18px}
+  .qa{display:grid; gap:10px; grid-template-columns:1fr 1fr}
+  .qa button{width:100%}
+  .log{white-space:pre-wrap; border-top:1px dashed var(--border); margin-top:10px; padding-top:10px; color:#3c5258}
+  .score{font-weight:900; color:var(--brand-600)}
+  .box{border-radius:12px; border:1px dashed var(--border); padding:10px; background:#f9fcff}
+  .field{display:flex; flex-direction:column; gap:6px}
+</style>
 </head>
 <body>
-  <div class="topbar">
+  <div class="top">
     <div class="topnav">
-      <div class="brandmini">
-        <div class="logo" aria-hidden="true"><img src="/assets/logo/fire-ops-sim.png" alt="FireOps SIM logo" /></div>
-        <div style="line-height:1.1; font-size:15px; font-weight:900">FireOps SIM</div>
-      </div>
+      <div class="brand">A&O×4 Orientation Simulator</div>
     </div>
   </div>
 
   <div class="wrap">
     <div class="grid">
-      <article class="card">
-        <div class="card-inner">
-          <div class="eyebrow">Scenario</div>
-          <h2>Select & Start</h2>
-          <p>Choose a scenario below, then press Start to enable voice prompts.</p>
-          <div class="row" style="margin-top:10px; width:100%">
-            <select id="scenarioSelect" aria-label="Choose a scenario"><option value="">Loading…</option></select>
+      <div class="card">
+        <div class="inner">
+          <h2>Scenario</h2>
+          <small>Pick a case and click Start. Use the Ask buttons to practice orientation questions; the simulator will speak each prompt.</small>
+          <div class="row" style="margin-top:8px">
+            <select id="scenarioSelect">
+              <option value="">Select a case…</option>
+              <option value="basic">Basic: No complications</option>
+              <option value="confused">Confused: Needs redirection</option>
+              <option value="aphasia">Aphasia: Short responses</option>
+              <option value="intox">Intoxicated: Slurred speech</option>
+            </select>
+            <button id="startBtn" class="btn">Start</button>
+            <button id="stopBtn" class="btn secondary">Stop</button>
+            <button id="nextBtn" class="btn warn">Next Case</button>
           </div>
-          <div class="status" id="status" aria-live="polite" style="margin-top:8px">Connecting…</div>
-          <div id="debug" aria-live="polite"></div>
+          <div id="status" class="box" style="margin-top:10px"></div>
         </div>
-      </article>
+      </div>
 
-      <article class="card" id="viewer" style="display:none">
-        <div class="card-inner">
-          <div class="row" style="justify-content:space-between; align-items:center">
-            <h3 id="scTitle" style="margin:0; font-size:18px">(scenario)</h3>
-            <button id="backBtn" class="btn secondary" type="button">Back</button>
-          </div>
-
-          <div class="status" id="dispatchBlock" style="white-space:pre-wrap; margin-top:8px"></div>
-          <div class="status" id="geoStatus" style="margin-top:4px">Waiting for location…</div>
-
-          <div id="result" style="display:none">
-            <h3 id="stopTitle" style="margin:12px 2px 6px 2px"></h3>
-            <div id="photoWrap"><img id="photo" alt="Photo for this stop"></div>
-            <div class="status" id="caption" style="white-space:pre-wrap; margin-top:10px"></div>
-            <div class="status" id="detail"></div>
+      <div class="cols">
+        <div class="card">
+          <div class="inner">
+            <h3>Ask (A&O×4)</h3>
+            <small>Tap a question to ask it. The simulator will speak the prompt and a patient-style reply.</small>
+            <div class="qa" style="margin-top:10px">
+              <button id="askPerson" class="btn">Ask Person</button>
+              <button id="askPlace" class="btn">Ask Place</button>
+              <button id="askTime" class="btn">Ask Time</button>
+              <button id="askEvent" class="btn">Ask Event</button>
+            </div>
+            <div class="log" id="log"></div>
           </div>
         </div>
-      </article>
 
-      <article class="card">
-        <div class="card-inner">
-          <div class="eyebrow">Audio & TTS</div>
-          <h2>Scenario Controls</h2>
-          <p>Start enables speech for the dispatch and each photo caption.</p>
-          <div class="row" style="margin-top:10px; align-items:flex-start">
-            <button id="startScenario" class="btn" type="button">Start Scenario</button>
-            <button id="muteToggle" class="btn secondary" type="button">Mute</button>
-            <label style="margin-left:auto; color:var(--muted)">Volume
-              <input id="vol" type="range" min="0" max="1" step="0.05" value="1" />
-            </label>
+        <div class="card">
+          <div class="inner">
+            <h3>Controls</h3>
+            <div class="field">
+              <label>Voice
+                <select id="voiceSel"></select>
+              </label>
+            </div>
+            <div class="field">
+              <label>Rate
+                <input id="rate" type="range" min="0.7" max="1.3" step="0.05" value="1.0"/>
+              </label>
+            </div>
+            <div class="field">
+              <label>Pitch
+                <input id="pitch" type="range" min="0.6" max="1.4" step="0.05" value="1.0"/>
+              </label>
+            </div>
+            <div class="field">
+              <label>Volume
+                <input id="vol" type="range" min="0" max="1" step="0.05" value="1"/>
+              </label>
+            </div>
           </div>
-          <div id="runTimer" aria-live="polite" style="margin-top:8px">00:00</div>
         </div>
-      </article>
+      </div>
+
+      <div class="card">
+        <div class="inner">
+          <h3>Transcript</h3>
+          <div id="transcript" class="box big"></div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <footer>
-    <div>© <span id="year"></span> FireOps SIM</div>
-    <div id="connStatus"></div>
-  </footer>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
 
-  <!-- Firebase (modular first; compat fallback present) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-database-compat.js"></script>
+  const scenarioSelect = $('scenarioSelect');
+  const startBtn = $('startBtn');
+  const stopBtn = $('stopBtn');
+  const nextBtn = $('nextBtn');
 
-  <script type="module">
-  (async () => {
-    const $ = id => document.getElementById(id);
-    const viewer=$('viewer'), backBtn=$('backBtn');
-    const select=$('scenarioSelect'), status=$('status'), debug=$('debug'), connStatus=$('connStatus');
-    const dispatchBlock=$('dispatchBlock'), geoStatus=$('geoStatus');
-    const result=$('result'), stopTitle=$('stopTitle'), photo=$('photo'), caption=$('caption'), detail=$('detail');
-    const scTitle=$('scTitle');
-    const startBtn=$('startScenario'), muteToggle=$('muteToggle'), vol=$('vol'), runTimer=$('runTimer');
-    const log = (m)=>{ console.log('[viewer]', m); debug.textContent=String(m); };
+  const askPerson = $('askPerson');
+  const askPlace = $('askPlace');
+  const askTime = $('askTime');
+  const askEvent = $('askEvent');
 
-    /* ---------- Helpers ---------- */
-    const toRad = x => x*Math.PI/180;
-    const hav=(a,b,c,d)=>{ const R=6371000, dA=toRad(c-a), dB=toRad(d-b);
-      return 2*R*Math.asin(Math.sqrt(Math.sin(dA/2)**2 + Math.cos(toRad(a))*Math.cos(toRad(c))*Math.sin(dB/2)**2)); };
-    const num=v=>(v===0||v===null)?v:parseFloat(v);
+  const status = $('status');
+  const transcript = $('transcript');
+  const logEl = $('log');
 
-    function normalizeStops(stopsLike){
-      if(!stopsLike) return [];
-      let arr = Array.isArray(stopsLike) ? stopsLike : Object.values(stopsLike);
-      return arr.map(s=>{
-        const lat = num(s.lat ?? s.latitude ?? s.latDeg);
-        const lng = num(s.lng ?? s.lon ?? s.long ?? s.longitude ?? s.lngDeg);
-        const radiusMeters = num(s.radiusMeters ?? s.radius ?? s.r) || 40;
-        const title = s.title || s.name || '';
-        const cap = s.caption || s.text || s.note || '';
-        const image = s.image || s.imageData || s.imageURL || s.imageUrl || s.url || s.photoURL || s.photo || s.img || '';
-        return { ...s, lat, lng, radiusMeters, title, caption: cap, image };
-      }).filter(s => Number.isFinite(s.lat) && Number.isFinite(s.lng));
-    }
-    function setImage(img, stop){
-      const src = stop.image || '';
-      img.src = src || "data:image/svg+xml;utf8,"+encodeURIComponent(
-        "<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='720'><rect width='100%' height='100%' fill='#000'/><text x='50%' y='50%' fill='#9ecbd6' font-size='24' text-anchor='middle'>No image</text></svg>"
-      );
-      img.onerror=()=>{ img.src="data:image/svg+xml;utf8,"+encodeURIComponent(
-        "<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='720'><rect width='100%' height='100%' fill='#000'/><text x='50%' y='50%' fill='#9ecbd6' font-size='24' text-anchor='middle'>Image failed to load</text></svg>"
-      ); };
-    }
+  const voiceSel = $('voiceSel');
+  const rate = $('rate');
+  const pitch = $('pitch');
+  const vol = $('vol');
 
-    /* ---------- Firebase init (modular or compat) ---------- */
-    const firebaseConfig = {
-      apiKey:"AIzaSyDM6DpRSeZueVKRpbyJyDmhf8WY66KyCDk",
-      authDomain:"dailyquiz-d5279.firebaseapp.com",
-      databaseURL:"https://dailyquiz-d5279-default-rtdb.firebaseio.com",
-      projectId:"dailyquiz-d5279",
-      appId:"1:94577748034:web:c032d3a1d72db1313de5db",
-      measurementId:"G-19DVN7NNH7"
-    };
-
-    let mode='modular', app, db, refFn, onValueFn, getFn;
-    try{
-      const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js');
-      const { getDatabase, ref, onValue, get } = await import('https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js');
-      app = initializeApp(firebaseConfig); db = getDatabase(app);
-      refFn = (dbRefPath)=>ref(db, dbRefPath);
-      onValueFn = onValue; getFn = get;
-    }catch(e){
-      mode='compat';
-      app = window.firebase.initializeApp(firebaseConfig);
-      db = window.firebase.database();
-      refFn = (dbRefPath)=>db.ref(dbRefPath);
-      onValueFn = (r, cb, err)=>r.on('value', s=>cb(s), err);
-      getFn = (r)=>r.get();
-    }
-    log('Firebase mode: ' + mode);
-
-    // connection indicator
-    try{
-      const infoRef = (mode==='modular') ? refFn('.info/connected') : refFn('.info/connected');
-      onValueFn(infoRef, snap=>{
-        const ok = snap.val() === true;
-        connStatus.textContent = ok ? 'Connected' : 'Offline';
-        connStatus.style.color = ok ? '#89ffb2' : '#ffdede';
-      });
-    }catch{}
-
-    /* ---------- Scenario loading (working) ---------- */
-    let scenarios=[], populated=false;
-    function mapSnapshot(val){
-      const obj = val || {};
-      return Object.entries(obj).map(([id, s])=>({ id, ...(s||{}), stops: normalizeStops(s?.stops) }));
-    }
-    function populateDropdown(list){
-      select.innerHTML = '<option value="">Select a scenario…</option>';
-      list.forEach(sc=>{
-        const o=document.createElement('option');
-        o.value=sc.id;
-        o.textContent=sc.title || sc.name || sc.notes || '(untitled)';
-        select.appendChild(o);
-      });
-      status.textContent = list.length ? `${list.length} scenario(s) found` : 'No scenarios yet.';
-      populated = list.length>0;
-    }
-    try{
-      const a = refFn('geophoto/scenarios');
-      onValueFn(a, snap=>{
-        const list=mapSnapshot(snap.val());
-        if(list.length){ scenarios=list; populateDropdown(scenarios); log('SDK: geophoto/scenarios '+list.length); }
-      }, err=>log('SDK geophoto error: '+(err?.message||err)));
-    }catch(e){ log('attach geophoto failed: '+e.message); }
-    try{
-      const b = refFn('scenarios');
-      onValueFn(b, snap=>{
-        const list=mapSnapshot(snap.val());
-        if(!scenarios.length && list.length){ scenarios=list; populateDropdown(scenarios); log('SDK: scenarios '+list.length); }
-      }, err=>log('SDK scenarios error: '+(err?.message||err)));
-    }catch(e){ log('attach scenarios failed: '+e.message); }
-    setTimeout(async ()=>{
-      if(!populated){
-        try{ const s1 = await getFn(refFn('geophoto/scenarios'));
-             const list=mapSnapshot(s1.val()); if(list.length){ scenarios=list; populateDropdown(list); log('GET geophoto '+list.length); } }catch(e){}
+  // Simple scenarios for demo
+  const scenarios = {
+    basic: {
+      intro: "You are evaluating a cooperative patient in triage.",
+      replies: {
+        person: "My name is Jordan Smith.",
+        place: "I'm at the county emergency department.",
+        time: "It's Tuesday afternoon.",
+        event: "I came in for chest tightness that started an hour ago."
       }
-      if(!populated){
-        try{ const s2 = await getFn(refFn('scenarios'));
-             const list=mapSnapshot(s2.val()); if(list.length){ scenarios=list; populateDropdown(list); log('GET scenarios '+list.length); } }catch(e){}
+    },
+    confused: {
+      intro: "You are evaluating a confused patient requiring redirection.",
+      replies: {
+        person: "Uh… I think it's John. John? Not sure.",
+        place: "This is the clinic? Or… is it the pharmacy?",
+        time: "Evening? Morning? It's a bit blurry.",
+        event: "I lost my wallet and felt dizzy on the bus."
       }
-      if(!populated){
-        try{
-          const r = await fetch('https://dailyquiz-d5279-default-rtdb.firebaseio.com/scenarios.json');
-          if(r.ok){ const json = await r.json(); const list = mapSnapshot(json);
-            if(list.length){ scenarios=list; populateDropdown(list); log('REST scenarios '+list.length); } }
-        }catch(e){ log('REST error: '+e.message); }
+    },
+    aphasia: {
+      intro: "You are evaluating a patient with expressive aphasia.",
+      replies: {
+        person: "…Jordan.",
+        place: "Hos… hospital.",
+        time: "Two… two o'clock.",
+        event: "Car… crash."
       }
-      if(!populated) status.textContent = 'No scenarios found.';
-    }, 1200);
-
-    /* ---------- Viewer prep vs. geolocation (split) ---------- */
-    let current=null, currentStops=[], watchId=null, lastStopIndex=-1;
-
-    function prepareScenario(sc){
-      current=sc;
-      currentStops = normalizeStops(sc.stops);
-      viewer.style.display='';
-      scTitle.textContent=sc.title || sc.name || sc.notes || '(scenario)';
-      result.style.display='none';
-      stopTitle.textContent=''; caption.textContent=''; detail.textContent='';
-      lastStopIndex = -1;
-      const txt = (sc.dispatch || sc.notes || '').trim();
-      dispatchBlock.textContent = txt ? `Dispatch: ${txt}` : 'Dispatch: (none)';
-      return txt;
+    },
+    intox: {
+      intro: "You are evaluating an intoxicated patient with slurred speech.",
+      replies: {
+        person: "Mmm… name? Jordan… yeah.",
+        place: "The ER… yeah, ER.",
+        time: "Nnnot sure… late.",
+        event: "Partied… too hard… feel sick."
+      }
     }
+  };
 
-    function startGeoWatch(){
-      if(watchId){ navigator.geolocation.clearWatch(watchId); watchId=null; }
-      geoStatus.textContent='Watching your location…';
-      try{
-        watchId=navigator.geolocation.watchPosition(p=>{
-          const { latitude:la, longitude:ln, accuracy:acc }=p.coords;
-          geoStatus.textContent=`Lat ${la.toFixed(5)}, Lng ${ln.toFixed(5)} (±${Math.round(acc)}m)`;
-          const hit=findHit(currentStops, la, ln, acc);
-          if(hit && hit.index!==lastStopIndex){
-            lastStopIndex = hit.index;
-            result.style.display='';
-            stopTitle.textContent=hit.s.title||'Stop';
-            setImage(photo, hit.s);
-            caption.textContent=hit.s.caption||'';
-            detail.textContent=`Distance: ${Math.round(hit.dist)} m (radius ${hit.s.radiusMeters} m)`;
+  // TTS helpers (Web Speech API)
+  const synth = window.speechSynthesis;
+  let selectedVoice = null;
 
-            // enqueue caption for playlist chain (no tap required)
-            sayQueue(`${hit.s.title ? hit.s.title + '. ' : ''}${hit.s.caption || ''}`);
-            viewer.scrollIntoView({behavior:'smooth', block:'start'});
-          }
-        }, err=>{ geoStatus.textContent='Location error: '+err.message; }, {
-          enableHighAccuracy:true, maximumAge:1000, timeout:10000
-        });
-      }catch(e){ geoStatus.textContent='Location error: '+e.message; }
+  function populateVoices() {
+    const voices = synth.getVoices();
+    voiceSel.innerHTML = '';
+    const opt = document.createElement('option');
+    opt.value = ''; opt.textContent = '(System default)';
+    voiceSel.appendChild(opt);
+
+    voices.forEach(v => {
+      const o = document.createElement('option');
+      o.value = v.name;
+      o.textContent = `${v.name} (${v.lang})`;
+      voiceSel.appendChild(o);
+    });
+  }
+  populateVoices();
+  synth.addEventListener('voiceschanged', populateVoices);
+
+  voiceSel.addEventListener('change', () => {
+    const v = synth.getVoices().find(v => v.name === voiceSel.value);
+    selectedVoice = v || null;
+  });
+
+  function say(text, opts={}) {
+    if(!text) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = parseFloat(rate.value) || 1.0;
+    u.pitch = parseFloat(pitch.value) || 1.0;
+    u.volume = parseFloat(vol.value) || 1.0;
+    if (selectedVoice) u.voice = selectedVoice;
+    // Cancel any previous speech before starting a new prompt
+    synth.cancel();
+    synth.speak(u);
+  }
+
+  function log(line){
+    const prev = logEl.textContent.trim();
+    logEl.textContent = (prev ? prev + "\n" : "") + line;
+  }
+
+  function setStatus(msg){ status.textContent = msg; }
+  function setTranscript(msg){ transcript.textContent = msg; }
+
+  function newScenario(first=false){
+    const key = scenarioSelect.value || 'basic';
+    const sc = scenarios[key];
+    setStatus(sc.intro);
+    setTranscript('');
+    logEl.textContent = '';
+    if (first) {
+      // don't autoplay on load; wait for user to hit Start
     }
+  }
 
-    const toRad2 = x => x*Math.PI/180;
-    const hav2=(a,b,c,d)=>{ const R=6371000, dA=toRad2(c-a), dB=toRad2(d-b);
-      return 2*R*Math.asin(Math.sqrt(Math.sin(dA/2)**2 + Math.cos(toRad2(a))*Math.cos(toRad2(c))*Math.sin(dB/2)**2)); };
-    function within(hitDist, stopRadius, accuracy){
-      const r = (Number(stopRadius)||0) + Math.max(Number(accuracy)||0, 10);
-      return hitDist <= r;
-    }
-    function findHit(stops, la, ln, acc){
-      let best=null;
-      (stops||[]).forEach((s,i)=>{
-        const d=hav2(la,ln,Number(s.lat),Number(s.lng));
-        if(within(d, s.radiusMeters, acc)){
-          if(!best || d<best.dist) best={s,index:i,dist:d};
-        }
-      });
-      return best;
-    }
+  // Button actions (each click triggers speech synchronously)
+  startBtn.addEventListener('click', ()=>{
+    const key = scenarioSelect.value || 'basic';
+    const sc = scenarios[key];
+    setTranscript('Scenario started.\n' + sc.intro);
+    say('Scenario started. ' + sc.intro);
+  });
 
-    /* ---------- Playlist-chain TTS ---------- */
-    const synth = window.speechSynthesis;
-    let audioEnabled=false, muted=false, volume=1.0;
-    let speaking=false, startedOnce=false;
-    const q=[];
+  stopBtn.addEventListener('click', ()=>{
+    window.speechSynthesis.cancel();
+    setTranscript('Scenario stopped.');
+  });
 
-    function speakNow(text){
-      if(!audioEnabled || muted || !text) return;
-      speaking = true;
-      const u = new SpeechSynthesisUtterance(String(text));
-      u.lang = 'en-US';
-      u.rate = 1.0; u.pitch = 1.0; u.volume = volume;
-      u.onend = ()=>{ speaking=false; playNextIfAny(); };
-      u.onerror = ()=>{ speaking=false; playNextIfAny(); };
-      // IMPORTANT: no cancel() here; keep session continuous
-      try{ synth.speak(u); }catch{ speaking=false; }
-    }
-    function sayQueue(text){
-      if(!audioEnabled || muted || !text) return;
-      q.push(text);
-      if(!speaking && startedOnce) playNextIfAny();
-    }
-    function playNextIfAny(){
-      if(!audioEnabled || muted) return;
-      if(q.length>0){ speakNow(q.shift()); }
-    }
+  askPerson.addEventListener('click', ()=>{
+    const key = scenarioSelect.value || 'basic';
+    const sc = scenarios[key];
+    say('What is your full name?');
+    log('Clinician: What is your full name?');
+    setTimeout(()=>{ say(sc.replies.person); log('Patient: ' + sc.replies.person); }, 600);
+  });
 
-    // Controls
-    muteToggle.onclick=()=>{ muted=!muted; muteToggle.textContent=muted?'Unmute':'Mute'; };
-    vol.oninput=e=>{ volume=parseFloat(e.target.value||'1')||1; };
+  askPlace.addEventListener('click', ()=>{
+    const key = scenarioSelect.value || 'basic';
+    const sc = scenarios[key];
+    say('Can you tell me where we are right now?');
+    log('Clinician: Can you tell me where we are right now?');
+    setTimeout(()=>{ say(sc.replies.place); log('Patient: ' + sc.replies.place); }, 600);
+  });
 
-    // Timer & wake lock (start AFTER first speak to keep Start tap clean)
-    let runInterval=null, startMs=0, wakeLock=null, wakeIv=null;
-    const formatTime = ms => { const s=Math.floor(ms/1000), m=Math.floor(s/60), sec=s%60; return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'); };
-    function startTimer(){ startMs=Date.now(); clearInterval(runInterval); runInterval=setInterval(()=>{ runTimer.textContent=formatTime(Date.now()-startMs); },500); }
-    function stopTimer(){ clearInterval(runInterval); runInterval=null; runTimer.textContent='00:00'; }
-    async function lockWake(){
-      try{
-        if('wakeLock' in navigator){
-          wakeLock = await navigator.wakeLock.request('screen');
-          wakeLock.addEventListener('release', ()=>{});
-        } else {
-          // Fallback tick to keep audio path warm on some iPhones
-          wakeIv = setInterval(()=>{ try{ new AudioContext().close(); }catch{} }, 30000);
-        }
-      }catch{}
-    }
-    function releaseWake(){ try{ if(wakeLock){ wakeLock.release(); wakeLock=null; } }catch{} if(wakeIv){ clearInterval(wakeIv); wakeIv=null; } }
+  askTime.addEventListener('click', ()=>{
+    const key = scenarioSelect.value || 'basic';
+    const sc = scenarios[key];
+    say('What day and time is it?');
+    log('Clinician: What day and time is it?');
+    setTimeout(()=>{ say(sc.replies.time); log('Patient: ' + sc.replies.time); }, 600);
+  });
 
-    /* ---------- Start & Back ---------- */
-    startBtn.onclick = function(){
-      // Do NOT await anything before the first speak
-      const id=select.value;
-      if(!id){ status.textContent='Choose a scenario first.'; return; }
+  askEvent.addEventListener('click', ()=>{
+    const key = scenarioSelect.value || 'basic';
+    const sc = scenarios[key];
+    say('What brought you in today?');
+    log('Clinician: What brought you in today?');
+    setTimeout(()=>{ say(sc.replies.event); log('Patient: ' + sc.replies.event); }, 600);
+  });
 
-      // Prepare UI + get dispatch text (sync)
-      const sc = scenarios.find(s=>s.id===id);
-      if(!sc){ status.textContent='Scenario not found.'; return; }
-      const dispatchText = prepareScenario(sc);
+  // Next scenario
+  nextBtn.addEventListener('click', ()=>{
+    window.speechSynthesis.cancel();
+    newScenario(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
-      audioEnabled = true;
-      startedOnce = true;
-
-      // FIRST: speak dispatch immediately, inside this click handler
-      speakNow(dispatchText || `${sc.title || 'scenario'} started.`);
-
-      // THEN: kick off async stuff after the event loop yields
-      setTimeout(()=>{
-        startTimer();
-        lockWake();
-        startGeoWatch();
-        startBtn.textContent='Scenario Running';
-        startBtn.disabled=true;
-      }, 0);
-    };
-
-    backBtn.onclick=function(){
-      viewer.style.display='none';
-      try{ if(watchId) navigator.geolocation.clearWatch(watchId); }catch{}
-      status.textContent='Choose a scenario and press Start Scenario.';
-      // It’s safe to cancel when leaving/stop; we do not cancel between normal utterances.
-      try{ window.speechSynthesis.cancel(); }catch{}
-      audioEnabled=false; speaking=false; startedOnce=false;
-      q.length = 0;
-      releaseWake(); stopTimer();
-      startBtn.disabled=false; startBtn.textContent='Start Scenario';
-    };
-
-    // Footer year + tiny error surface
-    $('year').textContent = new Date().getFullYear();
-    window.addEventListener('error', e => log('Error: ' + (e.message||e)));
-    window.addEventListener('unhandledrejection', e => log('Promise error: ' + (e.reason && e.reason.message ? e.reason.message : e.reason)));
-  })();
-  </script>
+  // init
+  newScenario(true);
+})();
+</script>
 </body>
 </html>
