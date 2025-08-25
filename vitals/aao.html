@@ -1,426 +1,412 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-<title>A&O×4 Orientation Simulator</title>
-<style>
-  :root{
-    --brand:#007B8A; --brand-600:#066371;
-    --bg:#f0f8ff; --panel:#ffffff; --ink:#0f2b33; --muted:#46636a;
-    --ok:#0a8f5b; --bad:#b81e2b; --warn:#c77b00;
-    --border:#e2e8f0; --shadow:0 10px 28px rgba(2,8,23,.08);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{margin:0; background:var(--bg); color:var(--ink);
-       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; line-height:1.45}
-  header{background:var(--brand); color:#fff; padding:14px 16px; font-weight:800; letter-spacing:.2px; position:sticky; top:0; z-index:10}
-  main{max-width:960px; margin:0 auto; padding:12px}
-  h2{margin:.25rem 0 .75rem}
-  .card{background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:14px; box-shadow:var(--shadow); margin-bottom:12px}
-  .pill{display:inline-block; padding:3px 8px; border-radius:999px; background:#e7f8f1; color:#0a8f5b; font-weight:800; font-size:.8rem}
-  .muted{color:var(--muted)}
-  .row{display:grid; gap:10px}
-  @media(min-width:680px){ .row{ grid-template-columns:1fr 1fr } }
-  .q{border:1px solid var(--border); border-radius:12px; padding:12px}
-  .q h3{margin:0 0 .35rem 0; font-size:1.05rem}
-  .ask{display:flex; gap:.5rem; flex-wrap:wrap}
-  .btn{appearance:none; border:0; background:var(--brand); color:#fff; padding:.6rem .9rem; border-radius:12px; font-weight:800; cursor:pointer}
-  .btn:hover{background:var(--brand-600)}
-  .btn.ghost{background:#fff; color:var(--brand); border:2px solid var(--brand)}
-  .btn.warn{background:var(--warn)}
-  .btn.bad{background:var(--bad)}
-  .resp{margin:.5rem 0 0 0; padding:.6rem .7rem; border-radius:10px; background:#f8fafc; border:1px solid var(--border)}
-  .resp .who{font-weight:700}
-  .k{display:inline-flex; align-items:center; gap:.4rem; font-weight:800}
-  .grid2{display:grid; gap:10px; grid-template-columns:1fr}
-  @media(min-width:760px){ .grid2{grid-template-columns:1fr 1fr} }
-  .results-list{margin:.5rem 0 0 1rem}
-  .results-list li{margin:.2rem 0}
-  select{width:100%; padding:.6rem .7rem; border-radius:10px; border:1px solid var(--border); background:#fff}
-  code{background:#eef6f8; padding:0 .35rem; border-radius:6px}
-</style>
+  <meta charset="utf-8" />
+  <title>FireOps SIM — Geo Scenarios Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0f14" />
+  <link rel="icon" href="data:," />
+  <style>
+    :root{ --bg:#0b0f14; --bg2:#101726; --card:#121823; --muted:#8ea0b3; --text:#eaf2ff; --blue:#0a84ff; --shadow:0 12px 34px rgba(0,0,0,.38); --radius:18px; }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0; padding:0; color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      background:
+        radial-gradient(1400px 700px at 15% -15%, rgba(10,132,255,.28), transparent 60%),
+        radial-gradient(1200px 600px at 110% 0%, rgba(255,59,48,.22), transparent 60%),
+        linear-gradient(165deg, var(--bg2), var(--bg) 55%);
+      -webkit-text-size-adjust:100%; scroll-behavior:smooth;
+    }
+    a{color:inherit; text-decoration:none} img{max-width:100%; height:auto; display:block}
+
+    .topbar{position:sticky; top:0; z-index:20; background:rgba(12,15,22,.75);
+      backdrop-filter:saturate(120%) blur(6px); border-bottom:1px solid rgba(255,255,255,.07)}
+    .topnav{max-width:1100px; margin:0 auto; padding:10px 20px; display:flex; align-items:center; gap:14px}
+    .brandmini{display:flex; align-items:center; gap:12px; font-weight:800}
+    .logo img{width:40px; height:40px; border-radius:10px; box-shadow:var(--shadow); object-fit:cover; background:#0f1624}
+
+    .wrap{max-width:1100px; margin:0 auto; padding:18px 20px 100px}
+    .grid{display:grid; gap:14px; grid-template-columns:1fr}
+    .card{border-radius:var(--radius); background:var(--card); border:1px solid rgba(255,255,255,.07);
+      box-shadow:var(--shadow); overflow:hidden; transition:transform .15s ease, border-color .2s ease}
+    .card:hover{transform:translateY(-2px); border-color:rgba(10,132,255,.35)}
+    .card-inner{padding:18px}
+    .eyebrow{font-size:12px; color:var(--muted); margin-bottom:8px}
+    h1,h2,h3{margin:0} h2{font-size:20px} p,.status{color:var(--muted); font-size:14px; margin:6px 0 0}
+
+    #viewer .card-inner{padding:12px}
+    #photoWrap{ margin-top:10px; border-radius:16px; border:1px solid rgba(255,255,255,.12); background:#000; overflow:hidden; }
+    #photo{ width:100%; height:min(78vh, calc(100vh - 220px)); object-fit:contain; background:#000; }
+    #caption{font-size:15px; color:#e9f1ff}
+
+    footer{max-width:1100px; margin:34px auto; padding:0 20px; color:#a9b6c9; font-size:13px;
+      border-top:1px solid rgba(255,255,255,.06); display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap}
+
+    #runTimer{font-size:13px; color:#cfe1ff}
+    #debug{font-size:12px; color:#ffdede; margin-top:6px; white-space:pre-wrap}
+
+    .btn{appearance:none; border:0; border-radius:12px; cursor:pointer; padding:14px 16px; font-weight:800; font-size:16px;
+      color:#03131b; background:linear-gradient(180deg,#54a6ff,var(--blue)); box-shadow:var(--shadow); text-align:center}
+    .btn[disabled]{opacity:.65; cursor:not-allowed}
+    .btn.secondary{background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.14)}
+    select{width:100%; padding:14px 12px; font-size:16px; border-radius:12px; border:1px solid rgba(255,255,255,.14);
+      background:#0f1624; color:var(--text); outline:none}
+    input[type="range"]{accent-color:#54a6ff}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  </style>
 </head>
 <body>
-  <header>A&O×4 Orientation Simulator</header>
-
-  <main>
-    <!-- Scenario -->
-    <section class="card">
-      <h2>Scenario</h2>
-      <div class="row">
-        <div><span class="pill">Patient</span> <strong id="scPerson">—</strong></div>
-        <div><span class="pill">Place</span> <strong id="scPlace">—</strong></div>
-        <div><span class="pill">Time (ref)</span> <strong id="scTime">—</strong></div>
-        <div><span class="pill">Event</span> <strong id="scEvent">—</strong></div>
+  <div class="topbar">
+    <div class="topnav">
+      <div class="brandmini">
+        <div class="logo" aria-hidden="true"><img src="/assets/logo/fire-ops-sim.png" alt="FireOps SIM logo" /></div>
+        <div style="line-height:1.1; font-size:15px; font-weight:900">FireOps SIM</div>
       </div>
-      <p class="muted" style="margin:.5rem 0 0">
-        Ask in order: <strong>Person → Place → Time → Event</strong>. Patient answers appear directly under each question.
-        Time orientation accepts reasonable approximations (e.g., <em>“shortly after lunch”</em> ≈ about 1:00 pm).
-      </p>
-    </section>
+    </div>
+  </div>
 
-    <!-- Questions -->
-    <section class="card">
-      <h2>Orientation Questions</h2>
-      <div class="grid2">
-        <div class="q" id="q-person">
-          <h3><span class="k">Person</span></h3>
-          <div class="ask">
-            <button class="btn" data-ask="person">Ask “What is your name?”</button>
+  <div class="wrap">
+    <div class="grid">
+      <article class="card">
+        <div class="card-inner">
+          <div class="eyebrow">Scenario</div>
+          <h2>Select & Start</h2>
+          <p>Choose a scenario below, then press Start to enable voice prompts.</p>
+          <div class="row" style="margin-top:10px; width:100%">
+            <select id="scenarioSelect" aria-label="Choose a scenario"><option value="">Loading…</option></select>
           </div>
-          <div class="resp" id="resp-person" hidden>
-            <span class="who">Patient:</span> <span class="line"></span>
+          <div class="status" id="status" aria-live="polite" style="margin-top:8px">Connecting…</div>
+          <div id="debug" aria-live="polite"></div>
+        </div>
+      </article>
+
+      <article class="card" id="viewer" style="display:none">
+        <div class="card-inner">
+          <div class="row" style="justify-content:space-between; align-items:center">
+            <h3 id="scTitle" style="margin:0; font-size:18px">(scenario)</h3>
+            <button id="backBtn" class="btn secondary" type="button">Back</button>
+          </div>
+
+          <div class="status" id="dispatchBlock" style="white-space:pre-wrap; margin-top:8px"></div>
+          <div class="status" id="geoStatus" style="margin-top:4px">Waiting for location…</div>
+
+          <div id="result" style="display:none">
+            <h3 id="stopTitle" style="margin:12px 2px 6px 2px"></h3>
+            <div id="photoWrap"><img id="photo" alt="Photo for this stop"></div>
+            <div class="status" id="caption" style="white-space:pre-wrap; margin-top:10px"></div>
+            <div class="status" id="detail"></div>
           </div>
         </div>
+      </article>
 
-        <div class="q" id="q-place">
-          <h3><span class="k">Place</span></h3>
-          <div class="ask">
-            <button class="btn" data-ask="place">Ask “Where are you right now?”</button>
+      <article class="card">
+        <div class="card-inner">
+          <div class="eyebrow">Audio & TTS</div>
+          <h2>Scenario Controls</h2>
+          <p>Start enables speech for the dispatch and each photo caption.</p>
+          <div class="row" style="margin-top:10px; align-items:flex-start">
+            <button id="startScenario" class="btn" type="button">Start Scenario</button>
+            <button id="muteToggle" class="btn secondary" type="button">Mute</button>
+            <label style="margin-left:auto; color:var(--muted)">Volume
+              <input id="vol" type="range" min="0" max="1" step="0.05" value="1" />
+            </label>
           </div>
-          <div class="resp" id="resp-place" hidden>
-            <span class="who">Patient:</span> <span class="line"></span>
-          </div>
+          <div id="runTimer" aria-live="polite" style="margin-top:8px">00:00</div>
         </div>
+      </article>
+    </div>
+  </div>
 
-        <div class="q" id="q-time">
-          <h3><span class="k">Time</span></h3>
-          <div class="ask">
-            <button class="btn" data-ask="time">Ask “About what time is it?”</button>
-          </div>
-          <div class="resp" id="resp-time" hidden>
-            <span class="who">Patient:</span> <span class="line"></span>
-          </div>
-        </div>
+  <footer>
+    <div>© <span id="year"></span> FireOps SIM</div>
+    <div id="connStatus"></div>
+  </footer>
 
-        <div class="q" id="q-event">
-          <h3><span class="k">Event</span></h3>
-          <div class="ask">
-            <button class="btn" data-ask="event">Ask “What happened?”</button>
-          </div>
-          <div class="resp" id="resp-event" hidden>
-            <span class="who">Patient:</span> <span class="line"></span>
-          </div>
-        </div>
-      </div>
-    </section>
+  <!-- Firebase (modular first; compat fallback present) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-database-compat.js"></script>
 
-    <!-- Your assessment + Results -->
-    <section class="card">
-      <h2>Assessment & Results</h2>
-      <div class="row" style="align-items:end">
-        <div>
-          <label for="assess"><strong>Your Assessment</strong></label>
-          <select id="assess">
-            <option value="0">A&O ×0</option>
-            <option value="1">A&O ×1</option>
-            <option value="2">A&O ×2</option>
-            <option value="3">A&O ×3</option>
-            <option value="4" selected>A&O ×4</option>
-          </select>
-        </div>
-        <div>
-          <button class="btn" id="showResults">Show Results</button>
-        </div>
-      </div>
+  <script type="module">
+  (async () => {
+    const $ = id => document.getElementById(id);
+    const viewer=$('viewer'), backBtn=$('backBtn');
+    const select=$('scenarioSelect'), status=$('status'), debug=$('debug'), connStatus=$('connStatus');
+    const dispatchBlock=$('dispatchBlock'), geoStatus=$('geoStatus');
+    const result=$('result'), stopTitle=$('stopTitle'), photo=$('photo'), caption=$('caption'), detail=$('detail');
+    const scTitle=$('scTitle');
+    const startBtn=$('startScenario'), muteToggle=$('muteToggle'), vol=$('vol'), runTimer=$('runTimer');
+    const log = (m)=>{ console.log('[viewer]', m); debug.textContent=String(m); };
 
-      <div id="results" class="resp" hidden>
-        <div id="resultLine"><strong>Results:</strong> —</div>
-        <ul class="results-list" id="detailList"></ul>
-        <div id="meaning" class="muted" style="margin-top:.5rem"></div>
-        <div id="reasons" style="margin-top:.5rem"></div>
-      </div>
+    /* ---------- Helpers ---------- */
+    const toRad = x => x*Math.PI/180;
+    const hav=(a,b,c,d)=>{ const R=6371000, dA=toRad(c-a), dB=toRad(d-b);
+      return 2*R*Math.asin(Math.sqrt(Math.sin(dA/2)**2 + Math.cos(toRad(a))*Math.cos(toRad(c))*Math.sin(dB/2)**2)); };
+    const num=v=>(v===0||v===null)?v:parseFloat(v);
 
-      <div class="row" style="margin-top:8px">
-        <button class="btn warn" id="next">Next Scenario</button>
-        <button class="btn ghost" id="stopTTS">⏹ Stop Voice</button>
-      </div>
-    </section>
-  </main>
+    function normalizeStops(stopsLike){
+      if(!stopsLike) return [];
+      let arr = Array.isArray(stopsLike) ? stopsLike : Object.values(stopsLike);
+      return arr.map(s=>{
+        const lat = num(s.lat ?? s.latitude ?? s.latDeg);
+        const lng = num(s.lng ?? s.lon ?? s.long ?? s.longitude ?? s.lngDeg);
+        const radiusMeters = num(s.radiusMeters ?? s.radius ?? s.r) || 40;
+        const title = s.title || s.name || '';
+        const cap = s.caption || s.text || s.note || '';
+        const image = s.image || s.imageData || s.imageURL || s.imageUrl || s.url || s.photoURL || s.photo || s.img || '';
+        return { ...s, lat, lng, radiusMeters, title, caption: cap, image };
+      }).filter(s => Number.isFinite(s.lat) && Number.isFinite(s.lng));
+    }
+    function setImage(img, stop){
+      const src = stop.image || '';
+      img.src = src || "data:image/svg+xml;utf8,"+encodeURIComponent(
+        "<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='720'><rect width='100%' height='100%' fill='#000'/><text x='50%' y='50%' fill='#9ecbd6' font-size='24' text-anchor='middle'>No image</text></svg>"
+      );
+      img.onerror=()=>{ img.src="data:image/svg+xml;utf8,"+encodeURIComponent(
+        "<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='720'><rect width='100%' height='100%' fill='#000'/><text x='50%' y='50%' fill='#9ecbd6' font-size='24' text-anchor='middle'>Image failed to load</text></svg>"
+      ); };
+    }
 
-<script>
-(function(){
-  // ---------- DOM
-  const sc = {
-    person: document.getElementById('scPerson'),
-    place:  document.getElementById('scPlace'),
-    time:   document.getElementById('scTime'),
-    event:  document.getElementById('scEvent')
-  };
-  const respBox = {
-    person: document.getElementById('resp-person'),
-    place:  document.getElementById('resp-place'),
-    time:   document.getElementById('resp-time'),
-    event:  document.getElementById('resp-event')
-  };
-  const assessEl = document.getElementById('assess');
-  const resultsWrap = document.getElementById('results');
-  const resultLine = document.getElementById('resultLine');
-  const detailList = document.getElementById('detailList');
-  const meaning = document.getElementById('meaning');
-  const reasons = document.getElementById('reasons');
-  const stopBtn = document.getElementById('stopTTS');
-
-  const btns = Array.from(document.querySelectorAll('button[data-ask]'));
-  const nextBtn = document.getElementById('next');
-  const showBtn = document.getElementById('showResults');
-
-  // ---------- Speech (TTS)
-  function speak(text){
-    try{
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 1; u.pitch = 1; u.lang = 'en-US';
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(u);
-    }catch(e){ /* ignore */ }
-  }
-  stopBtn.addEventListener('click', ()=>window.speechSynthesis.cancel());
-
-  // ---------- Helpers
-  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-  function shuffle(a){ return a.sort(()=>Math.random()-0.5); }
-  function pad2(n){ return String(n).padStart(2,'0'); }
-  function fmt12h(h, m){
-    const am = h < 12;
-    const hr = ((h+11)%12)+1;
-    return `${hr}:${pad2(m)} ${am?'am':'pm'}`;
-  }
-
-  // ---------- Scenario banks (first-person phrasing)
-  const persons = ["Mike Miller","Ashley Johnson","Ravi Patel","Jessica Chen","Alex Rivera","Kim Nguyen"];
-  const places  = [
-    "at home","in my apartment","in the ambulance","at the grocery store",
-    "in the park","at work","in my bedroom","in the living room"
-  ];
-  const events  = [
-    "fell and hit my head","had chest pain","passed out for a moment",
-    "was in a car crash","have been sick with a fever","had a seizure"
-  ];
-
-  // Time options with fuzzy acceptance
-  const timeOptions = [
-    { hour: 9,  minute: 0,  period: "morning",   meal: "after breakfast",
-      rough: ["this morning","morning time","after breakfast","around nine in the morning","late morning"] },
-    { hour: 13, minute: 0,  period: "afternoon", meal: "after lunch",
-      rough: ["shortly after lunch","early afternoon","around one in the afternoon","this afternoon"] },
-    { hour: 18, minute: 30, period: "evening",   meal: "around dinner",
-      rough: ["around dinner time","evening","just after supper","early evening"] },
-    { hour: 22, minute: 0,  period: "night",     meal: "late night",
-      rough: ["late at night","night time","close to bedtime","around ten at night"] }
-  ];
-
-  // Wrong answers (first-person style)
-  const wrongBank = {
-    person: ["I don’t know my name.","I can’t remember right now.","Uh… I’m not sure.","Leave me alone."],
-    place:  ["I’m at… somewhere.","Downtown?","I think I’m at school.","I don’t know where I am."],
-    time:   ["It’s… sometime today.","Maybe Saturday?","Later tonight?","I don’t really know."],
-    event:  ["Nothing happened.","I was sleeping.","I don’t remember.","I got dizzy but that’s it."]
-  };
-
-  // Domain-specific causes (examples, not diagnostic)
-  const causesByDomain = {
-    person: [
-      "Advanced dementia or severe delirium",
-      "Head trauma / traumatic brain injury",
-      "Postictal state after seizure",
-      "Severe intoxication or sedative effects",
-      "Wernicke–Korsakoff or severe thiamine deficiency",
-      "Primary psychiatric conditions with disorganization",
-      "Severe aphasia affecting self-identification"
-    ],
-    place: [
-      "Delirium (infection/sepsis, especially in older adults)",
-      "Intoxication (alcohol, opioids, sedatives) or withdrawal",
-      "Wandering in dementia; unfamiliar environment (hospital)",
-      "Head injury / concussion",
-      "Hypoxia or hypercapnia",
-      "Metabolic derangements (electrolytes, glucose)"
-    ],
-    time: [
-      "Delirium or encephalopathy (often time is first lost)",
-      "Hospitalization, sleep deprivation, jet lag",
-      "Intoxication or sedating medications",
-      "Metabolic causes (hypoglycemia/hyperglycemia, uremia, hepatic encephalopathy)",
-      "Infection (e.g., UTI, pneumonia) causing confusion in older adults",
-      "Normal aging with intact logic about general time of day"
-    ],
-    event: [
-      "Concussion / head injury (anterograde or retrograde amnesia)",
-      "Syncope with brief LOC; postictal after seizure",
-      "Intoxication (alcohol/benzodiazepines) affecting memory encoding",
-      "Hypoglycemia or other metabolic disturbance",
-      "Acute stress reaction or dissociation"
-    ]
-  };
-
-  // ---------- State
-  let trueAns = null;
-  let trueTime = null;
-  let correctKeys = new Set();
-  let said = { person:null, place:null, time:null, event:null };
-
-  function newScenario(first=true){
-    // Pick true answers
-    trueAns = {
-      person: rand(persons),
-      place:  rand(places),
-      event:  rand(events)
+    /* ---------- Firebase init (modular or compat) ---------- */
+    const firebaseConfig = {
+      apiKey:"AIzaSyDM6DpRSeZueVKRpbyJyDmhf8WY66KyCDk",
+      authDomain:"dailyquiz-d5279.firebaseapp.com",
+      databaseURL:"https://dailyquiz-d5279-default-rtdb.firebaseio.com",
+      projectId:"dailyquiz-d5279",
+      appId:"1:94577748034:web:c032d3a1d72db1313de5db",
+      measurementId:"G-19DVN7NNH7"
     };
-    trueTime = rand(timeOptions);
-    const refTime = fmt12h(trueTime.hour, trueTime.minute);
-    sc.person.textContent = trueAns.person;
-    sc.place.textContent  = trueAns.place;
-    sc.time.textContent   = `${refTime} (${trueTime.period}; ${trueTime.meal})`;
-    sc.event.textContent  = trueAns.event;
 
-    // Choose ground truth orientation: how many domains really correct (0..4)
-    const aoTrue = Math.floor(Math.random()*5);
-    const keys = ["person","place","time","event"];
-    correctKeys = new Set(shuffle(keys.slice()).slice(0, aoTrue));
-
-    // Reset UI
-    for(const k of keys){
-      said[k] = null;
-      respBox[k].hidden = true;
-      respBox[k].querySelector('.line').textContent = '';
+    let mode='modular', app, db, refFn, onValueFn, getFn;
+    try{
+      const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js');
+      const { getDatabase, ref, onValue, get } = await import('https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js');
+      app = initializeApp(firebaseConfig); db = getDatabase(app);
+      refFn = (dbRefPath)=>ref(db, dbRefPath);
+      onValueFn = onValue; getFn = get;
+    }catch(e){
+      mode='compat';
+      app = window.firebase.initializeApp(firebaseConfig);
+      db = window.firebase.database();
+      refFn = (dbRefPath)=>db.ref(dbRefPath);
+      onValueFn = (r, cb, err)=>r.on('value', s=>cb(s), err);
+      getFn = (r)=>r.get();
     }
-    resultsWrap.hidden = true;
-    if(!first) speak("New scenario loaded.");
-  }
+    log('Firebase mode: ' + mode);
 
-  // Build answer text (first person). For time, if oriented, often give a fuzzy phrase.
-  function buildAnswer(key){
-    const oriented = correctKeys.has(key);
-    if(!oriented){
-      return rand(wrongBank[key]);
+    // connection indicator
+    try{
+      const infoRef = (mode==='modular') ? refFn('.info/connected') : refFn('.info/connected');
+      onValueFn(infoRef, snap=>{
+        const ok = snap.val() === true;
+        connStatus.textContent = ok ? 'Connected' : 'Offline';
+        connStatus.style.color = ok ? '#89ffb2' : '#ffdede';
+      });
+    }catch{}
+
+    /* ---------- Scenario loading (working) ---------- */
+    let scenarios=[], populated=false;
+    function mapSnapshot(val){
+      const obj = val || {};
+      return Object.entries(obj).map(([id, s])=>({ id, ...(s||{}), stops: normalizeStops(s?.stops) }));
     }
-    if(key==='person') return `My name is ${trueAns.person}.`;
-    if(key==='place')  return `I’m ${trueAns.place}.`;
-    if(key==='event')  return `I ${trueAns.event}.`;
-    if(key==='time'){
-      // 60% chance to use fuzzy time, 40% exact
-      const useFuzzy = Math.random() < 0.6;
-      if(useFuzzy){
-        return `${rand(trueTime.rough)}.`;
-      }else{
-        return `It’s about ${fmt12h(trueTime.hour, trueTime.minute)}.`;
+    function populateDropdown(list){
+      select.innerHTML = '<option value="">Select a scenario…</option>';
+      list.forEach(sc=>{
+        const o=document.createElement('option');
+        o.value=sc.id;
+        o.textContent=sc.title || sc.name || sc.notes || '(untitled)';
+        select.appendChild(o);
+      });
+      status.textContent = list.length ? `${list.length} scenario(s) found` : 'No scenarios yet.';
+      populated = list.length>0;
+    }
+    try{
+      const a = refFn('geophoto/scenarios');
+      onValueFn(a, snap=>{
+        const list=mapSnapshot(snap.val());
+        if(list.length){ scenarios=list; populateDropdown(scenarios); log('SDK: geophoto/scenarios '+list.length); }
+      }, err=>log('SDK geophoto error: '+(err?.message||err)));
+    }catch(e){ log('attach geophoto failed: '+e.message); }
+    try{
+      const b = refFn('scenarios');
+      onValueFn(b, snap=>{
+        const list=mapSnapshot(snap.val());
+        if(!scenarios.length && list.length){ scenarios=list; populateDropdown(scenarios); log('SDK: scenarios '+list.length); }
+      }, err=>log('SDK scenarios error: '+(err?.message||err)));
+    }catch(e){ log('attach scenarios failed: '+e.message); }
+    setTimeout(async ()=>{
+      if(!populated){
+        try{ const s1 = await getFn(refFn('geophoto/scenarios'));
+             const list=mapSnapshot(s1.val()); if(list.length){ scenarios=list; populateDropdown(list); log('GET geophoto '+list.length); } }catch(e){}
       }
-    }
-  }
-
-  // Fuzzy logic note: time is marked oriented based on scenario truth (correctKeys),
-  // and we *present* an approximate phrase. Results will call this out as acceptable.
-
-  // Ask handlers
-  btns.forEach(b=>{
-    b.addEventListener('click', ()=>{
-      const key = b.getAttribute('data-ask');
-      const line = buildAnswer(key);
-      said[key] = line;
-      const box = respBox[key];
-      box.hidden = false;
-      box.querySelector('.line').textContent = line;
-      speak(line);
-    });
-  });
-
-  // Explain meaning and causes
-  function meaningText(actualAO, wrongDomains){
-    if(actualAO===4) return 'Fully oriented to person, place, time, and event.';
-    if(actualAO===3) return 'Oriented to three domains; disoriented to one: ' + wrongDomains.join(', ') + '.';
-    if(actualAO===2) return 'Oriented to two domains; disoriented to two: ' + wrongDomains.join(', ') + '.';
-    if(actualAO===1) return 'Oriented to a single domain; disoriented to three: ' + wrongDomains.join(', ') + '.';
-    return 'Not oriented to person, place, time, or event.';
-  }
-
-  function domainCausesList(wrongDomains){
-    // Build HTML explaining domain-specific causes (with AAOx3 emphasis if applicable)
-    if(wrongDomains.length===0) return '';
-    let html = '';
-    if(wrongDomains.length===1){
-      const d = wrongDomains[0];
-      html += `<p><strong>Why A&O×3 (missed ${d}) might happen:</strong></p><ul>`;
-      html += causesByDomain[d].map(x=>`<li>${x}</li>`).join('');
-      html += `</ul>`;
-      if(d==='time'){
-        html += `<p class="muted">Note: Reasonable approximations (e.g., <em>“shortly after lunch”</em>) count as oriented to time. Here, the miss reflects a clear mismatch rather than an approximation.</p>`;
+      if(!populated){
+        try{ const s2 = await getFn(refFn('scenarios'));
+             const list=mapSnapshot(s2.val()); if(list.length){ scenarios=list; populateDropdown(list); log('GET scenarios '+list.length); } }catch(e){}
       }
-      if(d==='person'){
-        html += `<p class="muted">Disorientation to <em>person</em> is usually a more severe finding and should prompt rapid evaluation for life threats (e.g., hypoxia, hypoglycemia, stroke, head injury, severe infection, toxic-metabolic causes).</p>`;
+      if(!populated){
+        try{
+          const r = await fetch('https://dailyquiz-d5279-default-rtdb.firebaseio.com/scenarios.json');
+          if(r.ok){ const json = await r.json(); const list = mapSnapshot(json);
+            if(list.length){ scenarios=list; populateDropdown(list); log('REST scenarios '+list.length); } }
+        }catch(e){ log('REST error: '+e.message); }
       }
-      return html;
-    }
-    // Multiple domains missed
-    html += `<p><strong>Domain-specific causes to consider:</strong></p>`;
-    for(const d of wrongDomains){
-      html += `<p><em>${d}</em></p><ul>` + causesByDomain[d].map(x=>`<li>${x}</li>`).join('') + `</ul>`;
-    }
-    return html;
-  }
+      if(!populated) status.textContent = 'No scenarios found.';
+    }, 1200);
 
-  // Results
-  showBtn.addEventListener('click', ()=>{
-    const keys = ["person","place","time","event"];
-    const actualAO = correctKeys.size;
-    const userAO = parseInt(assessEl.value,10);
+    /* ---------- Viewer prep vs. geolocation (split) ---------- */
+    let current=null, currentStops=[], watchId=null, lastStopIndex=-1;
 
-    detailList.innerHTML = '';
-    for(const k of keys){
-      const wasCorrect = correctKeys.has(k);
-      const li = document.createElement('li');
-      if(wasCorrect){
-        if(k==='time'){
-          const ref = `${fmt12h(trueTime.hour,trueTime.minute)} (${trueTime.period}; ${trueTime.meal})`;
-          const saidTime = said.time ? said.time.replace(/^Patient:\s*/,'') : '(no response given yet)';
-          li.innerHTML = `✅ <strong>${k}</strong>: patient was oriented. Patient said: <em>${saidTime}</em>. Reference: <code>${ref}</code>. Approximate descriptions like these count as oriented.`;
-        }else if(k==='person'){
-          li.innerHTML = `✅ <strong>${k}</strong>: correctly stated name. Patient said: <em>${said.person||'(no response yet)'}</em>.`;
-        }else if(k==='place'){
-          li.innerHTML = `✅ <strong>${k}</strong>: correctly identified location. Patient said: <em>${said.place||'(no response yet)'}</em>.`;
-        }else{
-          li.innerHTML = `✅ <strong>${k}</strong>: correctly recalled event. Patient said: <em>${said.event||'(no response yet)'}</em>.`;
+    function prepareScenario(sc){
+      current=sc;
+      currentStops = normalizeStops(sc.stops);
+      viewer.style.display='';
+      scTitle.textContent=sc.title || sc.name || sc.notes || '(scenario)';
+      result.style.display='none';
+      stopTitle.textContent=''; caption.textContent=''; detail.textContent='';
+      lastStopIndex = -1;
+      const txt = (sc.dispatch || sc.notes || '').trim();
+      dispatchBlock.textContent = txt ? `Dispatch: ${txt}` : 'Dispatch: (none)';
+      return txt;
+    }
+
+    function startGeoWatch(){
+      if(watchId){ navigator.geolocation.clearWatch(watchId); watchId=null; }
+      geoStatus.textContent='Watching your location…';
+      try{
+        watchId=navigator.geolocation.watchPosition(p=>{
+          const { latitude:la, longitude:ln, accuracy:acc }=p.coords;
+          geoStatus.textContent=`Lat ${la.toFixed(5)}, Lng ${ln.toFixed(5)} (±${Math.round(acc)}m)`;
+          const hit=findHit(currentStops, la, ln, acc);
+          if(hit && hit.index!==lastStopIndex){
+            lastStopIndex = hit.index;
+            result.style.display='';
+            stopTitle.textContent=hit.s.title||'Stop';
+            setImage(photo, hit.s);
+            caption.textContent=hit.s.caption||'';
+            detail.textContent=`Distance: ${Math.round(hit.dist)} m (radius ${hit.s.radiusMeters} m)`;
+
+            // enqueue caption for playlist chain (no tap required)
+            sayQueue(`${hit.s.title ? hit.s.title + '. ' : ''}${hit.s.caption || ''}`);
+            viewer.scrollIntoView({behavior:'smooth', block:'start'});
+          }
+        }, err=>{ geoStatus.textContent='Location error: '+err.message; }, {
+          enableHighAccuracy:true, maximumAge:1000, timeout:10000
+        });
+      }catch(e){ geoStatus.textContent='Location error: '+e.message; }
+    }
+
+    const toRad2 = x => x*Math.PI/180;
+    const hav2=(a,b,c,d)=>{ const R=6371000, dA=toRad2(c-a), dB=toRad2(d-b);
+      return 2*R*Math.asin(Math.sqrt(Math.sin(dA/2)**2 + Math.cos(toRad2(a))*Math.cos(toRad2(c))*Math.sin(dB/2)**2)); };
+    function within(hitDist, stopRadius, accuracy){
+      const r = (Number(stopRadius)||0) + Math.max(Number(accuracy)||0, 10);
+      return hitDist <= r;
+    }
+    function findHit(stops, la, ln, acc){
+      let best=null;
+      (stops||[]).forEach((s,i)=>{
+        const d=hav2(la,ln,Number(s.lat),Number(s.lng));
+        if(within(d, s.radiusMeters, acc)){
+          if(!best || d<best.dist) best={s,index:i,dist:d};
         }
-      }else{
-        // Show correct reference
-        let corr;
-        if(k==='person') corr = trueAns.person;
-        else if(k==='place') corr = trueAns.place;
-        else if(k==='time') corr = `${fmt12h(trueTime.hour,trueTime.minute)} (${trueTime.period}; ${trueTime.meal})`;
-        else corr = trueAns.event;
-        li.innerHTML = `❌ <strong>${k}</strong>: patient response was incorrect. Correct reference: <em>${corr}</em>.`;
-      }
-      detailList.appendChild(li);
+      });
+      return best;
     }
 
-    const wrongDomains = keys.filter(k=>!correctKeys.has(k));
-    resultLine.innerHTML = `<strong>Results:</strong> Actual orientation is <strong>A&O×${actualAO}</strong>. `
-      + ((userAO===actualAO) ? 'You were correct.' : `Your assessment (A&O×${userAO}) did not match.`);
+    /* ---------- Playlist-chain TTS ---------- */
+    const synth = window.speechSynthesis;
+    let audioEnabled=false, muted=false, volume=1.0;
+    let speaking=false, startedOnce=false;
+    const q=[];
 
-    meaning.textContent = `What this means: ${meaningText(actualAO, wrongDomains)}`;
-
-    // If A&O×2, include general note; otherwise tailor to missed domains
-    let general = '';
-    if(actualAO===2){
-      general = '<p><strong>A&O×2 note:</strong> Being oriented to only two domains often reflects a moderate alteration in mental status and warrants prompt evaluation for reversible causes (e.g., hypoxia, hypoglycemia, infection) and time-sensitive emergencies (e.g., stroke, head injury).</p>';
+    function speakNow(text){
+      if(!audioEnabled || muted || !text) return;
+      speaking = true;
+      const u = new SpeechSynthesisUtterance(String(text));
+      u.lang = 'en-US';
+      u.rate = 1.0; u.pitch = 1.0; u.volume = volume;
+      u.onend = ()=>{ speaking=false; playNextIfAny(); };
+      u.onerror = ()=>{ speaking=false; playNextIfAny(); };
+      // IMPORTANT: no cancel() here; keep session continuous
+      try{ synth.speak(u); }catch{ speaking=false; }
     }
-    reasons.innerHTML = general + domainCausesList(wrongDomains);
+    function sayQueue(text){
+      if(!audioEnabled || muted || !text) return;
+      q.push(text);
+      if(!speaking && startedOnce) playNextIfAny();
+    }
+    function playNextIfAny(){
+      if(!audioEnabled || muted) return;
+      if(q.length>0){ speakNow(q.shift()); }
+    }
 
-    resultsWrap.hidden = false;
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-  });
+    // Controls
+    muteToggle.onclick=()=>{ muted=!muted; muteToggle.textContent=muted?'Unmute':'Mute'; };
+    vol.oninput=e=>{ volume=parseFloat(e.target.value||'1')||1; };
 
-  // Next scenario
-  nextBtn.addEventListener('click', ()=>{
-    window.speechSynthesis.cancel();
-    newScenario(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+    // Timer & wake lock (start AFTER first speak to keep Start tap clean)
+    let runInterval=null, startMs=0, wakeLock=null, wakeIv=null;
+    const formatTime = ms => { const s=Math.floor(ms/1000), m=Math.floor(s/60), sec=s%60; return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'); };
+    function startTimer(){ startMs=Date.now(); clearInterval(runInterval); runInterval=setInterval(()=>{ runTimer.textContent=formatTime(Date.now()-startMs); },500); }
+    function stopTimer(){ clearInterval(runInterval); runInterval=null; runTimer.textContent='00:00'; }
+    async function lockWake(){
+      try{
+        if('wakeLock' in navigator){
+          wakeLock = await navigator.wakeLock.request('screen');
+          wakeLock.addEventListener('release', ()=>{});
+        } else {
+          // Fallback tick to keep audio path warm on some iPhones
+          wakeIv = setInterval(()=>{ try{ new AudioContext().close(); }catch{} }, 30000);
+        }
+      }catch{}
+    }
+    function releaseWake(){ try{ if(wakeLock){ wakeLock.release(); wakeLock=null; } }catch{} if(wakeIv){ clearInterval(wakeIv); wakeIv=null; } }
 
-  // init
-  newScenario(true);
-})();
-</script>
+    /* ---------- Start & Back ---------- */
+    startBtn.onclick = function(){
+      // Do NOT await anything before the first speak
+      const id=select.value;
+      if(!id){ status.textContent='Choose a scenario first.'; return; }
+
+      // Prepare UI + get dispatch text (sync)
+      const sc = scenarios.find(s=>s.id===id);
+      if(!sc){ status.textContent='Scenario not found.'; return; }
+      const dispatchText = prepareScenario(sc);
+
+      audioEnabled = true;
+      startedOnce = true;
+
+      // FIRST: speak dispatch immediately, inside this click handler
+      speakNow(dispatchText || `${sc.title || 'scenario'} started.`);
+
+      // THEN: kick off async stuff after the event loop yields
+      setTimeout(()=>{
+        startTimer();
+        lockWake();
+        startGeoWatch();
+        startBtn.textContent='Scenario Running';
+        startBtn.disabled=true;
+      }, 0);
+    };
+
+    backBtn.onclick=function(){
+      viewer.style.display='none';
+      try{ if(watchId) navigator.geolocation.clearWatch(watchId); }catch{}
+      status.textContent='Choose a scenario and press Start Scenario.';
+      // It’s safe to cancel when leaving/stop; we do not cancel between normal utterances.
+      try{ window.speechSynthesis.cancel(); }catch{}
+      audioEnabled=false; speaking=false; startedOnce=false;
+      q.length = 0;
+      releaseWake(); stopTimer();
+      startBtn.disabled=false; startBtn.textContent='Start Scenario';
+    };
+
+    // Footer year + tiny error surface
+    $('year').textContent = new Date().getFullYear();
+    window.addEventListener('error', e => log('Error: ' + (e.message||e)));
+    window.addEventListener('unhandledrejection', e => log('Promise error: ' + (e.reason && e.reason.message ? e.reason.message : e.reason)));
+  })();
+  </script>
 </body>
 </html>
