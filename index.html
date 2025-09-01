@@ -150,6 +150,12 @@
         var dd = document.getElementById('mobileNav');
         if(dd){
           dd.addEventListener('change', function(){
+            // If a URL is selected, go there; otherwise scroll to a section
+            if (this.value.startsWith('http')) {
+              location.href = this.value;
+              window.gaTrack.nav('Mobile: External ' + this.value);
+              return;
+            }
             var target = document.getElementById(this.value);
             if(target){ target.scrollIntoView({behavior:'smooth'}); window.gaTrack.nav('Mobile: '+this.value); }
           });
@@ -176,6 +182,8 @@
         <button data-ga-event="navigation" data-ga-params='{"label":"Neurological"}' onclick="document.getElementById('neuro').scrollIntoView({behavior:'smooth'})">Neurological</button>
         <button data-ga-event="navigation" data-ga-params='{"label":"Assessment"}' onclick="document.getElementById('assessment').scrollIntoView({behavior:'smooth'})">Assessment</button>
         <button data-ga-event="navigation" data-ga-params='{"label":"Skin & Burns"}' onclick="document.getElementById('skinburns').scrollIntoView({behavior:'smooth'})">Skin & Burns</button>
+        <!-- NEW: Daily EMS Quiz external button -->
+        <button data-ga-event="navigation" data-ga-params='{"label":"Daily EMS Quiz"}' onclick="location.href='https://dailyemsquiz.com'">Daily EMS Quiz</button>
       </div>
 
       <!-- Mobile dropdown -->
@@ -188,6 +196,8 @@
           <option value="neuro">Neurological</option>
           <option value="assessment">Assessment</option>
           <option value="skinburns">Skin & Burns</option>
+          <!-- NEW: external link option -->
+          <option value="https://dailyemsquiz.com">Daily EMS Quiz</option>
         </select>
       </div>
     </div>
@@ -374,6 +384,8 @@
   <footer>
     <div>© <span id="year"></span> EMS Code Sim</div>
     <div>Train smart • GA tracking enabled</div>
+    <!-- NEW footer link back to Daily EMS Quiz -->
+    <div><a href="https://dailyemsquiz.com" target="_blank" rel="noopener">Back to Daily EMS Quiz</a></div>
   </footer>
 
   <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
