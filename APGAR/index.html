@@ -3,225 +3,137 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Realistic SVG Baby (Apgar)</title>
+<title>Realistic SVG Baby (Two Legs, Correct Scale)</title>
 <style>
-  body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; padding: 12px; background:#fafafb;}
-  .stage { max-width: 420px; margin: 0 auto; }
+  body {
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background:#fafafb;
+    padding:12px;
+  }
+  .stage { max-width:420px; margin:auto; }
   svg { width:100%; height:auto; display:block; }
 </style>
 </head>
 <body>
 <div class="stage">
-  <!-- ——— SVG BABY ——— -->
-  <svg id="baby" viewBox="0 0 1080 1440" aria-label="newborn baby top-down">
-    <defs>
-      <!-- Base skin gradient with warmer midtones and gentle falloff -->
-      <radialGradient id="skinRad" cx="50%" cy="35%" r="70%">
-        <stop offset="0%"  stop-color="#f6dcc9"/>
-        <stop offset="55%" stop-color="#efcdb4"/>
-        <stop offset="100%" stop-color="#e7bfa5"/>
-      </radialGradient>
 
-      <!-- Cooler shadow for under-arms/under-chin -->
-      <radialGradient id="coolShadow" cx="50%" cy="50%" r="60%">
-        <stop offset="0%"  stop-color="#caaea0" stop-opacity="0.25"/>
-        <stop offset="100%" stop-color="#a18679" stop-opacity="0"/>
-      </radialGradient>
+<svg id="baby" viewBox="0 0 1080 1440" aria-label="newborn baby top-down">
+  <defs>
+    <radialGradient id="skinRad" cx="50%" cy="35%" r="70%">
+      <stop offset="0%"  stop-color="#f6dcc9"/>
+      <stop offset="55%" stop-color="#efcdb4"/>
+      <stop offset="100%" stop-color="#e7bfa5"/>
+    </radialGradient>
+    <radialGradient id="coolShadow" cx="50%" cy="50%" r="60%">
+      <stop offset="0%"  stop-color="#caaea0" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#a18679" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="warmHighlight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#fff8f2" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#fff8f2" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="skinTexture" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="8" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="
+        0 0 0 0 0
+        0 0 0 0 0
+        0 0 0 0 0
+        0 0 0 .018 0" result="skinGrain"/>
+      <feBlend in="SourceGraphic" in2="skinGrain" mode="overlay"/>
+    </filter>
+    <linearGradient id="cyanosis" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"  stop-color="#7ab1ff" stop-opacity="0.40"/>
+      <stop offset="100%" stop-color="#6fa8ff" stop-opacity="0.28"/>
+    </linearGradient>
+  </defs>
 
-      <!-- Warm highlight glaze -->
-      <linearGradient id="warmHighlight" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%"   stop-color="#fff8f2" stop-opacity="0.55"/>
-        <stop offset="100%" stop-color="#fff8f2" stop-opacity="0"/>
-      </linearGradient>
+  <rect x="0" y="0" width="1080" height="1440" fill="#f5f6fa"/>
+  <rect id="fullTint" x="0" y="0" width="1080" height="1440" fill="url(#cyanosis)" opacity="0"/>
 
-      <!-- Subtle skin texture (very light) -->
-      <filter id="skinTexture" x="-10%" y="-10%" width="120%" height="120%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="8" result="noise"/>
-        <feColorMatrix in="noise" type="matrix" values="
-          0 0 0 0 0
-          0 0 0 0 0
-          0 0 0 0 0
-          0 0 0 .02 0" result="skinGrain"/>
-        <feBlend in="SourceGraphic" in2="skinGrain" mode="overlay"/>
-      </filter>
+  <g id="babyGroup" filter="url(#skinTexture)">
 
-      <!-- Cyanosis tint reused for Appearance=0/1 -->
-      <linearGradient id="cyanosis" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%"  stop-color="#7ab1ff" stop-opacity="0.40"/>
-        <stop offset="100%" stop-color="#6fa8ff" stop-opacity="0.28"/>
-      </linearGradient>
-    </defs>
+    <!-- Torso -->
+    <g id="torsoWrap">
+      <path id="torso" fill="url(#skinRad)" d="
+        M320,560
+        C320,445 430,390 540,390
+        C650,390 760,445 760,560
+        L760,980
+        C760,1090 660,1160 540,1160
+        C420,1160 320,1090 320,980 Z"/>
+      <path fill="url(#coolShadow)" d="M420,545 C480,525 600,525 660,545
+        C600,540 480,540 420,545 Z" opacity=".33"/>
+      <ellipse cx="540" cy="900" rx="18" ry="10" fill="#a88373" opacity=".16"/>
+    </g>
 
-    <!-- Background pad -->
-    <rect x="0" y="0" width="1080" height="1440" fill="#f5f6fa"/>
-
-    <!-- Full-body tint for central cyanosis (A=0); off by default -->
-    <rect id="fullTint" x="0" y="0" width="1080" height="1440" fill="url(#cyanosis)" opacity="0" pointer-events="none"/>
-
-    <!-- BABY GROUP (transform target for breathing) -->
-    <g id="babyGroup" filter="url(#skinTexture)">
-      <!-- Torso/abdomen (separate so we can scale Y slightly for chest rise) -->
-      <g id="torsoWrap">
-        <path id="torso" fill="url(#skinRad)" d="
-          M340,540
-          C340,435 430,375 540,375
-          C650,375 740,435 740,540
-          L740,920
-          C740,1015 660,1070 540,1070
-          C420,1070 340,1015 340,920 Z"/>
-        <!-- Clavicle hint & sternum soft shade -->
-        <path fill="url(#coolShadow)" d="M430,520 C480,500 600,500 650,520
-          C600,515 480,515 430,520 Z" opacity=".35"/>
-        <!-- Navel gentle highlight -->
-        <ellipse cx="540" cy="860" rx="18" ry="10" fill="#a88373" opacity=".18"/>
+    <!-- Head -->
+    <g id="faceGroup">
+      <ellipse id="face" cx="540" cy="315" rx="150" ry="120" fill="url(#skinRad)"/>
+      <ellipse cx="540" cy="365" rx="115" ry="32" fill="#a18679" opacity=".16"/>
+      <g id="eyes">
+        <ellipse id="eyeL" cx="505" cy="305" rx="10" ry="7.5" fill="#473a34"/>
+        <ellipse id="eyeR" cx="575" cy="305" rx="10" ry="7.5" fill="#473a34"/>
+        <ellipse id="lidL" cx="505" cy="305" rx="11" ry="8" fill="url(#skinRad)" opacity="0"/>
+        <ellipse id="lidR" cx="575" cy="305" rx="11" ry="8" fill="url(#skinRad)" opacity="0"/>
       </g>
+      <path d="M538,318 q2,8 4,0" stroke="#8c6f63" stroke-width="3" fill="none" stroke-linecap="round" opacity=".65"/>
+      <path id="mouthNeutral" d="M510,342 Q540,362 570,342" stroke="#5a4941" stroke-width="6" fill="none" stroke-linecap="round" opacity=".9"/>
+      <path id="mouthOpen" d="M520,340 q20,32 40,0 q-20,26 -40,0 Z" fill="#5a4941" opacity="0"/>
+      <ellipse cx="540" cy="285" rx="76" ry="32" fill="url(#warmHighlight)" opacity=".33"/>
+    </g>
 
-      <!-- HEAD + FACE -->
-      <g id="faceGroup">
-        <ellipse id="face" cx="540" cy="315" rx="165" ry="135" fill="url(#skinRad)"/>
-        <!-- under-chin shadow -->
-        <ellipse cx="540" cy="370" rx="120" ry="36" fill="#a18679" opacity=".18"/>
+    <!-- Arms -->
+    <g id="arms">
+      <path id="leftArm" fill="url(#skinRad)" d="
+        M350,620
+        C300,650 280,720 310,770
+        L350,800
+        Q365,780 360,745
+        L350,700 Z"/>
+      <path id="rightArm" fill="url(#skinRad)" d="
+        M730,620
+        C780,650 800,720 770,770
+        L730,800
+        Q715,780 720,745
+        L730,700 Z"/>
+    </g>
 
-        <!-- Eyes -->
-        <g id="eyes">
-          <ellipse id="eyeL" cx="500" cy="305" rx="11" ry="8" fill="#473a34"/>
-          <ellipse id="eyeR" cx="580" cy="305" rx="11" ry="8" fill="#473a34"/>
-          <!-- lids for blink -->
-          <ellipse id="lidL" cx="500" cy="305" rx="12" ry="9" fill="url(#skinRad)" opacity="0"/>
-          <ellipse id="lidR" cx="580" cy="305" rx="12" ry="9" fill="url(#skinRad)" opacity="0"/>
-        </g>
-
-        <!-- Nose -->
-        <path d="M538,318 q2,8 4,0" stroke="#8c6f63" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>
-
-        <!-- Mouth (neutral & open/cry) -->
-        <path id="mouthNeutral" d="M505,340 Q540,360 575,340" stroke="#5a4941" stroke-width="6" fill="none" stroke-linecap="round" opacity=".9"/>
-        <path id="mouthOpen" d="M520,338 q20,32 40,0 q-20,26 -40,0 Z" fill="#5a4941" opacity="0"/>
-
-        <!-- Forehead highlight -->
-        <ellipse cx="540" cy="285" rx="80" ry="35" fill="url(#warmHighlight)" opacity=".35"/>
+    <!-- Hands -->
+    <g id="handsGroup">
+      <g id="handLwrap">
+        <ellipse id="handL" cx="300" cy="805" rx="56" ry="36" fill="url(#skinRad)"/>
       </g>
-
-      <!-- ARMS -->
-      <g id="arms">
-        <path id="leftArm"  fill="url(#skinRad)" d="M345,575 C270,615 255,705 300,745 L340,770 Q360,740 352,700 Z"/>
-        <path id="rightArm" fill="url(#skinRad)" d="M735,575 C810,615 825,705 780,745 L740,770 Q720,740 728,700 Z"/>
-        <!-- inner-arm shadow -->
-        <path d="M335,620 C300,650 300,690 330,710" fill="none" stroke="#a18679" stroke-width="14" opacity=".12" stroke-linecap="round"/>
-        <path d="M745,620 C780,650 780,690 750,710" fill="none" stroke="#a18679" stroke-width="14" opacity=".12" stroke-linecap="round"/>
-      </g>
-
-      <!-- HANDS (separate for acrocyanosis) -->
-      <g id="handsGroup">
-        <!-- right hand -->
-        <g id="handRwrap">
-          <ellipse id="handR" cx="820" cy="750" rx="58" ry="38" fill="url(#skinRad)"/>
-          <path d="M790,745 q10,12 22,0 M805,760 q8,10 18,0 M818,740 q9,12 19,0"
-            stroke="#8c6f63" stroke-width="4" stroke-linecap="round" opacity=".15" fill="none"/>
-        </g>
-        <!-- left hand -->
-        <g id="handLwrap">
-          <ellipse id="handL" cx="260" cy="750" rx="58" ry="38" fill="url(#skinRad)"/>
-          <path d="M232,745 q10,12 22,0 M247,760 q8,10 18,0 M260,740 q9,12 19,0"
-            stroke="#8c6f63" stroke-width="4" stroke-linecap="round" opacity=".15" fill="none"/>
-        </g>
-      </g>
-
-      <!-- LEGS -->
-      <g id="legs">
-        <path id="leftLeg"  fill="url(#skinRad)" d="M465,1070 C445,1150 450,1230 490,1285 C530,1340 605,1330 600,1270 C595,1205 560,1100 540,1070 Z"/>
-        <path id="rightLeg" fill="url(#skinRad)" d="M615,1070 C635,1150 630,1230 590,1285 C550,1340 475,1330 480,1270 C485,1205 520,1100 540,1070 Z"/>
-        <!-- knee/crease hints -->
-        <ellipse cx="500" cy="1180" rx="26" ry="10" fill="#a18679" opacity=".12"/>
-        <ellipse cx="580" cy="1180" rx="26" ry="10" fill="#a18679" opacity=".12"/>
-      </g>
-
-      <!-- FEET (separate for acrocyanosis) -->
-      <g id="feetGroup">
-        <g id="footRwrap">
-          <ellipse id="footR" cx="630" cy="1295" rx="70" ry="40" fill="url(#skinRad)"/>
-          <path d="M602,1290 q10,10 22,0 M617,1303 q10,10 22,0 M635,1285 q10,10 22,0"
-            stroke="#8c6f63" stroke-width="4" stroke-linecap="round" opacity=".14" fill="none"/>
-        </g>
-        <g id="footLwrap">
-          <ellipse id="footL" cx="450" cy="1295" rx="70" ry="40" fill="url(#skinRad)"/>
-          <path d="M422,1290 q10,10 22,0 M437,1303 q10,10 22,0 M455,1285 q10,10 22,0"
-            stroke="#8c6f63" stroke-width="4" stroke-linecap="round" opacity=".14" fill="none"/>
-        </g>
+      <g id="handRwrap">
+        <ellipse id="handR" cx="780" cy="805" rx="56" ry="36" fill="url(#skinRad)"/>
       </g>
     </g>
-  </svg>
+
+    <!-- Legs -->
+    <g id="legs">
+      <path id="leftLeg" fill="url(#skinRad)" d="
+        M470,1160
+        C445,1230 455,1298 500,1345
+        C545,1390 620,1380 610,1320
+        C600,1260 560,1180 540,1155 Z"/>
+      <path id="rightLeg" fill="url(#skinRad)" d="
+        M610,1160
+        C635,1230 625,1298 580,1345
+        C535,1390 460,1380 470,1320
+        C480,1260 520,1180 540,1155 Z"/>
+    </g>
+
+    <!-- Feet -->
+    <g id="feetGroup">
+      <g id="footLwrap">
+        <ellipse id="footL" cx="485" cy="1358" rx="68" ry="40" fill="url(#skinRad)"/>
+      </g>
+      <g id="footRwrap">
+        <ellipse id="footR" cx="595" cy="1358" rx="68" ry="40" fill="url(#skinRad)"/>
+      </g>
+    </g>
+  </g>
+</svg>
+
 </div>
-
-<script>
-/* ========= HOOKS (same API as your earlier code) ========= */
-const fullTint = document.getElementById('fullTint');
-const handL = document.getElementById('handL');
-const handR = document.getElementById('handR');
-const footL = document.getElementById('footL');
-const footR = document.getElementById('footR');
-const babyGroup = document.getElementById('babyGroup');
-const torsoWrap = document.getElementById('torsoWrap');
-const lidL = document.getElementById('lidL');
-const lidR = document.getElementById('lidR');
-const mouthNeutral = document.getElementById('mouthNeutral');
-const mouthOpen = document.getElementById('mouthOpen');
-
-/* Appearance (Apgar: 0 central, 1 acro, 2 pink) */
-function setAppearance(score){
-  fullTint.setAttribute('opacity','0');
-  [handL, handR, footL, footR].forEach(n => n.style.fill = 'url(#skinRad)');
-  if (score === 0){
-    fullTint.setAttribute('opacity','1');
-  } else if (score === 1){
-    const cyan = 'url(#cyanosis)';
-    [handL, handR, footL, footR].forEach(n => n.style.fill = cyan);
-  }
-}
-
-/* Respiration level affects breath depth */
-let respLevel = 2; // 0–2
-function setRespiration(level){ respLevel = Math.max(0, Math.min(2, Number(level))); }
-
-/* Cry toggle (optional) */
-let crying = false;
-function toggleCry(){
-  crying = !crying;
-  mouthNeutral.style.opacity = crying ? 0 : 1;
-  mouthOpen.style.opacity    = crying ? 1 : 0;
-}
-
-/* Blink */
-let blinking=false;
-function blinkNow(dur=140){
-  if (blinking) return;
-  blinking=true; lidL.setAttribute('opacity','1'); lidR.setAttribute('opacity','1');
-  setTimeout(()=>{ lidL.setAttribute('opacity','0'); lidR.setAttribute('opacity','0'); blinking=false; }, dur);
-}
-(function schedule(){ setTimeout(()=>{ blinkNow(); schedule(); }, 1200 + Math.random()*6000); })();
-
-/* Breathing animation (subtle chest rise + slight body lift) */
-let bpm = 40; // breaths/min
-function setBreathsPerMin(n){ bpm = Number(n)||40; }
-let phase=0, tPrev=performance.now();
-function animate(now){
-  const dt=(now - tPrev)/1000; tPrev=now;
-  const freq = bpm/60 * 2*Math.PI;
-  phase += freq*dt;
-  const depthMap = [0.5, 1.4, 2.8]; // px amplitudes
-  const amp = depthMap[respLevel];
-  const rise = Math.sin(phase)*amp;
-  const scaleY = 1 + (Math.sin(phase)*amp/95);
-  babyGroup.setAttribute('transform', `translate(0, ${-rise.toFixed(2)})`);
-  torsoWrap.setAttribute('transform', `translate(0,0) scale(1, ${scaleY.toFixed(4)})`);
-  requestAnimationFrame(animate);
-}
-requestAnimationFrame(animate);
-
-/* Defaults */
-setAppearance(2);
-setRespiration(2);
-setBreathsPerMin(40);
-</script>
 </body>
 </html>
