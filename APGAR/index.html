@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Apgar – Closing Blue Circle + Respiration</title>
+<title>Apgar – Fading Blue Circle + Respiration</title>
 <style>
   body{
     font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
@@ -16,14 +16,14 @@
     border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.08); overflow:hidden;
   }
   #baby{width:100%; height:auto; display:block;}
-  /* Overlay is masked to the baby silhouette so the room/bg never tints */
+  /* Overlay masked to baby only */
   .overlay{
     position:absolute; inset:0; pointer-events:none; mix-blend-mode:multiply;
     -webkit-mask-image:url('baby2.png'); mask-image:url('baby2.png');
     -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
     -webkit-mask-size:100% 100%; mask-size:100% 100%;
     -webkit-mask-position:center center; mask-position:center center;
-    transition:background .15s linear;
+    transition:background .2s linear;
   }
   .controls{
     width:min(90vw,440px); margin-top:14px; background:#fff; border:1px solid #e4e7ec;
@@ -36,7 +36,7 @@
 </head>
 <body>
 
-<h1>🩺 Cyanosis “Closing Circle” Demo</h1>
+<h1>🩺 Cyanosis Fade Demo</h1>
 
 <div class="stage">
   <img id="baby" src="baby2.png" alt="training manikin">
@@ -46,7 +46,7 @@
 <div class="controls">
   <strong>Cyanosis Level</strong>
   <input type="range" id="slider" min="0" max="100" value="0">
-  <div class="row"><span>0 = Pink / clear center</span><span>100 = Blue reaches center</span></div>
+  <div class="row"><span>0 = Pink</span><span>100 = Central Cyanosis</span></div>
 
   <label><input type="checkbox" id="respToggle" checked> Enable respiration chest bulge</label>
 </div>
@@ -57,24 +57,24 @@ const overlay= document.getElementById('overlay');
 const slider = document.getElementById('slider');
 const respOn = document.getElementById('respToggle');
 
-/* Closing blue circle:
-   - A radial gradient with a transparent inner stop (“hole”) and blue outside
-   - Centered near mid-chest (50% x, 60% y). Adjust if needed for your image. */
+/* --- Fading blue circle --- */
 function updateBlue(v){
-  // Map slider 0..100 to inner-hole radius (%) from large -> tiny
-  const inner = Math.max(4, 70 - v * 0.66); // 70% at v=0, ~4% at v=100
-  const alpha = 0.70; // blue strength
+  // Circle centered slightly higher (50% x, 40% y)
+  // Smooth fading gradient toward center
+  const inner = Math.max(3, 70 - v * 0.66); // % radius of clear center
+  const fadeStart = inner - 10; // adds smooth gradient zone
+  const alpha = 0.8;
   overlay.style.background =
-    `radial-gradient(circle at 50% 60%, transparent ${inner}%, rgba(90,150,255,${alpha}) ${inner}%, rgba(90,150,255,${alpha}) 100%)`;
+    `radial-gradient(circle at 50% 40%, rgba(90,150,255,${alpha}) ${fadeStart}%, rgba(90,150,255,${alpha*0.7}) ${inner}%, transparent ${inner+25}%)`;
 }
 slider.addEventListener('input', e=>updateBlue(+e.target.value));
 updateBlue(0);
 
-/* Respiration: gentle chest/whole-image bulge */
+/* --- Respiration: gentle scale animation --- */
 let t0=performance.now();
 function loop(now){
-  const freq = respOn.checked ? 1.6 : 0;        // breaths/sec
-  const amp  = respOn.checked ? 0.014 : 0;      // scale amplitude
+  const freq = respOn.checked ? 1.5 : 0;
+  const amp  = respOn.checked ? 0.012 : 0;
   const s = 1 + amp * Math.sin((now - t0)/1000 * 2*Math.PI*freq);
   baby.style.transform = `scale(${s.toFixed(3)})`;
   requestAnimationFrame(loop);
