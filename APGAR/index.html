@@ -3,137 +3,121 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Realistic SVG Baby (Two Legs, Correct Scale)</title>
+<title>Apgar Simulator</title>
 <style>
   body {
     font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    background:#fafafb;
-    padding:12px;
+    background: #fafafb;
+    padding: 10px;
+    text-align: center;
   }
-  .stage { max-width:420px; margin:auto; }
-  svg { width:100%; height:auto; display:block; }
+  .stage {
+    position: relative;
+    display: inline-block;
+    width: min(90vw, 420px);
+  }
+  #babyBase {
+    width: 100%;
+    border-radius: 8px;
+    display: block;
+  }
+  /* overlays */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  #overlayFull {
+    background: linear-gradient(#7ab1ff88, #6fa8ff66);
+    mix-blend-mode: multiply;
+  }
+  #overlayHandsFeet {
+    background: radial-gradient(circle at 20% 80%, #6fa8ff88 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, #6fa8ff88 0%, transparent 40%);
+    mix-blend-mode: multiply;
+  }
+  .controls {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  button {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
+
+<h2>🍼 Apgar Simulator</h2>
+
 <div class="stage">
-
-<svg id="baby" viewBox="0 0 1080 1440" aria-label="newborn baby top-down">
-  <defs>
-    <radialGradient id="skinRad" cx="50%" cy="35%" r="70%">
-      <stop offset="0%"  stop-color="#f6dcc9"/>
-      <stop offset="55%" stop-color="#efcdb4"/>
-      <stop offset="100%" stop-color="#e7bfa5"/>
-    </radialGradient>
-    <radialGradient id="coolShadow" cx="50%" cy="50%" r="60%">
-      <stop offset="0%"  stop-color="#caaea0" stop-opacity="0.22"/>
-      <stop offset="100%" stop-color="#a18679" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="warmHighlight" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%"   stop-color="#fff8f2" stop-opacity="0.55"/>
-      <stop offset="100%" stop-color="#fff8f2" stop-opacity="0"/>
-    </linearGradient>
-    <filter id="skinTexture" x="-10%" y="-10%" width="120%" height="120%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="8" result="noise"/>
-      <feColorMatrix in="noise" type="matrix" values="
-        0 0 0 0 0
-        0 0 0 0 0
-        0 0 0 0 0
-        0 0 0 .018 0" result="skinGrain"/>
-      <feBlend in="SourceGraphic" in2="skinGrain" mode="overlay"/>
-    </filter>
-    <linearGradient id="cyanosis" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%"  stop-color="#7ab1ff" stop-opacity="0.40"/>
-      <stop offset="100%" stop-color="#6fa8ff" stop-opacity="0.28"/>
-    </linearGradient>
-  </defs>
-
-  <rect x="0" y="0" width="1080" height="1440" fill="#f5f6fa"/>
-  <rect id="fullTint" x="0" y="0" width="1080" height="1440" fill="url(#cyanosis)" opacity="0"/>
-
-  <g id="babyGroup" filter="url(#skinTexture)">
-
-    <!-- Torso -->
-    <g id="torsoWrap">
-      <path id="torso" fill="url(#skinRad)" d="
-        M320,560
-        C320,445 430,390 540,390
-        C650,390 760,445 760,560
-        L760,980
-        C760,1090 660,1160 540,1160
-        C420,1160 320,1090 320,980 Z"/>
-      <path fill="url(#coolShadow)" d="M420,545 C480,525 600,525 660,545
-        C600,540 480,540 420,545 Z" opacity=".33"/>
-      <ellipse cx="540" cy="900" rx="18" ry="10" fill="#a88373" opacity=".16"/>
-    </g>
-
-    <!-- Head -->
-    <g id="faceGroup">
-      <ellipse id="face" cx="540" cy="315" rx="150" ry="120" fill="url(#skinRad)"/>
-      <ellipse cx="540" cy="365" rx="115" ry="32" fill="#a18679" opacity=".16"/>
-      <g id="eyes">
-        <ellipse id="eyeL" cx="505" cy="305" rx="10" ry="7.5" fill="#473a34"/>
-        <ellipse id="eyeR" cx="575" cy="305" rx="10" ry="7.5" fill="#473a34"/>
-        <ellipse id="lidL" cx="505" cy="305" rx="11" ry="8" fill="url(#skinRad)" opacity="0"/>
-        <ellipse id="lidR" cx="575" cy="305" rx="11" ry="8" fill="url(#skinRad)" opacity="0"/>
-      </g>
-      <path d="M538,318 q2,8 4,0" stroke="#8c6f63" stroke-width="3" fill="none" stroke-linecap="round" opacity=".65"/>
-      <path id="mouthNeutral" d="M510,342 Q540,362 570,342" stroke="#5a4941" stroke-width="6" fill="none" stroke-linecap="round" opacity=".9"/>
-      <path id="mouthOpen" d="M520,340 q20,32 40,0 q-20,26 -40,0 Z" fill="#5a4941" opacity="0"/>
-      <ellipse cx="540" cy="285" rx="76" ry="32" fill="url(#warmHighlight)" opacity=".33"/>
-    </g>
-
-    <!-- Arms -->
-    <g id="arms">
-      <path id="leftArm" fill="url(#skinRad)" d="
-        M350,620
-        C300,650 280,720 310,770
-        L350,800
-        Q365,780 360,745
-        L350,700 Z"/>
-      <path id="rightArm" fill="url(#skinRad)" d="
-        M730,620
-        C780,650 800,720 770,770
-        L730,800
-        Q715,780 720,745
-        L730,700 Z"/>
-    </g>
-
-    <!-- Hands -->
-    <g id="handsGroup">
-      <g id="handLwrap">
-        <ellipse id="handL" cx="300" cy="805" rx="56" ry="36" fill="url(#skinRad)"/>
-      </g>
-      <g id="handRwrap">
-        <ellipse id="handR" cx="780" cy="805" rx="56" ry="36" fill="url(#skinRad)"/>
-      </g>
-    </g>
-
-    <!-- Legs -->
-    <g id="legs">
-      <path id="leftLeg" fill="url(#skinRad)" d="
-        M470,1160
-        C445,1230 455,1298 500,1345
-        C545,1390 620,1380 610,1320
-        C600,1260 560,1180 540,1155 Z"/>
-      <path id="rightLeg" fill="url(#skinRad)" d="
-        M610,1160
-        C635,1230 625,1298 580,1345
-        C535,1390 460,1380 470,1320
-        C480,1260 520,1180 540,1155 Z"/>
-    </g>
-
-    <!-- Feet -->
-    <g id="feetGroup">
-      <g id="footLwrap">
-        <ellipse id="footL" cx="485" cy="1358" rx="68" ry="40" fill="url(#skinRad)"/>
-      </g>
-      <g id="footRwrap">
-        <ellipse id="footR" cx="595" cy="1358" rx="68" ry="40" fill="url(#skinRad)"/>
-      </g>
-    </g>
-  </g>
-</svg>
-
+  <img id="babyBase" src="baby.png" alt="training manikin" />
+  <div id="overlayFull" class="overlay"></div>
+  <div id="overlayHandsFeet" class="overlay"></div>
 </div>
+
+<div class="controls">
+  <button onclick="setAppearance(0)">Appearance 0 (Central Cyanosis)</button>
+  <button onclick="setAppearance(1)">Appearance 1 (Acrocyanosis)</button>
+  <button onclick="setAppearance(2)">Appearance 2 (Pink)</button>
+</div>
+
+<div class="controls">
+  <button onclick="toggleBreathing()">Toggle Breathing</button>
+  <button onclick="blinkNow()">Blink</button>
+</div>
+
+<script>
+const overlayFull = document.getElementById('overlayFull');
+const overlayHandsFeet = document.getElementById('overlayHandsFeet');
+const babyBase = document.getElementById('babyBase');
+
+function setAppearance(score) {
+  overlayFull.style.opacity = 0;
+  overlayHandsFeet.style.opacity = 0;
+
+  if (score === 0) {
+    overlayFull.style.opacity = 1;
+  } else if (score === 1) {
+    overlayHandsFeet.style.opacity = 1;
+  }
+}
+
+/* ========== Simple Breathing Animation ========== */
+let breathing = true;
+let phase = 0;
+function animateBreathing() {
+  if (breathing) {
+    phase += 0.03;
+    const scale = 1 + Math.sin(phase) * 0.01;
+    babyBase.style.transform = `scale(${scale})`;
+  }
+  requestAnimationFrame(animateBreathing);
+}
+requestAnimationFrame(animateBreathing);
+
+function toggleBreathing() {
+  breathing = !breathing;
+  if (!breathing) babyBase.style.transform = 'scale(1)';
+}
+
+/* ========== Simple Blink Animation ========== */
+function blinkNow() {
+  babyBase.style.filter = 'brightness(0.7)';
+  setTimeout(() => babyBase.style.filter = 'brightness(1)', 120);
+}
+
+/* Default state */
+setAppearance(2);
+</script>
+
 </body>
 </html>
