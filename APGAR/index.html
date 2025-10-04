@@ -3,79 +3,153 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Apgar – Progressive Cyanosis + Upper Chest Respiration</title>
+<title>Apgar Simulator – Blue Progression + Full Scale</title>
 <style>
   body{
     font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-    background:#f6f8fb; color:#111;
-    min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:#f5f7fa;color:#111;
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
   }
   h1{margin:6px 0 10px}
+  .grid{display:grid;gap:12px;max-width:940px;width:100%}
+  @media(min-width:880px){.grid{grid-template-columns:1fr 1fr}}
   .stage{
-    position:relative; width:min(90vw,440px); background:#fff; border:1px solid #e4e7ec;
-    border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.08); overflow:hidden;
+    position:relative;width:min(90vw,440px);background:#fff;border:1px solid #e4e7ec;
+    border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);overflow:hidden;justify-self:center;
   }
-  #baby{width:100%; height:auto; display:block; transform-origin:center 35%;}
-  /* Overlay masked to baby only */
+  #baby{width:100%;height:auto;display:block;transform-origin:center 35%;}
   .overlay{
-    position:absolute; inset:0; pointer-events:none; mix-blend-mode:multiply;
-    -webkit-mask-image:url('baby2.png'); mask-image:url('baby2.png');
-    -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
-    -webkit-mask-size:100% 100%; mask-size:100% 100%;
-    -webkit-mask-position:center center; mask-position:center center;
+    position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;
+    -webkit-mask-image:url('baby2.png');mask-image:url('baby2.png');
+    -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+    -webkit-mask-size:100% 100%;mask-size:100% 100%;
     transition:background .3s linear;
   }
-  .controls{
-    width:min(90vw,440px); margin-top:14px; background:#fff; border:1px solid #e4e7ec;
-    border-radius:12px; padding:12px; box-shadow:0 1px 4px rgba(0,0,0,.05);
-  }
-  input[type=range]{width:100%; accent-color:#388bff}
-  .row{display:flex; justify-content:space-between; font-size:14px; margin-top:4px}
-  label{display:block; margin-top:10px}
+  .controls{width:min(90vw,440px);background:#fff;border:1px solid #e4e7ec;
+    border-radius:12px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+  input[type=range]{width:100%;accent-color:#388bff}
+  .row{display:flex;justify-content:space-between;font-size:14px;margin-top:4px}
+  label{display:block;margin-top:10px}
+  .card{background:#fff;border:1px solid #e4e7ec;border-radius:12px;padding:12px}
+  .btn{padding:6px 10px;border:1px solid #ccc;border-radius:8px;cursor:pointer;background:#fff;font-size:14px}
+  .btn[data-active="1"]{border-color:#2563eb;color:#2563eb;font-weight:600}
+  .score{font-weight:700;font-size:18px}
 </style>
 </head>
 <body>
 
-<h1>🩺 Cyanosis Progression + Chest-only Respiration</h1>
+<h1>🩺 Apgar Simulator</h1>
+<div class="grid">
+  <div class="stage">
+    <img id="baby" src="baby2.png" alt="training manikin">
+    <div id="overlay" class="overlay"></div>
+  </div>
 
-<div class="stage">
-  <img id="baby" src="baby2.png" alt="training manikin">
-  <div id="overlay" class="overlay"></div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div>Total Apgar: <span id="scoreTotal" class="score">10</span>/10</div>
+      <button id="resetBtn" class="btn">Reset</button>
+    </div>
+
+    <div class="row"><strong>Appearance (Color)</strong></div>
+    <div class="row">
+      <button class="btn apg-btn" data-cat="appearance" data-val="0">0</button>
+      <button class="btn apg-btn" data-cat="appearance" data-val="1">1</button>
+      <button class="btn apg-btn" data-cat="appearance" data-val="2">2</button>
+    </div>
+
+    <div class="row"><strong>Pulse</strong></div>
+    <div class="row">
+      <button class="btn apg-btn" data-cat="pulse" data-val="0">0</button>
+      <button class="btn apg-btn" data-cat="pulse" data-val="1">1</button>
+      <button class="btn apg-btn" data-cat="pulse" data-val="2">2</button>
+    </div>
+
+    <div class="row"><strong>Grimace (Reflex)</strong></div>
+    <div class="row">
+      <button class="btn apg-btn" data-cat="grimace" data-val="0">0</button>
+      <button class="btn apg-btn" data-cat="grimace" data-val="1">1</button>
+      <button class="btn apg-btn" data-cat="grimace" data-val="2">2</button>
+    </div>
+
+    <div class="row"><strong>Activity (Tone)</strong></div>
+    <div class="row">
+      <button class="btn apg-btn" data-cat="activity" data-val="0">0</button>
+      <button class="btn apg-btn" data-cat="activity" data-val="1">1</button>
+      <button class="btn apg-btn" data-cat="activity" data-val="2">2</button>
+    </div>
+
+    <div class="row"><strong>Respiration</strong></div>
+    <div class="row">
+      <button class="btn apg-btn" data-cat="respiration" data-val="0">0</button>
+      <button class="btn apg-btn" data-cat="respiration" data-val="1">1</button>
+      <button class="btn apg-btn" data-cat="respiration" data-val="2">2</button>
+    </div>
+
+    <hr>
+    <label><input type="checkbox" id="respToggle" checked> Enable respiration animation</label>
+  </div>
 </div>
 
 <div class="controls">
   <strong>Cyanosis Level</strong>
   <input type="range" id="slider" min="0" max="100" value="0">
-  <div class="row"><span>0 = Normal Pink</span><span>100 = Entirely Blue</span></div>
-
-  <label><input type="checkbox" id="respToggle" checked> Enable respiration chest rise</label>
+  <div class="row"><span>0 = Pink / Normal</span><span>100 = Entirely Blue</span></div>
 </div>
 
 <script>
-const baby   = document.getElementById('baby');
-const overlay= document.getElementById('overlay');
-const slider = document.getElementById('slider');
-const respOn = document.getElementById('respToggle');
+/* --- Elements --- */
+const baby=document.getElementById('baby');
+const overlay=document.getElementById('overlay');
+const slider=document.getElementById('slider');
+const respOn=document.getElementById('respToggle');
+const totalEl=document.getElementById('scoreTotal');
 
-/* --- Blue starts outside and moves inward --- */
-function updateBlue(v){
-  // v: 0=normal, 100=entirely blue
-  const start = Math.max(0, 100 - v * 1.1); // fade radius shrinks faster
-  const alpha = 0.85;
-  overlay.style.background =
-    `radial-gradient(circle at 50% 38%, transparent ${start}%, rgba(90,150,255,${alpha}) 100%)`;
+/* --- APGAR Logic --- */
+const apgar={appearance:2,pulse:2,grimace:2,activity:2,respiration:2};
+function setScore(cat,val){
+  apgar[cat]=Number(val);
+  reflectActive(cat);
+  updateTotal();
 }
-slider.addEventListener('input', e=>updateBlue(+e.target.value));
+function reflectActive(cat){
+  document.querySelectorAll(`.apg-btn[data-cat="${cat}"]`).forEach(b=>{
+    b.dataset.active=(Number(b.dataset.val)===apgar[cat])?'1':'0';
+  });
+}
+function updateTotal(){
+  const total=Object.values(apgar).reduce((a,b)=>a+b,0);
+  totalEl.textContent=total;
+}
+document.querySelectorAll('.apg-btn').forEach(b=>{
+  b.addEventListener('click',()=>setScore(b.dataset.cat,b.dataset.val));
+});
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  Object.assign(apgar,{appearance:2,pulse:2,grimace:2,activity:2,respiration:2});
+  ['appearance','pulse','grimace','activity','respiration'].forEach(reflectActive);
+  updateTotal();slider.value=0;updateBlue(0);
+});
+Object.keys(apgar).forEach(reflectActive);updateTotal();
+
+/* --- Blue overlay (oval, darker, extremities first) --- */
+function updateBlue(v){
+  // v: 0=normal, 100=fully blue
+  // use elliptical gradient (oval shape)
+  const start=Math.max(0,90 - v*0.9);
+  const alpha=0.95;
+  overlay.style.background=
+    `radial-gradient(ellipse 80% 70% at 50% 40%, transparent ${start}%, rgba(40,90,200,${alpha}) 100%)`;
+}
+slider.addEventListener('input',e=>updateBlue(+e.target.value));
 updateBlue(0);
 
-/* --- Respiration: only upper chest moves --- */
+/* --- Respiration: chest-only movement --- */
 let t0=performance.now();
 function loop(now){
-  const freq = respOn.checked ? 1.5 : 0;
-  const amp  = respOn.checked ? 0.012 : 0;
-  const s = 1 + amp * Math.sin((now - t0)/1000 * 2*Math.PI*freq);
-  // only upper chest moves (origin set higher)
-  baby.style.transform = `scaleY(${s.toFixed(3)})`;
+  const freq=respOn.checked?1.5:0;
+  const amp=respOn.checked?0.012:0;
+  const s=1+amp*Math.sin((now-t0)/1000*2*Math.PI*freq);
+  baby.style.transform=`scaleY(${s.toFixed(3)})`;
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
