@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Apgar Baby (SVG, Motion)</title>
+<style>
+  body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; padding: 12px; }
+  .stage { max-width: 420px; margin: 0 auto; }
+  .controls { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:10px 0 2px; }
+  button { padding:8px 10px; border:1px solid #ddd; border-radius:8px; background:#fff; }
+  .row { display:flex; gap:8px; align-items:center; justify-content:center; margin:6px 0; }
+  .row label { font-size: 14px; }
+  input[type="range"] { width: 200px; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <svg id="baby" viewBox="0 0 1080 1440" style="width:100%;height:auto;display:block">
+    <defs>
+      <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"  stop-color="#f3d5c0"/>
+        <stop offset="100%" stop-color="#eec7ae"/>
+      </linearGradient>
+      <linearGradient id="cyanosis" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"  stop-color="#7ab1ff" stop-opacity="0.42"/>
+        <stop offset="100%" stop-color="#6fa8ff" stop-opacity="0.30"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Background -->
+    <rect x="0" y="0" width="1080" height="1440" fill="#f7f7f9"/>
+
+    <!-- Full-body tint for central cyanosis -->
+    <rect id="fullTint" x="0" y="0" width="1080" height="1440" fill="url(#cyanosis)" opacity="0" />
+
+    <!-- Baby (grouped so we can nudge chest/abdomen) -->
+    <g id="babyGroup" transform="translate(0,0)">
+
+      <!-- Torso & abdomen path (slightly stretched during inhale) -->
+      <path id="torso" fill="url(#skin)" d="
+        M340,520
+        C340,420 430,360 540,360
+        C650,360 740,420 740,520
+        L740,900
+        C740,990 660,1040 540,1040
+        C420,1040 340,990 340,900 Z" />
+
+      <!-- Head/face (separate group for blink/cry) -->
+      <g id="faceGroup">
+        <ellipse id="face" cx="540" cy="300" rx="160" ry="130" fill="url(#skin)"/>
+        <!-- Eyes -->
+        <g id="eyes">
+          <circle id="eyeL" cx="500" cy="295" r="8" fill="#5a4941"/>
+          <circle id="eyeR" cx="580" cy="295" r="8" fill="#5a4941"/>
+          <!-- Eyelids (shown during blink) -->
+          <rect id="lidL" x="492" y="287" width="16" height="16" rx="8" fill="#eec7ae" opacity="0"/>
+          <rect id="lidR" x="572" y="287" width="16" height="16" rx="8" fill="#eec7ae" opacity="0"/>
+        </g>
+        <!-- Mouth (neutral + open/cry) -->
+        <path id="mouthNeutral" d="M500,330 Q540,350 580,330" stroke="#5a4941" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path id="mouthOpen" d="M520,330 q20,28 40,0 q-20,22 -40,0 Z" fill="#5a4941" opacity="0"/>
+      </g>
+
+      <!-- Arms -->
+      <path id="leftArm"  fill="url(#skin)" d="M340,560 C260,600 250,700 300,740 L340,760 L360,720 L350,680 Z"/>
+      <path id="rightArm" fill="url(#skin)" d="M740,560 C820,600 830,700 780,740 L740,760 L720,720 L730,680 Z"/>
+
+      <!-- Hands (separate for acrocyanosis) -->
+      <ellipse id="handR" cx="820" cy="740" rx="55" ry="35" fill="url(#skin)"/>
+      <ellipse id="handL" cx="280" cy="740" rx="55" ry="35" fill="url(#skin)"/>
+
+      <!-- Legs -->
+      <path id="leftLeg"  fill="url(#skin)" d="M460,1040 C440,1120 440,1200 480,1260 C520,1320 600,1320 600,1260 C600,1200 560,1090 540,1040 Z"/>
+      <path id="rightLeg" fill="url(#skin)" d="M620,1040 C640,1120 640,1200 600,1260 C560,1320 480,1320 480,1260 C480,1200 520,1090 540,1040 Z"/>
+
+      <!-- Feet (separate for acrocyanosis) -->
+      <ellipse id="footR"  cx="620" cy="1280" rx="65" ry="38" fill="url(#skin)"/>
+      <ellipse id="footL" cx="460" cy="1280" rx="65" ry="38" fill="url(#skin)"/>
+    </g>
+  </svg>
+
+  <!-- Quick demo controls -->
+  <div class="controls">
+    <button onclick="setAppearance(0)">Appearance 0 (central cyanosis)</button>
+    <button onclick="setAppearance(1)">Appearance 1 (acrocyanosis)</button>
+    <button onclick="setAppearance(2)">Appearance 2 (pink)</button>
+  </div>
+  <div class="row">
+    <label>Respiration (Apgar):</label>
+    <button onclick="setRespiration(0)">0</button>
+    <button onclick="setRespiration(1)">1</button>
+    <button onclick="setRespiration(2)">2</button>
+  </div>
+  <div class="row">
+    <label>Breaths/min</label>
+    <input id="bpm" type="range" min="10" max="70" value="40" oninput="setBreathsPerMin(this.value)">
+    <span id="bpmVal">40</span>
+  </div>
+  <div class="row">
+    <button onclick="toggleCry()">Toggle Cry</button>
+    <button onclick="blinkNow()">Blink Now</button>
+  </div>
+</div>
+
+<script>
+/* ========= Elements ========= */
+const fullTint = document.getElementById('fullTint');
+const handL = document.getElementById('handL');
+const handR = document.getElementById('handR');
+const footL = document.getElementById('footL');
+const footR = document.getElementById('footR');
+const babyGroup = document.getElementById('babyGroup');
+const torso = document.getElementById('torso');
+const mouthNeutral = document.getElementById('mouthNeutral');
+const mouthOpen = document.getElementById('mouthOpen');
+const lidL = document.getElementById('lidL');
+const lidR = document.getElementById('lidR');
+const bpmVal = document.getElementById('bpmVal');
+
+/* ========= Appearance (Apgar: Appearance 0/1/2) ========= */
+function setAppearance(score){
+  // reset
+  fullTint.setAttribute('opacity','0');
+  [handL, handR, footL, footR].forEach(n => n.style.fill = 'url(#skin)');
+
+  if(score === 0){
+    // central cyanosis
+    fullTint.setAttribute('opacity','1');
+  } else if(score === 1){
+    // acrocyanosis only (hands/feet)
+    const cyan = 'url(#cyanosis)';
+    [handL, handR, footL, footR].forEach(n => n.style.fill = cyan);
+  } // score 2 = pink (default)
+}
+
+/* ========= Respiration-driven motion =========
+   Breath depth maps to Apgar Respiration:
+   0 → minimal depth, 1 → shallow, 2 → normal.
+================================================ */
+let respLevel = 2; // 0,1,2
+function setRespiration(level){
+  respLevel = Math.max(0, Math.min(2, Number(level)));
+  // Optional: also auto-toggle cry for 2
+  // mouthOpen.style.opacity = (respLevel === 2 && crying) ? 1 : 0;
+}
+
+/* ========= Breathing animation ========= */
+let breathsPerMin = 40;
+function setBreathsPerMin(v){
+  breathsPerMin = Number(v);
+  bpmVal.textContent = String(breathsPerMin);
+}
+
+let t0 = performance.now();
+function animateBreath(now){
+  const dt = (now - t0) / 1000;
+  t0 = now;
+
+  const freq = breathsPerMin / 60; // Hz
+  breathPhase += dt * freq * 2*Math.PI;
+
+  // Depth by respiration score (very subtle)
+  const baseDepth = [0.5, 1.5, 3.0][respLevel]; // px of vertical scaling
+  const scaleY = 1 + (Math.sin(breathPhase) * baseDepth / 100); // small scale
+  // Apply a tiny translateY to the group & a scale to torso to simulate expansion
+  const rise = Math.sin(breathPhase) * baseDepth; // px
+  babyGroup.setAttribute('transform', `translate(0, ${-rise.toFixed(2)})`);
+  torso.setAttribute('transform', `translate(0,0) scale(1, ${scaleY.toFixed(4)})`);
+
+  requestAnimationFrame(animateBreath);
+}
+let breathPhase = 0;
+requestAnimationFrame(animateBreath);
+
+/* ========= Micro-jitter (hands/feet) ========= */
+function jitter(el, max=0.5){
+  const x = (Math.random()*2-1)*max;
+  const y = (Math.random()*2-1)*max;
+  const old = el.getAttribute('data-base') || '0,0';
+  // Store base translation once
+  if(!el.hasAttribute('data-base')){
+    el.setAttribute('data-base','0,0');
+    el.setAttribute('data-jx','0'); el.setAttribute('data-jy','0');
+  }
+  el.setAttribute('data-jx', x.toFixed(2));
+  el.setAttribute('data-jy', y.toFixed(2));
+  el.style.transform = `translate(${x}px, ${y}px)`;
+}
+
+setInterval(()=>{ jitter(handL); jitter(handR); jitter(footL); jitter(footR); }, 300);
+
+/* ========= Blink (randomized) ========= */
+let blinking = false;
+function doBlink(duration=140){
+  if (blinking) return;
+  blinking = true;
+  lidL.setAttribute('opacity','1');
+  lidR.setAttribute('opacity','1');
+  setTimeout(()=>{
+    lidL.setAttribute('opacity','0');
+    lidR.setAttribute('opacity','0');
+    blinking = false;
+  }, duration);
+}
+function scheduleBlink(){
+  const next = 1200 + Math.random()*6000;
+  setTimeout(()=>{ doBlink(); scheduleBlink(); }, next);
+}
+scheduleBlink();
+function blinkNow(){ doBlink(); }
+
+/* ========= Cry (toggle) ========= */
+let crying = false;
+function toggleCry(){
+  crying = !crying;
+  mouthNeutral.style.opacity = crying ? 0 : 1;
+  mouthOpen.style.opacity    = crying ? 1 : 0;
+}
+
+/* ========= Defaults ========= */
+setAppearance(2);     // start pink
+setRespiration(2);    // normal
+setBreathsPerMin(40); // ~40 bpm is typical newborn rate
+</script>
+</body>
+</html>
