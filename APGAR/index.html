@@ -18,7 +18,7 @@
   @media(min-width:900px){ .grid{ grid-template-columns: 1fr 1fr; } }
 
   /* Stage */
-  .stage{ position:relative; background:#fff; border:1px solid var(--border); border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.06); padding:8px }
+  .stage{ position:relative; background:#fff; border:1px solid var(--border); border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.06); padding:8px; overflow:hidden }
   #baby{ width:100%; height:auto; display:block; transform-origin:center 35%; }
   .overlay{
     position:absolute; inset:8px; pointer-events:none; mix-blend-mode:multiply;
@@ -28,6 +28,7 @@
     -webkit-mask-position:center center; mask-position:center center;
   }
   .overlay.no-mask{ -webkit-mask-image:none; mask-image:none; } /* for on-top light/pulse effects */
+  #overlayPeripheral, #overlayCore { transition: opacity .2s linear, background .2s linear; }
 
   /* Cards / Controls */
   .card{ background:#fff; border:1px solid var(--border); border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,.05); padding:12px }
@@ -58,6 +59,20 @@
   }
   .modal h3{ margin:0 0 6px; font-size:18px }
   .modal p { margin:6px 0; color:#374151; line-height:1.45 }
+
+  /* GRIMACE overlays */
+  #overlayFace{
+    transition: opacity .12s ease;
+    opacity: 0;
+    background:
+      radial-gradient(32% 16% at 50% 18%, rgba(255,120,120,.55) 0%, rgba(255,120,120,.35) 55%, transparent 75%);
+  }
+  #overlayBlink{
+    transition: opacity .06s linear, clip-path .06s linear;
+    opacity: 0;
+    background: radial-gradient(80% 8% at 50% 22%, rgba(20,20,20,.55) 0%, rgba(20,20,20,.45) 60%, transparent 85%);
+    clip-path: inset(0 0 98% 0 round 20px); /* very thin to start */
+  }
 </style>
 </head>
 <body>
@@ -71,8 +86,11 @@
     <!-- Tints (masked to baby only) -->
     <div id="overlayPeripheral" class="overlay"></div>
     <div id="overlayCore" class="overlay"></div>
-    <!-- Chest highlight pulse (not masked so it brightens on top) -->
+    <!-- Chest highlight pulse (on top) -->
     <div id="overlayChestLight" class="overlay no-mask" style="inset:0;"></div>
+    <!-- GRIMACE overlays -->
+    <div id="overlayFace" class="overlay"></div>
+    <div id="overlayBlink" class="overlay"></div>
   </div>
 
   <!-- Controls -->
@@ -84,6 +102,7 @@
       <button id="btnDemoAppearance" class="btn">▶ Test Appearance Demo</button>
       <button id="btnDemoPulse" class="btn">▶ Test Pulse Sound</button>
       <button id="btnDemoResp" class="btn">▶ Test Respiration</button>
+      <button id="btnDemoGrimace" class="btn">▶ Test Grimace</button>
     </div>
     <div class="row" style="margin-top:6px; justify-content:flex-start;">
       <button id="btnReset" class="btn">Reset</button>
@@ -97,21 +116,11 @@
   <table id="apgarTable">
     <thead>
       <tr>
-        <th>
-          <button id="headAppearance" class="btn primary">Appearance</button>
-        </th>
-        <th>
-          <button id="headPulse" class="btn primary">Pulse</button>
-        </th>
-        <th>
-          <button id="headGrimace" class="btn primary">Grimace</button>
-        </th>
-        <th>
-          <button id="headActivity" class="btn primary">Activity</button>
-        </th>
-        <th>
-          <button id="headResp" class="btn primary">Respiration</button>
-        </th>
+        <th><button id="headAppearance" class="btn primary">Appearance</button></th>
+        <th><button id="headPulse"      class="btn primary">Pulse</button></th>
+        <th><button id="headGrimace"    class="btn primary">Grimace</button></th>
+        <th><button id="headActivity"   class="btn primary">Activity</button></th>
+        <th><button id="headResp"       class="btn primary">Respiration</button></th>
       </tr>
       <tr>
         <th>Score</th><th>Score</th><th>Score</th><th>Score</th><th>Score</th>
@@ -191,6 +200,9 @@ const baby = document.getElementById('baby');
 const overlayPeripheral = document.getElementById('overlayPeripheral'); // limbs
 const overlayCore = document.getElementById('overlayCore');             // head + chest
 const overlayChestLight = document.getElementById('overlayChestLight'); // chest highlight
+const overlayFace  = document.getElementById('overlayFace');            // grimace face flash
+const overlayBlink = document.getElementById('overlayBlink');           // grimace blink
+
 const slider = document.getElementById('slider');
 const totalScore = document.getElementById('totalScore');
 
@@ -199,6 +211,7 @@ const btnGuide = document.getElementById('btnGuide');
 const btnDemoAppearance = document.getElementById('btnDemoAppearance');
 const btnDemoPulse = document.getElementById('btnDemoPulse');
 const btnDemoResp = document.getElementById('btnDemoResp');
+const btnDemoGrimace = document.getElementById('btnDemoGrimace');
 
 const headAppearance = document.getElementById('headAppearance');
 const headPulse = document.getElementById('headPulse');
@@ -257,7 +270,7 @@ function updateVitals(sev){
 function updateBlue(v){
   updateVitals(v);
 
-  // Peripheral overlay (arms/legs) — visible from 0..50
+  /* Peripheral overlay (arms/legs) — visible from 0..50 */
   const p = Math.min(v,50)/50; // 0..1
   const a = (0.75*p).toFixed(3);
   const szHand = 18 + p*6;  // %
@@ -269,7 +282,7 @@ function updateBlue(v){
      radial-gradient(${szFoot}% ${szFoot}% at 72% 88%, rgba(40,100,230,${a}) 0%, transparent 70%)`;
   overlayPeripheral.style.opacity = p;
 
-  // Core overlay — fades in strongly from 50..100 (head + chest fully blue at 100)
+  /* Core overlay — fades in from 50..100 (head + chest fully blue at 100) */
   const q = v<=50 ? 0 : (v-50)/50; // 0..1
   const coreAlpha = (0.65 + 0.30*q).toFixed(3);
   overlayCore.style.background = `rgba(40,100,230,${coreAlpha})`;
@@ -324,30 +337,26 @@ function loop(now){
 requestAnimationFrame(loop);
 
 /* =============== Demos (category header buttons) =============== */
-function animateSliderSequence(seq, msPerStep=80){
+function animateSliderSequence(seq, msPerStep=90){
   let i=0; const timer=setInterval(()=>{
     if(i>=seq.length){ clearInterval(timer); return; }
     slider.value = seq[i]; updateBlue(seq[i]); i++;
   }, msPerStep);
 }
-
-// Appearance demo: pink -> limbs blue -> full blue -> pink
+// Appearance demo: pink -> limbs -> full -> back
 headAppearance.onclick = btnDemoAppearance.onclick = ()=>{
-  animateSliderSequence([0,10,20,30,40,50,60,75,90,100,90,60,40,20,0], 90);
+  animateSliderSequence([0,10,20,30,40,50,65,80,90,100,90,70,50,30,10,0], 90);
 };
-
-// Pulse demo: quick 5s pulse sound + visual chest highlight
+// Pulse demo: short highlight (audio already tied to HR)
 headPulse.onclick = btnDemoPulse.onclick = ()=>{
   if(!ctx) initAudio();
-  // brief stronger chest light effect
   let t=0; const demo=setInterval(()=>{
     t+=1; overlayChestLight.style.background =
       `radial-gradient(circle at 50% 32%, rgba(255,255,255,0.25) 0%, transparent 22%)`;
     if(t>30){ clearInterval(demo); overlayChestLight.style.background=''; }
   }, 160);
 };
-
-// Respiration demo: temporarily boost amplitude for 4s
+// Resp demo: temporarily boost chest amplitude
 let respBoostTimer=null;
 headResp.onclick = btnDemoResp.onclick = ()=>{
   const base = breathAmp;
@@ -355,15 +364,7 @@ headResp.onclick = btnDemoResp.onclick = ()=>{
   clearTimeout(respBoostTimer);
   respBoostTimer = setTimeout(()=>{ breathAmp = base; }, 4000);
 };
-
-// Grimace demo: quick “face flash” (simulated by brightening the upper face)
-headGrimace.onclick = ()=>{
-  overlayChestLight.style.background =
-    `radial-gradient(30% 18% at 50% 18%, rgba(255,120,120,0.35), transparent 70%)`;
-  setTimeout(()=> overlayChestLight.style.background='', 600);
-};
-
-// Activity demo: brief jitter to simulate movement
+// Activity demo: brief jitter
 headActivity.onclick = ()=>{
   let t=0; const jitter=setInterval(()=>{
     t+=1;
@@ -374,11 +375,66 @@ headActivity.onclick = ()=>{
   }, 16);
 };
 
+/* =============== GRIMACE Simulation =============== */
+function additiveTransform(el, extra) {
+  const base = el.style.transform || '';
+  const cleaned = base.replace(/\/\*__extra\*\/.*$/,'').trim();
+  el.style.transform = `${cleaned} ${extra} /*__extra*/`;
+}
+function playWhimper(strength=1){
+  try{
+    if(!ctx) return;
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(520, ctx.currentTime);
+    o.frequency.linearRampToValueAtTime(620, ctx.currentTime + 0.08);
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.12*strength, ctx.currentTime + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+    o.connect(g).connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime + 0.25);
+  }catch(e){}
+}
+/** level: 0 none, 1 mild (face only), 2 strong (blink + head withdraw + whimper) */
+function triggerGrimace(level=2, opts={autoScore:false}){
+  if(level<=0) return;
+  const faceOpacity  = (level===1? 0.55 : 0.85);
+  const blinkEnable  = (level>=2);
+  const jerkPx       = (level===1? 2 : 5);
+  const jerkMs       = 140;
+
+  // Face flush
+  overlayFace.style.opacity = faceOpacity;
+  setTimeout(()=> overlayFace.style.opacity = 0, 260);
+
+  // Blink
+  if(blinkEnable){
+    overlayBlink.style.opacity = 1;
+    overlayBlink.style.clipPath = 'inset(0 0 92% 0 round 20px)'; // “closed”
+    setTimeout(()=>{
+      overlayBlink.style.clipPath = 'inset(0 0 98% 0 round 20px)'; // “open”
+      overlayBlink.style.opacity = 0;
+    }, 120);
+  }
+
+  // Head withdrawal
+  additiveTransform(baby, `translateY(-${jerkPx}px) rotate(${(Math.random()>.5?1:-1)*1.2}deg)`);
+  setTimeout(()=> additiveTransform(baby, `translateY(0px) rotate(0deg)`), jerkMs);
+
+  // Sound
+  playWhimper(level===1? 0.6 : 1.0);
+
+  if(opts.autoScore){ setScore('grimace', String(level)); }
+}
+headGrimace.onclick = ()=> triggerGrimace(2, {autoScore:true});
+btnDemoGrimace.onclick = ()=> triggerGrimace(1);
+
 /* =============== Reset & Guide =============== */
 btnReset.onclick = ()=>{
   slider.value = 0; updateBlue(0);
   ['appearance','pulse','grimace','activity','respiration'].forEach(c=>{
-    setScore(c, c==='appearance' ? '2' : '2');
+    setScore(c, '2');
   });
 };
 btnGuide.onclick = ()=> openInfo('guide');
@@ -401,12 +457,13 @@ const helpText = {
     2 = ≥ 100 bpm<br>
     1 = &lt; 100 bpm<br>
     0 = Absent<br>
-    <i>Note:</i> Click once to enable audio beeps.`,
+    <i>Note:</i> Click once anywhere to enable audio beeps.`,
   grimace: `
     <b>Grimace (Reflex irritability)</b><br>
     2 = Cries, coughs, or pulls away<br>
     1 = Facial movement/grimace<br>
-    0 = No response`,
+    0 = No response<br>
+    <i>Demo:</i> Click the Grimace header for a strong response.`,
   activity: `
     <b>Activity (Muscle tone)</b><br>
     2 = Active motion, well flexed<br>
@@ -417,7 +474,7 @@ const helpText = {
     2 = Good cry, regular respirations<br>
     1 = Weak or irregular respirations<br>
     0 = Absent<br>
-    <i>Demo:</i> Use “Test Respiration” to increase chest rise briefly.`,
+    <i>Demo:</i> Use “Test Respiration” to briefly increase chest rise.`,
   guide: `
     <b>Apgar Reference</b><br>
     • Appearance: 2 pink • 1 acrocyanosis • 0 central cyanosis<br>
@@ -427,7 +484,6 @@ const helpText = {
     • Respiration: 2 good cry • 1 weak/irreg • 0 absent<br>
     <b>Newborn normals:</b> HR 120–160 bpm • RR 30–60/min`
 };
-
 function openInfo(cat){
   modalTitle.textContent = (cat==='guide' ? 'Apgar Scoring Reference' : `About: ${cat[0].toUpperCase()}${cat.slice(1)}`);
   modalBody.innerHTML = helpText[cat] || 'No info available.';
@@ -439,7 +495,7 @@ document.querySelectorAll('.pick.info').forEach(btn=>{
   btn.addEventListener('click', ()=> openInfo(btn.closest('td').dataset.cat));
 });
 
-/* =============== Initialize totals =============== */
+/* =============== Init =============== */
 updateTotal();
 </script>
 </body>
