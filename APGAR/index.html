@@ -43,4 +43,157 @@ input[type=range]{width:100%;accent-color:#388bff}
   align-items:center;justify-content:center;z-index:20;
 }
 #guideContent{
-  background:#fff;border-radius:12px;padding:16px;max-width:420px;box-shadow:0 4px 12px rgba(0,
+  background:#fff;border-radius:12px;padding:16px;max-width:420px;box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+</style>
+</head>
+<body>
+
+<h1>🩺 Apgar Training Simulator</h1>
+
+<div class="stage">
+  <img id="baby" src="baby2.png" alt="training manikin">
+  <div id="overlay" class="overlay"></div>
+</div>
+
+<div class="controls">
+  <strong>Appearance (Color)</strong>
+  <input type="range" id="slider" min="0" max="100" value="0">
+  <div class="row"><span>0 = Pink / Normal</span><span>≈50 = Full Cyanosis</span></div>
+  <button id="showGuide" class="btn" style="margin-top:8px;">📋 Show Apgar Scoring Guide</button>
+</div>
+
+<table class="apgar-table" id="apgarTable">
+  <thead><tr><th>Category</th><th>0</th><th>1</th><th>2</th></tr></thead>
+  <tbody>
+    <tr data-cat="appearance"><td>Appearance</td>
+      <td><button class="btn" data-val="0">0</button></td>
+      <td><button class="btn" data-val="1">1</button></td>
+      <td><button class="btn" data-val="2" data-active="1">2</button></td>
+    </tr>
+    <tr data-cat="pulse"><td>Pulse</td>
+      <td><button class="btn" data-val="0">0</button></td>
+      <td><button class="btn" data-val="1">1</button></td>
+      <td><button class="btn" data-val="2" data-active="1">2</button></td>
+    </tr>
+    <tr data-cat="grimace"><td>Grimace</td>
+      <td><button class="btn" data-val="0">0</button></td>
+      <td><button class="btn" data-val="1">1</button></td>
+      <td><button class="btn" data-val="2" data-active="1">2</button></td>
+    </tr>
+    <tr data-cat="activity"><td>Activity</td>
+      <td><button class="btn" data-val="0">0</button></td>
+      <td><button class="btn" data-val="1">1</button></td>
+      <td><button class="btn" data-val="2" data-active="1">2</button></td>
+    </tr>
+    <tr data-cat="respiration"><td>Respiration</td>
+      <td><button class="btn" data-val="0">0</button></td>
+      <td><button class="btn" data-val="1">1</button></td>
+      <td><button class="btn" data-val="2" data-active="1">2</button></td>
+    </tr>
+  </tbody>
+  <tfoot><tr class="score-row"><td>Total</td><td colspan="3" id="totalScore">10 / 10</td></tr></tfoot>
+</table>
+
+<!-- Scoring Guide Modal -->
+<div id="guideBox">
+  <div id="guideContent">
+    <h3>Apgar Scoring Reference</h3>
+    <ul style="text-align:left;font-size:14px;line-height:1.5;">
+      <li><b>Appearance:</b> 2 = Pink • 1 = Blue hands/feet • 0 = Blue/pale body</li>
+      <li><b>Pulse:</b> 2 = ≥100 bpm • 1 = &lt;100 bpm • 0 = Absent</li>
+      <li><b>Grimace:</b> 2 = Cries • 1 = Some response • 0 = None</li>
+      <li><b>Activity:</b> 2 = Active • 1 = Some flexion • 0 = Flaccid</li>
+      <li><b>Respiration:</b> 2 = Strong cry • 1 = Weak/irregular • 0 = Absent</li>
+      <li><b>Newborn normals:</b> HR 120–160 bpm • RR 30–60/min</li>
+    </ul>
+    <div style="text-align:center;margin-top:10px;">
+      <button id="closeGuide" class="btn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* === Elements === */
+const baby=document.getElementById('baby');
+const overlay=document.getElementById('overlay');
+const slider=document.getElementById('slider');
+const totalScore=document.getElementById('totalScore');
+
+/* === APGAR scoring === */
+const apgar={appearance:2,pulse:2,grimace:2,activity:2,respiration:2};
+function setScore(cat,val){
+  apgar[cat]=Number(val);
+  const row=document.querySelector(`tr[data-cat="${cat}"]`);
+  row.querySelectorAll('.btn').forEach(b=>{
+    b.dataset.active=(b.dataset.val===val)?'1':'0';
+  });
+  const total=Object.values(apgar).reduce((a,b)=>a+b,0);
+  totalScore.textContent=`${total} / 10`;
+}
+document.querySelectorAll('.apgar-table .btn').forEach(btn=>{
+  btn.addEventListener('click',()=>setScore(btn.closest('tr').dataset.cat,btn.dataset.val));
+});
+
+/* === Audio pulse === */
+let ctx,osc,gain;
+function initAudio(){
+  if(ctx)return;
+  ctx=new (window.AudioContext||window.webkitAudioContext)();
+  osc=ctx.createOscillator();gain=ctx.createGain();
+  osc.type='square';osc.connect(gain).connect(ctx.destination);
+  gain.gain.value=0;osc.start();
+}
+window.addEventListener('click',initAudio,{once:true});
+
+/* === Vitals and color === */
+let heartRate=140,respRate=50,breathAmp=0.012,time=performance.now();
+function updateVitals(v){
+  const scaled=Math.min(v*2,100);
+  heartRate=150-(scaled*1.1);   // 150 → 40 bpm
+  respRate =55-(scaled*0.45);   // 55 → 10/min
+  breathAmp=0.012-(scaled*0.00006);
+  if(scaled<33)setScore('appearance','2');
+  else if(scaled<66)setScore('appearance','1');
+  else setScore('appearance','0');
+}
+function updateBlue(v){
+  updateVitals(v);
+  const scaled=Math.min(v*2,100);
+  // New gradient ensures full-body blue at 100%
+  const intensity = 0.7 + (scaled/150); // slightly increase saturation as cyanosis worsens
+  const blueColor = `rgba(40,100,230,${intensity})`;
+  overlay.style.background = `radial-gradient(ellipse 95% 80% at 50% 40%, ${blueColor} 0%, ${blueColor} 100%)`;
+}
+slider.addEventListener('input',e=>updateBlue(+e.target.value));
+updateBlue(0);
+
+/* === Animation (chest-only breathing + pulse) === */
+let pulseTimer=0;
+function loop(now){
+  const dt=(now-time)/1000;time=now;
+  const freq=respRate/60;
+  const s=1+breathAmp*Math.sin(now/1000*2*Math.PI*freq);
+  baby.style.transform=`translateY(0) scaleY(${s.toFixed(3)})`;
+
+  if(ctx&&gain){
+    const beatInt=60/heartRate;
+    pulseTimer+=dt;
+    if(pulseTimer>=beatInt){
+      pulseTimer=0;
+      gain.gain.setValueAtTime(0.15,ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.08);
+      osc.frequency.setValueAtTime(150,ctx.currentTime);
+    }
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* === Guide Modal === */
+const guideBox=document.getElementById('guideBox');
+document.getElementById('showGuide').onclick=()=>guideBox.style.display='flex';
+document.getElementById('closeGuide').onclick=()=>guideBox.style.display='none';
+</script>
+</body>
+</html>
