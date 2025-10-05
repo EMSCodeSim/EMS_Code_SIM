@@ -52,7 +52,7 @@ input[type=range]{width:100%;accent-color:#388bff}
 <div class="controls">
   <strong>Appearance (Color)</strong>
   <input type="range" id="slider" min="0" max="100" value="0">
-  <div class="row"><span>0 = Pink / Normal</span><span>100 = All Blue / Cyanotic</span></div>
+  <div class="row"><span>0 = Pink / Normal</span><span>100 = Full Cyanosis</span></div>
 </div>
 
 <table class="apgar-table" id="apgarTable">
@@ -92,13 +92,13 @@ input[type=range]{width:100%;accent-color:#388bff}
 </table>
 
 <script>
-/* ===== Elements ===== */
+/* === Elements === */
 const baby=document.getElementById('baby');
 const overlay=document.getElementById('overlay');
 const slider=document.getElementById('slider');
 const totalScore=document.getElementById('totalScore');
 
-/* ===== APGAR scoring ===== */
+/* === APGAR logic === */
 const apgar={appearance:2,pulse:2,grimace:2,activity:2,respiration:2};
 function setScore(cat,val){
   apgar[cat]=Number(val);
@@ -116,7 +116,7 @@ document.querySelectorAll('.apgar-table .btn').forEach(btn=>{
   btn.addEventListener('click',()=>setScore(btn.closest('tr').dataset.cat,btn.dataset.val));
 });
 
-/* ===== Audio pulse ===== */
+/* === Audio pulse === */
 let ctx,osc,gain;
 function initAudio(){
   if(ctx)return;
@@ -127,43 +127,44 @@ function initAudio(){
 }
 window.addEventListener('click',initAudio,{once:true});
 
-/* ===== Vitals linked to slider ===== */
-let heartRate=120,respRate=40,breathAmp=0.012,time=performance.now();
+/* === Vitals & color === */
+let heartRate=140,respRate=50,breathAmp=0.012,time=performance.now();
 function updateVitals(v){
-  heartRate=120-(v*0.8);      // slower HR
-  respRate =40-(v*0.25);      // slower RR
-  breathAmp=0.012-(v*0.00007);// weaker motion
-  // auto-adjust Appearance score
+  // HR 140 → 40, RR 50 → 10 with cyanosis
+  heartRate=140-(v*1.0);
+  respRate =50-(v*0.4);
+  breathAmp=0.012-(v*0.00006);
   if(v<33)setScore('appearance','2');
   else if(v<66)setScore('appearance','1');
   else setScore('appearance','0');
 }
 function updateBlue(v){
   updateVitals(v);
-  const outer=`rgba(70,130,255,${0.6})`;
-  const inner=`rgba(30,70,190,${0.6})`;
-  const start=Math.max(0,90 - v*0.9); // outer fade for hands first
+  // full-body fade, lighter blue overall
+  const outer=`rgba(70,140,255,${0.65})`;
+  const inner=`rgba(40,100,230,${0.75})`;
+  const start=Math.max(0,88 - v*0.9);
   overlay.style.background=
-    `radial-gradient(ellipse 85% 70% at 50% 38%, transparent ${start}%, ${outer} 90%, ${inner} 100%)`;
+    `radial-gradient(ellipse 90% 72% at 50% 38%, transparent ${start}%, ${outer} 80%, ${inner} 100%)`;
 }
 slider.addEventListener('input',e=>updateBlue(+e.target.value));
 updateBlue(0);
 
-/* ===== Animation loop (breathing + pulse beeps) ===== */
+/* === Animation: chest-only breathing + pulse === */
 let pulseTimer=0;
 function loop(now){
   const dt=(now-time)/1000;time=now;
   const freq=respRate/60;
   const s=1+breathAmp*Math.sin(now/1000*2*Math.PI*freq);
-  baby.style.transform=`scaleY(${s.toFixed(3)})`;
+  baby.style.transform=`translateY(0px) scaleY(${s.toFixed(3)})`; // chest motion only
 
   if(ctx&&gain){
     const beatInt=60/heartRate;
     pulseTimer+=dt;
     if(pulseTimer>=beatInt){
       pulseTimer=0;
-      gain.gain.setValueAtTime(0.2,ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.1);
+      gain.gain.setValueAtTime(0.15,ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.08);
       osc.frequency.setValueAtTime(150,ctx.currentTime);
     }
   }
