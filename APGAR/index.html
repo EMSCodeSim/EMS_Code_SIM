@@ -23,6 +23,16 @@
     -webkit-mask-size:100% 100%;mask-size:100% 100%;
   }
   #overlayPeripheral,#overlayCore{transition:opacity .25s linear, background .25s linear;}
+  #overlayFace{
+    transition:opacity .12s ease;opacity:0;
+    background:radial-gradient(32% 16% at 50% 18%, rgba(255,100,100,.6) 0%, rgba(255,120,120,.35) 55%, transparent 75%);
+  }
+  #overlayBlink{
+    transition:opacity .06s linear, clip-path .06s linear;
+    opacity:0;
+    background:radial-gradient(80% 8% at 50% 22%, rgba(30,30,30,.6) 0%, rgba(20,20,20,.45) 60%, transparent 85%);
+    clip-path:inset(0 0 98% 0 round 20px);
+  }
   .controls{
     width:100%;max-width:420px;background:#fff;border:1px solid #ddd;
     border-radius:12px;padding:10px;
@@ -55,6 +65,8 @@
   <img id="baby" src="baby2.png" alt="Baby model">
   <div id="overlayPeripheral" class="overlay"></div>
   <div id="overlayCore" class="overlay"></div>
+  <div id="overlayFace" class="overlay"></div>
+  <div id="overlayBlink" class="overlay"></div>
 </div>
 
 <div class="controls">
@@ -69,60 +81,50 @@
   <tr>
     <td><button id="btnAppearance" class="btn">Appearance</button></td>
     <td data-cat="appearance">
-      <div>
-        <button class="btn" data-val="0">0</button>
-        <button class="btn" data-val="1">1</button>
-        <button class="btn" data-val="2" data-active="1">2</button>
-        <button class="btn" data-val="?">?</button>
-      </div>
+      <button class="btn" data-val="0">0</button>
+      <button class="btn" data-val="1">1</button>
+      <button class="btn" data-val="2" data-active="1">2</button>
+      <button class="btn" data-val="?">?</button>
     </td>
   </tr>
 
   <tr>
     <td><button id="btnPulse" class="btn">Pulse</button></td>
     <td data-cat="pulse">
-      <div>
-        <button class="btn" data-val="0">0</button>
-        <button class="btn" data-val="1">1</button>
-        <button class="btn" data-val="2" data-active="1">2</button>
-        <button class="btn" data-val="?">?</button>
-      </div>
+      <button class="btn" data-val="0">0</button>
+      <button class="btn" data-val="1">1</button>
+      <button class="btn" data-val="2" data-active="1">2</button>
+      <button class="btn" data-val="?">?</button>
     </td>
   </tr>
 
   <tr>
     <td><button id="btnGrimace" class="btn">Grimace</button></td>
     <td data-cat="grimace">
-      <div>
-        <button class="btn" data-val="0">0</button>
-        <button class="btn" data-val="1">1</button>
-        <button class="btn" data-val="2" data-active="1">2</button>
-        <button class="btn" data-val="?">?</button>
-      </div>
+      <button class="btn" data-val="0">0</button>
+      <button class="btn" data-val="1">1</button>
+      <button class="btn" data-val="2" data-active="1">2</button>
+      <button class="btn" data-val="?">?</button>
     </td>
   </tr>
 
   <tr>
     <td><button id="btnActivity" class="btn">Activity</button></td>
     <td data-cat="activity">
-      <div>
-        <button class="btn" data-val="0">0</button>
-        <button class="btn" data-val="1">1</button>
-        <button class="btn" data-val="2" data-active="1">2</button>
-        <button class="btn" data-val="?">?</button>
-      </div>
+      <button class="btn" data-val="0">0</button>
+      <button class="btn" data-val="1">1</button>
+      <button class="btn" data-val="2" data-active="1">2</button>
+      <button class="btn" data-val="?">?</button>
     </td>
   </tr>
 
   <tr>
     <td><button id="btnResp" class="btn">Respiration</button></td>
     <td data-cat="respiration">
-      <div>
-        <button class="btn" data-val="0">0</button>
-        <button class="btn" data-val="1">1</button>
-        <button class="btn" data-val="2" data-active="1">2</button>
-        <button class="btn" data-val="?">?</button>
-      </div>
+      <button class="btn" data-val="0">0</button>
+      <button class="btn" data-val="1">1</button>
+      <button class="btn" data-val="2" data-active="1">2</button>
+      <button class="btn" data-val="?">?</button>
     </td>
   </tr>
 
@@ -143,6 +145,8 @@
 const baby=document.getElementById('baby');
 const overlayPeripheral=document.getElementById('overlayPeripheral');
 const overlayCore=document.getElementById('overlayCore');
+const overlayFace=document.getElementById('overlayFace');
+const overlayBlink=document.getElementById('overlayBlink');
 const slider=document.getElementById('slider');
 const totalScore=document.getElementById('totalScore');
 const apgar={appearance:2,pulse:2,grimace:2,activity:2,respiration:2};
@@ -186,6 +190,30 @@ function updateBlue(v){
 slider.addEventListener('input',e=>updateBlue(+e.target.value));
 updateBlue(0);
 
+// Audio context
+let ctx;
+function initAudio(){if(ctx)return;ctx=new(window.AudioContext||window.webkitAudioContext)();}
+window.addEventListener('click',initAudio,{once:true});
+
+// Heartbeat
+function playHeartbeat(){
+  if(!ctx)return;
+  const bpm=heartRate,beatInt=60/bpm,t=ctx.currentTime;
+  for(let i=0;i<4;i++){const start=t+i*(beatInt*2);scheduleBeat(start);}
+}
+function scheduleBeat(start){
+  const o1=ctx.createOscillator(),g1=ctx.createGain();
+  o1.type='sine';o1.frequency.setValueAtTime(60,start);
+  g1.gain.setValueAtTime(0.15,start);
+  g1.gain.exponentialRampToValueAtTime(0.001,start+0.09);
+  o1.connect(g1).connect(ctx.destination);o1.start(start);o1.stop(start+0.1);
+  const o2=ctx.createOscillator(),g2=ctx.createGain();
+  o2.type='sine';o2.frequency.setValueAtTime(90,start+0.12);
+  g2.gain.setValueAtTime(0.15,start+0.12);
+  g2.gain.exponentialRampToValueAtTime(0.001,start+0.22);
+  o2.connect(g2).connect(ctx.destination);o2.start(start+0.12);o2.stop(start+0.22);
+}
+
 // breathing
 let time=performance.now();
 function loop(now){
@@ -198,41 +226,68 @@ function loop(now){
 }
 requestAnimationFrame(loop);
 
-// animations triggered by category buttons
+// whimper + grimace
+function playWhimper(){
+  if(!ctx)return;
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.type='triangle';
+  o.frequency.setValueAtTime(500,ctx.currentTime);
+  o.frequency.linearRampToValueAtTime(650,ctx.currentTime+0.15);
+  g.gain.setValueAtTime(0.0001,ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.15,ctx.currentTime+0.05);
+  g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.35);
+  o.connect(g).connect(ctx.destination);
+  o.start();o.stop(ctx.currentTime+0.4);
+}
+function grimaceFace(){
+  overlayFace.style.opacity=0.8;
+  setTimeout(()=>overlayFace.style.opacity=0,250);
+  overlayBlink.style.opacity=1;
+  overlayBlink.style.clipPath='inset(0 0 92% 0 round 20px)';
+  setTimeout(()=>{overlayBlink.style.clipPath='inset(0 0 98% 0 round 20px)';overlayBlink.style.opacity=0;},120);
+}
+
+// animations
 function animateAppearance(){
-  let i=0; const seq=[0,20,40,60,80,100,80,60,40,20,0];
+  let i=0;const seq=[0,20,40,60,80,100,80,60,40,20,0];
   const t=setInterval(()=>{slider.value=seq[i];updateBlue(seq[i]);i++;if(i>=seq.length)clearInterval(t);},120);
 }
 function animatePulse(){
-  baby.style.transition="transform .05s";let on=false;
-  let c=0;const flash=setInterval(()=>{
+  playHeartbeat();
+  baby.style.transition="transform .05s";let on=false;let c=0;
+  const flash=setInterval(()=>{
     baby.style.transform=`scale(${on?1:1.02})`;
     on=!on;c++;if(c>20){clearInterval(flash);baby.style.transform='scale(1)';}
   },200);
 }
 function animateGrimace(){
+  grimaceFace();playWhimper();
   baby.style.transition="transform .15s";
   baby.style.transform="translateY(-5px) rotate(3deg)";
   setTimeout(()=>baby.style.transform="translateY(0) rotate(0)",200);
 }
-function animateActivity(){
-  let t=0;const move=setInterval(()=>{
-    baby.style.transform=`rotate(${Math.sin(t*0.4)*1.5}deg)`;t+=1;
-    if(t>50){clearInterval(move);baby.style.transform='rotate(0deg)';}
+// *** Option B: Activity wiggle simulation ***
+function animateActivity(level=2){
+  let t=0;
+  const amp = level===2 ? 2.5 : level===1 ? 1.2 : 0;
+  const speed = level===2 ? 0.4 : 0.25;
+  if(amp===0)return;
+  const move=setInterval(()=>{
+    baby.style.transform=`rotate(${Math.sin(t*speed)*amp}deg)`;
+    t+=1;
+    if(t>60){clearInterval(move);baby.style.transform='rotate(0deg)';}
   },16);
 }
-function animateResp(){
-  breathAmp=0.04;setTimeout(()=>breathAmp=0.022,3000);
-}
+function animateResp(){breathAmp=0.04;setTimeout(()=>breathAmp=0.022,3000);}
 
 // link buttons
 btnAppearance.onclick=animateAppearance;
 btnPulse.onclick=animatePulse;
 btnGrimace.onclick=animateGrimace;
-btnActivity.onclick=animateActivity;
+btnActivity.onclick=()=>animateActivity(2);
 btnResp.onclick=animateResp;
 
-// info modal
+// modal info
 const modal=document.getElementById('modal');
 const modalTitle=document.getElementById('modalTitle');
 const modalBody=document.getElementById('modalBody');
@@ -241,7 +296,7 @@ const info={
   appearance:"2 = Pink<br>1 = Blue extremities<br>0 = Blue body",
   pulse:"2 = ≥100 bpm<br>1 = <100 bpm<br>0 = Absent",
   grimace:"2 = Cries<br>1 = Grimace<br>0 = None",
-  activity:"2 = Active<br>1 = Some flexion<br>0 = Flaccid",
+  activity:"2 = Active motion<br>1 = Some flexion<br>0 = Flaccid",
   respiration:"2 = Strong cry<br>1 = Weak<br>0 = None"
 };
 function openInfo(cat){
