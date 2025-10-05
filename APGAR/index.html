@@ -21,16 +21,23 @@ h1{margin:6px 0 10px}
   -webkit-mask-image:url('baby2.png');mask-image:url('baby2.png');
   -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
   -webkit-mask-size:100% 100%;mask-size:100% 100%;
-  transition:background .3s linear;
+  transition:background .25s linear;
 }
-.controls,.tests{
+.controls{
   width:min(90vw,440px);background:#fff;border:1px solid #e4e7ec;border-radius:12px;
   padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.05);margin-top:12px;
 }
 input[type=range]{width:100%;accent-color:#388bff}
 .row{display:flex;justify-content:space-between;font-size:14px;margin-top:4px}
-.btn{padding:8px 10px;border:1px solid #ccc;border-radius:8px;cursor:pointer;background:#fff;font-size:14px}
-.btn:hover{border-color:#2563eb;color:#2563eb}
+.apgar-table{width:min(90vw,440px);margin-top:14px;border-collapse:collapse;font-size:14px;background:#fff;
+  border:1px solid #e4e7ec;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.apgar-table th,.apgar-table td{padding:6px 4px;text-align:center;border-bottom:1px solid #e4e7ec}
+.apgar-table th:first-child,.apgar-table td:first-child{text-align:left;padding-left:8px}
+.btn{
+  padding:4px 8px;border:1px solid #ccc;border-radius:6px;cursor:pointer;background:#fff;font-size:13px
+}
+.btn[data-active="1"]{border-color:#2563eb;color:#2563eb;font-weight:600}
+.score-row{font-weight:700;background:#f1f5fb}
 </style>
 </head>
 <body>
@@ -45,27 +52,74 @@ input[type=range]{width:100%;accent-color:#388bff}
 <div class="controls">
   <strong>Appearance (Color)</strong>
   <input type="range" id="slider" min="0" max="100" value="0">
-  <div class="row"><span>0 = Pink / Normal</span><span>100 = Dark Blue / Cyanotic</span></div>
+  <div class="row"><span>0 = Pink / Normal</span><span>100 = All Blue / Cyanotic</span></div>
 </div>
 
-<div class="tests">
-  <strong>Test Apgar Components</strong><br>
-  <button class="btn" id="testAppearance">Test Appearance</button>
-  <button class="btn" id="testPulse">Test Pulse</button>
-  <button class="btn" id="testResp">Test Respiration</button>
-  <button class="btn" id="testActivity" disabled>Test Activity (coming soon)</button>
-</div>
+<table class="apgar-table" id="apgarTable">
+  <thead>
+    <tr><th>Category</th><th>0</th><th>1</th><th>2</th></tr>
+  </thead>
+  <tbody>
+    <tr data-cat="appearance"><td>Appearance</td>
+      <td><button class="btn" data-val="0">0</button></td>
+      <td><button class="btn" data-val="1">1</button></td>
+      <td><button class="btn" data-val="2" data-active="1">2</button></td>
+    </tr>
+    <tr data-cat="pulse"><td>Pulse</td>
+      <td><button class="btn" data-val="0">0</button></td>
+      <td><button class="btn" data-val="1">1</button></td>
+      <td><button class="btn" data-val="2" data-active="1">2</button></td>
+    </tr>
+    <tr data-cat="grimace"><td>Grimace</td>
+      <td><button class="btn" data-val="0">0</button></td>
+      <td><button class="btn" data-val="1">1</button></td>
+      <td><button class="btn" data-val="2" data-active="1">2</button></td>
+    </tr>
+    <tr data-cat="activity"><td>Activity</td>
+      <td><button class="btn" data-val="0">0</button></td>
+      <td><button class="btn" data-val="1">1</button></td>
+      <td><button class="btn" data-val="2" data-active="1">2</button></td>
+    </tr>
+    <tr data-cat="respiration"><td>Respiration</td>
+      <td><button class="btn" data-val="0">0</button></td>
+      <td><button class="btn" data-val="1">1</button></td>
+      <td><button class="btn" data-val="2" data-active="1">2</button></td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr class="score-row"><td>Total</td><td colspan="3" id="totalScore">10 / 10</td></tr>
+  </tfoot>
+</table>
 
 <script>
-/* --- Elements --- */
+/* ===== Elements ===== */
 const baby=document.getElementById('baby');
 const overlay=document.getElementById('overlay');
 const slider=document.getElementById('slider');
+const totalScore=document.getElementById('totalScore');
 
-/* --- Audio pulse setup --- */
+/* ===== APGAR scoring ===== */
+const apgar={appearance:2,pulse:2,grimace:2,activity:2,respiration:2};
+function setScore(cat,val){
+  apgar[cat]=Number(val);
+  const row=document.querySelector(`tr[data-cat="${cat}"]`);
+  row.querySelectorAll('.btn').forEach(b=>{
+    b.dataset.active=(b.dataset.val===val)?'1':'0';
+  });
+  updateTotal();
+}
+function updateTotal(){
+  const total=Object.values(apgar).reduce((a,b)=>a+b,0);
+  totalScore.textContent=`${total} / 10`;
+}
+document.querySelectorAll('.apgar-table .btn').forEach(btn=>{
+  btn.addEventListener('click',()=>setScore(btn.closest('tr').dataset.cat,btn.dataset.val));
+});
+
+/* ===== Audio pulse ===== */
 let ctx,osc,gain;
 function initAudio(){
-  if(ctx) return;
+  if(ctx)return;
   ctx=new (window.AudioContext||window.webkitAudioContext)();
   osc=ctx.createOscillator();gain=ctx.createGain();
   osc.type='square';osc.connect(gain).connect(ctx.destination);
@@ -73,67 +127,49 @@ function initAudio(){
 }
 window.addEventListener('click',initAudio,{once:true});
 
-/* --- Vital state variables --- */
-let heartRate=120;     // beats per minute
-let respRate=40;       // breaths per minute
-let breathAmp=0.012;   // breathing amplitude
-let cyanosis=0;        // 0–100 from slider
-let time=performance.now();
-
-/* --- Update blue overlay + vitals with slider --- */
+/* ===== Vitals linked to slider ===== */
+let heartRate=120,respRate=40,breathAmp=0.012,time=performance.now();
+function updateVitals(v){
+  heartRate=120-(v*0.8);      // slower HR
+  respRate =40-(v*0.25);      // slower RR
+  breathAmp=0.012-(v*0.00007);// weaker motion
+  // auto-adjust Appearance score
+  if(v<33)setScore('appearance','2');
+  else if(v<66)setScore('appearance','1');
+  else setScore('appearance','0');
+}
 function updateBlue(v){
-  cyanosis=v;
-  // heart and respiration slow with cyanosis
-  heartRate = 120 - (v*0.8);      // down to ~40 at 100%
-  respRate  = 40  - (v*0.25);     // down to ~15 at 100%
-  breathAmp = 0.012 - (v*0.00007); // weaker chest motion
-  // elliptical gradient: outer→inner fade, darker center at 100%
-  const alpha=0.9;
-  const outerBlue=`rgba(20,60,180,${alpha})`;
-  const innerBlue=`rgba(10,30,100,${alpha})`;
-  const start=Math.max(0,85 - v*0.8); // hands turn early
+  updateVitals(v);
+  const outer=`rgba(70,130,255,${0.6})`;
+  const inner=`rgba(30,70,190,${0.6})`;
+  const start=Math.max(0,90 - v*0.9); // outer fade for hands first
   overlay.style.background=
-    `radial-gradient(ellipse 85% 70% at 50% 38%, ${innerBlue} ${100-v*0.7}%, ${outerBlue} 100%)`;
+    `radial-gradient(ellipse 85% 70% at 50% 38%, transparent ${start}%, ${outer} 90%, ${inner} 100%)`;
 }
 slider.addEventListener('input',e=>updateBlue(+e.target.value));
 updateBlue(0);
 
-/* --- Respiration + Pulse animation --- */
+/* ===== Animation loop (breathing + pulse beeps) ===== */
 let pulseTimer=0;
-function animate(now){
+function loop(now){
   const dt=(now-time)/1000;time=now;
-
-  // breathing (chest only)
   const freq=respRate/60;
   const s=1+breathAmp*Math.sin(now/1000*2*Math.PI*freq);
   baby.style.transform=`scaleY(${s.toFixed(3)})`;
 
-  // pulse sound
-  if(ctx && gain){
+  if(ctx&&gain){
     const beatInt=60/heartRate;
     pulseTimer+=dt;
     if(pulseTimer>=beatInt){
       pulseTimer=0;
       gain.gain.setValueAtTime(0.2,ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.1);
-      osc.frequency.setValueAtTime(140,ctx.currentTime);
+      osc.frequency.setValueAtTime(150,ctx.currentTime);
     }
   }
-  requestAnimationFrame(animate);
+  requestAnimationFrame(loop);
 }
-requestAnimationFrame(animate);
-
-/* --- Test buttons --- */
-document.getElementById('testAppearance').onclick=()=>{
-  slider.value=slider.value<100?100:0;
-  updateBlue(+slider.value);
-};
-document.getElementById('testPulse').onclick=()=>{
-  alert(`Pulse Test:\nCurrent Heart Rate: ${Math.round(heartRate)} bpm\n(Cyanosis ${cyanosis}%)`);
-};
-document.getElementById('testResp').onclick=()=>{
-  alert(`Respiration Test:\nRate: ${Math.round(respRate)} bpm\nChest Motion Amplitude: ${breathAmp.toFixed(3)}`);
-};
+requestAnimationFrame(loop);
 </script>
 </body>
 </html>
