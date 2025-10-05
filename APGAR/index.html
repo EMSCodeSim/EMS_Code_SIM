@@ -1,46 +1,320 @@
-/* ==== Realistic Animation: chest-only breathing + pulse beeps ==== */
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Apgar Training Simulator — Interactive</title>
+<style>
+  :root{
+    --card:#fff; --ink:#111; --muted:#667085; --border:#e4e7ec; --brand:#2563eb;
+  }
+  body{
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif;
+    background:#f5f7fa;color:var(--ink);
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; gap:14px; padding:16px;
+  }
+  h1{margin:6px 0 0; font-size:20px}
+  .grid{display:grid; gap:14px; width:min(980px,95vw)}
+  @media(min-width:900px){ .grid{ grid-template-columns: 1fr 1fr; } }
+
+  /* Stage */
+  .stage{ position:relative; background:#fff; border:1px solid var(--border); border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.06); padding:8px }
+  #baby{ width:100%; height:auto; display:block; transform-origin:center 35%; }
+  .overlay{
+    position:absolute; inset:8px; pointer-events:none; mix-blend-mode:multiply;
+    -webkit-mask-image:url('baby2.png'); mask-image:url('baby2.png');
+    -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+    -webkit-mask-size:100% 100%; mask-size:100% 100%;
+    -webkit-mask-position:center center; mask-position:center center;
+  }
+  .overlay.no-mask{ -webkit-mask-image:none; mask-image:none; } /* for on-top light/pulse effects */
+
+  /* Cards / Controls */
+  .card{ background:#fff; border:1px solid var(--border); border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,.05); padding:12px }
+  .controls strong{ display:block }
+  input[type=range]{ width:100%; accent-color:#388bff }
+  .row{ display:flex; gap:8px; align-items:center; justify-content:space-between; font-size:14px; color:var(--muted) }
+
+  /* APGAR table */
+  table{ width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden }
+  th,td{ border-bottom:1px solid var(--border); padding:8px; text-align:center; font-size:14px }
+  th:first-child, td:first-child{ text-align:left }
+  .btn{
+    padding:6px 10px; border:1px solid #ccc; border-radius:8px; background:#fff; cursor:pointer; font-size:13px
+  }
+  .btn:hover{ border-color:var(--brand); color:var(--brand) }
+  .btn[data-active="1"]{ border-color:var(--brand); color:var(--brand); font-weight:600 }
+  .btn.primary{ border-color:var(--brand); color:#fff; background:var(--brand) }
+  .score-row{ font-weight:700; background:#f1f5fb }
+
+  /* Modal */
+  .modal{
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,.45);
+    align-items:center; justify-content:center; z-index:50; padding:16px;
+  }
+  .modal .panel{
+    background:#fff; border-radius:12px; padding:16px; max-width:520px; width:min(520px,95vw);
+    box-shadow:0 6px 18px rgba(0,0,0,.25);
+  }
+  .modal h3{ margin:0 0 6px; font-size:18px }
+  .modal p { margin:6px 0; color:#374151; line-height:1.45 }
+</style>
+</head>
+<body>
+
+<h1>🩺 Apgar Training Simulator — Interactive</h1>
+
+<div class="grid">
+  <!-- Visual Stage -->
+  <div class="stage">
+    <img id="baby" src="baby2.png" alt="training manikin">
+    <!-- Tints (masked to baby only) -->
+    <div id="overlayPeripheral" class="overlay"></div>
+    <div id="overlayCore" class="overlay"></div>
+    <!-- Chest highlight pulse (not masked so it brightens on top) -->
+    <div id="overlayChestLight" class="overlay no-mask" style="inset:0;"></div>
+  </div>
+
+  <!-- Controls -->
+  <div class="card controls">
+    <strong>Appearance (Color)</strong>
+    <input type="range" id="slider" min="0" max="100" value="0">
+    <div class="row"><span>0% = Normal Pink</span><span>50% = Blue Arms/Legs</span><span>100% = Full Body Blue</span></div>
+    <div class="row" style="margin-top:8px">
+      <button id="btnDemoAppearance" class="btn">▶ Test Appearance Demo</button>
+      <button id="btnDemoPulse" class="btn">▶ Test Pulse Sound</button>
+      <button id="btnDemoResp" class="btn">▶ Test Respiration</button>
+    </div>
+    <div class="row" style="margin-top:6px; justify-content:flex-start;">
+      <button id="btnReset" class="btn">Reset</button>
+      <button id="btnGuide" class="btn">📋 Scoring Reference</button>
+    </div>
+  </div>
+</div>
+
+<!-- APGAR Table -->
+<div class="card" style="width:min(980px,95vw)">
+  <table id="apgarTable">
+    <thead>
+      <tr>
+        <th>
+          <button id="headAppearance" class="btn primary">Appearance</button>
+        </th>
+        <th>
+          <button id="headPulse" class="btn primary">Pulse</button>
+        </th>
+        <th>
+          <button id="headGrimace" class="btn primary">Grimace</button>
+        </th>
+        <th>
+          <button id="headActivity" class="btn primary">Activity</button>
+        </th>
+        <th>
+          <button id="headResp" class="btn primary">Respiration</button>
+        </th>
+      </tr>
+      <tr>
+        <th>Score</th><th>Score</th><th>Score</th><th>Score</th><th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <!-- Appearance -->
+        <td data-cat="appearance">
+          <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap">
+            <button class="btn pick" data-val="0">0</button>
+            <button class="btn pick" data-val="1">1</button>
+            <button class="btn pick" data-val="2" data-active="1">2</button>
+            <button class="btn pick info" data-val="?">?</button>
+          </div>
+        </td>
+        <!-- Pulse -->
+        <td data-cat="pulse">
+          <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap">
+            <button class="btn pick" data-val="0">0</button>
+            <button class="btn pick" data-val="1">1</button>
+            <button class="btn pick" data-val="2" data-active="1">2</button>
+            <button class="btn pick info" data-val="?">?</button>
+          </div>
+        </td>
+        <!-- Grimace -->
+        <td data-cat="grimace">
+          <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap">
+            <button class="btn pick" data-val="0">0</button>
+            <button class="btn pick" data-val="1">1</button>
+            <button class="btn pick" data-val="2" data-active="1">2</button>
+            <button class="btn pick info" data-val="?">?</button>
+          </div>
+        </td>
+        <!-- Activity -->
+        <td data-cat="activity">
+          <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap">
+            <button class="btn pick" data-val="0">0</button>
+            <button class="btn pick" data-val="1">1</button>
+            <button class="btn pick" data-val="2" data-active="1">2</button>
+            <button class="btn pick info" data-val="?">?</button>
+          </div>
+        </td>
+        <!-- Respiration -->
+        <td data-cat="respiration">
+          <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap">
+            <button class="btn pick" data-val="0">0</button>
+            <button class="btn pick" data-val="1">1</button>
+            <button class="btn pick" data-val="2" data-active="1">2</button>
+            <button class="btn pick info" data-val="?">?</button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr class="score-row">
+        <td colspan="5">Total Apgar: <span id="totalScore">10</span> / 10</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<!-- Info Modal -->
+<div id="modal" class="modal" role="dialog" aria-modal="true">
+  <div class="panel">
+    <h3 id="modalTitle">Category Info</h3>
+    <p id="modalBody">—</p>
+    <div style="text-align:right; margin-top:8px">
+      <button id="modalClose" class="btn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =============== Elements =============== */
+const baby = document.getElementById('baby');
+const overlayPeripheral = document.getElementById('overlayPeripheral'); // limbs
+const overlayCore = document.getElementById('overlayCore');             // head + chest
+const overlayChestLight = document.getElementById('overlayChestLight'); // chest highlight
+const slider = document.getElementById('slider');
+const totalScore = document.getElementById('totalScore');
+
+const btnReset = document.getElementById('btnReset');
+const btnGuide = document.getElementById('btnGuide');
+const btnDemoAppearance = document.getElementById('btnDemoAppearance');
+const btnDemoPulse = document.getElementById('btnDemoPulse');
+const btnDemoResp = document.getElementById('btnDemoResp');
+
+const headAppearance = document.getElementById('headAppearance');
+const headPulse = document.getElementById('headPulse');
+const headGrimace = document.getElementById('headGrimace');
+const headActivity = document.getElementById('headActivity');
+const headResp = document.getElementById('headResp');
+
+/* =============== APGAR scoring state =============== */
+const apgar = { appearance:2, pulse:2, grimace:2, activity:2, respiration:2 };
+function setScore(cat, val){
+  if(val==='?'){ openInfo(cat); return; }
+  apgar[cat] = Number(val);
+  document.querySelectorAll(`[data-cat="${cat}"] .pick`).forEach(b=>{
+    b.dataset.active = (b.dataset.val===String(val)) ? '1' : '0';
+  });
+  updateTotal();
+}
+function updateTotal(){
+  const total = Object.values(apgar).reduce((a,b)=>a+b,0);
+  totalScore.textContent = total;
+}
+document.querySelectorAll('.pick').forEach(btn=>{
+  btn.addEventListener('click',()=> setScore(btn.closest('td').dataset.cat, btn.dataset.val));
+});
+
+/* =============== Audio Pulse =============== */
+let ctx,osc,gain;
+function initAudio(){
+  if(ctx) return;
+  ctx = new (window.AudioContext||window.webkitAudioContext)();
+  osc = ctx.createOscillator(); gain=ctx.createGain();
+  osc.type='square'; osc.connect(gain).connect(ctx.destination);
+  gain.gain.value=0; osc.start();
+}
+window.addEventListener('click', initAudio, {once:true});
+
+/* =============== Vitals & Color (slider mapping) =============== */
+/*
+  0%  -> normal pink (no blue)
+  50% -> limbs blue (acrocyanosis)
+  100%-> full body blue (central cyanosis)
+*/
+let heartRate = 140, respRate = 50, breathAmp = 0.022;
+function updateVitals(sev){
+  // sev: 0..100 (same as slider)
+  heartRate = 150 - sev*1.1;    // ~150 -> 40 bpm
+  respRate  = 55  - sev*0.45;   // ~55  -> 10/min
+  breathAmp = 0.022 - sev*0.00009; // amplitude decreases with severity
+
+  // Auto-link appearance score
+  if (sev < 25) setScore('appearance', '2');         // pink
+  else if (sev < 75) setScore('appearance', '1');    // acrocyanosis
+  else setScore('appearance', '0');                  // central cyanosis
+}
+
+function updateBlue(v){
+  updateVitals(v);
+
+  // Peripheral overlay (arms/legs) — visible from 0..50
+  const p = Math.min(v,50)/50; // 0..1
+  const a = (0.75*p).toFixed(3);
+  const szHand = 18 + p*6;  // %
+  const szFoot = 20 + p*10; // %
+  overlayPeripheral.style.background =
+    `radial-gradient(${szHand}% ${szHand}% at 22% 48%, rgba(40,100,230,${a}) 0%, transparent 70%),
+     radial-gradient(${szHand}% ${szHand}% at 78% 48%, rgba(40,100,230,${a}) 0%, transparent 70%),
+     radial-gradient(${szFoot}% ${szFoot}% at 28% 88%, rgba(40,100,230,${a}) 0%, transparent 70%),
+     radial-gradient(${szFoot}% ${szFoot}% at 72% 88%, rgba(40,100,230,${a}) 0%, transparent 70%)`;
+  overlayPeripheral.style.opacity = p;
+
+  // Core overlay — fades in strongly from 50..100 (head + chest fully blue at 100)
+  const q = v<=50 ? 0 : (v-50)/50; // 0..1
+  const coreAlpha = (0.65 + 0.30*q).toFixed(3);
+  overlayCore.style.background = `rgba(40,100,230,${coreAlpha})`;
+  overlayCore.style.opacity = q;
+}
+slider.addEventListener('input', e => updateBlue(+e.target.value));
+updateBlue(0);
+
+/* =============== Realistic Breathing + Pulse Beeps =============== */
+let time = performance.now();
 let pulseTimer = 0;
 let pauseUntil = 0;
 let pauseActive = false;
 
-function loop(now) {
-  const dt = (now - time) / 1000;
-  time = now;
+function loop(now){
+  const dt = (now - time)/1000; time = now;
 
-  /* --- Breathing Logic --- */
-  // Introduce mild variability to breathing rate (±10%)
-  const freq = (respRate / 60) * (1 + 0.1 * Math.sin(now / 8000));
+  // Mild variability to RR (±10%)
+  const freq = (respRate/60) * (1 + 0.1*Math.sin(now/8000));
 
-  // Occasionally simulate a newborn pause ("periodic breathing")
-  if (!pauseActive && Math.random() < 0.001) {
-    pauseActive = true;
-    pauseUntil = now + 800; // 0.8 s pause
-  }
+  // Occasional short pause (periodic breathing)
+  if (!pauseActive && Math.random() < 0.001) { pauseActive = true; pauseUntil = now + 800; }
   if (pauseActive && now > pauseUntil) pauseActive = false;
 
-  // Progress curve (0–1) for inhale/exhale
-  const breathPhase = (Math.sin(now / 1000 * 2 * Math.PI * freq) + 1) / 2;
-  // Faster inhale, slower exhale
-  const curve = Math.pow(breathPhase, 1.8);
-  const amp = pauseActive ? 0 : breathAmp + 0.002 * Math.sin(now / 3000);
+  const breathPhase = (Math.sin(now/1000 * 2*Math.PI*freq) + 1)/2; // 0..1
+  const curve = Math.pow(breathPhase, 1.8); // faster inhale, slower exhale
+  const amp = pauseActive ? 0 : breathAmp + 0.002*Math.sin(now/3000);
 
-  // Combined motion: vertical lift + chest expansion
+  // Chest lift + expansion (upper body only due to transform-origin)
   const chestRise = amp * curve;
-  baby.style.transform = `translateY(${-chestRise * 60}px) scaleY(${1 + chestRise})`;
+  baby.style.transform = `translateY(${-chestRise*60}px) scaleY(${1+chestRise})`;
 
-  // Optional: gentle light pulse over the chest area during inhale
-  const pulseOpacity = (curve * 0.2).toFixed(2);
-  overlayCore.style.background =
-    `radial-gradient(circle at 50% 38%, rgba(255,255,255,${pulseOpacity}) 0%, transparent 70%)`;
+  // Subtle chest light during inhale
+  const pulseOpacity = (curve * 0.18).toFixed(2);
+  overlayChestLight.style.background =
+    `radial-gradient(circle at 50% 32%, rgba(255,255,255,${pulseOpacity}) 0%, transparent 22%)`;
 
-  /* --- Pulse Audio --- */
-  if (ctx && gain) {
-    const beatInt = 60 / Math.max(heartRate, 1);
+  // Pulse beeps
+  if (ctx && gain){
+    const beatInt = 60/Math.max(heartRate,1);
     pulseTimer += dt;
-    if (pulseTimer >= beatInt) {
+    if (pulseTimer >= beatInt){
       pulseTimer = 0;
       gain.gain.setValueAtTime(0.16, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+0.08);
       osc.frequency.setValueAtTime(150, ctx.currentTime);
     }
   }
@@ -48,3 +322,125 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
+
+/* =============== Demos (category header buttons) =============== */
+function animateSliderSequence(seq, msPerStep=80){
+  let i=0; const timer=setInterval(()=>{
+    if(i>=seq.length){ clearInterval(timer); return; }
+    slider.value = seq[i]; updateBlue(seq[i]); i++;
+  }, msPerStep);
+}
+
+// Appearance demo: pink -> limbs blue -> full blue -> pink
+headAppearance.onclick = btnDemoAppearance.onclick = ()=>{
+  animateSliderSequence([0,10,20,30,40,50,60,75,90,100,90,60,40,20,0], 90);
+};
+
+// Pulse demo: quick 5s pulse sound + visual chest highlight
+headPulse.onclick = btnDemoPulse.onclick = ()=>{
+  if(!ctx) initAudio();
+  // brief stronger chest light effect
+  let t=0; const demo=setInterval(()=>{
+    t+=1; overlayChestLight.style.background =
+      `radial-gradient(circle at 50% 32%, rgba(255,255,255,0.25) 0%, transparent 22%)`;
+    if(t>30){ clearInterval(demo); overlayChestLight.style.background=''; }
+  }, 160);
+};
+
+// Respiration demo: temporarily boost amplitude for 4s
+let respBoostTimer=null;
+headResp.onclick = btnDemoResp.onclick = ()=>{
+  const base = breathAmp;
+  breathAmp = base + 0.012;
+  clearTimeout(respBoostTimer);
+  respBoostTimer = setTimeout(()=>{ breathAmp = base; }, 4000);
+};
+
+// Grimace demo: quick “face flash” (simulated by brightening the upper face)
+headGrimace.onclick = ()=>{
+  overlayChestLight.style.background =
+    `radial-gradient(30% 18% at 50% 18%, rgba(255,120,120,0.35), transparent 70%)`;
+  setTimeout(()=> overlayChestLight.style.background='', 600);
+};
+
+// Activity demo: brief jitter to simulate movement
+headActivity.onclick = ()=>{
+  let t=0; const jitter=setInterval(()=>{
+    t+=1;
+    const jx = Math.sin(t*0.9)*0.6, jy = Math.cos(t*1.1)*0.6;
+    const s = baby.style.transform;
+    baby.style.transform = `${s} translate(${jx}px,${jy}px)`;
+    if(t>50){ clearInterval(jitter); }
+  }, 16);
+};
+
+/* =============== Reset & Guide =============== */
+btnReset.onclick = ()=>{
+  slider.value = 0; updateBlue(0);
+  ['appearance','pulse','grimace','activity','respiration'].forEach(c=>{
+    setScore(c, c==='appearance' ? '2' : '2');
+  });
+};
+btnGuide.onclick = ()=> openInfo('guide');
+
+/* =============== Info Popups (the '?' buttons) =============== */
+const modal = document.getElementById('modal');
+const modalTitle = document.getElementById('modalTitle');
+const modalBody = document.getElementById('modalBody');
+const modalClose = document.getElementById('modalClose');
+
+const helpText = {
+  appearance: `
+    <b>Appearance (Color)</b><br>
+    2 = Completely pink<br>
+    1 = Blue hands and feet (acrocyanosis)<br>
+    0 = Blue or pale body (central cyanosis)<br>
+    <i>Tip:</i> Use the slider to demonstrate progression.`,
+  pulse: `
+    <b>Pulse</b><br>
+    2 = ≥ 100 bpm<br>
+    1 = &lt; 100 bpm<br>
+    0 = Absent<br>
+    <i>Note:</i> Click once to enable audio beeps.`,
+  grimace: `
+    <b>Grimace (Reflex irritability)</b><br>
+    2 = Cries, coughs, or pulls away<br>
+    1 = Facial movement/grimace<br>
+    0 = No response`,
+  activity: `
+    <b>Activity (Muscle tone)</b><br>
+    2 = Active motion, well flexed<br>
+    1 = Some flexion of extremities<br>
+    0 = Flaccid`,
+  respiration: `
+    <b>Respiration</b><br>
+    2 = Good cry, regular respirations<br>
+    1 = Weak or irregular respirations<br>
+    0 = Absent<br>
+    <i>Demo:</i> Use “Test Respiration” to increase chest rise briefly.`,
+  guide: `
+    <b>Apgar Reference</b><br>
+    • Appearance: 2 pink • 1 acrocyanosis • 0 central cyanosis<br>
+    • Pulse: 2 ≥100 bpm • 1 &lt;100 bpm • 0 absent<br>
+    • Grimace: 2 cries • 1 grimace • 0 none<br>
+    • Activity: 2 active • 1 some flexion • 0 flaccid<br>
+    • Respiration: 2 good cry • 1 weak/irreg • 0 absent<br>
+    <b>Newborn normals:</b> HR 120–160 bpm • RR 30–60/min`
+};
+
+function openInfo(cat){
+  modalTitle.textContent = (cat==='guide' ? 'Apgar Scoring Reference' : `About: ${cat[0].toUpperCase()}${cat.slice(1)}`);
+  modalBody.innerHTML = helpText[cat] || 'No info available.';
+  modal.style.display = 'flex';
+}
+modalClose.onclick = ()=> modal.style.display='none';
+modal.onclick = (e)=> { if(e.target===modal) modal.style.display='none'; };
+document.querySelectorAll('.pick.info').forEach(btn=>{
+  btn.addEventListener('click', ()=> openInfo(btn.closest('td').dataset.cat));
+});
+
+/* =============== Initialize totals =============== */
+updateTotal();
+</script>
+</body>
+</html>
