@@ -2,24 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Apgar Simulator (Mobile)</title>
 <style>
   body{
-    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
-    background:#f6f8fa;
-    margin:0; padding:10px;
-    display:flex; flex-direction:column; align-items:center; gap:10px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;
+    background:#f6f8fa;margin:0;padding:10px;
+    display:flex;flex-direction:column;align-items:center;gap:10px;
   }
-  h1{font-size:18px;margin:4px 0 8px;text-align:center;}
+  h1{text-align:center;font-size:18px;margin:4px 0 8px;}
   .stage{
-    width:100%;
-    max-width:420px;
-    background:#fff;
-    border-radius:12px;
-    border:1px solid #ddd;
-    position:relative;
-    overflow:hidden;
+    position:relative;width:100%;max-width:420px;background:#fff;
+    border-radius:12px;border:1px solid #ddd;overflow:hidden;
   }
   #baby{width:100%;height:auto;display:block;transform-origin:center 35%;}
   .overlay{
@@ -27,40 +21,35 @@
     -webkit-mask-image:url('baby2.png');mask-image:url('baby2.png');
     -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
     -webkit-mask-size:100% 100%;mask-size:100% 100%;
-    -webkit-mask-position:center center;mask-position:center center;
   }
-  #overlayPeripheral,#overlayCore{transition:opacity .2s linear, background .2s linear;}
+  #overlayPeripheral,#overlayCore{transition:opacity .25s linear, background .25s linear;}
   .controls{
-    background:#fff;border-radius:12px;border:1px solid #ddd;
-    padding:10px;width:100%;max-width:420px;
+    width:100%;max-width:420px;background:#fff;border:1px solid #ddd;
+    border-radius:12px;padding:10px;
   }
   input[type=range]{width:100%;accent-color:#2563eb;}
-  .info{font-size:13px;color:#555;text-align:center;}
+  .info{text-align:center;font-size:13px;color:#555;}
   table{width:100%;border-collapse:collapse;margin-top:10px;}
   th,td{border:1px solid #e4e7ec;padding:6px;text-align:center;font-size:14px;}
   th:first-child{text-align:left;}
   .btn{
-    padding:6px 10px;margin:3px 0;
-    border-radius:8px;border:1px solid #ccc;
-    background:#fff;width:100%;font-size:14px;
+    padding:6px 8px;margin:2px;border-radius:8px;border:1px solid #ccc;
+    background:#fff;font-size:14px;cursor:pointer;
   }
   .btn[data-active="1"]{border-color:#2563eb;color:#2563eb;font-weight:600;}
-  .score-row{font-weight:bold;background:#f1f5fb;}
+  .score-row{background:#f1f5fb;font-weight:bold;}
   .modal{
-    display:none;position:fixed;inset:0;
-    background:rgba(0,0,0,.45);
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);
     align-items:center;justify-content:center;z-index:100;
   }
   .panel{
-    background:#fff;border-radius:12px;padding:16px;
-    width:90%;max-width:400px;
+    background:#fff;border-radius:12px;padding:16px;width:90%;max-width:400px;
   }
-  .panel h3{margin-top:0;}
 </style>
 </head>
 <body>
 
-<h1>🩺 Apgar Training Simulator</h1>
+<h1>🩺 Apgar Simulator</h1>
 
 <div class="stage">
   <img id="baby" src="baby2.png" alt="Baby model">
@@ -71,65 +60,80 @@
 <div class="controls">
   <label><b>Appearance (Color)</b></label>
   <input type="range" id="slider" min="0" max="100" value="0">
-  <p class="info">0% = Normal • 50% = Blue limbs • 100% = Blue body</p>
+  <p class="info">0% = Normal • 50% = Blue limbs • 100% = Full blue</p>
 </div>
 
 <table id="apgarTable">
   <tr><th>Category</th><th>Score</th></tr>
+
   <tr>
-    <td>Appearance</td>
+    <td><button id="btnAppearance" class="btn">Appearance</button></td>
     <td data-cat="appearance">
-      <button class="btn" data-val="0">0</button>
-      <button class="btn" data-val="1">1</button>
-      <button class="btn" data-val="2" data-active="1">2</button>
-      <button class="btn" data-val="?">?</button>
+      <div>
+        <button class="btn" data-val="0">0</button>
+        <button class="btn" data-val="1">1</button>
+        <button class="btn" data-val="2" data-active="1">2</button>
+        <button class="btn" data-val="?">?</button>
+      </div>
     </td>
   </tr>
+
   <tr>
-    <td>Pulse</td>
+    <td><button id="btnPulse" class="btn">Pulse</button></td>
     <td data-cat="pulse">
-      <button class="btn" data-val="0">0</button>
-      <button class="btn" data-val="1">1</button>
-      <button class="btn" data-val="2" data-active="1">2</button>
-      <button class="btn" data-val="?">?</button>
+      <div>
+        <button class="btn" data-val="0">0</button>
+        <button class="btn" data-val="1">1</button>
+        <button class="btn" data-val="2" data-active="1">2</button>
+        <button class="btn" data-val="?">?</button>
+      </div>
     </td>
   </tr>
+
   <tr>
-    <td>Grimace</td>
+    <td><button id="btnGrimace" class="btn">Grimace</button></td>
     <td data-cat="grimace">
-      <button class="btn" data-val="0">0</button>
-      <button class="btn" data-val="1">1</button>
-      <button class="btn" data-val="2" data-active="1">2</button>
-      <button class="btn" data-val="?">?</button>
+      <div>
+        <button class="btn" data-val="0">0</button>
+        <button class="btn" data-val="1">1</button>
+        <button class="btn" data-val="2" data-active="1">2</button>
+        <button class="btn" data-val="?">?</button>
+      </div>
     </td>
   </tr>
+
   <tr>
-    <td>Activity</td>
+    <td><button id="btnActivity" class="btn">Activity</button></td>
     <td data-cat="activity">
-      <button class="btn" data-val="0">0</button>
-      <button class="btn" data-val="1">1</button>
-      <button class="btn" data-val="2" data-active="1">2</button>
-      <button class="btn" data-val="?">?</button>
+      <div>
+        <button class="btn" data-val="0">0</button>
+        <button class="btn" data-val="1">1</button>
+        <button class="btn" data-val="2" data-active="1">2</button>
+        <button class="btn" data-val="?">?</button>
+      </div>
     </td>
   </tr>
+
   <tr>
-    <td>Respiration</td>
+    <td><button id="btnResp" class="btn">Respiration</button></td>
     <td data-cat="respiration">
-      <button class="btn" data-val="0">0</button>
-      <button class="btn" data-val="1">1</button>
-      <button class="btn" data-val="2" data-active="1">2</button>
-      <button class="btn" data-val="?">?</button>
+      <div>
+        <button class="btn" data-val="0">0</button>
+        <button class="btn" data-val="1">1</button>
+        <button class="btn" data-val="2" data-active="1">2</button>
+        <button class="btn" data-val="?">?</button>
+      </div>
     </td>
   </tr>
+
   <tr class="score-row">
     <td>Total</td><td><span id="totalScore">10</span>/10</td>
   </tr>
 </table>
 
-<!-- Modal -->
 <div id="modal" class="modal">
   <div class="panel">
-    <h3 id="modalTitle">Info</h3>
+    <h3 id="modalTitle"></h3>
     <p id="modalBody"></p>
     <button id="modalClose" class="btn">Close</button>
   </div>
@@ -141,8 +145,8 @@ const overlayPeripheral=document.getElementById('overlayPeripheral');
 const overlayCore=document.getElementById('overlayCore');
 const slider=document.getElementById('slider');
 const totalScore=document.getElementById('totalScore');
-
 const apgar={appearance:2,pulse:2,grimace:2,activity:2,respiration:2};
+
 function setScore(cat,val){
   if(val==='?'){openInfo(cat);return;}
   apgar[cat]=Number(val);
@@ -155,7 +159,7 @@ function updateTotal(){
   const total=Object.values(apgar).reduce((a,b)=>a+b,0);
   totalScore.textContent=total;
 }
-document.querySelectorAll('.btn').forEach(btn=>{
+document.querySelectorAll('td[data-cat] .btn').forEach(btn=>{
   btn.addEventListener('click',()=>setScore(btn.closest('td').dataset.cat,btn.dataset.val));
 });
 
@@ -182,21 +186,53 @@ function updateBlue(v){
 slider.addEventListener('input',e=>updateBlue(+e.target.value));
 updateBlue(0);
 
-// Breathing animation (simple chest rise)
+// breathing
 let time=performance.now();
 function loop(now){
-  const dt=(now-time)/1000;time=now;
   const freq=(respRate/60);
   const breathPhase=(Math.sin(now/1000*2*Math.PI*freq)+1)/2;
   const curve=Math.pow(breathPhase,1.8);
-  const amp=breathAmp;
-  const chestRise=amp*curve;
+  const chestRise=breathAmp*curve;
   baby.style.transform=`translateY(${-chestRise*60}px) scaleY(${1+chestRise})`;
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
 
-// Info popup
+// animations triggered by category buttons
+function animateAppearance(){
+  let i=0; const seq=[0,20,40,60,80,100,80,60,40,20,0];
+  const t=setInterval(()=>{slider.value=seq[i];updateBlue(seq[i]);i++;if(i>=seq.length)clearInterval(t);},120);
+}
+function animatePulse(){
+  baby.style.transition="transform .05s";let on=false;
+  let c=0;const flash=setInterval(()=>{
+    baby.style.transform=`scale(${on?1:1.02})`;
+    on=!on;c++;if(c>20){clearInterval(flash);baby.style.transform='scale(1)';}
+  },200);
+}
+function animateGrimace(){
+  baby.style.transition="transform .15s";
+  baby.style.transform="translateY(-5px) rotate(3deg)";
+  setTimeout(()=>baby.style.transform="translateY(0) rotate(0)",200);
+}
+function animateActivity(){
+  let t=0;const move=setInterval(()=>{
+    baby.style.transform=`rotate(${Math.sin(t*0.4)*1.5}deg)`;t+=1;
+    if(t>50){clearInterval(move);baby.style.transform='rotate(0deg)';}
+  },16);
+}
+function animateResp(){
+  breathAmp=0.04;setTimeout(()=>breathAmp=0.022,3000);
+}
+
+// link buttons
+btnAppearance.onclick=animateAppearance;
+btnPulse.onclick=animatePulse;
+btnGrimace.onclick=animateGrimace;
+btnActivity.onclick=animateActivity;
+btnResp.onclick=animateResp;
+
+// info modal
 const modal=document.getElementById('modal');
 const modalTitle=document.getElementById('modalTitle');
 const modalBody=document.getElementById('modalBody');
