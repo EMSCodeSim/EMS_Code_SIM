@@ -34,10 +34,17 @@ input[type=range]{width:100%;accent-color:#388bff}
 .apgar-table th,.apgar-table td{padding:6px 4px;text-align:center;border-bottom:1px solid #e4e7ec}
 .apgar-table th:first-child,.apgar-table td:first-child{text-align:left;padding-left:8px}
 .btn{
-  padding:4px 8px;border:1px solid #ccc;border-radius:6px;cursor:pointer;background:#fff;font-size:13px
+  padding:5px 10px;border:1px solid #ccc;border-radius:6px;cursor:pointer;background:#fff;font-size:13px
 }
 .btn[data-active="1"]{border-color:#2563eb;color:#2563eb;font-weight:600}
 .score-row{font-weight:700;background:#f1f5fb}
+#guideBox{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);
+  align-items:center;justify-content:center;z-index:20;
+}
+#guideContent{
+  background:#fff;border-radius:12px;padding:16px;max-width:420px;box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
 </style>
 </head>
 <body>
@@ -52,13 +59,12 @@ input[type=range]{width:100%;accent-color:#388bff}
 <div class="controls">
   <strong>Appearance (Color)</strong>
   <input type="range" id="slider" min="0" max="100" value="0">
-  <div class="row"><span>0 = Pink / Normal</span><span>100 = Full Cyanosis</span></div>
+  <div class="row"><span>0 = Pink / Normal</span><span>≈50 = Full Cyanosis</span></div>
+  <button id="showGuide" class="btn" style="margin-top:8px;">📋 Show Apgar Scoring Guide</button>
 </div>
 
 <table class="apgar-table" id="apgarTable">
-  <thead>
-    <tr><th>Category</th><th>0</th><th>1</th><th>2</th></tr>
-  </thead>
+  <thead><tr><th>Category</th><th>0</th><th>1</th><th>2</th></tr></thead>
   <tbody>
     <tr data-cat="appearance"><td>Appearance</td>
       <td><button class="btn" data-val="0">0</button></td>
@@ -86,10 +92,26 @@ input[type=range]{width:100%;accent-color:#388bff}
       <td><button class="btn" data-val="2" data-active="1">2</button></td>
     </tr>
   </tbody>
-  <tfoot>
-    <tr class="score-row"><td>Total</td><td colspan="3" id="totalScore">10 / 10</td></tr>
-  </tfoot>
+  <tfoot><tr class="score-row"><td>Total</td><td colspan="3" id="totalScore">10 / 10</td></tr></tfoot>
 </table>
+
+<!-- guide modal -->
+<div id="guideBox">
+  <div id="guideContent">
+    <h3>Apgar Scoring Reference</h3>
+    <ul style="text-align:left;font-size:14px;line-height:1.5;">
+      <li><b>Appearance:</b> 2 = Completely pink • 1 = Blue hands/feet • 0 = Pale/blue</li>
+      <li><b>Pulse:</b> 2 = ≥ 100 bpm • 1 = &lt; 100 bpm • 0 = Absent</li>
+      <li><b>Grimace:</b> 2 = Cries • 1 = Facial movement • 0 = None</li>
+      <li><b>Activity:</b> 2 = Active • 1 = Some flexion • 0 = Flaccid</li>
+      <li><b>Respiration:</b> 2 = Good cry • 1 = Weak/irregular • 0 = Absent</li>
+      <li><b>Newborn normals:</b> HR ≈ 120–160 bpm • RR ≈ 30–60/min</li>
+    </ul>
+    <div style="text-align:center;margin-top:10px;">
+      <button id="closeGuide" class="btn">Close</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* === Elements === */
@@ -130,20 +152,21 @@ window.addEventListener('click',initAudio,{once:true});
 /* === Vitals & color === */
 let heartRate=140,respRate=50,breathAmp=0.012,time=performance.now();
 function updateVitals(v){
-  // HR 140 → 40, RR 50 → 10 with cyanosis
-  heartRate=140-(v*1.0);
-  respRate =50-(v*0.4);
-  breathAmp=0.012-(v*0.00006);
-  if(v<33)setScore('appearance','2');
-  else if(v<66)setScore('appearance','1');
+  // compress slider: 0–50 = full cyanosis
+  const scaled=Math.min(v*2,100);
+  heartRate=150-(scaled*1.1);   // 150 → ~40
+  respRate =55-(scaled*0.45);   // 55 → ~10
+  breathAmp=0.012-(scaled*0.00006);
+  if(scaled<33)setScore('appearance','2');
+  else if(scaled<66)setScore('appearance','1');
   else setScore('appearance','0');
 }
 function updateBlue(v){
   updateVitals(v);
-  // full-body fade, lighter blue overall
-  const outer=`rgba(70,140,255,${0.65})`;
-  const inner=`rgba(40,100,230,${0.75})`;
-  const start=Math.max(0,88 - v*0.9);
+  const scaled=Math.min(v*2,100);
+  const outer=`rgba(70,150,255,${0.7})`;
+  const inner=`rgba(30,90,230,${0.8})`;
+  const start=Math.max(0,88 - scaled*0.9);
   overlay.style.background=
     `radial-gradient(ellipse 90% 72% at 50% 38%, transparent ${start}%, ${outer} 80%, ${inner} 100%)`;
 }
@@ -156,7 +179,7 @@ function loop(now){
   const dt=(now-time)/1000;time=now;
   const freq=respRate/60;
   const s=1+breathAmp*Math.sin(now/1000*2*Math.PI*freq);
-  baby.style.transform=`translateY(0px) scaleY(${s.toFixed(3)})`; // chest motion only
+  baby.style.transform=`translateY(0) scaleY(${s.toFixed(3)})`; // chest-only
 
   if(ctx&&gain){
     const beatInt=60/heartRate;
@@ -171,6 +194,11 @@ function loop(now){
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
+
+/* === Scoring guide modal === */
+const guideBox=document.getElementById('guideBox');
+document.getElementById('showGuide').onclick=()=>guideBox.style.display='flex';
+document.getElementById('closeGuide').onclick=()=>guideBox.style.display='none';
 </script>
 </body>
 </html>
