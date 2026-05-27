@@ -1,0 +1,21 @@
+{
+  "name": "EMSCodeSim",
+  "short_name": "EMSCodeSim",
+  "description": "EMS training simulators, quizzes, and instructor tools.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "/ems-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

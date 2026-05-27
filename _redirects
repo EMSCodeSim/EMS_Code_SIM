@@ -1,0 +1,28 @@
+# Clean, human-readable tool URLs
+/blood-pressure-simulator        /vitals/bp.html                            301
+/breath-sound-simulator          /vitals/breath-sound-simulator.html        301
+/capnography-trainer             /vitals/capno.html                         301
+/gcs-trainer                     /vitals/gcs.html                           301
+/stroke-assessment-trainer       /vitals/stroke.html                        301
+/pulse-trainer                   /vitals/pulse.html                         301
+/pulse-oximeter-trainer          /vitals/pulse-ox.html                      301
+/blood-glucose-trainer           /vitals/bgl.html                           301
+/pupil-simulator                 /vitals/pupil.html                         301
+/loc-orientation-simulator       /vitals/aao.html                           301
+/rule-of-nines                   /vitals/nines.html                         301
+/apgar-simulator                 /APGAR/                                    301
+/medical-scenario-simulator      /med_sim.html                              301
+
+# Extensionless internal support
+/vitals/bp                       /vitals/bp.html                            200
+/vitals/breath-sound-simulator   /vitals/breath-sound-simulator.html        200
+/vitals/capno                    /vitals/capno.html                         200
+/vitals/gcs                      /vitals/gcs.html                           200
+/vitals/stroke                   /vitals/stroke.html                        200
+/vitals/pulse                    /vitals/pulse.html                         200
+/vitals/pulse-ox                 /vitals/pulse-ox.html                      200
+/vitals/bgl                      /vitals/bgl.html                           200
+/vitals/pupil                    /vitals/pupil.html                         200
+/vitals/aao                      /vitals/aao.html                           200
+/vitals/skin                     /vitals/skin.html                          200
+/vitals/nines                    /vitals/nines.html                         200
