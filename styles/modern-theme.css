@@ -1,0 +1,316 @@
+/* EMSCodeSim modern visual refresh
+   Design goal: fun, field-ready, and handcrafted rather than generic AI-gloss. */
+:root{
+  --ems-bg:#07121f;
+  --ems-bg-2:#0c1d2e;
+  --ems-panel:#102236;
+  --ems-panel-2:#132a42;
+  --ems-card:#12263b;
+  --ems-card-light:#f8fbff;
+  --ems-text:#edf7ff;
+  --ems-text-dark:#0f2333;
+  --ems-muted:#a8bfd1;
+  --ems-muted-dark:#546676;
+  --ems-line:rgba(255,255,255,.12);
+  --ems-line-dark:rgba(15,35,51,.12);
+  --ems-blue:#3bbcff;
+  --ems-cyan:#27e0c6;
+  --ems-green:#7ddf8e;
+  --ems-red:#ff5a66;
+  --ems-amber:#ffd166;
+  --ems-purple:#a78bfa;
+  --ems-radius:22px;
+  --ems-radius-sm:14px;
+  --ems-shadow:0 24px 70px rgba(0,0,0,.34);
+  --ems-shadow-soft:0 12px 30px rgba(3,12,22,.20);
+  --ems-font:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+html{scroll-behavior:smooth; background:var(--ems-bg);}
+body{
+  color:var(--ems-text);
+  font-family:var(--ems-font) !important;
+  background:
+    radial-gradient(circle at 18% -8%, rgba(59,188,255,.22), transparent 31rem),
+    radial-gradient(circle at 88% 8%, rgba(39,224,198,.17), transparent 28rem),
+    radial-gradient(circle at 42% 112%, rgba(255,90,102,.10), transparent 34rem),
+    linear-gradient(160deg, var(--ems-bg) 0%, #0b1725 48%, #06101b 100%) !important;
+  min-height:100vh;
+  accent-color:var(--ems-cyan);
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,.034) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px);
+  background-size:34px 34px;
+  mask-image:linear-gradient(to bottom, rgba(0,0,0,.70), rgba(0,0,0,.14));
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:linear-gradient(120deg, rgba(255,255,255,.045), transparent 26%, transparent 72%, rgba(39,224,198,.06));
+  mix-blend-mode:screen;
+}
+
+/* Universal tactile controls */
+a{transition:color .18s ease, background .18s ease, transform .08s ease, border-color .18s ease, box-shadow .18s ease;}
+button,.btn,.card-link,input[type="button"],input[type="submit"]{
+  border-radius:999px !important;
+  font-family:var(--ems-font) !important;
+  letter-spacing:.01em;
+  min-height:42px;
+}
+button,.btn,.card-link,#send-button,#mic-button{
+  box-shadow:0 12px 24px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.26) !important;
+}
+button:hover,.btn:hover,.card-link:hover,#send-button:hover,#mic-button:hover{
+  transform:translateY(-1px);
+  filter:saturate(1.06);
+}
+button:active,.btn:active,.card-link:active,#send-button:active,#mic-button:active{transform:translateY(1px) scale(.99);}
+input,select,textarea{
+  border-radius:14px !important;
+  border:1px solid rgba(148,188,214,.28) !important;
+  background:rgba(255,255,255,.92) !important;
+  color:#102033 !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 8px 18px rgba(0,0,0,.08) !important;
+}
+input:focus,select:focus,textarea:focus{
+  outline:3px solid rgba(39,224,198,.24) !important;
+  border-color:rgba(39,224,198,.68) !important;
+}
+
+/* Top navigation / headers */
+.topbar,header,#main-header{
+  background:rgba(7,18,31,.76) !important;
+  color:var(--ems-text) !important;
+  border-bottom:1px solid var(--ems-line) !important;
+  backdrop-filter:blur(18px) saturate(1.15);
+  box-shadow:0 18px 46px rgba(0,0,0,.22) !important;
+}
+.topbar .brand img,.brand img,.ems-logo-row img{
+  border-radius:16px !important;
+  box-shadow:0 12px 28px rgba(39,224,198,.18) !important;
+}
+.navlinks a,.topbar a,#main-header button,.iconbtn{
+  border:1px solid transparent;
+}
+.navlinks a:hover,.topbar a:hover,.iconbtn:hover{
+  background:rgba(255,255,255,.10) !important;
+  border-color:rgba(255,255,255,.10) !important;
+}
+.nav-cta,.btn-primary,.btn.btn-primary,.card-link,#send-button,#mic-button,.btn-primary,.view-toggle button,.sound-controls button,.topbar button:not(.iconbtn),#main-header button{
+  background:linear-gradient(135deg, var(--ems-blue), var(--ems-cyan)) !important;
+  color:#06121d !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  font-weight:850 !important;
+}
+.btn-secondary,.btn.secondary,.secondary{
+  background:rgba(255,255,255,.08) !important;
+  color:var(--ems-text) !important;
+  border:1px solid var(--ems-line) !important;
+}
+
+/* Landing page: less generic, more product-lab */
+.hero{
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:"EMS SIM LAB";
+  position:absolute;
+  right:clamp(1rem,4vw,4rem);
+  top:clamp(5rem,11vw,8rem);
+  z-index:0;
+  color:rgba(255,255,255,.045);
+  font-size:clamp(2.8rem,9vw,8rem);
+  font-weight:950;
+  letter-spacing:.10em;
+  transform:rotate(-5deg);
+  pointer-events:none;
+}
+.hero-grid,.section,.light-section .section{position:relative;z-index:1;}
+.eyebrow,.badge,.status,.pill,.tag,.chip{
+  border:1px solid rgba(255,255,255,.16) !important;
+  background:rgba(255,255,255,.08) !important;
+  color:#dff8ff !important;
+  border-radius:999px !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14);
+}
+.pulse-dot{
+  background:var(--ems-red) !important;
+  box-shadow:0 0 0 8px rgba(255,90,102,.14), 0 0 22px rgba(255,90,102,.50) !important;
+}
+.hero-card,.tool-card,.project,.panel,.card,.simulator-container,.container,#simulatorPane,#skillSheetPane,#handoffInstructionsPane,.modal-card,.select-block,.audio-card,.score-card,.meter-card,.scenario-card,.question-card{
+  border-radius:var(--ems-radius) !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  background:linear-gradient(180deg, rgba(18,38,59,.92), rgba(13,28,44,.88)) !important;
+  color:var(--ems-text) !important;
+  box-shadow:var(--ems-shadow-soft) !important;
+}
+.hero-card,.tool-card.featured{
+  box-shadow:0 24px 80px rgba(0,0,0,.34), 0 0 0 1px rgba(39,224,198,.08) !important;
+}
+.tool-card,.project,.panel{position:relative;overflow:hidden;}
+.tool-card::after,.project::after,.panel::after,.hero-card::after,.container::after,.card::after,#simulatorPane::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(135deg, rgba(255,255,255,.11), transparent 30%, transparent 72%, rgba(39,224,198,.08));
+  opacity:.72;
+}
+.tool-card:hover,.project:hover{
+  transform:translateY(-3px);
+  border-color:rgba(39,224,198,.28) !important;
+  box-shadow:0 22px 52px rgba(0,0,0,.28) !important;
+}
+.tool-icon{
+  width:52px !important;
+  height:52px !important;
+  min-width:52px !important;
+  display:grid !important;
+  place-items:center !important;
+  border-radius:17px !important;
+  background:linear-gradient(135deg, rgba(59,188,255,.22), rgba(39,224,198,.20)) !important;
+  color:#dffcff !important;
+  font-size:.86rem !important;
+  font-weight:950 !important;
+  letter-spacing:.05em;
+  border:1px solid rgba(255,255,255,.13) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18), 0 12px 24px rgba(0,0,0,.18) !important;
+}
+.tool-top h3,.project h3,.panel h3,.card h2,.container h1,.container h2,.topbar-title,header h1{
+  color:#ffffff !important;
+  letter-spacing:-.025em;
+}
+.tool-top p,.project p,.section-lead,.panel p,.lead,.subtitle,footer,.footer-links a,.disclaimer,.muted,label,.select-block label{
+  color:var(--ems-muted) !important;
+}
+.light-section{
+  background:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.025)) !important;
+  border-block:1px solid rgba(255,255,255,.08) !important;
+}
+.screen-top,.monitor,.sim-preview,.mini-stats .stat{
+  background:rgba(4,11,19,.52) !important;
+  border-color:rgba(255,255,255,.10) !important;
+  color:var(--ems-text) !important;
+}
+.ecg svg path{stroke:var(--ems-green) !important;filter:drop-shadow(0 0 8px rgba(125,223,142,.45));}
+.preview-links a{background:rgba(255,255,255,.08) !important;border:1px solid rgba(255,255,255,.12) !important;}
+
+/* Tool pages: mobile-app feel */
+.app,.container,.simulator-container{
+  width:min(100% - 24px, 700px) !important;
+  margin-inline:auto !important;
+}
+.container,.simulator-container,.card{
+  padding:clamp(16px,3vw,24px) !important;
+}
+.card,.container,.simulator-container{position:relative;overflow:hidden;}
+.card h1,.card h2,.container h1,.container h2,header h1{margin-top:0;}
+.card p,.container p,.simulator-container p{color:var(--ems-muted) !important;}
+header + .container,.topbar + .app{margin-top:16px !important;}
+
+/* Images and anatomical diagrams */
+.image-container,.diagram-container,.chest-img,#bodyContainer,.body-container,.manikin,.patient-img,.image-card{
+  border-radius:22px !important;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.13) !important;
+  background:rgba(255,255,255,.08) !important;
+  box-shadow:0 18px 38px rgba(0,0,0,.26) !important;
+}
+.image-container img,.chest-img,.patient-img,img[src*="front"],img[src*="back"],img[src*="baby"],img[src*="manikin"]{
+  filter:saturate(.98) contrast(1.02);
+}
+.point,.auscultation-point,.hotspot,.area-button,.body-region,.region-btn{
+  border-radius:999px !important;
+  border:1px solid rgba(255,255,255,.28) !important;
+  background:linear-gradient(135deg, rgba(255,90,102,.94), rgba(59,188,255,.92)) !important;
+  color:#fff !important;
+  box-shadow:0 10px 22px rgba(0,0,0,.24), 0 0 0 6px rgba(59,188,255,.10) !important;
+  font-weight:900 !important;
+}
+.point:hover,.auscultation-point:hover,.hotspot:hover,.area-button:hover,.body-region:hover,.region-btn:hover{
+  transform:translateY(-1px) scale(1.02);
+  box-shadow:0 14px 28px rgba(0,0,0,.28), 0 0 0 8px rgba(39,224,198,.14) !important;
+}
+
+/* Chat/scenario trainer */
+#chat-box,.response,.message,.chat-message{
+  border-radius:18px !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  background:rgba(255,255,255,.08) !important;
+  color:var(--ems-text) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07) !important;
+}
+#chat-box{scrollbar-color:rgba(39,224,198,.55) rgba(255,255,255,.08);}
+.response{background:rgba(59,188,255,.10) !important;}
+.input-row,div[style*="display: flex"]{gap:10px;}
+
+/* Tables, lists, assessments */
+table{border-collapse:separate !important;border-spacing:0 8px !important;width:100%;}
+th,td{background:rgba(255,255,255,.08) !important;color:var(--ems-text) !important;border:none !important;padding:10px !important;}
+th:first-child,td:first-child{border-radius:12px 0 0 12px;} th:last-child,td:last-child{border-radius:0 12px 12px 0;}
+ul,ol{color:var(--ems-muted);}
+li{margin:.18rem 0;}
+.status.live{background:rgba(125,223,142,.16) !important;color:#bffcc9 !important;}
+.status.soon{background:rgba(255,209,102,.16) !important;color:#ffe6a3 !important;}
+
+/* Result/feedback styling */
+#result,.result,.feedback,.score,.reading,.value,.display,.monitor-display{
+  color:#ffffff !important;
+  font-weight:850;
+}
+.good,.correct,.pass{color:#9ff3ad !important;}
+.bad,.incorrect,.fail{color:#ff9aa3 !important;}
+.warn,.warning{color:#ffe08a !important;}
+
+/* Modals */
+.modal{backdrop-filter:blur(8px);}
+.modal-card{max-width:min(92vw, 620px);}
+
+/* Footer */
+footer{
+  background:rgba(3,10,18,.45) !important;
+  border-top:1px solid rgba(255,255,255,.08) !important;
+}
+footer a:hover{color:#fff !important;}
+
+/* Page-specific cleanup */
+.ems-logo-row{
+  background:transparent !important;
+  box-shadow:none !important;
+  padding:14px 0 0 !important;
+}
+#mainLayout{gap:22px !important;}
+#skillSheetPane,#handoffInstructionsPane{border-left:1px solid rgba(255,255,255,.12) !important;}
+#handoffInstructionsPane{background:linear-gradient(180deg, rgba(255,209,102,.16), rgba(18,38,59,.88)) !important;color:#fff4c7 !important;}
+.toggle-switch input[type="checkbox"]{box-shadow:none !important;}
+.toggle-switch input[type="checkbox"]:checked{background:var(--ems-cyan) !important;}
+
+@media (max-width:760px){
+  body::before{background-size:28px 28px;}
+  .hero::before{top:5rem;right:-1rem;font-size:4rem;}
+  .tool-grid,.project-grid,.two-col{grid-template-columns:1fr !important;}
+  .hero-card,.tool-card,.project,.panel,.card,.container,.simulator-container{border-radius:18px !important;}
+  .navlinks{display:none !important;}
+  .mobile-nav{display:block !important;}
+  .app,.container,.simulator-container{width:min(100% - 18px, 700px) !important;}
+  .input-row{flex-wrap:wrap;}
+  #send-button,#mic-button{flex:1;}
+  #mainLayout{flex-direction:column !important;padding:12px !important;gap:14px !important;}
+  #simulatorPane,#skillSheetPane,#handoffInstructionsPane{width:100% !important;max-width:none !important;min-width:0 !important;}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none !important;animation-duration:.001ms !important;animation-iteration-count:1 !important;scroll-behavior:auto !important;}
+}
