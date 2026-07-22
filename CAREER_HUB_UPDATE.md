@@ -45,3 +45,20 @@ EMSCodeSim.com is now organized as a complete EMS career journey:
 ## Upload instructions
 
 Upload the entire project so the new pages, shared stylesheet, script, sitemap, and redirects are deployed together. Existing simulator folders and files remain in place.
+
+
+## Career Growth Expansion — July 22, 2026
+
+Expanded `ems-career-growth.html` with:
+- EMT-to-paramedic transition guidance
+- Emergency department and hospital EMT roles
+- Firefighter/EMT and firefighter/paramedic pathway
+- Critical care and flight paramedic requirements
+- Community paramedicine / mobile integrated health
+- Tactical, wilderness, industrial, event, and remote medicine
+- EMS education, FTO, quality, supervisor, and management roles
+- Paramedic-to-RN bridge guidance
+- Respiratory therapist, physician assistant, and emergency management transitions
+- National pay medians and clearly labeled specialty planning ranges
+- Direct links to BLS, NREMT, CAAHEP, IBSC, CAMTS, IAFF, NCSBN, ACEN, CoARC, FEMA, NAEMSE, and other official resources
+- New responsive career-card, pay-card, and decision-support styling
