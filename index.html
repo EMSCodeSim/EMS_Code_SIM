@@ -1,462 +1,97 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>EMSCodeSim | Free EMS Training Simulators, Vitals Practice & Instructor Tools</title>
-  <meta name="description" content="EMSCodeSim is a growing hub of free EMS training simulators for EMT students, paramedic students, and EMS instructors. Practice vitals, breath sounds, capnography, GCS, stroke assessment, APGAR, and future EMS scenario tools." />
-  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-  <meta name="theme-color" content="#07111f" />
-  <meta name="color-scheme" content="dark light" />
-  <link rel="canonical" href="https://emscodesim.com/" />
-
-  <!-- Favicons -->
-  <link rel="icon" href="/favicon.png" sizes="48x48" type="image/png" />
-  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-  <link rel="apple-touch-icon" href="/favicon.png" />
-  <link rel="manifest" href="/site.webmanifest" />
-
-  <!-- Open Graph / Social -->
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="EMSCodeSim" />
-  <meta property="og:title" content="EMSCodeSim | EMS Training Simulators & Instructor Tools" />
-  <meta property="og:description" content="Free EMS training simulators and scenario tools for EMT students, paramedic students, and EMS instructors." />
-  <meta property="og:url" content="https://emscodesim.com/" />
-  <meta property="og:image" content="https://emscodesim.com/ems-logo.png" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="EMSCodeSim | EMS Training Simulators & Instructor Tools" />
-  <meta name="twitter:description" content="Practice EMS vitals, breath sounds, capnography, GCS, stroke assessment, APGAR, quizzes, and scenario training." />
-  <meta name="twitter:image" content="https://emscodesim.com/ems-logo.png" />
-
-  <style>
-    :root{
-      --bg:#07111f;
-      --bg-soft:#0c1b2f;
-      --panel:#10233d;
-      --panel-2:#132b49;
-      --panel-light:#f8fbff;
-      --text:#eef7ff;
-      --text-dark:#102033;
-      --muted:#9fb6cf;
-      --muted-dark:#4f6277;
-      --line:rgba(255,255,255,.12);
-      --blue:#32b6ff;
-      --blue-2:#1677ff;
-      --cyan:#22e0c2;
-      --red:#ff4f5f;
-      --amber:#ffd166;
-      --green:#36d399;
-      --shadow:0 24px 80px rgba(0,0,0,.32);
-      --shadow-soft:0 16px 40px rgba(2,8,23,.16);
-      --radius:24px;
-      --max:1180px;
-    }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0;
-      color:var(--text);
-      background:
-        radial-gradient(1100px 520px at 10% -10%, rgba(50,182,255,.24), transparent 62%),
-        radial-gradient(900px 500px at 95% 6%, rgba(34,224,194,.15), transparent 58%),
-        radial-gradient(1000px 600px at 50% 115%, rgba(255,79,95,.10), transparent 62%),
-        linear-gradient(180deg, #07111f 0%, #091626 46%, #07111f 100%);
-      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      line-height:1.5;
-      -webkit-text-size-adjust:100%;
-    }
-    a{color:inherit;text-decoration:none}
-    img{max-width:100%;height:auto}
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-    .skip-link{position:absolute;top:-48px;left:16px;z-index:999;background:#fff;color:#07111f;padding:10px 14px;border-radius:12px;font-weight:800;transition:top .15s ease}
-    .skip-link:focus{top:12px}
-
-    .topbar{
-      position:sticky;top:0;z-index:50;
-      background:rgba(7,17,31,.74);
-      border-bottom:1px solid var(--line);
-      backdrop-filter:saturate(130%) blur(16px);
-    }
-    .nav{
-      max-width:var(--max);margin:0 auto;padding:12px 18px;
-      display:flex;align-items:center;gap:16px;
-    }
-    .brand{
-      display:flex;align-items:center;gap:10px;min-width:max-content;font-weight:900;letter-spacing:.2px;
-    }
-    .brand img{width:38px;height:38px;border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.3)}
-    .brand span{font-size:1.02rem}
-    .navlinks{margin-left:auto;display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end}
-    .navlinks a{
-      color:#d9ebff;font-weight:700;font-size:.93rem;padding:9px 11px;border-radius:999px;
-      transition:background .18s ease,color .18s ease,transform .05s ease;
-    }
-    .navlinks a:hover,.navlinks a:focus-visible{background:rgba(255,255,255,.1);outline:none;color:#fff}
-    .navlinks a:active{transform:translateY(1px)}
-    .nav-cta{background:linear-gradient(135deg,var(--blue-2),var(--cyan));color:#031321!important;box-shadow:0 10px 26px rgba(22,119,255,.28)}
-    .mobile-nav{display:none;margin-left:auto}
-    .mobile-nav select{background:#0d2037;color:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-weight:700;max-width:190px}
-
-    .hero{position:relative;overflow:hidden;padding:64px 18px 28px}
-    .hero::after{
-      content:"";position:absolute;inset:auto -8% -30% -8%;height:300px;pointer-events:none;
-      background:radial-gradient(closest-side, rgba(50,182,255,.14), transparent 70%);
-    }
-    .hero-grid{position:relative;z-index:1;max-width:var(--max);margin:0 auto;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(320px,.92fr);gap:34px;align-items:center}
-    .eyebrow{
-      display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(50,182,255,.32);background:rgba(50,182,255,.1);
-      color:#bfe9ff;padding:7px 12px;border-radius:999px;font-weight:800;font-size:.88rem;margin-bottom:18px;
-    }
-    .pulse-dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 0 7px rgba(54,211,153,.12)}
-    h1{font-size:clamp(2.45rem,6vw,5.2rem);line-height:.95;letter-spacing:-.065em;margin:0 0 18px;max-width:800px}
-    .hero p{font-size:clamp(1.05rem,2.2vw,1.32rem);color:#d7e9fb;max-width:760px;margin:0 0 24px}
-    .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin:28px 0 22px}
-    .btn{
-      display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid transparent;border-radius:16px;padding:13px 17px;
-      font-weight:900;min-height:48px;transition:transform .05s ease,filter .18s ease,background .18s ease,border-color .18s ease;
-    }
-    .btn:hover{filter:brightness(1.05)}
-    .btn:active{transform:translateY(1px)}
-    .btn-primary{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#031321;box-shadow:0 18px 46px rgba(34,224,194,.16)}
-    .btn-secondary{background:rgba(255,255,255,.08);border-color:var(--line);color:#eef7ff}
-    .trust-row{display:flex;gap:12px;flex-wrap:wrap;color:#bad0e7;font-size:.94rem}
-    .trust-row span{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid rgba(255,255,255,.1);border-radius:999px;background:rgba(255,255,255,.05)}
-
-    .hero-card{
-      border:1px solid rgba(255,255,255,.14);background:linear-gradient(180deg,rgba(18,43,73,.94),rgba(13,31,53,.88));border-radius:32px;padding:22px;
-      box-shadow:var(--shadow);position:relative;overflow:hidden;
-    }
-    .hero-card::before{content:"";position:absolute;inset:-1px -1px auto -1px;height:5px;background:linear-gradient(90deg,var(--red),var(--blue),var(--cyan))}
-    .screen-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;color:#cfe6ff;font-weight:900}
-    .screen-dots{display:flex;gap:6px}.screen-dots i{display:block;width:10px;height:10px;border-radius:50%;background:#254765}.screen-dots i:nth-child(1){background:var(--red)}.screen-dots i:nth-child(2){background:var(--amber)}.screen-dots i:nth-child(3){background:var(--green)}
-    .sim-preview{display:grid;gap:12px}
-    .monitor{
-      background:#07111f;border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:18px;display:grid;gap:14px;min-height:230px;
-    }
-    .ecg{height:70px;border-radius:16px;background:
-      linear-gradient(90deg, transparent 0 7%, rgba(54,211,153,.18) 7% 8%, transparent 8% 16%, rgba(54,211,153,.18) 16% 17%, transparent 17%),
-      linear-gradient(180deg, rgba(255,255,255,.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
-      background-size:100% 100%,20px 20px,20px 20px;position:relative;overflow:hidden;border:1px solid rgba(54,211,153,.2)}
-    .ecg svg{position:absolute;inset:0;width:100%;height:100%}
-    .mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-    .stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:12px}
-    .stat b{display:block;font-size:1.45rem;line-height:1;color:#fff}.stat small{color:var(--muted);font-weight:800}
-    .preview-links{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .preview-links a{padding:12px;border-radius:15px;background:rgba(50,182,255,.09);border:1px solid rgba(50,182,255,.22);font-weight:900;color:#dff4ff}
-
-    main{position:relative;z-index:2}
-    .section{max-width:var(--max);margin:0 auto;padding:54px 18px}
-    .section-head{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:20px}
-    .section h2{font-size:clamp(1.65rem,3vw,2.55rem);letter-spacing:-.035em;line-height:1.05;margin:0}
-    .section-lead{color:var(--muted);margin:8px 0 0;max-width:720px;font-size:1.05rem}
-    .badge{display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.06);border-radius:999px;padding:7px 11px;color:#cce5ff;font-weight:900;font-size:.82rem;white-space:nowrap}
-
-    .tool-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
-    .tool-card{
-      grid-column:span 4;min-height:208px;display:flex;flex-direction:column;justify-content:space-between;gap:18px;
-      background:linear-gradient(180deg,rgba(20,49,83,.86),rgba(12,29,50,.92));border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:20px;
-      box-shadow:var(--shadow-soft);transition:transform .16s ease,border-color .16s ease,background .16s ease;
-    }
-    .tool-card:hover,.tool-card:focus-within{transform:translateY(-3px);border-color:rgba(50,182,255,.42);background:linear-gradient(180deg,rgba(26,61,102,.96),rgba(13,33,57,.94))}
-    .tool-top{display:flex;align-items:flex-start;gap:14px}
-    .tool-icon{width:48px;height:48px;flex:0 0 48px;border-radius:16px;display:grid;place-items:center;background:rgba(50,182,255,.12);border:1px solid rgba(50,182,255,.28);color:#9ce1ff}
-    .tool-card h3{font-size:1.18rem;margin:0 0 6px;line-height:1.1;letter-spacing:-.02em}
-    .tool-card p{margin:0;color:#b7cbe2;font-size:.97rem}
-    .tool-card a.card-link{font-weight:900;color:#08111e;background:#ddf6ff;border-radius:14px;padding:11px 13px;text-align:center}
-    .tool-card.featured{grid-column:span 6;background:linear-gradient(135deg,rgba(22,119,255,.22),rgba(34,224,194,.13)),linear-gradient(180deg,rgba(21,53,89,.98),rgba(13,31,53,.94))}
-    .tool-card.small{grid-column:span 3;min-height:180px}
-
-    .light-section{background:#f5f9ff;color:var(--text-dark);margin-top:34px;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08)}
-    .light-section .section-lead,.light-section .muted{color:var(--muted-dark)}
-    .light-section .badge{background:#e8f3ff;border-color:#d5e9ff;color:#0e5b93}
-    .project-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-    .project{background:#fff;border:1px solid #dfeaf7;border-radius:22px;padding:20px;box-shadow:0 10px 28px rgba(12,31,53,.07)}
-    .project h3{margin:0 0 8px;font-size:1.12rem;letter-spacing:-.02em}.project p{margin:0 0 16px;color:var(--muted-dark)}
-    .project a{display:inline-flex;font-weight:900;color:#075da3}.status{display:inline-flex;margin-bottom:12px;border-radius:999px;padding:5px 9px;font-size:.78rem;font-weight:900;background:#ebf8ff;color:#095f9e}.status.live{background:#e9fbf4;color:#08764f}.status.soon{background:#fff5dc;color:#875b00}
-
-    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
-    .panel{background:linear-gradient(180deg,rgba(20,49,83,.88),rgba(12,29,50,.92));border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-soft)}
-    .panel h3{margin:0 0 10px;font-size:1.35rem}.panel p{color:#bdd1e6;margin:0 0 14px}.check-list{display:grid;gap:10px;margin:0;padding:0;list-style:none}.check-list li{display:flex;gap:10px;align-items:flex-start;color:#d7eaff}.check-list li::before{content:"✓";display:grid;place-items:center;width:22px;height:22px;flex:0 0 22px;border-radius:50%;background:rgba(54,211,153,.16);color:#7df0bd;font-weight:900}
-    .faq{display:grid;gap:12px}.faq details{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:14px 16px}.faq summary{cursor:pointer;font-weight:900;color:#fff}.faq p{margin:10px 0 0;color:#bdd1e6}
-
-    footer{max-width:var(--max);margin:0 auto;padding:34px 18px 48px;color:#9fb6cf;display:grid;grid-template-columns:1fr auto;gap:18px;border-top:1px solid rgba(255,255,255,.1)}
-    footer a{color:#d9edff;font-weight:800}.footer-links{display:flex;gap:14px;flex-wrap:wrap;justify-content:flex-end}.disclaimer{grid-column:1/-1;color:#7f98b2;font-size:.9rem;max-width:900px}
-
-    @media (max-width:980px){
-      .hero{padding-top:42px}.hero-grid{grid-template-columns:1fr}.hero-card{max-width:680px}.tool-card,.tool-card.featured{grid-column:span 6}.tool-card.small{grid-column:span 6}.project-grid{grid-template-columns:1fr 1fr}.two-col{grid-template-columns:1fr}
-    }
-    @media (max-width:760px){
-      .navlinks{display:none}.mobile-nav{display:block}.hero{padding:34px 16px 18px}.section{padding:42px 16px}.section-head{display:block}.tool-grid{grid-template-columns:1fr}.tool-card,.tool-card.featured,.tool-card.small{grid-column:auto;min-height:auto}.project-grid{grid-template-columns:1fr}.mini-stats{grid-template-columns:1fr}.preview-links{grid-template-columns:1fr}footer{grid-template-columns:1fr}.footer-links{justify-content:flex-start}h1{font-size:clamp(2.35rem,13vw,3.7rem)}
-    }
-    @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}
-  </style>
-
-  <!-- GA4 (G-5QLPK4025C) + click tracking -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-5QLPK4025C', { send_page_view: true });
-    document.addEventListener('click', function(e){
-      const el = e.target.closest('[data-ga-event]');
-      if(!el || typeof gtag !== 'function') return;
-      const params = el.dataset.gaParams ? JSON.parse(el.dataset.gaParams) : {};
-      gtag('event', el.dataset.gaEvent, params);
-    });
-    window.addEventListener('DOMContentLoaded', function(){
-      const nav = document.getElementById('mobileNav');
-      if(nav){
-        nav.addEventListener('change', function(){
-          if(!this.value) return;
-          if(this.value.charAt(0) === '#'){
-            document.querySelector(this.value)?.scrollIntoView({behavior:'smooth'});
-            this.selectedIndex = 0;
-            return;
-          }
-          window.location.href = this.value;
-        });
-      }
-    });
-  </script>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    "name": "EMSCodeSim",
-    "url": "https://emscodesim.com/",
-    "logo": "https://emscodesim.com/ems-logo.png",
-    "description": "EMS training simulators, quizzes, and instructor tools for EMT and paramedic education.",
-    "sameAs": [
-      "https://dailyemsquiz.com/",
-      "https://fireopscalc.com/",
-      "https://emscodesimcomic.netlify.app/",
-      "https://emscodesimccf.netlify.app/ccf/"
-    ]
-  }
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "name": "EMSCodeSim EMS training tools",
-    "itemListElement": [
-      {"@type":"ListItem","position":1,"name":"Blood Pressure Simulator","url":"https://emscodesim.com/vitals/bp.html"},
-      {"@type":"ListItem","position":2,"name":"Breath Sound Simulator","url":"https://emscodesim.com/vitals/breath-sound-simulator.html"},
-      {"@type":"ListItem","position":3,"name":"Capnography Waveform Trainer","url":"https://emscodesim.com/vitals/capno.html"},
-      {"@type":"ListItem","position":4,"name":"GCS Trainer","url":"https://emscodesim.com/vitals/gcs.html"},
-      {"@type":"ListItem","position":5,"name":"Stroke Assessment Trainer","url":"https://emscodesim.com/vitals/stroke.html"},
-      {"@type":"ListItem","position":6,"name":"APGAR Simulator","url":"https://emscodesim.com/APGAR/"}
-    ]
-  }
-  </script>
-  <link rel="stylesheet" href="styles/modern-theme.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>EMSCodeSim | Become an EMT, Build an EMS Career & Plan for Retirement</title>
+<meta name="description" content="A complete EMS career and training hub covering how to become an EMT, succeed in school, find EMS jobs, grow into advanced roles, protect your wellness, and prepare for retirement.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://emscodesim.com/">
+<meta name="theme-color" content="#081626">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/favicon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta property="og:type" content="website"><meta property="og:site_name" content="EMSCodeSim"><meta property="og:title" content="EMSCodeSim | Become an EMT, Build an EMS Career & Plan for Retirement"><meta property="og:description" content="A complete EMS career and training hub covering how to become an EMT, succeed in school, find EMS jobs, grow into advanced roles, protect your wellness, and prepare for retirement."><meta property="og:url" content="https://emscodesim.com/"><meta property="og:image" content="https://emscodesim.com/ems-logo.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"EMSCodeSim","url":"https://emscodesim.com/","description":"EMS career and training guidance from becoming an EMT through career growth, wellness, and retirement.","publisher":{"@type":"Organization","name":"EMSCodeSim"}}</script>
+<link rel="stylesheet" href="/styles/career-hub.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="topbar">
-    <nav class="nav" aria-label="Main navigation">
-      <a class="brand" href="/" aria-label="EMSCodeSim home">
-        <picture>
-          <source srcset="/ems-logo.webp" type="image/webp" />
-          <img src="/ems-logo.png" alt="EMSCodeSim logo" width="38" height="38" />
-        </picture>
-        <span>EMSCodeSim</span>
-      </a>
-      <div class="navlinks">
-        <a href="#tools">Training Tools</a>
-        <a href="#projects">EMS Projects</a>
-        <a href="#instructors">Instructors</a>
-        <a href="/privacy.html">Privacy</a>
-        <a class="nav-cta" href="https://dailyemsquiz.com/" data-ga-event="outbound_click" data-ga-params='{"site":"Daily EMS Quiz"}'>Daily Quiz</a>
-      </div>
-      <div class="mobile-nav">
-        <label class="sr-only" for="mobileNav">Jump to section</label>
-        <select id="mobileNav" aria-label="Jump to section">
-          <option value="">Menu</option>
-          <option value="#tools">Training Tools</option>
-          <option value="#projects">EMS Projects</option>
-          <option value="#instructors">Instructors</option>
-          <option value="https://dailyemsquiz.com/">Daily EMS Quiz</option>
-          <option value="/privacy.html">Privacy</option>
-        </select>
-      </div>
-    </nav>
-  </header>
 
-  <section class="hero" aria-labelledby="hero-title">
-    <div class="hero-grid">
-      <div>
-        <div class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span>EMS skills lab for real practice</div>
-        <h1 id="hero-title">EMS simulations for students, instructors, and future field-ready training.</h1>
-        <p>EMSCodeSim is the main home for my EMS training projects: vitals practice, breath sound simulation, capnography, neuro assessment, quizzes, CPR performance tools, and future scenario-based EMS education.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="#tools">Start training</a>
-          <a class="btn btn-secondary" href="https://dailyemsquiz.com/" data-ga-event="outbound_click" data-ga-params='{"site":"Daily EMS Quiz hero"}'>Take today’s EMS quiz</a>
-        </div>
-        <div class="trust-row" aria-label="Site highlights">
-          <span>✓ Mobile-friendly</span>
-          <span>✓ No login for core tools</span>
-          <span>✓ Built for EMT and paramedic practice</span>
-        </div>
-      </div>
-      <aside class="hero-card" aria-label="EMSCodeSim simulator preview">
-        <div class="screen-top">
-          <span>EMSCodeSim Dashboard</span>
-          <span class="screen-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-        </div>
-        <div class="sim-preview">
-          <div class="monitor">
-            <div class="ecg" aria-hidden="true">
-              <svg viewBox="0 0 500 100" preserveAspectRatio="none" role="img" aria-label="ECG style training wave">
-                <polyline points="0,55 50,55 64,55 74,28 88,80 100,55 160,55 174,55 184,32 198,78 210,55 280,55 292,55 305,24 319,82 335,55 420,55 435,55 446,34 462,75 500,55" fill="none" stroke="#36d399" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div class="mini-stats" aria-label="Example simulator values">
-              <div class="stat"><small>BP</small><b>124/78</b></div>
-              <div class="stat"><small>SpO₂</small><b>96%</b></div>
-              <div class="stat"><small>ETCO₂</small><b>38</b></div>
-            </div>
-            <div class="preview-links">
-              <a href="/vitals/bp.html">BP simulator</a>
-              <a href="/vitals/breath-sound-simulator.html">Breath sounds</a>
-            </div>
-          </div>
-        </div>
-      </aside>
-    </div>
-  </section>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <nav class="nav-wrap" aria-label="Primary navigation">
+    <a class="brand" href="/"><picture><source srcset="/ems-logo.webp" type="image/webp"><img src="/ems-logo.png" alt="EMSCodeSim logo" width="40" height="40"></picture><span>EMSCodeSim<small>EMS Career & Training Hub</small></span></a>
+    <div class="main-nav"><a href="/become-an-emt.html">Start</a><a href="/emt-school-success.html">Student</a><a href="/ems-career-growth.html">Career</a><a href="/ems-wellness.html">Wellness</a><a href="/ems-retirement.html">Retirement</a><a href="/ems-resources.html">Resources</a><a class="nav-action" href="/#practice">Practice Tools</a></div>
+    <select class="mobile-menu" id="mobileMenu" aria-label="Navigate EMSCodeSim"><option value="">Menu</option><option value="/">Home</option><option value="/become-an-emt.html">Start</option><option value="/emt-school-success.html">Student</option><option value="/ems-career-growth.html">Career</option><option value="/ems-wellness.html">Wellness</option><option value="/ems-retirement.html">Retirement</option><option value="/ems-resources.html">Resources</option><option value="/#practice">Practice Tools</option></select>
+  </nav>
+</header>
 
-  <main id="main">
-    <section class="section" id="tools" aria-labelledby="tools-title">
-      <div class="section-head">
-        <div>
-          <h2 id="tools-title">Free EMS training simulators</h2>
-          <p class="section-lead">Practice the small skills that are hard to teach from a worksheet: listening, counting, recognizing patterns, documenting findings, and making accurate assessment decisions.</p>
-        </div>
-        <span class="badge">Crawlable training links for Google</span>
-      </div>
-
-      <div class="tool-grid">
-        <article class="tool-card featured">
-          <div class="tool-top">
-            <div class="tool-icon" aria-hidden="true">BP</div>
-            <div><h3>Blood Pressure Simulator</h3><p>Practice cuff flow, Korotkoff sounds, systolic and diastolic recognition, and EMS-style BP documentation.</p></div>
-          </div>
-          <a class="card-link" href="/vitals/bp.html" data-ga-event="open_sim" data-ga-params='{"sim":"Blood Pressure Simulator"}'>Open BP simulator</a>
-        </article>
-
-        <article class="tool-card featured">
-          <div class="tool-top">
-            <div class="tool-icon" aria-hidden="true">LS</div>
-            <div><h3>Breath Sound Simulator</h3><p>Use chest hotspots to compare normal breath sounds, wheezes, crackles, stridor, diminished sounds, and side-to-side findings.</p></div>
-          </div>
-          <a class="card-link" href="/vitals/breath-sound-simulator.html" data-ga-event="open_sim" data-ga-params='{"sim":"Breath Sound Simulator"}'>Open breath sounds</a>
-        </article>
-
-        <article class="tool-card">
-          <div class="tool-top"><div class="tool-icon" aria-hidden="true">ET</div><div><h3>Capnography Trainer</h3><p>Review ETCO₂ waveforms for ventilation, perfusion, CPR, asthma, and respiratory distress scenarios.</p></div></div>
-          <a class="card-link" href="/vitals/capno.html" data-ga-event="open_sim" data-ga-params='{"sim":"Capnography"}'>Open capnography</a>
-        </article>
-
-        <article class="tool-card">
-          <div class="tool-top"><div class="tool-icon" aria-hidden="true">HR</div><div><h3>Pulse & Rate Practice</h3><p>Randomized pulse rates and rhythm-style counting practice for quick, accurate vital sign assessment.</p></div></div>
-          <a class="card-link" href="/vitals/pulse.html" data-ga-event="open_sim" data-ga-params='{"sim":"Pulse Trainer"}'>Open pulse trainer</a>
-        </article>
-
-        <article class="tool-card">
-          <div class="tool-top"><div class="tool-icon" aria-hidden="true">GCS</div><div><h3>GCS Trainer</h3><p>Score eye, verbal, and motor response findings with quick feedback for EMT and paramedic assessment practice.</p></div></div>
-          <a class="card-link" href="/vitals/gcs.html" data-ga-event="open_sim" data-ga-params='{"sim":"GCS Trainer"}'>Open GCS trainer</a>
-        </article>
-
-        <article class="tool-card">
-          <div class="tool-top"><div class="tool-icon" aria-hidden="true">FAST</div><div><h3>Stroke Assessment</h3><p>Practice BE-FAST style stroke recognition with visual assessment prompts and patient presentation cues.</p></div></div>
-          <a class="card-link" href="/vitals/stroke.html" data-ga-event="open_sim" data-ga-params='{"sim":"Stroke Assessment"}'>Open stroke trainer</a>
-        </article>
-
-        <article class="tool-card small">
-          <div class="tool-top"><div class="tool-icon" aria-hidden="true">BGL</div><div><h3>Blood Glucose</h3><p>Glucometer workflow, readings, and patient assessment prompts.</p></div></div>
-          <a class="card-link" href="/vitals/bgl.html">Open BGL</a>
-        </article>
-
-        <article class="tool-card small">
-          <div class="tool-top"><div class="tool-icon" aria-hidden="true">PERL</div><div><h3>PERL Pupils</h3><p>Practice pupil size, equality, and reactivity checks.</p></div></div>
-          <a class="card-link" href="/vitals/pupil.html">Open PERL</a>
-        </article>
-
-        <article class="tool-card small">
-          <div class="tool-top"><div class="tool-icon" aria-hidden="true">LOC</div><div><h3>AAOx4 / LOC</h3><p>Person, place, time, and event orientation checks.</p></div></div>
-          <a class="card-link" href="/vitals/aao.html">Open LOC trainer</a>
-        </article>
-
-        <article class="tool-card small">
-          <div class="tool-top"><div class="tool-icon" aria-hidden="true">%</div><div><h3>Rule of Nines</h3><p>Burn percentage practice with front and back region selection.</p></div></div>
-          <a class="card-link" href="/vitals/nines.html">Open burn tool</a>
-        </article>
-      </div>
-    </section>
-
-    <section class="light-section" id="projects" aria-labelledby="projects-title">
-      <div class="section">
-        <div class="section-head">
-          <div>
-            <h2 id="projects-title">The main page for future EMS projects</h2>
-            <p class="section-lead">This homepage now works as a hub for every EMSCodeSim project, so new apps, quizzes, and scenario trainers can be added without cluttering the main screen.</p>
-          </div>
-          <span class="badge">Project hub</span>
-        </div>
-        <div class="project-grid">
-          <article class="project"><span class="status live">Live</span><h3>Daily EMS Quiz</h3><p>Daily EMT and paramedic-style questions for quick review, test prep, and repeat visits.</p><a href="https://dailyemsquiz.com/" data-ga-event="outbound_click" data-ga-params='{"site":"Daily EMS Quiz project card"}'>Visit quiz site →</a></article>
-          <article class="project"><span class="status live">Live / expanding</span><h3>CCF Timer</h3><p>CPR compression fraction timing, instructor prompts, and future checklist-based performance reporting.</p><a href="https://emscodesimccf.netlify.app/ccf/" data-ga-event="outbound_click" data-ga-params='{"site":"CCF Timer"}'>Open CCF Timer →</a></article>
-          <article class="project"><span class="status live">Prototype</span><h3>Comic EMS Scenarios</h3><p>Scenario-based EMS learning with visual patient stories, decision points, and student feedback.</p><a href="https://emscodesimcomic.netlify.app/" data-ga-event="outbound_click" data-ga-params='{"site":"Comic Scenarios"}'>Open scenarios →</a></article>
-          <article class="project"><span class="status soon">Next</span><h3>Patient Assessment Sims</h3><p>Future EMS mini-sims for vitals, assessment steps, instructor grading, and scenario-driven patient findings.</p><a href="#instructors">See instructor plan →</a></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="instructors" aria-labelledby="instructors-title">
-      <div class="section-head">
-        <div>
-          <h2 id="instructors-title">Built for EMS instructors and realistic student practice</h2>
-          <p class="section-lead">The goal is simple: replace passive reading with hands-on assessment reps students can do before, during, or after class.</p>
-        </div>
-      </div>
-      <div class="two-col">
-        <div class="panel">
-          <h3>Why this helps classes</h3>
-          <ul class="check-list">
-            <li>Gives students more repetitions with vitals and assessment findings before live skill stations.</li>
-            <li>Creates reusable modules for EMT, paramedic, CPR, ACLS, PALS, and scenario-based training.</li>
-            <li>Supports future instructor workflows: class setup, student tracking, checklists, and printable reports.</li>
-            <li>Keeps the homepage focused while letting new EMS projects plug into the same ecosystem.</li>
-          </ul>
-        </div>
-        <div class="panel">
-          <h3>Common questions</h3>
-          <div class="faq">
-            <details open><summary>Is EMSCodeSim a replacement for EMS instructors?</summary><p>No. It is a training and practice tool designed to support instructor-led education, skill labs, and student review.</p></details>
-            <details><summary>Who is this site for?</summary><p>EMT students, paramedic students, EMS instructors, CPR instructors, and anyone practicing patient assessment or EMS decision-making.</p></details>
-            <details><summary>Will more EMS projects be added?</summary><p>Yes. This page is designed to become the main EMSCodeSim hub for future scenario simulators, quiz tools, skill checklists, and instructor resources.</p></details>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer>
+<section class="hero">
+  <div class="hero-inner">
     <div>
-      <strong>EMSCodeSim</strong><br />
-      <span>EMS training simulators, quizzes, and instructor tools.</span>
+      <p class="kicker">From your first EMT class to your final shift</p>
+      <h1>Build an EMS career that lasts.</h1>
+      <p class="hero-copy">EMSCodeSim is becoming a complete EMS career and training website: how to become an EMT, succeed in school, earn your first job, grow into advanced roles, stay physically and mentally healthy, and prepare for retirement.</p>
+      <div class="hero-actions"><a class="btn btn-primary" href="/become-an-emt.html">Start the EMT roadmap</a><a class="btn btn-outline" href="#practice">Open training tools</a></div>
     </div>
-    <div class="footer-links">
-      <a href="/privacy.html">Privacy</a>
-      <a href="https://dailyemsquiz.com/">Daily EMS Quiz</a>
-      <a href="https://fireopscalc.com/">FireOps Calc</a>
-      <a href="/sitemap.xml">Sitemap</a>
-    </div>
-    <p class="disclaimer">Training disclaimer: EMSCodeSim is for education and simulation practice only. Always follow your local protocols, medical direction, current course materials, and instructor guidance.</p>
-  </footer>
-</body>
-</html>
+    <aside class="hero-panel" aria-label="Career stage guide">
+      <h2>Where are you in your EMS career?</h2><p>Choose a stage for the best place to begin.</p>
+      <label for="careerStage" class="source-note">Current stage</label>
+      <select id="careerStage" class="path-select"><option value="exploring">I am considering EMS</option><option value="student">I am an EMT or paramedic student</option><option value="newemt">I am a new EMT</option><option value="experienced">I am an experienced clinician</option><option value="leadership">I want leadership or education roles</option><option value="retirement">I am planning for retirement</option></select>
+      <div class="path-result" id="careerStageResult" aria-live="polite"></div>
+    </aside>
+  </div>
+</section>
+<div class="quick-strip"><div class="quick-grid"><a class="quick-link" href="/become-an-emt.html"><span>01</span>Become an EMT</a><a class="quick-link" href="/ems-career-growth.html#jobs"><span>02</span>Find EMS Work</a><a class="quick-link" href="/ems-wellness.html"><span>03</span>Protect Your Health</a><a class="quick-link" href="/ems-retirement.html"><span>04</span>Plan Your Exit</a></div></div>
+<main id="main">
+<section class="section">
+  <div class="section-head"><p class="eyebrow">The EMS career journey</p><h2>One website for every stage</h2><p class="section-lead">Most EMS sites focus on a single test, a single job board, or news. EMSCodeSim connects the whole journey so each visitor has a useful next step.</p></div>
+  <div class="journey-grid">
+    <article class="journey-card"><span class="journey-number">STAGE 01</span><h3>Enter EMS</h3><p>Understand EMR, EMT, AEMT, and paramedic levels. Compare programs, state requirements, costs, schedules, and first-job options.</p><a href="/become-an-emt.html">Follow the entry roadmap →</a></article>
+    <article class="journey-card"><span class="journey-number">STAGE 02</span><h3>Build competence</h3><p>Develop study habits, patient assessment flow, vital-sign accuracy, documentation, clinical confidence, and exam readiness.</p><a href="/emt-school-success.html">Use the student center →</a></article>
+    <article class="journey-card"><span class="journey-number">STAGE 03</span><h3>Grow your career</h3><p>Plan your first year, compare employers, advance to paramedic, teach, lead, specialize, or move into related healthcare roles.</p><a href="/ems-career-growth.html">Explore career paths →</a></article>
+    <article class="journey-card"><span class="journey-number">STAGE 04</span><h3>Finish strong</h3><p>Protect your body, mental health, family life, credentials, benefits, savings, and professional identity through retirement.</p><a href="/ems-retirement.html">Prepare for retirement →</a></article>
+  </div>
+</section>
+<section class="band" id="practice"><div class="section">
+  <div class="section-head"><p class="eyebrow">Practice center</p><h2>Free EMS skills simulators</h2><p class="section-lead">Short, repeatable practice for the assessment skills students and working clinicians need to recognize quickly and document clearly.</p></div>
+  <div class="tool-grid">
+    <article class="tool-card"><span class="tool-tag">VITAL SIGNS</span><h3>Blood Pressure Simulator</h3><p>Practice cuff control, Korotkoff sounds, and systolic/diastolic recognition.</p><a href="/vitals/bp.html">Open simulator →</a></article>
+    <article class="tool-card"><span class="tool-tag">RESPIRATORY</span><h3>Breath Sound Simulator</h3><p>Compare normal, wheezing, crackles, stridor, and diminished findings.</p><a href="/vitals/breath-sound-simulator.html">Open simulator →</a></article>
+    <article class="tool-card"><span class="tool-tag">VENTILATION</span><h3>Capnography Trainer</h3><p>Review ETCO₂ values and waveform patterns used in EMS care.</p><a href="/vitals/capno.html">Open trainer →</a></article>
+    <article class="tool-card"><span class="tool-tag">NEURO</span><h3>GCS Trainer</h3><p>Score eye, verbal, and motor findings with immediate feedback.</p><a href="/vitals/gcs.html">Open trainer →</a></article>
+    <article class="tool-card"><span class="tool-tag">NEURO</span><h3>Stroke Assessment</h3><p>Practice structured stroke recognition with patient presentation cues.</p><a href="/vitals/stroke.html">Open trainer →</a></article>
+    <article class="tool-card"><span class="tool-tag">MORE TOOLS</span><h3>Complete Practice Library</h3><p>Pulse, SpO₂, glucose, pupils, orientation, burns, APGAR, and medication review.</p><a href="/ems-resources.html#simulators">View all tools →</a></article>
+  </div>
+</div></section>
+<section class="section">
+  <div class="section-head"><p class="eyebrow">Career reality</p><h2>Know the profession before you commit</h2><p class="section-lead">EMS can be meaningful and demanding. Good planning starts with accurate information about education, licensing, work settings, pay, advancement, and career longevity.</p></div>
+  <div class="stats">
+    <div class="stat-card"><strong>4 levels</strong><span>National EMS education commonly recognizes EMR, EMT, AEMT, and paramedic levels.</span></div>
+    <div class="stat-card"><strong>5% growth</strong><span>Projected U.S. employment growth for EMTs and paramedics from 2024–2034.</span></div>
+    <div class="stat-card"><strong>19,000 openings</strong><span>Average projected annual openings over the decade, including replacement needs.</span></div>
+  </div>
+  <p class="source-note">Employment figures: U.S. Bureau of Labor Statistics Occupational Outlook Handbook, published August 2025. Requirements and local conditions vary.</p>
+</section>
+<section class="band dark"><div class="section">
+  <div class="section-head"><p class="eyebrow" style="color:#9dd7ff">More than certification</p><h2>A sustainable EMS career needs a whole-person plan</h2><p class="section-lead">Clinical skill matters, but so do sleep, injury prevention, relationships, financial stability, continuing education, professional boundaries, and a path beyond front-line work.</p></div>
+  <div class="card-grid">
+    <div><h3>Clinical growth</h3><p>Deliberate practice, protocol knowledge, honest feedback, documentation, and communication.</p></div><div><h3>Career strategy</h3><p>Choose employers and promotions based on total compensation, culture, schedule, development, and long-term fit.</p></div><div><h3>Career durability</h3><p>Build habits and options that reduce burnout and let you continue serving without sacrificing your health.</p></div>
+  </div>
+</div></section>
+<section class="section compact"><div class="cta"><div><h2>Start with the stage you are in today.</h2><p>You do not need to plan the entire career at once. You need a clear next move.</p></div><a class="btn btn-primary" href="/become-an-emt.html">Open the EMT roadmap</a></div></section>
+</main>
+
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div><h2>EMSCodeSim</h2><p>A practical guide to entering EMS, becoming a stronger clinician, building a sustainable career, and preparing for life after the ambulance.</p></div>
+    <div><h3>Career Journey</h3><a href="/become-an-emt.html">Become an EMT</a><a href="/emt-school-success.html">Succeed in EMT School</a><a href="/ems-career-growth.html">Career Growth</a></div>
+    <div><h3>Stay in the Career</h3><a href="/ems-wellness.html">EMS Wellness</a><a href="/ems-retirement.html">Retirement Planning</a><a href="/ems-resources.html">Trusted Resources</a></div>
+    <div><h3>Practice</h3><a href="/#practice">Training Simulators</a><a href="https://dailyemsquiz.com/">Daily EMS Quiz</a><a href="https://emscodesimccf.netlify.app/ccf/">CCF Timer</a><a href="/privacy.html">Privacy</a></div>
+  </div>
+  <div class="footer-bottom">EMSCodeSim provides educational information and simulation practice. Certification, licensing, medical practice, benefits, and retirement rules vary. Always confirm current requirements with your state EMS office, employer, medical director, course program, and qualified financial or legal professionals.</div>
+</footer>
+<script src="/career.js" defer></script>
+</body></html>
