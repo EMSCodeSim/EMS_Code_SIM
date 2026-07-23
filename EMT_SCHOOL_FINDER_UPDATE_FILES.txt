@@ -1,0 +1,26 @@
+EMT SCHOOL FINDER UPDATE
+
+ADD THESE 3 NEW FILES
+emt-school-finder.html
+school-finder.js
+styles/school-finder.css
+
+REPLACE THESE 15 EXISTING FILES
+_redirects
+become-an-emt.html
+ems-career-growth.html
+ems-recertification.html
+ems-resources.html
+ems-retirement.html
+ems-training-tools.html
+ems-wellness.html
+emt-school-success.html
+explore-ems.html
+first-100-shifts.html
+index.html
+search-index.js
+search.html
+sitemap.xml
+
+DELETE
+None
