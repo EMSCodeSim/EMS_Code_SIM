@@ -1,0 +1,343 @@
+/* EMSCodeSim responsive safety layer
+   Shared by the career hub, quiz tools, and all simulator pages. */
+
+html {
+  width: 100%;
+  min-width: 0;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-width: 0;
+  max-width: 100%;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+main, header, footer, nav, section, article, aside,
+.app, .wrap, .container, .card, .panel,
+.grid, .row, .controls, .content-layout,
+.hero-inner, .hero-grid, .nav-wrap, .topbar-inner,
+.headerbar, #mainLayout, #simulatorPane, #skillSheetPane,
+#handoffInstructionsPane {
+  min-width: 0;
+}
+
+img, picture, video, canvas, svg, iframe {
+  max-width: 100%;
+}
+
+img, video {
+  height: auto;
+}
+
+iframe {
+  width: 100%;
+}
+
+canvas {
+  display: block;
+}
+
+a, p, li, td, th, label, legend, .response, .question-text,
+.scenario, .explanation, .feedback, .result {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+pre, code {
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+input, select, textarea, button {
+  max-width: 100%;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+select, textarea {
+  min-width: 0;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button, .btn, [role="button"], input[type="button"], input[type="submit"] {
+  touch-action: manipulation;
+}
+
+.table-wrap, .table-scroll, .comparison-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#apgarTable {
+  width: min(100%, 720px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.privacy-plain {
+  width: min(100%, 980px);
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: clamp(16px, 4vw, 40px) !important;
+  padding-right: clamp(16px, 4vw, 40px) !important;
+}
+
+dialog, .modal-card, .panel[role="dialog"] {
+  max-width: calc(100vw - 24px) !important;
+  max-height: calc(100dvh - 24px);
+  overflow: auto;
+}
+
+/* Medium screens: reduce oversized gutters and let dense controls wrap. */
+@media (max-width: 900px) {
+  .headerbar, .topbar-inner, .bar, .toolbar, .btn-row,
+  .button-row, .button-group, .actions, .controls-row,
+  .sound-controls, .view-actions, .quiz-actions, .cta-row,
+  .input-row, .form-actions, .modal-actions {
+    flex-wrap: wrap;
+  }
+
+  #main-header {
+    flex-wrap: wrap;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  #mainLayout {
+    flex-direction: column !important;
+  }
+
+  #simulatorPane, #skillSheetPane, #handoffInstructionsPane {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+}
+
+/* Phone layout. */
+@media (max-width: 700px) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  h1 {
+    font-size: clamp(1.45rem, 7vw, 2.25rem);
+    line-height: 1.08;
+  }
+
+  h2 {
+    line-height: 1.16;
+  }
+
+  .panel:not(.modal-panel), .qa, .cols, .formGrid,
+  .selectors, .split, .answer-wrap {
+    grid-template-columns: 1fr !important;
+  }
+
+  .headerbar, .topbar-inner {
+    align-items: center;
+  }
+
+  .headerbar h1, .topbar-title, .title, .brand-text {
+    min-width: 0;
+  }
+
+  .topbar-title, .headerbar h1 {
+    font-size: clamp(.95rem, 4.2vw, 1.15rem) !important;
+  }
+
+  .card, .panel, .container, .simulator-container,
+  .article section, .hero-panel {
+    max-width: 100%;
+  }
+
+  .row, .bar, .moisture, .temp, .big-readings,
+  .status-strip, .bvm-row, .h-left, .h-right {
+    min-width: 0;
+  }
+
+  .bar {
+    align-items: stretch;
+  }
+
+  .bar > * {
+    min-width: 0;
+  }
+
+  .keyboard {
+    gap: clamp(4px, 1.7vw, 8px) !important;
+  }
+
+  .keyboard .key, .key {
+    min-width: 0;
+    padding-left: 2px;
+    padding-right: 2px;
+    touch-action: manipulation;
+  }
+
+  .grid .cell, .cell {
+    min-width: 0;
+  }
+
+  .frameWrap {
+    height: min(72dvh, 720px) !important;
+    min-height: 420px !important;
+  }
+
+  .toast {
+    width: min(calc(100vw - 24px), 520px);
+    text-align: center;
+  }
+
+  table {
+    max-width: 100%;
+  }
+
+  .comparison {
+    min-width: 620px;
+  }
+
+  .btn-label {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  button, .btn, [role="button"], input[type="button"], input[type="submit"] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  select, textarea {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  #main-header > select, #main-header > button, #main-header > label {
+    flex: 1 1 100%;
+    width: 100%;
+    margin: 0 !important;
+  }
+
+  #main-header .toggle-switch {
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .headerbar, .topbar-inner {
+    gap: 6px !important;
+  }
+
+  .headerbar > div:first-child {
+    min-width: 0;
+  }
+
+  .headerbar h1 {
+    overflow-wrap: anywhere;
+  }
+
+  .bar {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 10px !important;
+  }
+
+  .bar .row {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .bar .row .btn {
+    width: 100%;
+    padding-inline: 8px;
+  }
+
+  .panel {
+    gap: 10px !important;
+  }
+
+  .big-readings {
+    gap: 6px !important;
+  }
+
+  .reading {
+    padding-inline: 7px !important;
+  }
+
+  .reading .value {
+    font-size: clamp(1.8rem, 10vw, 2.25rem) !important;
+  }
+
+  .reading .label, .reading .units {
+    font-size: .72rem !important;
+  }
+
+  .moisture, .temp {
+    flex-wrap: wrap;
+  }
+
+  .moisture-track, .moisture-labels {
+    width: min(220px, 100%) !important;
+  }
+
+  input[type="range"] {
+    width: 100%;
+  }
+
+  .bvm-row input[type="range"] {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .wrap, main, .app {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .keyboard {
+    gap: 4px !important;
+  }
+
+  .keyboard .key, .key {
+    font-size: .78rem;
+  }
+
+  .grid {
+    gap: 7px;
+  }
+
+  .cell {
+    font-size: clamp(1.15rem, 7vw, 1.65rem) !important;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .frameWrap {
+    height: calc(100dvh - 150px) !important;
+    min-height: 300px !important;
+  }
+
+  dialog, .modal-card, .panel[role="dialog"] {
+    max-height: calc(100dvh - 12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+}
