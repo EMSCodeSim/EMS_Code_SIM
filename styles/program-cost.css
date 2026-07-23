@@ -1,0 +1,43 @@
+.cost-shell{display:grid;gap:20px}
+.cost-intro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.cost-stat{border:1px solid var(--line);border-radius:14px;background:#fff;padding:20px}
+.cost-stat span{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:#eaf4fb;color:var(--blue-dark);font-weight:900;margin-bottom:12px}
+.cost-stat h3{margin:0 0 6px;font-size:1.08rem}
+.cost-stat p{margin:0;color:var(--muted)}
+.cost-calculator{background:linear-gradient(145deg,#f7fbfe,#edf5fa)!important}
+.cost-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:18px}
+.cost-field{display:grid;gap:6px}
+.cost-field label{font-weight:800;color:var(--navy)}
+.cost-field input,.cost-field select{width:100%;min-height:46px;padding:10px 12px;border:1px solid #bdccd8;border-radius:9px;background:#fff;color:var(--ink)}
+.cost-field small{color:var(--muted)}
+.cost-field.full{grid-column:1/-1}
+.cost-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.cost-results{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.cost-result{background:#fff;border:1px solid var(--line);border-radius:13px;padding:18px}
+.cost-result strong{display:block;font-size:clamp(1.45rem,3vw,2.1rem);line-height:1;color:var(--navy);margin-bottom:7px}
+.cost-result span{color:var(--muted);font-size:.9rem}
+.cost-result.highlight{border-color:#94c4e3;box-shadow:0 10px 28px rgba(11,110,189,.1)}
+.cost-message{margin:14px 0 0;color:var(--muted);font-size:.9rem}
+.cost-categories{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.cost-category{border-left:4px solid var(--blue);background:#f5f9fc;border-radius:10px;padding:16px}
+.cost-category h3{margin:0 0 6px;font-size:1.05rem}
+.cost-category p{margin:0;color:var(--muted)}
+.aid-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.aid-card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;padding:20px;background:#fff}
+.aid-card .aid-label{align-self:flex-start;padding:5px 9px;border-radius:999px;background:#edf4f8;color:var(--blue-dark);font-size:.72rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
+.aid-card h3{margin:12px 0 7px}
+.aid-card p{color:var(--muted);margin:0 0 13px}
+.aid-card a{margin-top:auto;font-weight:850}
+.fee-table{width:100%;border-collapse:collapse;min-width:520px}
+.fee-table th,.fee-table td{text-align:left;padding:12px;border-bottom:1px solid var(--line)}
+.fee-table th{background:#eef3f7;color:var(--navy)}
+.fee-table td:last-child{font-weight:850}
+.school-questions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.school-question{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:13px;background:#fff}
+.school-question span{display:grid;place-items:center;flex:0 0 auto;width:25px;height:25px;border-radius:50%;background:var(--navy);color:#fff;font-size:.78rem;font-weight:900}
+.school-question p{margin:0}
+.cost-next{display:flex;justify-content:space-between;align-items:center;gap:18px;background:var(--navy)!important;color:#fff}
+.cost-next p{color:#c8d8e5;margin:0}
+.cost-next .btn{white-space:nowrap}
+@media(max-width:850px){.cost-intro-grid,.cost-results{grid-template-columns:1fr}.aid-grid,.cost-categories,.school-questions{grid-template-columns:1fr}.cost-next{align-items:flex-start;flex-direction:column}}
+@media(max-width:600px){.cost-form{grid-template-columns:1fr}.cost-field.full{grid-column:auto}.cost-actions .btn{width:100%}.cost-result strong{font-size:1.7rem}}
