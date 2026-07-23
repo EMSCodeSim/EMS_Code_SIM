@@ -3,306 +3,118 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>APGAR Simulator | EMSCodeSim</title>
-<link href="https://emscodesim.com/APGAR/" rel="canonical"/>
-<meta content="Practice newborn APGAR scoring with an interactive EMS and neonatal assessment simulator." name="description"/>
-<style>
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;
-    background:#f6f8fa;margin:0;padding:10px;
-    display:flex;flex-direction:column;align-items:center;gap:10px;
-  }
-  h1{text-align:center;font-size:18px;margin:4px 0 8px;}
-  .stage{
-    position:relative;width:100%;max-width:420px;background:#fff;
-    border-radius:12px;border:1px solid #ddd;overflow:hidden;
-  }
-  #baby{width:100%;height:auto;display:block;transform-origin:center 35%;}
-  .overlay{
-    position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;
-    -webkit-mask-image:url('baby2.png');mask-image:url('baby2.png');
-    -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
-    -webkit-mask-size:100% 100%;mask-size:100% 100%;
-  }
-  #overlayPeripheral,#overlayCore{transition:opacity .25s linear, background .25s linear;}
-  #overlayFace{
-    transition:opacity .12s ease;opacity:0;
-    background:radial-gradient(32% 16% at 50% 18%, rgba(255,100,100,.6) 0%, rgba(255,120,120,.35) 55%, transparent 75%);
-  }
-  #overlayBlink{
-    transition:opacity .06s linear, clip-path .06s linear;
-    opacity:0;
-    background:radial-gradient(80% 8% at 50% 22%, rgba(30,30,30,.6) 0%, rgba(20,20,20,.45) 60%, transparent 85%);
-    clip-path:inset(0 0 98% 0 round 20px);
-  }
-  .controls{
-    width:100%;max-width:420px;background:#fff;border:1px solid #ddd;
-    border-radius:12px;padding:10px;
-  }
-  input[type=range]{width:100%;accent-color:#2563eb;}
-  .info{text-align:center;font-size:13px;color:#555;}
-  table{width:100%;border-collapse:collapse;margin-top:10px;}
-  th,td{border:1px solid #e4e7ec;padding:6px;text-align:center;font-size:14px;}
-  th:first-child{text-align:left;}
-  .btn{
-    padding:6px 8px;margin:2px;border-radius:8px;border:1px solid #ccc;
-    background:#fff;font-size:14px;cursor:pointer;
-  }
-  .btn[data-active="1"]{border-color:#2563eb;color:#2563eb;font-weight:600;}
-  .score-row{background:#f1f5fb;font-weight:bold;}
-  .modal{
-    display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);
-    align-items:center;justify-content:center;z-index:100;
-  }
-  .panel{
-    background:#fff;border-radius:12px;padding:16px;width:90%;max-width:400px;
-  }
-</style>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<title>EMSCodeSim: EMT Career Guides &amp; Free EMS Training Tools</title>
+<meta content="Explore EMS careers, become an EMT, practice EMS skills, manage recertification, grow professionally, protect your wellness, and plan for retirement." name="description"/>
+<meta content="index,follow,max-image-preview:large" name="robots"/>
+<link href="https://emscodesim.com/" rel="canonical"/>
+<meta content="#081626" name="theme-color"/>
+<link href="/favicon.png" rel="icon" type="image/png"/>
+<link href="/favicon.ico" rel="shortcut icon"/>
+<link href="/favicon.png" rel="apple-touch-icon"/>
+<link href="/site.webmanifest" rel="manifest"/>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="EMSCodeSim | Explore EMS, Become an EMT &amp; Build a Career" property="og:title"/><meta content="Explore EMS in high school, learn how to become an EMT, succeed in training, start your first job, grow your career, protect your wellness, and prepare for retirement." property="og:description"/><meta content="https://emscodesim.com/" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
+<script type="application/ld+json">{
+  "@context":"https://schema.org","@graph":[
+    {"@type":"Organization","@id":"https://emscodesim.com/#organization","name":"EMSCodeSim","url":"https://emscodesim.com/","logo":{"@type":"ImageObject","url":"https://emscodesim.com/ems-logo.png"}},
+    {"@type":"WebSite","@id":"https://emscodesim.com/#website","name":"EMSCodeSim","url":"https://emscodesim.com/","publisher":{"@id":"https://emscodesim.com/#organization"},"description":"EMT career guides and free EMS training tools from high-school exploration through retirement.","potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://emscodesim.com/search.html?q={search_term_string}"},"query-input":"required name=search_term_string"}}
+  ]
+}</script>
+<link href="/styles/career-hub.css" rel="stylesheet"/>
 <link href="/styles/responsive.css" rel="stylesheet"/>
 <link href="/styles/site-enhancements.css" rel="stylesheet"/>
 <script defer="" src="/privacy-controls.js"></script>
 <script defer="" src="/scripts/engagement-loop.js"></script>
-<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="APGAR Simulator | EMSCodeSim" property="og:title"/><meta content="Practice newborn APGAR scoring with an interactive EMS and neonatal assessment simulator." property="og:description"/><meta content="https://emscodesim.com/APGAR/" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 </head>
 <body>
-<h1>🩺 Apgar Simulator</h1>
-<div class="stage">
-<img alt="Baby model" id="baby" src="baby2.png"/>
-<div class="overlay" id="overlayPeripheral"></div>
-<div class="overlay" id="overlayCore"></div>
-<div class="overlay" id="overlayFace"></div>
-<div class="overlay" id="overlayBlink"></div>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+<nav aria-label="Primary navigation" class="nav-wrap">
+<a class="brand" href="/"><picture><source srcset="/ems-logo.webp" type="image/webp"/><img alt="EMSCodeSim logo" height="40" src="/ems-logo.png" width="40"/></picture><span>EMSCodeSim<small>EMS Career &amp; Training Hub</small></span></a>
+<div class="main-nav"><details class="nav-group" data-nav-group=""><summary>Start EMS</summary><div class="nav-dropdown"><a href="/explore-ems.html"><strong>Explore EMS</strong><small>For high-school students and beginners</small></a><a href="/become-an-emt.html"><strong>Become an EMT</strong><small>Training, certification, and state steps</small></a><a href="/emt-school-finder.html"><strong>EMT School Finder</strong><small>Search for and verify nearby programs</small></a><a href="/emt-program-cost.html"><strong>Program Cost &amp; Financial Help</strong><small>Estimate the full cost and find ways to pay less</small></a></div></details><details class="nav-group" data-nav-group=""><summary>Prepare</summary><div class="nav-dropdown"><a href="/emt-prep.html"><strong>Free EMT Prep Program</strong><small>Build foundations before class begins</small></a><a href="/emt-school-success.html"><strong>Succeed in EMT School</strong><small>Study, skills, clinicals, and exams</small></a><a href="/first-100-shifts.html"><strong>First EMT Job</strong><small>Field training and your first 100 shifts</small></a></div></details><details class="nav-group" data-nav-group=""><summary>Practice</summary><div class="nav-dropdown"><a href="/#daily-practice"><strong>Today’s 5-Minute Practice</strong><small>Quiz, fact, simulator, and prep progress</small></a><a href="/ems-training-tools.html"><strong>Training Tools</strong><small>Free vital-sign and assessment simulators</small></a><a href="/quiz/"><strong>Daily Quiz</strong><small>EMT, paramedic, terminology, and medication review</small></a></div></details><details class="nav-group" data-nav-group=""><summary>Career</summary><div class="nav-dropdown"><a href="/ems-career-growth.html"><strong>Career Paths &amp; Pay</strong><small>Paramedic, fire, flight, nursing, education, and leadership</small></a><a href="/ems-recertification.html"><strong>Recertification</strong><small>NREMT and state renewal planning</small></a><a href="/ems-wellness.html"><strong>EMS Wellness</strong><small>Sleep, fitness, mental health, and career longevity</small></a><a href="/ems-retirement.html"><strong>Retirement Planning</strong><small>Benefits, savings, transition, and life after EMS</small></a></div></details><details class="nav-group" data-nav-group=""><summary>Resources</summary><div class="nav-dropdown"><a href="/ems-resources.html"><strong>Trusted Resources</strong><small>Official agencies and reliable EMS references</small></a><a href="/about.html"><strong>About EMSCodeSim</strong><small>Creator experience and editorial standards</small></a><a href="/search.html"><strong>Search the Site</strong><small>Find a guide, simulator, or quiz</small></a><a href="/privacy.html"><strong>Privacy Choices</strong><small>Analytics, local storage, and user controls</small></a></div></details></div>
+<select aria-label="Navigate EMSCodeSim" class="mobile-menu" id="mobileMenu"><option value="">Menu</option><option value="/">Home</option><optgroup label="Start EMS"><option value="/explore-ems.html">Explore EMS</option><option value="/become-an-emt.html">Become an EMT</option><option value="/emt-school-finder.html">EMT School Finder</option><option value="/emt-program-cost.html">Program Cost &amp; Financial Help</option></optgroup><optgroup label="Prepare"><option value="/emt-prep.html">Free EMT Prep Program</option><option value="/emt-school-success.html">Succeed in EMT School</option><option value="/first-100-shifts.html">First EMT Job</option></optgroup><optgroup label="Practice"><option value="/#daily-practice">Today’s 5-Minute Practice</option><option value="/ems-training-tools.html">Training Tools</option><option value="/quiz/">Daily Quiz</option></optgroup><optgroup label="Career"><option value="/ems-career-growth.html">Career Paths &amp; Pay</option><option value="/ems-recertification.html">Recertification</option><option value="/ems-wellness.html">EMS Wellness</option><option value="/ems-retirement.html">Retirement Planning</option></optgroup><optgroup label="Resources"><option value="/ems-resources.html">Trusted Resources</option><option value="/about.html">About EMSCodeSim</option><option value="/search.html">Search the Site</option><option value="/privacy.html">Privacy Choices</option></optgroup></select>
+</nav>
+</header>
+<section class="hero">
+<div class="hero-inner">
+<div>
+<p class="kicker">From first interest in EMS to your final shift</p>
+<h1>Explore EMS. Become an EMT. Build a career that lasts.</h1>
+<p class="hero-copy">Start before EMT school and keep one trusted resource throughout your career. Explore EMS, prepare for certification, practice clinical skills, succeed in the field, advance professionally, protect your health, and plan for retirement.</p>
+<div class="hero-actions"><a class="btn btn-primary" href="/become-an-emt.html">Start the EMT career path</a><a class="btn btn-outline" href="/#daily-practice">Do today’s 5-minute practice</a><a class="btn btn-outline" href="/ems-training-tools.html">Open training tools</a></div>
+<form action="/search.html" class="hero-search" method="get" role="search"><label for="homeSearch">What do you need help with?</label><div><input autocomplete="off" id="homeSearch" name="q" placeholder="Try: become an EMT, NREMT renewal, flight medic..." type="search"/><button type="submit">Search</button></div></form>
 </div>
-<div class="controls">
-<label><b>Appearance (Color)</b></label>
-<input id="slider" max="100" min="0" type="range" value="0"/>
-<p class="info">0% = Normal • 50% = Blue limbs • 100% = Full blue</p>
+<aside aria-label="Career stage guide" class="hero-panel">
+<h2>Where are you in your EMS career?</h2><p>Choose a stage for the best place to begin.</p>
+<label class="source-note" for="careerStage">Current stage</label>
+<select class="path-select" id="careerStage"><option value="exploring">I am in high school or exploring EMS</option><option value="ready">I am ready to become an EMT</option><option value="preparing">I am preparing for EMT school</option><option value="student">I am an EMT or paramedic student</option><option value="newemt">I am a new EMT</option><option value="experienced">I am an experienced clinician</option><option value="leadership">I want leadership or education roles</option><option value="retirement">I am planning for retirement</option></select>
+<div aria-live="polite" class="path-result" id="careerStageResult"></div>
+</aside>
 </div>
-<table id="apgarTable">
-<tr><th>Category</th><th>Score</th></tr>
-<tr>
-<td><button class="btn" id="btnAppearance">Appearance</button></td>
-<td data-cat="appearance">
-<button class="btn" data-val="0">0</button>
-<button class="btn" data-val="1">1</button>
-<button class="btn" data-active="1" data-val="2">2</button>
-<button class="btn" data-val="?">?</button>
-</td>
-</tr>
-<tr>
-<td><button class="btn" id="btnPulse">Pulse</button></td>
-<td data-cat="pulse">
-<button class="btn" data-val="0">0</button>
-<button class="btn" data-val="1">1</button>
-<button class="btn" data-active="1" data-val="2">2</button>
-<button class="btn" data-val="?">?</button>
-</td>
-</tr>
-<tr>
-<td><button class="btn" id="btnGrimace">Grimace</button></td>
-<td data-cat="grimace">
-<button class="btn" data-val="0">0</button>
-<button class="btn" data-val="1">1</button>
-<button class="btn" data-active="1" data-val="2">2</button>
-<button class="btn" data-val="?">?</button>
-</td>
-</tr>
-<tr>
-<td><button class="btn" id="btnActivity">Activity</button></td>
-<td data-cat="activity">
-<button class="btn" data-val="0">0</button>
-<button class="btn" data-val="1">1</button>
-<button class="btn" data-active="1" data-val="2">2</button>
-<button class="btn" data-val="?">?</button>
-</td>
-</tr>
-<tr>
-<td><button class="btn" id="btnResp">Respiration</button></td>
-<td data-cat="respiration">
-<button class="btn" data-val="0">0</button>
-<button class="btn" data-val="1">1</button>
-<button class="btn" data-active="1" data-val="2">2</button>
-<button class="btn" data-val="?">?</button>
-</td>
-</tr>
-<tr class="score-row">
-<td>Total</td><td><span id="totalScore">10</span>/10</td>
-</tr>
-</table>
-<div class="modal" id="modal">
-<div class="panel">
-<h3 id="modalTitle"></h3>
-<p id="modalBody"></p>
-<button class="btn" id="modalClose">Close</button>
+</section>
+<div class="pathway-strip"><div class="pathway-grid"><a class="pathway-step" href="/emt-school-finder.html"><span>1</span><div><strong>Find a program</strong><small>Search nearby and verify state approval.</small></div></a><a class="pathway-step" href="/emt-program-cost.html"><span>2</span><div><strong>Plan the cost</strong><small>Estimate the real price and find financial help.</small></div></a><a class="pathway-step" href="/emt-prep.html"><span>3</span><div><strong>Prepare for class</strong><small>Build anatomy, terminology, vital-sign, and study foundations.</small></div></a></div></div><section class="daily-practice-home" id="daily-practice"><div class="daily-practice-shell"><div class="daily-practice-head"><div><p class="eyebrow">One useful visit every day</p><h2>Today’s 5-Minute EMS Practice</h2><p>Complete one short review, use one skill tool, and continue your prep progress.</p></div><div class="daily-practice-date" id="dailyPracticeDate"></div></div><div class="daily-practice-grid"><a class="daily-practice-card" href="/quiz/emt_quiz.html"><span>Daily review</span><strong>Take the EMT quiz</strong><small>Five rotating questions with explanations.</small><em>Start quiz →</em></a><a class="daily-practice-card" href="/ems-training-tools.html" id="dailyToolLink"><span>Skill of the day</span><strong id="dailyToolName">Loading today’s simulator…</strong><small id="dailyToolNote">Practice one focused assessment skill.</small><em>Open simulator →</em></a><a class="daily-practice-card" href="/quiz/ems_fact.html"><span>One-minute learning</span><strong>Read today’s EMS fact</strong><small>A quick clinical or operational concept to remember.</small><em>Read fact →</em></a><a class="daily-practice-card" href="/emt-prep.html" id="dailyPrepLink"><span>Your EMT Prep</span><strong id="dailyPrepAction">Continue your next module</strong><small id="dailyPrepProgress">Progress is saved on this device.</small><em>Continue prep →</em></a></div></div></section>
+<main id="main">
+<section class="section home-goals">
+<div class="section-head"><p class="eyebrow">Find your next step</p><h2>What are you trying to do today?</h2><p class="section-lead">Choose a goal instead of searching through every page.</p></div>
+<div class="goal-grid">
+<a class="goal-card" href="/explore-ems.html"><span>Explore</span><strong>See whether EMS fits me</strong><small>For high-school students, parents, counselors, and beginners.</small></a>
+<a class="goal-card" href="/become-an-emt.html"><span>Start</span><strong>Become an EMT</strong><small>Programs, costs, certification, state licensing, and hiring.</small></a>
+<a class="goal-card" href="/emt-school-finder.html"><span>Find</span><strong>Find an EMT school</strong><small>Search nearby programs, check state approval, and compare costs and schedules.</small></a>
+<a class="goal-card" href="/emt-program-cost.html"><span>Afford</span><strong>Lower the cost of EMT school</strong><small>Estimate the full price and find grants, workforce funding, employer help, and scholarships.</small></a>
+<a class="goal-card" href="/emt-prep.html"><span>Prepare</span><strong>Get ready before EMT school</strong><small>Free anatomy, terminology, vital-sign, assessment, and study foundations.</small></a>
+<a class="goal-card" href="/quiz/"><span>Review</span><strong>Take today’s EMS quiz</strong><small>Five EMT questions, five paramedic questions, EMS facts, medications, and mini-games.</small></a><a class="goal-card" href="/ems-training-tools.html"><span>Practice</span><strong>Build an EMS skill</strong><small>Free vital-sign, assessment, respiratory, and medication tools.</small></a>
+<a class="goal-card" href="/ems-recertification.html"><span>Renew</span><strong>Plan recertification</strong><small>NREMT requirements, CE tracking, deadlines, and state references.</small></a>
+<a class="goal-card" href="/ems-career-growth.html"><span>Advance</span><strong>Compare EMS career paths</strong><small>Pay, education, transition steps, and trusted help links.</small></a>
+<a class="goal-card" href="/ems-wellness.html"><span>Last</span><strong>Protect my health and career</strong><small>Sleep, fitness, mental health, relationships, and longevity.</small></a>
 </div>
+</section>
+<section class="section">
+<div class="section-head"><p class="eyebrow">The EMS career journey</p><h2>One website for every stage</h2><p class="section-lead">Most EMS sites focus on a single test, a single job board, or news. EMSCodeSim connects the whole journey so each visitor has a useful next step.</p></div>
+<div class="journey-grid">
+<article class="journey-card"><span class="journey-number">STAGE 01</span><h3>Explore EMS</h3><p>Learn what EMTs really do, compare the rewards and challenges, and build a high-school preparation plan.</p><a href="/explore-ems.html">See whether EMS fits →</a></article>
+<article class="journey-card"><span class="journey-number">STAGE 02</span><h3>Become an EMT</h3><p>Find an approved education program, compare costs, and understand certification and state requirements.</p><a href="/emt-school-finder.html">Find an EMT school →</a></article>
+<article class="journey-card"><span class="journey-number">STAGE 03</span><h3>Prepare before class</h3><p>Build anatomy, terminology, vital-sign, assessment, and study foundations without trying to replace EMT school.</p><a href="/emt-prep.html">Start the free prep program →</a></article>
+<article class="journey-card"><span class="journey-number">STAGE 04</span><h3>Build competence</h3><p>Develop study habits, patient assessment flow, vital-sign accuracy, documentation, and exam readiness.</p><a href="/emt-school-success.html">Use the student center →</a></article>
+<article class="journey-card"><span class="journey-number">STAGE 05</span><h3>Start working</h3><p>Choose a supportive employer, succeed in field training, and grow through your first 100 shifts.</p><a href="/first-100-shifts.html">Open the first-job guide →</a></article>
+<article class="journey-card"><span class="journey-number">STAGE 06</span><h3>Grow your career</h3><p>Advance to paramedic, fire service, critical care, flight, nursing, education, leadership, or another path.</p><a href="/ems-career-growth.html">Explore career paths →</a></article>
+<article class="journey-card"><span class="journey-number">STAGE 07</span><h3>Protect your future</h3><p>Support your health, relationships, credentials, benefits, savings, and professional identity through retirement.</p><a href="/ems-wellness.html">Build career durability →</a></article>
 </div>
-<script>
-const baby=document.getElementById('baby');
-const overlayPeripheral=document.getElementById('overlayPeripheral');
-const overlayCore=document.getElementById('overlayCore');
-const overlayFace=document.getElementById('overlayFace');
-const overlayBlink=document.getElementById('overlayBlink');
-const slider=document.getElementById('slider');
-const totalScore=document.getElementById('totalScore');
-const apgar={appearance:2,pulse:2,grimace:2,activity:2,respiration:2};
-
-function setScore(cat,val){
-  if(val==='?'){openInfo(cat);return;}
-  apgar[cat]=Number(val);
-  document.querySelectorAll(`[data-cat="${cat}"] .btn`).forEach(b=>{
-    b.dataset.active=(b.dataset.val===String(val))?'1':'0';
-  });
-  updateTotal();
-}
-function updateTotal(){
-  const total=Object.values(apgar).reduce((a,b)=>a+b,0);
-  totalScore.textContent=total;
-}
-document.querySelectorAll('td[data-cat] .btn').forEach(btn=>{
-  btn.addEventListener('click',()=>setScore(btn.closest('td').dataset.cat,btn.dataset.val));
-});
-
-let heartRate=140,respRate=50,breathAmp=0.022;
-function updateVitals(sev){
-  heartRate=150-sev*1.1;
-  respRate=55-sev*0.45;
-  breathAmp=0.022-sev*0.00009;
-}
-function updateBlue(v){
-  updateVitals(v);
-  const p=Math.min(v,50)/50;
-  const a=(0.75*p).toFixed(3);
-  overlayPeripheral.style.background=`
-    radial-gradient(18% 18% at 22% 48%, rgba(40,100,230,${a}) 0%, transparent 70%),
-    radial-gradient(18% 18% at 78% 48%, rgba(40,100,230,${a}) 0%, transparent 70%),
-    radial-gradient(20% 20% at 28% 88%, rgba(40,100,230,${a}) 0%, transparent 70%),
-    radial-gradient(20% 20% at 72% 88%, rgba(40,100,230,${a}) 0%, transparent 70%)`;
-  overlayPeripheral.style.opacity=p;
-  const q=v<=50?0:(v-50)/50;
-  overlayCore.style.background=`rgba(40,100,230,${(0.65+0.3*q).toFixed(3)})`;
-  overlayCore.style.opacity=q;
-}
-slider.addEventListener('input',e=>updateBlue(+e.target.value));
-updateBlue(0);
-
-// Audio context
-let ctx;
-function initAudio(){if(ctx)return;ctx=new(window.AudioContext||window.webkitAudioContext)();}
-window.addEventListener('click',initAudio,{once:true});
-
-// Heartbeat
-function playHeartbeat(){
-  if(!ctx)return;
-  const bpm=heartRate,beatInt=60/bpm,t=ctx.currentTime;
-  for(let i=0;i<4;i++){const start=t+i*(beatInt*2);scheduleBeat(start);}
-}
-function scheduleBeat(start){
-  const o1=ctx.createOscillator(),g1=ctx.createGain();
-  o1.type='sine';o1.frequency.setValueAtTime(60,start);
-  g1.gain.setValueAtTime(0.15,start);
-  g1.gain.exponentialRampToValueAtTime(0.001,start+0.09);
-  o1.connect(g1).connect(ctx.destination);o1.start(start);o1.stop(start+0.1);
-  const o2=ctx.createOscillator(),g2=ctx.createGain();
-  o2.type='sine';o2.frequency.setValueAtTime(90,start+0.12);
-  g2.gain.setValueAtTime(0.15,start+0.12);
-  g2.gain.exponentialRampToValueAtTime(0.001,start+0.22);
-  o2.connect(g2).connect(ctx.destination);o2.start(start+0.12);o2.stop(start+0.22);
-}
-
-// breathing
-let time=performance.now();
-function loop(now){
-  const freq=(respRate/60);
-  const breathPhase=(Math.sin(now/1000*2*Math.PI*freq)+1)/2;
-  const curve=Math.pow(breathPhase,1.8);
-  const chestRise=breathAmp*curve;
-  baby.style.transform=`translateY(${-chestRise*60}px) scaleY(${1+chestRise})`;
-  requestAnimationFrame(loop);
-}
-requestAnimationFrame(loop);
-
-// whimper + grimace
-function playWhimper(){
-  if(!ctx)return;
-  const o=ctx.createOscillator(),g=ctx.createGain();
-  o.type='triangle';
-  o.frequency.setValueAtTime(500,ctx.currentTime);
-  o.frequency.linearRampToValueAtTime(650,ctx.currentTime+0.15);
-  g.gain.setValueAtTime(0.0001,ctx.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.15,ctx.currentTime+0.05);
-  g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.35);
-  o.connect(g).connect(ctx.destination);
-  o.start();o.stop(ctx.currentTime+0.4);
-}
-function grimaceFace(){
-  overlayFace.style.opacity=0.8;
-  setTimeout(()=>overlayFace.style.opacity=0,250);
-  overlayBlink.style.opacity=1;
-  overlayBlink.style.clipPath='inset(0 0 92% 0 round 20px)';
-  setTimeout(()=>{overlayBlink.style.clipPath='inset(0 0 98% 0 round 20px)';overlayBlink.style.opacity=0;},120);
-}
-
-// animations
-function animateAppearance(){
-  let i=0;const seq=[0,20,40,60,80,100,80,60,40,20,0];
-  const t=setInterval(()=>{slider.value=seq[i];updateBlue(seq[i]);i++;if(i>=seq.length)clearInterval(t);},120);
-}
-function animatePulse(){
-  playHeartbeat();
-  baby.style.transition="transform .05s";let on=false;let c=0;
-  const flash=setInterval(()=>{
-    baby.style.transform=`scale(${on?1:1.02})`;
-    on=!on;c++;if(c>20){clearInterval(flash);baby.style.transform='scale(1)';}
-  },200);
-}
-function animateGrimace(){
-  grimaceFace();playWhimper();
-  baby.style.transition="transform .15s";
-  baby.style.transform="translateY(-5px) rotate(3deg)";
-  setTimeout(()=>baby.style.transform="translateY(0) rotate(0)",200);
-}
-// *** Option B: Activity wiggle simulation ***
-function animateActivity(level=2){
-  let t=0;
-  const amp = level===2 ? 2.5 : level===1 ? 1.2 : 0;
-  const speed = level===2 ? 0.4 : 0.25;
-  if(amp===0)return;
-  const move=setInterval(()=>{
-    baby.style.transform=`rotate(${Math.sin(t*speed)*amp}deg)`;
-    t+=1;
-    if(t>60){clearInterval(move);baby.style.transform='rotate(0deg)';}
-  },16);
-}
-function animateResp(){breathAmp=0.04;setTimeout(()=>breathAmp=0.022,3000);}
-
-// link buttons
-btnAppearance.onclick=animateAppearance;
-btnPulse.onclick=animatePulse;
-btnGrimace.onclick=animateGrimace;
-btnActivity.onclick=()=>animateActivity(2);
-btnResp.onclick=animateResp;
-
-// modal info
-const modal=document.getElementById('modal');
-const modalTitle=document.getElementById('modalTitle');
-const modalBody=document.getElementById('modalBody');
-const modalClose=document.getElementById('modalClose');
-const info={
-  appearance:"2 = Pink<br>1 = Blue extremities<br>0 = Blue body",
-  pulse:"2 = ≥100 bpm<br>1 = <100 bpm<br>0 = Absent",
-  grimace:"2 = Cries<br>1 = Grimace<br>0 = None",
-  activity:"2 = Active motion<br>1 = Some flexion<br>0 = Flaccid",
-  respiration:"2 = Strong cry<br>1 = Weak<br>0 = None"
-};
-function openInfo(cat){
-  modalTitle.textContent=cat.charAt(0).toUpperCase()+cat.slice(1);
-  modalBody.innerHTML=info[cat]||"";
-  modal.style.display="flex";
-}
-modalClose.onclick=()=>modal.style.display="none";
-modal.onclick=e=>{if(e.target===modal)modal.style.display="none";}
-updateTotal();
-</script>
-</body>
-</html>
+</section>
+<section class="band" id="practice"><div class="section">
+<div class="section-head"><p class="eyebrow">Practice center</p><h2>Free EMS skills simulators</h2><p class="section-lead">Short, repeatable practice for the assessment skills students and working clinicians need to recognize quickly and document clearly.</p></div>
+<div class="tool-grid">
+<article class="tool-card"><span class="tool-tag">DAILY REVIEW</span><h3>Daily EMT &amp; Paramedic Quiz</h3><p>Answer five daily questions, review explanations, build a streak, and use EMS facts and mini-games.</p><a href="/quiz/">Open daily quiz →</a></article>
+<article class="tool-card"><span class="tool-tag">VITAL SIGNS</span><h3>Blood Pressure Simulator</h3><p>Practice cuff control, Korotkoff sounds, and systolic/diastolic recognition.</p><a href="/vitals/bp.html">Open simulator →</a></article>
+<article class="tool-card"><span class="tool-tag">RESPIRATORY</span><h3>Breath Sound Simulator</h3><p>Compare normal, wheezing, crackles, stridor, and diminished findings.</p><a href="/vitals/breath-sound-simulator.html">Open simulator →</a></article>
+<article class="tool-card"><span class="tool-tag">VENTILATION</span><h3>Capnography Trainer</h3><p>Review ETCO₂ values and waveform patterns used in EMS care.</p><a href="/vitals/capno.html">Open trainer →</a></article>
+<article class="tool-card"><span class="tool-tag">NEURO</span><h3>GCS Trainer</h3><p>Score eye, verbal, and motor findings with immediate feedback.</p><a href="/vitals/gcs.html">Open trainer →</a></article>
+<article class="tool-card"><span class="tool-tag">NEURO</span><h3>Stroke Assessment</h3><p>Practice structured stroke recognition with patient presentation cues.</p><a href="/vitals/stroke.html">Open trainer →</a></article>
+<article class="tool-card"><span class="tool-tag">MORE TOOLS</span><h3>Complete Practice Library</h3><p>Pulse, SpO₂, glucose, pupils, orientation, burns, APGAR, and medication review.</p><a href="/ems-training-tools.html">View all training tools →</a></article>
+</div>
+</div></section>
+<section class="section">
+<div class="section-head"><p class="eyebrow">Career reality</p><h2>Know the profession before you commit</h2><p class="section-lead">EMS can be meaningful and demanding. Good planning starts with accurate information about education, licensing, work settings, pay, advancement, and career longevity.</p></div>
+<div class="stats">
+<div class="stat-card"><strong>4 levels</strong><span>National EMS education commonly recognizes EMR, EMT, AEMT, and paramedic levels.</span></div>
+<div class="stat-card"><strong>5% growth</strong><span>Projected U.S. employment growth for EMTs and paramedics from 2024–2034.</span></div>
+<div class="stat-card"><strong>19,000 openings</strong><span>Average projected annual openings over the decade, including replacement needs.</span></div>
+</div>
+<p class="source-note">Employment figures: U.S. Bureau of Labor Statistics Occupational Outlook Handbook, published August 2025. Requirements and local conditions vary.</p>
+</section>
+<section class="section compact"><div class="cta recert-cta"><div><p class="eyebrow" style="color:#9dd7ff">Career maintenance</p><h2>Keep your credentials current</h2><p>Use the EMT and paramedic recertification guide to track National Registry education and find your state renewal office.</p></div><a class="btn btn-primary" href="/ems-recertification.html">Open recertification guide</a></div></section>
+<section class="band dark"><div class="section">
+<div class="section-head"><p class="eyebrow" style="color:#9dd7ff">More than certification</p><h2>A sustainable EMS career needs a whole-person plan</h2><p class="section-lead">Clinical skill matters, but so do sleep, injury prevention, relationships, financial stability, continuing education, professional boundaries, and a path beyond front-line work.</p></div>
+<div class="card-grid">
+<div><h3>Clinical growth</h3><p>Deliberate practice, protocol knowledge, honest feedback, documentation, and communication.</p></div><div><h3>Career strategy</h3><p>Choose employers and promotions based on total compensation, culture, schedule, development, and long-term fit.</p></div><div><h3>Career durability</h3><p>Build habits and options that reduce burnout and let you continue serving without sacrificing your health.</p></div>
+</div>
+</div></section>
+<section class="section compact"><div class="cta"><div><h2>Not sure EMS is for you?</h2><p>Start with an honest look at the work and a high-school preparation plan.</p></div><a class="btn btn-primary" href="/explore-ems.html">Explore EMS</a></div></section>
+</main>
+<footer class="site-footer"><div class="footer-grid">
+<div><h2>EMSCodeSim</h2><p>Free guidance and practice from first interest in EMS through career growth and retirement.</p><form action="/search.html" class="footer-search" method="get" role="search"><label class="sr-only" for="footerSearch">Search EMSCodeSim</label><input id="footerSearch" name="q" placeholder="Search EMSCodeSim" type="search"/><button type="submit">Search</button></form></div>
+<div><h3>Start &amp; Prepare</h3><a href="/explore-ems.html">Explore EMS</a><a href="/emt-school-finder.html">EMT School Finder</a><a href="/emt-program-cost.html">Program Cost Help</a><a href="/emt-prep.html">Free EMT Prep Program</a><a href="/emt-school-success.html">Student Success</a></div>
+<div><h3>Practice &amp; Career</h3><a href="/#daily-practice">Today’s 5-Minute Practice</a><a href="/ems-training-tools.html">Training Tools</a><a href="/quiz/">Daily Quiz</a><a href="/ems-career-growth.html">Career Paths &amp; Pay</a><a href="/ems-recertification.html">Recertification</a></div>
+<div><h3>About &amp; Support</h3><a href="/ems-wellness.html">EMS Wellness</a><a href="/ems-retirement.html">Retirement Planning</a><a href="/ems-resources.html">Trusted Resources</a><a href="/about.html">About EMSCodeSim</a><a href="/privacy.html">Privacy Choices</a></div>
+</div><div class="footer-bottom">EMSCodeSim provides educational information and simulation practice. It does not replace an approved EMS course, local protocol, medical direction, certification authority, or professional financial, legal, or health advice.</div></footer>
+<script defer="" src="/career.js"></script>
+<script defer="True" src="/daily-practice.js"></script></body></html>
