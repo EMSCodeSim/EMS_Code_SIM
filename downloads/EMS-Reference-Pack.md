@@ -1,0 +1,1043 @@
+# Offline EMS Reference Pack
+**Reviewed:** July 23, 2026
+
+> Educational reference only. Protocols, scope, medication use, normal ranges, and equipment practices vary. Follow your agency, medical director, course, and current local protocols. Do not use this pack as the sole basis for patient care.
+
+## EMS Medications
+
+### Oxygen
+Medical gas used to correct suspected or confirmed hypoxemia and support critically ill patients.
+
+Indications depend on patient condition and local protocol. Titrate when appropriate; avoid delaying ventilation or airway management.
+
+**Remember:** Delivery device, flow, target saturation, response, fire risk.
+
+### Aspirin
+Antiplatelet medication commonly used for suspected acute coronary syndrome.
+
+Confirm indications and contraindications; consider allergy, active bleeding, and local protocol.
+
+**Remember:** Chewable form, reassessment, bleeding risk.
+
+### Nitroglycerin
+Vasodilator used in selected chest-pain and pulmonary-edema patients.
+
+Check blood pressure, prescribed use when applicable, recent PDE-5 inhibitor use, and protocol.
+
+**Remember:** Hypotension, headache, repeat BP, symptom response.
+
+### Albuterol
+Short-acting bronchodilator for bronchospasm.
+
+Assess breath sounds, work of breathing, heart rate, and ability to use the delivery device.
+
+**Remember:** Tremor, tachycardia, response to treatment.
+
+### Ipratropium
+Anticholinergic bronchodilator often paired with albuterol in obstructive airway disease.
+
+Used according to local protocol, commonly for asthma or COPD exacerbation.
+
+**Remember:** Dry mouth, delivery method, reassessment.
+
+### Epinephrine auto-injector
+Adrenergic medication used for severe allergic reactions and anaphylaxis.
+
+Recognize airway swelling, breathing difficulty, shock, or rapidly progressing symptoms.
+
+**Remember:** Correct device/site, immediate transport, repeat assessment.
+
+### Naloxone
+Opioid antagonist used when opioid toxicity causes respiratory depression.
+
+Ventilation remains the priority. Use according to protocol and reassess for recurrent respiratory depression.
+
+**Remember:** Airway, breathing, withdrawal, scene safety.
+
+### Oral glucose
+Carbohydrate gel or paste used for selected conscious patients with suspected hypoglycemia.
+
+Patient must be able to protect the airway and swallow. Follow glucose assessment and protocol.
+
+**Remember:** Aspiration risk, repeat glucose, symptom response.
+
+### Glucagon
+Hormone used for selected severe hypoglycemia when oral glucose is unsafe or ineffective.
+
+Scope and route vary. Reassess airway, mental status, and glucose.
+
+**Remember:** Nausea/vomiting, delayed response, recovery position.
+
+### Dextrose
+Intravenous glucose used by appropriately credentialed clinicians for hypoglycemia.
+
+Concentration and route vary by protocol. Confirm IV patency and reassess glucose.
+
+**Remember:** Extravasation, hyperglycemia, repeat assessment.
+
+### Ondansetron
+Antiemetic used for nausea and vomiting.
+
+Consider causes of vomiting, QT-risk factors, and local protocol.
+
+**Remember:** Route, response, ongoing hydration/transport needs.
+
+### Acetaminophen
+Analgesic and antipyretic used in selected systems.
+
+Check total recent intake, liver risk, age/weight requirements, and protocol.
+
+**Remember:** Duplicate products, maximum daily exposure.
+
+### Ibuprofen
+NSAID used for pain or fever in selected systems.
+
+Consider allergy, bleeding, kidney disease, pregnancy, and age restrictions.
+
+**Remember:** GI upset, hydration status, duplicate NSAID use.
+
+### Diphenhydramine
+Antihistamine used in selected allergic reactions.
+
+It does not replace epinephrine in anaphylaxis. Scope and route vary.
+
+**Remember:** Sedation, anticholinergic effects, airway monitoring.
+
+### Activated charcoal
+Adsorbent used rarely for selected ingestions under medical direction.
+
+Not for caustics, hydrocarbons, altered patients without protected airway, or many other exposures.
+
+**Remember:** Poison-center/medical-control direction, aspiration risk.
+
+### Normal saline
+Isotonic crystalloid used for vascular access, medication delivery, and selected volume needs.
+
+Amount and indication vary by patient and protocol.
+
+**Remember:** Lung sounds, perfusion, reassessment, fluid overload.
+
+### Lactated Ringer’s
+Balanced crystalloid used in selected systems for fluid replacement.
+
+Follow protocol and consider patient condition and compatibility.
+
+**Remember:** Perfusion, lung sounds, reassessment.
+
+### Epinephrine 1 mg/mL
+Concentrated epinephrine formulation used for selected IM indications by authorized clinicians.
+
+Concentration errors are dangerous. Verify indication, route, and formulation.
+
+**Remember:** Read label aloud, cross-check concentration.
+
+### Epinephrine 0.1 mg/mL
+Dilute epinephrine formulation used for selected resuscitation indications by authorized clinicians.
+
+Do not confuse with 1 mg/mL. Follow resuscitation protocol.
+
+**Remember:** Concentration, route, timing, documentation.
+
+### Amiodarone
+Antiarrhythmic used in selected ventricular dysrhythmias by ALS clinicians.
+
+Indication, rhythm, route, and sequence are protocol-specific.
+
+**Remember:** Rhythm, blood pressure, IV access, reassessment.
+
+### Adenosine
+Short-acting antiarrhythmic used for selected regular narrow-complex tachycardias.
+
+Requires rhythm interpretation, rapid administration, monitoring, and protocol.
+
+**Remember:** Transient pause, patient explanation, rhythm strip.
+
+### Atropine
+Anticholinergic used for selected symptomatic bradycardia and other indications.
+
+Use depends on rhythm, symptoms, and protocol.
+
+**Remember:** Heart rate, perfusion, pacing readiness.
+
+### Fentanyl
+Opioid analgesic used by authorized clinicians.
+
+Assess pain, respiratory status, blood pressure, allergies, and protocol.
+
+**Remember:** Sedation, ventilation, reassessment.
+
+### Ketamine
+Dissociative medication used in selected systems for analgesia, sedation, or behavioral emergencies.
+
+Indication and dosing vary greatly. Requires monitoring and airway readiness.
+
+**Remember:** Airway, emergence reactions, blood pressure.
+
+### Midazolam
+Benzodiazepine used for seizures, sedation, and selected agitation protocols.
+
+Monitor ventilation and hemodynamics. Scope and route vary.
+
+**Remember:** Respiratory depression, sedation, reassessment.
+
+### Magnesium sulfate
+Medication used for selected dysrhythmias, severe asthma, or obstetric emergencies.
+
+Indication and route are protocol-specific.
+
+**Remember:** Blood pressure, reflexes/respirations when relevant.
+
+### Calcium
+Used for selected toxicologic, electrolyte, and resuscitation situations.
+
+Formulation and compatibility matter. Follow protocol.
+
+**Remember:** IV patency, rhythm, medication compatibility.
+
+### Sodium bicarbonate
+Alkalinizing medication used in selected toxicologic and resuscitation situations.
+
+Not a routine medication for all arrests. Follow protocol.
+
+**Remember:** Ventilation, indication, IV compatibility.
+
+## Normal Vitals & Reference Ranges
+
+### Adult resting pulse
+Commonly taught reference: 60-100 beats/min.
+
+Interpret with symptoms, perfusion, medications, fitness, temperature, and trend.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Adult resting respirations
+Commonly taught reference: 12-20 breaths/min.
+
+Count quality and effort, not only rate. Avoid announcing the count.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Adult oxygen saturation
+Often 95-100% in healthy adults at sea level.
+
+Baseline, altitude, chronic lung disease, waveform quality, and clinical appearance matter.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Adult systolic blood pressure
+A single “normal” number is less useful than perfusion and trend. Many courses use about 90-120 mmHg as a basic reference.
+
+Check cuff size, position, repeated readings, and symptoms.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Adult temperature
+About 97-99°F (36.1-37.2°C) is a common oral reference range.
+
+Route, environment, age, and device affect readings.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Newborn pulse
+Common EMS teaching range: roughly 100-180/min.
+
+Use age-specific references from your course and protocol.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Infant pulse
+Common EMS teaching range: roughly 100-160/min.
+
+Assess perfusion and respiratory status; ranges vary with activity.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Toddler pulse
+Common EMS teaching range: roughly 90-150/min.
+
+Crying and fever can increase rate.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Preschool pulse
+Common EMS teaching range: roughly 80-140/min.
+
+Trend and appearance matter more than one isolated number.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### School-age pulse
+Common EMS teaching range: roughly 70-120/min.
+
+Use local pediatric reference tools.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Adolescent pulse
+Common EMS teaching range: roughly 60-100/min.
+
+Approaches adult ranges.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Newborn respirations
+Common EMS teaching range: roughly 30-60/min.
+
+Watch chest/abdomen, effort, color, and pauses.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Infant respirations
+Common EMS teaching range: roughly 30-50/min.
+
+Count a full minute when irregular.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Toddler respirations
+Common EMS teaching range: roughly 24-40/min.
+
+Observe before touching when possible.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Preschool respirations
+Common EMS teaching range: roughly 22-34/min.
+
+Retractions, grunting, and nasal flaring are important.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### School-age respirations
+Common EMS teaching range: roughly 18-30/min.
+
+Consider fever, anxiety, pain, and exertion.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Adolescent respirations
+Common EMS teaching range: roughly 12-20/min.
+
+Interpret similarly to adults while considering age.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Capillary refill
+Often less than 2 seconds in a warm, well-perfused patient.
+
+Cold, age, lighting, and technique affect the result.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### End-tidal CO2
+A commonly taught adult reference is about 35-45 mmHg.
+
+Interpret waveform, ventilation, perfusion, clinical context, and trend.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+### Blood glucose
+A common fasting laboratory reference is about 70-99 mg/dL, but EMS interpretation depends on symptoms, meal timing, diabetes, and protocol.
+
+Treat the patient and follow local thresholds.
+
+**Remember:** Ranges are teaching references, not universal treatment thresholds.
+
+## Assessment Mnemonics
+
+### SAMPLE
+Signs/symptoms, Allergies, Medications, Past history, Last oral intake, Events leading up.
+
+Use to organize history; ask follow-up questions rather than treating it as a script.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### OPQRST
+Onset, Provocation/palliation, Quality, Region/radiation, Severity, Time.
+
+Works for pain and many symptoms, but not every letter fits every complaint.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### AVPU
+Alert, responds to Verbal, responds to Pain, Unresponsive.
+
+Rapid mental-status classification; document more detail when possible.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### DCAP-BTLS
+Deformities, Contusions, Abrasions, Punctures/penetrations, Burns, Tenderness, Lacerations, Swelling.
+
+Systematic trauma exam reminder.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### AEIOU-TIPS
+Alcohol, Epilepsy/electrolytes, Insulin, Overdose/oxygen, Uremia, Trauma/temperature, Infection, Psychiatric/poisoning, Stroke/shock.
+
+Differential reminder for altered mental status; versions vary.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### BE-FAST
+Balance, Eyes, Face, Arm, Speech, Time.
+
+Stroke recognition; use your local stroke scale and destination plan.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### PERRL
+Pupils Equal, Round, Reactive to Light.
+
+Add size, gaze, and other findings when relevant.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### PMS/CSM
+Pulse, Motor, Sensation / Circulation, Sensation, Movement.
+
+Document before and after splinting or movement.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### RACE
+Rescue, Alarm, Confine, Extinguish/Evacuate.
+
+Common fire-response mnemonic in facilities; follow site policy.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### PASS
+Pull, Aim, Squeeze, Sweep.
+
+Basic extinguisher use when safe and appropriate.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### MARCH
+Massive hemorrhage, Airway, Respiration, Circulation, Head injury/Hypothermia.
+
+Tactical/trauma priority framework; training context varies.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### APGAR
+Appearance, Pulse, Grimace, Activity, Respiration.
+
+Newborn score at defined intervals; not a substitute for resuscitation decisions.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### GCS
+Eye, Verbal, Motor.
+
+Score components separately and document confounders.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### 5 Rights
+Right patient, medication, dose, route, time.
+
+Many systems add indication, documentation, response, and refusal rights.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### 6 Ps
+Pain, Pallor, Pulselessness, Paresthesia, Paralysis, Poikilothermia.
+
+Possible limb ischemia/compartment concerns; late signs may be ominous.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### SLUDGE
+Salivation, Lacrimation, Urination, Defecation, GI upset, Emesis.
+
+Cholinergic toxidrome reminder; some versions add miosis/bronchorrhea.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### CAGE
+Cut down, Annoyed, Guilty, Eye-opener.
+
+Alcohol-use screening tool; use respectfully and within role.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### SOAP
+Subjective, Objective, Assessment, Plan.
+
+Documentation framework; EMS PCR structure may differ.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### SBAR
+Situation, Background, Assessment, Recommendation.
+
+Structured handoff or consultation format.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+### IMIST-AMBO
+Identification, Mechanism/medical complaint, Injuries/information, Signs, Treatment, Allergies, Medications, Background, Other.
+
+Structured EMS handoff; local versions vary.
+
+**Remember:** Use mnemonics as prompts, not substitutes for clinical judgment.
+
+## Medical Terminology
+
+### Anterior
+Toward the front of the body.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Posterior
+Toward the back of the body.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Superior
+Above or toward the head.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Inferior
+Below or toward the feet.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Medial
+Toward the midline.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Lateral
+Away from the midline.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Proximal
+Closer to the trunk or point of origin.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Distal
+Farther from the trunk or point of origin.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Bilateral
+On both sides.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Unilateral
+On one side.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Acute
+Sudden onset or short duration.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Chronic
+Long-lasting or recurring.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Etiology
+Cause or origin of a condition.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Pathophysiology
+How disease or injury changes normal body function.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Perfusion
+Delivery of oxygenated blood to tissues.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Hypoxia
+Inadequate oxygen at the tissue level.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Hypoxemia
+Low oxygen in arterial blood.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Dyspnea
+Subjective difficulty breathing.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Apnea
+Absence of breathing.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Tachypnea
+Abnormally rapid breathing.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Bradypnea
+Abnormally slow breathing.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Tachycardia
+Abnormally rapid heart rate.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Bradycardia
+Abnormally slow heart rate.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Cyanosis
+Bluish discoloration associated with deoxygenated blood or poor perfusion.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Diaphoresis
+Profuse sweating.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Syncope
+Temporary loss of consciousness from reduced cerebral perfusion.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Presyncope
+Feeling of near-fainting without full loss of consciousness.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Edema
+Swelling caused by fluid accumulation.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Hematemesis
+Vomiting blood.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Hemoptysis
+Coughing blood from the respiratory tract.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Melena
+Black, tarry stool often associated with upper GI bleeding.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Hematochezia
+Passage of bright red or maroon blood per rectum.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Dysphagia
+Difficulty swallowing.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Dysarthria
+Difficulty articulating speech from motor dysfunction.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Aphasia
+Impaired ability to understand or produce language.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Ataxia
+Impaired coordination or unsteady movement.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Paresthesia
+Abnormal sensation such as tingling or numbness.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Pallor
+Unusual paleness.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Jaundice
+Yellow discoloration from elevated bilirubin.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Orthopnea
+Breathing difficulty when lying flat.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Stridor
+Harsh upper-airway sound, often inspiratory.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Wheeze
+Musical sound associated with narrowed lower airways.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Crackles
+Discontinuous popping lung sounds, often associated with fluid or reopening airways.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Rhonchi
+Low-pitched coarse sounds often associated with secretions.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Triage
+Prioritizing patients based on urgency and resources.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Contraindication
+Reason a treatment or procedure should not be used.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Indication
+Clinical reason to use a treatment or procedure.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Adverse effect
+Unintended harmful effect of a treatment.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+### Reassessment
+Repeat evaluation to identify change or treatment response.
+
+Use the term in a complete patient-care sentence to reinforce meaning.
+
+**Remember:** Spelling and exact definitions may vary slightly by source.
+
+## EMS Equipment
+
+### Bag-valve mask (BVM)
+Manual positive-pressure ventilation device with self-inflating bag, valve, mask, and oxygen connection.
+
+Select correct mask size, maintain seal, watch chest rise, avoid excessive rate/volume.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Nonrebreather mask
+High-concentration oxygen mask with reservoir bag and one-way valves.
+
+Inflate reservoir before placement and maintain adequate flow.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Nasal cannula
+Low-flow oxygen interface placed in the nares.
+
+Comfortable and useful for selected spontaneously breathing patients.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Venturi mask
+Fixed-performance oxygen mask using interchangeable adapters.
+
+More common in facilities; delivers a selected oxygen concentration.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### OPA
+Rigid oral airway used in an unresponsive patient without a gag reflex.
+
+Size correctly; do not use when gag reflex is present.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### NPA
+Soft nasal airway used in selected patients with reduced airway tone.
+
+Size and lubricate; contraindications vary with trauma and protocol.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Suction unit
+Device used to remove secretions, blood, or vomit from the airway.
+
+Check power, tubing, canister, catheter, and function before calls.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Yankauer catheter
+Rigid suction tip for the mouth and oropharynx.
+
+Use under direct visualization; avoid prolonged suction.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Flexible suction catheter
+Soft catheter used for selected airway or tracheal suctioning.
+
+Depth and technique depend on training and airway type.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Pulse oximeter
+Noninvasive estimate of oxygen saturation and pulse rate.
+
+Confirm waveform/perfusion and compare displayed pulse with palpated pulse.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Glucometer
+Point-of-care device for capillary blood glucose.
+
+Check strip compatibility, expiration, sample technique, and infection control.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Manual BP cuff
+Inflatable cuff, bulb, valve, and aneroid gauge for blood pressure measurement.
+
+Correct cuff size and positioning are essential.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Stethoscope
+Acoustic device for breath sounds, blood pressure, and selected cardiac sounds.
+
+Good seal, correct earpiece direction, quiet technique.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Trauma shears
+Heavy scissors designed to cut clothing and some soft materials.
+
+Protect skin while cutting; clean after use.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Tourniquet
+Device that stops life-threatening extremity hemorrhage by circumferential compression.
+
+Apply for severe extremity bleeding per training; note time.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Hemostatic gauze
+Gauze impregnated with an agent that supports clot formation.
+
+Pack appropriate wounds firmly and maintain pressure.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Pressure dressing
+Dressing designed to maintain pressure over a bleeding wound.
+
+Do not obscure ongoing reassessment of bleeding and distal circulation.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Occlusive dressing
+Airtight or semi-airtight dressing used for selected open chest or neck wounds.
+
+Monitor breathing and follow venting protocol.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Cervical collar
+Device used in selected spinal-motion-restriction plans.
+
+Correct size and fit; collar alone does not fully immobilize the spine.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Scoop stretcher
+Split stretcher that can be assembled around a patient.
+
+Useful for selected lifts and transfers; follow manufacturer limits.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Stair chair
+Chair designed to move selected patients on stairs or through tight spaces.
+
+Use straps, adequate personnel, and safe lifting technique.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Pelvic binder
+Circumferential device for suspected unstable pelvic injury.
+
+Placement is typically over the greater trochanters, per training.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Nebulizer
+Device that aerosolizes medication for inhalation.
+
+Assemble correctly, maintain gas flow, reassess breath sounds and effort.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### CPAP
+Noninvasive positive airway-pressure system for selected breathing patients.
+
+Requires spontaneous breathing, appropriate mental status, seal, and monitoring.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Supraglottic airway
+Advanced airway device seated above the vocal cords.
+
+Confirm placement with waveform capnography when available and ongoing reassessment.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Endotracheal tube
+Tube passed through the vocal cords into the trachea by trained clinicians.
+
+Placement confirmation and continuous monitoring are essential.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### Capnography
+Device measuring exhaled CO2 as a number and waveform.
+
+Interpret waveform, trend, ventilation, perfusion, and clinical context.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### 12-lead ECG cable
+Electrode and lead system recording the heart from multiple views.
+
+Correct placement and skin preparation reduce artifact.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### IV catheter
+Over-the-needle catheter used for vascular access.
+
+Select site and size based on need; secure and reassess.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
+
+### IO device
+Device for intraosseous vascular access when indicated.
+
+Site, needle, pain management, and confirmation are protocol-specific.
+
+**Remember:** Use equipment only within training, authorization, and manufacturer guidance.
