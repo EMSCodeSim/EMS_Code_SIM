@@ -1,0 +1,12 @@
+ADD
+pre-emt-equipment.html
+styles/pre-emt-equipment.css
+
+REPLACE
+index.html
+emt-prep.html
+search-index.js
+sitemap.xml
+_redirects
+
+Navigation was also updated across root educational HTML pages where the shared Prepare menu was present.
