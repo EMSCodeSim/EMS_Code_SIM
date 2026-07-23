@@ -47,3 +47,18 @@
 /emt-practice-tools /ems-training-tools.html 301
 /ems-simulators /ems-training-tools.html 301
 /search /search.html 200
+
+# EMSCodeSim Daily Quiz aliases
+/daily-quiz                         /quiz/                              301
+/emt-quiz                           /quiz/emt_quiz.html                 301
+/paramedic-quiz                     /quiz/paramedic_quiz.html           301
+/ems-daily-fact                     /quiz/ems_fact.html                 301
+/medword                            /quiz/medword.html                  301
+/daily-home-medication              /quiz/home_med.html                 301
+/emt_quiz.html                      /quiz/emt_quiz.html                 301
+/paramedic_quiz.html                /quiz/paramedic_quiz.html           301
+/ems_fact.html                      /quiz/ems_fact.html                 301
+/home_med.html                      /quiz/home_med.html                 301
+/medword.html                       /quiz/medword.html                  301
+/daily_sim.html                     /quiz/daily_sim.html                301
+/daily_beat.html                    /quiz/daily_beat.html               301

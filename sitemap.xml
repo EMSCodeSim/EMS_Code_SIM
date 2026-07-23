@@ -26,4 +26,12 @@
   <url><loc>https://emscodesim.com/APGAR/</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://emscodesim.com/vitals/meds.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://emscodesim.com/med_sim.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://emscodesim.com/quiz/</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.95</priority></url>
+  <url><loc>https://emscodesim.com/quiz/emt_quiz.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://emscodesim.com/quiz/paramedic_quiz.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://emscodesim.com/quiz/ems_fact.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://emscodesim.com/quiz/home_med.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://emscodesim.com/quiz/medword.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://emscodesim.com/quiz/daily_beat.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.75</priority></url>
+  <url><loc>https://emscodesim.com/quiz/daily_sim.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.75</priority></url>
 </urlset>
