@@ -1,0 +1,1824 @@
+{
+  "version": "2026-07-23",
+  "title": "EMSCodeSim EMT Flashcard Trainer",
+  "description": "Free foundational flashcards for future EMT students and EMT learners.",
+  "disclaimer": "Educational review only. Medication scope, terminology, radio codes, equipment use, and protocols vary by state and agency. Follow your approved EMT course, instructor, medical director, and current local protocols.",
+  "categories": [
+    {
+      "name": "Anatomy & Physiology",
+      "count": 26
+    },
+    {
+      "name": "Medical Terminology",
+      "count": 33
+    },
+    {
+      "name": "EMS Slang & Radio Terms",
+      "count": 24
+    },
+    {
+      "name": "EMS Equipment",
+      "count": 28
+    },
+    {
+      "name": "Street Drugs & Overdose Awareness",
+      "count": 20
+    },
+    {
+      "name": "EMS Medications",
+      "count": 22
+    },
+    {
+      "name": "Assessment & Vital Signs",
+      "count": 25
+    },
+    {
+      "name": "Operations & Safety",
+      "count": 20
+    }
+  ],
+  "cards": [
+    {
+      "id": "anatomy-physiology-anatomy",
+      "category": "Anatomy & Physiology",
+      "front": "Anatomy",
+      "back": "The study of body structures and how those structures are organized.",
+      "note": "Example: knowing where the lungs, heart, and major bones are located.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-physiology",
+      "category": "Anatomy & Physiology",
+      "front": "Physiology",
+      "back": "The study of how body structures function.",
+      "note": "Example: understanding how the lungs exchange gases or how the heart moves blood.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-cell",
+      "category": "Anatomy & Physiology",
+      "front": "Cell",
+      "back": "The smallest living unit of the body. Cells need oxygen and nutrients and must remove waste.",
+      "note": "Illness or poor perfusion can disrupt normal cell function.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-tissue",
+      "category": "Anatomy & Physiology",
+      "front": "Tissue",
+      "back": "A group of similar cells working together for a common purpose.",
+      "note": "Muscle, nervous, epithelial, and connective tissue are major tissue types.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-organ",
+      "category": "Anatomy & Physiology",
+      "front": "Organ",
+      "back": "A body structure made of multiple tissue types that performs a specific function.",
+      "note": "The heart, lungs, brain, liver, and kidneys are organs.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-organ-system",
+      "category": "Anatomy & Physiology",
+      "front": "Organ system",
+      "back": "A group of organs that work together to perform major body functions.",
+      "note": "EMS assessment often asks which system may be failing and how that affects the whole patient.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-homeostasis",
+      "category": "Anatomy & Physiology",
+      "front": "Homeostasis",
+      "back": "The body’s effort to maintain a stable internal environment.",
+      "note": "Temperature, blood glucose, pH, and blood pressure are examples of values the body regulates.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-upper-airway",
+      "category": "Anatomy & Physiology",
+      "front": "Upper airway",
+      "back": "The nose, mouth, jaw, pharynx, and related structures that conduct air toward the lower airway.",
+      "note": "Swelling, secretions, trauma, or loss of muscle tone can threaten patency.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-lower-airway",
+      "category": "Anatomy & Physiology",
+      "front": "Lower airway",
+      "back": "The larynx, trachea, bronchi, bronchioles, and lungs below the upper airway.",
+      "note": "Wheezing, crackles, and diminished sounds can suggest lower-airway or lung problems.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-alveoli",
+      "category": "Anatomy & Physiology",
+      "front": "Alveoli",
+      "back": "Microscopic air sacs where oxygen and carbon dioxide move between air and blood.",
+      "note": "Fluid, collapse, or poor ventilation can reduce gas exchange.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-diaphragm",
+      "category": "Anatomy & Physiology",
+      "front": "Diaphragm",
+      "back": "The major muscle of breathing located beneath the lungs.",
+      "note": "When it contracts, the chest cavity expands and air is drawn in.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-ventilation",
+      "category": "Anatomy & Physiology",
+      "front": "Ventilation",
+      "back": "The physical movement of air into and out of the lungs.",
+      "note": "A patient can have oxygen present but still ventilate poorly.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-respiration",
+      "category": "Anatomy & Physiology",
+      "front": "Respiration",
+      "back": "Gas exchange: oxygen enters the blood and tissues while carbon dioxide leaves them.",
+      "note": "External respiration occurs in the lungs; internal respiration occurs at the tissues.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-perfusion",
+      "category": "Anatomy & Physiology",
+      "front": "Perfusion",
+      "back": "The delivery of oxygenated blood to body tissues and organs.",
+      "note": "Mental status, skin signs, pulse quality, and blood pressure help assess perfusion.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-right-side-of-the-heart",
+      "category": "Anatomy & Physiology",
+      "front": "Right side of the heart",
+      "back": "Receives deoxygenated blood from the body and pumps it to the lungs.",
+      "note": "Right-sided failure can contribute to systemic venous congestion.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-left-side-of-the-heart",
+      "category": "Anatomy & Physiology",
+      "front": "Left side of the heart",
+      "back": "Receives oxygenated blood from the lungs and pumps it to the body.",
+      "note": "Left-sided failure can contribute to pulmonary congestion and breathing difficulty.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-artery",
+      "category": "Anatomy & Physiology",
+      "front": "Artery",
+      "back": "A blood vessel that carries blood away from the heart.",
+      "note": "Most arteries carry oxygenated blood, but the pulmonary arteries carry deoxygenated blood to the lungs.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-vein",
+      "category": "Anatomy & Physiology",
+      "front": "Vein",
+      "back": "A blood vessel that carries blood toward the heart.",
+      "note": "Most veins carry deoxygenated blood, but pulmonary veins carry oxygenated blood from the lungs.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-capillary",
+      "category": "Anatomy & Physiology",
+      "front": "Capillary",
+      "back": "A tiny vessel where gases, nutrients, and waste products exchange between blood and tissues.",
+      "note": "Capillary-level perfusion is essential for cell survival.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-central-nervous-system",
+      "category": "Anatomy & Physiology",
+      "front": "Central nervous system",
+      "back": "The brain and spinal cord.",
+      "note": "It processes information and coordinates many body functions.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-peripheral-nervous-system",
+      "category": "Anatomy & Physiology",
+      "front": "Peripheral nervous system",
+      "back": "Nerves outside the brain and spinal cord.",
+      "note": "It carries sensory information to the CNS and motor commands away from it.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-musculoskeletal-system",
+      "category": "Anatomy & Physiology",
+      "front": "Musculoskeletal system",
+      "back": "Bones, joints, muscles, tendons, and ligaments that provide support and movement.",
+      "note": "Injury can affect movement, circulation, sensation, and the ability to ventilate.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-integumentary-system",
+      "category": "Anatomy & Physiology",
+      "front": "Integumentary system",
+      "back": "The skin, hair, nails, and related structures.",
+      "note": "Skin color, temperature, moisture, wounds, and burns provide important assessment clues.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-digestive-system",
+      "category": "Anatomy & Physiology",
+      "front": "Digestive system",
+      "back": "Organs that break down food, absorb nutrients, and eliminate solid waste.",
+      "note": "Abdominal pain, vomiting, bleeding, and dehydration can involve this system.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-urinary-system",
+      "category": "Anatomy & Physiology",
+      "front": "Urinary system",
+      "back": "The kidneys, ureters, bladder, and urethra; it filters blood and regulates fluid and electrolytes.",
+      "note": "Reduced urine output can be a clue to poor perfusion or kidney dysfunction.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "anatomy-physiology-endocrine-system",
+      "category": "Anatomy & Physiology",
+      "front": "Endocrine system",
+      "back": "Glands that release hormones to regulate metabolism, growth, stress response, and glucose balance.",
+      "note": "Diabetes and adrenal emergencies are common EMS-related endocrine concerns.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-hypo",
+      "category": "Medical Terminology",
+      "front": "hypo-",
+      "back": "Prefix meaning below, deficient, or less than normal.",
+      "note": "Examples: hypoglycemia, hypothermia, hypotension.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-hyper",
+      "category": "Medical Terminology",
+      "front": "hyper-",
+      "back": "Prefix meaning above, excessive, or more than normal.",
+      "note": "Examples: hyperglycemia, hyperthermia, hypertension.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-brady",
+      "category": "Medical Terminology",
+      "front": "brady-",
+      "back": "Prefix meaning slow.",
+      "note": "Example: bradycardia means a slower-than-expected heart rate.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-tachy",
+      "category": "Medical Terminology",
+      "front": "tachy-",
+      "back": "Prefix meaning fast or rapid.",
+      "note": "Examples: tachycardia and tachypnea.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-a-an",
+      "category": "Medical Terminology",
+      "front": "a- / an-",
+      "back": "Prefix meaning without or absence of.",
+      "note": "Examples: apnea means no breathing; anoxia means absence of oxygen.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-dys",
+      "category": "Medical Terminology",
+      "front": "dys-",
+      "back": "Prefix meaning difficult, painful, or abnormal.",
+      "note": "Examples: dyspnea and dysrhythmia.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-peri",
+      "category": "Medical Terminology",
+      "front": "peri-",
+      "back": "Prefix meaning around or surrounding.",
+      "note": "Example: pericardium is the sac around the heart.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-endo",
+      "category": "Medical Terminology",
+      "front": "endo-",
+      "back": "Prefix meaning within or inside.",
+      "note": "Example: endotracheal means within the trachea.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-epi",
+      "category": "Medical Terminology",
+      "front": "epi-",
+      "back": "Prefix meaning on, upon, or above.",
+      "note": "Example: epidermis is the outer layer of skin.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-intra",
+      "category": "Medical Terminology",
+      "front": "intra-",
+      "back": "Prefix meaning within.",
+      "note": "Examples: intravenous and intraosseous.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-sub",
+      "category": "Medical Terminology",
+      "front": "sub-",
+      "back": "Prefix meaning below or under.",
+      "note": "Examples: subcutaneous and sublingual.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-poly",
+      "category": "Medical Terminology",
+      "front": "poly-",
+      "back": "Prefix meaning many or excessive.",
+      "note": "Examples: polyuria and polydipsia.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-oligo",
+      "category": "Medical Terminology",
+      "front": "oligo-",
+      "back": "Prefix meaning few, scant, or reduced.",
+      "note": "Example: oliguria means abnormally low urine output.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-cardi-o",
+      "category": "Medical Terminology",
+      "front": "cardi/o",
+      "back": "Word root referring to the heart.",
+      "note": "Examples: cardiology, cardiovascular, cardiogenic.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-pneum-o-or-pulmon-o",
+      "category": "Medical Terminology",
+      "front": "pneum/o or pulmon/o",
+      "back": "Word roots referring to air, lungs, or breathing.",
+      "note": "Examples: pneumonia, pneumothorax, pulmonary.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-neur-o",
+      "category": "Medical Terminology",
+      "front": "neur/o",
+      "back": "Word root referring to nerves or the nervous system.",
+      "note": "Examples: neurologic and neuropathy.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-hem-o-or-hemat-o",
+      "category": "Medical Terminology",
+      "front": "hem/o or hemat/o",
+      "back": "Word roots referring to blood.",
+      "note": "Examples: hemorrhage, hematoma, hematology.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-gastr-o",
+      "category": "Medical Terminology",
+      "front": "gastr/o",
+      "back": "Word root referring to the stomach.",
+      "note": "Examples: gastritis and gastrointestinal.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-hepat-o",
+      "category": "Medical Terminology",
+      "front": "hepat/o",
+      "back": "Word root referring to the liver.",
+      "note": "Examples: hepatitis and hepatomegaly.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-nephr-o-or-ren-o",
+      "category": "Medical Terminology",
+      "front": "nephr/o or ren/o",
+      "back": "Word roots referring to the kidney.",
+      "note": "Examples: nephrology and renal failure.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-derm-o",
+      "category": "Medical Terminology",
+      "front": "derm/o",
+      "back": "Word root referring to skin.",
+      "note": "Examples: dermatitis and dermatology.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-oste-o",
+      "category": "Medical Terminology",
+      "front": "oste/o",
+      "back": "Word root referring to bone.",
+      "note": "Examples: osteoporosis and osteomyelitis.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-my-o",
+      "category": "Medical Terminology",
+      "front": "my/o",
+      "back": "Word root referring to muscle.",
+      "note": "Examples: myocardial and myopathy.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-itis",
+      "category": "Medical Terminology",
+      "front": "-itis",
+      "back": "Suffix meaning inflammation.",
+      "note": "Examples: bronchitis, appendicitis, dermatitis.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-emia",
+      "category": "Medical Terminology",
+      "front": "-emia",
+      "back": "Suffix referring to a condition of the blood.",
+      "note": "Examples: hypoglycemia and bacteremia.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-pnea",
+      "category": "Medical Terminology",
+      "front": "-pnea",
+      "back": "Suffix referring to breathing.",
+      "note": "Examples: apnea, dyspnea, tachypnea.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-algia",
+      "category": "Medical Terminology",
+      "front": "-algia",
+      "back": "Suffix meaning pain.",
+      "note": "Examples: neuralgia and myalgia.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-ectomy",
+      "category": "Medical Terminology",
+      "front": "-ectomy",
+      "back": "Suffix meaning surgical removal.",
+      "note": "Example: appendectomy.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-proximal",
+      "category": "Medical Terminology",
+      "front": "proximal",
+      "back": "Closer to the trunk or point of attachment.",
+      "note": "The elbow is proximal to the wrist.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-distal",
+      "category": "Medical Terminology",
+      "front": "distal",
+      "back": "Farther from the trunk or point of attachment.",
+      "note": "The fingers are distal to the elbow.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-anterior-posterior",
+      "category": "Medical Terminology",
+      "front": "anterior / posterior",
+      "back": "Anterior means toward the front; posterior means toward the back.",
+      "note": "These terms help describe findings precisely.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-medial-lateral",
+      "category": "Medical Terminology",
+      "front": "medial / lateral",
+      "back": "Medial means toward the midline; lateral means away from the midline.",
+      "note": "The nose is medial to the eyes.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "medical-terminology-superior-inferior",
+      "category": "Medical Terminology",
+      "front": "superior / inferior",
+      "back": "Superior means above; inferior means below.",
+      "note": "The chest is superior to the abdomen.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-bls",
+      "category": "EMS Slang & Radio Terms",
+      "front": "BLS",
+      "back": "Basic Life Support: the EMT-level assessment and care system, though exact scope varies by jurisdiction.",
+      "note": "Use the formal term in documentation rather than assuming everyone uses it identically.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-als",
+      "category": "EMS Slang & Radio Terms",
+      "front": "ALS",
+      "back": "Advanced Life Support: care involving advanced assessment, medications, procedures, or paramedic-level resources.",
+      "note": "What counts as ALS depends on state and local scope.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-mvc-mva",
+      "category": "EMS Slang & Radio Terms",
+      "front": "MVC / MVA",
+      "back": "Motor vehicle collision / motor vehicle accident. Many agencies prefer “collision” because it does not assume the event was unavoidable.",
+      "note": "Use your agency’s approved terminology.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-mci",
+      "category": "EMS Slang & Radio Terms",
+      "front": "MCI",
+      "back": "Mass-casualty incident: an event where patient needs may exceed immediately available resources.",
+      "note": "MCI thresholds and triage systems are locally defined.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-rma-ama",
+      "category": "EMS Slang & Radio Terms",
+      "front": "RMA / AMA",
+      "back": "Refusal of medical assistance / against medical advice. Terminology varies.",
+      "note": "A refusal requires capacity assessment, informed discussion, documentation, and local-protocol compliance.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-eta",
+      "category": "EMS Slang & Radio Terms",
+      "front": "ETA",
+      "back": "Estimated time of arrival.",
+      "note": "Give realistic updates and revise them if conditions change.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-en-route",
+      "category": "EMS Slang & Radio Terms",
+      "front": "En route",
+      "back": "The unit has started traveling toward the assigned location or destination.",
+      "note": "Radio status wording varies by dispatch system.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-on-scene",
+      "category": "EMS Slang & Radio Terms",
+      "front": "On scene",
+      "back": "The unit has arrived at the incident location.",
+      "note": "Arrival does not automatically mean the scene is safe.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-staging",
+      "category": "EMS Slang & Radio Terms",
+      "front": "Staging",
+      "back": "Waiting at a designated safe location until the scene is secured or resources are coordinated.",
+      "note": "Common for violence, hazmat, fire, and large incidents.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-code-3-emergency-traffic",
+      "category": "EMS Slang & Radio Terms",
+      "front": "Code 3 / emergency traffic",
+      "back": "A local term often meaning lights-and-sirens response.",
+      "note": "The exact meaning varies; do not assume it is universal.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-load-and-go",
+      "category": "EMS Slang & Radio Terms",
+      "front": "Load and go",
+      "back": "Informal phrase for minimizing scene time when rapid transport is a priority.",
+      "note": "It does not mean skipping immediate lifesaving care.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-stay-and-play",
+      "category": "EMS Slang & Radio Terms",
+      "front": "Stay and play",
+      "back": "Informal phrase for performing more treatment before transport.",
+      "note": "The phrase can oversimplify complex decisions; use clinical priorities and protocol.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-scoop-and-run",
+      "category": "EMS Slang & Radio Terms",
+      "front": "Scoop and run",
+      "back": "Informal phrase similar to load and go, often used in time-sensitive trauma.",
+      "note": "Use professional language around patients and families.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-frequent-caller",
+      "category": "EMS Slang & Radio Terms",
+      "front": "Frequent caller",
+      "back": "A person who accesses EMS repeatedly.",
+      "note": "Avoid dismissive labels such as “frequent flyer”; repeated calls can reflect unmet medical or social needs.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-trauma-alert",
+      "category": "EMS Slang & Radio Terms",
+      "front": "Trauma alert",
+      "back": "A hospital notification that a patient may need a trauma-team response.",
+      "note": "Criteria and alert levels vary by system.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-working-code",
+      "category": "EMS Slang & Radio Terms",
+      "front": "Working code",
+      "back": "Informal phrase for active cardiac-arrest resuscitation.",
+      "note": "Document the actual patient condition and interventions.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-rosc",
+      "category": "EMS Slang & Radio Terms",
+      "front": "ROSC",
+      "back": "Return of spontaneous circulation after cardiac arrest.",
+      "note": "ROSC does not end care; airway, ventilation, perfusion, and transport planning remain priorities.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-downtime",
+      "category": "EMS Slang & Radio Terms",
+      "front": "Downtime",
+      "back": "Estimated time from collapse or arrest until resuscitation or circulation.",
+      "note": "Clarify whether the estimate is witnessed, unwitnessed, no-flow, or total time.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-mechanism",
+      "category": "EMS Slang & Radio Terms",
+      "front": "Mechanism",
+      "back": "Short for mechanism of injury: how traumatic energy was transferred to the patient.",
+      "note": "Mechanism supports—but does not replace—the physical assessment.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-index-of-suspicion",
+      "category": "EMS Slang & Radio Terms",
+      "front": "Index of suspicion",
+      "back": "The clinician’s level of concern based on history, exam, mechanism, and context.",
+      "note": "It should be tied to specific findings rather than intuition alone.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-hot-warm-and-cold-zones",
+      "category": "EMS Slang & Radio Terms",
+      "front": "Hot, warm, and cold zones",
+      "back": "Hazard-control areas used at incidents such as hazmat or active threats.",
+      "note": "Definitions and entry requirements are incident-command decisions.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-mutual-aid",
+      "category": "EMS Slang & Radio Terms",
+      "front": "Mutual aid",
+      "back": "Resources requested from another agency or jurisdiction.",
+      "note": "Use clear resource names and assignments.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-intercept",
+      "category": "EMS Slang & Radio Terms",
+      "front": "Intercept",
+      "back": "A meeting between units, often to add an ALS crew or transfer care.",
+      "note": "Plan a safe location and avoid delays that outweigh the benefit.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-slang-radio-terms-clear-available",
+      "category": "EMS Slang & Radio Terms",
+      "front": "Clear / available",
+      "back": "The unit has completed the call and can accept another assignment.",
+      "note": "Complete required restocking, cleaning, and documentation according to policy.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-bag-valve-mask-bvm",
+      "category": "EMS Equipment",
+      "front": "Bag-valve mask (BVM)",
+      "back": "A hand-operated device used to provide positive-pressure ventilation through a mask or advanced airway.",
+      "note": "Good technique includes airway positioning, an effective seal, visible chest rise, and avoiding excessive rate or volume.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-oropharyngeal-airway-opa",
+      "category": "EMS Equipment",
+      "front": "Oropharyngeal airway (OPA)",
+      "back": "A curved airway adjunct placed in the mouth to help prevent the tongue from obstructing the airway.",
+      "note": "Generally used in deeply unresponsive patients without an intact gag reflex; follow training and protocol.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-nasopharyngeal-airway-npa",
+      "category": "EMS Equipment",
+      "front": "Nasopharyngeal airway (NPA)",
+      "back": "A soft airway adjunct inserted through a nostril to help maintain an open airway.",
+      "note": "Contraindications, sizing, lubrication, and insertion technique must follow course instruction and protocol.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-portable-suction-unit",
+      "category": "EMS Equipment",
+      "front": "Portable suction unit",
+      "back": "A device that removes blood, vomit, or secretions from the airway.",
+      "note": "Check battery, tubing, canister, pressure, and catheter availability during unit checks.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-rigid-suction-catheter",
+      "category": "EMS Equipment",
+      "front": "Rigid suction catheter",
+      "back": "A firm, large-bore catheter often used to suction the mouth and oropharynx.",
+      "note": "It is commonly called a tonsil-tip or Yankauer catheter.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-oxygen-cylinder-and-regulator",
+      "category": "EMS Equipment",
+      "front": "Oxygen cylinder and regulator",
+      "back": "A pressurized oxygen source and device that controls flow.",
+      "note": "Secure cylinders, confirm pressure, inspect the regulator, and keep oil or grease away from oxygen equipment.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-nasal-cannula",
+      "category": "EMS Equipment",
+      "front": "Nasal cannula",
+      "back": "A low-flow oxygen-delivery device with prongs placed in the nostrils.",
+      "note": "It is generally better tolerated than a mask, but delivery depends on flow, fit, and patient breathing.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-nonrebreather-mask",
+      "category": "EMS Equipment",
+      "front": "Nonrebreather mask",
+      "back": "An oxygen mask with a reservoir bag and one-way valves designed to deliver a high oxygen concentration to a breathing patient.",
+      "note": "Inflate the reservoir before application and monitor the bag during inhalation.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-nebulizer",
+      "category": "EMS Equipment",
+      "front": "Nebulizer",
+      "back": "A device that turns liquid medication into an inhaled mist.",
+      "note": "Medication, dose, oxygen or air flow, and indications must follow protocol.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-cpap",
+      "category": "EMS Equipment",
+      "front": "CPAP",
+      "back": "Continuous positive airway pressure: a noninvasive device that maintains pressure during spontaneous breathing.",
+      "note": "It can improve oxygenation and reduce work of breathing in selected patients; contraindications matter.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-pulse-oximeter",
+      "category": "EMS Equipment",
+      "front": "Pulse oximeter",
+      "back": "A device that estimates peripheral oxygen saturation and pulse rate using light absorption.",
+      "note": "Treat the patient, not one number; motion, poor perfusion, nail products, and other factors can affect readings.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-blood-pressure-cuff",
+      "category": "EMS Equipment",
+      "front": "Blood-pressure cuff",
+      "back": "An inflatable cuff used to measure arterial blood pressure.",
+      "note": "Correct cuff size and placement are essential for useful readings.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-stethoscope",
+      "category": "EMS Equipment",
+      "front": "Stethoscope",
+      "back": "An acoustic tool used to hear body sounds such as Korotkoff sounds, breath sounds, and some heart sounds.",
+      "note": "Earpiece direction, diaphragm placement, and a quiet environment improve performance.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-glucometer",
+      "category": "EMS Equipment",
+      "front": "Glucometer",
+      "back": "A device that measures blood glucose from a small blood sample.",
+      "note": "Use approved infection-control technique, verify strip compatibility, and interpret the result with the patient presentation.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-aed",
+      "category": "EMS Equipment",
+      "front": "AED",
+      "back": "Automated external defibrillator: analyzes rhythm and advises or delivers a shock when appropriate.",
+      "note": "Minimize interruptions in CPR and ensure no one is touching the patient during analysis or shock.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-cardiac-monitor-defibrillator",
+      "category": "EMS Equipment",
+      "front": "Cardiac monitor-defibrillator",
+      "back": "An advanced device used for ECG monitoring, defibrillation, pacing, cardioversion, and other functions depending on configuration.",
+      "note": "EMTs should recognize the equipment even when operation is outside their scope.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-cervical-collar",
+      "category": "EMS Equipment",
+      "front": "Cervical collar",
+      "back": "A device that may limit some neck movement as part of spinal-motion restriction.",
+      "note": "A collar does not fully immobilize the spine and should not distract from airway or other priorities.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-vacuum-mattress",
+      "category": "EMS Equipment",
+      "front": "Vacuum mattress",
+      "back": "A full-body device that molds around the patient when air is removed.",
+      "note": "It can support comfortable motion restriction and transport in selected situations.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-scoop-stretcher",
+      "category": "EMS Equipment",
+      "front": "Scoop stretcher",
+      "back": "A stretcher that separates into sections so it can be assembled around a patient.",
+      "note": "It can reduce rolling during lifting or transfer; secure the patient before movement.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-long-backboard",
+      "category": "EMS Equipment",
+      "front": "Long backboard",
+      "back": "A rigid device useful for extrication and short transfers.",
+      "note": "Many systems avoid routine prolonged transport on a board because of discomfort and pressure concerns; follow local policy.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-stair-chair",
+      "category": "EMS Equipment",
+      "front": "Stair chair",
+      "back": "A compact chair used to move seated patients on stairs or through tight spaces.",
+      "note": "Use the manufacturer’s straps, enough personnel, and clear commands.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-traction-splint",
+      "category": "EMS Equipment",
+      "front": "Traction splint",
+      "back": "A device that applies longitudinal traction to selected isolated mid-shaft femur fractures.",
+      "note": "Indications and contraindications must be assessed before use.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-pelvic-binder",
+      "category": "EMS Equipment",
+      "front": "Pelvic binder",
+      "back": "A device placed around the pelvis to reduce movement and support suspected unstable pelvic injury.",
+      "note": "Correct placement is generally over the greater trochanters, not the waist.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-tourniquet",
+      "category": "EMS Equipment",
+      "front": "Tourniquet",
+      "back": "A device used to control life-threatening extremity bleeding by compressing blood flow.",
+      "note": "Apply according to training, tighten until bleeding stops, record the time, and do not conceal it.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-hemostatic-gauze",
+      "category": "EMS Equipment",
+      "front": "Hemostatic gauze",
+      "back": "Gauze treated or designed to support clot formation when packed into a bleeding wound.",
+      "note": "Use with firm direct pressure and according to product and protocol guidance.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-occlusive-dressing",
+      "category": "EMS Equipment",
+      "front": "Occlusive dressing",
+      "back": "An airtight or water-resistant dressing used for selected open wounds, including some chest injuries.",
+      "note": "Monitor the patient closely because chest findings can change.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-malleable-splint",
+      "category": "EMS Equipment",
+      "front": "Malleable splint",
+      "back": "A flexible splint, often foam-covered aluminum, that can be shaped to support an injured extremity.",
+      "note": "Assess circulation, sensation, and movement before and after splinting.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-equipment-stretcher-restraint-system",
+      "category": "EMS Equipment",
+      "front": "Stretcher restraint system",
+      "back": "Straps that secure a patient to the ambulance stretcher.",
+      "note": "Use all required restraints and shoulder straps; ambulance movement can create major forces.",
+      "level": "Future EMT",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-opioids",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Opioids",
+      "back": "A drug class that includes prescription pain medicines and illicit substances such as heroin; effects can include pain relief, sedation, and respiratory depression.",
+      "note": "Look for slow or absent breathing and decreased responsiveness. Drug identity cannot be confirmed by appearance alone.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-fentanyl",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Fentanyl",
+      "back": "A potent synthetic opioid used medically and also found in the illicit drug supply.",
+      "note": "Illicit fentanyl may be mixed into powders or counterfeit pills; treat the patient’s condition and use PPE and local protocol.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-heroin",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Heroin",
+      "back": "An illicit opioid that can cause euphoria, sedation, pinpoint pupils, and life-threatening respiratory depression.",
+      "note": "Route and appearance vary; do not delay ventilation and overdose care while trying to identify the substance.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-counterfeit-pills",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Counterfeit pills",
+      "back": "Illicitly manufactured tablets made to resemble prescription medications.",
+      "note": "They may contain unexpected fentanyl or other substances, so markings and color do not prove contents.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-cocaine",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Cocaine",
+      "back": "A stimulant that can increase heart rate, blood pressure, temperature, agitation, and risk of chest pain or dysrhythmia.",
+      "note": "Crack is a smokable form of cocaine; both can produce serious cardiovascular emergencies.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-methamphetamine",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Methamphetamine",
+      "back": "A powerful stimulant that can cause agitation, paranoia, hyperthermia, tachycardia, and hypertension.",
+      "note": "Consider scene safety, temperature, glucose, trauma, and co-ingestants.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-mdma-ecstasy-molly",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "MDMA / ecstasy / molly",
+      "back": "A synthetic drug with stimulant and perception-altering effects.",
+      "note": "Possible concerns include hyperthermia, dehydration or overhydration, agitation, and serotonin-related toxicity.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-cannabis",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Cannabis",
+      "back": "A drug containing cannabinoids such as THC that can alter perception, coordination, heart rate, and anxiety.",
+      "note": "Effects vary by dose, route, product, age, and co-ingestants.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-synthetic-cannabinoids-k2-spice",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Synthetic cannabinoids / K2 / Spice",
+      "back": "Laboratory-made chemicals intended to act on cannabinoid receptors, often with unpredictable effects.",
+      "note": "Agitation, seizures, vomiting, altered mental status, and cardiovascular effects can occur.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-pcp",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "PCP",
+      "back": "Phencyclidine, a dissociative drug that can cause severe agitation, altered perception, numbness, hypertension, and unpredictable behavior.",
+      "note": "Prioritize safety and avoid relying on pain response as the only assessment.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-ketamine-misuse",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Ketamine misuse",
+      "back": "Ketamine is a dissociative anesthetic used medically and sometimes misused recreationally.",
+      "note": "Effects may include dissociation, impaired movement, vomiting, and altered consciousness; medical ketamine use is distinct from illicit use.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-lsd",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "LSD",
+      "back": "A hallucinogen that can cause altered perception, anxiety, panic, and impaired judgment.",
+      "note": "Serious illness may be related to behavior, trauma, co-ingestants, or an unexpected substance.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-psilocybin-mushrooms",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Psilocybin mushrooms",
+      "back": "Hallucinogenic mushrooms that can alter perception, mood, and thinking.",
+      "note": "Supportive care, safety, and assessment for co-ingestants or trauma may be important.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-ghb",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "GHB",
+      "back": "A central nervous system depressant that can produce rapid sedation, vomiting, and respiratory compromise.",
+      "note": "Patients may alternate between deep sedation and agitation; protect the airway and reassess frequently.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-synthetic-cathinones-bath-salts",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Synthetic cathinones / bath salts",
+      "back": "Synthetic stimulants that may mimic effects of cocaine, methamphetamine, or MDMA.",
+      "note": "Possible findings include severe agitation, paranoia, hyperthermia, tachycardia, and hypertension.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-xylazine",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Xylazine",
+      "back": "A veterinary sedative increasingly found mixed with illicit drugs, especially opioids.",
+      "note": "Naloxone can treat an accompanying opioid component but does not reverse xylazine itself; ventilation and supportive care remain essential.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-benzodiazepine-misuse",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Benzodiazepine misuse",
+      "back": "Misuse of sedative medications such as alprazolam or diazepam can cause drowsiness, poor coordination, and respiratory depression, especially with opioids or alcohol.",
+      "note": "Counterfeit tablets may contain unexpected substances.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-inhalants",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Inhalants",
+      "back": "Fumes from household or industrial products inhaled for intoxicating effects.",
+      "note": "They can cause hypoxia, dysrhythmias, neurologic changes, burns, or chemical exposure.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-polysubstance-use",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Polysubstance use",
+      "back": "Use of more than one drug or substance, intentionally or unknowingly.",
+      "note": "Mixed stimulants, depressants, alcohol, or counterfeit products can create atypical presentations.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "street-drugs-overdose-awareness-toxidrome",
+      "category": "Street Drugs & Overdose Awareness",
+      "front": "Toxidrome",
+      "back": "A recognizable pattern of findings associated with a class of toxins.",
+      "note": "Toxidromes guide assessment but do not prove the exact substance; always consider medical mimics.",
+      "level": "EMT Awareness",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-oxygen",
+      "category": "EMS Medications",
+      "front": "Oxygen",
+      "back": "A medical gas used to treat or prevent hypoxemia in selected patients.",
+      "note": "Target, device, and flow should follow patient need and local protocol; oxygen is a medication.",
+      "level": "EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-aspirin",
+      "category": "EMS Medications",
+      "front": "Aspirin",
+      "back": "An antiplatelet medication commonly used in suspected acute coronary syndrome when indicated.",
+      "note": "Check allergies, bleeding concerns, and protocol; do not teach yourself a dose from a flashcard.",
+      "level": "EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-oral-glucose",
+      "category": "EMS Medications",
+      "front": "Oral glucose",
+      "back": "A concentrated glucose preparation used for selected patients with suspected or confirmed hypoglycemia who can protect their airway and swallow.",
+      "note": "Airway status and ability to follow commands matter.",
+      "level": "EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-naloxone",
+      "category": "EMS Medications",
+      "front": "Naloxone",
+      "back": "An opioid antagonist that can reverse opioid-related respiratory depression.",
+      "note": "Ventilation remains a priority; patients can become acutely ill or agitated as opioid effects reverse.",
+      "level": "EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-epinephrine-auto-injector",
+      "category": "EMS Medications",
+      "front": "Epinephrine auto-injector",
+      "back": "A device that delivers epinephrine for severe allergic reactions or anaphylaxis.",
+      "note": "EMT administration or assistance depends on state scope and local protocol.",
+      "level": "EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-albuterol",
+      "category": "EMS Medications",
+      "front": "Albuterol",
+      "back": "A bronchodilator used for bronchospasm in conditions such as asthma or COPD.",
+      "note": "It may increase heart rate or cause tremor; assessment and local protocol guide use.",
+      "level": "EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-nitroglycerin",
+      "category": "EMS Medications",
+      "front": "Nitroglycerin",
+      "back": "A vasodilator commonly prescribed for angina and used in some EMS chest-pain or pulmonary-edema protocols.",
+      "note": "Blood pressure, contraindications, prescribed medication status, and medical-control rules matter.",
+      "level": "EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-acetaminophen",
+      "category": "EMS Medications",
+      "front": "Acetaminophen",
+      "back": "A pain reliever and fever reducer.",
+      "note": "Some EMS systems allow EMT use; consider allergies, duplicate products, liver disease, and protocol.",
+      "level": "EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-ibuprofen",
+      "category": "EMS Medications",
+      "front": "Ibuprofen",
+      "back": "A nonsteroidal anti-inflammatory drug used for pain and fever.",
+      "note": "Some EMS systems allow EMT use; consider bleeding, kidney disease, pregnancy, allergies, and protocol.",
+      "level": "EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-activated-charcoal",
+      "category": "EMS Medications",
+      "front": "Activated charcoal",
+      "back": "An adsorbent historically used for selected oral poisonings.",
+      "note": "Use has become limited in many systems; aspiration risk and poison-control or medical-direction guidance are important.",
+      "level": "EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-glucagon",
+      "category": "EMS Medications",
+      "front": "Glucagon",
+      "back": "A hormone medication that raises blood glucose and may be used when glucose cannot be given by mouth or IV.",
+      "note": "Scope and route vary; nausea and vomiting can occur.",
+      "level": "ALS Awareness",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-dextrose",
+      "category": "EMS Medications",
+      "front": "Dextrose",
+      "back": "An intravenous or intraosseous glucose solution used to treat hypoglycemia.",
+      "note": "This is usually an ALS medication; concentration and extravasation risks require training.",
+      "level": "ALS Awareness",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-ondansetron",
+      "category": "EMS Medications",
+      "front": "Ondansetron",
+      "back": "An antiemetic used to reduce nausea and vomiting.",
+      "note": "Route, contraindications, and cardiac considerations depend on protocol.",
+      "level": "ALS Awareness",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-fentanyl-medical",
+      "category": "EMS Medications",
+      "front": "Fentanyl (medical)",
+      "back": "A potent opioid analgesic used in controlled medical settings for pain management.",
+      "note": "Medical fentanyl and illicit fentanyl involve different contexts; respiratory and hemodynamic monitoring are essential.",
+      "level": "ALS Awareness",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-morphine",
+      "category": "EMS Medications",
+      "front": "Morphine",
+      "back": "An opioid analgesic used in some EMS systems for pain and selected cardiovascular conditions.",
+      "note": "It can cause respiratory depression and hypotension; indications have evolved across protocols.",
+      "level": "ALS Awareness",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-ketamine-medical",
+      "category": "EMS Medications",
+      "front": "Ketamine (medical)",
+      "back": "A dissociative medication used by appropriately credentialed clinicians for analgesia, sedation, or severe agitation in some systems.",
+      "note": "Use requires protocol, monitoring, airway readiness, and careful documentation.",
+      "level": "ALS Awareness",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-atropine",
+      "category": "EMS Medications",
+      "front": "Atropine",
+      "back": "An anticholinergic medication used for selected symptomatic bradycardia and certain poisonings.",
+      "note": "Indications and dosing are ALS-level protocol topics.",
+      "level": "ALS Awareness",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-adenosine",
+      "category": "EMS Medications",
+      "front": "Adenosine",
+      "back": "A short-acting antiarrhythmic used for selected regular narrow-complex tachycardias.",
+      "note": "Correct rhythm identification, rapid administration technique, and monitoring are essential.",
+      "level": "ALS Awareness",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-amiodarone",
+      "category": "EMS Medications",
+      "front": "Amiodarone",
+      "back": "An antiarrhythmic medication used in selected ventricular dysrhythmias.",
+      "note": "Indication and administration differ between cardiac arrest and perfusing rhythms.",
+      "level": "ALS Awareness",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-magnesium-sulfate",
+      "category": "EMS Medications",
+      "front": "Magnesium sulfate",
+      "back": "A medication used in selected conditions such as torsades de pointes, severe asthma, or eclampsia depending on protocol.",
+      "note": "It is generally an ALS medication requiring monitoring.",
+      "level": "ALS Awareness",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-medication-rights",
+      "category": "EMS Medications",
+      "front": "Medication rights",
+      "back": "A safety framework that includes the right patient, medication, dose, route, time, and documentation, with additional rights used by some systems.",
+      "note": "A mnemonic supports—but does not replace—indication, contraindication, allergy, interaction, and reassessment checks.",
+      "level": "EMT",
+      "tags": []
+    },
+    {
+      "id": "ems-medications-protocol-variation",
+      "category": "EMS Medications",
+      "front": "Protocol variation",
+      "back": "The medications an EMT may administer, assist with, or monitor differ by state and agency.",
+      "note": "Your course, medical director, and current protocol are the source of authority.",
+      "level": "EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-scene-size-up",
+      "category": "Assessment & Vital Signs",
+      "front": "Scene size-up",
+      "back": "The initial process of evaluating safety, mechanism or nature of illness, number of patients, needed resources, and spinal-motion concerns.",
+      "note": "It begins before patient contact and continues as conditions change.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-general-impression",
+      "category": "Assessment & Vital Signs",
+      "front": "General impression",
+      "back": "A rapid overall judgment of how ill or injured the patient appears.",
+      "note": "Age, position, work of breathing, skin, behavior, and environment contribute.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-primary-assessment",
+      "category": "Assessment & Vital Signs",
+      "front": "Primary assessment",
+      "back": "A rapid evaluation focused on immediate life threats involving airway, breathing, circulation, disability, and exposure as taught by the course.",
+      "note": "The exact sequence may vary, but life threats are addressed promptly.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-chief-complaint",
+      "category": "Assessment & Vital Signs",
+      "front": "Chief complaint",
+      "back": "The main symptom, problem, or reason the patient says EMS was called.",
+      "note": "The patient’s words can be more useful than a diagnostic label.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-nature-of-illness",
+      "category": "Assessment & Vital Signs",
+      "front": "Nature of illness",
+      "back": "The medical reason or symptom pattern leading to the call.",
+      "note": "Examples include breathing difficulty, chest discomfort, seizure, or altered mental status.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-mechanism-of-injury",
+      "category": "Assessment & Vital Signs",
+      "front": "Mechanism of injury",
+      "back": "How force or energy caused a traumatic injury.",
+      "note": "Mechanism helps predict injuries but does not replace examination.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-sample-history",
+      "category": "Assessment & Vital Signs",
+      "front": "SAMPLE history",
+      "back": "A structured history: Signs/Symptoms, Allergies, Medications, Past history, Last oral intake, Events.",
+      "note": "Some courses or agencies use slight variations.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-opqrst",
+      "category": "Assessment & Vital Signs",
+      "front": "OPQRST",
+      "back": "A symptom-assessment framework: Onset, Provocation/Palliation, Quality, Region/Radiation, Severity, Time.",
+      "note": "Use natural conversation rather than sounding like a checklist.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-baseline-vital-signs",
+      "category": "Assessment & Vital Signs",
+      "front": "Baseline vital signs",
+      "back": "The first reliable set of measurements used for comparison during care.",
+      "note": "Document when and how they were obtained.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-trending",
+      "category": "Assessment & Vital Signs",
+      "front": "Trending",
+      "back": "Comparing repeated findings over time rather than relying on one measurement.",
+      "note": "A change in mental status, pulse, respirations, skin, or pressure can be more important than one isolated value.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-level-of-consciousness",
+      "category": "Assessment & Vital Signs",
+      "front": "Level of consciousness",
+      "back": "The patient’s degree of awareness and ability to respond.",
+      "note": "Assess changes and consider causes such as hypoxia, hypoglycemia, stroke, trauma, toxins, or seizure.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-avpu",
+      "category": "Assessment & Vital Signs",
+      "front": "AVPU",
+      "back": "A rapid responsiveness scale: Alert, responds to Verbal stimulus, responds to Pain, Unresponsive.",
+      "note": "AVPU is a snapshot and does not replace a fuller neurologic assessment.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-pulse-rate",
+      "category": "Assessment & Vital Signs",
+      "front": "Pulse rate",
+      "back": "The number of palpable or monitored heartbeats per minute.",
+      "note": "Also assess regularity, strength, and location.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-respiratory-rate",
+      "category": "Assessment & Vital Signs",
+      "front": "Respiratory rate",
+      "back": "The number of breaths per minute.",
+      "note": "Observe rate, depth, rhythm, effort, sounds, and chest movement before alerting the patient when possible.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-blood-pressure",
+      "category": "Assessment & Vital Signs",
+      "front": "Blood pressure",
+      "back": "The force of circulating blood against arterial walls, commonly recorded as systolic over diastolic pressure.",
+      "note": "Interpret pressure with mental status, pulse, skin signs, history, and trends.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-spo",
+      "category": "Assessment & Vital Signs",
+      "front": "SpO₂",
+      "back": "An estimate of peripheral oxygen saturation measured by pulse oximetry.",
+      "note": "It does not directly measure ventilation and can be affected by artifact or poor perfusion.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-skin-signs",
+      "category": "Assessment & Vital Signs",
+      "front": "Skin signs",
+      "back": "Color, temperature, moisture, and condition of the skin.",
+      "note": "These observations can reflect perfusion, temperature, stress response, or local injury.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-capillary-refill",
+      "category": "Assessment & Vital Signs",
+      "front": "Capillary refill",
+      "back": "The time for color to return after blanching a nail bed or skin area.",
+      "note": "It is influenced by age, temperature, lighting, and perfusion and should not be used alone.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-pupil-assessment",
+      "category": "Assessment & Vital Signs",
+      "front": "Pupil assessment",
+      "back": "Evaluation of pupil size, equality, shape, reactivity, and sometimes gaze.",
+      "note": "Findings should be interpreted with neurologic status, medications, lighting, and eye history.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-gcs",
+      "category": "Assessment & Vital Signs",
+      "front": "GCS",
+      "back": "Glasgow Coma Scale: a structured score based on eye, verbal, and motor responses.",
+      "note": "Record the component scores, not just the total.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-stroke-screen",
+      "category": "Assessment & Vital Signs",
+      "front": "Stroke screen",
+      "back": "A standardized check for findings such as facial asymmetry, arm weakness, speech changes, balance, or vision depending on the tool.",
+      "note": "Document last known well and follow local stroke-routing criteria.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-secondary-assessment",
+      "category": "Assessment & Vital Signs",
+      "front": "Secondary assessment",
+      "back": "A focused or head-to-toe examination guided by the patient’s condition, history, and mechanism.",
+      "note": "It follows management of immediate threats.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-dcap-btls",
+      "category": "Assessment & Vital Signs",
+      "front": "DCAP-BTLS",
+      "back": "A trauma-assessment mnemonic: Deformities, Contusions, Abrasions, Punctures/Penetrations, Burns, Tenderness, Lacerations, Swelling.",
+      "note": "Use it as a prompt, not as a substitute for observation and palpation.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-reassessment",
+      "category": "Assessment & Vital Signs",
+      "front": "Reassessment",
+      "back": "Repeating the primary assessment, vital signs, interventions, and focused exam to identify change.",
+      "note": "Frequency depends on patient stability and local expectations.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "assessment-vital-signs-handoff-report",
+      "category": "Assessment & Vital Signs",
+      "front": "Handoff report",
+      "back": "A concise transfer of essential patient information and care to the receiving clinician.",
+      "note": "Include identifiers, complaint, relevant history, findings, trends, interventions, response, and safety concerns.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-standard-precautions",
+      "category": "Operations & Safety",
+      "front": "Standard precautions",
+      "back": "Infection-control practices used with every patient based on anticipated exposure.",
+      "note": "Select gloves, eye protection, mask, gown, and hand hygiene according to risk.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-ppe",
+      "category": "Operations & Safety",
+      "front": "PPE",
+      "back": "Personal protective equipment used to reduce exposure to blood, body fluids, respiratory hazards, chemicals, or physical hazards.",
+      "note": "PPE must match the hazard and does not make an unsafe scene safe.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-scene-safety",
+      "category": "Operations & Safety",
+      "front": "Scene safety",
+      "back": "The ongoing evaluation of threats to responders, patients, and bystanders.",
+      "note": "Violence, traffic, fire, electricity, animals, weather, and unstable structures are examples.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-situational-awareness",
+      "category": "Operations & Safety",
+      "front": "Situational awareness",
+      "back": "Maintaining an accurate picture of the environment, patient, team, hazards, and changing priorities.",
+      "note": "Avoid tunnel vision and speak up when something changes.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-body-mechanics",
+      "category": "Operations & Safety",
+      "front": "Body mechanics",
+      "back": "Using posture, positioning, and coordinated movement to reduce injury during lifting and moving.",
+      "note": "Keep loads close, communicate, use equipment, and request help early.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-ambulance-restraint-safety",
+      "category": "Operations & Safety",
+      "front": "Ambulance restraint safety",
+      "back": "Securing patients, providers, equipment, and loose objects during transport.",
+      "note": "Unrestrained occupants and equipment can become projectiles.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-sharps-safety",
+      "category": "Operations & Safety",
+      "front": "Sharps safety",
+      "back": "Practices that reduce needle-stick and cutting injuries.",
+      "note": "Use approved containers, avoid unnecessary recapping, and report exposures promptly.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-hazmat-awareness",
+      "category": "Operations & Safety",
+      "front": "Hazmat awareness",
+      "back": "Recognizing a possible hazardous-material incident and avoiding entry or contamination.",
+      "note": "Approach uphill, upwind, and upstream when appropriate and follow incident command.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-triage",
+      "category": "Operations & Safety",
+      "front": "Triage",
+      "back": "Sorting patients based on urgency and available resources.",
+      "note": "Systems and categories vary; use the method adopted by your agency.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-incident-command-system",
+      "category": "Operations & Safety",
+      "front": "Incident command system",
+      "back": "A standardized structure for managing roles, communication, and resources at incidents.",
+      "note": "Know who you report to and avoid freelancing.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-radio-report",
+      "category": "Operations & Safety",
+      "front": "Radio report",
+      "back": "A concise transmission to dispatch, other units, or a receiving facility.",
+      "note": "Use plain language, protect privacy, and follow local format.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-patient-care-report",
+      "category": "Operations & Safety",
+      "front": "Patient-care report",
+      "back": "The legal and clinical record of assessment, care, response, and disposition.",
+      "note": "Be objective, complete, timely, and consistent.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-consent",
+      "category": "Operations & Safety",
+      "front": "Consent",
+      "back": "Permission from a patient with decision-making capacity after appropriate explanation.",
+      "note": "Consent can be expressed verbally or through actions, depending on the situation.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-implied-consent",
+      "category": "Operations & Safety",
+      "front": "Implied consent",
+      "back": "A legal concept allowing emergency care when a patient cannot consent and a reasonable person would want lifesaving treatment.",
+      "note": "Application depends on law, circumstances, and protocol.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-decision-making-capacity",
+      "category": "Operations & Safety",
+      "front": "Decision-making capacity",
+      "back": "The ability to understand information, appreciate consequences, reason about options, and communicate a choice.",
+      "note": "Capacity is decision-specific and can change.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-scope-of-practice",
+      "category": "Operations & Safety",
+      "front": "Scope of practice",
+      "back": "The legal range of care a credentialed clinician is permitted to provide.",
+      "note": "It is defined by law, regulation, certification level, and system authorization.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-protocol",
+      "category": "Operations & Safety",
+      "front": "Protocol",
+      "back": "A medical-director-approved guideline that directs assessment and treatment within a system.",
+      "note": "Protocols do not replace judgment, but they define authorized care.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-medical-direction",
+      "category": "Operations & Safety",
+      "front": "Medical direction",
+      "back": "Physician oversight of EMS care through standing orders, online consultation, quality improvement, and education.",
+      "note": "Know when your protocol requires contact.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-crew-resource-management",
+      "category": "Operations & Safety",
+      "front": "Crew resource management",
+      "back": "Using communication, leadership, role clarity, cross-checks, and shared situational awareness to improve safety.",
+      "note": "Closed-loop communication helps confirm that tasks were heard and completed.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    },
+    {
+      "id": "operations-safety-decontamination",
+      "category": "Operations & Safety",
+      "front": "Decontamination",
+      "back": "Removing or reducing hazardous substances from people or equipment.",
+      "note": "Do not bring contamination into the ambulance or emergency department.",
+      "level": "Future EMT / EMT",
+      "tags": []
+    }
+  ]
+}
