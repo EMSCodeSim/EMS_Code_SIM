@@ -20,6 +20,7 @@
   const recommendations = {
     exploring: ['Explore EMS before you enroll','Learn what EMTs really do, take the career-fit quiz, and build a high-school preparation plan.','/explore-ems.html'],
     ready: ['Start the EMT entry roadmap','Compare programs, costs, certification, state authorization, and first-job options.','/become-an-emt.html'],
+    preparing: ['Use the free EMT Prep Program','Build medical terminology, anatomy, vital-sign, patient-assessment, and study foundations before class begins.','/emt-prep.html'],
     student: ['Use the Student Success Center','Build a study plan, practice patient assessment, and prepare for clinical and testing days.','/emt-school-success.html'],
     newemt: ['Build a strong first 100 shifts','Prepare for field training, patient care, reports, communication, safety, feedback, and dependable habits.','/first-100-shifts.html'],
     experienced: ['Choose your next EMS path','Compare paramedic, critical care, fire-based EMS, education, leadership, community paramedicine, and other options.','/ems-career-growth.html'],
