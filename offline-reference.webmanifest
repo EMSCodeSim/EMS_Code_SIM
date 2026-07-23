@@ -1,0 +1,9 @@
+{
+  "name": "Offline EMS Reference Pack",
+  "short_name": "EMS Reference",
+  "start_url": "/offline-ems-reference.html",
+  "display": "standalone",
+  "background_color": "#f4f7fa",
+  "theme_color": "#082b49",
+  "description": "Offline EMS medications, vitals, mnemonics, terminology, and equipment reference."
+}

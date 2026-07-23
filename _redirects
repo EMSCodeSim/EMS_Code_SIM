@@ -92,3 +92,6 @@
 
 /ems-progress-tracker /ems-progress-tracker.html 301
 /ems-skill-tracker /ems-progress-tracker.html 301
+
+/offline-ems-reference /offline-ems-reference.html 200
+/ems-reference /offline-ems-reference.html 301
