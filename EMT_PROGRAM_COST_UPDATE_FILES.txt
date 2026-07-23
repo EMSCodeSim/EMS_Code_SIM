@@ -1,0 +1,27 @@
+EMT PROGRAM COST & FINANCIAL HELP UPDATE
+
+ADD THESE 3 FILES
+emt-program-cost.html
+program-cost.js
+styles/program-cost.css
+
+REPLACE THESE 16 FILES
+_redirects
+become-an-emt.html
+ems-career-growth.html
+ems-recertification.html
+ems-resources.html
+ems-retirement.html
+ems-training-tools.html
+ems-wellness.html
+emt-school-finder.html
+emt-school-success.html
+explore-ems.html
+first-100-shifts.html
+index.html
+search-index.js
+search.html
+sitemap.xml
+
+DELETE
+Nothing.
