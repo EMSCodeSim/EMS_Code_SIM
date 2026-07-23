@@ -1,0 +1,34 @@
+{
+  "quiz": [
+    {
+      "question": "What is the normal respiratory rate for an adult?",
+      "options": ["8-12", "12-20", "20-28", "28-36"],
+      "answer": "12-20"
+    },
+    {
+      "question": "Which of the following is a sign of hypoxia?",
+      "options": ["Flushed skin", "Dilated pupils", "Cyanosis", "Bradycardia"],
+      "answer": "Cyanosis"
+    },
+    {
+      "question": "What is the first step in using an AED?",
+      "options": ["Check pulse", "Open airway", "Turn it on", "Apply pads"],
+      "answer": "Turn it on"
+    },
+    {
+      "question": "Which medication is typically administered for chest pain?",
+      "options": ["Epinephrine", "Albuterol", "Nitroglycerin", "Glucose"],
+      "answer": "Nitroglycerin"
+    },
+    {
+      "question": "What does SAMPLE stand for?",
+      "options": [
+        "Signs, Allergies, Medications, Past history, Last oral intake, Events",
+        "Symptoms, Airway, Meds, Pain, Level of consciousness, Events",
+        "Seizures, Allergies, Meds, Past history, Last meal, Exposure",
+        "Signs, Assessment, Medications, Pain, Lung sounds, EKG"
+      ],
+      "answer": "Signs, Allergies, Medications, Past history, Last oral intake, Events"
+    }
+  ]
+}
