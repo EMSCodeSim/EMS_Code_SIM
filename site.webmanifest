@@ -1,7 +1,7 @@
 {
   "name": "EMSCodeSim",
   "short_name": "EMSCodeSim",
-  "description": "EMS training simulators, quizzes, and instructor tools.",
+  "description": "EMT career guides, recertification help, and free EMS training simulators from high-school exploration through retirement.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#07111f",

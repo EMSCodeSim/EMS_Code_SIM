@@ -1,5 +1,11 @@
 
 (function(){
+
+  const navGroups=[...document.querySelectorAll('[data-nav-group]')];
+  navGroups.forEach(function(group){group.addEventListener('toggle',function(){if(!group.open)return;navGroups.forEach(function(other){if(other!==group)other.open=false;});});});
+  document.addEventListener('click',function(event){if(!event.target.closest('.nav-group'))navGroups.forEach(function(group){group.open=false;});});
+  document.addEventListener('keydown',function(event){if(event.key==='Escape')navGroups.forEach(function(group){group.open=false;});});
+
   const mobile = document.getElementById('mobileMenu');
   if(mobile){
     mobile.addEventListener('change', function(){

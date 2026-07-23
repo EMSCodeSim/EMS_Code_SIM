@@ -42,3 +42,8 @@
 /emt-recertification /ems-recertification.html 301
 /paramedic-recertification /ems-recertification.html 301
 /nremt-recertification /ems-recertification.html 301
+
+/ems-training-tools /ems-training-tools.html 200
+/emt-practice-tools /ems-training-tools.html 301
+/ems-simulators /ems-training-tools.html 301
+/search /search.html 200
