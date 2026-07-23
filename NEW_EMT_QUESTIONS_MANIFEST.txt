@@ -1,0 +1,15 @@
+ADD:
+new-emt-questions.html
+new-emt-first-shift.html
+emt-ride-along-guide.html
+emt-job-interview-guide.html
+ift-vs-911-first-emt-job.html
+new-emt-skills-to-master.html
+new-emt-mistakes-confidence.html
+styles/new-emt-questions.css
+
+REPLACE:
+search-index.js
+sitemap.xml
+_redirects
+first-100-shifts.html
