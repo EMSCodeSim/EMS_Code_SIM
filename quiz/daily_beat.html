@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>The Daily Beat | EMS Rhythm Review</title>
+  <meta name="description" content="Practice estimating a simulated pulse or rhythm rate with The Daily Beat, a quick EMS vital-sign review tool." />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://emscodesim.com/quiz/daily_beat.html" />
+  <link rel="icon" href="/favicon.png" type="image/png" />
+  <meta name="theme-color" content="#07111f" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="EMSCodeSim Daily Quiz" />
+  <meta property="og:title" content="The Daily Beat | EMS Rhythm Review" />
+  <meta property="og:description" content="Practice estimating a simulated pulse or rhythm rate with The Daily Beat, a quick EMS vital-sign review tool." />
+  <meta property="og:url" content="https://emscodesim.com/quiz/daily_beat.html" />
+  <meta property="og:image" content="https://emscodesim.com/quiz/og-image.jpg" />
+  <link rel="stylesheet" href="/quiz/dailyemsquiz.css" />
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "The Daily Beat | EMS Rhythm Review",
+  "url": "https://emscodesim.com/quiz/daily_beat.html",
+  "description": "Practice estimating a simulated pulse or rhythm rate with The Daily Beat, a quick EMS vital-sign review tool.",
+  "isPartOf": {
+    "@id": "https://emscodesim.com/quiz/#website"
+  },
+  "inLanguage": "en-US"
+}</script>
+</head>
+<body>
+  <header class="site-header"><div class="container nav"><a class="brand" href="/quiz/" aria-label="EMSCodeSim Daily Quiz home"><img class="brand-logo" src="/ems-logo.png" alt="EMSCodeSim logo" width="46" height="46"><span class="brand-text">EMSCodeSim Daily Quiz <small>EMT & Paramedic study tools</small></span></a><nav class="nav-links" aria-label="Main navigation"><a href="/quiz/emt_quiz.html" >EMT Quiz</a><a href="/quiz/paramedic_quiz.html" >Paramedic Quiz</a><a href="/quiz/ems_fact.html" >EMS Facts</a><a href="/quiz/medword.html" >MedWord</a><a href="/quiz/home_med.html" >Home Meds</a><a class="career-hub-link" href="/">Career Hub</a></nav></div></header><div class="quiz-breadcrumb"><a href="/">EMSCodeSim</a> / <a href="/quiz/">Daily Quiz</a> / The Daily Beat</div>
+  <main class="container quiz-shell">
+    <section class="quiz-hero"><div class="quiz-title-card"><span class="eyebrow">❤️ EMS pulse and rhythm practice</span><h1>The Daily Beat</h1><p>Listen to today’s simulated pulse rate, estimate the beats per minute, and check your answer. Built for quick EMS vital-sign practice.</p></div><aside class="score-card"><div class="daily-label"><span>Today’s rhythm</span><span>Audio practice</span></div><div class="score-big" id="bpmLabel">Ready</div><div class="progress-track"><div class="progress-bar" id="beatBar"></div></div></aside></section><section class="helper-section" style="text-align:center"><button class="btn btn-primary" type="button" onclick="startBeat()">▶️ Start the beat</button><div id="heart" style="font-size:100px;margin:24px 0;visibility:hidden">❤️</div><input type="range" id="slider" min="30" max="200" value="75" style="display:none;width:min(100%,620px);accent-color:#22d3ee"><p id="sliderText" style="display:none;color:var(--muted);font-size:18px">BPM Guess: <strong id="bpmValue">75</strong></p><button class="btn btn-secondary" onclick="checkAnswer()" id="checkBtn" style="display:none">Check Answer</button><div class="result" id="result" style="margin-top:20px">Tap start to hear today’s rhythm.</div></section>
+  </main>
+  <footer class="site-footer"><div class="container footer-grid"><div>© 2026 EMSCodeSim Daily Quiz. Independent EMS education practice site. Not affiliated with NREMT.</div><div class="footer-links"><a href="/privacy.html">Privacy</a><a href="/sitemap.xml">Sitemap</a><a href="/">EMSCodeSim Career Hub</a></div></div></footer>
+  <script>
+const heart=document.getElementById('heart'),slider=document.getElementById('slider'),bpmDisplay=document.getElementById('bpmValue'),result=document.getElementById('result'),checkBtn=document.getElementById('checkBtn'),sliderText=document.getElementById('sliderText'),bpmLabel=document.getElementById('bpmLabel'),beatBar=document.getElementById('beatBar');
+function getDailyBPM(){const today=new Date().toISOString().split('T')[0];let hash=0;for(let i=0;i<today.length;i++)hash=today.charCodeAt(i)+((hash<<5)-hash);return 30+Math.abs(hash%171);}const actualBPM=getDailyBPM();const beatInterval=60/actualBPM;
+function playBeatPattern(){const AudioContext=window.AudioContext||window.webkitAudioContext;const ctx=new AudioContext();const duration=20;const now=ctx.currentTime;for(let i=0;i<Math.ceil(actualBPM*(duration/60));i++){const start=now+i*beatInterval;const osc=ctx.createOscillator();const gain=ctx.createGain();osc.frequency.value=660;gain.gain.setValueAtTime(0.9,start);gain.gain.exponentialRampToValueAtTime(0.001,start+0.1);osc.connect(gain).connect(ctx.destination);osc.start(start);osc.stop(start+0.1);}}
+function startBeat(){document.querySelector('.btn-primary').style.display='none';heart.style.visibility='visible';slider.style.display='inline-block';checkBtn.style.display='inline-flex';sliderText.style.display='block';bpmLabel.textContent='Listen';beatBar.style.width='50%';playBeatPattern();heart.style.animation=`beat ${beatInterval}s infinite ease-in-out`;}
+function checkAnswer(){const guess=parseInt(slider.value);const diff=Math.abs(guess-actualBPM);beatBar.style.width='100%';bpmLabel.textContent=actualBPM+' BPM';result.innerHTML=diff<=3?`✅ Correct! It was <strong>${actualBPM} BPM</strong>. Come back tomorrow for a new rhythm.`:`❌ Not quite. It was <strong>${actualBPM} BPM</strong>. Review rate estimation and try again tomorrow.`;}
+slider.addEventListener('input',()=>{bpmDisplay.textContent=slider.value;});
+</script><style>@keyframes beat{0%{transform:scale(1)}20%{transform:scale(1.25)}40%{transform:scale(1)}100%{transform:scale(1)}}</style>
+</body>
+</html>

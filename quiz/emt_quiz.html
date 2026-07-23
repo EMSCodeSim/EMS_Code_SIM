@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Daily EMT Quiz | Free EMT Practice Questions</title>
+  <meta name="description" content="Free daily EMT quiz with five NREMT-style practice questions for EMS students and providers. Practice airway, assessment, trauma, medical, and operations topics with no login." />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://emscodesim.com/quiz/emt_quiz.html" />
+  <link rel="icon" href="/favicon.png" type="image/png" />
+  <meta name="theme-color" content="#07111f" />
+  <meta name="keywords" content="EMT quiz, daily EMT quiz, NREMT EMT practice questions, EMT practice test, EMS study, EMT exam prep" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="EMSCodeSim Daily Quiz" />
+  <meta property="og:title" content="Daily EMT Quiz | Free EMT Practice Questions" />
+  <meta property="og:description" content="Free daily EMT quiz with five NREMT-style practice questions for EMS students and providers. Practice airway, assessment, trauma, medical, and operations topics with no login." />
+  <meta property="og:url" content="https://emscodesim.com/quiz/emt_quiz.html" />
+  <meta property="og:image" content="https://emscodesim.com/quiz/og-image.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="stylesheet" href="/quiz/dailyemsquiz.css" />
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://emscodesim.com/quiz/emt_quiz.html#webpage",
+      "url": "https://emscodesim.com/quiz/emt_quiz.html",
+      "name": "Daily EMT Quiz | Free EMT Practice Questions",
+      "description": "Free daily EMT quiz with five NREMT-style practice questions for EMS students and providers. Practice airway, assessment, trauma, medical, and operations topics with no login.",
+      "isPartOf": {
+        "@id": "https://emscodesim.com/quiz/#website"
+      },
+      "inLanguage": "en-US"
+    },
+    {
+      "@type": "Quiz",
+      "@id": "https://emscodesim.com/quiz/emt_quiz.html#quiz",
+      "name": "Daily EMT Quiz",
+      "description": "Free daily EMT quiz with five NREMT-style practice questions for EMS students and providers. Practice airway, assessment, trauma, medical, and operations topics with no login.",
+      "about": [
+        "EMT assessment",
+        "Airway",
+        "Trauma",
+        "Medical emergencies",
+        "EMS operations",
+        "Patient care"
+      ],
+      "educationalLevel": "EMT",
+      "isAccessibleForFree": true,
+      "hasPart": [
+        {
+          "@type": "Question",
+          "name": "What is the primary role of the EMT in an EMS system?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Provide basic emergency medical care"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is an example of off-line medical direction?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Standing orders"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which level of EMS provider can perform advanced airway management?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Paramedic"
+          }
+        }
+      ]
+    }
+  ]
+}</script>
+</head>
+<body>
+  <a class="skip-link" href="#quiz-container">Skip to quiz</a>
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="/quiz/" aria-label="EMSCodeSim Daily Quiz home">
+        <img class="brand-logo" src="/ems-logo.png" alt="EMSCodeSim logo" width="46" height="46">
+        <span class="brand-text">EMSCodeSim Daily Quiz <small>EMT & Paramedic study tools</small></span>
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="/quiz/emt_quiz.html" aria-current="page">EMT Quiz</a>
+        <a href="/quiz/paramedic_quiz.html" >Paramedic Quiz</a>
+        <a href="/quiz/ems_fact.html">EMS Facts</a>
+        <a href="/quiz/medword.html">MedWord</a>
+        <a href="/quiz/home_med.html">Home Meds</a>
+      <a class="career-hub-link" href="/">Career Hub</a></nav>
+    </div>
+  </header><div class="quiz-breadcrumb"><a href="/">EMSCodeSim</a> / <a href="/quiz/">Daily Quiz</a> / Daily EMT Quiz</div>
+
+  <main class="container quiz-shell">
+    <section class="quiz-hero">
+      <div class="quiz-title-card">
+        <span class="eyebrow">🚑 Free daily EMT practice</span>
+        <h1>Daily EMT Quiz</h1>
+        <p>Free daily EMT quiz with five NREMT-style practice questions for EMS students and providers. Practice airway, assessment, trauma, medical, and operations topics with no login. Each quiz gives you five questions for fast review on a phone, tablet, or desktop.</p>
+        <div class="badge-row"><span class="badge">EMT assessment</span><span class="badge">Airway</span><span class="badge">Trauma</span><span class="badge">Medical emergencies</span><span class="badge">EMS operations</span><span class="badge">Patient care</span></div>
+      </div>
+      <aside class="score-card" aria-live="polite">
+        <div class="daily-label"><span>Today’s score</span><span id="answeredLabel">0 of 5 answered</span></div>
+        <div class="score-big" id="scoreBig">Ready</div>
+        <div class="progress-track" aria-label="Quiz progress"><div class="progress-bar" id="progressBar"></div></div>
+        <p style="color:var(--muted);line-height:1.5;margin:6px 0 0">Submit when finished to see correct answers and explanations.</p>
+      </aside>
+    </section>
+
+    <section id="quiz-container" class="quiz-container" aria-label="Daily EMT quiz questions"><div class="loading">Loading today’s EMT quiz...</div></section>
+
+    <section class="quiz-actions" aria-label="Quiz actions">
+      <div class="result" id="result">Answer the questions, then submit.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn btn-ghost" href="/quiz/">Quiz Home</a>
+        <button class="btn btn-primary" type="button" id="submitBtn">Submit Answers</button>
+      </div>
+    </section>
+
+    <section class="helper-section">
+      <h2>EMT quiz topics</h2>
+      <p>This daily emt quiz is intended for EMS review and test preparation. Questions may cover assessment, safety, airway, patient care, medications, operations, and scenario-based decision-making.</p>
+      <ul>
+        <li>Use the quiz as a quick daily warm-up before class, clinicals, or shift review.</li>
+        <li>Review missed questions and write down the topic you need to study next.</li>
+        <li>This is an independent practice resource and is not affiliated with NREMT.</li>
+      </ul>
+    </section>
+
+    <section class="helper-section">
+      <h2>Sample EMT practice questions</h2>
+      <p>These examples show the style of questions used on this page and help search engines understand the educational content.</p>
+      <div class="faq"><details><summary>1. What is the primary role of the EMT in an EMS system?</summary><p><strong>Answer:</strong> Provide basic emergency medical care</p></details><details><summary>2. What is an example of off-line medical direction?</summary><p><strong>Answer:</strong> Standing orders</p></details><details><summary>3. Which level of EMS provider can perform advanced airway management?</summary><p><strong>Answer:</strong> Paramedic</p></details></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>© 2026 EMSCodeSim Daily Quiz. Independent EMS education practice site. Not affiliated with NREMT.</div>
+      <div class="footer-links"><a href="/privacy.html">Privacy</a><a href="/sitemap.xml">Sitemap</a><a href="/">EMSCodeSim Career Hub</a></div>
+    </div>
+  </footer>
+
+  <script>
+    const quizFile = "emt_quiz.json";
+    const storageKey = "dailyQuiz_emt";
+    let questionsData = [];
+    let todaysQuestions = [];
+    let submitted = false;
+
+    const quizContainer = document.getElementById("quiz-container");
+    const resultEl = document.getElementById("result");
+    const progressBar = document.getElementById("progressBar");
+    const answeredLabel = document.getElementById("answeredLabel");
+    const scoreBig = document.getElementById("scoreBig");
+    const submitBtn = document.getElementById("submitBtn");
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, function(ch) {
+        return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch] || ch;
+      });
+    }
+
+    function getTodayKey() { return new Date().toISOString().split("T")[0]; }
+
+    function pickUniqueQuestions(n) {
+      const indexes = Array.from({ length: questionsData.length }, (_, i) => i);
+      for (let i = indexes.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indexes[i], indexes[j]] = [indexes[j], indexes[i]];
+      }
+      return indexes.slice(0, Math.min(n, indexes.length)).map(i => questionsData[i]);
+    }
+
+    function normalizeQuestion(q) {
+      return {
+        question: q.question || "",
+        choices: q.choices || q.options || [],
+        answer: q.answer || "",
+        reason: q.reason || q.explanation || "Review the topic and confirm why the correct answer best matches the patient care priority."
+      };
+    }
+
+    function loadSavedOrNewQuiz() {
+      const today = getTodayKey();
+      let saved = null;
+      try { saved = JSON.parse(localStorage.getItem(storageKey)); } catch (_) { saved = null; }
+      if (saved && saved.date === today && Array.isArray(saved.questions)) {
+        todaysQuestions = saved.questions.map(normalizeQuestion);
+      } else {
+        todaysQuestions = pickUniqueQuestions(5).map(normalizeQuestion);
+        localStorage.setItem(storageKey, JSON.stringify({ date: today, questions: todaysQuestions }));
+      }
+      displayQuiz();
+    }
+
+    function displayQuiz() {
+      quizContainer.innerHTML = "";
+      if (!todaysQuestions.length) {
+        quizContainer.innerHTML = '<div class="loading">No quiz questions are available right now.</div>';
+        return;
+      }
+      todaysQuestions.forEach((q, idx) => {
+        const div = document.createElement("article");
+        div.className = "question-box";
+        div.innerHTML = `
+          <div class="question-kicker"><span>Question ${idx + 1}</span><span>EMT practice</span></div>
+          <div class="question-text">${escapeHtml(q.question)}</div>
+          <div class="choices">
+            ${q.choices.map((choice, i) => `
+              <label class="choice" id="q${idx}a${i}">
+                <input type="radio" name="q${idx}" value="${i}" aria-label="${escapeHtml(choice)}" />
+                <span>${escapeHtml(choice)}</span>
+              </label>`).join("")}
+          </div>
+          <div class="explanation" id="explain${idx}" hidden></div>
+        `;
+        quizContainer.appendChild(div);
+      });
+      document.querySelectorAll('input[type="radio"]').forEach(input => input.addEventListener('change', updateProgress));
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const answered = todaysQuestions.filter((_, idx) => document.querySelector(`input[name="q${idx}"]:checked`)).length;
+      const total = todaysQuestions.length || 5;
+      answeredLabel.textContent = `${answered} of ${total} answered`;
+      progressBar.style.width = `${Math.round((answered / total) * 100)}%`;
+      if (!submitted) scoreBig.textContent = answered ? `${answered}/${total}` : 'Ready';
+    }
+
+    function submitQuiz() {
+      submitted = true;
+      let score = 0;
+      todaysQuestions.forEach((q, idx) => {
+        const selectedInput = document.querySelector(`input[name="q${idx}"]:checked`);
+        const selectedIndex = selectedInput ? Number(selectedInput.value) : -1;
+        q.choices.forEach((choice, i) => {
+          const label = document.getElementById(`q${idx}a${i}`);
+          label.classList.remove("correct", "incorrect");
+          if (choice === q.answer) {
+            label.classList.add("correct");
+            if (selectedIndex === i) score++;
+          } else if (selectedIndex === i) {
+            label.classList.add("incorrect");
+          }
+        });
+        const explanation = document.getElementById(`explain${idx}`);
+        explanation.hidden = false;
+        explanation.innerHTML = `<strong>Answer:</strong> ${escapeHtml(q.answer)}<br>${escapeHtml(q.reason)}`;
+      });
+      scoreBig.textContent = `${score}/${todaysQuestions.length}`;
+      resultEl.innerHTML = `Score: ${score}/${todaysQuestions.length}. Come back tomorrow for a new daily EMT quiz.`;
+      progressBar.style.width = '100%';
+      submitBtn.textContent = 'Submitted';
+    }
+
+    submitBtn.addEventListener('click', submitQuiz);
+
+    fetch(quizFile)
+      .then(res => { if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); })
+      .then(data => { questionsData = Array.isArray(data) ? data : (data.quiz || []); loadSavedOrNewQuiz(); })
+      .catch(err => {
+        console.error(err);
+        quizContainer.innerHTML = '<div class="loading">Failed to load questions. Please refresh and try again.</div>';
+      });
+  </script>
+</body>
+</html>

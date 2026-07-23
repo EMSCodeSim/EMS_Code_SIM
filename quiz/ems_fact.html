@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>EMS Daily Fact | EMSCodeSim Daily Quiz</title>
+  <meta name="description" content="Read one quick EMS fact each day for fast EMT and paramedic review." />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://emscodesim.com/quiz/ems_fact.html" />
+  <link rel="icon" href="/favicon.png" type="image/png" />
+  <meta name="theme-color" content="#07111f" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="EMSCodeSim Daily Quiz" />
+  <meta property="og:title" content="EMS Daily Fact | EMSCodeSim Daily Quiz" />
+  <meta property="og:description" content="Read one quick EMS fact each day for fast EMT and paramedic review." />
+  <meta property="og:url" content="https://emscodesim.com/quiz/ems_fact.html" />
+  <meta property="og:image" content="https://emscodesim.com/quiz/og-image.jpg" />
+  <link rel="stylesheet" href="/quiz/dailyemsquiz.css" />
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "EMS Daily Fact | EMSCodeSim Daily Quiz",
+  "url": "https://emscodesim.com/quiz/ems_fact.html",
+  "description": "Read one quick EMS fact each day for fast EMT and paramedic review.",
+  "isPartOf": {
+    "@id": "https://emscodesim.com/quiz/#website"
+  },
+  "inLanguage": "en-US"
+}</script>
+</head>
+<body>
+  <header class="site-header"><div class="container nav"><a class="brand" href="/quiz/" aria-label="EMSCodeSim Daily Quiz home"><img class="brand-logo" src="/ems-logo.png" alt="EMSCodeSim logo" width="46" height="46"><span class="brand-text">EMSCodeSim Daily Quiz <small>EMT & Paramedic study tools</small></span></a><nav class="nav-links" aria-label="Main navigation"><a href="/quiz/emt_quiz.html" >EMT Quiz</a><a href="/quiz/paramedic_quiz.html" >Paramedic Quiz</a><a href="/quiz/ems_fact.html" aria-current="page">EMS Facts</a><a href="/quiz/medword.html" >MedWord</a><a href="/quiz/home_med.html" >Home Meds</a><a class="career-hub-link" href="/">Career Hub</a></nav></div></header><div class="quiz-breadcrumb"><a href="/">EMSCodeSim</a> / <a href="/quiz/">Daily Quiz</a> / EMS Daily Fact</div>
+  <main class="container quiz-shell">
+    <section class="quiz-hero"><div class="quiz-title-card"><span class="eyebrow">📚 Daily EMS refresher</span><h1>EMS Daily Fact</h1><p>Read one fast EMS fact each day for a quick review, classroom discussion starter, or shift-change knowledge check.</p></div><aside class="score-card"><div class="daily-label"><span>Today’s fact</span><span>New daily</span></div><div class="score-big">Fact</div><p style="color:var(--muted);line-height:1.5;margin:0">Come back tomorrow for another EMS fact.</p></aside></section><section class="helper-section"><div class="question-kicker"><span id="category">Loading category…</span><span>EMSCodeSim Quiz</span></div><h2 id="factTitle" style="margin-top:12px">Loading today’s EMS fact...</h2><p id="fact" style="font-size:20px;color:#d9efff"></p><div class="cta-row"><a class="btn btn-primary" href="/quiz/emt_quiz.html">Practice EMT quiz</a><a class="btn btn-secondary" href="/quiz/paramedic_quiz.html">Practice paramedic quiz</a></div></section>
+  </main>
+  <footer class="site-footer"><div class="container footer-grid"><div>© 2026 EMSCodeSim Daily Quiz. Independent EMS education practice site. Not affiliated with NREMT.</div><div class="footer-links"><a href="/privacy.html">Privacy</a><a href="/sitemap.xml">Sitemap</a><a href="/">EMSCodeSim Career Hub</a></div></div></footer>
+  <script>
+function escapeHtml(value){return String(value ?? '').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+fetch('/quiz/ems_fact.json').then(r=>r.json()).then(facts=>{const today=new Date();const dayOfYear=Math.floor((today-new Date(today.getFullYear(),0,0))/86400000);const item=facts[dayOfYear % facts.length];document.getElementById('category').textContent=item.category||'EMS Fact';document.getElementById('factTitle').textContent=item.category||'Today’s EMS fact';document.getElementById('fact').innerHTML=escapeHtml(item.fact||'Check back tomorrow for a new EMS fact.');}).catch(()=>{document.getElementById('fact').textContent='Unable to load today’s EMS fact.';});
+</script>
+</body>
+</html>

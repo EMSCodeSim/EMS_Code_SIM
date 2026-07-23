@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Daily Home Medication Review | EMSCodeSim Daily Quiz</title>
+  <meta name="description" content="Review one common home medication each day, including medication class, common use, and EMS considerations." />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href="https://emscodesim.com/quiz/home_med.html" />
+  <link rel="icon" href="/favicon.png" type="image/png" />
+  <meta name="theme-color" content="#07111f" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="EMSCodeSim Daily Quiz" />
+  <meta property="og:title" content="Daily Home Medication Review | EMSCodeSim Daily Quiz" />
+  <meta property="og:description" content="Review one common home medication each day, including medication class, common use, and EMS considerations." />
+  <meta property="og:url" content="https://emscodesim.com/quiz/home_med.html" />
+  <meta property="og:image" content="https://emscodesim.com/quiz/og-image.jpg" />
+  <link rel="stylesheet" href="/quiz/dailyemsquiz.css" />
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Daily Home Medication Review | EMSCodeSim Daily Quiz",
+  "url": "https://emscodesim.com/quiz/home_med.html",
+  "description": "Review one common home medication each day, including medication class, common use, and EMS considerations.",
+  "isPartOf": {
+    "@id": "https://emscodesim.com/quiz/#website"
+  },
+  "inLanguage": "en-US"
+}</script>
+</head>
+<body>
+  <header class="site-header"><div class="container nav"><a class="brand" href="/quiz/" aria-label="EMSCodeSim Daily Quiz home"><img class="brand-logo" src="/ems-logo.png" alt="EMSCodeSim logo" width="46" height="46"><span class="brand-text">EMSCodeSim Daily Quiz <small>EMT & Paramedic study tools</small></span></a><nav class="nav-links" aria-label="Main navigation"><a href="/quiz/emt_quiz.html" >EMT Quiz</a><a href="/quiz/paramedic_quiz.html" >Paramedic Quiz</a><a href="/quiz/ems_fact.html" >EMS Facts</a><a href="/quiz/medword.html" >MedWord</a><a href="/quiz/home_med.html" aria-current="page">Home Meds</a><a class="career-hub-link" href="/">Career Hub</a></nav></div></header><div class="quiz-breadcrumb"><a href="/">EMSCodeSim</a> / <a href="/quiz/">Daily Quiz</a> / Daily Home Medication</div>
+  <main class="container quiz-shell">
+    <section class="quiz-hero"><div class="quiz-title-card"><span class="eyebrow">💊 Medication recognition practice</span><h1>Daily Home Medication</h1><p>Review one common home medication each day. This helps EMT and paramedic students recognize medication classes, common uses, and EMS assessment considerations.</p></div><aside class="score-card"><div class="daily-label"><span>Today’s medication</span><span>New daily</span></div><div class="score-big">Meds</div><p style="color:var(--muted);line-height:1.5;margin:0">Use this as a quick patient history review tool.</p></aside></section><section class="helper-section"><div class="question-kicker"><span>Home medication review</span><span>EMSCodeSim Quiz</span></div><div id="medication"><p>Loading today’s medication...</p></div><div class="cta-row"><a class="btn btn-primary" href="/quiz/emt_quiz.html">Practice EMT quiz</a><a class="btn btn-secondary" href="/quiz/paramedic_quiz.html">Practice paramedic quiz</a></div></section><section class="helper-section"><h2>How to use this page</h2><p>During patient assessment, home medications can provide clues about medical history, chronic conditions, and treatment risks. Review the class, common use, and EMS consideration, then connect it to your SAMPLE history and medication list documentation.</p></section>
+  </main>
+  <footer class="site-footer"><div class="container footer-grid"><div>© 2026 EMSCodeSim Daily Quiz. Independent EMS education practice site. Not affiliated with NREMT.</div><div class="footer-links"><a href="/privacy.html">Privacy</a><a href="/sitemap.xml">Sitemap</a><a href="/">EMSCodeSim Career Hub</a></div></div></footer>
+  <script>
+function escapeHtml(value){return String(value ?? '').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+fetch('/quiz/home_med.json').then(r=>r.json()).then(data=>{const today=new Date();const dayOfYear=Math.floor((today-new Date(today.getFullYear(),0,0))/86400000);const med=data[dayOfYear % data.length];document.getElementById('medication').innerHTML=`<h2>${escapeHtml(med.Generic||'Medication')}</h2><div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin-top:14px"><div class="tool-card"><div class="tool-icon">🏷️</div><h3>Brand</h3><p>${escapeHtml(med.Brand||'Not listed')}</p></div><div class="tool-card"><div class="tool-icon">🧬</div><h3>Class</h3><p>${escapeHtml(med.Class||'Not listed')}</p></div><div class="tool-card"><div class="tool-icon">📋</div><h3>Common use</h3><p>${escapeHtml(med.Use||'Not listed')}</p></div></div><div class="explanation" style="margin-top:16px"><strong>EMS consideration:</strong> ${escapeHtml(med.EMS_Consideration||'Review patient history, allergies, dose, route, compliance, and adverse effects.')}</div>`;}).catch(()=>{document.getElementById('medication').textContent='Failed to load today’s medication.';});
+</script>
+</body>
+</html>

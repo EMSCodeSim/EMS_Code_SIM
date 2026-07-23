@@ -1,0 +1,452 @@
+[
+  {
+    "question": "A 36-year-old female presents with right-sided weakness, slurred speech, and facial droop that started 30 minutes ago. Her blood glucose is 98 mg/dL. What is the most appropriate next action?",
+    "choices": [
+      "Transport to a stroke center immediately",
+      "Administer oral glucose",
+      "Give aspirin 324 mg",
+      "Perform spinal immobilization"
+    ],
+    "answer": "Transport to a stroke center immediately",
+    "reason": "The patient is within the window for stroke intervention and has a normal glucose. Rapid transport is key.",
+    "subtopic": "Stroke",
+    "topic": "Medical Emergencies"
+  },
+  {
+    "question": "A 50-year-old male has circumferential burns to his chest and is struggling to breathe. Breath sounds are decreased bilaterally. What is your most immediate concern?",
+    "choices": [
+      "Impaired chest wall expansion",
+      "Hypoglycemia from burn stress",
+      "Cardiac tamponade",
+      "Tension pneumothorax"
+    ],
+    "answer": "Impaired chest wall expansion",
+    "reason": "Circumferential chest burns can restrict breathing due to tightening of skin and tissue.",
+    "subtopic": "Burns",
+    "topic": "Trauma"
+  },
+  {
+    "question": "A combative patient is threatening bystanders and screaming unintelligibly. Vitals are normal. What is the safest initial management?",
+    "choices": [
+      "Ensure scene safety and wait for law enforcement",
+      "Physically restrain the patient immediately",
+      "Administer haloperidol without consent",
+      "Attempt to reason with the patient alone"
+    ],
+    "answer": "Ensure scene safety and wait for law enforcement",
+    "reason": "Scene safety is the top priority, especially with behavioral emergencies involving potential violence.",
+    "subtopic": "Behavioral/Psychiatric",
+    "topic": "Medical Emergencies"
+  },
+  {
+    "question": "A 26-year-old male has open femur fractures and is pulseless after a motorcycle crash. What should you do first?",
+    "choices": [
+      "Start CPR and apply a tourniquet",
+      "Apply splints before initiating CPR",
+      "Perform a focused trauma assessment",
+      "Transport without interventions"
+    ],
+    "answer": "Start CPR and apply a tourniquet",
+    "reason": "Life-threatening bleeding and cardiac arrest require simultaneous resuscitative actions.",
+    "subtopic": "Bleeding and Shock",
+    "topic": "Trauma"
+  },
+  {
+    "question": "During hazmat response, you see a placard with skull and crossbones and the number 6. What does this indicate?",
+    "choices": [
+      "Poisonous material",
+      "Flammable gas",
+      "Corrosive liquid",
+      "Radioactive substance"
+    ],
+    "answer": "Poisonous material",
+    "reason": "Class 6 placards with a skull and crossbones represent toxic substances.",
+    "subtopic": "Hazmat Awareness",
+    "topic": "EMS Operations"
+  },
+  {
+    "question": "A 22-year-old woman is in active labor with crowning visible. What is your next immediate action?",
+    "choices": [
+      "Prepare for imminent delivery",
+      "Insert a gloved hand for breech rotation",
+      "Transport immediately with lights and sirens",
+      "Administer oxygen and delay delivery"
+    ],
+    "answer": "Prepare for imminent delivery",
+    "reason": "Visible crowning indicates that birth is imminent and should occur on scene with proper preparation.",
+    "subtopic": "Obstetrics",
+    "topic": "Special Populations"
+  },
+  {
+    "question": "A patient presents after diving into a shallow pool and complains of neck pain. Vitals are stable. What should you do first?",
+    "choices": [
+      "Manually stabilize the spine",
+      "Apply high-flow oxygen",
+      "Log roll onto long spine board",
+      "Ask the patient to walk to the stretcher"
+    ],
+    "answer": "Manually stabilize the spine",
+    "reason": "Manual stabilization is the first step in suspected spinal injury, even before assessment or oxygen.",
+    "subtopic": "Spinal Trauma",
+    "topic": "Trauma"
+  },
+  {
+    "question": "You arrive to find an adult patient gasping and cyanotic with inspiratory stridor after a bee sting. What should you do first?",
+    "choices": [
+      "Administer epinephrine IM",
+      "Apply a non-rebreather mask",
+      "Initiate chest compressions",
+      "Place the patient in Trendelenburg"
+    ],
+    "answer": "Administer epinephrine IM",
+    "reason": "This is anaphylaxis with airway involvement. Epinephrine is life-saving and must be given immediately.",
+    "subtopic": "Respiratory Distress",
+    "topic": "Airway Management, Respiration & Ventilation"
+  },
+  {
+    "question": "A trauma patient has a weak radial pulse, altered mental status, and pale, cool skin. What does this indicate?",
+    "choices": [
+      "Compensated shock",
+      "Normal perfusion",
+      "Spinal cord injury",
+      "Hypothermia"
+    ],
+    "answer": "Compensated shock",
+    "reason": "These signs point to early hypoperfusion, when the body is still maintaining blood pressure.",
+    "subtopic": "Bleeding and Shock",
+    "topic": "Trauma"
+  },
+  
+  {
+    "question": "A 54-year-old male is complaining of crushing substernal chest pain radiating to his left arm. He is diaphoretic and short of breath. What is the most appropriate initial treatment?",
+    "choices": [
+      "Administer aspirin and provide oxygen",
+      "Begin CPR immediately",
+      "Apply a cervical collar",
+      "Perform rapid extrication"
+    ],
+    "answer": "Administer aspirin and provide oxygen",
+    "reason": "The presentation suggests an acute coronary syndrome. Aspirin reduces clot formation and oxygen addresses hypoxia, making this the correct initial treatment.",
+    "subtopic": "Cardiac Emergencies",
+    "topic": "Cardiovascular"
+  },
+  {
+    "question": "A 25-year-old male is found unconscious after a suspected opioid overdose. Respirations are 6/min and shallow. What is the most appropriate first action?",
+    "choices": [
+      "Insert an OPA and ventilate with a BVM",
+      "Administer naloxone IM",
+      "Apply a non-rebreather mask",
+      "Place the patient in the recovery position"
+    ],
+    "answer": "Insert an OPA and ventilate with a BVM",
+    "reason": "The priority is airway and ventilation. Reversing the opioid is important, but airway support comes first when respirations are inadequate.",
+    "subtopic": "Toxicology",
+    "topic": "Medical Emergencies"
+  },
+  {
+    "question": "A 3-year-old child presents with inspiratory stridor, a barking cough, and mild fever. What condition is most likely?",
+    "choices": [
+      "Croup",
+      "Asthma",
+      "Epiglottitis",
+      "Foreign body aspiration"
+    ],
+    "answer": "Croup",
+    "reason": "Croup presents with stridor, a seal-like cough, and is common in toddlers. Epiglottitis typically involves high fever and drooling.",
+    "subtopic": "Pediatrics",
+    "topic": "Special Populations"
+  },
+  {
+    "question": "A 70-year-old female complains of dizziness and has a heart rate of 38 bpm. Blood pressure is 84/60. What is the best next step?",
+    "choices": [
+      "Begin transcutaneous pacing",
+      "Administer nitroglycerin",
+      "Have the patient walk to the stretcher",
+      "Apply a cold pack to the neck"
+    ],
+    "answer": "Begin transcutaneous pacing",
+    "reason": "Bradycardia with hypotension and symptoms indicates unstable bradycardia, for which pacing is the treatment of choice.",
+    "subtopic": "Cardiac Emergencies",
+    "topic": "Cardiovascular"
+  },
+  {
+    "question": "A 19-year-old female has been assaulted and complains of lower abdominal pain with vaginal bleeding. What is your priority?",
+    "choices": [
+      "Treat for shock and transport",
+      "Question her about the assailant",
+      "Administer oxygen and notify police",
+      "Apply a cervical collar and long board"
+    ],
+    "answer": "Treat for shock and transport",
+    "reason": "Bleeding and trauma may indicate internal injury. Rapid transport and shock management take priority over legal aspects.",
+    "subtopic": "Gynecological",
+    "topic": "Medical Emergencies"
+  },
+  {
+    "question": "A 34-year-old diabetic patient is confused and combative. Blood glucose reads 35 mg/dL. What is the most appropriate action?",
+    "choices": [
+      "Administer oral glucose if able",
+      "Apply a cardiac monitor",
+      "Begin cooling measures",
+      "Transport without treatment"
+    ],
+    "answer": "Administer oral glucose if able",
+    "reason": "A glucose of 35 indicates hypoglycemia. If the patient can protect their airway, oral glucose is appropriate.",
+    "subtopic": "Endocrine",
+    "topic": "Medical Emergencies"
+  },
+  {
+    "question": "You arrive on scene where multiple patients are involved in a building collapse. What is your first action?",
+    "choices": [
+      "Ensure scene safety",
+      "Start triaging patients",
+      "Call for a second ambulance",
+      "Begin CPR on a pulseless patient"
+    ],
+    "answer": "Ensure scene safety",
+    "reason": "Scene safety always comes first. Entering an unsafe environment risks additional casualties.",
+    "subtopic": "Scene Size-Up",
+    "topic": "Patient Assessment"
+  },
+  {
+    "question": "A patient involved in a motorcycle crash presents with paradoxical chest wall movement. What is your most immediate concern?",
+    "choices": [
+      "Flail chest and impaired ventilation",
+      "Spinal cord injury",
+      "Hypovolemia",
+      "Airway obstruction from tongue"
+    ],
+    "answer": "Flail chest and impaired ventilation",
+    "reason": "Paradoxical movement indicates flail chest, which compromises ventilation and requires stabilization and oxygen support.",
+    "subtopic": "Chest Trauma",
+    "topic": "Trauma"
+  },
+  {
+    "question": "A patient presents with pinpoint pupils, bradypnea, and hypotension. Which medication is most likely involved?",
+    "choices": [
+      "Heroin",
+      "Cocaine",
+      "Atropine",
+      "Aspirin"
+    ],
+    "answer": "Heroin",
+    "reason": "Heroin and other opioids cause miosis (pinpoint pupils), respiratory depression, and hypotension.",
+    "subtopic": "Toxicology",
+    "topic": "Medical Emergencies"
+  },
+
+  {
+    "topic": "Cardiovascular",
+    "question": "What is the primary purpose of administering aspirin to a patient experiencing chest pain?",
+    "choices": [
+      "To relieve pain",
+      "To reduce inflammation",
+      "To inhibit platelet aggregation",
+      "To dilate the coronary arteries"
+    ],
+    "answer": "To inhibit platelet aggregation",
+    "explanation": "Aspirin inhibits platelet aggregation, which reduces the risk of clot formation in coronary arteries during an acute coronary syndrome."
+  },
+  {
+    "topic": "Cardiovascular",
+    "question": "What is the contraindication for giving aspirin to a patient with chest pain?",
+    "choices": [
+      "History of diabetes",
+      "Recent surgery",
+      "Active gastrointestinal bleeding",
+      "Mild hypertension"
+    ],
+    "answer": "Active gastrointestinal bleeding",
+    "explanation": "Aspirin can worsen bleeding, and is contraindicated in patients with active GI bleeding due to its antiplatelet effects."
+  },
+  {
+    "topic": "Cardiovascular",
+    "question": "What is the typical dose of aspirin given to a patient with suspected acute coronary syndrome?",
+    "choices": [
+      "81 mg",
+      "324 mg",
+      "500 mg",
+      "650 mg"
+    ],
+    "answer": "324 mg",
+    "explanation": "The usual field dose is 324 mg, administered as four 81 mg baby aspirin tablets chewed by the patient."
+  },
+  {
+    "topic": "Cardiovascular",
+    "question": "Which of the following is a common side effect of aspirin administration?",
+    "choices": [
+      "Shortness of breath",
+      "Ringing in the ears",
+      "Seizures",
+      "Numbness"
+    ],
+    "answer": "Ringing in the ears",
+    "explanation": "Tinnitus (ringing in the ears) is a known side effect of salicylates like aspirin, especially in higher doses."
+  },
+  {
+    "topic": "Cardiovascular",
+    "question": "What is the proper route of administration for aspirin in the prehospital setting?",
+    "choices": [
+      "Sublingual",
+      "Intravenous",
+      "Oral, chewed",
+      "Intramuscular"
+    ],
+    "answer": "Oral, chewed",
+    "explanation": "Aspirin should be given orally and chewed for faster absorption in the setting of suspected cardiac events."
+  },
+  {
+    "question": "What is the primary mechanism of action of adenosine in treating supraventricular tachycardia (SVT)?",
+    "choices": [
+      "Beta-adrenergic blockade",
+      "Inhibition of calcium channels",
+      "Slowing conduction through the AV node",
+      "Prolongation of QT interval"
+    ],
+    "answer": "Slowing conduction through the AV node",
+    "reason": "Adenosine temporarily blocks AV node conduction, which often breaks reentrant tachycardias like SVT."
+  },
+  {
+    "question": "A 58-year-old with atrial fibrillation suddenly becomes hypotensive with altered mental status. What is the immediate intervention?",
+    "choices": [
+      "Amiodarone 150 mg IV over 10 minutes",
+      "Synchronized cardioversion",
+      "Administer aspirin",
+      "Defibrillation"
+    ],
+    "answer": "Synchronized cardioversion",
+    "reason": "Unstable atrial fibrillation (hypotension, AMS) requires synchronized cardioversion per ACLS protocol."
+  },
+  {
+    "question": "Which of the following is a contraindication for nitroglycerin administration in chest pain?",
+    "choices": [
+      "Tachycardia",
+      "BP 110/70 mmHg",
+      "Use of sildenafil within 24 hours",
+      "History of diabetes"
+    ],
+    "answer": "Use of sildenafil within 24 hours",
+    "reason": "Phosphodiesterase inhibitors combined with nitro can cause life-threatening hypotension."
+  },
+  {
+    "question": "What is the correct initial dose of ketamine for sedation in a violent patient (IM route)?",
+    "choices": [
+      "0.1 mg/kg",
+      "1 mg/kg",
+      "4 mg/kg",
+      "10 mg/kg"
+    ],
+    "answer": "4 mg/kg",
+    "reason": "IM ketamine for sedation is commonly dosed at 4 mg/kg for rapid control of agitation."
+  },
+  {
+    "question": "A patient with CHF is given furosemide. What is the most concerning side effect to monitor for prehospital?",
+    "choices": [
+      "Tinnitus",
+      "Hypokalemia",
+      "Seizures",
+      "Hyperglycemia"
+    ],
+    "answer": "Hypokalemia",
+    "reason": "Furosemide is a loop diuretic and can cause electrolyte imbalances, particularly hypokalemia."
+  },
+  {
+    "question": "Which medication is most appropriate to manage a stable patient with ventricular ectopy and a history of myocardial infarction?",
+    "choices": [
+      "Epinephrine",
+      "Amiodarone",
+      "Atropine",
+      "Lidocaine"
+    ],
+    "answer": "Amiodarone",
+    "reason": "Amiodarone is preferred for ventricular arrhythmias, especially in post-MI patients."
+  },
+  {
+    "question": "Which of the following best explains the effect of glucagon in beta blocker overdose?",
+    "choices": [
+      "Increases acetylcholine release",
+      "Enhances insulin sensitivity",
+      "Stimulates cAMP independently of beta receptors",
+      "Blocks calcium influx"
+    ],
+    "answer": "Stimulates cAMP independently of beta receptors",
+    "reason": "Glucagon activates cAMP without using beta-adrenergic receptors, restoring cardiac contractility."
+  },
+  {
+    "question": "What is the correct prehospital dose of magnesium sulfate for torsades de pointes in an adult patient?",
+    "choices": [
+      "0.5 g IV over 10 min",
+      "1 g IV push",
+      "2 g IV diluted over 2\u20135 minutes",
+      "4 g IM"
+    ],
+    "answer": "2 g IV diluted over 2\u20135 minutes",
+    "reason": "Magnesium 2 g IV over 2\u20135 minutes is the ACLS-recommended dose for torsades."
+  },
+  {
+    "question": "Which of the following conditions is most associated with a pulsus paradoxus and muffled heart sounds?",
+    "choices": [
+      "Tension pneumothorax",
+      "Pulmonary embolism",
+      "Cardiac tamponade",
+      "Aortic dissection"
+    ],
+    "answer": "Cardiac tamponade",
+    "reason": "Tamponade causes fluid compression around the heart, resulting in decreased stroke volume and pulsus paradoxus."
+  },
+  {
+    "question": "What ECG finding is most indicative of hyperkalemia?",
+    "choices": [
+      "Peaked T waves",
+      "Shortened PR interval",
+      "U waves",
+      "ST depression"
+    ],
+    "answer": "Peaked T waves",
+    "reason": "Peaked T waves are the earliest and most classic ECG sign of elevated serum potassium."
+  },
+  {
+    "question": "What is the appropriate dose of epinephrine for adult anaphylaxis via IM route?",
+    "choices": [
+      "0.3 mg of 1:1,000",
+      "1 mg of 1:10,000",
+      "0.1 mg of 1:1,000",
+      "0.5 mg of 1:10,000"
+    ],
+    "answer": "0.3 mg of 1:1,000",
+    "reason": "The standard adult dose is 0.3 mg IM using a 1:1,000 concentration."
+  },
+  {
+    "question": "A patient is postictal after a tonic-clonic seizure. What drug should be administered if seizures continue?",
+    "choices": [
+      "Epinephrine",
+      "Midazolam",
+      "Naloxone",
+      "Diazoxide"
+    ],
+    "answer": "Midazolam",
+    "reason": "Benzodiazepines like midazolam are the treatment of choice for status epilepticus."
+  },
+  {
+    "question": "Which medication is used to reverse the effects of benzodiazepines?",
+    "choices": [
+      "Naloxone",
+      "Romazicon (Flumazenil)",
+      "Atropine",
+      "Fomepizole"
+    ],
+    "answer": "Romazicon (Flumazenil)",
+    "reason": "Flumazenil is a benzodiazepine antagonist, used in very selective cases due to seizure risk."
+  },
+  {
+    "question": "A patient with COPD is given too much oxygen. What complication are you most concerned about?",
+    "choices": [
+      "Cardiac ischemia",
+      "Seizures",
+      "Hypoventilation due to loss of hypoxic drive",
+      "Hyperthermia"
+    ],
+    "answer": "Hypoventilation due to loss of hypoxic drive",
+    "reason": "COPD patients rely partially on hypoxic respiratory drive; high-flow O\u2082 can reduce their respiratory effort."
+  }
+]

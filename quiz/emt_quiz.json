@@ -1,0 +1,1017 @@
+[
+  {
+    "question": "What is the primary role of the EMT in an EMS system?",
+    "choices": [
+      "Provide basic emergency medical care",
+      "Diagnose medical conditions",
+      "Perform advanced airway procedures",
+      "Prescribe medications"
+    ],
+    "answer": "Provide basic emergency medical care"
+  },
+  {
+    "question": "What is an example of off-line medical direction?",
+    "choices": [
+      "Direct supervision",
+      "Real-time orders by radio",
+      "Standing orders",
+      "Calling the medical director"
+    ],
+    "answer": "Standing orders"
+  },
+  {
+    "question": "Which level of EMS provider can perform advanced airway management?",
+    "choices": [
+      "Paramedic",
+      "AEMT",
+      "EMT",
+      "EMR"
+    ],
+    "answer": "Paramedic"
+  },
+  {
+    "question": "What does CQI stand for in EMS systems?",
+    "choices": [
+      "Continuous Quality Improvement",
+      "Clinical Quantitative Index",
+      "Certified Quality Initiative",
+      "Continuous Quantitative Instruction"
+    ],
+    "answer": "Continuous Quality Improvement"
+  },
+  {
+    "question": "Who provides on-line medical direction?",
+    "choices": [
+      "EMT partner",
+      "Physician via radio or phone",
+      "Medical assistant",
+      "Dispatch center"
+    ],
+    "answer": "Physician via radio or phone"
+  },
+  {
+    "question": "What must be obtained before providing care to a conscious adult?",
+    "choices": [
+      "Parental consent",
+      "Expressed denial",
+      "Implied consent",
+      "Informed consent"
+    ],
+    "answer": "Informed consent"
+  },
+  {
+    "question": "Which of the following is an example of implied consent?",
+    "choices": [
+      "Child with parent present",
+      "Refusing care after being informed",
+      "Signing a waiver",
+      "Unconscious trauma patient"
+    ],
+    "answer": "Unconscious trauma patient"
+  },
+  {
+    "question": "What is the term for unlawful touching of a patient without consent?",
+    "choices": [
+      "Battery",
+      "Assault",
+      "Negligence",
+      "Abandonment"
+    ],
+    "answer": "Battery"
+  },
+  {
+    "question": "What should you do if a patient refuses care?",
+    "choices": [
+      "Leave immediately",
+      "Call police",
+      "Force treatment",
+      "Explain risks and document refusal"
+    ],
+    "answer": "Explain risks and document refusal"
+  },
+  {
+    "question": "What is the legal term for terminating care without transfer?",
+    "choices": [
+      "Malpractice",
+      "Negligence",
+      "Battery",
+      "Abandonment"
+    ],
+    "answer": "Abandonment"
+  },
+  {
+    "question": "Which organ is responsible for pumping blood throughout the body?",
+    "choices": [
+      "Lungs",
+      "Heart",
+      "Liver",
+      "Kidney"
+    ],
+    "answer": "Heart"
+  },
+  {
+    "question": "Which body system includes the brain and spinal cord?",
+    "choices": [
+      "Digestive system",
+      "Respiratory system",
+      "Nervous system",
+      "Endocrine system"
+    ],
+    "answer": "Nervous system"
+  },
+  {
+    "question": "Which system is responsible for gas exchange?",
+    "choices": [
+      "Urinary system",
+      "Respiratory system",
+      "Nervous system",
+      "Digestive system"
+    ],
+    "answer": "Respiratory system"
+  },
+  {
+    "question": "Which organ is part of the digestive system?",
+    "choices": [
+      "Heart",
+      "Trachea",
+      "Stomach",
+      "Larynx"
+    ],
+    "answer": "Stomach"
+  },
+  {
+    "question": "Which bones protect the brain?",
+    "choices": [
+      "Spinal vertebrae",
+      "Pelvis",
+      "Ribs",
+      "Cranial bones"
+    ],
+    "answer": "Cranial bones"
+  },
+  {
+    "question": "What is the function of alveoli in the lungs?",
+    "choices": [
+      "Sound production",
+      "Protect against infection",
+      "Gas exchange",
+      "Air filtration"
+    ],
+    "answer": "Gas exchange"
+  },
+  {
+    "question": "What vessel carries oxygenated blood from the lungs to the heart?",
+    "choices": [
+      "Pulmonary vein",
+      "Vena cava",
+      "Aorta",
+      "Pulmonary artery"
+    ],
+    "answer": "Pulmonary vein"
+  },
+  {
+    "question": "Which part of the heart pumps blood to the body?",
+    "choices": [
+      "Left atrium",
+      "Right atrium",
+      "Right ventricle",
+      "Left ventricle"
+    ],
+    "answer": "Left ventricle"
+  },
+  {
+    "question": "Which blood cells help fight infection?",
+    "choices": [
+      "Red blood cells",
+      "Platelets",
+      "Plasma",
+      "White blood cells"
+    ],
+    "answer": "White blood cells"
+  },
+  {
+    "question": "Which structure prevents food from entering the airway?",
+    "choices": [
+      "Larynx",
+      "Trachea",
+      "Epiglottis",
+      "Esophagus"
+    ],
+    "answer": "Epiglottis"
+  },
+  {
+    "question": "The prefix 'tachy-' means:",
+    "choices": [
+      "Slow",
+      "Large",
+      "Pain",
+      "Fast"
+    ],
+    "answer": "Fast"
+  },
+  {
+    "question": "The suffix '-itis' refers to:",
+    "choices": [
+      "Condition",
+      "Pain",
+      "Infection",
+      "Inflammation"
+    ],
+    "answer": "Inflammation"
+  },
+  {
+    "question": "The term 'hypoglycemia' means:",
+    "choices": [
+      "High calcium",
+      "Low blood sugar",
+      "Low oxygen",
+      "High blood sugar"
+    ],
+    "answer": "Low blood sugar"
+  },
+  {
+    "question": "The prefix 'brady-' means:",
+    "choices": [
+      "Below",
+      "Fast",
+      "Slow",
+      "Above"
+    ],
+    "answer": "Slow"
+  },
+  {
+    "question": "The root word 'cardio' refers to:",
+    "choices": [
+      "Heart",
+      "Brain",
+      "Liver",
+      "Lungs"
+    ],
+    "answer": "Heart"
+  },
+  {
+    "question": "Which of the following is a common early sign of shock?",
+    "choices": [
+      "Hypertension",
+      "Flushed skin",
+      "Bradycardia",
+      "Tachycardia"
+    ],
+    "answer": "Tachycardia"
+  },
+  {
+    "question": "What type of shock results from fluid loss?",
+    "choices": [
+      "Obstructive shock",
+      "Distributive shock",
+      "Cardiogenic shock",
+      "Hypovolemic shock"
+    ],
+    "answer": "Hypovolemic shock"
+  },
+  {
+    "question": "Which condition is most likely to lead to cardiogenic shock?",
+    "choices": [
+      "Asthma",
+      "Seizure",
+      "Heart attack",
+      "Stroke"
+    ],
+    "answer": "Heart attack"
+  },
+  {
+    "question": "What is a late sign of shock?",
+    "choices": [
+      "Drop in blood pressure",
+      "Pale skin",
+      "Anxiety",
+      "Increased pulse"
+    ],
+    "answer": "Drop in blood pressure"
+  },
+  {
+    "question": "Which organ is most sensitive to inadequate perfusion?",
+    "choices": [
+      "Brain",
+      "Skin",
+      "Stomach",
+      "Liver"
+    ],
+    "answer": "Brain"
+  },
+  {
+    "question": "Which age group is most likely to have separation anxiety during assessment?",
+    "choices": [
+      "Toddlers",
+      "Adolescents",
+      "Adults",
+      "Neonates"
+    ],
+    "answer": "Toddlers"
+  },
+  {
+    "question": "How should you communicate with an elderly patient who is hard of hearing?",
+    "choices": [
+      "Speak clearly and slowly",
+      "Raise your voice and speak quickly",
+      "Use medical jargon",
+      "Ignore their hearing difficulty"
+    ],
+    "answer": "Speak clearly and slowly"
+  },
+  {
+    "question": "Which age group is most likely to underreport pain?",
+    "choices": [
+      "Geriatric patients",
+      "Teens",
+      "Infants",
+      "Adults"
+    ],
+    "answer": "Geriatric patients"
+  },
+  {
+    "question": "Which is a normal heart rate for a neonate?",
+    "choices": [
+      "60\u2013100 bpm",
+      "160\u2013200 bpm",
+      "120\u2013160 bpm",
+      "100\u2013120 bpm"
+    ],
+    "answer": "120\u2013160 bpm"
+  },
+  {
+    "question": "Which age group commonly presents with nonspecific symptoms in serious illness?",
+    "choices": [
+      "Adults",
+      "Geriatrics",
+      "Teens",
+      "Infants"
+    ],
+    "answer": "Geriatrics"
+  },
+  {
+    "question": "Which action represents EMS involvement in public health?",
+    "choices": [
+      "Waiting for hospital orders",
+      "Treating only emergency calls",
+      "Providing vaccinations at community events",
+      "Filing insurance claims"
+    ],
+    "answer": "Providing vaccinations at community events"
+  },
+  {
+    "question": "What is one goal of community paramedicine?",
+    "choices": [
+      "Transport all patients",
+      "Increase 911 calls",
+      "Focus only on trauma",
+      "Prevent hospital readmissions"
+    ],
+    "answer": "Prevent hospital readmissions"
+  },
+  {
+    "question": "Which is a benefit of EMS data collection?",
+    "choices": [
+      "Eliminates all errors",
+      "Improves public health planning",
+      "Reduces scene time",
+      "Shortens hospital stays"
+    ],
+    "answer": "Improves public health planning"
+  },
+  {
+    "question": "How can EMS help during a disease outbreak?",
+    "choices": [
+      "Assist with screening and education",
+      "Treat only trauma",
+      "Transport without PPE",
+      "Avoid public interaction"
+    ],
+    "answer": "Assist with screening and education"
+  },
+  {
+    "question": "What does public health emphasize?",
+    "choices": [
+      "Prevention and wellness",
+      "Private treatment",
+      "Emergency only",
+      "Long-term care"
+    ],
+    "answer": "Prevention and wellness"
+  },
+  {
+    "question": "Which medication is commonly administered for hypoglycemia?",
+    "choices": [
+      "Oral glucose",
+      "Epinephrine",
+      "Nitroglycerin",
+      "Aspirin"
+    ],
+    "answer": "Oral glucose"
+  },
+  {
+    "question": "Which medication is used for anaphylaxis?",
+    "choices": [
+      "Nitroglycerin",
+      "Aspirin",
+      "Albuterol",
+      "Epinephrine auto-injector"
+    ],
+    "answer": "Epinephrine auto-injector"
+  },
+  {
+    "question": "Which medication dilates the coronary arteries?",
+    "choices": [
+      "Naloxone",
+      "Oral glucose",
+      "Nitroglycerin",
+      "Epinephrine"
+    ],
+    "answer": "Nitroglycerin"
+  },
+  {
+    "question": "Which medication reverses opioid overdose?",
+    "choices": [
+      "Naloxone",
+      "Aspirin",
+      "Glucose",
+      "Albuterol"
+    ],
+    "answer": "Naloxone"
+  },
+  {
+    "question": "Which medication is indicated for chest pain of suspected cardiac origin?",
+    "choices": [
+      "Aspirin",
+      "Albuterol",
+      "Epinephrine",
+      "Oral glucose"
+    ],
+    "answer": "Aspirin"
+  },
+  {
+    "question": "What is the most appropriate airway adjunct for an unconscious patient without a gag reflex?",
+    "choices": [
+      "CPAP",
+      "Nasopharyngeal airway",
+      "Endotracheal tube",
+      "Oropharyngeal airway"
+    ],
+    "answer": "Oropharyngeal airway"
+  },
+  {
+    "question": "What is the best method to open the airway of a trauma patient?",
+    "choices": [
+      "Chin push",
+      "Head-tilt chin-lift",
+      "Cricoid pressure",
+      "Jaw-thrust maneuver"
+    ],
+    "answer": "Jaw-thrust maneuver"
+  },
+  {
+    "question": "Which device provides the highest concentration of oxygen?",
+    "choices": [
+      "Simple face mask",
+      "Nasal cannula",
+      "Bag-valve mask with reservoir",
+      "Venturi mask"
+    ],
+    "answer": "Bag-valve mask with reservoir"
+  },
+  {
+    "question": "What is the purpose of suctioning?",
+    "choices": [
+      "Deliver oxygen",
+      "Monitor airway pressure",
+      "Remove secretions and prevent aspiration",
+      "Warm inhaled air"
+    ],
+    "answer": "Remove secretions and prevent aspiration"
+  },
+  {
+    "question": "What indicates adequate artificial ventilation?",
+    "choices": [
+      "Decreased skin turgor",
+      "Increased heart rate",
+      "Visible chest rise and fall",
+      "Dry mucous membranes"
+    ],
+    "answer": "Visible chest rise and fall"
+  },
+  {
+    "question": "What does the 'P' in AVPU stand for?",
+    "choices": [
+      "Pulse",
+      "Pale",
+      "Pain",
+      "Peripheral"
+    ],
+    "answer": "Pain"
+  },
+  {
+    "question": "What is the first step in the primary assessment?",
+    "choices": [
+      "Form general impression",
+      "Take vitals",
+      "Assess SAMPLE history",
+      "Begin CPR"
+    ],
+    "answer": "Form general impression"
+  },
+  {
+    "question": "Which mnemonic helps assess a patient\u2019s chief complaint?",
+    "choices": [
+      "SAMPLE",
+      "DCAP-BTLS",
+      "OPQRST",
+      "AVPU"
+    ],
+    "answer": "OPQRST"
+  },
+  {
+    "question": "What does the 'L' in SAMPLE stand for?",
+    "choices": [
+      "Location",
+      "Level of pain",
+      "Last oral intake",
+      "Laceration"
+    ],
+    "answer": "Last oral intake"
+  },
+  {
+    "question": "What is a key part of the secondary assessment?",
+    "choices": [
+      "Performing a focused physical exam",
+      "Asking insurance information",
+      "Checking oxygen tank",
+      "Calling for ALS backup"
+    ],
+    "answer": "Performing a focused physical exam"
+  },
+  {
+    "question": "Which condition is characterized by wheezing and bronchoconstriction?",
+    "choices": [
+      "Seizure",
+      "CHF",
+      "Stroke",
+      "Asthma"
+    ],
+    "answer": "Asthma"
+  },
+  {
+    "question": "Which condition may present with crushing chest pain and diaphoresis?",
+    "choices": [
+      "Pneumonia",
+      "Asthma",
+      "Anxiety attack",
+      "Myocardial infarction"
+    ],
+    "answer": "Myocardial infarction"
+  },
+  {
+    "question": "What is a typical sign of congestive heart failure (CHF)?",
+    "choices": [
+      "Hives",
+      "Seizure",
+      "Pulmonary edema",
+      "JVD"
+    ],
+    "answer": "Pulmonary edema"
+  },
+  {
+    "question": "Which patient is most likely experiencing a transient ischemic attack (TIA)?",
+    "choices": [
+      "Severe headache and vomiting",
+      "Chest pain and diaphoresis",
+      "Symptoms resolve within 24 hours",
+      "Persistent right-side weakness"
+    ],
+    "answer": "Symptoms resolve within 24 hours"
+  },
+  {
+    "question": "Which condition is treated with albuterol?",
+    "choices": [
+      "Stroke",
+      "Seizure",
+      "Hypoglycemia",
+      "Bronchospasm"
+    ],
+    "answer": "Bronchospasm"
+  },
+  {
+    "question": "What is the compression rate for adult CPR?",
+    "choices": [
+      "80\u2013100",
+      "60\u201380",
+      "100\u2013120 compressions per minute",
+      "120\u2013140"
+    ],
+    "answer": "100\u2013120 compressions per minute"
+  },
+  {
+    "question": "How deep should compressions be on an adult?",
+    "choices": [
+      "Less than 1 inch",
+      "2.5 inches",
+      "At least 2 inches",
+      "1 inch"
+    ],
+    "answer": "At least 2 inches"
+  },
+  {
+    "question": "When should the AED be applied to a pulseless patient?",
+    "choices": [
+      "After airway is secured",
+      "After 5 cycles",
+      "As soon as it is available",
+      "After 2 minutes of CPR"
+    ],
+    "answer": "As soon as it is available"
+  },
+  {
+    "question": "Which rhythm is shockable by an AED?",
+    "choices": [
+      "Ventricular fibrillation",
+      "Asystole",
+      "Normal sinus rhythm",
+      "First-degree AV block"
+    ],
+    "answer": "Ventricular fibrillation"
+  },
+  {
+    "question": "What is the ratio of compressions to ventilations in two-rescuer adult CPR?",
+    "choices": [
+      "5:1",
+      "20:2",
+      "30:2",
+      "15:2"
+    ],
+    "answer": "30:2"
+  },
+  {
+    "question": "What is the first step in controlling external bleeding?",
+    "choices": [
+      "Apply direct pressure",
+      "Use a tourniquet",
+      "Elevate the limb",
+      "Apply cold packs"
+    ],
+    "answer": "Apply direct pressure"
+  },
+  {
+    "question": "Which type of bleed is most likely arterial?",
+    "choices": [
+      "Bright red and spurting",
+      "Dark red and oozing",
+      "No visible bleeding",
+      "Steady flow"
+    ],
+    "answer": "Bright red and spurting"
+  },
+  {
+    "question": "A burn that blisters is classified as:",
+    "choices": [
+      "Deep-tissue",
+      "Full-thickness",
+      "Partial-thickness",
+      "Superficial"
+    ],
+    "answer": "Partial-thickness"
+  },
+  {
+    "question": "Which sign suggests internal bleeding?",
+    "choices": [
+      "Rigid, distended abdomen",
+      "Bradycardia",
+      "Low oxygen saturation",
+      "Red skin"
+    ],
+    "answer": "Rigid, distended abdomen"
+  },
+  {
+    "question": "What is the best method to control bleeding from a leg amputation?",
+    "choices": [
+      "Cold compress",
+      "Tourniquet",
+      "Elevation",
+      "Direct pressure only"
+    ],
+    "answer": "Tourniquet"
+  },
+  {
+    "question": "What is the first step in assisting with a normal delivery?",
+    "choices": [
+      "Support the head as it emerges",
+      "Pull the baby out",
+      "Deliver the placenta",
+      "Clamp the cord"
+    ],
+    "answer": "Support the head as it emerges"
+  },
+  {
+    "question": "What does APGAR assess in a newborn?",
+    "choices": [
+      "Airway, Pulse, Gag reflex, Activity, Reflexes",
+      "Alertness, Position, Gait, Activity, Response",
+      "Appearance, Position, Grunt, Agitation, Reflex",
+      "Appearance, Pulse, Grimace, Activity, Respirations"
+    ],
+    "answer": "Appearance, Pulse, Grimace, Activity, Respirations"
+  },
+  {
+    "question": "What is the most common cause of cardiac arrest in pediatric patients?",
+    "choices": [
+      "Seizure",
+      "Fever",
+      "Respiratory failure",
+      "Heart attack"
+    ],
+    "answer": "Respiratory failure"
+  },
+  {
+    "question": "How should an EMT assess a child\u2019s airway?",
+    "choices": [
+      "Hyperextend the neck",
+      "Insert an OPA immediately",
+      "Use a jaw thrust on all pediatric patients",
+      "Use a head tilt\u2013chin lift unless trauma suspected"
+    ],
+    "answer": "Use a head tilt\u2013chin lift unless trauma suspected"
+  },
+  {
+    "question": "What is a sign of respiratory distress in infants?",
+    "choices": [
+      "Bradycardia",
+      "Decreased level of consciousness",
+      "Cool skin",
+      "Nasal flaring"
+    ],
+    "answer": "Nasal flaring"
+  },
+  {
+    "question": "What is the purpose of the START triage system?",
+    "choices": [
+      "Evacuate non-ambulatory patients",
+      "Sort patients by severity",
+      "Transport first arrivals",
+      "Treat all patients the same"
+    ],
+    "answer": "Sort patients by severity"
+  },
+  {
+    "question": "What color tag is assigned to patients who are deceased in triage?",
+    "choices": [
+      "Red",
+      "Green",
+      "Yellow",
+      "Black"
+    ],
+    "answer": "Black"
+  },
+  {
+    "question": "Which of the following best describes the role of the EMT at a crime scene?",
+    "choices": [
+      "Take photos of the scene",
+      "Interview witnesses",
+      "Avoid disturbing evidence while providing care",
+      "Collect evidence for police"
+    ],
+    "answer": "Avoid disturbing evidence while providing care"
+  },
+  {
+    "question": "When driving an ambulance with lights and sirens, what must EMTs still do?",
+    "choices": [
+      "Follow all traffic laws with due regard",
+      "Drive at any speed",
+      "Ignore traffic signals",
+      "Pass on the shoulder at will"
+    ],
+    "answer": "Follow all traffic laws with due regard"
+  },
+  {
+    "question": "What is a primary goal of incident command at an MCI?",
+    "choices": [
+      "Establish control and coordination",
+      "Perform surgery",
+      "Load all patients rapidly",
+      "Avoid documentation"
+    ],
+    "answer": "Establish control and coordination"
+  },
+  {
+    "question": "A 56-year-old male with a history of angina is complaining of chest discomfort. His vital signs are BP 124/82, HR 96, RR 18, and SpO\u2082 95%. What should you do first?",
+    "choices": [
+      "Administer nitroglycerin",
+      "Apply oxygen via non-rebreather",
+      "Assist the patient with his prescribed nitroglycerin",
+      "Obtain a detailed SAMPLE history"
+    ],
+    "answer": "Obtain a detailed SAMPLE history",
+    "reason": "The patient is stable and has a normal oxygen saturation. The first step should be assessment and history gathering before administering medications."
+  },
+  {
+    "question": "You arrive to find a 67-year-old man slumped over the wheel of his car. He is unresponsive, breathing at 8 breaths per minute, and has a carotid pulse. What should you do?",
+    "choices": [
+      "Begin chest compressions",
+      "Deliver oxygen via nasal cannula",
+      "Ventilate with BVM at 10\u201312/min",
+      "Wait for ALS before intervening"
+    ],
+    "answer": "Ventilate with BVM at 10\u201312/min",
+    "reason": "Inadequate respiratory rate requires immediate assisted ventilations with a bag-valve mask (BVM)."
+  },
+  {
+    "question": "Which of the following findings most clearly indicates that a patient is in compensated shock?",
+    "choices": [
+      "Slow capillary refill and bradycardia",
+      "Cool skin, restlessness, and tachycardia",
+      "Cyanosis and absent radial pulse",
+      "Irregular breathing with dilated pupils"
+    ],
+    "answer": "Cool skin, restlessness, and tachycardia",
+    "reason": "These are signs that the body is still compensating to maintain perfusion despite the onset of shock."
+  },
+  {
+    "question": "A construction worker falls from a ladder and is found lying supine. He is conscious and complaining of back pain. What is your first priority?",
+    "choices": [
+      "Log-roll the patient onto the stretcher",
+      "Assess vital signs",
+      "Perform a rapid trauma exam",
+      "Manually stabilize the cervical spine"
+    ],
+    "answer": "Manually stabilize the cervical spine",
+    "reason": "In trauma with suspected spinal injury, immediate manual stabilization of the spine is critical to prevent further injury."
+  },
+  {
+    "question": "Which of the following is the most appropriate action when assisting ventilations with a BVM in an adult patient?",
+    "choices": [
+      "Ventilate once every 3 seconds",
+      "Deliver large tidal volumes to ensure chest rise",
+      "Ensure a tight mask seal with two hands",
+      "Use 6 L/min oxygen to conserve tank usage"
+    ],
+    "answer": "Ensure a tight mask seal with two hands",
+    "reason": "A good seal is essential for effective ventilation and delivery of oxygen."
+  },
+  {
+    "question": "What is the primary reason EMTs administer aspirin to a patient with chest pain?",
+    "choices": [
+      "To lower blood pressure",
+      "To relieve pain",
+      "To reduce fever",
+      "To inhibit blood clotting"
+    ],
+    "answer": "To inhibit blood clotting"
+  },
+  {
+    "question": "Which of the following is a contraindication for aspirin administration?",
+    "choices": [
+      "Chest discomfort",
+      "Known allergy to aspirin",
+      "History of hypertension",
+      "Age over 40"
+    ],
+    "answer": "Known allergy to aspirin"
+  },
+  {
+    "question": "What is the typical dose of aspirin administered by EMTs for chest pain?",
+    "choices": [
+      "81 mg total",
+      "325 mg total",
+      "400 mg total",
+      "1,000 mg total"
+    ],
+    "answer": "325 mg total"
+  },
+  {
+    "question": "Aspirin is most beneficial during a suspected heart attack because it:",
+    "choices": [
+      "Relaxes chest muscles",
+      "Improves oxygen delivery",
+      "Prevents clot growth",
+      "Stops chest pain immediately"
+    ],
+    "answer": "Prevents clot growth"
+  },
+  {
+    "question": "Under what condition can an EMT assist a patient with nitroglycerin?",
+    "choices": [
+      "The patient has chest trauma",
+      "The patient has a prescription and systolic BP > 100 mmHg",
+      "The patient is unconscious",
+      "The EMT carries nitroglycerin"
+    ],
+    "answer": "The patient has a prescription and systolic BP > 100 mmHg"
+  },
+  {
+    "question": "What is the typical route of nitroglycerin administration?",
+    "choices": [
+      "Intramuscular",
+      "Oral",
+      "Sublingual",
+      "Intravenous"
+    ],
+    "answer": "Sublingual"
+  },
+  {
+    "question": "Which condition is a contraindication to assisting with nitroglycerin?",
+    "choices": [
+      "Chest pain radiating to the jaw",
+      "Use of erectile dysfunction medications within 48 hours",
+      "History of angina",
+      "Mild headache"
+    ],
+    "answer": "Use of erectile dysfunction medications within 48 hours"
+  },
+  {
+    "question": "How does nitroglycerin help patients with chest pain?",
+    "choices": [
+      "It increases heart rate",
+      "It decreases respiratory rate",
+      "It dilates blood vessels to improve blood flow",
+      "It constricts coronary arteries"
+    ],
+    "answer": "It dilates blood vessels to improve blood flow"
+  },
+  {
+    "question": "What is the primary action of albuterol when used for a respiratory emergency?",
+    "choices": [
+      "Reduces mucus secretion",
+      "Suppresses cough reflex",
+      "Dilates the bronchioles",
+      "Decreases respiratory rate"
+    ],
+    "answer": "Dilates the bronchioles"
+  },
+  {
+    "question": "Which patient condition is an indication for albuterol use?",
+    "choices": [
+      "Chest trauma",
+      "Wheezing and shortness of breath",
+      "Bradycardia",
+      "Nasal congestion"
+    ],
+    "answer": "Wheezing and shortness of breath"
+  },
+  {
+    "question": "What is a common side effect of albuterol?",
+    "choices": [
+      "Slow heart rate",
+      "Drowsiness",
+      "Shakiness and increased heart rate",
+      "Low blood sugar"
+    ],
+    "answer": "Shakiness and increased heart rate"
+  },
+  {
+    "question": "EMTs may assist with albuterol if:",
+    "choices": [
+      "The patient is unresponsive",
+      "They have verbal orders from medical control",
+      "The patient has their own prescribed inhaler",
+      "They carry a department-issued inhaler"
+    ],
+    "answer": "The patient has their own prescribed inhaler"
+  },
+  {
+    "question": "What is the main effect of epinephrine during anaphylaxis?",
+    "choices": [
+      "Promotes digestion",
+      "Constricts airways",
+      "Relaxes smooth muscles and opens airways",
+      "Slows the heart rate"
+    ],
+    "answer": "Relaxes smooth muscles and opens airways"
+  },
+  {
+    "question": "When should epinephrine be administered by EMTs?",
+    "choices": [
+      "For mild allergic reactions",
+      "Only after contacting the ER",
+      "When signs of severe allergic reaction are present",
+      "Only for patients with asthma"
+    ],
+    "answer": "When signs of severe allergic reaction are present"
+  },
+  {
+    "question": "What is the most common route of administration for EMTs giving epinephrine?",
+    "choices": [
+      "Oral",
+      "Intranasal",
+      "Intramuscular (auto-injector)",
+      "Sublingual"
+    ],
+    "answer": "Intramuscular (auto-injector)"
+  },
+  {
+    "question": "What is a possible side effect of epinephrine?",
+    "choices": [
+      "Bradycardia",
+      "Low blood pressure",
+      "Anxiety and rapid heartbeat",
+      "Sedation"
+    ],
+    "answer": "Anxiety and rapid heartbeat"
+  }
+]

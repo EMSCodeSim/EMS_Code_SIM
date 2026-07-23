@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Daily EMS Sim | EMS Assessment Practice</title>
+  <link rel="canonical" href="https://emscodesim.com/quiz/daily_sim.html" />
+  <meta name="description" content="Open daily EMS simulation practice tools for vitals, assessment, and patient care review." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0f14; --panel:#101826; --text:#eaf2ff; --muted:#b6c2ff;
+      --edge:rgba(255,255,255,.12); --shadow:0 10px 30px rgba(0,0,0,.35);
+      --btn:linear-gradient(135deg,#06b6d4,#6366f1);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#0b0f14; color:var(--text);}
+    .wrap{max-width:900px; margin:0 auto; padding:clamp(16px,3.5vw,32px)}
+    header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px}
+    .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--text)}
+    .logo{width:40px; height:40px; border-radius:12px; overflow:hidden; border:1px solid var(--edge); display:grid; place-items:center; box-shadow:var(--shadow)}
+    .logo img{width:100%; height:100%; object-fit:cover}
+    .title{line-height:1.1}
+    .title b{font-size:18px}
+    .tiny{font-size:12px; opacity:.75}
+
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid var(--edge); border-radius:18px; box-shadow:var(--shadow);}
+    .hero{padding:14px 16px; display:grid; grid-template-columns: 1fr; gap:8px}
+    .simName{font-size:16px; font-weight:800; letter-spacing:.2px}
+    .howto{font-size:14px; color:#c7d2fe}
+    .rule{font-size:12px; color:#a5b4fc}
+
+    .frameWrap{margin-top:12px; height:72vh; min-height:440px}
+    iframe{width:100%; height:100%; border:0; border-radius:18px; background:#0b0f14}
+    .fallback{padding:16px}
+    .fallback a{display:inline-block; margin-top:8px; padding:10px 12px; border-radius:12px; text-decoration:none; color:white; border:1px solid rgba(255,255,255,.16); background:var(--btn)}
+    footer{margin:18px 0 8px; text-align:center; color:#cbd5e1; font-size:14px}
+    footer a{color:#93c5fd; text-decoration:none; border-bottom:1px dashed rgba(147,197,253,.5)}
+    footer a:hover{border-bottom-color:transparent}
+  </style>
+
+  <!-- Optional: GA (uses your site’s existing property if present) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-19DVN7NNH7"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date()); gtag('config', 'G-19DVN7NNH7');
+  </script>
+
+  <script>
+    // --- CONFIG: Your daily sims (corrected paths) ---
+    const SIMS = [
+      {
+        slug:'bp',
+        title:'Blood Pressure Simulator',
+        url:'/vitals/bp.html',
+        icon:'🩺',
+        howto:'Pump the cuff, then slowly deflate. Watch/listen for Korotkoff sounds to capture systolic/diastolic.'
+      },
+      {
+        slug:'pulse',
+        title:'Pulse Trainer',
+        url:'/vitals/pulse.html',
+        icon:'💓',
+        howto:'Palpate radial/carotid, count beats for the interval, multiply as directed to get rate. Note rhythm and quality.'
+      },
+      {
+        slug:'pupil',
+        title:'Pupil / PERL',
+        url:'/vitals/pupil.html',
+        icon:'👁️',
+        howto:'Adjust size/reactivity and compare left vs right. Practice documenting PERL, anisocoria, and reactivity.'
+      },
+      {
+        slug:'stroke',
+        title:'Stroke (BE-FAST)',
+        url:'/vitals/stroke.html',
+        icon:'🧠',
+        howto:'Run BE-FAST checks (Balance, Eyes, Face, Arms, Speech, Time). Identify deficits and set LKW.'
+      },
+      {
+        slug:'nines',
+        title:'Rule of Nines',
+        url:'/vitals/nines.html',
+        icon:'🔥',
+        howto:'Estimate %TBSA with adult/peds charts for burn triage and fluid planning.'
+      }
+    ];
+
+    // Utilities
+    function formatDateTZ(tz='America/Denver'){
+      const now = new Date();
+      const parts = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year:'numeric', month:'2-digit', day:'2-digit' }).formatToParts(now);
+      const y = parts.find(p=>p.type==='year').value;
+      const m = parts.find(p=>p.type==='month').value;
+      const d = parts.find(p=>p.type==='day').value;
+      return `${y}-${m}-${d}`; // YYYY-MM-DD
+    }
+    function dayOfYearInTZ(tz='America/Denver'){
+      const todayStr = formatDateTZ(tz);
+      const y = todayStr.slice(0,4);
+      // Using -07:00 keeps date correct for DOY purposes; DOY value is all we need
+      const today = new Date(`${todayStr}T00:00:00-07:00`);
+      const jan1 = new Date(`${y}-01-01T00:00:00-07:00`);
+      return Math.floor((today - jan1)/86400000) + 1;
+    }
+
+    // One-sim-per-day enforcement (client-side)
+    function selectTodaysSim(){
+      const tz = 'America/Denver';
+      const today = formatDateTZ(tz);
+      const storedDate = localStorage.getItem('dsim_date');
+      const storedSlug = localStorage.getItem('dsim_slug');
+
+      // If already chosen today, stick with it (prevents changing sims via hacks/old code)
+      if (storedDate === today && storedSlug){
+        const found = SIMS.find(s=>s.slug === storedSlug) || SIMS[0];
+        return { sim: found, date: today, locked: true };
+      }
+
+      // Fresh selection by deterministic rotation
+      const enabled = SIMS; // all enabled
+      const doy = dayOfYearInTZ(tz);
+      const pick = enabled[doy % enabled.length];
+
+      // Persist today’s pick
+      localStorage.setItem('dsim_date', today);
+      localStorage.setItem('dsim_slug', pick.slug);
+
+      return { sim: pick, date: today, locked: false };
+    }
+
+    function loadSim(sim){
+      const nameEl = document.getElementById('simName');
+      const iconEl = document.getElementById('simIcon');
+      const howtoEl = document.getElementById('simHowTo');
+      const ruleEl = document.getElementById('ruleText');
+      const frameWrap = document.getElementById('frameWrap');
+
+      nameEl.textContent = sim.title;
+      iconEl.textContent = sim.icon;
+      howtoEl.textContent = sim.howto;
+      ruleEl.textContent = 'You can use one sim per day. This selection resets each new day (America/Denver).';
+
+      const iframe = document.createElement('iframe');
+      iframe.src = sim.url; // Correct paths without .html
+      iframe.loading = 'eager';
+      iframe.referrerPolicy = 'no-referrer';
+      iframe.allow = 'fullscreen; autoplay; clipboard-read; clipboard-write';
+
+      let loaded = false;
+      const timeout = setTimeout(()=>{
+        if(!loaded){
+          frameWrap.innerHTML = `
+            <div class="fallback">
+              <p><strong>Heads up:</strong> This sim can’t be embedded here. Open it directly:</p>
+              <p><a href="${sim.url}" target="_blank" rel="noopener">${sim.icon} Open ${sim.title}</a></p>
+            </div>`;
+        }
+      }, 3500);
+
+      iframe.onload = ()=>{ loaded = true; clearTimeout(timeout); };
+
+      frameWrap.innerHTML = '';
+      frameWrap.appendChild(iframe);
+
+      if(window.gtag){ gtag('event','daily_sim_load',{sim_slug:sim.slug, sim_title:sim.title}); }
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      // Disable any override via URL params; one per day only.
+      const { sim } = selectTodaysSim();
+      loadSim(sim);
+    });
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="/quiz/">
+        <div class="logo">
+          <!-- Swap to your actual icon path if different -->
+          <img src="/ems-logo.png" alt="Daily EMS Quiz icon"
+               onerror="this.replaceWith(Object.assign(document.createElement('div'),{textContent:'🩺',style:'font-size:20px'}))">
+        </div>
+        <div class="title">
+          <b>EMSCodeSim Daily Sim</b>
+          <div class="tiny">Loads a different mini-app each day</div>
+        </div>
+      </a>
+    </header>
+
+    <section class="card hero" aria-live="polite">
+      <div class="simName"><span id="simIcon">🧪</span> <span id="simName">Loading…</span></div>
+      <div id="simHowTo" class="howto">Preparing instructions…</div>
+      <div id="ruleText" class="rule"></div>
+    </section>
+
+    <section id="frameWrap" class="frameWrap card" aria-live="polite"></section>
+
+    <footer>
+      <div>&copy; 2026 EMSCodeSim Daily Quiz · Independent practice · Not affiliated with NREMT</div>
+      <div style="margin-top:8px">
+        <a href="/quiz/">Back to Daily Quiz</a> · <a href="/">EMSCodeSim Career Hub</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

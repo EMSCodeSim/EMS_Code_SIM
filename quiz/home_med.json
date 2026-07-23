@@ -1,0 +1,149 @@
+[
+  {
+    "Brand": "Lisinopril",
+    "Generic": "Lisinopril",
+    "Class": "ACE Inhibitor",
+    "Use": "Hypertension, CHF, Post-MI",
+    "EMS_Consideration": "May cause hypotension; assess BP and compliance"
+  },
+  {
+    "Brand": "Metoprolol",
+    "Generic": "Metoprolol",
+    "Class": "Beta Blocker",
+    "Use": "Hypertension, Tachycardia, CHF",
+    "EMS_Consideration": "Bradycardia, hypotension, masks hypoglycemia"
+  },
+  {
+    "Brand": "Lasix",
+    "Generic": "Furosemide",
+    "Class": "Loop Diuretic",
+    "Use": "CHF, Edema, Hypertension",
+    "EMS_Consideration": "Monitor for dehydration, electrolyte imbalance"
+  },
+  {
+    "Brand": "Coumadin",
+    "Generic": "Warfarin",
+    "Class": "Anticoagulant",
+    "Use": "AFib, DVT, PE prevention",
+    "EMS_Consideration": "Bleeding risk; check for bruising, recent INR"
+  },
+  {
+    "Brand": "Lipitor",
+    "Generic": "Atorvastatin",
+    "Class": "Statin",
+    "Use": "High cholesterol",
+    "EMS_Consideration": "Muscle pain may indicate rhabdo"
+  },
+  {
+    "Brand": "Synthroid",
+    "Generic": "Levothyroxine",
+    "Class": "Thyroid Hormone",
+    "Use": "Hypothyroidism",
+    "EMS_Consideration": "Look for signs of hypo/hyperthyroidism"
+  },
+  {
+    "Brand": "Plavix",
+    "Generic": "Clopidogrel",
+    "Class": "Antiplatelet",
+    "Use": "Post-stent, MI prevention",
+    "EMS_Consideration": "Increased bleeding risk"
+  },
+  {
+    "Brand": "Albuterol",
+    "Generic": "Albuterol",
+    "Class": "Beta-2 Agonist",
+    "Use": "Asthma, COPD",
+    "EMS_Consideration": "Tachycardia, tremors"
+  },
+  {
+    "Brand": "Advair",
+    "Generic": "Fluticasone/Salmeterol",
+    "Class": "Steroid/LABA",
+    "Use": "COPD, Asthma",
+    "EMS_Consideration": "Inhaled; monitor airway status"
+  },
+  {
+    "Brand": "Zoloft",
+    "Generic": "Sertraline",
+    "Class": "SSRI",
+    "Use": "Depression, Anxiety",
+    "EMS_Consideration": "Watch for serotonin syndrome"
+  },
+  {
+    "Brand": "Aspirin",
+    "Generic": "Aspirin",
+    "Class": "Antiplatelet/NSAID",
+    "Use": "Pain, MI prevention",
+    "EMS_Consideration": "GI bleeding, tinnitus at high doses"
+  },
+  {
+    "Brand": "Ativan",
+    "Generic": "Lorazepam",
+    "Class": "Benzodiazepine",
+    "Use": "Anxiety, Seizures",
+    "EMS_Consideration": "Respiratory depression risk"
+  },
+  {
+    "Brand": "Amiodarone",
+    "Generic": "Amiodarone",
+    "Class": "Antiarrhythmic",
+    "Use": "Ventricular arrhythmias",
+    "EMS_Consideration": "Prolonged QT, bradycardia"
+  },
+  {
+    "Brand": "Glucophage",
+    "Generic": "Metformin",
+    "Class": "Biguanide",
+    "Use": "Type 2 Diabetes",
+    "EMS_Consideration": "Lactic acidosis risk in sepsis"
+  },
+  {
+    "Brand": "Norvasc",
+    "Generic": "Amlodipine",
+    "Class": "Calcium Channel Blocker",
+    "Use": "Hypertension",
+    "EMS_Consideration": "Hypotension, dizziness"
+  },
+  {
+    "Brand": "Protonix",
+    "Generic": "Pantoprazole",
+    "Class": "PPI",
+    "Use": "GERD, ulcers",
+    "EMS_Consideration": "Few acute EMS concerns"
+  },
+  {
+    "Brand": "Xarelto",
+    "Generic": "Rivaroxaban",
+    "Class": "Anticoagulant",
+    "Use": "AFib, DVT/PE prevention",
+    "EMS_Consideration": "Bleeding risk; no reversal agent"
+  },
+  {
+    "Brand": "Zofran",
+    "Generic": "Ondansetron",
+    "Class": "Antiemetic",
+    "Use": "Nausea/vomiting",
+    "EMS_Consideration": "Watch for prolonged QT"
+  },
+  {
+    "Brand": "Tenormin",
+    "Generic": "Atenolol",
+    "Class": "Beta Blocker",
+    "Use": "Hypertension, Angina",
+    "EMS_Consideration": "Bradycardia, hypotension"
+  },
+  {
+    "Brand": "Spiriva",
+    "Generic": "Tiotropium",
+    "Class": "Anticholinergic",
+    "Use": "COPD",
+    "EMS_Consideration": "Dry mouth, not a rescue inhaler"
+  },
+  {
+    "Brand": "Atrovent",
+    "Generic": "Ipratropium",
+    "Class": "Anticholinergic",
+    "Use": "COPD, Asthma (with Albuterol)",
+    "EMS_Consideration": "Used in DuoNeb; monitor airway"
+  }
+]
