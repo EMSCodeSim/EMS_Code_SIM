@@ -1,0 +1,925 @@
+{
+  "title": "Offline EMS Reference Pack",
+  "version": "1.0",
+  "reviewed": "July 23, 2026",
+  "disclaimer": "Educational reference only. Protocols, scope, medication use, normal ranges, and equipment practices vary. Follow your agency, medical director, course, and current local protocols. Do not use this pack as the sole basis for patient care.",
+  "sections": [
+    {
+      "id": "medications",
+      "title": "EMS Medications",
+      "icon": "💊",
+      "items": [
+        {
+          "term": "Oxygen",
+          "summary": "Medical gas used to correct suspected or confirmed hypoxemia and support critically ill patients.",
+          "details": "Indications depend on patient condition and local protocol. Titrate when appropriate; avoid delaying ventilation or airway management.",
+          "remember": "Delivery device, flow, target saturation, response, fire risk."
+        },
+        {
+          "term": "Aspirin",
+          "summary": "Antiplatelet medication commonly used for suspected acute coronary syndrome.",
+          "details": "Confirm indications and contraindications; consider allergy, active bleeding, and local protocol.",
+          "remember": "Chewable form, reassessment, bleeding risk."
+        },
+        {
+          "term": "Nitroglycerin",
+          "summary": "Vasodilator used in selected chest-pain and pulmonary-edema patients.",
+          "details": "Check blood pressure, prescribed use when applicable, recent PDE-5 inhibitor use, and protocol.",
+          "remember": "Hypotension, headache, repeat BP, symptom response."
+        },
+        {
+          "term": "Albuterol",
+          "summary": "Short-acting bronchodilator for bronchospasm.",
+          "details": "Assess breath sounds, work of breathing, heart rate, and ability to use the delivery device.",
+          "remember": "Tremor, tachycardia, response to treatment."
+        },
+        {
+          "term": "Ipratropium",
+          "summary": "Anticholinergic bronchodilator often paired with albuterol in obstructive airway disease.",
+          "details": "Used according to local protocol, commonly for asthma or COPD exacerbation.",
+          "remember": "Dry mouth, delivery method, reassessment."
+        },
+        {
+          "term": "Epinephrine auto-injector",
+          "summary": "Adrenergic medication used for severe allergic reactions and anaphylaxis.",
+          "details": "Recognize airway swelling, breathing difficulty, shock, or rapidly progressing symptoms.",
+          "remember": "Correct device/site, immediate transport, repeat assessment."
+        },
+        {
+          "term": "Naloxone",
+          "summary": "Opioid antagonist used when opioid toxicity causes respiratory depression.",
+          "details": "Ventilation remains the priority. Use according to protocol and reassess for recurrent respiratory depression.",
+          "remember": "Airway, breathing, withdrawal, scene safety."
+        },
+        {
+          "term": "Oral glucose",
+          "summary": "Carbohydrate gel or paste used for selected conscious patients with suspected hypoglycemia.",
+          "details": "Patient must be able to protect the airway and swallow. Follow glucose assessment and protocol.",
+          "remember": "Aspiration risk, repeat glucose, symptom response."
+        },
+        {
+          "term": "Glucagon",
+          "summary": "Hormone used for selected severe hypoglycemia when oral glucose is unsafe or ineffective.",
+          "details": "Scope and route vary. Reassess airway, mental status, and glucose.",
+          "remember": "Nausea/vomiting, delayed response, recovery position."
+        },
+        {
+          "term": "Dextrose",
+          "summary": "Intravenous glucose used by appropriately credentialed clinicians for hypoglycemia.",
+          "details": "Concentration and route vary by protocol. Confirm IV patency and reassess glucose.",
+          "remember": "Extravasation, hyperglycemia, repeat assessment."
+        },
+        {
+          "term": "Ondansetron",
+          "summary": "Antiemetic used for nausea and vomiting.",
+          "details": "Consider causes of vomiting, QT-risk factors, and local protocol.",
+          "remember": "Route, response, ongoing hydration/transport needs."
+        },
+        {
+          "term": "Acetaminophen",
+          "summary": "Analgesic and antipyretic used in selected systems.",
+          "details": "Check total recent intake, liver risk, age/weight requirements, and protocol.",
+          "remember": "Duplicate products, maximum daily exposure."
+        },
+        {
+          "term": "Ibuprofen",
+          "summary": "NSAID used for pain or fever in selected systems.",
+          "details": "Consider allergy, bleeding, kidney disease, pregnancy, and age restrictions.",
+          "remember": "GI upset, hydration status, duplicate NSAID use."
+        },
+        {
+          "term": "Diphenhydramine",
+          "summary": "Antihistamine used in selected allergic reactions.",
+          "details": "It does not replace epinephrine in anaphylaxis. Scope and route vary.",
+          "remember": "Sedation, anticholinergic effects, airway monitoring."
+        },
+        {
+          "term": "Activated charcoal",
+          "summary": "Adsorbent used rarely for selected ingestions under medical direction.",
+          "details": "Not for caustics, hydrocarbons, altered patients without protected airway, or many other exposures.",
+          "remember": "Poison-center/medical-control direction, aspiration risk."
+        },
+        {
+          "term": "Normal saline",
+          "summary": "Isotonic crystalloid used for vascular access, medication delivery, and selected volume needs.",
+          "details": "Amount and indication vary by patient and protocol.",
+          "remember": "Lung sounds, perfusion, reassessment, fluid overload."
+        },
+        {
+          "term": "Lactated Ringer’s",
+          "summary": "Balanced crystalloid used in selected systems for fluid replacement.",
+          "details": "Follow protocol and consider patient condition and compatibility.",
+          "remember": "Perfusion, lung sounds, reassessment."
+        },
+        {
+          "term": "Epinephrine 1 mg/mL",
+          "summary": "Concentrated epinephrine formulation used for selected IM indications by authorized clinicians.",
+          "details": "Concentration errors are dangerous. Verify indication, route, and formulation.",
+          "remember": "Read label aloud, cross-check concentration."
+        },
+        {
+          "term": "Epinephrine 0.1 mg/mL",
+          "summary": "Dilute epinephrine formulation used for selected resuscitation indications by authorized clinicians.",
+          "details": "Do not confuse with 1 mg/mL. Follow resuscitation protocol.",
+          "remember": "Concentration, route, timing, documentation."
+        },
+        {
+          "term": "Amiodarone",
+          "summary": "Antiarrhythmic used in selected ventricular dysrhythmias by ALS clinicians.",
+          "details": "Indication, rhythm, route, and sequence are protocol-specific.",
+          "remember": "Rhythm, blood pressure, IV access, reassessment."
+        },
+        {
+          "term": "Adenosine",
+          "summary": "Short-acting antiarrhythmic used for selected regular narrow-complex tachycardias.",
+          "details": "Requires rhythm interpretation, rapid administration, monitoring, and protocol.",
+          "remember": "Transient pause, patient explanation, rhythm strip."
+        },
+        {
+          "term": "Atropine",
+          "summary": "Anticholinergic used for selected symptomatic bradycardia and other indications.",
+          "details": "Use depends on rhythm, symptoms, and protocol.",
+          "remember": "Heart rate, perfusion, pacing readiness."
+        },
+        {
+          "term": "Fentanyl",
+          "summary": "Opioid analgesic used by authorized clinicians.",
+          "details": "Assess pain, respiratory status, blood pressure, allergies, and protocol.",
+          "remember": "Sedation, ventilation, reassessment."
+        },
+        {
+          "term": "Ketamine",
+          "summary": "Dissociative medication used in selected systems for analgesia, sedation, or behavioral emergencies.",
+          "details": "Indication and dosing vary greatly. Requires monitoring and airway readiness.",
+          "remember": "Airway, emergence reactions, blood pressure."
+        },
+        {
+          "term": "Midazolam",
+          "summary": "Benzodiazepine used for seizures, sedation, and selected agitation protocols.",
+          "details": "Monitor ventilation and hemodynamics. Scope and route vary.",
+          "remember": "Respiratory depression, sedation, reassessment."
+        },
+        {
+          "term": "Magnesium sulfate",
+          "summary": "Medication used for selected dysrhythmias, severe asthma, or obstetric emergencies.",
+          "details": "Indication and route are protocol-specific.",
+          "remember": "Blood pressure, reflexes/respirations when relevant."
+        },
+        {
+          "term": "Calcium",
+          "summary": "Used for selected toxicologic, electrolyte, and resuscitation situations.",
+          "details": "Formulation and compatibility matter. Follow protocol.",
+          "remember": "IV patency, rhythm, medication compatibility."
+        },
+        {
+          "term": "Sodium bicarbonate",
+          "summary": "Alkalinizing medication used in selected toxicologic and resuscitation situations.",
+          "details": "Not a routine medication for all arrests. Follow protocol.",
+          "remember": "Ventilation, indication, IV compatibility."
+        }
+      ]
+    },
+    {
+      "id": "vitals",
+      "title": "Normal Vitals & Reference Ranges",
+      "icon": "♥",
+      "items": [
+        {
+          "term": "Adult resting pulse",
+          "summary": "Commonly taught reference: 60-100 beats/min.",
+          "details": "Interpret with symptoms, perfusion, medications, fitness, temperature, and trend.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Adult resting respirations",
+          "summary": "Commonly taught reference: 12-20 breaths/min.",
+          "details": "Count quality and effort, not only rate. Avoid announcing the count.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Adult oxygen saturation",
+          "summary": "Often 95-100% in healthy adults at sea level.",
+          "details": "Baseline, altitude, chronic lung disease, waveform quality, and clinical appearance matter.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Adult systolic blood pressure",
+          "summary": "A single “normal” number is less useful than perfusion and trend. Many courses use about 90-120 mmHg as a basic reference.",
+          "details": "Check cuff size, position, repeated readings, and symptoms.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Adult temperature",
+          "summary": "About 97-99°F (36.1-37.2°C) is a common oral reference range.",
+          "details": "Route, environment, age, and device affect readings.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Newborn pulse",
+          "summary": "Common EMS teaching range: roughly 100-180/min.",
+          "details": "Use age-specific references from your course and protocol.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Infant pulse",
+          "summary": "Common EMS teaching range: roughly 100-160/min.",
+          "details": "Assess perfusion and respiratory status; ranges vary with activity.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Toddler pulse",
+          "summary": "Common EMS teaching range: roughly 90-150/min.",
+          "details": "Crying and fever can increase rate.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Preschool pulse",
+          "summary": "Common EMS teaching range: roughly 80-140/min.",
+          "details": "Trend and appearance matter more than one isolated number.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "School-age pulse",
+          "summary": "Common EMS teaching range: roughly 70-120/min.",
+          "details": "Use local pediatric reference tools.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Adolescent pulse",
+          "summary": "Common EMS teaching range: roughly 60-100/min.",
+          "details": "Approaches adult ranges.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Newborn respirations",
+          "summary": "Common EMS teaching range: roughly 30-60/min.",
+          "details": "Watch chest/abdomen, effort, color, and pauses.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Infant respirations",
+          "summary": "Common EMS teaching range: roughly 30-50/min.",
+          "details": "Count a full minute when irregular.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Toddler respirations",
+          "summary": "Common EMS teaching range: roughly 24-40/min.",
+          "details": "Observe before touching when possible.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Preschool respirations",
+          "summary": "Common EMS teaching range: roughly 22-34/min.",
+          "details": "Retractions, grunting, and nasal flaring are important.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "School-age respirations",
+          "summary": "Common EMS teaching range: roughly 18-30/min.",
+          "details": "Consider fever, anxiety, pain, and exertion.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Adolescent respirations",
+          "summary": "Common EMS teaching range: roughly 12-20/min.",
+          "details": "Interpret similarly to adults while considering age.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Capillary refill",
+          "summary": "Often less than 2 seconds in a warm, well-perfused patient.",
+          "details": "Cold, age, lighting, and technique affect the result.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "End-tidal CO2",
+          "summary": "A commonly taught adult reference is about 35-45 mmHg.",
+          "details": "Interpret waveform, ventilation, perfusion, clinical context, and trend.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        },
+        {
+          "term": "Blood glucose",
+          "summary": "A common fasting laboratory reference is about 70-99 mg/dL, but EMS interpretation depends on symptoms, meal timing, diabetes, and protocol.",
+          "details": "Treat the patient and follow local thresholds.",
+          "remember": "Ranges are teaching references, not universal treatment thresholds."
+        }
+      ]
+    },
+    {
+      "id": "mnemonics",
+      "title": "Assessment Mnemonics",
+      "icon": "🧠",
+      "items": [
+        {
+          "term": "SAMPLE",
+          "summary": "Signs/symptoms, Allergies, Medications, Past history, Last oral intake, Events leading up.",
+          "details": "Use to organize history; ask follow-up questions rather than treating it as a script.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "OPQRST",
+          "summary": "Onset, Provocation/palliation, Quality, Region/radiation, Severity, Time.",
+          "details": "Works for pain and many symptoms, but not every letter fits every complaint.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "AVPU",
+          "summary": "Alert, responds to Verbal, responds to Pain, Unresponsive.",
+          "details": "Rapid mental-status classification; document more detail when possible.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "DCAP-BTLS",
+          "summary": "Deformities, Contusions, Abrasions, Punctures/penetrations, Burns, Tenderness, Lacerations, Swelling.",
+          "details": "Systematic trauma exam reminder.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "AEIOU-TIPS",
+          "summary": "Alcohol, Epilepsy/electrolytes, Insulin, Overdose/oxygen, Uremia, Trauma/temperature, Infection, Psychiatric/poisoning, Stroke/shock.",
+          "details": "Differential reminder for altered mental status; versions vary.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "BE-FAST",
+          "summary": "Balance, Eyes, Face, Arm, Speech, Time.",
+          "details": "Stroke recognition; use your local stroke scale and destination plan.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "PERRL",
+          "summary": "Pupils Equal, Round, Reactive to Light.",
+          "details": "Add size, gaze, and other findings when relevant.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "PMS/CSM",
+          "summary": "Pulse, Motor, Sensation / Circulation, Sensation, Movement.",
+          "details": "Document before and after splinting or movement.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "RACE",
+          "summary": "Rescue, Alarm, Confine, Extinguish/Evacuate.",
+          "details": "Common fire-response mnemonic in facilities; follow site policy.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "PASS",
+          "summary": "Pull, Aim, Squeeze, Sweep.",
+          "details": "Basic extinguisher use when safe and appropriate.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "MARCH",
+          "summary": "Massive hemorrhage, Airway, Respiration, Circulation, Head injury/Hypothermia.",
+          "details": "Tactical/trauma priority framework; training context varies.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "APGAR",
+          "summary": "Appearance, Pulse, Grimace, Activity, Respiration.",
+          "details": "Newborn score at defined intervals; not a substitute for resuscitation decisions.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "GCS",
+          "summary": "Eye, Verbal, Motor.",
+          "details": "Score components separately and document confounders.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "5 Rights",
+          "summary": "Right patient, medication, dose, route, time.",
+          "details": "Many systems add indication, documentation, response, and refusal rights.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "6 Ps",
+          "summary": "Pain, Pallor, Pulselessness, Paresthesia, Paralysis, Poikilothermia.",
+          "details": "Possible limb ischemia/compartment concerns; late signs may be ominous.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "SLUDGE",
+          "summary": "Salivation, Lacrimation, Urination, Defecation, GI upset, Emesis.",
+          "details": "Cholinergic toxidrome reminder; some versions add miosis/bronchorrhea.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "CAGE",
+          "summary": "Cut down, Annoyed, Guilty, Eye-opener.",
+          "details": "Alcohol-use screening tool; use respectfully and within role.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "SOAP",
+          "summary": "Subjective, Objective, Assessment, Plan.",
+          "details": "Documentation framework; EMS PCR structure may differ.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "SBAR",
+          "summary": "Situation, Background, Assessment, Recommendation.",
+          "details": "Structured handoff or consultation format.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        },
+        {
+          "term": "IMIST-AMBO",
+          "summary": "Identification, Mechanism/medical complaint, Injuries/information, Signs, Treatment, Allergies, Medications, Background, Other.",
+          "details": "Structured EMS handoff; local versions vary.",
+          "remember": "Use mnemonics as prompts, not substitutes for clinical judgment."
+        }
+      ]
+    },
+    {
+      "id": "terminology",
+      "title": "Medical Terminology",
+      "icon": "ABC",
+      "items": [
+        {
+          "term": "Anterior",
+          "summary": "Toward the front of the body.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Posterior",
+          "summary": "Toward the back of the body.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Superior",
+          "summary": "Above or toward the head.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Inferior",
+          "summary": "Below or toward the feet.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Medial",
+          "summary": "Toward the midline.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Lateral",
+          "summary": "Away from the midline.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Proximal",
+          "summary": "Closer to the trunk or point of origin.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Distal",
+          "summary": "Farther from the trunk or point of origin.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Bilateral",
+          "summary": "On both sides.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Unilateral",
+          "summary": "On one side.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Acute",
+          "summary": "Sudden onset or short duration.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Chronic",
+          "summary": "Long-lasting or recurring.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Etiology",
+          "summary": "Cause or origin of a condition.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Pathophysiology",
+          "summary": "How disease or injury changes normal body function.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Perfusion",
+          "summary": "Delivery of oxygenated blood to tissues.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Hypoxia",
+          "summary": "Inadequate oxygen at the tissue level.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Hypoxemia",
+          "summary": "Low oxygen in arterial blood.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Dyspnea",
+          "summary": "Subjective difficulty breathing.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Apnea",
+          "summary": "Absence of breathing.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Tachypnea",
+          "summary": "Abnormally rapid breathing.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Bradypnea",
+          "summary": "Abnormally slow breathing.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Tachycardia",
+          "summary": "Abnormally rapid heart rate.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Bradycardia",
+          "summary": "Abnormally slow heart rate.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Cyanosis",
+          "summary": "Bluish discoloration associated with deoxygenated blood or poor perfusion.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Diaphoresis",
+          "summary": "Profuse sweating.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Syncope",
+          "summary": "Temporary loss of consciousness from reduced cerebral perfusion.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Presyncope",
+          "summary": "Feeling of near-fainting without full loss of consciousness.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Edema",
+          "summary": "Swelling caused by fluid accumulation.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Hematemesis",
+          "summary": "Vomiting blood.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Hemoptysis",
+          "summary": "Coughing blood from the respiratory tract.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Melena",
+          "summary": "Black, tarry stool often associated with upper GI bleeding.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Hematochezia",
+          "summary": "Passage of bright red or maroon blood per rectum.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Dysphagia",
+          "summary": "Difficulty swallowing.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Dysarthria",
+          "summary": "Difficulty articulating speech from motor dysfunction.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Aphasia",
+          "summary": "Impaired ability to understand or produce language.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Ataxia",
+          "summary": "Impaired coordination or unsteady movement.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Paresthesia",
+          "summary": "Abnormal sensation such as tingling or numbness.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Pallor",
+          "summary": "Unusual paleness.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Jaundice",
+          "summary": "Yellow discoloration from elevated bilirubin.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Orthopnea",
+          "summary": "Breathing difficulty when lying flat.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Stridor",
+          "summary": "Harsh upper-airway sound, often inspiratory.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Wheeze",
+          "summary": "Musical sound associated with narrowed lower airways.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Crackles",
+          "summary": "Discontinuous popping lung sounds, often associated with fluid or reopening airways.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Rhonchi",
+          "summary": "Low-pitched coarse sounds often associated with secretions.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Triage",
+          "summary": "Prioritizing patients based on urgency and resources.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Contraindication",
+          "summary": "Reason a treatment or procedure should not be used.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Indication",
+          "summary": "Clinical reason to use a treatment or procedure.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Adverse effect",
+          "summary": "Unintended harmful effect of a treatment.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        },
+        {
+          "term": "Reassessment",
+          "summary": "Repeat evaluation to identify change or treatment response.",
+          "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+          "remember": "Spelling and exact definitions may vary slightly by source."
+        }
+      ]
+    },
+    {
+      "id": "equipment",
+      "title": "EMS Equipment",
+      "icon": "🧰",
+      "items": [
+        {
+          "term": "Bag-valve mask (BVM)",
+          "summary": "Manual positive-pressure ventilation device with self-inflating bag, valve, mask, and oxygen connection.",
+          "details": "Select correct mask size, maintain seal, watch chest rise, avoid excessive rate/volume.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Nonrebreather mask",
+          "summary": "High-concentration oxygen mask with reservoir bag and one-way valves.",
+          "details": "Inflate reservoir before placement and maintain adequate flow.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Nasal cannula",
+          "summary": "Low-flow oxygen interface placed in the nares.",
+          "details": "Comfortable and useful for selected spontaneously breathing patients.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Venturi mask",
+          "summary": "Fixed-performance oxygen mask using interchangeable adapters.",
+          "details": "More common in facilities; delivers a selected oxygen concentration.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "OPA",
+          "summary": "Rigid oral airway used in an unresponsive patient without a gag reflex.",
+          "details": "Size correctly; do not use when gag reflex is present.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "NPA",
+          "summary": "Soft nasal airway used in selected patients with reduced airway tone.",
+          "details": "Size and lubricate; contraindications vary with trauma and protocol.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Suction unit",
+          "summary": "Device used to remove secretions, blood, or vomit from the airway.",
+          "details": "Check power, tubing, canister, catheter, and function before calls.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Yankauer catheter",
+          "summary": "Rigid suction tip for the mouth and oropharynx.",
+          "details": "Use under direct visualization; avoid prolonged suction.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Flexible suction catheter",
+          "summary": "Soft catheter used for selected airway or tracheal suctioning.",
+          "details": "Depth and technique depend on training and airway type.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Pulse oximeter",
+          "summary": "Noninvasive estimate of oxygen saturation and pulse rate.",
+          "details": "Confirm waveform/perfusion and compare displayed pulse with palpated pulse.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Glucometer",
+          "summary": "Point-of-care device for capillary blood glucose.",
+          "details": "Check strip compatibility, expiration, sample technique, and infection control.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Manual BP cuff",
+          "summary": "Inflatable cuff, bulb, valve, and aneroid gauge for blood pressure measurement.",
+          "details": "Correct cuff size and positioning are essential.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Stethoscope",
+          "summary": "Acoustic device for breath sounds, blood pressure, and selected cardiac sounds.",
+          "details": "Good seal, correct earpiece direction, quiet technique.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Trauma shears",
+          "summary": "Heavy scissors designed to cut clothing and some soft materials.",
+          "details": "Protect skin while cutting; clean after use.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Tourniquet",
+          "summary": "Device that stops life-threatening extremity hemorrhage by circumferential compression.",
+          "details": "Apply for severe extremity bleeding per training; note time.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Hemostatic gauze",
+          "summary": "Gauze impregnated with an agent that supports clot formation.",
+          "details": "Pack appropriate wounds firmly and maintain pressure.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Pressure dressing",
+          "summary": "Dressing designed to maintain pressure over a bleeding wound.",
+          "details": "Do not obscure ongoing reassessment of bleeding and distal circulation.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Occlusive dressing",
+          "summary": "Airtight or semi-airtight dressing used for selected open chest or neck wounds.",
+          "details": "Monitor breathing and follow venting protocol.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Cervical collar",
+          "summary": "Device used in selected spinal-motion-restriction plans.",
+          "details": "Correct size and fit; collar alone does not fully immobilize the spine.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Scoop stretcher",
+          "summary": "Split stretcher that can be assembled around a patient.",
+          "details": "Useful for selected lifts and transfers; follow manufacturer limits.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Stair chair",
+          "summary": "Chair designed to move selected patients on stairs or through tight spaces.",
+          "details": "Use straps, adequate personnel, and safe lifting technique.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Pelvic binder",
+          "summary": "Circumferential device for suspected unstable pelvic injury.",
+          "details": "Placement is typically over the greater trochanters, per training.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Nebulizer",
+          "summary": "Device that aerosolizes medication for inhalation.",
+          "details": "Assemble correctly, maintain gas flow, reassess breath sounds and effort.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "CPAP",
+          "summary": "Noninvasive positive airway-pressure system for selected breathing patients.",
+          "details": "Requires spontaneous breathing, appropriate mental status, seal, and monitoring.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Supraglottic airway",
+          "summary": "Advanced airway device seated above the vocal cords.",
+          "details": "Confirm placement with waveform capnography when available and ongoing reassessment.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Endotracheal tube",
+          "summary": "Tube passed through the vocal cords into the trachea by trained clinicians.",
+          "details": "Placement confirmation and continuous monitoring are essential.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "Capnography",
+          "summary": "Device measuring exhaled CO2 as a number and waveform.",
+          "details": "Interpret waveform, trend, ventilation, perfusion, and clinical context.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "12-lead ECG cable",
+          "summary": "Electrode and lead system recording the heart from multiple views.",
+          "details": "Correct placement and skin preparation reduce artifact.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "IV catheter",
+          "summary": "Over-the-needle catheter used for vascular access.",
+          "details": "Select site and size based on need; secure and reassess.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        },
+        {
+          "term": "IO device",
+          "summary": "Device for intraosseous vascular access when indicated.",
+          "details": "Site, needle, pain management, and confirmation are protocol-specific.",
+          "remember": "Use equipment only within training, authorization, and manufacturer guidance."
+        }
+      ]
+    }
+  ]
+}
