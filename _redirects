@@ -14,50 +14,48 @@
 /medical-scenario-simulator      /med_sim.html                              301
 
 # Extensionless internal support
-/vitals/bp                       /vitals/bp.html                            200
-/vitals/breath-sound-simulator   /vitals/breath-sound-simulator.html        200
-/vitals/capno                    /vitals/capno.html                         200
-/vitals/gcs                      /vitals/gcs.html                           200
-/vitals/stroke                   /vitals/stroke.html                        200
-/vitals/pulse                    /vitals/pulse.html                         200
-/vitals/pulse-ox                 /vitals/pulse-ox.html                      200
-/vitals/bgl                      /vitals/bgl.html                           200
-/vitals/pupil                    /vitals/pupil.html                         200
-/vitals/aao                      /vitals/aao.html                           200
-/vitals/skin                     /vitals/skin.html                          200
-/vitals/nines                    /vitals/nines.html                         200
-/explore-ems /explore-ems.html 200
+/vitals/bp /vitals/bp.html 301
+/vitals/breath-sound-simulator /vitals/breath-sound-simulator.html 301
+/vitals/capno /vitals/capno.html 301
+/vitals/gcs /vitals/gcs.html 301
+/vitals/stroke /vitals/stroke.html 301
+/vitals/pulse /vitals/pulse.html 301
+/vitals/pulse-ox /vitals/pulse-ox.html 301
+/vitals/bgl /vitals/bgl.html 301
+/vitals/pupil /vitals/pupil.html 301
+/vitals/aao /vitals/aao.html 301
+/vitals/skin /vitals/skin.html 301
+/vitals/nines /vitals/nines.html 301
+/explore-ems /explore-ems.html 301
 /is-ems-right-for-me /explore-ems.html 301
 /high-school-ems /explore-ems.html 301
-/become-an-emt /become-an-emt.html 200
-/emt-school-finder /emt-school-finder.html 200
-/emt-program-cost /emt-program-cost.html 200
+/become-an-emt /become-an-emt.html 301
+/emt-school-finder /emt-school-finder.html 301
+/emt-program-cost /emt-program-cost.html 301
 /emt-school-cost /emt-program-cost.html 301
 /paramedic-school-cost /emt-program-cost.html 301
 /emt-financial-aid /emt-program-cost.html 301
 /emt-classes-near-me /emt-school-finder.html 301
 /emt-schools-near-me /emt-school-finder.html 301
-/emt-prep /emt-prep.html 200
+/emt-prep /emt-prep.html 301
 /emt-school-prep /emt-prep.html 301
 /prepare-for-emt-school /emt-prep.html 301
-/emt-student-success /emt-school-success.html 200
-/first-100-shifts /first-100-shifts.html 200
+/emt-student-success /emt-school-success.html 301
+/first-100-shifts /first-100-shifts.html 301
 /first-emt-job /first-100-shifts.html 301
-/ems-career-growth /ems-career-growth.html 200
-/ems-wellness /ems-wellness.html 200
-/ems-retirement /ems-retirement.html 200
-/ems-resources /ems-resources.html 200
-
+/ems-career-growth /ems-career-growth.html 301
+/ems-wellness /ems-wellness.html 301
+/ems-retirement /ems-retirement.html 301
+/ems-resources /ems-resources.html 301
 /recertification /ems-recertification.html 301
 /emt-recertification /ems-recertification.html 301
 /paramedic-recertification /ems-recertification.html 301
 /nremt-recertification /ems-recertification.html 301
 
-/ems-training-tools /ems-training-tools.html 200
+/ems-training-tools /ems-training-tools.html 301
 /emt-practice-tools /ems-training-tools.html 301
 /ems-simulators /ems-training-tools.html 301
-/search /search.html 200
-
+/search /search.html 301
 # EMSCodeSim Daily Quiz aliases
 /daily-quiz                         /quiz/                              301
 /emt-quiz                           /quiz/emt_quiz.html                 301
@@ -72,3 +70,14 @@
 /medword.html                       /quiz/medword.html                  301
 /daily_sim.html                     /quiz/daily_sim.html                301
 /daily_beat.html                    /quiz/daily_beat.html               301
+
+/about /about.html 301
+/editorial-standards /about.html 301
+/emt-prep/module-1 /emt-prep/module-1-emt-school-expectations.html 301
+/emt-prep/module-2 /emt-prep/module-2-medical-terminology.html 301
+/emt-prep/module-3 /emt-prep/module-3-anatomy-physiology.html 301
+/emt-prep/module-4 /emt-prep/module-4-vital-signs.html 301
+/emt-prep/module-5 /emt-prep/module-5-patient-assessment.html 301
+/emt-prep/module-6 /emt-prep/module-6-student-habits.html 301
+
+/calcPrivacy.html /privacy.html 301

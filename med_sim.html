@@ -2,14 +2,14 @@
 
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EMS Medical Scenario Simulator | EMSCodeSim</title>
-<meta name="robots" content="index,follow,max-image-preview:large">
-  <meta name="description" content="Interactive EMS medical scenario simulator for patient assessment, handoff practice, and instructor-led EMS training." />
-  <link rel="canonical" href="https://emscodesim.com/med_sim.html" />
-  <link rel="stylesheet" href="styles/style.css" />
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EMS Medical Scenario Simulator | EMSCodeSim</title>
+<meta content="index,follow,max-image-preview:large" name="robots"/>
+<meta content="Interactive EMS medical scenario simulator for patient assessment, handoff practice, and instructor-led EMS training." name="description">
+<link href="https://emscodesim.com/med_sim.html" rel="canonical"/>
+<link href="styles/style.css" rel="stylesheet"/>
+<style>
     html, body {
       height: 100%;
       margin: 0;
@@ -261,131 +261,132 @@
     }
     @keyframes spin { 100% { transform: rotate(360deg); } }
   </style>
-<link rel="stylesheet" href="/styles/tool-seo.css">
+<link href="/styles/tool-seo.css" rel="stylesheet"/>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":["WebApplication","LearningResource"],"name":"EMS Medical Scenario Simulator","url":"https://emscodesim.com/med_sim.html","description":"Practice patient assessment, information gathering, clinical communication, and handoff structure in interactive EMS medical scenarios.","applicationCategory":"EducationalApplication","operatingSystem":"Any","isAccessibleForFree":true,"provider":{"@type":"Organization","name":"EMSCodeSim","url":"https://emscodesim.com/"}}</script>
-  <link rel="stylesheet" href="/styles/responsive.css">
-</head>
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="EMS Medical Scenario Simulator | EMSCodeSim" property="og:title"/><meta content="Interactive EMS medical scenario simulator for patient assessment, handoff practice, and instructor-led EMS training." property="og:description"/><meta content="https://emscodesim.com/med_sim.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
+</meta></head>
 <body>
-  <div class="ems-logo-row">
-    <svg width="100%" height="100" viewBox="0 0 900 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="grad1" x1="0" y1="0" x2="900" y2="0" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#1976d2"/>
-          <stop offset="1" stop-color="#20e3c2"/>
-        </linearGradient>
-      </defs>
-      <rect x="60" y="18" width="780" height="64" rx="32" fill="url(#grad1)"/>
-      <text x="450" y="65" text-anchor="middle" font-family="Arial Black, Arial, sans-serif"
-        font-size="46" fill="#fff" font-weight="bold" letter-spacing="10">
+<div class="ems-logo-row">
+<svg fill="none" height="100" viewbox="0 0 900 100" width="100%" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient gradientunits="userSpaceOnUse" id="grad1" x1="0" x2="900" y1="0" y2="0">
+<stop stop-color="#1976d2"></stop>
+<stop offset="1" stop-color="#20e3c2"></stop>
+</lineargradient>
+</defs>
+<rect fill="url(#grad1)" height="64" rx="32" width="780" x="60" y="18"></rect>
+<text fill="#fff" font-family="Arial Black, Arial, sans-serif" font-size="46" font-weight="bold" letter-spacing="10" text-anchor="middle" x="450" y="65">
         EMS CODE SIM
       </text>
-    </svg>
-  </div>
-  <h1 class="med-sim-title">EMS Medical Scenario Simulator</h1>
-  <header id="main-header">
-    <select id="scenario-picker">
-      <option value="chest_pain_002">Chest Pain</option>
-      <option value="allergic_reaction_001">Allergic Reaction</option>
-      <!-- Add more scenarios here -->
-    </select>
-    <button id="start-button">Start Scenario</button>
-    <button id="handoff-button">Give Handoff Report</button>
-    <label class="toggle-switch">
-      <input type="checkbox" id="learningModeToggle">
-      <span>Learning Mode</span>
-    </label>
-  </header>
-  <div id="mainLayout">
-    <div id="simulatorPane">
-      <div id="chat-box"></div>
-      <div id="loading-spinner" style="display:none;text-align:center;padding:18px;">
-        <svg width="48" height="48" viewBox="0 0 48 48" style="animation: spin 1s linear infinite;">
-          <circle cx="24" cy="24" r="20" stroke="#1976d2" stroke-width="5" fill="none" opacity="0.2"/>
-          <path d="M44 24a20 20 0 0 1-20 20" stroke="#20e3c2" stroke-width="5" fill="none" stroke-linecap="round"/>
-        </svg>
-        <div style="color:#1976d2;font-weight:bold;">Loading Scenario...</div>
+</svg>
+</div>
+<h1 class="med-sim-title">EMS Medical Scenario Simulator</h1>
+<header id="main-header">
+<select id="scenario-picker">
+<option value="chest_pain_002">Chest Pain</option>
+<option value="allergic_reaction_001">Allergic Reaction</option>
+<!-- Add more scenarios here -->
+</select>
+<button id="start-button">Start Scenario</button>
+<button id="handoff-button">Give Handoff Report</button>
+<label class="toggle-switch">
+<input id="learningModeToggle" type="checkbox"/>
+<span>Learning Mode</span>
+</label>
+</header>
+<div id="mainLayout">
+<div id="simulatorPane">
+<div id="chat-box"></div>
+<div id="loading-spinner" style="display:none;text-align:center;padding:18px;">
+<svg height="48" style="animation: spin 1s linear infinite;" viewbox="0 0 48 48" width="48">
+<circle cx="24" cy="24" fill="none" opacity="0.2" r="20" stroke="#1976d2" stroke-width="5"></circle>
+<path d="M44 24a20 20 0 0 1-20 20" fill="none" stroke="#20e3c2" stroke-linecap="round" stroke-width="5"></path>
+</svg>
+<div style="color:#1976d2;font-weight:bold;">Loading Scenario...</div>
+</div>
+<div class="input-row">
+<input id="user-input" placeholder="Type your response here..." type="text">
+<button id="send-button">Send</button>
+<button id="mic-button">🎤</button>
+</input></div>
+</div>
+<div id="skillSheetPane">
+<h3>NREMT Medical Assessment Skill Sheet</h3>
+<ul id="skillChecklist">
+<li id="EMT-B-MED-1">BSI/PPE <span class="status"></span></li>
+<li id="EMT-B-MED-2">Scene Safety <span class="status"></span></li>
+<li id="EMT-B-MED-3">Determine MOI/NOI <span class="status"></span></li>
+<li id="EMT-B-MED-4">Determine Number of Patients <span class="status"></span></li>
+<li id="EMT-B-MED-5">Request Additional EMS Assistance <span class="status"></span></li>
+<li id="EMT-B-MED-6">Consider C-Spine Stabilization <span class="status"></span></li>
+<li id="EMT-B-MED-7">General Impression <span class="status"></span></li>
+<li id="EMT-B-MED-8">Determine Responsiveness/LOC <span class="status"></span></li>
+<li id="EMT-B-MED-9">Determine Chief Complaint <span class="status"></span></li>
+<li id="EMT-B-MED-10">Assess Airway/Breathing <span class="status"></span></li>
+<li id="EMT-B-MED-11">Initiate Oxygen Therapy <span class="status"></span></li>
+<li id="EMT-B-MED-12">Assess Circulation (Pulse, Skin, Bleeding) <span class="status"></span></li>
+<li id="EMT-B-MED-13">Identify Patient Priority &amp; Transport Decision <span class="status"></span></li>
+<li id="EMT-B-MED-14">OPQRST - Onset <span class="status"></span></li>
+<li id="EMT-B-MED-15">Provocation <span class="status"></span></li>
+<li id="EMT-B-MED-16">Quality <span class="status"></span></li>
+<li id="EMT-B-MED-17">Radiation <span class="status"></span></li>
+<li id="EMT-B-MED-18">Severity <span class="status"></span></li>
+<li id="EMT-B-MED-19">Time <span class="status"></span></li>
+<li id="EMT-B-MED-20">SAMPLE - Signs/Symptoms <span class="status"></span></li>
+<li id="EMT-B-MED-21">Allergies <span class="status"></span></li>
+<li id="EMT-B-MED-22">Medications <span class="status"></span></li>
+<li id="EMT-B-MED-23">Past Medical History <span class="status"></span></li>
+<li id="EMT-B-MED-24">Last Oral Intake <span class="status"></span></li>
+<li id="EMT-B-MED-25">Events Leading to Present Illness <span class="status"></span></li>
+<li id="EMT-B-MED-26">Assess Affected Body/System <span class="status"></span></li>
+<li id="EMT-B-MED-27">Vital Signs - BP <span class="status"></span></li>
+<li id="EMT-B-MED-28">Heart Rate <span class="status"></span></li>
+<li id="EMT-B-MED-29">Respiratory Rate <span class="status"></span></li>
+<li id="EMT-B-MED-30">Field Impression of Patient <span class="status"></span></li>
+<li id="EMT-B-MED-31">Interventions <span class="status"></span></li>
+<li id="EMT-B-MED-32">Demonstrate How &amp; When to Reassess <span class="status"></span></li>
+</ul>
+<h4>Critical Failures</h4>
+<ul>
+<li>Failure to initiate or call for transport within 15 minutes</li>
+<li>Failure to provide adequate oxygen therapy</li>
+<li>Failure to verbalize or demonstrate BSI/PPE before patient contact</li>
+<li>Failure to assess and treat life-threatening conditions first</li>
+<li>Failure to manage the patient as a competent EMT</li>
+<li>Exhibits unsafe behavior</li>
+<li>Failure to perform all critical steps</li>
+</ul>
+</div>
+<div id="handoffInstructionsPane">
+<h3 style="margin-top:0;color:#d97706;">How to Give a Handoff Report</h3>
+<ol style="margin:12px 0 0 15px;">
+<li>State age, gender, chief complaint.</li>
+<li>Summarize key assessment findings (vitals, exam, history).</li>
+<li>List major treatments/interventions provided.</li>
+<li>Report any changes or response to treatment.</li>
+<li>Current status and recommendations.</li>
+<li>Be concise, use a clear structure.</li>
+</ol>
+<div style="margin-top:11px;font-size:1em;color:#b45309;">
+<b>MIST Format:</b> <u>M</u>echanism/Complaint, <u>I</u>njuries/Findings, <u>S</u>igns/Vitals, <u>T</u>reatments.
       </div>
-      <div class="input-row">
-        <input type="text" id="user-input" placeholder="Type your response here..." />
-        <button id="send-button">Send</button>
-        <button id="mic-button">🎤</button>
+<div style="margin-top:18px;font-size:.98em;">
+<span style="color:#ea580c;">Tip:</span> Speak clearly or type your report below. Your report will be graded automatically!
       </div>
-    </div>
-    <div id="skillSheetPane">
-      <h3>NREMT Medical Assessment Skill Sheet</h3>
-      <ul id="skillChecklist">
-        <li id="EMT-B-MED-1">BSI/PPE <span class="status"></span></li>
-        <li id="EMT-B-MED-2">Scene Safety <span class="status"></span></li>
-        <li id="EMT-B-MED-3">Determine MOI/NOI <span class="status"></span></li>
-        <li id="EMT-B-MED-4">Determine Number of Patients <span class="status"></span></li>
-        <li id="EMT-B-MED-5">Request Additional EMS Assistance <span class="status"></span></li>
-        <li id="EMT-B-MED-6">Consider C-Spine Stabilization <span class="status"></span></li>
-        <li id="EMT-B-MED-7">General Impression <span class="status"></span></li>
-        <li id="EMT-B-MED-8">Determine Responsiveness/LOC <span class="status"></span></li>
-        <li id="EMT-B-MED-9">Determine Chief Complaint <span class="status"></span></li>
-        <li id="EMT-B-MED-10">Assess Airway/Breathing <span class="status"></span></li>
-        <li id="EMT-B-MED-11">Initiate Oxygen Therapy <span class="status"></span></li>
-        <li id="EMT-B-MED-12">Assess Circulation (Pulse, Skin, Bleeding) <span class="status"></span></li>
-        <li id="EMT-B-MED-13">Identify Patient Priority & Transport Decision <span class="status"></span></li>
-        <li id="EMT-B-MED-14">OPQRST - Onset <span class="status"></span></li>
-        <li id="EMT-B-MED-15">Provocation <span class="status"></span></li>
-        <li id="EMT-B-MED-16">Quality <span class="status"></span></li>
-        <li id="EMT-B-MED-17">Radiation <span class="status"></span></li>
-        <li id="EMT-B-MED-18">Severity <span class="status"></span></li>
-        <li id="EMT-B-MED-19">Time <span class="status"></span></li>
-        <li id="EMT-B-MED-20">SAMPLE - Signs/Symptoms <span class="status"></span></li>
-        <li id="EMT-B-MED-21">Allergies <span class="status"></span></li>
-        <li id="EMT-B-MED-22">Medications <span class="status"></span></li>
-        <li id="EMT-B-MED-23">Past Medical History <span class="status"></span></li>
-        <li id="EMT-B-MED-24">Last Oral Intake <span class="status"></span></li>
-        <li id="EMT-B-MED-25">Events Leading to Present Illness <span class="status"></span></li>
-        <li id="EMT-B-MED-26">Assess Affected Body/System <span class="status"></span></li>
-        <li id="EMT-B-MED-27">Vital Signs - BP <span class="status"></span></li>
-        <li id="EMT-B-MED-28">Heart Rate <span class="status"></span></li>
-        <li id="EMT-B-MED-29">Respiratory Rate <span class="status"></span></li>
-        <li id="EMT-B-MED-30">Field Impression of Patient <span class="status"></span></li>
-        <li id="EMT-B-MED-31">Interventions <span class="status"></span></li>
-        <li id="EMT-B-MED-32">Demonstrate How & When to Reassess <span class="status"></span></li>
-      </ul>
-      <h4>Critical Failures</h4>
-      <ul>
-        <li>Failure to initiate or call for transport within 15 minutes</li>
-        <li>Failure to provide adequate oxygen therapy</li>
-        <li>Failure to verbalize or demonstrate BSI/PPE before patient contact</li>
-        <li>Failure to assess and treat life-threatening conditions first</li>
-        <li>Failure to manage the patient as a competent EMT</li>
-        <li>Exhibits unsafe behavior</li>
-        <li>Failure to perform all critical steps</li>
-      </ul>
-    </div>
-    <div id="handoffInstructionsPane">
-      <h3 style="margin-top:0;color:#d97706;">How to Give a Handoff Report</h3>
-      <ol style="margin:12px 0 0 15px;">
-        <li>State age, gender, chief complaint.</li>
-        <li>Summarize key assessment findings (vitals, exam, history).</li>
-        <li>List major treatments/interventions provided.</li>
-        <li>Report any changes or response to treatment.</li>
-        <li>Current status and recommendations.</li>
-        <li>Be concise, use a clear structure.</li>
-      </ol>
-      <div style="margin-top:11px;font-size:1em;color:#b45309;">
-        <b>MIST Format:</b> <u>M</u>echanism/Complaint, <u>I</u>njuries/Findings, <u>S</u>igns/Vitals, <u>T</u>reatments.
-      </div>
-      <div style="margin-top:18px;font-size:.98em;">
-        <span style="color:#ea580c;">Tip:</span> Speak clearly or type your report below. Your report will be graded automatically!
-      </div>
-    </div>
-  </div>
-
-  <!-- Load app logic and modules -->
-  <script type="module" src="scripts/grading.js"></script>
-  <script type="module" src="scripts/checklist.js"></script>
-  <script type="module" src="scripts/app.js"></script>
-  <script type="module" src="scripts/handoff_inline.js"></script>
-  <script type="module" src="scripts/mic.js"></script>
-
-  <!-- Button and pane event handlers -->
-  <script>
+</div>
+</div>
+<!-- Load app logic and modules -->
+<script src="scripts/grading.js" type="module"></script>
+<script src="scripts/checklist.js" type="module"></script>
+<script src="scripts/app.js" type="module"></script>
+<script src="scripts/handoff_inline.js" type="module"></script>
+<script src="scripts/mic.js" type="module"></script>
+<!-- Button and pane event handlers -->
+<script>
     window.appendChatBubble = window.appendChatBubble || function(role, html) {
       var chat = document.getElementById("chat-box");
       var div = document.createElement("div");
@@ -483,6 +484,6 @@
       if (spinner) spinner.style.display = "none";
     };
   </script>
-<section class="tool-seo-panel" aria-labelledby="about-tool"><h2 id="about-tool">About the EMS Medical Scenario Simulator</h2><p>Practice patient assessment, information gathering, clinical communication, and handoff structure in interactive EMS medical scenarios.</p><div class="tool-seo-links"><a href="/ems-training-tools.html">All EMS training tools</a><a href="/vitals/aao.html">A&amp;O×4 Orientation Simulator</a><a href="/vitals/gcs.html">GCS Trainer</a><a href="/search.html">Search EMSCodeSim</a></div><p class="tool-seo-note">Educational simulation only. Follow your approved course materials, local protocols, medical direction, and instructor guidance.</p></section>
+<section aria-labelledby="about-tool" class="tool-seo-panel"><h2 id="about-tool">About the EMS Medical Scenario Simulator</h2><p>Practice patient assessment, information gathering, clinical communication, and handoff structure in interactive EMS medical scenarios.</p><div class="tool-seo-links"><a href="/ems-training-tools.html">All EMS training tools</a><a href="/vitals/aao.html">A&amp;O×4 Orientation Simulator</a><a href="/vitals/gcs.html">GCS Trainer</a><a href="/search.html">Search EMSCodeSim</a></div><p class="tool-seo-note">Educational simulation only. Follow your approved course materials, local protocols, medical direction, and instructor guidance.</p></section>
 </body>
 </html>
