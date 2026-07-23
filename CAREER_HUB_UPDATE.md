@@ -62,3 +62,19 @@ Expanded `ems-career-growth.html` with:
 - National pay medians and clearly labeled specialty planning ranges
 - Direct links to BLS, NREMT, CAAHEP, IBSC, CAMTS, IAFF, NCSBN, ACEN, CoARC, FEMA, NAEMSE, and other official resources
 - New responsive career-card, pay-card, and decision-support styling
+
+
+## First EMT Job and First 100 Shifts update
+
+Added `first-100-shifts.html` with:
+- First-job setting and employer comparison
+- Hiring, resume, interview, and first-shift preparation
+- Saved 100-shift progress tracker
+- Shifts 1–10, 11–25, 26–50, 51–75, and 76–100 development roadmap
+- Ambulance readiness and first-year competency checklists
+- Call flow, communication, handoff, documentation, and FTO guidance
+- Rookie mistakes, safety, exposure, fatigue, lifting, and wellness guidance
+- Private local browser shift-reflection tool
+- Official EMS.gov, National Registry, NIOSH, OSHA, and NAEMT links
+
+Navigation, homepage career stages, sitemap, clean redirects, shared JavaScript, and shared CSS were updated.
