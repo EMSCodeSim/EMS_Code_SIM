@@ -26,6 +26,9 @@
 /vitals/aao                      /vitals/aao.html                           200
 /vitals/skin                     /vitals/skin.html                          200
 /vitals/nines                    /vitals/nines.html                         200
+/explore-ems /explore-ems.html 200
+/is-ems-right-for-me /explore-ems.html 301
+/high-school-ems /explore-ems.html 301
 /become-an-emt /become-an-emt.html 200
 /emt-student-success /emt-school-success.html 200
 /first-100-shifts /first-100-shifts.html 200

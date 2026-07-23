@@ -78,3 +78,9 @@ Added `first-100-shifts.html` with:
 - Official EMS.gov, National Registry, NIOSH, OSHA, and NAEMT links
 
 Navigation, homepage career stages, sitemap, clean redirects, shared JavaScript, and shared CSS were updated.
+
+
+## High-school EMS exploration update
+- Added `explore-ems.html` as the new first stage of the career journey.
+- Added an EMS career-fit quiz, grade-based planner, high-school roadmap, saved exploration checklist, beginner activities, and trusted official links.
+- Updated the homepage, navigation, redirects, sitemap, and career-stage recommendations.

@@ -12,7 +12,8 @@
   const stage = document.getElementById('careerStage');
   const result = document.getElementById('careerStageResult');
   const recommendations = {
-    exploring: ['Start with the EMT roadmap','Learn the basic requirements, compare programs, and see what the work is really like.','/become-an-emt.html'],
+    exploring: ['Explore EMS before you enroll','Learn what EMTs really do, take the career-fit quiz, and build a high-school preparation plan.','/explore-ems.html'],
+    ready: ['Start the EMT entry roadmap','Compare programs, costs, certification, state authorization, and first-job options.','/become-an-emt.html'],
     student: ['Use the Student Success Center','Build a study plan, practice patient assessment, and prepare for clinical and testing days.','/emt-school-success.html'],
     newemt: ['Build a strong first 100 shifts','Prepare for field training, patient care, reports, communication, safety, feedback, and dependable habits.','/first-100-shifts.html'],
     experienced: ['Choose your next EMS path','Compare paramedic, critical care, fire-based EMS, education, leadership, community paramedicine, and other options.','/ems-career-growth.html'],
@@ -110,4 +111,68 @@
     });
   }
 
+})();
+
+(function(){
+  const quiz=document.getElementById('emsFitQuiz');
+  const quizResult=document.getElementById('emsFitResult');
+  const quizKey='emscodesim:explore:fitResult';
+  function showFitResult(score,shouldScroll){
+    if(!quizResult) return;
+    let title,text,next;
+    if(score>=16){
+      title='EMS may be a strong career to explore';
+      text='Your answers suggest that you may enjoy patient contact, teamwork, practical problem-solving, responsibility, and continued learning. The next step is real-world exploration—not assuming the job will be perfect.';
+      next='Talk with a working clinician or EMS educator, then compare approved EMT programs.';
+    }else if(score>=10){
+      title='EMS is worth exploring further';
+      text='Some parts of EMS appear to fit you, while other parts deserve a closer look. Many successful EMTs began unsure about blood, communication, stress, or confidence and improved through safe exposure and practice.';
+      next='Attend a career event, take CPR or first aid, and ask an EMS professional about the parts that concern you.';
+    }else{
+      title='Learn more before making a commitment';
+      text='Your current preferences may not line up with several common EMS demands, but this result is not a rejection. You may discover that a different healthcare, public-safety, technical, or support role fits you better—or that your interests change with experience.';
+      next='Explore several careers and focus on the answers that made you hesitate.';
+    }
+    quizResult.hidden=false;
+    quizResult.innerHTML='<p class="result-score">Exploration score: '+score+' of 20</p><h3>'+title+'</h3><p>'+text+'</p><p><strong>Recommended next step:</strong> '+next+'</p><p><a href="/become-an-emt.html">Continue to the EMT roadmap →</a></p>';
+    try{localStorage.setItem(quizKey,String(score));}catch(e){}
+    if(shouldScroll!==false) quizResult.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+  if(quiz){
+    quiz.addEventListener('submit',function(e){
+      e.preventDefault();
+      const data=new FormData(quiz);
+      let score=0,answered=0;
+      for(let i=1;i<=10;i++){
+        const value=data.get('q'+i);
+        if(value!==null){score+=Number(value);answered++;}
+      }
+      if(answered<10){
+        if(quizResult){quizResult.hidden=false;quizResult.innerHTML='<h3>Answer all ten questions</h3><p>Choose the response that is most honest today. There are no wrong answers.</p>';}
+        return;
+      }
+      showFitResult(score,true);
+    });
+    quiz.addEventListener('reset',function(){
+      window.setTimeout(function(){if(quizResult){quizResult.hidden=true;quizResult.innerHTML='';}try{localStorage.removeItem(quizKey);}catch(e){}},0);
+    });
+    try{const saved=localStorage.getItem(quizKey);if(saved!==null) showFitResult(Number(saved),false);}catch(e){}
+  }
+
+  const grade=document.getElementById('highSchoolGrade');
+  const gradeResult=document.getElementById('gradePlanResult');
+  const gradePlans={
+    middle:['Explore without pressure','Build strong reading, science, teamwork, and communication habits. Learn basic first aid and attend a career day or public-safety open house with an adult.'],
+    freshman:['Build the foundation','Choose science, health, communication, and physical-education opportunities. Ask whether your school has HOSA, health science, CTE, or public-safety programs.'],
+    sophomore:['Get closer to the work','Consider CPR/first aid, medical terminology, agency open houses, and approved youth or cadet programs. Start researching local EMT course age rules and total costs.'],
+    junior:['Compare real pathways','Look for dual-enrollment, CTE, EMR, or EMT options. Talk with a counselor and compare state-approved programs, schedules, transportation, prerequisites, and clinical requirements.'],
+    senior:['Prepare for the transition','Confirm age and graduation requirements, apply to an approved course, plan for fees and transportation, protect your driving record, and build a basic résumé.'],
+    graduate:['Use the full EMT roadmap','Compare approved programs and complete the required education, certification, state authorization, and employer steps without assuming one national rule applies everywhere.']
+  };
+  function updateGradePlan(){
+    if(!grade||!gradeResult) return;
+    const plan=gradePlans[grade.value];
+    gradeResult.innerHTML='<strong>'+plan[0]+'</strong><span>'+plan[1]+'</span>';
+  }
+  if(grade){grade.addEventListener('change',updateGradePlan);updateGradePlan();}
 })();
