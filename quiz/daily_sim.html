@@ -1,15 +1,16 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Daily EMS Sim | EMS Assessment Practice</title>
-  <link rel="canonical" href="https://emscodesim.com/quiz/daily_sim.html" />
-  <meta name="description" content="Open daily EMS simulation practice tools for vitals, assessment, and patient care review." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Daily EMS Simulator | Rotating Assessment Practice</title>
+<link href="https://emscodesim.com/quiz/daily_sim.html" rel="canonical"/>
+<meta content="Open one rotating EMSCodeSim simulator each day for a short vital-sign or patient-assessment practice session." name="description"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&amp;display=swap" rel="stylesheet"/>
+<style>
     :root{
       --bg:#0b0f14; --panel:#101826; --text:#eaf2ff; --muted:#b6c2ff;
       --edge:rgba(255,255,255,.12); --shadow:0 10px 30px rgba(0,0,0,.35);
@@ -41,16 +42,8 @@
     footer a{color:#93c5fd; text-decoration:none; border-bottom:1px dashed rgba(147,197,253,.5)}
     footer a:hover{border-bottom-color:transparent}
   </style>
-
-  <!-- Optional: GA (uses your site’s existing property if present) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-19DVN7NNH7"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date()); gtag('config', 'G-19DVN7NNH7');
-  </script>
-
-  <script>
+<!-- Optional: GA (uses your site’s existing property if present) -->
+<script>
     // --- CONFIG: Your daily sims (corrected paths) ---
     const SIMS = [
       {
@@ -176,38 +169,38 @@
       loadSim(sim);
     });
   </script>
-  <link rel="stylesheet" href="/styles/responsive.css">
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Daily EMS Simulator | Rotating Assessment Practice" property="og:title"/><meta content="Open one rotating EMSCodeSim simulator each day for a short vital-sign or patient-assessment practice session." property="og:description"/><meta content="https://emscodesim.com/quiz/daily_sim.html" property="og:url"/><meta content="https://emscodesim.com/quiz/og-image.jpg" property="og:image"/>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <a class="brand" href="/quiz/">
-        <div class="logo">
-          <!-- Swap to your actual icon path if different -->
-          <img src="/ems-logo.png" alt="Daily EMS Quiz icon"
-               onerror="this.replaceWith(Object.assign(document.createElement('div'),{textContent:'🩺',style:'font-size:20px'}))">
-        </div>
-        <div class="title">
-          <b>EMSCodeSim Daily Sim</b>
-          <div class="tiny">Loads a different mini-app each day</div>
-        </div>
-      </a>
-    </header>
-
-    <section class="card hero" aria-live="polite">
-      <div class="simName"><span id="simIcon">🧪</span> <span id="simName">Loading…</span></div>
-      <div id="simHowTo" class="howto">Preparing instructions…</div>
-      <div id="ruleText" class="rule"></div>
-    </section>
-
-    <section id="frameWrap" class="frameWrap card" aria-live="polite"></section>
-
-    <footer>
-      <div>&copy; 2026 EMSCodeSim Daily Quiz · Independent practice · Not affiliated with NREMT</div>
-      <div style="margin-top:8px">
-        <a href="/quiz/">Back to Daily Quiz</a> · <a href="/">EMSCodeSim Career Hub</a>
-      </div>
-    </footer>
-  </div>
+<div class="wrap">
+<header>
+<a class="brand" href="/quiz/">
+<div class="logo">
+<!-- Swap to your actual icon path if different -->
+<img alt="Daily EMS Quiz icon" onerror="this.replaceWith(Object.assign(document.createElement('div'),{textContent:'🩺',style:'font-size:20px'}))" src="/ems-logo.png"/>
+</div>
+<div class="title">
+<h1 style="font-size:1rem;margin:0">EMSCodeSim Daily Sim</h1>
+<div class="tiny">Loads a different mini-app each day</div>
+</div>
+</a>
+</header>
+<section aria-live="polite" class="card hero">
+<div class="simName"><span id="simIcon">🧪</span> <span id="simName">Loading…</span></div>
+<div class="howto" id="simHowTo">Preparing instructions…</div>
+<div class="rule" id="ruleText"></div>
+</section>
+<section aria-live="polite" class="frameWrap card" id="frameWrap"></section>
+<footer>
+<div>© 2026 EMSCodeSim Daily Quiz · Independent practice · Not affiliated with NREMT</div>
+<div style="margin-top:8px">
+<a href="/quiz/">Back to Daily Quiz</a> · <a href="/">EMSCodeSim Career Hub</a>
+</div>
+</footer>
+</div>
 </body>
 </html>

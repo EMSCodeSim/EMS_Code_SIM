@@ -1,14 +1,15 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MedWord | Daily EMS Medical Terminology Game</title>
-  <link rel="canonical" href="https://emscodesim.com/quiz/medword.html" />
-  <meta name="description" content="Play MedWord, a daily EMS medical terminology word game for EMT and paramedic learners." />
-  <link rel="icon" href="/favicon.png" />
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>MedWord | Daily EMS Medical Terminology Game</title>
+<link href="https://emscodesim.com/quiz/medword.html" rel="canonical"/>
+<meta content="Play MedWord, a daily EMS medical terminology word game for EMT and paramedic learners." name="description"/>
+<link href="/favicon.png" rel="icon"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<style>
     :root{
       --bg:#0b0f14; --panel:#111827; --grid:#0f1624; --text:#eaf2ff; --muted:#9fb0c7;
       --accent1:#60a5fa; --accent2:#22d3ee; --good:#10b981; --warn:#f59e0b; --edge:rgba(255,255,255,.12);
@@ -67,48 +68,47 @@
     a{color:#7dd3fc;text-decoration:none}
     a:hover{text-decoration:underline}
   </style>
-  <link rel="stylesheet" href="/styles/responsive.css">
-</head>
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="MedWord | Daily EMS Medical Terminology Game" property="og:title"/><meta content="Play MedWord, a daily EMS medical terminology word game for EMT and paramedic learners." property="og:description"/><meta content="https://emscodesim.com/quiz/medword.html" property="og:url"/><meta content="https://emscodesim.com/quiz/og-image.jpg" property="og:image"/>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Quiz","name":"MedWord Daily Medical Terminology Game","educationalLevel":"Beginner EMS","isAccessibleForFree":true,"provider":{"@type":"Organization","name":"EMSCodeSim","url":"https://emscodesim.com/"},"url":"https://emscodesim.com/quiz/medword.html"}</script></head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="title">
-        <a href="/quiz/" class="logo" title="Back to EMSCodeSim Daily Quiz"><img src="/ems-logo.png" alt="EMSCodeSim logo"></a>
-        <div>
-          <h1>MedWord</h1>
-          <div class="subtitle">A daily EMS medical terminology mini-game</div>
-        </div>
-      </div>
-      <div class="streak" id="streakBox" title="Your daily streak">
-        <span>🔥</span> <span>Streak:</span> <span class="num" id="streakNum">0</span>
-      </div>
-    </header>
-
-    <section class="panel">
-      <div class="bar">
-        <div>
-          <strong id="dateLabel"></strong>
-          <div class="hint" id="hintLine">Guess today’s 5-letter EMS term in 6 tries.</div>
-        </div>
-        <div class="row">
-          <button class="btn secondary" id="hintBtn" title="Reveal a short hint">Hint</button>
-          <button class="btn secondary" id="howBtn" title="How to play">How</button>
-          <button class="btn" id="shareBtn" title="Share result">Share</button>
-        </div>
-      </div>
-
-      <div id="board" class="grid" aria-label="Guess grid"></div>
-      <div id="kb"></div>
-      <div id="reveal" class="revealLine" hidden></div>
-    </section>
-
-    <footer>
+<div class="wrap">
+<header>
+<div class="title">
+<a class="logo" href="/quiz/" title="Back to EMSCodeSim Daily Quiz"><img alt="EMSCodeSim logo" src="/ems-logo.png"/></a>
+<div>
+<h1>MedWord</h1>
+<div class="subtitle">A daily EMS medical terminology mini-game</div>
+</div>
+</div>
+<div class="streak" id="streakBox" title="Your daily streak">
+<span>🔥</span> <span>Streak:</span> <span class="num" id="streakNum">0</span>
+</div>
+</header>
+<section class="panel">
+<div class="bar">
+<div>
+<strong id="dateLabel"></strong>
+<div class="hint" id="hintLine">Guess today’s 5-letter EMS term in 6 tries.</div>
+</div>
+<div class="row">
+<button class="btn secondary" id="hintBtn" title="Reveal a short hint">Hint</button>
+<button class="btn secondary" id="howBtn" title="How to play">How</button>
+<button class="btn" id="shareBtn" title="Share result">Share</button>
+</div>
+</div>
+<div aria-label="Guess grid" class="grid" id="board"></div>
+<div id="kb"></div>
+<div class="revealLine" hidden="" id="reveal"></div>
+</section>
+<footer>
       Part of EMSCodeSim Daily Quiz • Terms curated for EMS learners • <a href="#" id="reset">Reset</a>
      • <a href="/">EMSCodeSim Career Hub</a></footer>
-  </div>
-
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
+</div>
+<div aria-live="polite" class="toast" id="toast" role="status"></div>
 <script>
 /* ========= Word Bank ========= */
 const WORDS = [

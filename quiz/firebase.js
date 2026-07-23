@@ -7,7 +7,7 @@ const firebaseConfig = {
   storageBucket: "dailyquiz-d5279.appspot.com",
   messagingSenderId: "94577748034",
   appId: "1:94577748034:web:c032d3a1d72db1313de5db",
-  measurementId: "G-19DVN7NNH7"
+  measurementId: "G-5QLPK4025C"
 };
 
 firebase.initializeApp(firebaseConfig);

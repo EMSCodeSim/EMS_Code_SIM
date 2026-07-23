@@ -1,24 +1,25 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Daily EMT Quiz | Free EMT Practice Questions</title>
-  <meta name="description" content="Free daily EMT quiz with five NREMT-style practice questions for EMS students and providers. Practice airway, assessment, trauma, medical, and operations topics with no login." />
-  <meta name="robots" content="index, follow, max-image-preview:large" />
-  <link rel="canonical" href="https://emscodesim.com/quiz/emt_quiz.html" />
-  <link rel="icon" href="/favicon.png" type="image/png" />
-  <meta name="theme-color" content="#07111f" />
-  <meta name="keywords" content="EMT quiz, daily EMT quiz, NREMT EMT practice questions, EMT practice test, EMS study, EMT exam prep" />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="EMSCodeSim Daily Quiz" />
-  <meta property="og:title" content="Daily EMT Quiz | Free EMT Practice Questions" />
-  <meta property="og:description" content="Free daily EMT quiz with five NREMT-style practice questions for EMS students and providers. Practice airway, assessment, trauma, medical, and operations topics with no login." />
-  <meta property="og:url" content="https://emscodesim.com/quiz/emt_quiz.html" />
-  <meta property="og:image" content="https://emscodesim.com/quiz/og-image.jpg" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <link rel="stylesheet" href="/quiz/dailyemsquiz.css" />
-  <script type="application/ld+json">{
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Daily EMT Quiz | Free EMT Practice Questions</title>
+<meta content="Free daily EMT quiz with five NREMT-style practice questions for EMS students and providers. Practice airway, assessment, trauma, medical, and operations topics with no login." name="description"/>
+<meta content="index, follow, max-image-preview:large" name="robots"/>
+<link href="https://emscodesim.com/quiz/emt_quiz.html" rel="canonical"/>
+<link href="/favicon.png" rel="icon" type="image/png"/>
+<meta content="#07111f" name="theme-color"/>
+<meta content="EMT quiz, daily EMT quiz, NREMT EMT practice questions, EMT practice test, EMS study, EMT exam prep" name="keywords"/>
+<meta content="website" property="og:type"/>
+<meta content="EMSCodeSim Daily Quiz" property="og:site_name"/>
+<meta content="Daily EMT Quiz | Free EMT Practice Questions" property="og:title"/>
+<meta content="Free daily EMT quiz with five NREMT-style practice questions for EMS students and providers. Practice airway, assessment, trauma, medical, and operations topics with no login." property="og:description"/>
+<meta content="https://emscodesim.com/quiz/emt_quiz.html" property="og:url"/>
+<meta content="https://emscodesim.com/quiz/og-image.jpg" property="og:image"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<link href="/quiz/dailyemsquiz.css" rel="stylesheet"/>
+<script type="application/ld+json">{
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -76,77 +77,73 @@
     }
   ]
 }</script>
-  <link rel="stylesheet" href="/styles/responsive.css">
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#quiz-container">Skip to quiz</a>
-  <header class="site-header">
-    <div class="container nav">
-      <a class="brand" href="/quiz/" aria-label="EMSCodeSim Daily Quiz home">
-        <img class="brand-logo" src="/ems-logo.png" alt="EMSCodeSim logo" width="46" height="46">
-        <span class="brand-text">EMSCodeSim Daily Quiz <small>EMT & Paramedic study tools</small></span>
-      </a>
-      <nav class="nav-links" aria-label="Main navigation">
-        <a href="/quiz/emt_quiz.html" aria-current="page">EMT Quiz</a>
-        <a href="/quiz/paramedic_quiz.html" >Paramedic Quiz</a>
-        <a href="/quiz/ems_fact.html">EMS Facts</a>
-        <a href="/quiz/medword.html">MedWord</a>
-        <a href="/quiz/home_med.html">Home Meds</a>
-      <a class="career-hub-link" href="/">Career Hub</a></nav>
-    </div>
-  </header><div class="quiz-breadcrumb"><a href="/">EMSCodeSim</a> / <a href="/quiz/">Daily Quiz</a> / Daily EMT Quiz</div>
-
-  <main class="container quiz-shell">
-    <section class="quiz-hero">
-      <div class="quiz-title-card">
-        <span class="eyebrow">🚑 Free daily EMT practice</span>
-        <h1>Daily EMT Quiz</h1>
-        <p>Free daily EMT quiz with five NREMT-style practice questions for EMS students and providers. Practice airway, assessment, trauma, medical, and operations topics with no login. Each quiz gives you five questions for fast review on a phone, tablet, or desktop.</p>
-        <div class="badge-row"><span class="badge">EMT assessment</span><span class="badge">Airway</span><span class="badge">Trauma</span><span class="badge">Medical emergencies</span><span class="badge">EMS operations</span><span class="badge">Patient care</span></div>
-      </div>
-      <aside class="score-card" aria-live="polite">
-        <div class="daily-label"><span>Today’s score</span><span id="answeredLabel">0 of 5 answered</span></div>
-        <div class="score-big" id="scoreBig">Ready</div>
-        <div class="progress-track" aria-label="Quiz progress"><div class="progress-bar" id="progressBar"></div></div>
-        <p style="color:var(--muted);line-height:1.5;margin:6px 0 0">Submit when finished to see correct answers and explanations.</p>
-      </aside>
-    </section>
-
-    <section id="quiz-container" class="quiz-container" aria-label="Daily EMT quiz questions"><div class="loading">Loading today’s EMT quiz...</div></section>
-
-    <section class="quiz-actions" aria-label="Quiz actions">
-      <div class="result" id="result">Answer the questions, then submit.</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <a class="btn btn-ghost" href="/quiz/">Quiz Home</a>
-        <button class="btn btn-primary" type="button" id="submitBtn">Submit Answers</button>
-      </div>
-    </section>
-
-    <section class="helper-section">
-      <h2>EMT quiz topics</h2>
-      <p>This daily emt quiz is intended for EMS review and test preparation. Questions may cover assessment, safety, airway, patient care, medications, operations, and scenario-based decision-making.</p>
-      <ul>
-        <li>Use the quiz as a quick daily warm-up before class, clinicals, or shift review.</li>
-        <li>Review missed questions and write down the topic you need to study next.</li>
-        <li>This is an independent practice resource and is not affiliated with NREMT.</li>
-      </ul>
-    </section>
-
-    <section class="helper-section">
-      <h2>Sample EMT practice questions</h2>
-      <p>These examples show the style of questions used on this page and help search engines understand the educational content.</p>
-      <div class="faq"><details><summary>1. What is the primary role of the EMT in an EMS system?</summary><p><strong>Answer:</strong> Provide basic emergency medical care</p></details><details><summary>2. What is an example of off-line medical direction?</summary><p><strong>Answer:</strong> Standing orders</p></details><details><summary>3. Which level of EMS provider can perform advanced airway management?</summary><p><strong>Answer:</strong> Paramedic</p></details></div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div>© 2026 EMSCodeSim Daily Quiz. Independent EMS education practice site. Not affiliated with NREMT.</div>
-      <div class="footer-links"><a href="/privacy.html">Privacy</a><a href="/sitemap.xml">Sitemap</a><a href="/">EMSCodeSim Career Hub</a></div>
-    </div>
-  </footer>
-
-  <script>
+<a class="skip-link" href="#quiz-container">Skip to quiz</a>
+<header class="site-header">
+<div class="container nav">
+<a aria-label="EMSCodeSim Daily Quiz home" class="brand" href="/quiz/">
+<img alt="EMSCodeSim logo" class="brand-logo" height="46" src="/ems-logo.png" width="46"/>
+<span class="brand-text">EMSCodeSim Daily Quiz <small>EMT &amp; Paramedic study tools</small></span>
+</a>
+<nav aria-label="Main navigation" class="nav-links">
+<a aria-current="page" href="/quiz/emt_quiz.html">EMT Quiz</a>
+<a href="/quiz/paramedic_quiz.html">Paramedic Quiz</a>
+<a href="/quiz/ems_fact.html">EMS Facts</a>
+<a href="/quiz/medword.html">MedWord</a>
+<a href="/quiz/home_med.html">Home Meds</a>
+<a class="career-hub-link" href="/">Career Hub</a></nav>
+</div>
+</header><div class="quiz-breadcrumb"><a href="/">EMSCodeSim</a> / <a href="/quiz/">Daily Quiz</a> / Daily EMT Quiz</div>
+<main class="container quiz-shell">
+<section class="quiz-hero">
+<div class="quiz-title-card">
+<span class="eyebrow">🚑 Free daily EMT practice</span>
+<h1>Daily EMT Quiz</h1>
+<p>Free daily EMT quiz with five NREMT-style practice questions for EMS students and providers. Practice airway, assessment, trauma, medical, and operations topics with no login. Each quiz gives you five questions for fast review on a phone, tablet, or desktop.</p>
+<div class="badge-row"><span class="badge">EMT assessment</span><span class="badge">Airway</span><span class="badge">Trauma</span><span class="badge">Medical emergencies</span><span class="badge">EMS operations</span><span class="badge">Patient care</span></div>
+</div>
+<aside aria-live="polite" class="score-card">
+<div class="daily-label"><span>Today’s score</span><span id="answeredLabel">0 of 5 answered</span></div>
+<div class="score-big" id="scoreBig">Ready</div>
+<div aria-label="Quiz progress" class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+<p style="color:var(--muted);line-height:1.5;margin:6px 0 0">Submit when finished to see correct answers and explanations.</p>
+</aside>
+</section>
+<section aria-label="Daily EMT quiz questions" class="quiz-container" id="quiz-container"><div class="loading">Loading today’s EMT quiz...</div></section>
+<section aria-label="Quiz actions" class="quiz-actions">
+<div class="result" id="result">Answer the questions, then submit.</div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<a class="btn btn-ghost" href="/quiz/">Quiz Home</a>
+<button class="btn btn-primary" id="submitBtn" type="button">Submit Answers</button>
+</div>
+</section>
+<section class="helper-section">
+<h2>EMT quiz topics</h2>
+<p>This daily emt quiz is intended for EMS review and test preparation. Questions may cover assessment, safety, airway, patient care, medications, operations, and scenario-based decision-making.</p>
+<ul>
+<li>Use the quiz as a quick daily warm-up before class, clinicals, or shift review.</li>
+<li>Review missed questions and write down the topic you need to study next.</li>
+<li>This is an independent practice resource and is not affiliated with NREMT.</li>
+</ul>
+</section>
+<section class="helper-section">
+<h2>Sample EMT practice questions</h2>
+<p>These examples show the style of questions used on this page and help search engines understand the educational content.</p>
+<div class="faq"><details><summary>1. What is the primary role of the EMT in an EMS system?</summary><p><strong>Answer:</strong> Provide basic emergency medical care</p></details><details><summary>2. What is an example of off-line medical direction?</summary><p><strong>Answer:</strong> Standing orders</p></details><details><summary>3. Which level of EMS provider can perform advanced airway management?</summary><p><strong>Answer:</strong> Paramedic</p></details></div>
+</section>
+</main>
+<footer class="site-footer">
+<div class="container footer-grid">
+<div>© 2026 EMSCodeSim Daily Quiz. Independent EMS education practice site. Not affiliated with NREMT.</div>
+<div class="footer-links"><a href="/privacy.html">Privacy</a><a href="/sitemap.xml">Sitemap</a><a href="/">EMSCodeSim Career Hub</a></div>
+</div>
+</footer>
+<script>
     const quizFile = "emt_quiz.json";
     const storageKey = "dailyQuiz_emt";
     let questionsData = [];
