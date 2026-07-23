@@ -1,22 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <!-- Lock phone view: no pinch zoom, no sideways scroll -->
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>PERL Pupil Simulator | EMSCodeSim</title>
-<link rel="canonical" href="https://emscodesim.com/vitals/pupil.html"/>
-<meta name="description" content="Practice EMS pupil assessment including size, equality, roundness, and reactivity to light."/>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-5QLPK4025C');
-</script>
-
+<link href="https://emscodesim.com/vitals/pupil.html" rel="canonical"/>
+<meta content="Practice EMS pupil assessment including size, equality, roundness, and reactivity to light." name="description"/>
 <style>
   :root{
     --bg:#f6f9fc; --card:#fff; --ink:#122230; --muted:#637589; --accent:#0a76d3;
@@ -68,228 +59,219 @@
   .disc{background:#111;border:none;border-radius:9999px;flex:0 0 auto}
   small{white-space:nowrap}
 </style>
-  <link rel="stylesheet" href="/styles/responsive.css">
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="PERL Pupil Simulator | EMSCodeSim" property="og:title"/><meta content="Practice EMS pupil assessment including size, equality, roundness, and reactivity to light." property="og:description"/><meta content="https://emscodesim.com/vitals/pupil.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 </head>
 <body>
-
 <header>
-  <div class="headerbar">
-    <div style="display:flex;gap:8px;align-items:center">
-      <button id="btnBack" class="iconbtn">← Back</button>
-      <h1>Pupil & Gaze Trainer — True-Scale, Clear but Bounded Nystagmus</h1>
-    </div>
-    <div><button id="btnInfo" class="iconbtn">ℹ️ Info</button></div>
-  </div>
-</header>
-
-<div class="wrap">
-  <!-- Penlight pupil size chart (true scale; 1–7 mm) -->
-  <section class="card">
-    <h2>Penlight Pupil Size Chart (True Scale)</h2>
-    <div class="body">
-      <div id="sizeChart" class="chart" aria-label="Pupil size reference 1–7 mm"></div>
-      <div style="text-align:center;margin-top:10px">
-        <span class="line" style="display:inline-block">
-          <strong>Reference:</strong>
-          Pinpoint ≈ <em>1–2 mm</em> • Normal (room light) ≈ <em>3–4 mm</em> • Dilated ≥ <em>6 mm</em>
-        </span>
-      </div>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>Eyes</h2>
-    <div class="body">
-      <!-- Eyes: patient's RIGHT is on the left; patient's LEFT is on the right -->
-      <div class="panel">
-        <!-- Left card = RIGHT side (patient) -->
-        <div class="eyeBox">
-          <div class="labelAbove">
-            Right side Pupil: <span id="mmR">—</span>
-            <span class="muted">(ratio <span id="ratioR">—</span>)</span>
-          </div>
-          <div class="svgwrap">
-            <svg id="svgR" viewBox="0 0 240 170" aria-label="Right eye">
-              <defs>
-                <clipPath id="openR"><path d="M20,85 Q120,32 220,85 Q120,138 20,85 Z"/></clipPath>
-                <radialGradient id="gradIrisR" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#6aa0ff"/><stop offset="80%" stop-color="#3065c9"/><stop offset="100%" stop-color="#20407f"/>
-                </radialGradient>
-                <linearGradient id="upperSkinR" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--skin)"/><stop offset="100%" stop-color="var(--skin-shadow)"/>
-                </linearGradient>
-                <linearGradient id="lowerSkinR" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--skin-shadow)"/><stop offset="100%" stop-color="var(--skin)"/>
-                </linearGradient>
-              </defs>
-              <g clip-path="url(#openR)">
-                <ellipse cx="120" cy="85" rx="100" ry="62" fill="#ffffff" stroke="#d8e5f3" stroke-width="2"/>
-                <circle id="irisR" cx="120" cy="85" r="44" fill="url(#gradIrisR)" stroke="#2f4f7f" stroke-width="2"/>
-                <circle id="pupilR" cx="120" cy="85" r="12" fill="#0b0b0b"/>
-                <circle cx="105" cy="72" r="6" fill="#fff" opacity=".9"/>
-              </g>
-              <path d="M 20 85 Q 120 32 220 85 L 220 0 L 20 0 Z" fill="url(#upperSkinR)"/>
-              <path d="M 20 85 Q 120 138 220 85 L 220 170 L 20 170 Z" fill="url(#lowerSkinR)"/>
-              <path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
-              <path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
-            </svg>
-          </div>
-          <div class="btnrow" style="margin-top:8px">
-            <button class="btn pin" id="btnLightR">💡 Penlight — Right side</button>
-          </div>
-        </div>
-
-        <!-- Right card = LEFT side (patient) -->
-        <div class="eyeBox">
-          <div class="labelAbove">
-            Left side Pupil: <span id="mmL">—</span>
-            <span class="muted">(ratio <span id="ratioL">—</span>)</span>
-          </div>
-          <div class="svgwrap">
-            <svg id="svgL" viewBox="0 0 240 170" aria-label="Left eye">
-              <defs>
-                <clipPath id="openL"><path d="M20,85 Q120,32 220,85 Q120,138 20,85 Z"/></clipPath>
-                <radialGradient id="gradIrisL" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="#6aa0ff"/><stop offset="80%" stop-color="#3065c9"/><stop offset="100%" stop-color="#20407f"/>
-                </radialGradient>
-                <linearGradient id="upperSkinL" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--skin)"/><stop offset="100%" stop-color="var(--skin-shadow)"/>
-                </linearGradient>
-                <linearGradient id="lowerSkinL" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--skin-shadow)"/><stop offset="100%" stop-color="var(--skin)"/>
-                </linearGradient>
-              </defs>
-              <g clip-path="url(#openL)">
-                <ellipse cx="120" cy="85" rx="100" ry="62" fill="#ffffff" stroke="#d8e5f3" stroke-width="2"/>
-                <circle id="irisL" cx="120" cy="85" r="44" fill="url(#gradIrisL)" stroke="#2f4f7f" stroke-width="2"/>
-                <circle id="pupilL" cx="120" cy="85" r="12" fill="#0b0b0b"/>
-                <circle cx="105" cy="72" r="6" fill="#fff" opacity=".9"/>
-              </g>
-              <path d="M 20 85 Q 120 32 220 85 L 220 0 L 20 0 Z" fill="url(#upperSkinL)"/>
-              <path d="M 20 85 Q 120 138 220 85 L 220 170 L 20 170 Z" fill="url(#lowerSkinL)"/>
-              <path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
-              <path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"/>
-            </svg>
-          </div>
-          <div class="btnrow" style="margin-top:8px">
-            <button class="btn pin" id="btnLightL">💡 Penlight — Left side</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tracking control -->
-      <div class="line" style="margin-top:10px">
-        <label for="gaze">Tracking (follow examiner’s finger): <span class="muted">Left ⇄ Right (auto-centers on release)</span></label>
-        <input id="gaze" type="range" min="-100" max="100" value="0"/>
-      </div>
-
-      <!-- Findings -->
-      <div class="line warn"><strong>Record findings (sides are the patient’s)</strong></div>
-      <div class="line" style="margin-top:0">
-        <label for="perl">PERL (Pupils Equal and Reactive to Light)</label>
-        <select id="perl">
-          <option value="">— choose —</option>
-          <option>Yes</option>
-          <option>No</option>
-        </select>
-      </div>
-
-      <!-- Per-eye inputs (size, reaction, tracking) -->
-      <div class="panel">
-        <!-- RIGHT side -->
-        <div>
-          <label for="sizeR">Right side — Size</label>
-          <select id="sizeR">
-            <option value="">— choose —</option>
-            <option>Pinpoint</option>
-            <option>Normal</option>
-            <option>Dilated</option>
-          </select>
-          <div style="height:8px"></div>
-          <label for="reactR">Right side — Reaction</label>
-          <select id="reactR">
-            <option value="">— choose —</option>
-            <option>Normal</option>
-            <option>Sluggish</option>
-            <option>Non-reactive</option>
-          </select>
-          <div style="height:8px"></div>
-          <label for="trackR">Right side — Tracking</label>
-          <select id="trackR">
-            <option value="">— choose —</option>
-            <option>Normal tracking</option>
-            <option>Movement limited toward the patient’s left</option>
-            <option>Movement limited toward the patient’s right</option>
-            <option>Both eyes held to the patient’s left</option>
-            <option>Both eyes held to the patient’s right</option>
-            <option>Nystagmus (visible small rapid shaking)</option>
-            <option>Eyes do not move together / one lags</option>
-          </select>
-        </div>
-
-        <!-- LEFT side -->
-        <div>
-          <label for="sizeL">Left side — Size</label>
-          <select id="sizeL">
-            <option value="">— choose —</option>
-            <option>Pinpoint</option>
-            <option>Normal</option>
-            <option>Dilated</option>
-          </select>
-          <div style="height:8px"></div>
-          <label for="reactL">Left side — Reaction</label>
-          <select id="reactL">
-            <option value="">— choose —</option>
-            <option>Normal</option>
-            <option>Sluggish</option>
-            <option>Non-reactive</option>
-          </select>
-          <div style="height:8px"></div>
-          <label for="trackL">Left side — Tracking</label>
-          <select id="trackL">
-            <option value="">— choose —</option>
-            <option>Normal tracking</option>
-            <option>Movement limited toward the patient’s left</option>
-            <option>Movement limited toward the patient’s right</option>
-            <option>Both eyes held to the patient’s left</option>
-            <option>Both eyes held to the patient’s right</option>
-            <option>Nystagmus (visible small rapid shaking)</option>
-            <option>Eyes do not move together / one lags</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="btnrow" style="margin-top:12px">
-        <button class="btn primary" id="btnGrade">Grade Findings</button>
-      </div>
-
-      <div id="gradeBox" class="line" style="display:none"></div>
-      <div id="whyBox" class="line" style="display:none"></div>
-
-      <div class="btnrow" style="margin-top:14px">
-        <button class="btn" id="btnNewCase">New Random Case</button>
-      </div>
-    </div>
-  </section>
+<div class="headerbar">
+<div style="display:flex;gap:8px;align-items:center">
+<button class="iconbtn" id="btnBack">← Back</button>
+<h1>Pupil &amp; Gaze Trainer — True-Scale, Clear but Bounded Nystagmus</h1>
 </div>
-
+<div><button class="iconbtn" id="btnInfo">ℹ️ Info</button></div>
+</div>
+</header>
+<div class="wrap">
+<!-- Penlight pupil size chart (true scale; 1–7 mm) -->
+<section class="card">
+<h2>Penlight Pupil Size Chart (True Scale)</h2>
+<div class="body">
+<div aria-label="Pupil size reference 1–7 mm" class="chart" id="sizeChart"></div>
+<div style="text-align:center;margin-top:10px">
+<span class="line" style="display:inline-block">
+<strong>Reference:</strong>
+          Pinpoint ≈ <em>1–2 mm</em> • Normal (room light) ≈ <em>3–4 mm</em> • Dilated ≥ <em>6 mm</em>
+</span>
+</div>
+</div>
+</section>
+<section class="card">
+<h2>Eyes</h2>
+<div class="body">
+<!-- Eyes: patient's RIGHT is on the left; patient's LEFT is on the right -->
+<div class="panel">
+<!-- Left card = RIGHT side (patient) -->
+<div class="eyeBox">
+<div class="labelAbove">
+            Right side Pupil: <span id="mmR">—</span>
+<span class="muted">(ratio <span id="ratioR">—</span>)</span>
+</div>
+<div class="svgwrap">
+<svg aria-label="Right eye" id="svgR" viewbox="0 0 240 170">
+<defs>
+<clippath id="openR"><path d="M20,85 Q120,32 220,85 Q120,138 20,85 Z"></path></clippath>
+<radialgradient cx="50%" cy="50%" id="gradIrisR" r="50%">
+<stop offset="0%" stop-color="#6aa0ff"></stop><stop offset="80%" stop-color="#3065c9"></stop><stop offset="100%" stop-color="#20407f"></stop>
+</radialgradient>
+<lineargradient id="upperSkinR" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="var(--skin)"></stop><stop offset="100%" stop-color="var(--skin-shadow)"></stop>
+</lineargradient>
+<lineargradient id="lowerSkinR" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="var(--skin-shadow)"></stop><stop offset="100%" stop-color="var(--skin)"></stop>
+</lineargradient>
+</defs>
+<g clip-path="url(#openR)">
+<ellipse cx="120" cy="85" fill="#ffffff" rx="100" ry="62" stroke="#d8e5f3" stroke-width="2"></ellipse>
+<circle cx="120" cy="85" fill="url(#gradIrisR)" id="irisR" r="44" stroke="#2f4f7f" stroke-width="2"></circle>
+<circle cx="120" cy="85" fill="#0b0b0b" id="pupilR" r="12"></circle>
+<circle cx="105" cy="72" fill="#fff" opacity=".9" r="6"></circle>
+</g>
+<path d="M 20 85 Q 120 32 220 85 L 220 0 L 20 0 Z" fill="url(#upperSkinR)"></path>
+<path d="M 20 85 Q 120 138 220 85 L 220 170 L 20 170 Z" fill="url(#lowerSkinR)"></path>
+<path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"></path>
+<path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"></path>
+</svg>
+</div>
+<div class="btnrow" style="margin-top:8px">
+<button class="btn pin" id="btnLightR">💡 Penlight — Right side</button>
+</div>
+</div>
+<!-- Right card = LEFT side (patient) -->
+<div class="eyeBox">
+<div class="labelAbove">
+            Left side Pupil: <span id="mmL">—</span>
+<span class="muted">(ratio <span id="ratioL">—</span>)</span>
+</div>
+<div class="svgwrap">
+<svg aria-label="Left eye" id="svgL" viewbox="0 0 240 170">
+<defs>
+<clippath id="openL"><path d="M20,85 Q120,32 220,85 Q120,138 20,85 Z"></path></clippath>
+<radialgradient cx="50%" cy="50%" id="gradIrisL" r="50%">
+<stop offset="0%" stop-color="#6aa0ff"></stop><stop offset="80%" stop-color="#3065c9"></stop><stop offset="100%" stop-color="#20407f"></stop>
+</radialgradient>
+<lineargradient id="upperSkinL" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="var(--skin)"></stop><stop offset="100%" stop-color="var(--skin-shadow)"></stop>
+</lineargradient>
+<lineargradient id="lowerSkinL" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="var(--skin-shadow)"></stop><stop offset="100%" stop-color="var(--skin)"></stop>
+</lineargradient>
+</defs>
+<g clip-path="url(#openL)">
+<ellipse cx="120" cy="85" fill="#ffffff" rx="100" ry="62" stroke="#d8e5f3" stroke-width="2"></ellipse>
+<circle cx="120" cy="85" fill="url(#gradIrisL)" id="irisL" r="44" stroke="#2f4f7f" stroke-width="2"></circle>
+<circle cx="120" cy="85" fill="#0b0b0b" id="pupilL" r="12"></circle>
+<circle cx="105" cy="72" fill="#fff" opacity=".9" r="6"></circle>
+</g>
+<path d="M 20 85 Q 120 32 220 85 L 220 0 L 20 0 Z" fill="url(#upperSkinL)"></path>
+<path d="M 20 85 Q 120 138 220 85 L 220 170 L 20 170 Z" fill="url(#lowerSkinL)"></path>
+<path d="M20,85 Q120,32 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"></path>
+<path d="M20,85 Q120,138 220,85" fill="none" stroke="#c9d7e6" stroke-width="2"></path>
+</svg>
+</div>
+<div class="btnrow" style="margin-top:8px">
+<button class="btn pin" id="btnLightL">💡 Penlight — Left side</button>
+</div>
+</div>
+</div>
+<!-- Tracking control -->
+<div class="line" style="margin-top:10px">
+<label for="gaze">Tracking (follow examiner’s finger): <span class="muted">Left ⇄ Right (auto-centers on release)</span></label>
+<input id="gaze" max="100" min="-100" type="range" value="0"/>
+</div>
+<!-- Findings -->
+<div class="line warn"><strong>Record findings (sides are the patient’s)</strong></div>
+<div class="line" style="margin-top:0">
+<label for="perl">PERL (Pupils Equal and Reactive to Light)</label>
+<select id="perl">
+<option value="">— choose —</option>
+<option>Yes</option>
+<option>No</option>
+</select>
+</div>
+<!-- Per-eye inputs (size, reaction, tracking) -->
+<div class="panel">
+<!-- RIGHT side -->
+<div>
+<label for="sizeR">Right side — Size</label>
+<select id="sizeR">
+<option value="">— choose —</option>
+<option>Pinpoint</option>
+<option>Normal</option>
+<option>Dilated</option>
+</select>
+<div style="height:8px"></div>
+<label for="reactR">Right side — Reaction</label>
+<select id="reactR">
+<option value="">— choose —</option>
+<option>Normal</option>
+<option>Sluggish</option>
+<option>Non-reactive</option>
+</select>
+<div style="height:8px"></div>
+<label for="trackR">Right side — Tracking</label>
+<select id="trackR">
+<option value="">— choose —</option>
+<option>Normal tracking</option>
+<option>Movement limited toward the patient’s left</option>
+<option>Movement limited toward the patient’s right</option>
+<option>Both eyes held to the patient’s left</option>
+<option>Both eyes held to the patient’s right</option>
+<option>Nystagmus (visible small rapid shaking)</option>
+<option>Eyes do not move together / one lags</option>
+</select>
+</div>
+<!-- LEFT side -->
+<div>
+<label for="sizeL">Left side — Size</label>
+<select id="sizeL">
+<option value="">— choose —</option>
+<option>Pinpoint</option>
+<option>Normal</option>
+<option>Dilated</option>
+</select>
+<div style="height:8px"></div>
+<label for="reactL">Left side — Reaction</label>
+<select id="reactL">
+<option value="">— choose —</option>
+<option>Normal</option>
+<option>Sluggish</option>
+<option>Non-reactive</option>
+</select>
+<div style="height:8px"></div>
+<label for="trackL">Left side — Tracking</label>
+<select id="trackL">
+<option value="">— choose —</option>
+<option>Normal tracking</option>
+<option>Movement limited toward the patient’s left</option>
+<option>Movement limited toward the patient’s right</option>
+<option>Both eyes held to the patient’s left</option>
+<option>Both eyes held to the patient’s right</option>
+<option>Nystagmus (visible small rapid shaking)</option>
+<option>Eyes do not move together / one lags</option>
+</select>
+</div>
+</div>
+<div class="btnrow" style="margin-top:12px">
+<button class="btn primary" id="btnGrade">Grade Findings</button>
+</div>
+<div class="line" id="gradeBox" style="display:none"></div>
+<div class="line" id="whyBox" style="display:none"></div>
+<div class="btnrow" style="margin-top:14px">
+<button class="btn" id="btnNewCase">New Random Case</button>
+</div>
+</div>
+</section>
+</div>
 <!-- Info -->
 <dialog id="infoDialog" style="max-width:760px;border:1px solid var(--border);border-radius:16px;padding:0">
-  <form method="dialog" style="margin:0">
-    <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">About</div>
-    <div style="padding:14px 16px">
-      <ul>
-        <li>“Right side” and “Left side” are from the patient’s point of view. The right side appears on the left of your screen.</li>
-        <li>The chart and the live pupils use the same geometry. A pupil that reads “6.0 mm” will match the 6 mm chart disc on any screen size.</li>
-        <li>The tracking slider recenters itself when you let go, like returning your finger to the middle.</li>
-      </ul>
-    </div>
-    <div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
-      <button class="iconbtn" style="background:#eee;color:#111">Close</button>
-    </div>
-  </form>
+<form method="dialog" style="margin:0">
+<div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">About</div>
+<div style="padding:14px 16px">
+<ul>
+<li>“Right side” and “Left side” are from the patient’s point of view. The right side appears on the left of your screen.</li>
+<li>The chart and the live pupils use the same geometry. A pupil that reads “6.0 mm” will match the 6 mm chart disc on any screen size.</li>
+<li>The tracking slider recenters itself when you let go, like returning your finger to the middle.</li>
+</ul>
+</div>
+<div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
+<button class="iconbtn" style="background:#eee;color:#111">Close</button>
+</div>
+</form>
 </dialog>
-
 <script>
 (function(){
   const $ = s => document.querySelector(s);

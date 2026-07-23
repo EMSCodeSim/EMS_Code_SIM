@@ -1,22 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Blood Pressure Simulator | EMSCodeSim</title>
-<link rel="canonical" href="https://emscodesim.com/vitals/bp.html"/>
-<meta name="description" content="Practice manual blood pressure skills with an interactive EMS blood pressure simulator, Korotkoff sounds, cuff flow, and reading feedback."/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-5QLPK4025C');
-  </script>
-
-  <style>
+<meta charset="utf-8"/>
+<title>Blood Pressure Simulator | EMSCodeSim</title>
+<link href="https://emscodesim.com/vitals/bp.html" rel="canonical"/>
+<meta content="Practice manual blood pressure skills with an interactive EMS blood pressure simulator, Korotkoff sounds, cuff flow, and reading feedback." name="description"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<style>
     :root{
       --bg:#f7fafc; --card:#ffffff; --text:#0f172a; --muted:#334155;
       --accent:#0284c7; --accent-2:#dc2626; --ring: rgba(2,132,199,.35);
@@ -163,104 +154,99 @@
     .muted{ color: var(--muted); font-size:.92rem; }
     .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:10px; }
   </style>
-  <link rel="stylesheet" href="../styles/modern-theme.css" />
-  <link rel="stylesheet" href="/styles/responsive.css">
+<link href="../styles/modern-theme.css" rel="stylesheet"/>
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Blood Pressure Simulator | EMSCodeSim" property="og:title"/><meta content="Practice manual blood pressure skills with an interactive EMS blood pressure simulator, Korotkoff sounds, cuff flow, and reading feedback." property="og:description"/><meta content="https://emscodesim.com/vitals/bp.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 </head>
 <body>
-  <!-- Sticky Top Header -->
-  <div class="topbar" role="banner">
-    <div class="topbar-inner">
-      <button class="iconbtn" id="backBtn" aria-label="Go back" title="Back">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <div class="topbar-title">Blood Pressure</div>
-      <button class="iconbtn" id="infoBtn" aria-label="Blood pressure info" title="Info">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-          <path d="M12 8h.01M11 11h2v6h-2z" fill="currentColor"/>
-        </svg>
-        <span class="btn-label">Info</span>
-      </button>
-    </div>
-  </div>
-
-  <div class="app" role="main">
-    <div class="subtitle">Pump to inflate • Toggle release • Beat plays between SYS→DIA</div>
-
-    <div class="card">
-      <div id="gauge-container">
-        <img id="dial" src="bp_dial.png" alt="Gauge Dial" />
-        <div id="needle"></div>
-        <div class="hub"></div>
-      </div>
-
-      <div class="readouts">
-        <div>Pressure: <b id="pressureDisplay">0</b> mmHg</div>
-        <div>&nbsp;</div> <!-- no live BP reveal -->
-      </div>
-
-      <div class="controls">
-        <button class="btn btn-primary" id="pumpBtn">Pump +10</button>
-        <button class="btn btn-danger" id="releaseBtn">Release</button>
-        <button class="btn btn-ghost"  id="resetBtn">Reset</button>
-      </div>
-
-      <div class="slider-wrap">
-        <div class="slider-label">
-          <span>Deflation speed</span>
-          <span><b id="speedValue">0.5</b> mmHg/step</span>
-        </div>
-        <input type="range" id="speedSlider" min="0.2" max="5" step="0.1" value="0.5" aria-label="Deflation speed">
-      </div>
-    </div>
-
-    <!-- Answer entry -->
-    <div class="card" aria-labelledby="answerTitle">
-      <div id="answerTitle" class="slider-label"><b>Enter the blood pressure you heard</b><span class="muted">Format: SYS / DIA (even numbers)</span></div>
-      <div class="answer-wrap">
-        <input type="number" id="sysInput" inputmode="numeric" min="60" max="260" placeholder="Systolic" aria-label="Systolic (SYS)">
-        <div class="slash">/</div>
-        <input type="number" id="diaInput" inputmode="numeric" min="30" max="160" placeholder="Diastolic" aria-label="Diastolic (DIA)">
-        <button class="btn btn-primary" id="submitBtn" aria-label="Submit answer">Submit</button>
-      </div>
-      <div id="result" class="result" role="status" aria-live="polite"></div>
-    </div>
-
-    <div class="footer">v1.8 • iPhone audio • instant pump • ±4 tolerance • even numbers • Info labeled</div>
-  </div>
-
-  <!-- Info Modal -->
-  <div class="modal" id="infoModal" aria-hidden="true" aria-labelledby="bpInfoTitle" role="dialog">
-    <div class="modal-card">
-      <div class="modal-header">
-        <div class="modal-title" id="bpInfoTitle">Understanding Blood Pressure <span class="badge">SYS/DIA (mmHg)</span></div>
-        <button class="iconbtn" id="closeModalBtn" aria-label="Close info" title="Close">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-      <div>
-        <p><strong>Systolic (SYS)</strong> is the pressure when the heart contracts. <strong>Diastolic (DIA)</strong> is the pressure when the heart relaxes. In this simulator, you’ll hear beats while the cuff pressure is between the patient’s SYS and DIA.</p>
-        <div class="legend" aria-label="Common categories (adults)">
-          <div><strong>Normal:</strong> &lt;120 and &lt;80</div>
-          <div><strong>Elevated:</strong> 120–129 and &lt;80</div>
-          <div><strong>Stage 1 HTN:</strong> 130–139 or 80–89</div>
-          <div><strong>Stage 2 HTN:</strong> ≥140 or ≥90</div>
-          <div><strong>Crisis:</strong> ≥180 and/or ≥120 <em>→ evaluate promptly</em></div>
-          <div><strong>Notes:</strong> Single readings don’t diagnose; use clinical context.</div>
-        </div>
-        <p class="muted">Training use only. Always follow your local protocols and device instructions.</p>
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-primary" id="modalOkBtn">Got it</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
+<!-- Sticky Top Header -->
+<div class="topbar" role="banner">
+<div class="topbar-inner">
+<button aria-label="Go back" class="iconbtn" id="backBtn" title="Back">
+<svg aria-hidden="true" fill="none" height="22" viewbox="0 0 24 24" width="22">
+<path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<h1 class="topbar-title tool-h1">Blood Pressure Simulator</h1>
+<button aria-label="Blood pressure info" class="iconbtn" id="infoBtn" title="Info">
+<svg aria-hidden="true" fill="none" height="20" viewbox="0 0 24 24" width="20">
+<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"></circle>
+<path d="M12 8h.01M11 11h2v6h-2z" fill="currentColor"></path>
+</svg>
+<span class="btn-label">Info</span>
+</button>
+</div>
+</div>
+<div class="app" role="main">
+<div class="subtitle">Pump to inflate • Toggle release • Beat plays between SYS→DIA</div>
+<div class="card">
+<div id="gauge-container">
+<img alt="Gauge Dial" id="dial" src="bp_dial.png"/>
+<div id="needle"></div>
+<div class="hub"></div>
+</div>
+<div class="readouts">
+<div>Pressure: <b id="pressureDisplay">0</b> mmHg</div>
+<div> </div> <!-- no live BP reveal -->
+</div>
+<div class="controls">
+<button class="btn btn-primary" id="pumpBtn">Pump +10</button>
+<button class="btn btn-danger" id="releaseBtn">Release</button>
+<button class="btn btn-ghost" id="resetBtn">Reset</button>
+</div>
+<div class="slider-wrap">
+<div class="slider-label">
+<span>Deflation speed</span>
+<span><b id="speedValue">0.5</b> mmHg/step</span>
+</div>
+<input aria-label="Deflation speed" id="speedSlider" max="5" min="0.2" step="0.1" type="range" value="0.5"/>
+</div>
+</div>
+<!-- Answer entry -->
+<div aria-labelledby="answerTitle" class="card">
+<div class="slider-label" id="answerTitle"><b>Enter the blood pressure you heard</b><span class="muted">Format: SYS / DIA (even numbers)</span></div>
+<div class="answer-wrap">
+<input aria-label="Systolic (SYS)" id="sysInput" inputmode="numeric" max="260" min="60" placeholder="Systolic" type="number"/>
+<div class="slash">/</div>
+<input aria-label="Diastolic (DIA)" id="diaInput" inputmode="numeric" max="160" min="30" placeholder="Diastolic" type="number"/>
+<button aria-label="Submit answer" class="btn btn-primary" id="submitBtn">Submit</button>
+</div>
+<div aria-live="polite" class="result" id="result" role="status"></div>
+</div>
+<div class="footer">v1.8 • iPhone audio • instant pump • ±4 tolerance • even numbers • Info labeled</div>
+</div>
+<!-- Info Modal -->
+<div aria-hidden="true" aria-labelledby="bpInfoTitle" class="modal" id="infoModal" role="dialog">
+<div class="modal-card">
+<div class="modal-header">
+<div class="modal-title" id="bpInfoTitle">Understanding Blood Pressure <span class="badge">SYS/DIA (mmHg)</span></div>
+<button aria-label="Close info" class="iconbtn" id="closeModalBtn" title="Close">
+<svg aria-hidden="true" fill="none" height="22" viewbox="0 0 24 24" width="22">
+<path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+<div>
+<p><strong>Systolic (SYS)</strong> is the pressure when the heart contracts. <strong>Diastolic (DIA)</strong> is the pressure when the heart relaxes. In this simulator, you’ll hear beats while the cuff pressure is between the patient’s SYS and DIA.</p>
+<div aria-label="Common categories (adults)" class="legend">
+<div><strong>Normal:</strong> &lt;120 and &lt;80</div>
+<div><strong>Elevated:</strong> 120–129 and &lt;80</div>
+<div><strong>Stage 1 HTN:</strong> 130–139 or 80–89</div>
+<div><strong>Stage 2 HTN:</strong> ≥140 or ≥90</div>
+<div><strong>Crisis:</strong> ≥180 and/or ≥120 <em>→ evaluate promptly</em></div>
+<div><strong>Notes:</strong> Single readings don’t diagnose; use clinical context.</div>
+</div>
+<p class="muted">Training use only. Always follow your local protocols and device instructions.</p>
+</div>
+<div class="modal-actions">
+<button class="btn btn-primary" id="modalOkBtn">Got it</button>
+</div>
+</div>
+</div>
+<script>
     // ---------- Topbar actions ----------
     const backBtn = document.getElementById('backBtn');
     const infoBtn = document.getElementById('infoBtn');

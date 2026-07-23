@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="utf-8"/>
 <!-- Prevent mobile zoom on focus -->
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Rule of Nines Burn Assessment Tool | EMSCodeSim</title>
-<link rel="canonical" href="https://emscodesim.com/vitals/nines.html"/>
-<meta name="description" content="Practice burn percentage estimation with an interactive EMS Rule of Nines training tool."/>
+<link href="https://emscodesim.com/vitals/nines.html" rel="canonical"/>
+<meta content="Practice burn percentage estimation with an interactive EMS Rule of Nines training tool." name="description"/>
 <style>
   :root{
     --brand:#0a7c86;
@@ -90,120 +91,115 @@
   /* Hidden utility (keeps old IDs alive for unchanged logic) */
   .visually-hidden{position:absolute !important; left:-9999px !important; width:1px; height:1px; overflow:hidden}
 </style>
-  <link rel="stylesheet" href="/styles/responsive.css">
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Rule of Nines Burn Assessment Tool | EMSCodeSim" property="og:title"/><meta content="Practice burn percentage estimation with an interactive EMS Rule of Nines training tool." property="og:description"/><meta content="https://emscodesim.com/vitals/nines.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 </head>
 <body>
 <header><h1>Rule of Nines (TBSA)</h1></header>
 <div class="wrap">
-
-  <!-- Patient / View ABOVE the model; Burned Regions removed; Status replaced by color key -->
-  <div class="results">
-    <div class="kv"><span>Patient</span><b id="modeOut">Adult</b></div>
-    <div class="kv"><span>View</span><b id="viewOut">Front</b></div>
-    <div class="kv">
-      <span>Color Key</span>
-      <div class="key">
-        <span class="k"><span class="sw none"></span>None</span>
-        <span class="k"><span class="sw half"></span>Half (½)</span>
-        <span class="k"><span class="sw full"></span>Full</span>
-      </div>
-    </div>
-    <!-- Hidden placeholders so existing JS stays unchanged -->
-    <span id="countOut" class="visually-hidden">0</span>
-    <span id="statusOut" class="visually-hidden">Scenario active — enter your answer</span>
-  </div>
-
-  <!-- Buttons BELOW patient info -->
-  <div class="controls">
-    <div class="row" style="justify-content:flex-end">
-      <div class="seg">
-        <button id="frontBtn" class="btn">Front</button>
-        <button id="backBtn"  class="btn">Back</button>
-        <button id="newScenarioBtn" class="btn">New Scenario</button>
-        <button id="resetBtn" class="btn danger">Reset</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Board with model -->
-  <div class="board">
-    <div id="svgWrap" class="svg-wrap">
-      <!-- ADULT MODEL — viewBox further shortened to reduce space under legs -->
-      <svg id="adultSVG" viewBox="0 0 320 570" role="img" aria-label="Adult Burn Map" class="front-only">
-        <!-- FRONT -->
-        <g class="front">
-          <rect class="zone" data-key="head-front" x="120" y="20" width="80" height="80" rx="40" ry="40"></rect>
-          <rect class="zone" data-key="chest"      x="95"  y="110" width="130" height="110"></rect>
-          <rect class="zone" data-key="abdomen"    x="95"  y="225" width="130" height="110"></rect>
-          <rect class="zone" data-key="perineum"   x="150" y="340" width="20"  height="16"  rx="5" ry="5"></rect>
-          <rect class="zone" data-key="armL-front" x="55"  y="120" width="35"  height="220" rx="18" ry="18"></rect>
-          <rect class="zone" data-key="armR-front" x="230" y="120" width="35"  height="220" rx="18" ry="18"></rect>
-          <!-- legs moved UP and shortened a bit more -->
-          <rect class="zone" data-key="legL-front" x="100" y="345" width="60"  height="210" rx="28" ry="28"></rect>
-          <rect class="zone" data-key="legR-front" x="170" y="345" width="60"  height="210" rx="28" ry="28"></rect>
-        </g>
-
-        <!-- BACK -->
-        <g class="back">
-          <rect class="zone" data-key="head-back"   x="120" y="20" width="80" height="80" rx="40" ry="40"></rect>
-          <rect class="zone" data-key="upper-back"  x="95"  y="110" width="130" height="115"></rect>
-          <rect class="zone" data-key="lower-back"  x="95"  y="230" width="130" height="110"></rect>
-          <rect class="zone" data-key="armL-back"   x="55"  y="120" width="35"  height="220" rx="18" ry="18"></rect>
-          <rect class="zone" data-key="armR-back"   x="230" y="120" width="35"  height="220" rx="18" ry="18"></rect>
-          <!-- legs moved UP and shortened a bit more -->
-          <rect class="zone" data-key="legL-back"   x="100" y="345" width="60"  height="210" rx="28" ry="28"></rect>
-          <rect class="zone" data-key="legR-back"   x="170" y="345" width="60"  height="210" rx="28" ry="28"></rect>
-        </g>
-      </svg>
-
-      <!-- PEDIATRIC MODEL — viewBox further shortened too -->
-      <svg id="pedsSVG" viewBox="0 0 320 570" role="img" aria-label="Pediatric Burn Map" style="display:none" class="front-only">
-        <!-- FRONT -->
-        <g class="front">
-          <rect class="zone" data-key="head-front" x="118" y="20" width="84" height="84" rx="42" ry="42"></rect>
-          <rect class="zone" data-key="chest"      x="105" y="110" width="110" height="100"></rect>
-          <rect class="zone" data-key="abdomen"    x="105" y="215" width="110" height="100"></rect>
-          <rect class="zone" data-key="perineum"   x="150" y="322" width="20"  height="16" rx="5" ry="5"></rect>
-          <rect class="zone" data-key="armL-front" x="70"  y="120" width="28"  height="200" rx="14" ry="14"></rect>
-          <rect class="zone" data-key="armR-front" x="222" y="120" width="28"  height="200" rx="14" ry="14"></rect>
-          <!-- legs moved UP and shortened a bit more -->
-          <rect class="zone" data-key="legL-front" x="104" y="345" width="56"  height="210" rx="26" ry="26"></rect>
-          <rect class="zone" data-key="legR-front" x="170" y="345" width="56"  height="210" rx="26" ry="26"></rect>
-        </g>
-
-        <!-- BACK -->
-        <g class="back">
-          <rect class="zone" data-key="head-back"   x="118" y="20" width="84" height="84" rx="42" ry="42"></rect>
-          <rect class="zone" data-key="upper-back"  x="105" y="110" width="110" height="110"></rect>
-          <rect class="zone" data-key="lower-back"  x="105" y="225" width="110" height="105"></rect>
-          <rect class="zone" data-key="armL-back"   x="70"  y="120" width="28"  height="200" rx="14" ry="14"></rect>
-          <rect class="zone" data-key="armR-back"   x="222" y="120" width="28"  height="200" rx="14" ry="14"></rect>
-          <!-- legs moved UP and shortened a bit more -->
-          <rect class="zone" data-key="legL-back"   x="104" y="345" width="56"  height="210" rx="26" ry="26"></rect>
-          <rect class="zone" data-key="legR-back"   x="170" y="345" width="56"  height="210" rx="26" ry="26"></rect>
-        </g>
-      </svg>
-    </div>
-  </div>
-
-  <!-- Quiz -->
-  <div class="quiz">
-    <div class="grid">
-      <div>
-        <label for="answerVal">Your TBSA (%)</label>
-        <div class="row" style="margin-top:.25rem">
-          <input id="answerVal" type="number" step="0.25" placeholder="e.g., 18.0">
-          <button id="submitBtn" class="btn">Submit Answer</button>
-        </div>
-        <div class="hint" style="margin-top:.35rem">Tolerance: ±0.25%.</div>
-      </div>
-    </div>
-    <div id="feedback" class="feedback"></div>
-    <div id="riskBox" class="risks" style="display:none"></div>
-  </div>
-
+<!-- Patient / View ABOVE the model; Burned Regions removed; Status replaced by color key -->
+<div class="results">
+<div class="kv"><span>Patient</span><b id="modeOut">Adult</b></div>
+<div class="kv"><span>View</span><b id="viewOut">Front</b></div>
+<div class="kv">
+<span>Color Key</span>
+<div class="key">
+<span class="k"><span class="sw none"></span>None</span>
+<span class="k"><span class="sw half"></span>Half (½)</span>
+<span class="k"><span class="sw full"></span>Full</span>
 </div>
-
+</div>
+<!-- Hidden placeholders so existing JS stays unchanged -->
+<span class="visually-hidden" id="countOut">0</span>
+<span class="visually-hidden" id="statusOut">Scenario active — enter your answer</span>
+</div>
+<!-- Buttons BELOW patient info -->
+<div class="controls">
+<div class="row" style="justify-content:flex-end">
+<div class="seg">
+<button class="btn" id="frontBtn">Front</button>
+<button class="btn" id="backBtn">Back</button>
+<button class="btn" id="newScenarioBtn">New Scenario</button>
+<button class="btn danger" id="resetBtn">Reset</button>
+</div>
+</div>
+</div>
+<!-- Board with model -->
+<div class="board">
+<div class="svg-wrap" id="svgWrap">
+<!-- ADULT MODEL — viewBox further shortened to reduce space under legs -->
+<svg aria-label="Adult Burn Map" class="front-only" id="adultSVG" role="img" viewbox="0 0 320 570">
+<!-- FRONT -->
+<g class="front">
+<rect class="zone" data-key="head-front" height="80" rx="40" ry="40" width="80" x="120" y="20"></rect>
+<rect class="zone" data-key="chest" height="110" width="130" x="95" y="110"></rect>
+<rect class="zone" data-key="abdomen" height="110" width="130" x="95" y="225"></rect>
+<rect class="zone" data-key="perineum" height="16" rx="5" ry="5" width="20" x="150" y="340"></rect>
+<rect class="zone" data-key="armL-front" height="220" rx="18" ry="18" width="35" x="55" y="120"></rect>
+<rect class="zone" data-key="armR-front" height="220" rx="18" ry="18" width="35" x="230" y="120"></rect>
+<!-- legs moved UP and shortened a bit more -->
+<rect class="zone" data-key="legL-front" height="210" rx="28" ry="28" width="60" x="100" y="345"></rect>
+<rect class="zone" data-key="legR-front" height="210" rx="28" ry="28" width="60" x="170" y="345"></rect>
+</g>
+<!-- BACK -->
+<g class="back">
+<rect class="zone" data-key="head-back" height="80" rx="40" ry="40" width="80" x="120" y="20"></rect>
+<rect class="zone" data-key="upper-back" height="115" width="130" x="95" y="110"></rect>
+<rect class="zone" data-key="lower-back" height="110" width="130" x="95" y="230"></rect>
+<rect class="zone" data-key="armL-back" height="220" rx="18" ry="18" width="35" x="55" y="120"></rect>
+<rect class="zone" data-key="armR-back" height="220" rx="18" ry="18" width="35" x="230" y="120"></rect>
+<!-- legs moved UP and shortened a bit more -->
+<rect class="zone" data-key="legL-back" height="210" rx="28" ry="28" width="60" x="100" y="345"></rect>
+<rect class="zone" data-key="legR-back" height="210" rx="28" ry="28" width="60" x="170" y="345"></rect>
+</g>
+</svg>
+<!-- PEDIATRIC MODEL — viewBox further shortened too -->
+<svg aria-label="Pediatric Burn Map" class="front-only" id="pedsSVG" role="img" style="display:none" viewbox="0 0 320 570">
+<!-- FRONT -->
+<g class="front">
+<rect class="zone" data-key="head-front" height="84" rx="42" ry="42" width="84" x="118" y="20"></rect>
+<rect class="zone" data-key="chest" height="100" width="110" x="105" y="110"></rect>
+<rect class="zone" data-key="abdomen" height="100" width="110" x="105" y="215"></rect>
+<rect class="zone" data-key="perineum" height="16" rx="5" ry="5" width="20" x="150" y="322"></rect>
+<rect class="zone" data-key="armL-front" height="200" rx="14" ry="14" width="28" x="70" y="120"></rect>
+<rect class="zone" data-key="armR-front" height="200" rx="14" ry="14" width="28" x="222" y="120"></rect>
+<!-- legs moved UP and shortened a bit more -->
+<rect class="zone" data-key="legL-front" height="210" rx="26" ry="26" width="56" x="104" y="345"></rect>
+<rect class="zone" data-key="legR-front" height="210" rx="26" ry="26" width="56" x="170" y="345"></rect>
+</g>
+<!-- BACK -->
+<g class="back">
+<rect class="zone" data-key="head-back" height="84" rx="42" ry="42" width="84" x="118" y="20"></rect>
+<rect class="zone" data-key="upper-back" height="110" width="110" x="105" y="110"></rect>
+<rect class="zone" data-key="lower-back" height="105" width="110" x="105" y="225"></rect>
+<rect class="zone" data-key="armL-back" height="200" rx="14" ry="14" width="28" x="70" y="120"></rect>
+<rect class="zone" data-key="armR-back" height="200" rx="14" ry="14" width="28" x="222" y="120"></rect>
+<!-- legs moved UP and shortened a bit more -->
+<rect class="zone" data-key="legL-back" height="210" rx="26" ry="26" width="56" x="104" y="345"></rect>
+<rect class="zone" data-key="legR-back" height="210" rx="26" ry="26" width="56" x="170" y="345"></rect>
+</g>
+</svg>
+</div>
+</div>
+<!-- Quiz -->
+<div class="quiz">
+<div class="grid">
+<div>
+<label for="answerVal">Your TBSA (%)</label>
+<div class="row" style="margin-top:.25rem">
+<input id="answerVal" placeholder="e.g., 18.0" step="0.25" type="number"/>
+<button class="btn" id="submitBtn">Submit Answer</button>
+</div>
+<div class="hint" style="margin-top:.35rem">Tolerance: ±0.25%.</div>
+</div>
+</div>
+<div class="feedback" id="feedback"></div>
+<div class="risks" id="riskBox" style="display:none"></div>
+</div>
+</div>
 <script>
 /* ==== Percent maps ==== */
 const PCT_ADULT = {

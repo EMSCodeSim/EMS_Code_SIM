@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <title>GCS Trainer | EMSCodeSim</title>
-<link rel="canonical" href="https://emscodesim.com/vitals/gcs.html"/>
-<meta name="description" content="Practice Glasgow Coma Scale scoring for EMS assessment with eye, verbal, and motor response prompts."/>
+<link href="https://emscodesim.com/vitals/gcs.html" rel="canonical"/>
+<meta content="Practice Glasgow Coma Scale scoring for EMS assessment with eye, verbal, and motor response prompts." name="description"/>
 <style>
   :root{
     --brand:#007B8A; --brand-600:#066371;
@@ -45,115 +46,111 @@
   @media(min-width:760px){ .scorebox{grid-template-columns:repeat(4,1fr)} }
   code{background:#eef6f8; padding:0 .35rem; border-radius:6px}
 </style>
-  <link rel="stylesheet" href="/styles/responsive.css">
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="GCS Trainer | EMSCodeSim" property="og:title"/><meta content="Practice Glasgow Coma Scale scoring for EMS assessment with eye, verbal, and motor response prompts." property="og:description"/><meta content="https://emscodesim.com/vitals/gcs.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 </head>
 <body>
-  <header>Glasgow Coma Scale (GCS) Simulator</header>
-
-  <main>
-    <!-- Scenario snapshot (so instructors can verify internal consistency) -->
-    <section class="card">
-      <h2>Scenario</h2>
-      <div class="row">
-        <div><span class="pill">Clinical context</span> <strong id="scContext">—</strong></div>
-        <div><span class="pill">Airway</span> <strong id="scAirway">—</strong></div>
-      </div>
-      <p class="muted" style="margin:.5rem 0 0">
+<header><h1>Glasgow Coma Scale (GCS) Simulator</h1></header>
+<main>
+<!-- Scenario snapshot (so instructors can verify internal consistency) -->
+<section class="card">
+<h2>Scenario</h2>
+<div class="row">
+<div><span class="pill">Clinical context</span> <strong id="scContext">—</strong></div>
+<div><span class="pill">Airway</span> <strong id="scAirway">—</strong></div>
+</div>
+<p class="muted" style="margin:.5rem 0 0">
         Click each button to assess a domain. The patient’s response appears directly under the question. Then choose your E/V/M scores and tap <strong>Show Results</strong>.
       </p>
-    </section>
-
-    <!-- Questions -->
-    <section class="card">
-      <h2>Assess</h2>
-      <div class="grid2">
-        <!-- Eyes -->
-        <div class="q" id="q-eyes">
-          <h3>Eyes</h3>
-          <div class="ask">
-            <button class="btn" id="btnEyes">Assess Eyes</button>
-          </div>
-          <div class="resp" id="resp-eyes" hidden>
-            <span class="who">Observation:</span> <span class="line"></span>
-          </div>
-        </div>
-
-        <!-- Verbal -->
-        <div class="q" id="q-verbal">
-          <h3>Verbal</h3>
-          <div class="ask">
-            <button class="btn" id="btnVerbal">“Can you tell me your name?”</button>
-          </div>
-          <div class="resp" id="resp-verbal" hidden>
-            <span class="who">Patient:</span> <span class="line"></span>
-          </div>
-        </div>
-
-        <!-- Motor -->
-        <div class="q" id="q-motor">
-          <h3>Motor</h3>
-          <div class="ask">
-            <button class="btn" id="btnMotor">“Squeeze my hands.” (If no response, apply nail bed pressure)</button>
-          </div>
-          <div class="resp" id="resp-motor" hidden>
-            <span class="who">Observation:</span> <span class="line"></span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Your assessment + Results -->
-    <section class="card">
-      <h2>Your Scores & Results</h2>
-      <div class="scorebox">
-        <div>
-          <label for="selE"><strong>Eyes (E)</strong></label>
-          <select id="selE">
-            <option value="1">E1 – No eye opening</option>
-            <option value="2">E2 – Opens to pain</option>
-            <option value="3">E3 – Opens to speech</option>
-            <option value="4" selected>E4 – Spontaneous</option>
-          </select>
-        </div>
-        <div>
-          <label for="selV"><strong>Verbal (V)</strong></label>
-          <select id="selV">
-            <option value="1">V1 – None</option>
-            <option value="2">V2 – Incomprehensible sounds</option>
-            <option value="3">V3 – Inappropriate words</option>
-            <option value="4">V4 – Confused conversation</option>
-            <option value="5" selected>V5 – Oriented</option>
-          </select>
-        </div>
-        <div>
-          <label for="selM"><strong>Motor (M)</strong></label>
-          <select id="selM">
-            <option value="1">M1 – No motor response</option>
-            <option value="2">M2 – Extension to pain</option>
-            <option value="3">M3 – Abnormal flexion (decorticate)</option>
-            <option value="4">M4 – Withdraws from pain</option>
-            <option value="5">M5 – Localizes pain</option>
-            <option value="6" selected>M6 – Obeys commands</option>
-          </select>
-        </div>
-        <div style="display:flex;align-items:end;gap:8px">
-          <button class="btn" id="showResults" style="width:100%">Show Results</button>
-        </div>
-      </div>
-
-      <div id="results" class="resp" hidden>
-        <div id="summary"><strong>Results:</strong> —</div>
-        <ul class="results-list" id="detailList"></ul>
-        <div id="meaning" class="muted" style="margin-top:.5rem"></div>
-        <div id="domainNotes" style="margin-top:.5rem"></div>
-      </div>
-
-      <div class="row" style="margin-top:8px">
-        <button class="btn warn" id="next">Next Scenario</button>
-      </div>
-    </section>
-  </main>
-
+</section>
+<!-- Questions -->
+<section class="card">
+<h2>Assess</h2>
+<div class="grid2">
+<!-- Eyes -->
+<div class="q" id="q-eyes">
+<h3>Eyes</h3>
+<div class="ask">
+<button class="btn" id="btnEyes">Assess Eyes</button>
+</div>
+<div class="resp" hidden="" id="resp-eyes">
+<span class="who">Observation:</span> <span class="line"></span>
+</div>
+</div>
+<!-- Verbal -->
+<div class="q" id="q-verbal">
+<h3>Verbal</h3>
+<div class="ask">
+<button class="btn" id="btnVerbal">“Can you tell me your name?”</button>
+</div>
+<div class="resp" hidden="" id="resp-verbal">
+<span class="who">Patient:</span> <span class="line"></span>
+</div>
+</div>
+<!-- Motor -->
+<div class="q" id="q-motor">
+<h3>Motor</h3>
+<div class="ask">
+<button class="btn" id="btnMotor">“Squeeze my hands.” (If no response, apply nail bed pressure)</button>
+</div>
+<div class="resp" hidden="" id="resp-motor">
+<span class="who">Observation:</span> <span class="line"></span>
+</div>
+</div>
+</div>
+</section>
+<!-- Your assessment + Results -->
+<section class="card">
+<h2>Your Scores &amp; Results</h2>
+<div class="scorebox">
+<div>
+<label for="selE"><strong>Eyes (E)</strong></label>
+<select id="selE">
+<option value="1">E1 – No eye opening</option>
+<option value="2">E2 – Opens to pain</option>
+<option value="3">E3 – Opens to speech</option>
+<option selected="" value="4">E4 – Spontaneous</option>
+</select>
+</div>
+<div>
+<label for="selV"><strong>Verbal (V)</strong></label>
+<select id="selV">
+<option value="1">V1 – None</option>
+<option value="2">V2 – Incomprehensible sounds</option>
+<option value="3">V3 – Inappropriate words</option>
+<option value="4">V4 – Confused conversation</option>
+<option selected="" value="5">V5 – Oriented</option>
+</select>
+</div>
+<div>
+<label for="selM"><strong>Motor (M)</strong></label>
+<select id="selM">
+<option value="1">M1 – No motor response</option>
+<option value="2">M2 – Extension to pain</option>
+<option value="3">M3 – Abnormal flexion (decorticate)</option>
+<option value="4">M4 – Withdraws from pain</option>
+<option value="5">M5 – Localizes pain</option>
+<option selected="" value="6">M6 – Obeys commands</option>
+</select>
+</div>
+<div style="display:flex;align-items:end;gap:8px">
+<button class="btn" id="showResults" style="width:100%">Show Results</button>
+</div>
+</div>
+<div class="resp" hidden="" id="results">
+<div id="summary"><strong>Results:</strong> —</div>
+<ul class="results-list" id="detailList"></ul>
+<div class="muted" id="meaning" style="margin-top:.5rem"></div>
+<div id="domainNotes" style="margin-top:.5rem"></div>
+</div>
+<div class="row" style="margin-top:8px">
+<button class="btn warn" id="next">Next Scenario</button>
+</div>
+</section>
+</main>
 <script>
 (function(){
   // ----- DOM

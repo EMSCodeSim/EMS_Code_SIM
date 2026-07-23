@@ -1,24 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <!-- Prevent pinch/double-tap zoom so taps don't zoom the page on phones -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pulse Trainer | EMSCodeSim</title>
-<link rel="canonical" href="https://emscodesim.com/vitals/pulse.html"/>
-<meta name="description" content="Practice pulse rate counting and vital sign assessment with a randomized EMS pulse trainer."/>
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-5QLPK4025C');
-  </script>
-
-  <style>
+<meta charset="utf-8"/>
+<!-- Prevent pinch/double-tap zoom so taps don't zoom the page on phones -->
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pulse Trainer | EMSCodeSim</title>
+<link href="https://emscodesim.com/vitals/pulse.html" rel="canonical"/>
+<meta content="Practice pulse rate counting and vital sign assessment with a randomized EMS pulse trainer." name="description"/>
+<style>
     :root{
       --bg:#f0f8ff;
       --brand:#007B8A;
@@ -191,88 +181,83 @@
     /* Reduce accidental text selection on mobile */
     button, input, a, #heart{ -webkit-user-select: none; user-select: none; }
   </style>
-  <link rel="stylesheet" href="/styles/responsive.css">
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Pulse Trainer | EMSCodeSim" property="og:title"/><meta content="Practice pulse rate counting and vital sign assessment with a randomized EMS pulse trainer." property="og:description"/><meta content="https://emscodesim.com/vitals/pulse.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 </head>
 <body>
-  <!-- Sticky top header with Back + Info -->
-  <header>
-    <div class="topbar-inner">
-      <button class="iconbtn" id="backBtn" aria-label="Go back" title="Back">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="btn-label">Back</span>
-      </button>
-
-      <h1 class="topbar-title">❤️ The Daily Beat</h1>
-
-      <button class="iconbtn" id="infoBtn" aria-label="How to use" title="Info">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-          <path d="M12 8h.01M11 11h2v6h-2z" fill="currentColor"/>
-        </svg>
-        <span class="btn-label">Info</span>
-      </button>
-    </div>
-  </header>
-
-  <main class="container">
-    <p class="lead">Tap <strong>Start</strong> to hear a brand-new rhythm. Guess the rate!</p>
-
-    <div class="heart-wrap">
-      <div id="heart" aria-hidden="true">❤️</div>
-    </div>
-
-    <div class="slider-wrap" id="guessUI" style="display:none;">
-      <div class="label-row">
-        <span>BPM Guess</span>
-        <span class="pill"><span id="bpmValue">75</span> BPM</span>
-      </div>
-      <input id="slider" type="range" min="30" max="200" value="75" />
-      <div class="label-row" style="font-size:.9rem; opacity:.8;">
-        <span>30</span><span>200</span>
-      </div>
-    </div>
-
-    <div class="controls">
-      <button class="btn" id="startBtn">▶️ Start</button>
-      <div class="grid-2">
-        <button class="btn secondary" id="checkBtn" style="display:none;">Check Answer</button>
-        <button class="btn secondary" id="newBtn" style="display:none;">🔁 New Rhythm</button>
-      </div>
-      <div id="result" role="status" aria-live="polite"></div>
-    </div>
-
-    <!-- Removed the footer back link per request -->
-  </main>
-
-  <!-- Info Modal -->
-  <div class="modal" id="infoModal" aria-hidden="true" aria-labelledby="infoTitle" role="dialog">
-    <div class="modal-card">
-      <div class="modal-head">
-        <div class="modal-title" id="infoTitle">How this works</div>
-        <button class="iconbtn" id="closeModalBtn" aria-label="Close">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-      <div>
-        <p>Press <strong>Start</strong> to generate a random heart rhythm (30–200 BPM). Listen to the beeps and watch the heart animation, then pick your best guess with the slider and tap <strong>Check Answer</strong>.</p>
-        <ul>
-          <li><strong>&lt;60</strong> BPM: bradycardic range</li>
-          <li><strong>60–100</strong> BPM: normal resting range</li>
-          <li><strong>&gt;100</strong> BPM: tachycardic range</li>
-        </ul>
-        <p>Tap <strong>New Rhythm</strong> for another try. Audio unlocks on your first tap (iOS friendly).</p>
-      </div>
-      <div class="modal-actions">
-        <button class="btn small secondary" id="modalOkBtn">Got it</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
+<!-- Sticky top header with Back + Info -->
+<header>
+<div class="topbar-inner">
+<button aria-label="Go back" class="iconbtn" id="backBtn" title="Back">
+<svg aria-hidden="true" fill="none" height="20" viewbox="0 0 24 24" width="20">
+<path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="btn-label">Back</span>
+</button>
+<h1 class="topbar-title">❤️ The Daily Beat</h1>
+<button aria-label="How to use" class="iconbtn" id="infoBtn" title="Info">
+<svg aria-hidden="true" fill="none" height="20" viewbox="0 0 24 24" width="20">
+<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"></circle>
+<path d="M12 8h.01M11 11h2v6h-2z" fill="currentColor"></path>
+</svg>
+<span class="btn-label">Info</span>
+</button>
+</div>
+</header>
+<main class="container">
+<p class="lead">Tap <strong>Start</strong> to hear a brand-new rhythm. Guess the rate!</p>
+<div class="heart-wrap">
+<div aria-hidden="true" id="heart">❤️</div>
+</div>
+<div class="slider-wrap" id="guessUI" style="display:none;">
+<div class="label-row">
+<span>BPM Guess</span>
+<span class="pill"><span id="bpmValue">75</span> BPM</span>
+</div>
+<input id="slider" max="200" min="30" type="range" value="75"/>
+<div class="label-row" style="font-size:.9rem; opacity:.8;">
+<span>30</span><span>200</span>
+</div>
+</div>
+<div class="controls">
+<button class="btn" id="startBtn">▶️ Start</button>
+<div class="grid-2">
+<button class="btn secondary" id="checkBtn" style="display:none;">Check Answer</button>
+<button class="btn secondary" id="newBtn" style="display:none;">🔁 New Rhythm</button>
+</div>
+<div aria-live="polite" id="result" role="status"></div>
+</div>
+<!-- Removed the footer back link per request -->
+</main>
+<!-- Info Modal -->
+<div aria-hidden="true" aria-labelledby="infoTitle" class="modal" id="infoModal" role="dialog">
+<div class="modal-card">
+<div class="modal-head">
+<div class="modal-title" id="infoTitle">How this works</div>
+<button aria-label="Close" class="iconbtn" id="closeModalBtn">
+<svg aria-hidden="true" fill="none" height="20" viewbox="0 0 24 24" width="20">
+<path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+<div>
+<p>Press <strong>Start</strong> to generate a random heart rhythm (30–200 BPM). Listen to the beeps and watch the heart animation, then pick your best guess with the slider and tap <strong>Check Answer</strong>.</p>
+<ul>
+<li><strong>&lt;60</strong> BPM: bradycardic range</li>
+<li><strong>60–100</strong> BPM: normal resting range</li>
+<li><strong>&gt;100</strong> BPM: tachycardic range</li>
+</ul>
+<p>Tap <strong>New Rhythm</strong> for another try. Audio unlocks on your first tap (iOS friendly).</p>
+</div>
+<div class="modal-actions">
+<button class="btn small secondary" id="modalOkBtn">Got it</button>
+</div>
+</div>
+</div>
+<script>
     // ----- Header buttons -----
     const backBtn = document.getElementById('backBtn');
     const infoBtn = document.getElementById('infoBtn');

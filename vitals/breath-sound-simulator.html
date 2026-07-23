@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Breath Sound Simulator | EMSCodeSim</title>
-<link rel="canonical" href="https://emscodesim.com/vitals/breath-sound-simulator.html"/>
-<meta name="description" content="Practice EMS lung sound assessment with anterior and posterior chest hotspots, normal sounds, wheezes, crackles, stridor, and diminished findings."/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <style>
+<meta charset="utf-8"/>
+<title>Breath Sound Simulator | EMSCodeSim</title>
+<link href="https://emscodesim.com/vitals/breath-sound-simulator.html" rel="canonical"/>
+<meta content="Practice EMS lung sound assessment with anterior and posterior chest hotspots, normal sounds, wheezes, crackles, stridor, and diminished findings." name="description"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<style>
     :root{
       --bg:#f7fafc; --card:#ffffff; --text:#0f172a; --muted:#334155;
       --accent:#0284c7; --accent-light:#06b6d4; --ring: rgba(2,132,199,.35);
@@ -85,185 +86,167 @@
       .modal-grid{ grid-template-columns: 1fr 1fr; }
     }
   </style>
-  <link rel="stylesheet" href="../styles/modern-theme.css" />
-  <link rel="stylesheet" href="/styles/responsive.css">
+<link href="../styles/modern-theme.css" rel="stylesheet"/>
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Breath Sound Simulator | EMSCodeSim" property="og:title"/><meta content="Practice EMS lung sound assessment with anterior and posterior chest hotspots, normal sounds, wheezes, crackles, stridor, and diminished findings." property="og:description"/><meta content="https://emscodesim.com/vitals/breath-sound-simulator.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 </head>
 <body>
-  <!-- Sticky Top Header -->
-  <div class="topbar" role="banner">
-    <div class="topbar-inner">
-      <button class="iconbtn" id="backBtn" aria-label="Go back" title="Back">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="btn-label">Back</span>
-      </button>
-
-      <div class="topbar-title">Breath Sound Simulator</div>
-
-      <button class="iconbtn" id="infoBtn" aria-label="How this works" title="Info" aria-controls="infoModal">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-          <path d="M12 8h.01M11 11h2v6h-2z" fill="currentColor"/>
-        </svg>
-        <span class="btn-label">Info</span>
-      </button>
-    </div>
-  </div>
-
-  <div class="app" role="main">
-    <div class="subtitle">Tap a region • Choose left/right sounds • Rotate the body</div>
-
-    <section class="card">
-      <div class="view-row">
-        <div class="view-actions">
-          <button class="btn btn-primary" onclick="rotateView()">Rotate Body</button>
-          <span id="viewLabel" class="subtitle" style="align-self:center;">View: FRONT</span>
-        </div>
-
-        <div class="image-container">
-          <img id="currentImage" src="front.png" alt="Front">
-
-          <!-- FRONT (patient facing you): screen-left = patient RIGHT  -->
-          <button class="point" data-view="front" data-region="thorax" style="top:26%; left:24%;"  onclick="play('right', this.dataset.region)">RUL</button>
-          <button class="point" data-view="front" data-region="thorax" style="top:26%; right:24%;" onclick="play('left',  this.dataset.region)">LUL</button>
-          <button class="point" data-view="front" data-region="thorax" style="top:64%; left:24%;"  onclick="play('right', this.dataset.region)">RLL</button>
-          <button class="point" data-view="front" data-region="thorax" style="top:64%; right:24%;" onclick="play('left',  this.dataset.region)">LLL</button>
-
-          <!-- BACK (viewer behind patient): screen-left = patient LEFT -->
-          <button class="point" data-view="back" data-region="thorax" style="top:26%; left:24%;"  onclick="play('left',  this.dataset.region)">LUL</button>
-          <button class="point" data-view="back" data-region="thorax" style="top:26%; right:24%;" onclick="play('right', this.dataset.region)">RUL</button>
-          <button class="point" data-view="back" data-region="thorax" style="top:64%; left:24%;"  onclick="play('left',  this.dataset.region)">LLL</button>
-          <button class="point" data-view="back" data-region="thorax" style="top:64%; right:24%;" onclick="play('right', this.dataset.region)">RLL</button>
-
-          <!-- RIGHT view (patient’s right) -->
-          <button class="point" data-view="right" data-region="neck"   style="top:22%; left:40%;" onclick="play('right', this.dataset.region)">Neck</button>
-          <button class="point" data-view="right" data-region="thorax" style="top:62%; left:40%;" onclick="play('right', this.dataset.region)">Midaxillary</button>
-
-          <!-- LEFT view (patient’s left) -->
-          <button class="point" data-view="left"  data-region="neck"   style="top:22%; left:40%;" onclick="play('left',  this.dataset.region)">Neck</button>
-          <button class="point" data-view="left"  data-region="thorax" style="top:62%; left:40%;" onclick="play('left',  this.dataset.region)">Midaxillary</button>
-        </div>
-
-        <div class="subtitle" style="font-size:.9rem; opacity:.85;">
+<!-- Sticky Top Header -->
+<div class="topbar" role="banner">
+<div class="topbar-inner">
+<button aria-label="Go back" class="iconbtn" id="backBtn" title="Back">
+<svg aria-hidden="true" fill="none" height="22" viewbox="0 0 24 24" width="22">
+<path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="btn-label">Back</span>
+</button>
+<h1 class="topbar-title tool-h1">Breath Sound Simulator</h1>
+<button aria-controls="infoModal" aria-label="How this works" class="iconbtn" id="infoBtn" title="Info">
+<svg aria-hidden="true" fill="none" height="22" viewbox="0 0 24 24" width="22">
+<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"></circle>
+<path d="M12 8h.01M11 11h2v6h-2z" fill="currentColor"></path>
+</svg>
+<span class="btn-label">Info</span>
+</button>
+</div>
+</div>
+<div class="app" role="main">
+<div class="subtitle">Tap a region • Choose left/right sounds • Rotate the body</div>
+<section class="card">
+<div class="view-row">
+<div class="view-actions">
+<button class="btn btn-primary" onclick="rotateView()">Rotate Body</button>
+<span class="subtitle" id="viewLabel" style="align-self:center;">View: FRONT</span>
+</div>
+<div class="image-container">
+<img alt="Front" id="currentImage" src="front.png"/>
+<!-- FRONT (patient facing you): screen-left = patient RIGHT  -->
+<button class="point" data-region="thorax" data-view="front" onclick="play('right', this.dataset.region)" style="top:26%; left:24%;">RUL</button>
+<button class="point" data-region="thorax" data-view="front" onclick="play('left',  this.dataset.region)" style="top:26%; right:24%;">LUL</button>
+<button class="point" data-region="thorax" data-view="front" onclick="play('right', this.dataset.region)" style="top:64%; left:24%;">RLL</button>
+<button class="point" data-region="thorax" data-view="front" onclick="play('left',  this.dataset.region)" style="top:64%; right:24%;">LLL</button>
+<!-- BACK (viewer behind patient): screen-left = patient LEFT -->
+<button class="point" data-region="thorax" data-view="back" onclick="play('left',  this.dataset.region)" style="top:26%; left:24%;">LUL</button>
+<button class="point" data-region="thorax" data-view="back" onclick="play('right', this.dataset.region)" style="top:26%; right:24%;">RUL</button>
+<button class="point" data-region="thorax" data-view="back" onclick="play('left',  this.dataset.region)" style="top:64%; left:24%;">LLL</button>
+<button class="point" data-region="thorax" data-view="back" onclick="play('right', this.dataset.region)" style="top:64%; right:24%;">RLL</button>
+<!-- RIGHT view (patient’s right) -->
+<button class="point" data-region="neck" data-view="right" onclick="play('right', this.dataset.region)" style="top:22%; left:40%;">Neck</button>
+<button class="point" data-region="thorax" data-view="right" onclick="play('right', this.dataset.region)" style="top:62%; left:40%;">Midaxillary</button>
+<!-- LEFT view (patient’s left) -->
+<button class="point" data-region="neck" data-view="left" onclick="play('left',  this.dataset.region)" style="top:22%; left:40%;">Neck</button>
+<button class="point" data-region="thorax" data-view="left" onclick="play('left',  this.dataset.region)" style="top:62%; left:40%;">Midaxillary</button>
+</div>
+<div class="subtitle" style="font-size:.9rem; opacity:.85;">
           Front view is mirrored to patient: screen-left = patient’s <strong>RIGHT</strong>.
         </div>
-      </div>
-
-      <div class="selectors">
-        <div class="select-block">
-          <label for="leftSound">Left sound</label>
-          <select id="leftSound" onchange="setSide('left', this.value)">
-            <option value="normal">Normal vesicular</option>
-            <option value="wheeze">Wheezing</option>
-            <option value="crackles">Coarse crackles</option>
-            <option id="leftStridorOpt" value="stridor" disabled>Stridor (neck only)</option>
-          </select>
-        </div>
-
-        <div class="select-block">
-          <label for="rightSound">Right sound</label>
-          <select id="rightSound" onchange="setSide('right', this.value)">
-            <option value="normal">Normal vesicular</option>
-            <option value="wheeze">Wheezing</option>
-            <option value="crackles">Coarse crackles</option>
-            <option id="rightStridorOpt" value="stridor" disabled>Stridor (neck only)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="audio-card">
-        <div class="audio-row">
-          <strong>Audio</strong>
-          <button class="btn" onclick="document.getElementById('breathAudio').pause()">Pause</button>
-        </div>
-        <div id="note" class="note"></div>
-        <audio id="breathAudio" controls>
-          <source src="" type="audio/mpeg">
+</div>
+<div class="selectors">
+<div class="select-block">
+<label for="leftSound">Left sound</label>
+<select id="leftSound" onchange="setSide('left', this.value)">
+<option value="normal">Normal vesicular</option>
+<option value="wheeze">Wheezing</option>
+<option value="crackles">Coarse crackles</option>
+<option disabled="" id="leftStridorOpt" value="stridor">Stridor (neck only)</option>
+</select>
+</div>
+<div class="select-block">
+<label for="rightSound">Right sound</label>
+<select id="rightSound" onchange="setSide('right', this.value)">
+<option value="normal">Normal vesicular</option>
+<option value="wheeze">Wheezing</option>
+<option value="crackles">Coarse crackles</option>
+<option disabled="" id="rightStridorOpt" value="stridor">Stridor (neck only)</option>
+</select>
+</div>
+</div>
+<div class="audio-card">
+<div class="audio-row">
+<strong>Audio</strong>
+<button class="btn" onclick="document.getElementById('breathAudio').pause()">Pause</button>
+</div>
+<div class="note" id="note"></div>
+<audio controls="" id="breathAudio">
+<source src="" type="audio/mpeg"/>
           Your browser does not support the audio element.
         </audio>
-      </div>
-    </section>
-
-    <footer>&copy; 2025 EMS CODE SIM • Phone friendly</footer>
-  </div>
-
-  <!-- Info Modal -->
-  <div class="modal" id="infoModal" aria-hidden="true" aria-labelledby="infoTitle" role="dialog">
-    <div class="modal-card">
-      <div class="modal-header">
-        <div class="modal-title" id="infoTitle">Breath sounds: what they mean & where to listen</div>
-        <button class="iconbtn" id="closeModalBtn" aria-label="Close" title="Close">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-
-      <div class="modal-grid">
-        <!-- Normal -->
-        <div class="info-card">
-          <div class="chips"><span class="chip">Normal vesicular</span><span class="chip">Low-pitched</span><span class="chip">Peripheral</span></div>
-          <ul>
-            <li>Soft, rustling; inspiratory > expiratory, no pause.</li>
-            <li><strong>Best heard:</strong> over peripheral lung fields (upper & lower, front and back).</li>
-            <li><strong>Use:</strong> Baseline for comparison side-to-side.</li>
-          </ul>
-        </div>
-
-        <!-- Wheeze -->
-        <div class="info-card">
-          <div class="chips"><span class="chip">Wheezing</span><span class="chip">High-pitched musical</span><span class="chip">Expiratory±Inspiratory</span></div>
-          <ul>
-            <li>Narrowed airways → polyphonic “musical” tones.</li>
-            <li><strong>Common causes:</strong> Asthma, COPD, anaphylaxis, CHF exacerbation (cardiac asthma).</li>
-            <li><strong>Best heard:</strong> Anterior/upper lobes and diffuse fields; can be heard without a stethoscope if severe.</li>
-          </ul>
-        </div>
-
-        <!-- Crackles -->
-        <div class="info-card">
-          <div class="chips"><span class="chip">Coarse crackles</span><span class="chip">“Bubbling”/“Popping”</span><span class="chip">Inspiratory</span></div>
-          <ul>
-            <li>Air through fluid/secretions; lower-pitched, coarse.</li>
-            <li><strong>Common causes:</strong> Pneumonia, CHF/pulmonary edema, COPD exacerbation.</li>
-            <li><strong>Best heard:</strong> Posterior bases & lower lobes (back & lateral mid-axillary).</li>
-          </ul>
-        </div>
-
-        <!-- Stridor -->
-        <div class="info-card">
-          <div class="chips"><span class="chip">Stridor</span><span class="chip">Inspiratory, harsh</span><span class="chip">Upper airway</span></div>
-          <ul>
-            <li>Monophonic, loud → upper airway obstruction.</li>
-            <li><strong>Common causes:</strong> Croup, epiglottitis, foreign body, angioedema.</li>
-            <li><strong>Best heard:</strong> <u>Neck/trachea</u> (this simulator limits stridor to the neck points).</li>
-            <li class="warn">Red flags: voice change, drooling, severe work of breathing → manage airway early.</li>
-          </ul>
-        </div>
-
-        <!-- Where to listen map -->
-        <div class="info-card" style="grid-column:1 / -1">
-          <div class="chips"><span class="chip">Where to listen</span></div>
-          <ul style="margin-top:6px;">
-            <li><strong>Upper (anterior RUL/LUL):</strong> Good for <em>wheezes</em>, bronchial changes.</li>
-            <li><strong>Lower (posterior bases RLL/LLL):</strong> Best for <em>crackles</em> (pneumonia/edema).</li>
-            <li><strong>Lateral mid-axillary:</strong> Middle lobe & lingula; catches focal changes missed anteriorly.</li>
-            <li><strong>Neck/trachea:</strong> <em>Stridor</em>, tracheal quality, transmitted upper airway sounds.</li>
-          </ul>
-          <ul style="margin-top:6px;">
-            <li><strong>Technique tips:</strong> Compare side-to-side at same levels; listen to a full insp/exp cycle; have the patient sit up if possible; reduce room noise.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="modal-actions">
-        <button class="btn small" id="modalOkBtn">Got it</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
+</div>
+</section>
+<footer>© 2025 EMS CODE SIM • Phone friendly</footer>
+</div>
+<!-- Info Modal -->
+<div aria-hidden="true" aria-labelledby="infoTitle" class="modal" id="infoModal" role="dialog">
+<div class="modal-card">
+<div class="modal-header">
+<div class="modal-title" id="infoTitle">Breath sounds: what they mean &amp; where to listen</div>
+<button aria-label="Close" class="iconbtn" id="closeModalBtn" title="Close">
+<svg aria-hidden="true" fill="none" height="20" viewbox="0 0 24 24" width="20">
+<path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+<div class="modal-grid">
+<!-- Normal -->
+<div class="info-card">
+<div class="chips"><span class="chip">Normal vesicular</span><span class="chip">Low-pitched</span><span class="chip">Peripheral</span></div>
+<ul>
+<li>Soft, rustling; inspiratory &gt; expiratory, no pause.</li>
+<li><strong>Best heard:</strong> over peripheral lung fields (upper &amp; lower, front and back).</li>
+<li><strong>Use:</strong> Baseline for comparison side-to-side.</li>
+</ul>
+</div>
+<!-- Wheeze -->
+<div class="info-card">
+<div class="chips"><span class="chip">Wheezing</span><span class="chip">High-pitched musical</span><span class="chip">Expiratory±Inspiratory</span></div>
+<ul>
+<li>Narrowed airways → polyphonic “musical” tones.</li>
+<li><strong>Common causes:</strong> Asthma, COPD, anaphylaxis, CHF exacerbation (cardiac asthma).</li>
+<li><strong>Best heard:</strong> Anterior/upper lobes and diffuse fields; can be heard without a stethoscope if severe.</li>
+</ul>
+</div>
+<!-- Crackles -->
+<div class="info-card">
+<div class="chips"><span class="chip">Coarse crackles</span><span class="chip">“Bubbling”/“Popping”</span><span class="chip">Inspiratory</span></div>
+<ul>
+<li>Air through fluid/secretions; lower-pitched, coarse.</li>
+<li><strong>Common causes:</strong> Pneumonia, CHF/pulmonary edema, COPD exacerbation.</li>
+<li><strong>Best heard:</strong> Posterior bases &amp; lower lobes (back &amp; lateral mid-axillary).</li>
+</ul>
+</div>
+<!-- Stridor -->
+<div class="info-card">
+<div class="chips"><span class="chip">Stridor</span><span class="chip">Inspiratory, harsh</span><span class="chip">Upper airway</span></div>
+<ul>
+<li>Monophonic, loud → upper airway obstruction.</li>
+<li><strong>Common causes:</strong> Croup, epiglottitis, foreign body, angioedema.</li>
+<li><strong>Best heard:</strong> <u>Neck/trachea</u> (this simulator limits stridor to the neck points).</li>
+<li class="warn">Red flags: voice change, drooling, severe work of breathing → manage airway early.</li>
+</ul>
+</div>
+<!-- Where to listen map -->
+<div class="info-card" style="grid-column:1 / -1">
+<div class="chips"><span class="chip">Where to listen</span></div>
+<ul style="margin-top:6px;">
+<li><strong>Upper (anterior RUL/LUL):</strong> Good for <em>wheezes</em>, bronchial changes.</li>
+<li><strong>Lower (posterior bases RLL/LLL):</strong> Best for <em>crackles</em> (pneumonia/edema).</li>
+<li><strong>Lateral mid-axillary:</strong> Middle lobe &amp; lingula; catches focal changes missed anteriorly.</li>
+<li><strong>Neck/trachea:</strong> <em>Stridor</em>, tracheal quality, transmitted upper airway sounds.</li>
+</ul>
+<ul style="margin-top:6px;">
+<li><strong>Technique tips:</strong> Compare side-to-side at same levels; listen to a full insp/exp cycle; have the patient sit up if possible; reduce room noise.</li>
+</ul>
+</div>
+</div>
+<div class="modal-actions">
+<button class="btn small" id="modalOkBtn">Got it</button>
+</div>
+</div>
+</div>
+<script>
     // ----- Topbar actions & Info modal (robust open on mobile/desktop) -----
     const backBtn = document.getElementById('backBtn');
     const infoBtn = document.getElementById('infoBtn');

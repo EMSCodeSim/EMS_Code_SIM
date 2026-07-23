@@ -1,21 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Stroke Assessment Trainer | EMSCodeSim</title>
-<link rel="canonical" href="https://emscodesim.com/vitals/stroke.html"/>
-<meta name="description" content="Practice EMS stroke recognition and BE-FAST assessment findings with an interactive stroke assessment trainer."/>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-5QLPK4025C');
-</script>
-
+<link href="https://emscodesim.com/vitals/stroke.html" rel="canonical"/>
+<meta content="Practice EMS stroke recognition and BE-FAST assessment findings with an interactive stroke assessment trainer." name="description"/>
 <style>
   :root{
     --bg:#f4f8fb; --card:#fff; --ink:#122230; --muted:#5c6a78;
@@ -83,221 +74,209 @@
   }
   .speech-strip strong{margin-right:.25rem}
 </style>
-  <link rel="stylesheet" href="/styles/responsive.css">
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Stroke Assessment Trainer | EMSCodeSim" property="og:title"/><meta content="Practice EMS stroke recognition and BE-FAST assessment findings with an interactive stroke assessment trainer." property="og:description"/><meta content="https://emscodesim.com/vitals/stroke.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 </head>
 <body>
 <div class="wrap">
-  <!-- HEADER (sticky) with Back + Info -->
-  <header class="card">
-    <div class="headerbar">
-      <div class="h-left">
-        <button id="btnBack" class="iconbtn" title="Back">← Back</button>
-        <h1 style="margin:0">Stroke Assessment</h1>
-      </div>
-      <div class="h-right">
-        <button id="btnInfo" class="iconbtn" title="Info">ℹ️ Info</button>
-      </div>
-    </div>
-  </header>
-
-  <!-- PATIENT INFO just under header -->
-  <section class="card" aria-labelledby="ptinfo-title">
-    <h2 id="ptinfo-title">Patient Information</h2>
-    <div class="body">
-      <div id="ptInfo"></div>
-    </div>
-  </section>
-
-  <div class="grid">
-    <!-- LEFT: Simulator -->
-    <section class="card">
-      <h2>Simulator</h2>
-      <div class="body">
-        <!-- Patient says (text version) — hidden until Speech test is pressed -->
-        <div class="speech-strip" id="speechStrip"><strong>Patient says:</strong><span id="spokenText">…</span></div>
-
-        <div class="toolbar">
-          <!-- BEFAST order: Balance, Eyes, Face, Arms, Speech -->
-          <div class="seg" role="tablist" aria-label="Test selector">
-            <button id="tab-balance" role="tab" aria-selected="false" title="Arms down">Balance</button>
-            <button id="tab-eyes"    role="tab" aria-selected="false">Eyes</button>
-            <button id="tab-face"    role="tab" aria-selected="false">Face</button>
-            <button id="tab-drift"   role="tab" aria-selected="false" title="Arms up, palms up">Arm Drift</button>
-            <button id="tab-speech"  role="tab" aria-selected="false">Speech</button>
-          </div>
-          <div class="btn-row">
-            <span class="pill">Timer: <span id="timer">0.0</span>s</span>
-            <button id="btn-reset-visual" class="btn">Reset View</button>
-          </div>
-        </div>
-
-        <div class="panel" id="panel">
-          <!-- Reusable SVG person for all tests -->
-          <svg id="person" viewBox="0 0 200 280" aria-labelledby="title desc" role="img" preserveAspectRatio="xMidYMid meet">
-            <title id="title">Patient Figure</title>
-            <desc id="desc">Front view human figure used in stroke assessment animations (balance, drift, face, eyes).</desc>
-
-            <!-- Ground (slightly higher to reduce bottom whitespace) -->
-            <ellipse cx="100" cy="255" rx="58" ry="9" fill="#e7eef6"/>
-
-            <!-- Wrap lower+upper so we can rotate the WHOLE body around the feet for Balance -->
-            <g id="bodyAll">
-              <!-- LOWER (legs/feet) -->
-              <g id="lower">
-                <path d="M 92 162 V 225" stroke="#2f3d56" stroke-width="14" stroke-linecap="round"/>
-                <path d="M 108 162 V 225" stroke="#2f3d56" stroke-width="14" stroke-linecap="round"/>
-                <rect x="84" y="225" width="32" height="10" rx="3" fill="#2f3d56"/>
-              </g>
-
-              <!-- UPPER (head + torso + arms) -->
-              <g id="upper">
-                <!-- Head -->
-                <g id="head" transform="translate(100,60)">
-                  <circle r="22" fill="#f5d2b8" stroke="#c9a18c"/>
-                  <!-- Eyes with equal pupils -->
-                  <g id="eyeL" transform="translate(-9,-3)">
-                    <ellipse rx="6" ry="4.2" fill="#fff" stroke="#c9a18c"/>
-                    <circle id="pL" r="2.2" cx="0" cy="0" fill="#222"/>
-                  </g>
-                  <g id="eyeR" transform="translate(9,-3)">
-                    <ellipse rx="6" ry="4.2" fill="#fff" stroke="#c9a18c"/>
-                    <circle id="pR" r="2.2" cx="0" cy="0" fill="#222"/>
-                  </g>
-                  <!-- Brows -->
-                  <path id="browL" d="M -12 -9 Q -6 -11 -1 -10" fill="none" stroke="#8b5a4e" stroke-width="2" stroke-linecap="round"/>
-                  <path id="browR" d="M 1 -10 Q 6 -11 12 -9" fill="none" stroke="#8b5a4e" stroke-width="2" stroke-linecap="round"/>
-                  <!-- Mouth (morphs for smile & droop) -->
-                  <path id="mouth" d="M -7 8 Q 0 10 7 8" fill="none" stroke="#8b5a4e" stroke-width="2" stroke-linecap="round"/>
-                </g>
-
-                <!-- Torso -->
-                <rect x="72" y="84" width="56" height="78" rx="10" fill="#79a9ff" stroke="#4c77cc"/>
-
-                <!-- Arms DOWN (Balance default) -->
-                <g id="arms-down">
-                  <path d="M 72 92 C 62 120, 62 150, 70 178" fill="none" stroke="#79a9ff" stroke-width="14" stroke-linecap="round"/>
-                  <path d="M 128 92 C 138 120, 138 150, 130 178" fill="none" stroke="#79a9ff" stroke-width="14" stroke-linecap="round"/>
-                  <circle cx="70" cy="184" r="7" fill="#f5d2b8" stroke="#c9a18c"/>
-                  <circle cx="130" cy="184" r="7" fill="#f5d2b8" stroke="#c9a18c"/>
-                </g>
-
-                <!-- Arms UP, PALMS UP (Arm Drift) -->
-                <g id="arms-up" visibility="hidden">
-                  <path d="M 84 110 Q 84 100 92 98" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
-                  <path d="M 116 110 Q 116 100 108 98" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
-                  <path id="left-forearm" d="M 92 98 H 66" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
-                  <path id="right-forearm" d="M 108 98 H 134" fill="none" stroke="#79a9ff" stroke-width="12" stroke-linecap="round"/>
-                  <ellipse id="left-palm" cx="62" cy="98" rx="7.5" ry="6.5" fill="#f5d2b8" stroke="#c9a18c"/>
-                  <ellipse id="right-palm" cx="138" cy="98" rx="7.5" ry="6.5" fill="#f5d2b8" stroke="#c9a18c"/>
-                  <path d="M 58 98 h 8" stroke="#d3b2a0" />
-                  <path d="M 134 98 h 8" stroke="#d3b2a0" />
-                </g>
-              </g>
-            </g>
-          </svg>
-        </div>
-
-        <div id="testDesc" class="muted" style="margin-top:8px"></div>
-      </div>
-    </section>
-
-    <!-- RIGHT: Findings -->
-    <aside class="card">
-      <h2>Your Findings</h2>
-      <div class="body">
-        <div class="formGrid">
-          <div>
-            <label for="fBalance">Balance</label>
-            <select id="fBalance">
-              <option value="normal">Normal</option>
-              <option value="unsteady">Unsteady or wide stance</option>
-              <option value="leansLeft">Leans or falls to the left</option>
-              <option value="leansRight">Leans or falls to the right</option>
-            </select>
-          </div>
-          <div>
-            <label for="fEyes">Eyes (Gaze)</label>
-            <select id="fEyes">
-              <option value="normal">Follows finger both ways</option>
-              <option value="slow">Follows slowly</option>
-              <option value="deviationLeft">Eyes pulled to the left</option>
-              <option value="deviationRight">Eyes pulled to the right</option>
-            </select>
-          </div>
-          <div>
-            <label for="fFace">Face</label>
-            <select id="fFace">
-              <option value="none">No droop</option>
-              <option value="left">Left side droops</option>
-              <option value="right">Right side droops</option>
-            </select>
-          </div>
-          <div>
-            <label for="fArms">Arms</label>
-            <select id="fArms">
-              <option value="none">No arm drift</option>
-              <option value="left">Left arm drifts down</option>
-              <option value="right">Right arm drifts down</option>
-            </select>
-          </div>
-          <div>
-            <label for="fSpeech">Speech</label>
-            <select id="fSpeech">
-              <option value="normal">Normal</option>
-              <option value="slurred">Slurred</option>
-              <option value="expressive">Trouble speaking</option>
-              <option value="receptive">Trouble understanding</option>
-              <option value="mute">No speech</option>
-            </select>
-          </div>
-          <div>
-            <label for="fTime">Time (last known well)</label>
-            <select id="fTime">
-              <option value="lt3h">Less than 3 hours</option>
-              <option value="3to6h">3 to 6 hours</option>
-              <option value="6to24h">6 to 24 hours</option>
-              <option value="gt24h">More than 24 hours</option>
-              <option value="unknown">Not sure</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="btn-row" style="margin-top:10px">
-          <button class="btn success" id="btnGrade">Show Results</button>
-          <button class="btn" id="btnNew">Next Case</button>
-          <button class="btn" id="btnResetForm">Reset</button>
-        </div>
-
-        <div class="results">
-          <div class="box" id="gradeBox" hidden>
-            <div id="gradeSummary"><strong>Results:</strong> —</div>
-            <ul id="gradeList"></ul>
-            <div id="meaning" style="margin-top:.5rem"></div>
-          </div>
-        </div>
-      </div>
-    </aside>
-  </div>
+<!-- HEADER (sticky) with Back + Info -->
+<header class="card">
+<div class="headerbar">
+<div class="h-left">
+<button class="iconbtn" id="btnBack" title="Back">← Back</button>
+<h1 style="margin:0">Stroke Assessment</h1>
 </div>
-
+<div class="h-right">
+<button class="iconbtn" id="btnInfo" title="Info">ℹ️ Info</button>
+</div>
+</div>
+</header>
+<!-- PATIENT INFO just under header -->
+<section aria-labelledby="ptinfo-title" class="card">
+<h2 id="ptinfo-title">Patient Information</h2>
+<div class="body">
+<div id="ptInfo"></div>
+</div>
+</section>
+<div class="grid">
+<!-- LEFT: Simulator -->
+<section class="card">
+<h2>Simulator</h2>
+<div class="body">
+<!-- Patient says (text version) — hidden until Speech test is pressed -->
+<div class="speech-strip" id="speechStrip"><strong>Patient says:</strong><span id="spokenText">…</span></div>
+<div class="toolbar">
+<!-- BEFAST order: Balance, Eyes, Face, Arms, Speech -->
+<div aria-label="Test selector" class="seg" role="tablist">
+<button aria-selected="false" id="tab-balance" role="tab" title="Arms down">Balance</button>
+<button aria-selected="false" id="tab-eyes" role="tab">Eyes</button>
+<button aria-selected="false" id="tab-face" role="tab">Face</button>
+<button aria-selected="false" id="tab-drift" role="tab" title="Arms up, palms up">Arm Drift</button>
+<button aria-selected="false" id="tab-speech" role="tab">Speech</button>
+</div>
+<div class="btn-row">
+<span class="pill">Timer: <span id="timer">0.0</span>s</span>
+<button class="btn" id="btn-reset-visual">Reset View</button>
+</div>
+</div>
+<div class="panel" id="panel">
+<!-- Reusable SVG person for all tests -->
+<svg aria-labelledby="title desc" id="person" preserveaspectratio="xMidYMid meet" role="img" viewbox="0 0 200 280">
+<title id="title">Patient Figure</title>
+<desc id="desc">Front view human figure used in stroke assessment animations (balance, drift, face, eyes).</desc>
+<!-- Ground (slightly higher to reduce bottom whitespace) -->
+<ellipse cx="100" cy="255" fill="#e7eef6" rx="58" ry="9"></ellipse>
+<!-- Wrap lower+upper so we can rotate the WHOLE body around the feet for Balance -->
+<g id="bodyAll">
+<!-- LOWER (legs/feet) -->
+<g id="lower">
+<path d="M 92 162 V 225" stroke="#2f3d56" stroke-linecap="round" stroke-width="14"></path>
+<path d="M 108 162 V 225" stroke="#2f3d56" stroke-linecap="round" stroke-width="14"></path>
+<rect fill="#2f3d56" height="10" rx="3" width="32" x="84" y="225"></rect>
+</g>
+<!-- UPPER (head + torso + arms) -->
+<g id="upper">
+<!-- Head -->
+<g id="head" transform="translate(100,60)">
+<circle fill="#f5d2b8" r="22" stroke="#c9a18c"></circle>
+<!-- Eyes with equal pupils -->
+<g id="eyeL" transform="translate(-9,-3)">
+<ellipse fill="#fff" rx="6" ry="4.2" stroke="#c9a18c"></ellipse>
+<circle cx="0" cy="0" fill="#222" id="pL" r="2.2"></circle>
+</g>
+<g id="eyeR" transform="translate(9,-3)">
+<ellipse fill="#fff" rx="6" ry="4.2" stroke="#c9a18c"></ellipse>
+<circle cx="0" cy="0" fill="#222" id="pR" r="2.2"></circle>
+</g>
+<!-- Brows -->
+<path d="M -12 -9 Q -6 -11 -1 -10" fill="none" id="browL" stroke="#8b5a4e" stroke-linecap="round" stroke-width="2"></path>
+<path d="M 1 -10 Q 6 -11 12 -9" fill="none" id="browR" stroke="#8b5a4e" stroke-linecap="round" stroke-width="2"></path>
+<!-- Mouth (morphs for smile & droop) -->
+<path d="M -7 8 Q 0 10 7 8" fill="none" id="mouth" stroke="#8b5a4e" stroke-linecap="round" stroke-width="2"></path>
+</g>
+<!-- Torso -->
+<rect fill="#79a9ff" height="78" rx="10" stroke="#4c77cc" width="56" x="72" y="84"></rect>
+<!-- Arms DOWN (Balance default) -->
+<g id="arms-down">
+<path d="M 72 92 C 62 120, 62 150, 70 178" fill="none" stroke="#79a9ff" stroke-linecap="round" stroke-width="14"></path>
+<path d="M 128 92 C 138 120, 138 150, 130 178" fill="none" stroke="#79a9ff" stroke-linecap="round" stroke-width="14"></path>
+<circle cx="70" cy="184" fill="#f5d2b8" r="7" stroke="#c9a18c"></circle>
+<circle cx="130" cy="184" fill="#f5d2b8" r="7" stroke="#c9a18c"></circle>
+</g>
+<!-- Arms UP, PALMS UP (Arm Drift) -->
+<g id="arms-up" visibility="hidden">
+<path d="M 84 110 Q 84 100 92 98" fill="none" stroke="#79a9ff" stroke-linecap="round" stroke-width="12"></path>
+<path d="M 116 110 Q 116 100 108 98" fill="none" stroke="#79a9ff" stroke-linecap="round" stroke-width="12"></path>
+<path d="M 92 98 H 66" fill="none" id="left-forearm" stroke="#79a9ff" stroke-linecap="round" stroke-width="12"></path>
+<path d="M 108 98 H 134" fill="none" id="right-forearm" stroke="#79a9ff" stroke-linecap="round" stroke-width="12"></path>
+<ellipse cx="62" cy="98" fill="#f5d2b8" id="left-palm" rx="7.5" ry="6.5" stroke="#c9a18c"></ellipse>
+<ellipse cx="138" cy="98" fill="#f5d2b8" id="right-palm" rx="7.5" ry="6.5" stroke="#c9a18c"></ellipse>
+<path d="M 58 98 h 8" stroke="#d3b2a0"></path>
+<path d="M 134 98 h 8" stroke="#d3b2a0"></path>
+</g>
+</g>
+</g>
+</svg>
+</div>
+<div class="muted" id="testDesc" style="margin-top:8px"></div>
+</div>
+</section>
+<!-- RIGHT: Findings -->
+<aside class="card">
+<h2>Your Findings</h2>
+<div class="body">
+<div class="formGrid">
+<div>
+<label for="fBalance">Balance</label>
+<select id="fBalance">
+<option value="normal">Normal</option>
+<option value="unsteady">Unsteady or wide stance</option>
+<option value="leansLeft">Leans or falls to the left</option>
+<option value="leansRight">Leans or falls to the right</option>
+</select>
+</div>
+<div>
+<label for="fEyes">Eyes (Gaze)</label>
+<select id="fEyes">
+<option value="normal">Follows finger both ways</option>
+<option value="slow">Follows slowly</option>
+<option value="deviationLeft">Eyes pulled to the left</option>
+<option value="deviationRight">Eyes pulled to the right</option>
+</select>
+</div>
+<div>
+<label for="fFace">Face</label>
+<select id="fFace">
+<option value="none">No droop</option>
+<option value="left">Left side droops</option>
+<option value="right">Right side droops</option>
+</select>
+</div>
+<div>
+<label for="fArms">Arms</label>
+<select id="fArms">
+<option value="none">No arm drift</option>
+<option value="left">Left arm drifts down</option>
+<option value="right">Right arm drifts down</option>
+</select>
+</div>
+<div>
+<label for="fSpeech">Speech</label>
+<select id="fSpeech">
+<option value="normal">Normal</option>
+<option value="slurred">Slurred</option>
+<option value="expressive">Trouble speaking</option>
+<option value="receptive">Trouble understanding</option>
+<option value="mute">No speech</option>
+</select>
+</div>
+<div>
+<label for="fTime">Time (last known well)</label>
+<select id="fTime">
+<option value="lt3h">Less than 3 hours</option>
+<option value="3to6h">3 to 6 hours</option>
+<option value="6to24h">6 to 24 hours</option>
+<option value="gt24h">More than 24 hours</option>
+<option value="unknown">Not sure</option>
+</select>
+</div>
+</div>
+<div class="btn-row" style="margin-top:10px">
+<button class="btn success" id="btnGrade">Show Results</button>
+<button class="btn" id="btnNew">Next Case</button>
+<button class="btn" id="btnResetForm">Reset</button>
+</div>
+<div class="results">
+<div class="box" hidden="" id="gradeBox">
+<div id="gradeSummary"><strong>Results:</strong> —</div>
+<ul id="gradeList"></ul>
+<div id="meaning" style="margin-top:.5rem"></div>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div>
 <!-- Simple Info dialog -->
 <dialog id="infoDialog" style="max-width:640px;border:1px solid var(--border);border-radius:16px;padding:0">
-  <form method="dialog" style="margin:0">
-    <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">About this Simulator</div>
-    <div style="padding:14px 16px">
-      <p>This tool simulates BE-FAST stroke checks: Balance, Eyes, Face, Arm drift, and Speech.</p>
-      <ul>
-        <li>Press a test to start the animation.</li>
-        <li>Use <strong>Reset View</strong> to return to neutral.</li>
-        <li>Use the right panel to record findings and show results.</li>
-      </ul>
-    </div>
-    <div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
-      <button class="btn">Close</button>
-    </div>
-  </form>
+<form method="dialog" style="margin:0">
+<div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">About this Simulator</div>
+<div style="padding:14px 16px">
+<p>This tool simulates BE-FAST stroke checks: Balance, Eyes, Face, Arm drift, and Speech.</p>
+<ul>
+<li>Press a test to start the animation.</li>
+<li>Use <strong>Reset View</strong> to return to neutral.</li>
+<li>Use the right panel to record findings and show results.</li>
+</ul>
+</div>
+<div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
+<button class="btn">Close</button>
+</div>
+</form>
 </dialog>
-
 <script>
 (function(){
   const $ = s => document.querySelector(s);

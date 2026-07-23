@@ -1,21 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <title>Skin Signs Simulator | EMSCodeSim</title>
-<link rel="canonical" href="https://emscodesim.com/vitals/skin.html"/>
-<meta name="description" content="Practice EMS skin sign assessment including color, temperature, moisture, and patient presentation cues."/>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-5QLPK4025C');
-</script>
-
+<link href="https://emscodesim.com/vitals/skin.html" rel="canonical"/>
+<meta content="Practice EMS skin sign assessment including color, temperature, moisture, and patient presentation cues." name="description"/>
 <style>
   :root{
     --bg:#f0f8ff; --panel:#fff; --text:#0f2b33; --muted:#e7f4f7;
@@ -123,136 +114,131 @@
   }
   .temp button{ appearance:none; border:1px solid #d4e5ea; background:#fff; border-radius:10px; padding:8px 12px; font-weight:900; cursor:pointer; }
 </style>
-  <link rel="stylesheet" href="/styles/responsive.css">
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Skin Signs Simulator | EMSCodeSim" property="og:title"/><meta content="Practice EMS skin sign assessment including color, temperature, moisture, and patient presentation cues." property="og:description"/><meta content="https://emscodesim.com/vitals/skin.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 </head>
 <body>
-  <!-- Header -->
-  <div class="topbar" role="banner">
-    <div class="topbar-inner">
-      <button class="iconbtn" id="backBtn" aria-label="Go back" title="Back">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span class="btn-label">Back</span>
-      </button>
-      <div class="topbar-title">Skin Signs • Split View</div>
-      <button class="iconbtn" id="infoBtn" aria-label="Info" title="Info">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 8h.01M11 11h2v6h-2z" fill="currentColor"/></svg>
-        <span class="btn-label">Info</span>
-      </button>
-    </div>
-  </div>
-
-  <main>
-    <!-- Stage (square + controls directly underneath) -->
-    <section class="card stage">
-      <div class="skin" id="skin">
-        <div class="pane left"  id="paneLeft"></div>
-        <div class="pane right" id="paneRight">
-          <div class="ov ov-flush"  id="ovFlush"></div>
-          <div class="ov ov-cyan"   id="ovCyan"></div>
-          <div class="ov ov-jaund"  id="ovJaund"></div>
-          <div class="ov ov-pale"   id="ovPale"></div>
-          <div class="ov ov-sheen"  id="ovSheen"></div>
-          <div class="ov ov-drops"  id="ovDrops"></div>
-          <div class="ov ov-cool"   id="ovCool"></div>
-          <div class="ov ov-warm"   id="ovWarm"></div>
-          <div class="blanch"       id="blanch"></div>
-        </div>
-        <div class="splitbar"></div>
-
-        <!-- Color badges -->
-        <div class="badge left"><span class="dot" id="dotLeft"></span><span id="hexLeft">#f2d6c0</span></div>
-        <div class="badge right"><span class="dot" id="dotRight"></span><span id="hexRight">Now</span></div>
-      </div>
-
-      <!-- Controls directly under the square -->
-      <div class="under-skin">
-        <!-- Row 1: four toggles -->
-        <div class="row">
-          <button class="tbtn" id="btnFlush"  type="button" aria-pressed="false">Flushed</button>
-          <button class="tbtn" id="btnCyan"   type="button" aria-pressed="false">Cyanotic</button>
-          <button class="tbtn" id="btnJaund"  type="button" aria-pressed="false">Jaundice</button>
-          <button class="tbtn" id="btnPale"   type="button" aria-pressed="false">Pale</button>
-        </div>
-
-        <!-- Row 2: cap refill time selector + button side-by-side -->
-        <div class="row" aria-label="Cap refill time & run">
-          <div class="seg" role="group">
-            <button id="speedFast" type="button" aria-pressed="true"  data-ms="1200">&lt; 2 sec</button>
-            <button id="speedSlow" type="button" aria-pressed="false" data-ms="4000">&gt; 2 sec (4s)</button>
-          </div>
-          <button class="btn" id="crtBtn" type="button">▶️ Cap Refill</button>
-        </div>
-
-        <!-- Row 3: Moisture (arrow) + Temp display -->
-        <div class="row" style="align-items:flex-start;">
-          <div>
-            <div class="moisture">
-              <div class="moisture-track" id="moistTrack">
-                <div class="moisture-arrow" id="moistArrow" style="left:50%"></div>
-              </div>
-            </div>
-            <div class="moisture-labels">
-              <button class="moist-opt" id="moistDry"    type="button" aria-pressed="false" data-level="0">Dry</button>
-              <button class="moist-opt" id="moistNormal" type="button" aria-pressed="true"  data-level="1">Normal</button>
-              <button class="moist-opt" id="moistWet"    type="button" aria-pressed="false" data-level="2">Wet</button>
-            </div>
-          </div>
-
-          <div class="temp" aria-label="Digital temperature">
-            <button id="tempMinus" type="button">–</button>
-            <div class="display" id="tempDisplay">98.6°F</div>
-            <button id="tempPlus" type="button">+</button>
-          </div>
-        </div>
-
-        <!-- Row 4: patient skin tone picker -->
-        <div class="row" style="justify-content:center">
-          <input id="tonePicker" title="Patient skin color" type="color" value="#f2d6c0" style="width:140px;height:44px;border-radius:10px;border:1px solid #cfe3e8;padding:4px;background:#fff"/>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Info Modal -->
-  <div class="modal" id="infoModal" aria-hidden="true" aria-labelledby="infoTitle" role="dialog" style="position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,.48); z-index: 60; padding: 24px;">
-    <div class="modal-card" tabindex="-1" style="width:min(760px, 100%); background:#fff; border-radius:18px; padding:18px; box-shadow:var(--shadow); border:1px solid #e8eef0; max-height:85dvh; overflow:auto; color:var(--text);">
-      <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding-bottom:8px; border-bottom:1px solid #e8eef0;">
-        <div class="modal-title" id="infoTitle" style="font-weight:800; font-size:1.1rem;">How this works & why colors change</div>
-        <button class="iconbtn" id="closeModalBtn" aria-label="Close" title="Close">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </button>
-      </div>
-      <div class="modal-body" style="display:grid; gap:12px;">
-        <div>
-          <p>Left half is the patient’s baseline tone; right half shows the “now” appearance. Toggle color changes and run cap refill to visualize perfusion.</p>
-        </div>
-        <div>
-          <h4>Color changes</h4>
-          <ul>
-            <li><strong>Flushed</strong>: vasodilation (fever, early sepsis, exertion, anaphylaxis, CO₂ retention).</li>
-            <li><strong>Cyanotic</strong>: deoxygenated Hb. Central (tongue/lips) → hypoxemia; peripheral (nails) → cold/low cardiac output.</li>
-            <li><strong>Jaundice</strong>: elevated bilirubin (liver disease, obstruction, hemolysis). Check sclerae/mucosa; subtle on darker skin.</li>
-            <li><strong>Pale</strong>: anemia, shock/low perfusion, vasoconstriction, cold exposure.</li>
-          </ul>
-        </div>
-        <div>
-          <h4>Capillary refill</h4>
-          <p>Blanches then returns to baseline. &lt;2 s often normal (warm). &gt;2 s (4 s demo) suggests poor perfusion, hypothermia, or vasoconstriction—interpret with overall context.</p>
-        </div>
-        <div>
-          <h4>Moisture & Temperature</h4>
-          <ul>
-            <li><strong>Dry→Wet</strong>: from dehydration/fever chills (dry) to diaphoresis (wet) in shock, fever, pain, anxiety.</li>
-            <li><strong>Temp</strong>: low skin temp (cool) can reflect vasoconstriction/exposure; fever may cause warmth/flushing.</li>
-          </ul>
-        </div>
-      </div>
-      <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
-        <button class="btn" id="modalOkBtn" style="padding:10px 14px; font-size:.95rem;">Got it</button>
-      </div>
-    </div>
-  </div>
-
+<!-- Header -->
+<div class="topbar" role="banner">
+<div class="topbar-inner">
+<button aria-label="Go back" class="iconbtn" id="backBtn" title="Back">
+<svg aria-hidden="true" fill="none" height="22" viewbox="0 0 24 24" width="22"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="btn-label">Back</span>
+</button>
+<h1 class="topbar-title tool-h1">Skin Signs Simulator</h1>
+<button aria-label="Info" class="iconbtn" id="infoBtn" title="Info">
+<svg aria-hidden="true" fill="none" height="22" viewbox="0 0 24 24" width="22"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"></circle><path d="M12 8h.01M11 11h2v6h-2z" fill="currentColor"></path></svg>
+<span class="btn-label">Info</span>
+</button>
+</div>
+</div>
+<main>
+<!-- Stage (square + controls directly underneath) -->
+<section class="card stage">
+<div class="skin" id="skin">
+<div class="pane left" id="paneLeft"></div>
+<div class="pane right" id="paneRight">
+<div class="ov ov-flush" id="ovFlush"></div>
+<div class="ov ov-cyan" id="ovCyan"></div>
+<div class="ov ov-jaund" id="ovJaund"></div>
+<div class="ov ov-pale" id="ovPale"></div>
+<div class="ov ov-sheen" id="ovSheen"></div>
+<div class="ov ov-drops" id="ovDrops"></div>
+<div class="ov ov-cool" id="ovCool"></div>
+<div class="ov ov-warm" id="ovWarm"></div>
+<div class="blanch" id="blanch"></div>
+</div>
+<div class="splitbar"></div>
+<!-- Color badges -->
+<div class="badge left"><span class="dot" id="dotLeft"></span><span id="hexLeft">#f2d6c0</span></div>
+<div class="badge right"><span class="dot" id="dotRight"></span><span id="hexRight">Now</span></div>
+</div>
+<!-- Controls directly under the square -->
+<div class="under-skin">
+<!-- Row 1: four toggles -->
+<div class="row">
+<button aria-pressed="false" class="tbtn" id="btnFlush" type="button">Flushed</button>
+<button aria-pressed="false" class="tbtn" id="btnCyan" type="button">Cyanotic</button>
+<button aria-pressed="false" class="tbtn" id="btnJaund" type="button">Jaundice</button>
+<button aria-pressed="false" class="tbtn" id="btnPale" type="button">Pale</button>
+</div>
+<!-- Row 2: cap refill time selector + button side-by-side -->
+<div aria-label="Cap refill time &amp; run" class="row">
+<div class="seg" role="group">
+<button aria-pressed="true" data-ms="1200" id="speedFast" type="button">&lt; 2 sec</button>
+<button aria-pressed="false" data-ms="4000" id="speedSlow" type="button">&gt; 2 sec (4s)</button>
+</div>
+<button class="btn" id="crtBtn" type="button">▶️ Cap Refill</button>
+</div>
+<!-- Row 3: Moisture (arrow) + Temp display -->
+<div class="row" style="align-items:flex-start;">
+<div>
+<div class="moisture">
+<div class="moisture-track" id="moistTrack">
+<div class="moisture-arrow" id="moistArrow" style="left:50%"></div>
+</div>
+</div>
+<div class="moisture-labels">
+<button aria-pressed="false" class="moist-opt" data-level="0" id="moistDry" type="button">Dry</button>
+<button aria-pressed="true" class="moist-opt" data-level="1" id="moistNormal" type="button">Normal</button>
+<button aria-pressed="false" class="moist-opt" data-level="2" id="moistWet" type="button">Wet</button>
+</div>
+</div>
+<div aria-label="Digital temperature" class="temp">
+<button id="tempMinus" type="button">–</button>
+<div class="display" id="tempDisplay">98.6°F</div>
+<button id="tempPlus" type="button">+</button>
+</div>
+</div>
+<!-- Row 4: patient skin tone picker -->
+<div class="row" style="justify-content:center">
+<input id="tonePicker" style="width:140px;height:44px;border-radius:10px;border:1px solid #cfe3e8;padding:4px;background:#fff" title="Patient skin color" type="color" value="#f2d6c0"/>
+</div>
+</div>
+</section>
+</main>
+<!-- Info Modal -->
+<div aria-hidden="true" aria-labelledby="infoTitle" class="modal" id="infoModal" role="dialog" style="position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(0,0,0,.48); z-index: 60; padding: 24px;">
+<div class="modal-card" style="width:min(760px, 100%); background:#fff; border-radius:18px; padding:18px; box-shadow:var(--shadow); border:1px solid #e8eef0; max-height:85dvh; overflow:auto; color:var(--text);" tabindex="-1">
+<div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding-bottom:8px; border-bottom:1px solid #e8eef0;">
+<div class="modal-title" id="infoTitle" style="font-weight:800; font-size:1.1rem;">How this works &amp; why colors change</div>
+<button aria-label="Close" class="iconbtn" id="closeModalBtn" title="Close">
+<svg aria-hidden="true" fill="none" height="20" viewbox="0 0 24 24" width="20"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<div class="modal-body" style="display:grid; gap:12px;">
+<div>
+<p>Left half is the patient’s baseline tone; right half shows the “now” appearance. Toggle color changes and run cap refill to visualize perfusion.</p>
+</div>
+<div>
+<h4>Color changes</h4>
+<ul>
+<li><strong>Flushed</strong>: vasodilation (fever, early sepsis, exertion, anaphylaxis, CO₂ retention).</li>
+<li><strong>Cyanotic</strong>: deoxygenated Hb. Central (tongue/lips) → hypoxemia; peripheral (nails) → cold/low cardiac output.</li>
+<li><strong>Jaundice</strong>: elevated bilirubin (liver disease, obstruction, hemolysis). Check sclerae/mucosa; subtle on darker skin.</li>
+<li><strong>Pale</strong>: anemia, shock/low perfusion, vasoconstriction, cold exposure.</li>
+</ul>
+</div>
+<div>
+<h4>Capillary refill</h4>
+<p>Blanches then returns to baseline. &lt;2 s often normal (warm). &gt;2 s (4 s demo) suggests poor perfusion, hypothermia, or vasoconstriction—interpret with overall context.</p>
+</div>
+<div>
+<h4>Moisture &amp; Temperature</h4>
+<ul>
+<li><strong>Dry→Wet</strong>: from dehydration/fever chills (dry) to diaphoresis (wet) in shock, fever, pain, anxiety.</li>
+<li><strong>Temp</strong>: low skin temp (cool) can reflect vasoconstriction/exposure; fever may cause warmth/flushing.</li>
+</ul>
+</div>
+</div>
+<div class="modal-actions" style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
+<button class="btn" id="modalOkBtn" style="padding:10px 14px; font-size:.95rem;">Got it</button>
+</div>
+</div>
+</div>
 <script>
 (function(){
   // Header + modal

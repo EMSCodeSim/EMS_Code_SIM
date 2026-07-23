@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8" />
+<meta charset="utf-8"/>
 <title>Capnography Waveform Trainer | EMSCodeSim</title>
-<link rel="canonical" href="https://emscodesim.com/vitals/capno.html"/>
-<meta name="description" content="Review ETCO2 waveforms and capnography patterns for EMS respiratory assessment, CPR, asthma, hypoventilation, and ventilation practice."/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link href="https://emscodesim.com/vitals/capno.html" rel="canonical"/>
+<meta content="Review ETCO2 waveforms and capnography patterns for EMS respiratory assessment, CPR, asthma, hypoventilation, and ventilation practice." name="description"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
 <style>
   :root{
     --bg:#f0f8ff; --card:#ffffff; --ink:#0c2a3a; --muted:#5d7a88;
@@ -95,133 +96,128 @@
   .mini canvas{ width:100%; height:100px; display:block }
   .mini label{ display:block; font-size:12px; color:#093246; margin-top:6px; text-align:center }
 </style>
-  <link rel="stylesheet" href="../styles/modern-theme.css" />
-  <link rel="stylesheet" href="/styles/responsive.css">
+<link href="../styles/modern-theme.css" rel="stylesheet"/>
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Capnography Waveform Trainer | EMSCodeSim" property="og:title"/><meta content="Review ETCO2 waveforms and capnography patterns for EMS respiratory assessment, CPR, asthma, hypoventilation, and ventilation practice." property="og:description"/><meta content="https://emscodesim.com/vitals/capno.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 </head>
 <body>
 <header>
-  <h1>Capnography Simulator (EMT-B)</h1>
-  <button id="eduBtn" class="eduBtn">📘 Understand Capnography</button>
+<h1>Capnography Simulator (EMT-B)</h1>
+<button class="eduBtn" id="eduBtn">📘 Understand Capnography</button>
 </header>
-
 <main class="wrap">
-  <section class="grid">
-    <div class="card">
-      <h2>Scenario</h2>
-      <div id="scenarioText" class="scenario">Loading case…</div>
-      <div style="margin-top:8px">
-        <span class="badge">NREMT Focus: Airway, Ventilation, Perfusion & ETCO₂</span>
-      </div>
-      <p class="tiny" style="margin-top:6px">
+<section class="grid">
+<div class="card">
+<h2>Scenario</h2>
+<div class="scenario" id="scenarioText">Loading case…</div>
+<div style="margin-top:8px">
+<span class="badge">NREMT Focus: Airway, Ventilation, Perfusion &amp; ETCO₂</span>
+</div>
+<p class="tiny" style="margin-top:6px">
         Pick the <b>best EMT-B action</b>. If the patient is <b>on BVM</b>, use the slider to set the ventilation rate and watch ETCO₂ respond
         (adult target <b>10–12/min</b>; avoid hyperventilation).
       </p>
-    </div>
-
-    <div class="card device" aria-label="Capnograph">
-      <div class="screen">
-        <div class="status-strip">
-          <div class="pill">Sensor: <strong>Attached</strong></div>
-          <div class="sig-bars" id="sigBars"><span></span><span></span><span></span><span></span></div>
-        </div>
-        <div class="big-readings">
-          <div class="reading et">
-            <div class="label">ETCO₂</div>
-            <div class="value" id="etco2Val">--</div>
-            <div class="units">mmHg</div>
-          </div>
-          <div class="reading rr">
-            <div class="label">RR</div>
-            <div class="value" id="rrVal">--</div>
-            <div class="units">/min</div>
-          </div>
-          <div class="reading wf">
-            <div class="label">Waveform</div>
-            <div class="value" id="shapeLabel">--</div>
-            <div class="units"></div>
-          </div>
-        </div>
-        <div class="pleth-wrap">
-          <canvas id="capno" width="900" height="160" aria-label="Capnogram waveform"></canvas>
-        </div>
-        <div class="alert" id="alert">Acquiring…</div>
-        <div class="alert notice" id="noTrace" style="display:none">
-          CO₂ TRACE ABSENT<br><span style="font-weight:400; font-size:12px; letter-spacing:0; opacity:.9">ETCO₂ below display threshold</span>
-        </div>
-      </div>
-
-      <div id="choicesBox" class="choices" aria-live="polite"></div>
-
-      <div id="bvmBox" class="bvm-box">
-        <div class="bvm-row">
-          <strong>BVM Ventilation Rate:</strong>
-          <input id="bvmRate" type="range" min="4" max="30" step="1" value="12" />
-          <span class="bvm-chip"><b id="bvmRateLbl">12</b> /min</span>
-          <span class="tiny">Adult target: 10–12/min • Too fast ↓ETCO₂ (hypocapnia) • Too slow ↑ETCO₂ (hypercapnia)</span>
-        </div>
-      </div>
-
-      <div id="explainBox" class="explain" style="display:none"></div>
-      <button id="nextBtn" class="next" style="display:none">🔀 Next Random Scenario</button>
-    </div>
-  </section>
-  <div class="footer-note">For training use only. Not a medical device.</div>
-</main>
-
-<!-- EDUCATION MODAL -->
-<div id="eduModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="eduTitle">
-  <div class="modal-card">
-    <div class="modal-header">
-      <h3 id="eduTitle">Understand Capnography</h3>
-      <button id="closeEdu" class="close" aria-label="Close">Close</button>
-    </div>
-    <div class="edu-grid">
-      <div class="edu-card">
-        <h4>How it works</h4>
-        <ul class="edu-list">
-          <li><b>Capnography</b> measures CO₂ in exhaled air over time; <b>ETCO₂</b> is the peak at end-exhalation.</li>
-          <li>Reflects <b>ventilation</b>, <b>perfusion</b>, and <b>metabolism</b>.</li>
-          <li>Use it to confirm airway device placement, titrate BVM rate, monitor CPR quality, and recognize ROSC.</li>
-        </ul>
-        <h4 style="margin-top:10px">Normal readings</h4>
-        <ul class="edu-list">
-          <li>Awake adult: <b>35–45 mmHg</b> with a square waveform.</li>
-          <li>CPR: often <b>10–20 mmHg</b>; a sustained jump toward the 30s suggests <b>ROSC</b>.</li>
-          <li>Adult BVM target: <b>10–12/min</b>. Avoid hyperventilation.</li>
-        </ul>
-        <h4 style="margin-top:10px">High vs Low ETCO₂</h4>
-        <ul class="edu-list">
-          <li><b>High</b>: hypoventilation, increased CO₂ production (fever/seizures), ROSC/improved perfusion, <b>rebreathing/equipment fault</b>.</li>
-          <li><b>Low</b>: hyperventilation, <b>poor perfusion</b> (shock/PE/arrest), <b>low-quality CPR</b>, prolonged downtime, or esophageal/failed airway (near-zero, flatline).</li>
-        </ul>
-      </div>
-
-      <div class="edu-card">
-        <h4>Waveform gallery</h4>
-        <div class="gallery">
-          <div class="mini"><canvas id="mini-normal" width="260" height="100"></canvas><label>Normal</label></div>
-          <div class="mini"><canvas id="mini-sharkfin" width="260" height="100"></canvas><label>Bronchospasm (shark-fin)</label></div>
-          <div class="mini"><canvas id="mini-rebreath" width="260" height="100"></canvas><label>Rebreathing (elevated baseline)</label></div>
-          <div class="mini"><canvas id="mini-flat" width="260" height="100"></canvas><label>Flat / No alveolar CO₂</label></div>
-          <div class="mini"><canvas id="mini-hyper" width="260" height="100"></canvas><label>Hyperventilation (low ETCO₂)</label></div>
-          <div class="mini"><canvas id="mini-hypo" width="260" height="100"></canvas><label>Hypoventilation (high ETCO₂)</label></div>
-        </div>
-      </div>
-
-      <div class="edu-card">
-        <h4>EMT-B decision cues</h4>
-        <ul class="edu-list">
-          <li><b>Inadequate breathing</b>: BVM + O₂ 10–12/min; titrate by ETCO₂.</li>
-          <li><b>Bronchospasm</b>: Assist prescribed bronchodilator; BVM only if ventilation fails.</li>
-          <li><b>Airway device</b>: Near-zero ETCO₂ → remove suspect device, OPA/NPA, BVM.</li>
-          <li><b>CPR</b>: Use ETCO₂ to gauge compression quality & recognize ROSC; avoid hyperventilation.</li>
-          <li><b>Rebreathing</b>: Elevated baseline → fix/replace equipment/valve.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
 </div>
-
+<div aria-label="Capnograph" class="card device">
+<div class="screen">
+<div class="status-strip">
+<div class="pill">Sensor: <strong>Attached</strong></div>
+<div class="sig-bars" id="sigBars"><span></span><span></span><span></span><span></span></div>
+</div>
+<div class="big-readings">
+<div class="reading et">
+<div class="label">ETCO₂</div>
+<div class="value" id="etco2Val">--</div>
+<div class="units">mmHg</div>
+</div>
+<div class="reading rr">
+<div class="label">RR</div>
+<div class="value" id="rrVal">--</div>
+<div class="units">/min</div>
+</div>
+<div class="reading wf">
+<div class="label">Waveform</div>
+<div class="value" id="shapeLabel">--</div>
+<div class="units"></div>
+</div>
+</div>
+<div class="pleth-wrap">
+<canvas aria-label="Capnogram waveform" height="160" id="capno" width="900"></canvas>
+</div>
+<div class="alert" id="alert">Acquiring…</div>
+<div class="alert notice" id="noTrace" style="display:none">
+          CO₂ TRACE ABSENT<br/><span style="font-weight:400; font-size:12px; letter-spacing:0; opacity:.9">ETCO₂ below display threshold</span>
+</div>
+</div>
+<div aria-live="polite" class="choices" id="choicesBox"></div>
+<div class="bvm-box" id="bvmBox">
+<div class="bvm-row">
+<strong>BVM Ventilation Rate:</strong>
+<input id="bvmRate" max="30" min="4" step="1" type="range" value="12"/>
+<span class="bvm-chip"><b id="bvmRateLbl">12</b> /min</span>
+<span class="tiny">Adult target: 10–12/min • Too fast ↓ETCO₂ (hypocapnia) • Too slow ↑ETCO₂ (hypercapnia)</span>
+</div>
+</div>
+<div class="explain" id="explainBox" style="display:none"></div>
+<button class="next" id="nextBtn" style="display:none">🔀 Next Random Scenario</button>
+</div>
+</section>
+<div class="footer-note">For training use only. Not a medical device.</div>
+</main>
+<!-- EDUCATION MODAL -->
+<div aria-hidden="true" aria-labelledby="eduTitle" class="modal" id="eduModal" role="dialog">
+<div class="modal-card">
+<div class="modal-header">
+<h3 id="eduTitle">Understand Capnography</h3>
+<button aria-label="Close" class="close" id="closeEdu">Close</button>
+</div>
+<div class="edu-grid">
+<div class="edu-card">
+<h4>How it works</h4>
+<ul class="edu-list">
+<li><b>Capnography</b> measures CO₂ in exhaled air over time; <b>ETCO₂</b> is the peak at end-exhalation.</li>
+<li>Reflects <b>ventilation</b>, <b>perfusion</b>, and <b>metabolism</b>.</li>
+<li>Use it to confirm airway device placement, titrate BVM rate, monitor CPR quality, and recognize ROSC.</li>
+</ul>
+<h4 style="margin-top:10px">Normal readings</h4>
+<ul class="edu-list">
+<li>Awake adult: <b>35–45 mmHg</b> with a square waveform.</li>
+<li>CPR: often <b>10–20 mmHg</b>; a sustained jump toward the 30s suggests <b>ROSC</b>.</li>
+<li>Adult BVM target: <b>10–12/min</b>. Avoid hyperventilation.</li>
+</ul>
+<h4 style="margin-top:10px">High vs Low ETCO₂</h4>
+<ul class="edu-list">
+<li><b>High</b>: hypoventilation, increased CO₂ production (fever/seizures), ROSC/improved perfusion, <b>rebreathing/equipment fault</b>.</li>
+<li><b>Low</b>: hyperventilation, <b>poor perfusion</b> (shock/PE/arrest), <b>low-quality CPR</b>, prolonged downtime, or esophageal/failed airway (near-zero, flatline).</li>
+</ul>
+</div>
+<div class="edu-card">
+<h4>Waveform gallery</h4>
+<div class="gallery">
+<div class="mini"><canvas height="100" id="mini-normal" width="260"></canvas><label>Normal</label></div>
+<div class="mini"><canvas height="100" id="mini-sharkfin" width="260"></canvas><label>Bronchospasm (shark-fin)</label></div>
+<div class="mini"><canvas height="100" id="mini-rebreath" width="260"></canvas><label>Rebreathing (elevated baseline)</label></div>
+<div class="mini"><canvas height="100" id="mini-flat" width="260"></canvas><label>Flat / No alveolar CO₂</label></div>
+<div class="mini"><canvas height="100" id="mini-hyper" width="260"></canvas><label>Hyperventilation (low ETCO₂)</label></div>
+<div class="mini"><canvas height="100" id="mini-hypo" width="260"></canvas><label>Hypoventilation (high ETCO₂)</label></div>
+</div>
+</div>
+<div class="edu-card">
+<h4>EMT-B decision cues</h4>
+<ul class="edu-list">
+<li><b>Inadequate breathing</b>: BVM + O₂ 10–12/min; titrate by ETCO₂.</li>
+<li><b>Bronchospasm</b>: Assist prescribed bronchodilator; BVM only if ventilation fails.</li>
+<li><b>Airway device</b>: Near-zero ETCO₂ → remove suspect device, OPA/NPA, BVM.</li>
+<li><b>CPR</b>: Use ETCO₂ to gauge compression quality &amp; recognize ROSC; avoid hyperventilation.</li>
+<li><b>Rebreathing</b>: Elevated baseline → fix/replace equipment/valve.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
 <script>
 /* ================== CONFIG / STABILITY GUARDS ================== */
 const NO_TRACE_THRESHOLD = 5;            // hide trace if ETCO2 < 5 mmHg

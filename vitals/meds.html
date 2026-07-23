@@ -1,19 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>EMS Trainer — 5 Rights of Medication Administration</title>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5QLPK4025C"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-5QLPK4025C');
-</script>
-
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>EMS Medication Administration Trainer | 5 Rights Practice</title>
 <style>
   :root{
     --bg:#f6f9fc; --card:#fff; --ink:#122230; --muted:#637589; --accent:#0a76d3;
@@ -68,181 +59,172 @@
   .tabpanel{display:none}
   .tabpanel.active{display:block}
 </style>
-  <link rel="stylesheet" href="/styles/responsive.css">
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="Practice the five rights of medication administration with free EMT medication scenarios and immediate feedback." name="description"/><link href="https://emscodesim.com/vitals/meds.html" rel="canonical"/><meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="EMS Medication Administration Trainer | 5 Rights Practice" property="og:title"/><meta content="Practice the five rights of medication administration with free EMT medication scenarios and immediate feedback." property="og:description"/><meta content="https://emscodesim.com/vitals/meds.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="headerbar">
-        <div class="h-left">
-          <button id="btnBack" class="iconbtn">← Back</button>
-          <h1>Medication Administration Trainer — The 5 Rights</h1>
-        </div>
-        <div class="h-right">
-          <button id="btnInfo" class="iconbtn">ℹ️ Info</button>
-        </div>
-      </div>
-    </header>
-
-    <div class="row">
-      <section class="card">
-        <h2>Scenario</h2>
-        <div class="body">
-          <div id="scenario" class="scenario"></div>
-          <div class="pills">
-            <span class="pill" id="vitalsPill"></span>
-            <span class="pill" id="allergyPill"></span>
-            <span class="pill" id="bottlePill" hidden></span>
-          </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>Your 5 Rights</h2>
-        <div class="body">
-          <div class="form">
-            <div>
-              <label for="rightPatient">Right Patient</label>
-              <select id="rightPatient">
-                <option value="">— choose —</option>
-                <option>No (not the right patient)</option>
-              </select>
-            </div>
-
-            <div>
-              <label for="rightMed">Right Medication</label>
-              <select id="rightMed">
-                <option value="">— choose —</option>
-                <option>Aspirin (chewable)</option>
-                <option>Nitroglycerin (SL)</option>
-                <option>Albuterol (MDI)</option>
-                <option>Epinephrine (auto-injector)</option>
-                <option>Oral Glucose (gel)</option>
-                <option>Naloxone (IN)</option>
-              </select>
-            </div>
-
-            <div class="split">
-              <div>
-                <label for="rightDose">Right Dose</label>
-                <select id="rightDose">
-                  <option value="">— choose —</option>
-                </select>
-              </div>
-              <div>
-                <label for="rightRoute">Right Route</label>
-                <select id="rightRoute">
-                  <option value="">— choose —</option>
-                  <option>PO (by mouth)</option>
-                  <option>SL (sublingual)</option>
-                  <option>IM (intramuscular)</option>
-                  <option>IN (intranasal)</option>
-                  <option>Inhalation (MDI)</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label for="rightTime">Right Time</label>
-              <select id="rightTime">
-                <option value="">— choose —</option>
-                <option>Now</option>
-                <option>Repeat in 5 minutes</option>
-                <option>Hold & consult medical control</option>
-              </select>
-            </div>
-
-            <!-- Follow-ups (affect Right Dose/Time scoring) -->
-            <div id="followups" class="line" hidden>
-              <strong>Follow-up Questions</strong>
-              <div id="fuNitro" class="split" hidden style="margin-top:8px">
-                <div>
-                  <label for="fuNitroMax">Nitro: Max total SL doses per episode?</label>
-                  <select id="fuNitroMax">
-                    <option value="">— choose —</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="fuNitroInterval">Nitro: Minimum minutes between doses?</label>
-                  <select id="fuNitroInterval">
-                    <option value="">— choose —</option>
-                    <option>3 minutes</option>
-                    <option>5 minutes</option>
-                    <option>10 minutes</option>
-                  </select>
-                </div>
-              </div>
-
-              <div id="fuAlbuterol" hidden style="margin-top:8px">
-                <label for="fuAlbuterolPuffs">Albuterol: Initial puffs?</label>
-                <select id="fuAlbuterolPuffs">
-                  <option value="">— choose —</option>
-                  <option>1 puff</option>
-                  <option>1–2 puffs</option>
-                  <option>3–4 puffs</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="btns" style="margin-top:6px">
-              <button class="primary" id="btnSubmit">Submit</button>
-              <button id="btnNew">New Scenario</button>
-              <button id="btnReset">Reset Choices</button>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <section class="card">
-      <h2>Review</h2>
-      <div class="body">
-        <div class="tabs" role="tablist" aria-label="Results tabs">
-          <button class="tabbtn active" id="tab-contra" role="tab" aria-selected="true">Contraindications</button>
-          <button class="tabbtn" id="tab-rights" role="tab" aria-selected="false">5 Rights Results</button>
-        </div>
-
-        <div id="panel-contra" class="tabpanel active" role="tabpanel" aria-labelledby="tab-contra">
-          <div class="line"><strong>Contraindications Check</strong></div>
-          <div id="contraBox"><div class="muted">Select a medication and click Submit to evaluate contraindications.</div></div>
-        </div>
-
-        <div id="panel-rights" class="tabpanel" role="tabpanel" aria-labelledby="tab-rights">
-          <div id="results"><div class="muted">Pick your answers and hit <strong>Submit</strong> to see feedback.</div></div>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- Info dialog: 5 Rights + Standing vs Call-in -->
-  <dialog id="infoDialog" style="max-width:760px;border:1px solid var(--border);border-radius:16px;padding:0">
-    <form method="dialog" style="margin:0">
-      <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">The 5 Rights (EMS) & Authority</div>
-      <div style="padding:14px 16px">
-        <ol>
-          <li><strong>Right Patient</strong> — Identity confirmed and medication indicated for this patient; if assisting, bottle label name matches the patient.</li>
-          <li><strong>Right Medication</strong> — Correct drug and correct formulation/concentration/device.</li>
-          <li><strong>Right Dose</strong> — Correct amount for age/weight and correct total/count where applicable (e.g., Nitro max, Albuterol puffs).</li>
-          <li><strong>Right Route</strong> — Correct route and delivery device for the medication.</li>
-          <li><strong>Right Time</strong> — Appropriate to give now; not expired; proper interval since last dose; not over maximum total doses.</li>
-        </ol>
-        <hr style="border:none;border-top:1px solid var(--border);margin:12px 0">
-        <p style="margin:.2rem 0"><strong>Standing Orders vs Medical Control (varies by region)</strong></p>
-        <ul style="margin:.4rem 0 .6rem 1.2rem">
-          <li><strong>Typically Standing Orders:</strong> Oxygen, Oral Glucose, Aspirin, Naloxone (IN/auto-injector), Epinephrine (auto-injector).</li>
-          <li><strong>Often Call-In / Online Medical Direction:</strong> Nitroglycerin (assist with patient’s Rx), Bronchodilator Inhalers/Nebulized Albuterol (assist with patient’s Rx), Activated Charcoal (if carried).</li>
-        </ul>
-        <p class="muted">Always follow your state, local, and agency protocols. This trainer illustrates common patterns but is not a substitute for your medical director’s guidance.</p>
-      </div>
-      <div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
-        <button class="iconbtn" style="background:#eee;color:#111">Close</button>
-      </div>
-    </form>
-  </dialog>
-
+<div class="wrap">
+<header>
+<div class="headerbar">
+<div class="h-left">
+<button class="iconbtn" id="btnBack">← Back</button>
+<h1>Medication Administration Trainer — The 5 Rights</h1>
+</div>
+<div class="h-right">
+<button class="iconbtn" id="btnInfo">ℹ️ Info</button>
+</div>
+</div>
+</header>
+<div class="row">
+<section class="card">
+<h2>Scenario</h2>
+<div class="body">
+<div class="scenario" id="scenario"></div>
+<div class="pills">
+<span class="pill" id="vitalsPill"></span>
+<span class="pill" id="allergyPill"></span>
+<span class="pill" hidden="" id="bottlePill"></span>
+</div>
+</div>
+</section>
+<section class="card">
+<h2>Your 5 Rights</h2>
+<div class="body">
+<div class="form">
+<div>
+<label for="rightPatient">Right Patient</label>
+<select id="rightPatient">
+<option value="">— choose —</option>
+<option>No (not the right patient)</option>
+</select>
+</div>
+<div>
+<label for="rightMed">Right Medication</label>
+<select id="rightMed">
+<option value="">— choose —</option>
+<option>Aspirin (chewable)</option>
+<option>Nitroglycerin (SL)</option>
+<option>Albuterol (MDI)</option>
+<option>Epinephrine (auto-injector)</option>
+<option>Oral Glucose (gel)</option>
+<option>Naloxone (IN)</option>
+</select>
+</div>
+<div class="split">
+<div>
+<label for="rightDose">Right Dose</label>
+<select id="rightDose">
+<option value="">— choose —</option>
+</select>
+</div>
+<div>
+<label for="rightRoute">Right Route</label>
+<select id="rightRoute">
+<option value="">— choose —</option>
+<option>PO (by mouth)</option>
+<option>SL (sublingual)</option>
+<option>IM (intramuscular)</option>
+<option>IN (intranasal)</option>
+<option>Inhalation (MDI)</option>
+</select>
+</div>
+</div>
+<div>
+<label for="rightTime">Right Time</label>
+<select id="rightTime">
+<option value="">— choose —</option>
+<option>Now</option>
+<option>Repeat in 5 minutes</option>
+<option>Hold &amp; consult medical control</option>
+</select>
+</div>
+<!-- Follow-ups (affect Right Dose/Time scoring) -->
+<div class="line" hidden="" id="followups">
+<strong>Follow-up Questions</strong>
+<div class="split" hidden="" id="fuNitro" style="margin-top:8px">
+<div>
+<label for="fuNitroMax">Nitro: Max total SL doses per episode?</label>
+<select id="fuNitroMax">
+<option value="">— choose —</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+</select>
+</div>
+<div>
+<label for="fuNitroInterval">Nitro: Minimum minutes between doses?</label>
+<select id="fuNitroInterval">
+<option value="">— choose —</option>
+<option>3 minutes</option>
+<option>5 minutes</option>
+<option>10 minutes</option>
+</select>
+</div>
+</div>
+<div hidden="" id="fuAlbuterol" style="margin-top:8px">
+<label for="fuAlbuterolPuffs">Albuterol: Initial puffs?</label>
+<select id="fuAlbuterolPuffs">
+<option value="">— choose —</option>
+<option>1 puff</option>
+<option>1–2 puffs</option>
+<option>3–4 puffs</option>
+</select>
+</div>
+</div>
+<div class="btns" style="margin-top:6px">
+<button class="primary" id="btnSubmit">Submit</button>
+<button id="btnNew">New Scenario</button>
+<button id="btnReset">Reset Choices</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<section class="card">
+<h2>Review</h2>
+<div class="body">
+<div aria-label="Results tabs" class="tabs" role="tablist">
+<button aria-selected="true" class="tabbtn active" id="tab-contra" role="tab">Contraindications</button>
+<button aria-selected="false" class="tabbtn" id="tab-rights" role="tab">5 Rights Results</button>
+</div>
+<div aria-labelledby="tab-contra" class="tabpanel active" id="panel-contra" role="tabpanel">
+<div class="line"><strong>Contraindications Check</strong></div>
+<div id="contraBox"><div class="muted">Select a medication and click Submit to evaluate contraindications.</div></div>
+</div>
+<div aria-labelledby="tab-rights" class="tabpanel" id="panel-rights" role="tabpanel">
+<div id="results"><div class="muted">Pick your answers and hit <strong>Submit</strong> to see feedback.</div></div>
+</div>
+</div>
+</section>
+</div>
+<!-- Info dialog: 5 Rights + Standing vs Call-in -->
+<dialog id="infoDialog" style="max-width:760px;border:1px solid var(--border);border-radius:16px;padding:0">
+<form method="dialog" style="margin:0">
+<div style="padding:14px 16px;border-bottom:1px solid var(--border);font-weight:800">The 5 Rights (EMS) &amp; Authority</div>
+<div style="padding:14px 16px">
+<ol>
+<li><strong>Right Patient</strong> — Identity confirmed and medication indicated for this patient; if assisting, bottle label name matches the patient.</li>
+<li><strong>Right Medication</strong> — Correct drug and correct formulation/concentration/device.</li>
+<li><strong>Right Dose</strong> — Correct amount for age/weight and correct total/count where applicable (e.g., Nitro max, Albuterol puffs).</li>
+<li><strong>Right Route</strong> — Correct route and delivery device for the medication.</li>
+<li><strong>Right Time</strong> — Appropriate to give now; not expired; proper interval since last dose; not over maximum total doses.</li>
+</ol>
+<hr style="border:none;border-top:1px solid var(--border);margin:12px 0"/>
+<p style="margin:.2rem 0"><strong>Standing Orders vs Medical Control (varies by region)</strong></p>
+<ul style="margin:.4rem 0 .6rem 1.2rem">
+<li><strong>Typically Standing Orders:</strong> Oxygen, Oral Glucose, Aspirin, Naloxone (IN/auto-injector), Epinephrine (auto-injector).</li>
+<li><strong>Often Call-In / Online Medical Direction:</strong> Nitroglycerin (assist with patient’s Rx), Bronchodilator Inhalers/Nebulized Albuterol (assist with patient’s Rx), Activated Charcoal (if carried).</li>
+</ul>
+<p class="muted">Always follow your state, local, and agency protocols. This trainer illustrates common patterns but is not a substitute for your medical director’s guidance.</p>
+</div>
+<div style="padding:12px 16px;border-top:1px solid var(--border);text-align:right">
+<button class="iconbtn" style="background:#eee;color:#111">Close</button>
+</div>
+</form>
+</dialog>
 <script>
 (function(){
   const $ = s => document.querySelector(s);

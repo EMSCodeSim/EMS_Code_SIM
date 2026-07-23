@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <title>AAOx4 Orientation Simulator | EMSCodeSim</title>
-<link rel="canonical" href="https://emscodesim.com/vitals/aao.html"/>
-<meta name="description" content="Practice level of consciousness and orientation questions for EMS patient assessment: person, place, time, and event."/>
+<link href="https://emscodesim.com/vitals/aao.html" rel="canonical"/>
+<meta content="Practice level of consciousness and orientation questions for EMS patient assessment: person, place, time, and event." name="description"/>
 <style>
   :root{
     --brand:#007B8A; --brand-600:#066371;
@@ -44,89 +45,88 @@
   .box{border-radius:12px; border:1px dashed var(--border); padding:10px; background:#f9fcff}
   .field{display:flex; flex-direction:column; gap:6px}
 </style>
-  <link rel="stylesheet" href="../styles/modern-theme.css" />
-  <link rel="stylesheet" href="/styles/responsive.css">
+<link href="../styles/modern-theme.css" rel="stylesheet"/>
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="AAOx4 Orientation Simulator | EMSCodeSim" property="og:title"/><meta content="Practice level of consciousness and orientation questions for EMS patient assessment: person, place, time, and event." property="og:description"/><meta content="https://emscodesim.com/vitals/aao.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 </head>
 <body>
-  <div class="top">
-    <div class="topnav">
-      <div class="brand">A&O×4 Orientation Simulator</div>
-    </div>
-  </div>
-
-  <div class="wrap">
-    <div class="grid">
-      <div class="card">
-        <div class="inner">
-          <h2>Scenario</h2>
-          <small>Pick a case and click Start. Use the Ask buttons to practice orientation questions; the simulator will speak each prompt.</small>
-          <div class="row" style="margin-top:8px">
-            <select id="scenarioSelect">
-              <option value="">Select a case…</option>
-              <option value="basic">Basic: No complications</option>
-              <option value="confused">Confused: Needs redirection</option>
-              <option value="aphasia">Aphasia: Short responses</option>
-              <option value="intox">Intoxicated: Slurred speech</option>
-            </select>
-            <button id="startBtn" class="btn">Start</button>
-            <button id="stopBtn" class="btn secondary">Stop</button>
-            <button id="nextBtn" class="btn warn">Next Case</button>
-          </div>
-          <div id="status" class="box" style="margin-top:10px"></div>
-        </div>
-      </div>
-
-      <div class="cols">
-        <div class="card">
-          <div class="inner">
-            <h3>Ask (A&O×4)</h3>
-            <small>Tap a question to ask it. The simulator will speak the prompt and a patient-style reply.</small>
-            <div class="qa" style="margin-top:10px">
-              <button id="askPerson" class="btn">Ask Person</button>
-              <button id="askPlace" class="btn">Ask Place</button>
-              <button id="askTime" class="btn">Ask Time</button>
-              <button id="askEvent" class="btn">Ask Event</button>
-            </div>
-            <div class="log" id="log"></div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="inner">
-            <h3>Controls</h3>
-            <div class="field">
-              <label>Voice
+<div class="top">
+<div class="topnav">
+<h1 class="brand tool-h1">A&amp;O×4 Orientation Simulator</h1>
+</div>
+</div>
+<div class="wrap">
+<div class="grid">
+<div class="card">
+<div class="inner">
+<h2>Scenario</h2>
+<small>Pick a case and click Start. Use the Ask buttons to practice orientation questions; the simulator will speak each prompt.</small>
+<div class="row" style="margin-top:8px">
+<select id="scenarioSelect">
+<option value="">Select a case…</option>
+<option value="basic">Basic: No complications</option>
+<option value="confused">Confused: Needs redirection</option>
+<option value="aphasia">Aphasia: Short responses</option>
+<option value="intox">Intoxicated: Slurred speech</option>
+</select>
+<button class="btn" id="startBtn">Start</button>
+<button class="btn secondary" id="stopBtn">Stop</button>
+<button class="btn warn" id="nextBtn">Next Case</button>
+</div>
+<div class="box" id="status" style="margin-top:10px"></div>
+</div>
+</div>
+<div class="cols">
+<div class="card">
+<div class="inner">
+<h3>Ask (A&amp;O×4)</h3>
+<small>Tap a question to ask it. The simulator will speak the prompt and a patient-style reply.</small>
+<div class="qa" style="margin-top:10px">
+<button class="btn" id="askPerson">Ask Person</button>
+<button class="btn" id="askPlace">Ask Place</button>
+<button class="btn" id="askTime">Ask Time</button>
+<button class="btn" id="askEvent">Ask Event</button>
+</div>
+<div class="log" id="log"></div>
+</div>
+</div>
+<div class="card">
+<div class="inner">
+<h3>Controls</h3>
+<div class="field">
+<label>Voice
                 <select id="voiceSel"></select>
-              </label>
-            </div>
-            <div class="field">
-              <label>Rate
-                <input id="rate" type="range" min="0.7" max="1.3" step="0.05" value="1.0"/>
-              </label>
-            </div>
-            <div class="field">
-              <label>Pitch
-                <input id="pitch" type="range" min="0.6" max="1.4" step="0.05" value="1.0"/>
-              </label>
-            </div>
-            <div class="field">
-              <label>Volume
-                <input id="vol" type="range" min="0" max="1" step="0.05" value="1"/>
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="inner">
-          <h3>Transcript</h3>
-          <div id="transcript" class="box big"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
+</label>
+</div>
+<div class="field">
+<label>Rate
+                <input id="rate" max="1.3" min="0.7" step="0.05" type="range" value="1.0"/>
+</label>
+</div>
+<div class="field">
+<label>Pitch
+                <input id="pitch" max="1.4" min="0.6" step="0.05" type="range" value="1.0"/>
+</label>
+</div>
+<div class="field">
+<label>Volume
+                <input id="vol" max="1" min="0" step="0.05" type="range" value="1"/>
+</label>
+</div>
+</div>
+</div>
+</div>
+<div class="card">
+<div class="inner">
+<h3>Transcript</h3>
+<div class="box big" id="transcript"></div>
+</div>
+</div>
+</div>
+</div>
 <script>
 (() => {
   const $ = id => document.getElementById(id);

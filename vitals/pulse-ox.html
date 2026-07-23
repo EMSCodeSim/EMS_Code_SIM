@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Pulse Oximeter Simulator | EMSCodeSim</title>
-<link rel="canonical" href="https://emscodesim.com/vitals/pulse-ox.html"/>
-<meta name="description" content="Practice reading SpO2 and heart rate values with an EMS pulse oximeter training simulator."/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <style>
+<meta charset="utf-8"/>
+<title>Pulse Oximeter Simulator | EMSCodeSim</title>
+<link href="https://emscodesim.com/vitals/pulse-ox.html" rel="canonical"/>
+<meta content="Practice reading SpO2 and heart rate values with an EMS pulse oximeter training simulator." name="description"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<style>
     :root{
       --bg:#f0f8ff; --card:#ffffff; --ink:#0c2a3a; --muted:#5d7a88;
       --brand:#007BFF; --teal:#007B8A; --ok:#0a8754; --warn:#e68a00; --bad:#d7263d;
@@ -58,57 +59,57 @@
     .next{ display:inline-flex; gap:10px; align-items:center; background:var(--brand); color:#fff; border:none; border-radius:12px; padding:12px 14px; cursor:pointer; font-weight:700; margin-top:10px; box-shadow:0 4px 12px rgba(0,123,255,.25) }
     .footer-note{ text-align:center; font-size:12px; color:#muted; padding:4px 0 10px }
   </style>
-  <link rel="stylesheet" href="/styles/responsive.css">
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Pulse Oximeter Simulator | EMSCodeSim" property="og:title"/><meta content="Practice reading SpO2 and heart rate values with an EMS pulse oximeter training simulator." property="og:description"/><meta content="https://emscodesim.com/vitals/pulse-ox.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 </head>
 <body>
 <header><h1>Pulse Ox Scenario Trainer</h1></header>
-
 <main class="wrap">
-  <section class="grid">
-    <div class="card">
-      <h2>Scenario</h2>
-      <div id="scenarioText" class="scenario">Loading case…</div>
-      <div style="margin-top:8px">
-        <span class="badge" id="hintBadge">NREMT Focus: Oxygenation, Ventilation & CPAP</span>
-      </div>
-      <p class="tiny" style="margin-top:6px">
+<section class="grid">
+<div class="card">
+<h2>Scenario</h2>
+<div class="scenario" id="scenarioText">Loading case…</div>
+<div style="margin-top:8px">
+<span class="badge" id="hintBadge">NREMT Focus: Oxygenation, Ventilation &amp; CPAP</span>
+</div>
+<p class="tiny" style="margin-top:6px">
         Review the chief complaint and **RR**, then choose the **best EMT treatment**. SpO₂ will change based on your choice.
-        <br>Guidance: **BVM** if ventilation is inadequate (slow/shallow/poor tidal volume or altered mentation). **CPAP** for severe respiratory distress with **adequate** respirations (e.g., CHF pulmonary edema or COPD exacerbation), when allowed by protocol and no contraindications.
+        <br/>Guidance: **BVM** if ventilation is inadequate (slow/shallow/poor tidal volume or altered mentation). **CPAP** for severe respiratory distress with **adequate** respirations (e.g., CHF pulmonary edema or COPD exacerbation), when allowed by protocol and no contraindications.
       </p>
-    </div>
-
-    <div class="card device" aria-label="Pulse oximeter">
-      <div class="screen">
-        <div class="status-strip">
-          <div class="pill">Sensor: <strong>Attached</strong></div>
-          <div class="sig-bars" id="sigBars"><span></span><span></span><span></span><span></span></div>
-        </div>
-        <div class="big-readings">
-          <div class="reading spo2">
-            <div class="label">SpO₂</div>
-            <div class="value" id="spo2Val">--</div>
-            <div class="units">%</div>
-          </div>
-          <div class="reading pulse">
-            <div class="label">Pulse</div>
-            <div class="value" id="pulseVal">--</div>
-            <div class="units">bpm</div>
-          </div>
-        </div>
-        <div class="pleth-wrap">
-          <canvas id="pleth" width="700" height="120" aria-label="Pleth waveform"></canvas>
-        </div>
-        <div class="alert" id="alert">Searching…</div>
-      </div>
-
-      <div id="choicesBox" class="choices" aria-live="polite"></div>
-      <div id="explainBox" class="explain" style="display:none"></div>
-      <button id="nextBtn" class="next" style="display:none">🔀 Next Random Scenario</button>
-    </div>
-  </section>
-  <div class="footer-note">For training use only. Not a medical device.</div>
+</div>
+<div aria-label="Pulse oximeter" class="card device">
+<div class="screen">
+<div class="status-strip">
+<div class="pill">Sensor: <strong>Attached</strong></div>
+<div class="sig-bars" id="sigBars"><span></span><span></span><span></span><span></span></div>
+</div>
+<div class="big-readings">
+<div class="reading spo2">
+<div class="label">SpO₂</div>
+<div class="value" id="spo2Val">--</div>
+<div class="units">%</div>
+</div>
+<div class="reading pulse">
+<div class="label">Pulse</div>
+<div class="value" id="pulseVal">--</div>
+<div class="units">bpm</div>
+</div>
+</div>
+<div class="pleth-wrap">
+<canvas aria-label="Pleth waveform" height="120" id="pleth" width="700"></canvas>
+</div>
+<div class="alert" id="alert">Searching…</div>
+</div>
+<div aria-live="polite" class="choices" id="choicesBox"></div>
+<div class="explain" id="explainBox" style="display:none"></div>
+<button class="next" id="nextBtn" style="display:none">🔀 Next Random Scenario</button>
+</div>
+</section>
+<div class="footer-note">For training use only. Not a medical device.</div>
 </main>
-
 <script>
   // Utilities
   const $ = s => document.querySelector(s);

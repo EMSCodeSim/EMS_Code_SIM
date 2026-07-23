@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Blood Glucose Meter Simulator | EMSCodeSim</title>
-<link rel="canonical" href="https://emscodesim.com/vitals/bgl.html"/>
-<meta name="description" content="Practice EMS blood glucose assessment workflow with interactive glucometer readings and patient assessment cues."/>
+<link href="https://emscodesim.com/vitals/bgl.html" rel="canonical"/>
+<meta content="Practice EMS blood glucose assessment workflow with interactive glucometer readings and patient assessment cues." name="description"/>
 <style>
   :root{
     --brand:#007B8A; --brand-dark:#0a616c;
@@ -62,115 +63,103 @@
   .note{ font-size:.9rem; color:#3b616b }
   .list{ margin:4px 0 0 18px; padding:0 }
 </style>
-  <link rel="stylesheet" href="../styles/modern-theme.css" />
-  <link rel="stylesheet" href="/styles/responsive.css">
+<link href="../styles/modern-theme.css" rel="stylesheet"/>
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<script defer="" src="/scripts/engagement-loop.js"></script>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Blood Glucose Meter Simulator | EMSCodeSim" property="og:title"/><meta content="Practice EMS blood glucose assessment workflow with interactive glucometer readings and patient assessment cues." property="og:description"/><meta content="https://emscodesim.com/vitals/bgl.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 </head>
 <body>
-<header>Blood Glucose Simulator (Simple)</header>
-
+<header><h1>Blood Glucose Simulator</h1></header>
 <main>
-  <section class="card">
-    <div class="stage">
-      <!-- SVG GLUCOSE METER -->
-      <svg id="meter" class="meter-wrap" viewBox="0 0 420 620" role="img" aria-label="Glucose meter">
-        <defs>
-          <linearGradient id="gBody" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stop-color="var(--meter-hi)"/>
-            <stop offset="50%" stop-color="var(--meter)"/>
-            <stop offset="100%" stop-color="var(--meter-lo)"/>
-          </linearGradient>
-          <linearGradient id="gScreen" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stop-color="#eff7f9"/>
-            <stop offset="100%" stop-color="var(--lcd-bg)"/>
-          </linearGradient>
-          <filter id="innerShadow" x="-50%" y="-50%" width="200%" height="200%">
-            <feOffset dx="0" dy="2"/><feGaussianBlur stdDeviation="6" result="b"/>
-            <feComposite operator="out" in="SourceGraphic" in2="b" result="shadowDiff"/>
-            <feFlood flood-color="#000" flood-opacity="0.25"/><feComposite operator="in" in2="shadowDiff"/>
-            <feComposite operator="over" in="SourceGraphic"/>
-          </filter>
-        </defs>
-
-        <!-- Body -->
-        <rect x="40" y="20" rx="40" ry="40" width="340" height="560" fill="url(#gBody)" stroke="#0c1f22" stroke-width="2" />
-        <!-- Screen bezel -->
-        <rect x="75" y="70" rx="16" ry="16" width="270" height="170" fill="#102b30" opacity="0.9"/>
-        <!-- Screen -->
-        <g id="screen" transform="translate(85,82)">
-          <rect width="250" height="146" rx="14" ry="14" fill="url(#gScreen)" stroke="#b9d4da"/>
-          <text id="units" x="16" y="28" font-size="18" fill="#2b5660" font-weight="600">mg/dL</text>
-          <text id="reading" x="16" y="104" font-family="ui-monospace, SFMono-Regular, Menlo, monospace"
-                font-size="70" fill="var(--lcd-txt)" letter-spacing="2">— — —</text>
-          <text id="statusText" x="16" y="132" font-size="16" fill="#2b5660">Power on…</text>
-          <text id="countdown" x="210" y="28" font-size="18" fill="#2b5660" text-anchor="end"></text>
-        </g>
-
-        <!-- Decorative soft key -->
-        <circle cx="210" cy="300" r="20" fill="#0d2a2f"/>
-        <circle cx="210" cy="300" r="12" fill="#174147"/>
-
-        <!-- Strip slot -->
-        <rect x="170" y="20" width="80" height="18" rx="8" fill="#0d2a2f"/>
-
-        <!-- Strip -->
-        <g id="strip" transform="translate(200,5)" opacity="0">
-          <rect x="-10" y="0" width="20" height="50" rx="4" fill="#f3f5f6" stroke="#cfd9dc"/>
-          <rect x="-8"  y="34" width="16" height="12" rx="2" fill="#b5c9cf"/>
-          <rect id="fillBar" x="-6" y="36" width="12" height="0" fill="var(--accent)"/>
-        </g>
-
-        <!-- Hand/finger shown during apply -->
-        <g id="hand" transform="translate(60,400)" opacity="0">
-          <ellipse cx="120" cy="60" rx="90" ry="60" fill="#e6b69b" filter="url(#innerShadow)"/>
-          <rect x="190" y="46" width="130" height="28" rx="14" fill="#ebc2a9"/>
-          <circle cx="320" cy="60" r="14" fill="#e6b69b"/>
-          <g id="drop" transform="translate(308,66)" opacity="0.0">
-            <path d="M12 0 C18 10, 18 20, 12 26 C6 20, 6 10, 12 0 Z" fill="#b3202a"/>
-          </g>
-        </g>
-
-        <text x="210" y="560" text-anchor="middle" font-size="16" fill="#cde6eb">EMS Code Sim • Glucose</text>
-      </svg>
-
-      <div class="controls">
-        <button id="powerBtn" class="btn alt">⏻ Power</button>
-        <button id="stripBtn" class="btn">🧪 Insert / Remove Strip</button>
-        <button id="applyBtn" class="btn warn">💉 Press & Hold: Apply Blood</button>
-        <button id="explainBtn" class="btn ghost">ℹ️ Explain Readings</button>
-      </div>
-
-      <div id="status" class="status" aria-live="polite">Power on, then insert a strip.</div>
-    </div>
-  </section>
-</main>
-
-<!-- Modal -->
-<div id="modal" class="modal" aria-modal="true" role="dialog">
-  <div class="modal-card">
-    <button class="close" id="closeModal">Close</button>
-    <h3>What the Reading Means</h3>
-
-    <h4>Hypoglycemia</h4>
-    <ul class="list">
-      <li><strong>&lt; 70 mg/dL</strong>: treat as hypoglycemia on the exam; assess and manage per protocols. <span class="note">(teaching threshold)</span></li>
-      <li><strong>&le; 60 mg/dL</strong>: many EMS protocols use this as a treatment trigger (oral glucose if able; D10/D50/Glucagon per scope).</li>
-      <li><strong>&lt; 45 mg/dL</strong>: high risk for severe neuroglycopenia; prompt dextrose indicated.</li>
-    </ul>
-
-    <h4>Normal (field reading)</h4>
-    <ul class="list">
-      <li>Common teaching window: <strong>~80–140 mg/dL</strong> (non-fasting field checks vary).</li>
-    </ul>
-
-    <h4>Hyperglycemia</h4>
-    <ul class="list">
-      <li><strong>&gt; 180 mg/dL</strong>: hyperglycemia flag. Assess for infection/illness, dehydration, DKA/HHS risk with very high readings.</li>
-    </ul>
-
-    <p class="note">These are NREMT-prep friendly ranges; always follow your local protocol specifics during patient care.</p>
-  </div>
+<section class="card">
+<div class="stage">
+<!-- SVG GLUCOSE METER -->
+<svg aria-label="Glucose meter" class="meter-wrap" id="meter" role="img" viewbox="0 0 420 620">
+<defs>
+<lineargradient id="gBody" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="var(--meter-hi)"></stop>
+<stop offset="50%" stop-color="var(--meter)"></stop>
+<stop offset="100%" stop-color="var(--meter-lo)"></stop>
+</lineargradient>
+<lineargradient id="gScreen" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#eff7f9"></stop>
+<stop offset="100%" stop-color="var(--lcd-bg)"></stop>
+</lineargradient>
+<filter height="200%" id="innerShadow" width="200%" x="-50%" y="-50%">
+<feoffset dx="0" dy="2"></feoffset><fegaussianblur result="b" stddeviation="6"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="b" operator="out" result="shadowDiff"></fecomposite>
+<feflood flood-color="#000" flood-opacity="0.25"></feflood><fecomposite in2="shadowDiff" operator="in"></fecomposite>
+<fecomposite in="SourceGraphic" operator="over"></fecomposite>
+</filter>
+</defs>
+<!-- Body -->
+<rect fill="url(#gBody)" height="560" rx="40" ry="40" stroke="#0c1f22" stroke-width="2" width="340" x="40" y="20"></rect>
+<!-- Screen bezel -->
+<rect fill="#102b30" height="170" opacity="0.9" rx="16" ry="16" width="270" x="75" y="70"></rect>
+<!-- Screen -->
+<g id="screen" transform="translate(85,82)">
+<rect fill="url(#gScreen)" height="146" rx="14" ry="14" stroke="#b9d4da" width="250"></rect>
+<text fill="#2b5660" font-size="18" font-weight="600" id="units" x="16" y="28">mg/dL</text>
+<text fill="var(--lcd-txt)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="70" id="reading" letter-spacing="2" x="16" y="104">— — —</text>
+<text fill="#2b5660" font-size="16" id="statusText" x="16" y="132">Power on…</text>
+<text fill="#2b5660" font-size="18" id="countdown" text-anchor="end" x="210" y="28"></text>
+</g>
+<!-- Decorative soft key -->
+<circle cx="210" cy="300" fill="#0d2a2f" r="20"></circle>
+<circle cx="210" cy="300" fill="#174147" r="12"></circle>
+<!-- Strip slot -->
+<rect fill="#0d2a2f" height="18" rx="8" width="80" x="170" y="20"></rect>
+<!-- Strip -->
+<g id="strip" opacity="0" transform="translate(200,5)">
+<rect fill="#f3f5f6" height="50" rx="4" stroke="#cfd9dc" width="20" x="-10" y="0"></rect>
+<rect fill="#b5c9cf" height="12" rx="2" width="16" x="-8" y="34"></rect>
+<rect fill="var(--accent)" height="0" id="fillBar" width="12" x="-6" y="36"></rect>
+</g>
+<!-- Hand/finger shown during apply -->
+<g id="hand" opacity="0" transform="translate(60,400)">
+<ellipse cx="120" cy="60" fill="#e6b69b" filter="url(#innerShadow)" rx="90" ry="60"></ellipse>
+<rect fill="#ebc2a9" height="28" rx="14" width="130" x="190" y="46"></rect>
+<circle cx="320" cy="60" fill="#e6b69b" r="14"></circle>
+<g id="drop" opacity="0.0" transform="translate(308,66)">
+<path d="M12 0 C18 10, 18 20, 12 26 C6 20, 6 10, 12 0 Z" fill="#b3202a"></path>
+</g>
+</g>
+<text fill="#cde6eb" font-size="16" text-anchor="middle" x="210" y="560">EMS Code Sim • Glucose</text>
+</svg>
+<div class="controls">
+<button class="btn alt" id="powerBtn">⏻ Power</button>
+<button class="btn" id="stripBtn">🧪 Insert / Remove Strip</button>
+<button class="btn warn" id="applyBtn">💉 Press &amp; Hold: Apply Blood</button>
+<button class="btn ghost" id="explainBtn">ℹ️ Explain Readings</button>
 </div>
-
+<div aria-live="polite" class="status" id="status">Power on, then insert a strip.</div>
+</div>
+</section>
+</main>
+<!-- Modal -->
+<div aria-modal="true" class="modal" id="modal" role="dialog">
+<div class="modal-card">
+<button class="close" id="closeModal">Close</button>
+<h3>What the Reading Means</h3>
+<h4>Hypoglycemia</h4>
+<ul class="list">
+<li><strong>&lt; 70 mg/dL</strong>: treat as hypoglycemia on the exam; assess and manage per protocols. <span class="note">(teaching threshold)</span></li>
+<li><strong>≤ 60 mg/dL</strong>: many EMS protocols use this as a treatment trigger (oral glucose if able; D10/D50/Glucagon per scope).</li>
+<li><strong>&lt; 45 mg/dL</strong>: high risk for severe neuroglycopenia; prompt dextrose indicated.</li>
+</ul>
+<h4>Normal (field reading)</h4>
+<ul class="list">
+<li>Common teaching window: <strong>~80–140 mg/dL</strong> (non-fasting field checks vary).</li>
+</ul>
+<h4>Hyperglycemia</h4>
+<ul class="list">
+<li><strong>&gt; 180 mg/dL</strong>: hyperglycemia flag. Assess for infection/illness, dehydration, DKA/HHS risk with very high readings.</li>
+</ul>
+<p class="note">These are NREMT-prep friendly ranges; always follow your local protocol specifics during patient care.</p>
+</div>
+</div>
 <script>
 (function(){
   // Elements
