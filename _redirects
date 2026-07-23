@@ -37,3 +37,8 @@
 /ems-wellness /ems-wellness.html 200
 /ems-retirement /ems-retirement.html 200
 /ems-resources /ems-resources.html 200
+
+/recertification /ems-recertification.html 301
+/emt-recertification /ems-recertification.html 301
+/paramedic-recertification /ems-recertification.html 301
+/nremt-recertification /ems-recertification.html 301

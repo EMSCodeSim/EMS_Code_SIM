@@ -176,3 +176,67 @@
   }
   if(grade){grade.addEventListener('change',updateGradePlan);updateGradePlan();}
 })();
+
+(function(){
+  const level=document.getElementById('recertLevel');
+  const national=document.getElementById('nationalCredits');
+  const local=document.getElementById('localCredits');
+  const individual=document.getElementById('individualCredits');
+  const reset=document.getElementById('resetCeTracker');
+  const key='emscodesim:recert:ceTracker';
+  const requirements={emt:{national:20,local:10,individual:10,total:40,label:'EMT'},paramedic:{national:30,local:15,individual:15,total:60,label:'Paramedic'}};
+  const clean=function(value){const n=Number.parseFloat(value);return Number.isFinite(n)?Math.max(0,n):0;};
+  const format=function(value){return Number.isInteger(value)?String(value):value.toFixed(1);};
+  function updateCeTracker(save){
+    if(!level||!national||!local||!individual) return;
+    const req=requirements[level.value]||requirements.emt;
+    const values={national:clean(national.value),local:clean(local.value),individual:clean(individual.value)};
+    const total=values.national+values.local+values.individual;
+    ['national','local','individual'].forEach(function(type){
+      const text=document.getElementById(type+'Text');
+      const bar=document.getElementById(type+'Bar');
+      const pct=Math.min(100,(values[type]/req[type])*100);
+      if(text) text.textContent=format(values[type])+' of '+format(req[type]);
+      if(bar) bar.style.width=pct+'%';
+    });
+    const totalText=document.getElementById('totalText');
+    const totalBar=document.getElementById('totalBar');
+    const status=document.getElementById('ceStatus');
+    if(totalText) totalText.textContent=format(total)+' of '+format(req.total);
+    if(totalBar) totalBar.style.width=Math.min(100,(total/req.total)*100)+'%';
+    const complete=values.national>=req.national&&values.local>=req.local&&values.individual>=req.individual;
+    if(status){
+      if(complete) status.innerHTML='<strong>All three NCCP components meet the displayed '+req.label+' minimums.</strong>Verify each course, state requirements, skills verification, and application status before relying on this result.';
+      else{
+        const remaining=[];
+        if(values.national<req.national) remaining.push(format(req.national-values.national)+' national');
+        if(values.local<req.local) remaining.push(format(req.local-values.local)+' local/state');
+        if(values.individual<req.individual) remaining.push(format(req.individual-values.individual)+' individual');
+        status.innerHTML='<strong>Still needed for the displayed NCCP minimum:</strong> '+remaining.join(', ')+' credit'+(remaining.length===1?'':'s')+'.';
+      }
+    }
+    if(save!==false){try{localStorage.setItem(key,JSON.stringify({level:level.value,national:values.national,local:values.local,individual:values.individual}));}catch(e){}}
+  }
+  if(level&&national&&local&&individual){
+    try{const saved=JSON.parse(localStorage.getItem(key)||'null');if(saved&&requirements[saved.level]){level.value=saved.level;national.value=saved.national||0;local.value=saved.local||0;individual.value=saved.individual||0;}}catch(e){}
+    [level,national,local,individual].forEach(function(control){control.addEventListener('input',function(){updateCeTracker(true);});control.addEventListener('change',function(){updateCeTracker(true);});});
+    if(reset) reset.addEventListener('click',function(){level.value='emt';national.value=0;local.value=0;individual.value=0;try{localStorage.removeItem(key);}catch(e){}updateCeTracker(false);});
+    updateCeTracker(false);
+  }
+
+  const state=document.getElementById('stateOffice');
+  const stateLink=document.getElementById('openStateOffice');
+  const stateResult=document.getElementById('stateOfficeResult');
+  const stateKey='emscodesim:recert:selectedState';
+  function updateStateOffice(){
+    if(!state||!stateLink||!stateResult) return;
+    const code=state.value;
+    if(!code){stateLink.href='https://www.nremt.org/resources/state-ems-offices';stateLink.classList.add('disabled-link');stateLink.setAttribute('aria-disabled','true');stateResult.textContent='Choose a state to open its current EMS agency contact page.';return;}
+    const name=state.options[state.selectedIndex].text;
+    stateLink.href='https://www.nremt.org/resources/state-ems-offices/'+code;
+    stateLink.classList.remove('disabled-link');stateLink.removeAttribute('aria-disabled');
+    stateResult.innerHTML='<strong>'+name+' selected.</strong> Open the official reference, then verify renewal details directly on the state EMS website listed there.';
+    try{localStorage.setItem(stateKey,code);}catch(e){}
+  }
+  if(state){try{const saved=localStorage.getItem(stateKey);if(saved&&state.querySelector('option[value="'+saved+'"]')) state.value=saved;}catch(e){}state.addEventListener('change',updateStateOffice);updateStateOffice();}
+})();

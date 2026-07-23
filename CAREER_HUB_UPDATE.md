@@ -84,3 +84,19 @@ Navigation, homepage career stages, sitemap, clean redirects, shared JavaScript,
 - Added `explore-ems.html` as the new first stage of the career journey.
 - Added an EMS career-fit quiz, grade-based planner, high-school roadmap, saved exploration checklist, beginner activities, and trusted official links.
 - Updated the homepage, navigation, redirects, sitemap, and career-stage recommendations.
+
+## EMT and Paramedic Recertification Guide — July 22, 2026
+
+Added `ems-recertification.html` with:
+- NREMT certification versus state licensure explanation
+- EMT 40-credit and paramedic 60-credit NCCP breakdowns
+- Continuing-education and recertification-by-examination pathways
+- Important National Registry renewal dates
+- Accepted education guidance and CAPCE course finder
+- Browser-saved CE progress tracker
+- State EMS office finder for all 50 states and Washington, D.C.
+- Active versus inactive status guidance
+- Browser-saved renewal checklist
+- Direct National Registry and state reference links
+
+Also added Recertify navigation links, homepage promotion, resource-center entry, redirects, and sitemap coverage.
