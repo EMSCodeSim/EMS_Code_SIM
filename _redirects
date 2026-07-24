@@ -109,3 +109,8 @@
 /pcr-narrative-coach /pcr-narrative-coach.html 200
 /pcr-report-writer /pcr-narrative-coach.html 301
 /ems-narrative-builder /pcr-narrative-coach.html 301
+
+# EMS career pathway planner
+/ems-career-planner /ems-career-planner.html 200
+/ems-certification-tracker /ems-career-planner.html 301
+/ems-career-roadmap /ems-career-planner.html 301
