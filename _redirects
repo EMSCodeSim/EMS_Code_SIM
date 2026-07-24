@@ -104,3 +104,8 @@
 /ift-vs-911-first-emt-job /ift-vs-911-first-emt-job.html 200
 /new-emt-skills-to-master /new-emt-skills-to-master.html 200
 /new-emt-mistakes-confidence /new-emt-mistakes-confidence.html 200
+
+# PCR narrative coach
+/pcr-narrative-coach /pcr-narrative-coach.html 200
+/pcr-report-writer /pcr-narrative-coach.html 301
+/ems-narrative-builder /pcr-narrative-coach.html 301

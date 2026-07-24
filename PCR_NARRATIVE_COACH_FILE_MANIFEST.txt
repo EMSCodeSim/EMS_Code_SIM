@@ -1,0 +1,18 @@
+PCR Narrative Coach update
+
+ADD:
+pcr-narrative-coach.html
+pcr-narrative-coach.js
+styles/pcr-narrative-coach.css
+PCR_NARRATIVE_COACH_UPDATE.md (documentation only)
+
+REPLACE:
+ems-training-tools.html
+first-100-shifts.html
+ems-resources.html
+search-index.js
+sitemap.xml
+_redirects
+
+DELETE:
+Nothing
