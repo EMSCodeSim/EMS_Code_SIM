@@ -4,3 +4,18 @@
 @media(max-width:820px){.flashcard-intro,.deck-builder{grid-template-columns:1fr}.future-packs{grid-template-columns:1fr}.flashcard{min-height:410px}.flashcard-inner{min-height:410px}}
 @media(max-width:560px){.flashcard-app{padding:1.25rem .75rem 3rem}.category-grid{grid-template-columns:1fr}.deck-stat-grid,.summary-grid{grid-template-columns:1fr 1fr}.flashcard-face{padding:1.1rem}.card-meta{align-items:flex-start;flex-direction:column}.flashcard-actions button{flex:1 1 46%;min-width:0}.study-toolbar{align-items:flex-start}.keyboard-help{display:none}}
 @media(prefers-reduced-motion:reduce){.flashcard-inner{transition:none}}
+
+/* Robust flip-card behavior */
+.flashcard-stage{min-height:410px}
+.flashcard{display:block;position:relative;min-height:410px;width:100%;border:0;background:transparent;padding:0;cursor:pointer;text-align:left;outline:none}
+.flashcard:focus-visible{border-radius:24px;box-shadow:0 0 0 4px rgba(47,183,211,.35)}
+.flashcard-inner{display:grid;position:relative;width:100%;min-height:410px;transform-style:preserve-3d;-webkit-transform-style:preserve-3d;transition:transform .55s ease}
+.flashcard.is-flipped .flashcard-inner{transform:rotateY(180deg);-webkit-transform:rotateY(180deg)}
+.flashcard-face{grid-area:1/1;position:relative;inset:auto;min-height:410px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:auto}
+.flashcard-front{transform:rotateY(0deg);-webkit-transform:rotateY(0deg)}
+.flashcard-back{transform:rotateY(180deg);-webkit-transform:rotateY(180deg)}
+.card-definition{display:block;white-space:pre-line}
+.card-note{display:block}
+.card-history{text-align:center;color:var(--fc-muted);font-size:.88rem;margin:.9rem auto 0;max-width:760px}
+.session-actions .button-review{border:0;border-radius:11px;padding:.78rem 1rem;font-weight:750;cursor:pointer;min-height:46px}
+@media(max-width:560px){.flashcard-stage,.flashcard,.flashcard-inner,.flashcard-face{min-height:430px}}
