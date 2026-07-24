@@ -12,12 +12,12 @@ document.querySelectorAll('[data-module-note]').forEach((field)=>{
 
 document.querySelectorAll('[data-lesson-timer]').forEach((timer)=>{
   const display=timer.querySelector('strong');
-  let remaining=1800, interval=null;
+  let remaining=Number(timer.dataset.duration||1800), interval=null;
   const render=()=>{const m=Math.floor(remaining/60),s=remaining%60;display.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');};
   const stop=()=>{if(interval){clearInterval(interval);interval=null;}};
   timer.querySelector('[data-timer-action="start"]').addEventListener('click',()=>{if(interval||remaining<=0)return;interval=setInterval(()=>{remaining-=1;render();if(remaining<=0){stop();display.textContent='Complete';}},1000);});
   timer.querySelector('[data-timer-action="pause"]').addEventListener('click',stop);
-  timer.querySelector('[data-timer-action="reset"]').addEventListener('click',()=>{stop();remaining=1800;render();});
+  timer.querySelector('[data-timer-action="reset"]').addEventListener('click',()=>{stop();remaining=Number(timer.dataset.duration||1800);render();});
   render();
 });
 
