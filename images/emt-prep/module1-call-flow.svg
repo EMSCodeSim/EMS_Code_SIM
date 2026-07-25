@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+<title id="title">EMS call flow overview</title>
+<desc id="desc">Illustrated timeline showing dispatch, response, patient assessment, transport, hospital handoff, and documentation.</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#eef8fd"/><stop offset="100%" stop-color="#f8fafc"/></linearGradient>
+</defs>
+<rect width="1200" height="700" rx="28" fill="url(#bg)"/>
+<text x="70" y="86" font-family="Arial, sans-serif" font-size="38" font-weight="700" fill="#0b2239">One EMS Call: From 911 to Ready for the Next Call</text>
+<text x="70" y="126" font-family="Arial, sans-serif" font-size="20" fill="#395267">Module 1 helps students see how the EMT fits inside the larger system.</text>
+<path d="M100 360 H1080" stroke="#2f84b8" stroke-width="10" stroke-linecap="round"/>
+<g font-family="Arial, sans-serif" text-anchor="middle">
+  <g transform="translate(120 360)"><circle r="46" fill="#ffffff" stroke="#2f84b8" stroke-width="4"/><text y="8" font-size="18" font-weight="700" fill="#0b2239">911</text><text y="96" font-size="18" font-weight="700" fill="#0b2239">Call for help</text><text y="122" font-size="15" fill="#4d6475">Someone requests help</text></g>
+  <g transform="translate(290 360)"><circle r="46" fill="#ffffff" stroke="#2f84b8" stroke-width="4"/><text y="8" font-size="18" font-weight="700" fill="#0b2239">CAD</text><text y="96" font-size="18" font-weight="700" fill="#0b2239">Dispatch</text><text y="122" font-size="15" fill="#4d6475">Information gathered and resources sent</text></g>
+  <g transform="translate(470 360)"><circle r="46" fill="#ffffff" stroke="#2f84b8" stroke-width="4"/><text y="8" font-size="18" font-weight="700" fill="#0b2239">RSP</text><text y="96" font-size="18" font-weight="700" fill="#0b2239">Respond</text><text y="122" font-size="15" fill="#4d6475">Crew heads to the scene</text></g>
+  <g transform="translate(650 360)"><circle r="46" fill="#ffffff" stroke="#2f84b8" stroke-width="4"/><text y="8" font-size="18" font-weight="700" fill="#0b2239">ABC</text><text y="96" font-size="18" font-weight="700" fill="#0b2239">Assess &amp; care</text><text y="122" font-size="15" fill="#4d6475">Findings, treatment, and reassessment</text></g>
+  <g transform="translate(830 360)"><circle r="46" fill="#ffffff" stroke="#2f84b8" stroke-width="4"/><text y="8" font-size="18" font-weight="700" fill="#0b2239">ER</text><text y="96" font-size="18" font-weight="700" fill="#0b2239">Handoff</text><text y="122" font-size="15" fill="#4d6475">Transfer care with a verbal report</text></g>
+  <g transform="translate(1030 360)"><circle r="46" fill="#ffffff" stroke="#2f84b8" stroke-width="4"/><text y="8" font-size="16" font-weight="700" fill="#0b2239">PCR</text><text y="96" font-size="18" font-weight="700" fill="#0b2239">Document</text><text y="122" font-size="15" fill="#4d6475">Finish charting and return to service</text></g>
+</g>
+<g font-family="Arial, sans-serif" fill="#0b2239">
+  <rect x="90" y="520" width="1020" height="110" rx="18" fill="#ffffff" stroke="#d5e7f2"/>
+  <text x="120" y="565" font-size="24" font-weight="700">Key EMT idea:</text>
+  <text x="120" y="603" font-size="20">The EMT does not only “ride in the back.” The EMT works inside a system of dispatch, teamwork, assessment, transport,</text>
+  <text x="120" y="631" font-size="20">handoff, and documentation. Understanding that flow makes later EMT lessons much easier to understand.</text>
+</g>
+</svg>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="620" viewBox="0 0 900 620" role="img" aria-labelledby="title desc">
+<title id="title">Dispatch scene illustration</title>
+<desc id="desc">Illustration of a 911 dispatcher, an ambulance, and patient contact for a beginner EMS module.</desc>
+<rect width="900" height="620" rx="26" fill="#f8fbfd"/>
+<g font-family="Arial, sans-serif">
+  <text x="50" y="70" font-size="34" font-weight="700" fill="#0b2239">Start thinking from dispatch</text>
+  <text x="50" y="108" font-size="19" fill="#4d6475">What do you know? What is missing? What should the crew consider before arrival?</text>
+</g>
+<rect x="50" y="150" width="220" height="330" rx="20" fill="#ffffff" stroke="#d7e8f2"/>
+<circle cx="160" cy="230" r="48" fill="#e8f3fa"/>
+<circle cx="160" cy="220" r="20" fill="#2f84b8"/>
+<rect x="122" y="248" width="76" height="74" rx="20" fill="#2f84b8"/>
+<path d="M110 340 q50 20 100 0" fill="none" stroke="#2f84b8" stroke-width="8" stroke-linecap="round"/>
+<text x="80" y="400" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#0b2239">Dispatcher</text>
+<text x="80" y="434" font-family="Arial, sans-serif" font-size="18" fill="#4d6475">Gets the first information and sends resources.</text>
+<circle cx="280" cy="220" r="12" fill="#2f84b8"/><circle cx="318" cy="192" r="10" fill="#8ac5e8"/><circle cx="352" cy="162" r="8" fill="#b8dff1"/>
+<path d="M290 224 C350 250, 420 280, 470 300" fill="none" stroke="#2f84b8" stroke-width="6" stroke-dasharray="10 10"/>
+<rect x="470" y="250" width="220" height="120" rx="20" fill="#ffffff" stroke="#d7e8f2"/>
+<rect x="500" y="282" width="155" height="58" rx="16" fill="#dceff9"/>
+<rect x="490" y="290" width="22" height="44" rx="8" fill="#e85c5c"/>
+<rect x="558" y="300" width="38" height="20" fill="#ffffff"/>
+<rect x="567" y="291" width="20" height="38" fill="#ffffff"/>
+<circle cx="526" cy="380" r="16" fill="#0b2239"/><circle cx="630" cy="380" r="16" fill="#0b2239"/>
+<text x="505" y="230" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#0b2239">Responding crew</text>
+<text x="505" y="405" font-family="Arial, sans-serif" font-size="18" fill="#4d6475">Begins thinking about scene safety, complaint, and equipment.</text>
+<path d="M690 310 C735 310, 780 310, 815 310" fill="none" stroke="#2f84b8" stroke-width="6" stroke-dasharray="10 10"/>
+<rect x="735" y="210" width="120" height="210" rx="18" fill="#ffffff" stroke="#d7e8f2"/>
+<circle cx="795" cy="256" r="22" fill="#f6d1b3"/>
+<rect x="765" y="280" width="60" height="80" rx="22" fill="#7aaad1"/>
+<rect x="760" y="362" width="70" height="12" rx="6" fill="#b7c7d1"/>
+<text x="760" y="455" font-family="Arial, sans-serif" font-size="20" font-weight="700" fill="#0b2239">Patient contact</text>
+<text x="64" y="540" font-family="Arial, sans-serif" font-size="18" fill="#0b2239">Dispatch gives you a starting point, not a final answer.</text>
+</svg>
