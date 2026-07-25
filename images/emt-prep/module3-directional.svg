@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="680" viewBox="0 0 800 680" role="img" aria-labelledby="title desc">
+<title id="title">Anatomical position and directional terms</title><desc id="desc">Front-facing anatomical figure labeled with superior, inferior, medial, lateral, proximal, distal, anterior, and posterior concepts.</desc>
+<rect width="800" height="680" rx="24" fill="#f8fbfd"/>
+<text x="45" y="60" font-family="Arial,sans-serif" font-size="31" font-weight="700" fill="#0b2239">Anatomical position</text>
+<text x="45" y="96" font-family="Arial,sans-serif" font-size="18" fill="#4d6475">Face forward, arms at the sides, palms forward.</text>
+<g stroke="#2f84b8" stroke-width="10" stroke-linecap="round" fill="none">
+  <circle cx="400" cy="175" r="42" fill="#f2c8aa" stroke="none"/>
+  <line x1="400" y1="220" x2="400" y2="430"/>
+  <line x1="400" y1="270" x2="260" y2="360"/>
+  <line x1="400" y1="270" x2="540" y2="360"/>
+  <line x1="400" y1="430" x2="325" y2="570"/>
+  <line x1="400" y1="430" x2="475" y2="570"/>
+</g>
+<line x1="400" y1="120" x2="400" y2="610" stroke="#9eb9ca" stroke-width="3" stroke-dasharray="10 10"/>
+<g font-family="Arial,sans-serif" fill="#0b2239">
+  <text x="425" y="130" font-size="20" font-weight="700">Superior</text><text x="425" y="153" font-size="16" fill="#4d6475">above</text>
+  <text x="425" y="620" font-size="20" font-weight="700">Inferior</text><text x="425" y="643" font-size="16" fill="#4d6475">below</text>
+  <text x="440" y="300" font-size="20" font-weight="700">Medial</text><text x="440" y="323" font-size="16" fill="#4d6475">toward midline</text>
+  <text x="600" y="360" font-size="20" font-weight="700">Lateral</text><text x="600" y="383" font-size="16" fill="#4d6475">away from midline</text>
+  <text x="155" y="305" font-size="20" font-weight="700">Proximal</text><text x="155" y="328" font-size="16" fill="#4d6475">closer to trunk</text>
+  <text x="105" y="405" font-size="20" font-weight="700">Distal</text><text x="105" y="428" font-size="16" fill="#4d6475">farther from trunk</text>
+</g>
+<path d="M240 318 H315" stroke="#7aaad1" stroke-width="4"/><path d="M190 398 H260" stroke="#7aaad1" stroke-width="4"/><path d="M540 340 H585" stroke="#7aaad1" stroke-width="4"/>
+<rect x="75" y="515" width="185" height="92" rx="15" fill="#fff" stroke="#cfe3ef"/>
+<text x="168" y="550" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" font-weight="700" fill="#0b2239">Anterior</text><text x="168" y="578" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#4d6475">front of body</text>
+<rect x="540" y="515" width="185" height="92" rx="15" fill="#fff" stroke="#cfe3ef"/>
+<text x="632" y="550" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" font-weight="700" fill="#0b2239">Posterior</text><text x="632" y="578" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#4d6475">back of body</text>
+</svg>

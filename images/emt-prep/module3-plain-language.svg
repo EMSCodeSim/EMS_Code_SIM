@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+<title id="title">Medical language to plain language</title><desc id="desc">An EMT translates clinical terminology into clear patient-friendly wording while retaining objective documentation.</desc>
+<rect width="1200" height="520" rx="26" fill="#f8fbfd"/>
+<text x="60" y="72" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#0b2239">Say it clearly. Document it objectively.</text>
+<text x="60" y="110" font-family="Arial,sans-serif" font-size="19" fill="#4d6475">Clinical terms help the care team. Plain language helps the patient understand.</text>
+<rect x="65" y="165" width="300" height="230" rx="20" fill="#fff" stroke="#cfe3ef"/>
+<circle cx="215" cy="220" r="32" fill="#f2c8aa"/><rect x="175" y="255" width="80" height="92" rx="22" fill="#d85f5f"/>
+<text x="215" y="375" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#0b2239">EMT</text>
+<path d="M365 280 C430 230 500 230 560 280" fill="none" stroke="#2f84b8" stroke-width="6" stroke-dasharray="12 10"/>
+<rect x="420" y="175" width="320" height="95" rx="18" fill="#dceff9"/>
+<text x="580" y="215" text-anchor="middle" font-family="Arial,sans-serif" font-size="23" font-weight="700" fill="#0b2239">“Are you having trouble breathing?”</text>
+<text x="580" y="247" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#4d6475">patient-friendly language</text>
+<rect x="420" y="300" width="320" height="105" rx="18" fill="#eaf5ec"/>
+<text x="580" y="340" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" font-weight="700" fill="#0b2239">“Dyspnea; pale and diaphoretic;</text>
+<text x="580" y="367" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" font-weight="700" fill="#0b2239">speaking in two-word phrases.”</text>
+<text x="580" y="392" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#4d6475">objective clinical documentation</text>
+<path d="M740 280 C810 230 860 230 925 280" fill="none" stroke="#2f84b8" stroke-width="6" stroke-dasharray="12 10"/>
+<rect x="880" y="165" width="255" height="230" rx="20" fill="#fff" stroke="#cfe3ef"/>
+<circle cx="1008" cy="220" r="32" fill="#f2c8aa"/><rect x="968" y="255" width="80" height="92" rx="22" fill="#7aaad1"/>
+<text x="1008" y="375" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#0b2239">Patient</text>
+<text x="60" y="470" font-family="Arial,sans-serif" font-size="20" fill="#0b2239">Do not use terminology to sound impressive. Use it to communicate accurately.</text>
+</svg>
