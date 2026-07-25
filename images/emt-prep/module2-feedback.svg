@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+<title id="title">Instructor feedback loop</title><desc id="desc">Illustration of an instructor and EMT student using a four-step feedback loop.</desc>
+<rect width="1200" height="520" rx="26" fill="#f8fbfd"/>
+<text x="60" y="72" font-family="Arial,sans-serif" font-size="36" font-weight="700" fill="#0b2239">Feedback is part of the curriculum</text>
+<text x="60" y="110" font-family="Arial,sans-serif" font-size="19" fill="#4d6475">Correction becomes useful when the student changes the next practice attempt.</text>
+<g>
+<circle cx="170" cy="230" r="42" fill="#f6d1b3"/><rect x="120" y="275" width="100" height="120" rx="24" fill="#2f84b8"/><text x="170" y="430" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#0b2239">Instructor</text>
+<circle cx="350" cy="230" r="42" fill="#f6d1b3"/><rect x="300" y="275" width="100" height="120" rx="24" fill="#d85f5f"/><text x="350" y="430" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#0b2239">Student</text>
+<rect x="245" y="155" width="115" height="58" rx="16" fill="#fff" stroke="#d7e8f2"/><text x="302" y="190" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#0b2239">“Pause here.”</text>
+</g>
+<g font-family="Arial,sans-serif" text-anchor="middle">
+<g transform="translate(520 180)"><circle r="55" fill="#dceff9"/><text y="-5" font-size="18" font-weight="700" fill="#0b2239">1. Hear it</text><text y="22" font-size="15" fill="#4d6475">Listen fully</text></g>
+<path d="M575 180H645" stroke="#2f84b8" stroke-width="6" stroke-linecap="round"/>
+<g transform="translate(705 180)"><circle r="55" fill="#e6f3ef"/><text y="-5" font-size="18" font-weight="700" fill="#0b2239">2. Clarify</text><text y="22" font-size="15" fill="#4d6475">Ask specifically</text></g>
+<path d="M760 180H830" stroke="#2f84b8" stroke-width="6" stroke-linecap="round"/>
+<g transform="translate(890 180)"><circle r="55" fill="#ffe9d6"/><text y="-5" font-size="18" font-weight="700" fill="#0b2239">3. Correct</text><text y="22" font-size="15" fill="#4d6475">Change the step</text></g>
+<path d="M945 180H1015" stroke="#2f84b8" stroke-width="6" stroke-linecap="round"/>
+<g transform="translate(1070 180)"><circle r="55" fill="#f2e8fb"/><text y="-5" font-size="18" font-weight="700" fill="#0b2239">4. Repeat</text><text y="22" font-size="15" fill="#4d6475">Practice again</text></g>
+</g>
+<rect x="500" y="300" width="620" height="120" rx="20" fill="#fff" stroke="#d7e8f2"/>
+<text x="535" y="345" font-family="Arial,sans-serif" font-size="22" font-weight="700" fill="#0b2239">Useful question:</text>
+<text x="535" y="382" font-family="Arial,sans-serif" font-size="20" fill="#4d6475">“Which exact step should I change, and can I repeat that section now?”</text>
+</svg>

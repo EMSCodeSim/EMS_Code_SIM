@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+<title id="title">EMT skills laboratory preparation</title><desc id="desc">Illustration of an EMT student arriving prepared for a skills laboratory.</desc>
+<rect width="1200" height="520" rx="26" fill="#f7fbfe"/>
+<text x="60" y="72" font-family="Arial,sans-serif" font-size="36" font-weight="700" fill="#0b2239">Arrive ready to practice</text>
+<text x="60" y="110" font-family="Arial,sans-serif" font-size="19" fill="#4d6475">A skills lab works best when preparation happens before the station begins.</text>
+<g font-family="Arial,sans-serif">
+<rect x="70" y="160" width="300" height="280" rx="20" fill="#fff" stroke="#d7e8f2"/>
+<text x="100" y="205" font-size="25" font-weight="700" fill="#0b2239">Before lab</text>
+<g font-size="18" fill="#4d6475"><text x="110" y="250">✓ Review the assigned skill</text><text x="110" y="290">✓ Confirm time and location</text><text x="110" y="330">✓ Pack required equipment</text><text x="110" y="370">✓ Plan travel and meals</text><text x="110" y="410">✓ Expect direct correction</text></g>
+<rect x="440" y="170" width="300" height="230" rx="24" fill="#fff" stroke="#d7e8f2"/>
+<rect x="490" y="250" width="200" height="70" rx="16" fill="#dceff9"/><circle cx="530" cy="340" r="20" fill="#0b2239"/><circle cx="650" cy="340" r="20" fill="#0b2239"/>
+<rect x="555" y="220" width="70" height="50" rx="10" fill="#ffe9d6"/>
+<text x="590" y="205" text-anchor="middle" font-size="22" font-weight="700" fill="#0b2239">Practice station</text>
+<text x="590" y="440" text-anchor="middle" font-size="19" fill="#4d6475">Equipment + checklist + repetition</text>
+<rect x="810" y="160" width="320" height="280" rx="20" fill="#fff" stroke="#d7e8f2"/>
+<text x="840" y="205" font-size="25" font-weight="700" fill="#0b2239">During lab</text>
+<g font-size="18" fill="#4d6475"><text x="850" y="250">1. Watch the demonstration</text><text x="850" y="290">2. Practice the sequence</text><text x="850" y="330">3. Accept feedback</text><text x="850" y="370">4. Correct the missed step</text><text x="850" y="410">5. Repeat until consistent</text></g>
+</g>
+</svg>
