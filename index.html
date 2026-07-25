@@ -1,19 +1,19 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <title>EMSCodeSim | Your EMS Career and Training Hub</title>
-<meta name="description" content="Free EMS career guidance, EMT preparation, daily quizzes, training simulators, career growth resources, recertification help, wellness guidance, and retirement planning.">
-<meta name="robots" content="index,follow,max-image-preview:large">
-<link rel="canonical" href="https://emscodesim.com/">
-<meta name="theme-color" content="#071426">
-<link rel="icon" href="/favicon.png" type="image/png"><link rel="shortcut icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/favicon.png"><link rel="manifest" href="/site.webmanifest">
-<meta property="og:type" content="website"><meta property="og:site_name" content="EMSCodeSim"><meta property="og:title" content="EMSCodeSim | From First Interest to Your Final Shift"><meta property="og:description" content="Free EMS career guidance, EMT preparation, daily practice, simulators, and resources for every stage of an EMS career."><meta property="og:url" content="https://emscodesim.com/"><meta property="og:image" content="https://emscodesim.com/ems-logo.png">
-<link rel="stylesheet" href="/styles/career-hub.css"><link rel="stylesheet" href="/styles/responsive.css"><link rel="stylesheet" href="/styles/site-enhancements.css">
+<meta content="Free EMS career guidance, EMT preparation, daily quizzes, training simulators, career growth resources, recertification help, wellness guidance, and retirement planning." name="description"/>
+<meta content="index,follow,max-image-preview:large" name="robots"/>
+<link href="https://emscodesim.com/" rel="canonical"/>
+<meta content="#071426" name="theme-color"/>
+<link href="/favicon.png" rel="icon" type="image/png"/><link href="/favicon.ico" rel="shortcut icon"/><link href="/favicon.png" rel="apple-touch-icon"/><link href="/site.webmanifest" rel="manifest"/>
+<meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="EMSCodeSim | From First Interest to Your Final Shift" property="og:title"/><meta content="Free EMS career guidance, EMT preparation, daily practice, simulators, and resources for every stage of an EMS career." property="og:description"/><meta content="https://emscodesim.com/" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
+<link href="/styles/career-hub.css" rel="stylesheet"/><link href="/styles/responsive.css" rel="stylesheet"/><link href="/styles/site-enhancements.css" rel="stylesheet"/>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"EMSCodeSim","url":"https://emscodesim.com/","description":"Free EMS career and training resources from first interest through retirement.","potentialAction":{"@type":"SearchAction","target":"https://emscodesim.com/search.html?q={search_term_string}","query-input":"required name=search_term_string"}}</script>
-<script defer src="/privacy-controls.js"></script><script defer src="/scripts/engagement-loop.js"></script>
-
+<script defer="" src="/privacy-controls.js"></script><script defer="" src="/scripts/engagement-loop.js"></script>
 <style id="home-career-inline">
 :root{--home-navy:#071426;--home-blue:#1577ef;--home-blue2:#2b9cff;--home-ink:#102038;--home-muted:#5d6b7d;--home-line:#dce5ef;--home-soft:#f4f7fb;--home-card:#fff;--stage-accent:#2b9cff}
 *{box-sizing:border-box}.home-page{margin:0;background:#f7f9fc;color:var(--home-ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.home-page a{text-decoration:none}.home-page .site-header{position:sticky;top:0;z-index:120;background:rgba(5,15,30,.96);border-bottom:1px solid rgba(255,255,255,.1);backdrop-filter:blur(14px)}
@@ -44,22 +44,127 @@
 .stage-summary-line{margin-top:14px;color:#c3d3e3;font-size:.9rem}
 @media(max-width:720px){.career-stage-wrap{padding:12px 8px 15px}.career-stage-panel .stage-intro{display:block}.stage-badge{margin-top:10px}.hero-home-inner{padding:38px 16px 44px}.career-stage-panel{border-radius:14px}.stage-detail{margin-top:10px}}
 
+
+
+/* Mobile-first homepage career picker and quick access */
+.mobile-career-picker,.mobile-home-shortcuts{display:none}
+@media(max-width:720px){
+  .home-page .nav-wrap{min-height:60px;padding:0 12px;gap:8px}
+  .home-page .brand{font-size:1.02rem;gap:7px;min-width:0}
+  .home-page .brand img{width:36px;height:36px}
+  .home-page .brand span{min-width:0;line-height:1.08}
+  .home-page .brand small{font-size:.58rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px;margin-top:3px}
+  .home-page .mobile-menu{max-width:92px;min-height:39px;padding:7px 6px;border-radius:9px;font-size:.86rem}
+
+  .career-stage-wrap{display:none!important}
+  .mobile-career-picker{display:block;background:linear-gradient(145deg,#071426,#102541);padding:12px 12px 14px;color:#fff}
+  .mobile-career-card{max-width:560px;margin:auto;padding:17px;border:1px solid rgba(255,255,255,.15);border-radius:16px;background:rgba(255,255,255,.07);box-shadow:0 12px 28px rgba(0,0,0,.2)}
+  .mobile-stage-label{display:inline-block;color:#8dccff;font-size:.7rem;font-weight:900;letter-spacing:.09em;text-transform:uppercase}
+  .mobile-career-card h2{margin:6px 0 7px;font-size:1.35rem;line-height:1.18;color:#fff;letter-spacing:-.02em}
+  .mobile-career-card>p{margin:0 0 13px;color:#cfdeeb;font-size:.91rem;line-height:1.45}
+  .mobile-stage-select-label{display:block;margin-bottom:6px;color:#fff;font-size:.82rem;font-weight:850}
+  .mobile-stage-select{width:100%;min-height:48px;border:1px solid rgba(255,255,255,.32);border-radius:11px;padding:10px 38px 10px 12px;background:#fff;color:#102038;font:inherit;font-weight:800}
+  .mobile-stage-summary{display:grid;gap:3px;margin-top:12px;padding:11px 12px;border-radius:11px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1)}
+  .mobile-stage-summary strong{color:#fff;font-size:1rem}
+  .mobile-stage-summary span{color:#c7d7e5;font-size:.84rem;line-height:1.4}
+  .mobile-stage-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+  .mobile-stage-actions a{min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;padding:9px 10px;border-radius:9px;border:1px solid rgba(255,255,255,.28);color:#fff;font-size:.84rem;font-weight:900;line-height:1.2}
+  .mobile-stage-actions .mobile-stage-primary{background:linear-gradient(135deg,#0874f9,#2397ff);border-color:transparent}
+
+  .hero-home:before{background:linear-gradient(90deg,rgba(3,9,18,.96),rgba(5,15,30,.82))}
+  .hero-home:after{display:none}
+  .hero-home-inner{padding:30px 15px 27px!important;min-height:0!important}
+  .hero-copy{max-width:none}
+  .hero-stage-kicker{font-size:.7rem}
+  .hero-copy h1{font-size:clamp(2rem,10.5vw,2.8rem)!important;line-height:1.04}
+  .hero-copy p{font-size:.98rem;line-height:1.48;margin-top:13px}
+  .hero-actions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:20px}
+  .hero-actions .home-btn{width:100%;min-height:45px;padding:10px 13px}
+  #heroPractice,.stage-summary-line{display:none}
+
+  .mobile-home-shortcuts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:12px 12px 4px;background:#f7f9fc}
+  .mobile-home-shortcuts a{display:grid;grid-template-columns:36px 1fr;grid-template-rows:auto auto;column-gap:9px;align-items:center;min-height:72px;padding:11px;border:1px solid var(--home-line);border-radius:13px;background:#fff;color:var(--home-ink);box-shadow:0 5px 15px rgba(32,58,84,.06)}
+  .mobile-home-shortcuts span{grid-row:1/3;width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#eaf4ff;color:#1278df;font-size:1.1rem;font-weight:900}
+  .mobile-home-shortcuts strong{font-size:.88rem;line-height:1.15}
+  .mobile-home-shortcuts small{color:var(--home-muted);font-size:.7rem;line-height:1.25}
+
+  .home-main{padding:18px 12px 40px!important}
+  .home-section{margin-top:22px}
+  .path-and-practice{gap:13px}
+  .path-box,.practice-box{padding:16px;border-radius:14px}
+  .path-title-row,.section-head{gap:8px;margin-bottom:12px}
+  .path-title-row h2,.section-head h2{font-size:1.35rem}
+  .path-title-row p,.section-head p{font-size:.9rem;line-height:1.42}
+  .path-title-row>a,.section-head>a{font-size:.88rem;font-weight:850}
+  .path-cards{gap:9px;margin-top:14px}
+  .path-card{min-height:0!important;padding:14px 13px 14px 58px;border-radius:12px}
+  .path-card .path-num{position:absolute;left:13px;top:14px;width:31px;height:31px}
+  .path-card .path-icon{display:none}
+  .path-card h3{margin:0 0 4px;font-size:1rem}
+  .path-card p{font-size:.85rem;line-height:1.38}
+  .path-card span:last-child{position:static;display:block;margin-top:8px;font-size:.82rem}
+  .practice-box h2{font-size:1.18rem}
+  .practice-item{grid-template-columns:34px 1fr auto;padding:11px 0}
+  .practice-ico{width:34px;height:34px}
+  .practice-item strong{font-size:.9rem}
+  .practice-item small{font-size:.74rem}
+  .practice-item em{padding:7px 9px;font-size:.73rem}
+  .tool-grid{gap:9px}
+  .tool-card{min-height:92px;padding:12px 7px}
+  .tool-card b{width:38px;height:38px;margin-bottom:8px}
+  .tool-card span{font-size:.78rem}
+  .trust-strip{margin-top:22px}
+  .trust-item{padding:14px}
+  .resource-callout{margin:20px 0!important;padding:17px!important;border-radius:14px!important}
+  .resource-callout h2{font-size:1.25rem}
+  .feature-grid{grid-template-columns:1fr!important}
+}
+@media(max-width:380px){
+  .mobile-stage-actions{grid-template-columns:1fr}
+  .mobile-home-shortcuts{grid-template-columns:1fr 1fr}
+  .home-page .brand small{max-width:135px}
+}
 </style>
 </head>
 <body class="home-page">
 <a class="skip-link" href="#main">Skip to main content</a>
-<header class="site-header"><nav class="nav-wrap" aria-label="Primary navigation">
-<a class="brand" href="/"><picture><source srcset="/ems-logo.webp" type="image/webp"><img src="/ems-logo.png" width="42" height="42" alt="EMSCodeSim logo"></picture><span>EMSCodeSim<small>From First Interest to Your Final Shift</small></span></a>
+<header class="site-header"><nav aria-label="Primary navigation" class="nav-wrap">
+<a class="brand" href="/"><picture><source srcset="/ems-logo.webp" type="image/webp"/><img alt="EMSCodeSim logo" height="42" src="/ems-logo.png" width="42"/></picture><span>EMSCodeSim<small>From First Interest to Your Final Shift</small></span></a>
 <div class="main-nav">
-<details class="nav-group" data-nav-group><summary>Start EMS</summary><div class="nav-dropdown"><a href="/explore-ems.html"><strong>Explore EMS</strong><small>Discover the career and what to expect</small></a><a href="/become-an-emt.html"><strong>Become an EMT</strong><small>Training, certification, and state steps</small></a><a href="/emt-school-finder.html"><strong>EMT School Finder</strong><small>Search for and verify nearby programs</small></a><a href="/emt-program-cost.html"><strong>Program Cost &amp; Financial Help</strong><small>Estimate costs and find ways to pay less</small></a></div></details>
-<details class="nav-group" data-nav-group><summary>Prepare</summary><div class="nav-dropdown"><a href="/emt-prep.html"><strong>Free EMT Prep Program</strong><small>Build foundations before class</small></a><a href="/pre-emt-equipment.html"><strong>Pre-EMT Equipment Guide</strong><small>Choose a practical cuff and stethoscope</small></a><a href="/emt-school-success.html"><strong>Succeed in EMT School</strong><small>Study, skills, clinicals, and exams</small></a><a href="/first-100-shifts.html"><strong>First EMT Job</strong><small>Field training and your first 100 shifts</small></a></div></details>
-<details class="nav-group" data-nav-group><summary>Practice</summary><div class="nav-dropdown"><a href="#daily-practice"><strong>Today’s 5-Minute Practice</strong><small>Quiz, fact, and quick simulator</small></a><a href="/ems-training-tools.html"><strong>Training Tools</strong><small>Vital-sign and assessment simulators</small></a><a href="/quiz/"><strong>Daily Quiz</strong><small>EMT and paramedic review</small></a></div></details>
-<details class="nav-group" data-nav-group><summary>Career</summary><div class="nav-dropdown"><a href="/ems-career-planner.html"><strong>Career Pathway Planner</strong><small>Track credentials, goals, and next steps</small></a><a href="/ems-progress-tracker.html"><strong>Personal Progress Tracker</strong><small>Track calls, skills, and success rates</small></a><a href="/ems-career-growth.html"><strong>Career Paths &amp; Pay</strong><small>Paramedic, fire, flight, nursing, and leadership</small></a><a href="/ems-recertification.html"><strong>Recertification</strong><small>NREMT and state renewal planning</small></a><a href="/ems-wellness.html"><strong>EMS Wellness</strong><small>Sleep, fitness, mental health, and longevity</small></a><a href="/ems-retirement.html"><strong>Retirement Planning</strong><small>Prepare for life after full-time EMS</small></a></div></details>
-<details class="nav-group" data-nav-group><summary>Resources</summary><div class="nav-dropdown"><a href="/ems-resources.html"><strong>Trusted Resources</strong><small>Official agencies and reliable references</small></a><a href="/about.html"><strong>About EMSCodeSim</strong><small>Creator experience and editorial standards</small></a><a href="/search.html"><strong>Search the Site</strong><small>Find a guide, simulator, or quiz</small></a><a href="/privacy.html"><strong>Privacy Choices</strong><small>Analytics and local-storage controls</small></a></div></details>
+<details class="nav-group" data-nav-group=""><summary>Start EMS</summary><div class="nav-dropdown"><a href="/explore-ems.html"><strong>Explore EMS</strong><small>Discover the career and what to expect</small></a><a href="/become-an-emt.html"><strong>Become an EMT</strong><small>Training, certification, and state steps</small></a><a href="/emt-school-finder.html"><strong>EMT School Finder</strong><small>Search for and verify nearby programs</small></a><a href="/emt-program-cost.html"><strong>Program Cost &amp; Financial Help</strong><small>Estimate costs and find ways to pay less</small></a></div></details>
+<details class="nav-group" data-nav-group=""><summary>Prepare</summary><div class="nav-dropdown"><a href="/emt-prep.html"><strong>Free EMT Prep Program</strong><small>Build foundations before class</small></a><a href="/pre-emt-equipment.html"><strong>Pre-EMT Equipment Guide</strong><small>Choose a practical cuff and stethoscope</small></a><a href="/emt-school-success.html"><strong>Succeed in EMT School</strong><small>Study, skills, clinicals, and exams</small></a><a href="/first-100-shifts.html"><strong>First EMT Job</strong><small>Field training and your first 100 shifts</small></a></div></details>
+<details class="nav-group" data-nav-group=""><summary>Practice</summary><div class="nav-dropdown"><a href="#daily-practice"><strong>Today’s 5-Minute Practice</strong><small>Quiz, fact, and quick simulator</small></a><a href="/ems-training-tools.html"><strong>Training Tools</strong><small>Vital-sign and assessment simulators</small></a><a href="/quiz/"><strong>Daily Quiz</strong><small>EMT and paramedic review</small></a></div></details>
+<details class="nav-group" data-nav-group=""><summary>Career</summary><div class="nav-dropdown"><a href="/ems-career-planner.html"><strong>Career Pathway Planner</strong><small>Track credentials, goals, and next steps</small></a><a href="/ems-progress-tracker.html"><strong>Personal Progress Tracker</strong><small>Track calls, skills, and success rates</small></a><a href="/ems-career-growth.html"><strong>Career Paths &amp; Pay</strong><small>Paramedic, fire, flight, nursing, and leadership</small></a><a href="/ems-recertification.html"><strong>Recertification</strong><small>NREMT and state renewal planning</small></a><a href="/ems-wellness.html"><strong>EMS Wellness</strong><small>Sleep, fitness, mental health, and longevity</small></a><a href="/ems-retirement.html"><strong>Retirement Planning</strong><small>Prepare for life after full-time EMS</small></a></div></details>
+<details class="nav-group" data-nav-group=""><summary>Resources</summary><div class="nav-dropdown"><a href="/ems-resources.html"><strong>Trusted Resources</strong><small>Official agencies and reliable references</small></a><a href="/about.html"><strong>About EMSCodeSim</strong><small>Creator experience and editorial standards</small></a><a href="/search.html"><strong>Search the Site</strong><small>Find a guide, simulator, or quiz</small></a><a href="/privacy.html"><strong>Privacy Choices</strong><small>Analytics and local-storage controls</small></a></div></details>
 </div>
-<select class="mobile-menu" id="mobileMenu" aria-label="Navigate EMSCodeSim"><option value="">Menu</option><option value="/">Home</option><optgroup label="Start EMS"><option value="/explore-ems.html">Explore EMS</option><option value="/become-an-emt.html">Become an EMT</option><option value="/emt-school-finder.html">EMT School Finder</option><option value="/emt-program-cost.html">Program Cost</option></optgroup><optgroup label="Prepare"><option value="/emt-prep.html">Free EMT Prep</option><option value="/pre-emt-equipment.html">Pre-EMT Equipment Guide</option><option value="/emt-school-success.html">EMT School Success</option><option value="/first-100-shifts.html">First EMT Job</option></optgroup><optgroup label="Practice"><option value="/#daily-practice">Today’s Practice</option><option value="/ems-training-tools.html">Training Tools</option><option value="/quiz/">Daily Quiz</option></optgroup><optgroup label="Career"><option value="/ems-career-planner.html">Career Pathway Planner</option><option value="/ems-progress-tracker.html">Personal Progress Tracker</option><option value="/ems-career-growth.html">Career Paths</option><option value="/ems-recertification.html">Recertification</option><option value="/ems-wellness.html">Wellness</option><option value="/ems-retirement.html">Retirement</option></optgroup><optgroup label="Resources"><option value="/ems-resources.html">Trusted Resources</option><option value="/about.html">About</option><option value="/search.html">Search</option></optgroup></select>
+<select aria-label="Navigate EMSCodeSim" class="mobile-menu" id="mobileMenu"><option value="">Menu</option><option value="/">Home</option><optgroup label="Start EMS"><option value="/explore-ems.html">Explore EMS</option><option value="/become-an-emt.html">Become an EMT</option><option value="/emt-school-finder.html">EMT School Finder</option><option value="/emt-program-cost.html">Program Cost</option></optgroup><optgroup label="Prepare"><option value="/emt-prep.html">Free EMT Prep</option><option value="/pre-emt-equipment.html">Pre-EMT Equipment Guide</option><option value="/emt-school-success.html">EMT School Success</option><option value="/first-100-shifts.html">First EMT Job</option></optgroup><optgroup label="Practice"><option value="/#daily-practice">Today’s Practice</option><option value="/ems-training-tools.html">Training Tools</option><option value="/quiz/">Daily Quiz</option></optgroup><optgroup label="Career"><option value="/ems-career-planner.html">Career Pathway Planner</option><option value="/ems-progress-tracker.html">Personal Progress Tracker</option><option value="/ems-career-growth.html">Career Paths</option><option value="/ems-recertification.html">Recertification</option><option value="/ems-wellness.html">Wellness</option><option value="/ems-retirement.html">Retirement</option></optgroup><optgroup label="Resources"><option value="/ems-resources.html">Trusted Resources</option><option value="/about.html">About</option><option value="/search.html">Search</option></optgroup></select>
 </nav></header>
-<section class="career-stage-wrap" id="career-stage" aria-labelledby="careerStageHeading"><div class="career-stage-panel" tabindex="0"><div class="stage-intro"><div><h2 id="careerStageHeading">Where are you in your EMS career?</h2><p>Choose your stage first. The entire homepage will adjust to show the best next steps and tools for you.</p></div><span class="stage-badge">Your personalized EMS menu</span></div><div class="stage-slider-row"><button class="stage-arrow" id="stagePrev" aria-label="Previous career stage">‹</button><div class="stage-track"><div class="stage-line"></div><div class="stage-options">
+<section aria-labelledby="mobileCareerHeading" class="mobile-career-picker">
+<div class="mobile-career-card">
+<span class="mobile-stage-label">Personalize your homepage</span>
+<h2 id="mobileCareerHeading">Where are you in your EMS career?</h2>
+<p>Choose your current stage. The homepage will show the most useful guides, practice tools, and next steps for you.</p>
+<label class="mobile-stage-select-label" for="mobileStageSelect">My current stage</label>
+<select class="mobile-stage-select" id="mobileStageSelect">
+<option value="explore">I’m exploring EMS</option>
+<option value="pre">I’m preparing for EMT school</option>
+<option value="student">I’m currently an EMT student</option>
+<option value="new">I’m a new EMT</option>
+<option value="career">I’m an experienced EMT or paramedic</option>
+<option value="senior">I’m a senior EMS professional or leader</option>
+<option value="retire">I’m planning for retirement</option>
+</select>
+<div aria-live="polite" class="mobile-stage-summary">
+<strong id="mobileStageTitle">Exploring EMS</strong>
+<span id="mobileStageCopy">Learn what EMTs and paramedics do and decide whether EMS fits you.</span>
+</div>
+<div class="mobile-stage-actions">
+<a class="mobile-stage-primary" href="/explore-ems.html" id="mobileStagePrimary">Explore EMS</a>
+<a href="/become-an-emt.html" id="mobileStageSecondary">How to Become an EMT</a>
+</div>
+</div>
+</section>
+<section aria-labelledby="careerStageHeading" class="career-stage-wrap" id="career-stage"><div aria-label="EMS career stage selector" class="career-stage-panel" tabindex="0"><div class="stage-intro"><div><h2 id="careerStageHeading">Where are you in your EMS career?</h2><p>Choose your stage first. The entire homepage will adjust to show the best next steps and tools for you.</p></div><span class="stage-badge">Your personalized EMS menu</span></div><div class="stage-slider-row"><button aria-label="Previous career stage" class="stage-arrow" id="stagePrev">‹</button><div class="stage-track"><div class="stage-line"></div><div class="stage-options">
 <button class="stage-button" data-stage="explore"><span class="stage-icon">◇</span><strong>Exploring EMS</strong><small>Discover the possibilities</small></button>
 <button class="stage-button" data-stage="pre"><span class="stage-icon">⌕</span><strong>Pre-EMT Student</strong><small>Find, plan, and prepare</small></button>
 <button class="stage-button" data-stage="student"><span class="stage-icon">▤</span><strong>EMT Student</strong><small>Build class skills</small></button>
@@ -67,18 +172,24 @@
 <button class="stage-button" data-stage="career"><span class="stage-icon">✦</span><strong>Career EMT</strong><small>Advance and specialize</small></button>
 <button class="stage-button" data-stage="senior"><span class="stage-icon">≋</span><strong>Senior EMS Pro</strong><small>Lead and mentor</small></button>
 <button class="stage-button" data-stage="retire"><span class="stage-icon">♡</span><strong>Retirement</strong><small>Plan the next chapter</small></button>
-</div></div><button class="stage-arrow" id="stageNext" aria-label="Next career stage">›</button></div><div class="stage-detail" aria-live="polite"><div><h3 id="stageTitle">Exploring EMS</h3><p id="stageCopy">Learn what EMTs and paramedics do, understand the career, and decide whether EMS fits you.</p></div><div class="stage-actions"><a id="stagePrimary" href="/explore-ems.html">Explore EMS</a><a class="secondary" id="stageSecondary" href="/become-an-emt.html">How to Become an EMT</a></div></div></div></section>
-<section class="hero-home"><div class="hero-home-inner"><div class="hero-copy"><span class="hero-stage-kicker" id="heroKicker">Your EMS starting point</span><h1 id="heroTitle">See whether EMS is <span>the right career for you.</span></h1><p id="heroCopy">Learn what the work is really like, what training requires, and how to take your first informed step.</p><div class="hero-actions"><a class="home-btn primary" id="heroPrimary" href="/explore-ems.html">Explore EMS Careers →</a><a class="home-btn" id="heroSecondary" href="/become-an-emt.html">How to Become an EMT</a><a class="home-btn" id="heroPractice" href="/quiz/emt_quiz.html">Try a Quick EMS Quiz</a></div><p class="stage-summary-line">You can change your career stage at any time using the selector above.</p></div></div></section>
-<main class="home-main" id="main">
-<section class="path-and-practice"><div class="path-box"><div class="path-title-row"><div><span class="personalized-label">Selected for your stage</span><h2 id="pathHeading">Your first steps into EMS</h2><p id="pathIntro">Start with these three resources in order, or choose the one that fits your question today.</p></div><a id="pathMore" href="/become-an-emt.html">View full guide →</a></div><div class="path-cards" id="pathCards">
+</div></div><button aria-label="Next career stage" class="stage-arrow" id="stageNext">›</button></div><div aria-live="polite" class="stage-detail"><div><h3 id="stageTitle">Exploring EMS</h3><p id="stageCopy">Learn what EMTs and paramedics do, understand the career, and decide whether EMS fits you.</p></div><div class="stage-actions"><a href="/explore-ems.html" id="stagePrimary">Explore EMS</a><a class="secondary" href="/become-an-emt.html" id="stageSecondary">How to Become an EMT</a></div></div></div></section>
+<section class="hero-home"><div class="hero-home-inner"><div class="hero-copy"><span class="hero-stage-kicker" id="heroKicker">Your EMS starting point</span><h1 id="heroTitle">See whether EMS is <span>the right career for you.</span></h1><p id="heroCopy">Learn what the work is really like, what training requires, and how to take your first informed step.</p><div class="hero-actions"><a class="home-btn primary" href="/explore-ems.html" id="heroPrimary">Explore EMS Careers →</a><a class="home-btn" href="/become-an-emt.html" id="heroSecondary">How to Become an EMT</a><a class="home-btn" href="/quiz/emt_quiz.html" id="heroPractice">Try a Quick EMS Quiz</a></div><p class="stage-summary-line">Your selected career stage is saved on this device and can be changed at any time.</p></div></div></section>
+<nav aria-label="Popular EMSCodeSim sections" class="mobile-home-shortcuts">
+<a href="/emt-prep.html"><span aria-hidden="true">▤</span><strong>EMT Prep</strong><small>Start the free course</small></a>
+<a href="/ems-training-tools.html"><span aria-hidden="true">✚</span><strong>Simulators</strong><small>Practice EMS skills</small></a>
+<a href="/quiz/"><span aria-hidden="true">?</span><strong>Daily Quiz</strong><small>Test your recall</small></a>
+<a href="/ems-career-planner.html"><span aria-hidden="true">↗</span><strong>Career Plan</strong><small>Build your roadmap</small></a>
+</nav>
+<main class="home-main mobile-scan-layout" id="main">
+<section class="path-and-practice"><div class="path-box"><div class="path-title-row"><div><span class="personalized-label">Selected for your stage</span><h2 id="pathHeading">Your first steps into EMS</h2><p id="pathIntro">Start with these three resources in order, or choose the one that fits your question today.</p></div><a href="/become-an-emt.html" id="pathMore">View full guide →</a></div><div class="path-cards" id="pathCards">
 <a class="path-card" href="/explore-ems.html"><span class="path-num">1</span><span class="path-icon">◇</span><h3>Explore the Career</h3><p>See what EMTs and paramedics actually do and whether EMS fits your goals.</p><span>Start Exploring →</span></a>
 <a class="path-card" href="/become-an-emt.html"><span class="path-num">2</span><span class="path-icon">▤</span><h3>Understand the Process</h3><p>Learn about education, certification, state requirements, and the hiring path.</p><span>See the Steps →</span></a>
 <a class="path-card" href="/emt-school-finder.html"><span class="path-num">3</span><span class="path-icon">⌕</span><h3>Find a Program</h3><p>Search for EMT programs and verify approval before you enroll.</p><span>Find Schools →</span></a>
 </div></div>
 <aside class="practice-box" id="daily-practice"><h2 id="practiceHeading">Try EMS before you enroll</h2><p id="practiceIntro">Use a few free activities to see how EMS learning feels.</p><div class="practice-list" id="practiceList"></div></aside></section>
-<section class="home-section"><div class="section-head"><div><span class="personalized-label">Recommended tools</span><h2 id="toolsHeading">Tools for exploring EMS</h2><p id="toolsIntro">Begin with simple activities that introduce common EMS thinking and skills.</p></div><a id="toolsMore" href="/ems-training-tools.html">View all tools →</a></div><div class="tool-grid" id="toolGrid"></div></section>
-<section class="trust-strip" aria-label="Why use EMSCodeSim"><div class="trust-item"><b>✓</b><div><strong>Always Free</strong><small>Core tools and guidance are available without a subscription.</small></div></div><div class="trust-item"><b>◎</b><div><strong>Education Focused</strong><small>Designed to support—not replace—approved EMS education.</small></div></div><div class="trust-item"><b>♙</b><div><strong>Built from EMS Experience</strong><small>Created around real field, teaching, and student needs.</small></div></div><div class="trust-item"><b>↻</b><div><strong>Career-Long Support</strong><small>Resources from first interest through retirement.</small></div></div></section>
-<section class="resource-callout" style="max-width:1100px;margin:28px auto;padding:22px;border-radius:16px;background:#eef7fb;border:1px solid #b7d8e8"><h2 style="margin-top:0">Offline EMS Reference Pack</h2><p>Keep medications, normal vital references, assessment mnemonics, terminology, and equipment descriptions available without a signal.</p><a href="/offline-ems-reference.html" style="font-weight:800;color:#075d87">Open the Offline Reference Pack →</a></section><section class="home-section"><div class="section-heading"><p class="eyebrow">Career planning</p><h2>Build Your EMS Career Roadmap</h2><p>Save your certifications, expiration dates, classes, experience, and career goal. The planner shows where you are now and what to complete next.</p></div><div class="feature-grid"><article class="feature-card"><span class="feature-icon">↗</span><h3>Career Pathway Planner</h3><p>Create a visual EMT-to-paramedic, fire, critical-care, instructor, or leadership pathway with editable milestones.</p><a class="text-link" href="/ems-career-planner.html">Build my roadmap →</a></article><article class="feature-card"><span class="feature-icon">✓</span><h3>Call & Skill Tracker</h3><p>Track call exposure, IV success, common skills, and custom professional-development goals.</p><a class="text-link" href="/ems-progress-tracker.html">Track field progress →</a></article></div></section></main>
+<section class="home-section"><div class="section-head"><div><span class="personalized-label">Recommended tools</span><h2 id="toolsHeading">Tools for exploring EMS</h2><p id="toolsIntro">Begin with simple activities that introduce common EMS thinking and skills.</p></div><a href="/ems-training-tools.html" id="toolsMore">View all tools →</a></div><div class="tool-grid" id="toolGrid"></div></section>
+<section aria-label="Why use EMSCodeSim" class="trust-strip"><div class="trust-item"><b>✓</b><div><strong>Always Free</strong><small>Core tools and guidance are available without a subscription.</small></div></div><div class="trust-item"><b>◎</b><div><strong>Education Focused</strong><small>Designed to support—not replace—approved EMS education.</small></div></div><div class="trust-item"><b>♙</b><div><strong>Built from EMS Experience</strong><small>Created around real field, teaching, and student needs.</small></div></div><div class="trust-item"><b>↻</b><div><strong>Career-Long Support</strong><small>Resources from first interest through retirement.</small></div></div></section>
+<section class="resource-callout" style="max-width:1100px;margin:28px auto;padding:22px;border-radius:16px;background:#eef7fb;border:1px solid #b7d8e8"><h2 style="margin-top:0">Offline EMS Reference Pack</h2><p>Keep medications, normal vital references, assessment mnemonics, terminology, and equipment descriptions available without a signal.</p><a href="/offline-ems-reference.html" style="font-weight:800;color:#075d87">Open the Offline Reference Pack →</a></section><section class="home-section"><div class="section-heading"><p class="eyebrow">Career planning</p><h2>Build Your EMS Career Roadmap</h2><p>Save your certifications, expiration dates, classes, experience, and career goal. The planner shows where you are now and what to complete next.</p></div><div class="feature-grid"><article class="feature-card"><span class="feature-icon">↗</span><h3>Career Pathway Planner</h3><p>Create a visual EMT-to-paramedic, fire, critical-care, instructor, or leadership pathway with editable milestones.</p><a class="text-link" href="/ems-career-planner.html">Build my roadmap →</a></article><article class="feature-card"><span class="feature-icon">✓</span><h3>Call &amp; Skill Tracker</h3><p>Track call exposure, IV success, common skills, and custom professional-development goals.</p><a class="text-link" href="/ems-progress-tracker.html">Track field progress →</a></article></div></section></main>
 <footer class="site-footer"><div class="footer-inner"><div><strong>EMSCodeSim</strong><p>Free EMS career guidance and training tools.</p></div><div><a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="/search.html">Search</a></div></div></footer>
 <script>
 (function(){
@@ -91,7 +202,7 @@
     {id:'senior',label:'Senior EMS Professional',nav:'Career',description:'Protect career longevity, mentor others, strengthen wellness, and prepare for your next leadership chapter.',hero:['Lead, teach, and protect longevity','Turn your experience into','lasting impact.','Use your field experience to mentor others, improve systems, teach well, protect your health, and plan the next stage of your EMS career.'],buttons:[['Career Growth & Leadership','/ems-career-growth.html'],['EMS Wellness','/ems-wellness.html'],['Start Retirement Planning','/ems-retirement.html']],path:['Your senior-career priorities','Balance leadership, mentorship, wellness, and future planning.','/ems-career-growth.html',[['♙','Lead and Mentor','Develop future instructors, preceptors, and team leaders.','Career Options','/ems-career-growth.html'],['♡','Protect Your Health','Address sleep, fitness, stress, and career longevity.','Wellness Guide','/ems-wellness.html'],['≋','Plan the Transition','Prepare financially and professionally for reduced-duty or retirement work.','Plan Ahead','/ems-retirement.html']]],practice:['Today’s senior-EMS practice','Stay clinically connected and find something useful to teach.',[['?','Mixed Quiz','Use a quick teaching warm-up','Start','/quiz/'],['i','EMS Fact','Share one discussion topic','Learn','/quiz/ems_fact.html'],['✚','Scenario Review','Use a case for mentoring','Practice','/med_sim.html'],['→','Wellness Check','Review career-longevity resources','Open','/ems-wellness.html']]],tools:['Tools for leaders and mentors','Use these resources for refreshers, discussion, and teaching support.',[['✚','Medical Scenarios','/med_sim.html'],['?','Daily Quiz','/quiz/'],['▤','Flashcard Topics','/emt-flashcards.html'],['↻','Recertification','/ems-recertification.html'],['♡','EMS Wellness','/ems-wellness.html'],['✦','Career Paths','/ems-career-growth.html']]]},
     {id:'retire',label:'Retirement',nav:'Career',description:'Plan benefits, savings, transition work, teaching, and a meaningful life after full-time EMS.',hero:['Your next chapter after full-time EMS','Plan a retirement that keeps','purpose and flexibility.','Prepare your finances, benefits, identity, health, and optional teaching or part-time work before the final shift arrives.'],buttons:[['Retirement Planning Guide','/ems-retirement.html'],['Explore Teaching & Other Roles','/ems-career-growth.html'],['EMS Wellness','/ems-wellness.html']],path:['Your EMS retirement plan','Build a transition that addresses money, health, identity, and meaningful work.','/ems-retirement.html',[['$','Review the Financial Picture','Understand benefits, savings, insurance, and income gaps.','Start Planning','/ems-retirement.html'],['♡','Protect Health and Identity','Plan routines, relationships, wellness, and purpose beyond shift work.','Wellness Guide','/ems-wellness.html'],['♙','Choose Your Continued Role','Consider teaching, mentoring, testing, part-time EMS, or a new field.','Explore Options','/ems-career-growth.html']]],practice:['Stay connected on your terms','Use short activities for teaching, mentoring, or personal recall.',[['?','Daily Quiz','Keep knowledge fresh','Start','/quiz/'],['i','EMS Fact','Find a teaching conversation starter','Learn','/quiz/ems_fact.html'],['✚','Scenario Review','Use a case with students or peers','Open','/med_sim.html'],['→','Retirement Guide','Continue your transition plan','Open','/ems-retirement.html']]],tools:['Resources for retirement and transition','Focus on planning, mentoring, and maintaining the level of EMS involvement you want.',[['≋','Retirement Guide','/ems-retirement.html'],['♡','EMS Wellness','/ems-wellness.html'],['✦','Career Options','/ems-career-growth.html'],['?','Daily Quiz','/quiz/'],['✚','Scenarios','/med_sim.html'],['i','Trusted Resources','/ems-resources.html']]]}
   ];
-  const $=id=>document.getElementById(id), buttons=[...document.querySelectorAll('[data-stage]')], panel=document.querySelector('.career-stage-panel');
+  const $=id=>document.getElementById(id), buttons=[...document.querySelectorAll('[data-stage]')], panel=document.querySelector('.career-stage-panel'), mobileSelect=$('mobileStageSelect');
   let stored='';try{stored=localStorage.getItem('emscodesim-career-stage')||''}catch(e){}
   let index=Math.max(0,stages.findIndex(s=>s.id===stored));
   const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -99,6 +210,11 @@
     buttons.forEach((b,i)=>{b.classList.toggle('active',i===index);b.setAttribute('aria-pressed',i===index?'true':'false')});
     $('stageTitle').textContent=s.label;$('stageCopy').textContent=s.description;
     $('stagePrimary').textContent=s.buttons[0][0];$('stagePrimary').href=s.buttons[0][1];$('stageSecondary').textContent=s.buttons[1][0];$('stageSecondary').href=s.buttons[1][1];
+    if(mobileSelect)mobileSelect.value=s.id;
+    if($('mobileStageTitle'))$('mobileStageTitle').textContent=s.label;
+    if($('mobileStageCopy'))$('mobileStageCopy').textContent=s.description;
+    if($('mobileStagePrimary')){$('mobileStagePrimary').textContent=s.buttons[0][0];$('mobileStagePrimary').href=s.buttons[0][1]}
+    if($('mobileStageSecondary')){$('mobileStageSecondary').textContent=s.buttons[1][0];$('mobileStageSecondary').href=s.buttons[1][1]}
     $('heroKicker').textContent=s.hero[0];$('heroTitle').innerHTML=esc(s.hero[1])+' <span>'+esc(s.hero[2])+'</span>';$('heroCopy').textContent=s.hero[3];
     [['heroPrimary',0],['heroSecondary',1],['heroPractice',2]].forEach(([id,i])=>{const el=$(id);el.textContent=s.buttons[i][0]+(i===0?' →':'');el.href=s.buttons[i][1]});
     $('pathHeading').textContent=s.path[0];$('pathIntro').textContent=s.path[1];$('pathMore').href=s.path[2];
@@ -110,7 +226,7 @@
     document.querySelectorAll('.nav-group').forEach(g=>{const q=g.querySelector('summary');g.classList.toggle('career-stage-current',!!q&&q.textContent.trim()===s.nav)});
     if(focus&&buttons[index])buttons[index].focus({preventScroll:true});if(buttons[index]?.scrollIntoView)buttons[index].scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
   }
-  buttons.forEach((b,i)=>b.addEventListener('click',()=>render(i,false)));$('stagePrev')?.addEventListener('click',()=>render(index-1,true));$('stageNext')?.addEventListener('click',()=>render(index+1,true));panel?.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){e.preventDefault();render(index+1,true)}if(e.key==='ArrowLeft'){e.preventDefault();render(index-1,true)}});
+  buttons.forEach((b,i)=>b.addEventListener('click',()=>render(i,false)));mobileSelect?.addEventListener('change',()=>{const next=stages.findIndex(stage=>stage.id===mobileSelect.value);if(next>=0)render(next,false)});$('stagePrev')?.addEventListener('click',()=>render(index-1,true));$('stageNext')?.addEventListener('click',()=>render(index+1,true));panel?.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){e.preventDefault();render(index+1,true)}if(e.key==='ArrowLeft'){e.preventDefault();render(index-1,true)}});
   $('mobileMenu')?.addEventListener('change',e=>{if(e.target.value)location.href=e.target.value});render(index,false);
 })();
 </script>
