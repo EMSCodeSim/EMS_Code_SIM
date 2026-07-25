@@ -43,7 +43,8 @@ document.querySelectorAll('.module-quiz').forEach((form)=>{
       if(explanation)explanation.hidden=false;
     });
     if(answered<questions.length){result.textContent='Answer all '+questions.length+' questions before scoring.';return;}
-    const message=correct===questions.length?'Excellent foundation.':correct>=4?'Strong start—review the explanation for the missed item.':'Review the lesson sections connected to the missed questions, then try again.';
+    const ratio=questions.length?correct/questions.length:0;
+    const message=correct===questions.length?'Excellent foundation.':ratio>=0.8?'Strong start—review the explanation for the missed item.':'Review the lesson sections connected to the missed questions, then try again.';
     result.textContent=correct+' of '+questions.length+' correct. '+message;
     result.focus?.();
   });
