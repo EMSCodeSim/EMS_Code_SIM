@@ -1,71 +1,71 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://emscodesim.com/</loc><lastmod>2026-07-22</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://emscodesim.com/explore-ems.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
-  <url><loc>https://emscodesim.com/become-an-emt.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
-  <url><loc>https://emscodesim.com/emt-school-finder.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
-  <url><loc>https://emscodesim.com/emt-program-cost.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
-  <url><loc>https://emscodesim.com/ems-training-tools.html</loc><lastmod>2026-07-22</lastmod><changefreq>weekly</changefreq><priority>0.95</priority></url>
-  <url><loc>https://emscodesim.com/emt-school-success.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://emscodesim.com/first-100-shifts.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://emscodesim.com/ems-career-growth.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://emscodesim.com/ems-recertification.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://emscodesim.com/ems-wellness.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
-  <url><loc>https://emscodesim.com/ems-retirement.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/ems-resources.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/vitals/bp.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/vitals/pulse.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/vitals/pulse-ox.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/vitals/bgl.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/vitals/skin.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/vitals/breath-sound-simulator.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/vitals/capno.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/vitals/gcs.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/vitals/stroke.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/vitals/pupil.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/vitals/aao.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/vitals/nines.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/APGAR/</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/vitals/meds.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/med_sim.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/quiz/</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.95</priority></url>
-  <url><loc>https://emscodesim.com/quiz/emt_quiz.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
-  <url><loc>https://emscodesim.com/quiz/paramedic_quiz.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
-  <url><loc>https://emscodesim.com/quiz/ems_fact.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/quiz/home_med.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/quiz/medword.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/quiz/daily_beat.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/quiz/daily_sim.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.75</priority></url>
-  <url><loc>https://emscodesim.com/about.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://emscodesim.com/emt-flashcards.html</loc><lastmod>2026-07-23</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://emscodesim.com/pre-emt-equipment.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
-  <url><loc>https://emscodesim.com/ems-progress-tracker.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://emscodesim.com/offline-ems-reference.html</loc><lastmod>2026-07-23</lastmod></url>
-  <url><loc>https://emscodesim.com/new-emt-questions.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://emscodesim.com/new-emt-first-shift.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-ride-along-guide.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-job-interview-guide.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/ift-vs-911-first-emt-job.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/new-emt-skills-to-master.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/new-emt-mistakes-confidence.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/pcr-narrative-coach.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://emscodesim.com/ems-career-planner.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep/module-1-understanding-ems.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep/module-2-emt-school-expectations.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep/module-3-medical-terminology.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep/module-4-anatomy-physiology.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep/module-5-vital-signs.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep/module-6-patient-assessment.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep/module-7-abc-foundations.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep/module-8-equipment-orientation.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep/module-9-communication-professionalism.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep/module-10-study-testing.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep/module-11-physical-emotional-readiness.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep/module-12-enrollment-costs.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep/practice-center.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep/resource-library.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/emt-prep/final-readiness-assessment.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://emscodesim.com/vitals/respiratory-rate.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://emscodesim.com/vitals/temperature.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-</urlset>
+<url><loc>https://emscodesim.com/</loc><lastmod>2026-07-22</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+<url><loc>https://emscodesim.com/explore-ems.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
+<url><loc>https://emscodesim.com/become-an-emt.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
+<url><loc>https://emscodesim.com/emt-school-finder.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
+<url><loc>https://emscodesim.com/emt-program-cost.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
+<url><loc>https://emscodesim.com/emt-prep.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
+<url><loc>https://emscodesim.com/ems-training-tools.html</loc><lastmod>2026-07-22</lastmod><changefreq>weekly</changefreq><priority>0.95</priority></url>
+<url><loc>https://emscodesim.com/emt-school-success.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+<url><loc>https://emscodesim.com/first-100-shifts.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+<url><loc>https://emscodesim.com/ems-career-growth.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+<url><loc>https://emscodesim.com/ems-recertification.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+<url><loc>https://emscodesim.com/ems-wellness.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
+<url><loc>https://emscodesim.com/ems-retirement.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/ems-resources.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/vitals/bp.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/vitals/pulse.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/vitals/pulse-ox.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/vitals/bgl.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/vitals/skin.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/vitals/breath-sound-simulator.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/vitals/capno.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/vitals/gcs.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/vitals/stroke.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/vitals/pupil.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/vitals/aao.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/vitals/nines.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/APGAR/</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/vitals/meds.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/med_sim.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/quiz/</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.95</priority></url>
+<url><loc>https://emscodesim.com/quiz/emt_quiz.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+<url><loc>https://emscodesim.com/quiz/paramedic_quiz.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+<url><loc>https://emscodesim.com/quiz/ems_fact.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/quiz/home_med.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/quiz/medword.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/quiz/daily_beat.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/quiz/daily_sim.html</loc><lastmod>2026-07-23</lastmod><changefreq>daily</changefreq><priority>0.75</priority></url>
+<url><loc>https://emscodesim.com/about.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://emscodesim.com/emt-flashcards.html</loc><lastmod>2026-07-23</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+<url><loc>https://emscodesim.com/pre-emt-equipment.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
+<url><loc>https://emscodesim.com/ems-progress-tracker.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+<url><loc>https://emscodesim.com/offline-ems-reference.html</loc><lastmod>2026-07-23</lastmod></url>
+<url><loc>https://emscodesim.com/new-emt-questions.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+<url><loc>https://emscodesim.com/new-emt-first-shift.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-ride-along-guide.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-job-interview-guide.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/ift-vs-911-first-emt-job.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/new-emt-skills-to-master.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/new-emt-mistakes-confidence.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/pcr-narrative-coach.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+<url><loc>https://emscodesim.com/ems-career-planner.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
+<url><loc>https://emscodesim.com/emt-prep/module-1-understanding-ems.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-prep/module-2-emt-school-expectations.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-prep/module-3-medical-terminology.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-prep/module-4-anatomy-physiology.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-prep/module-5-vital-signs.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-prep/module-6-patient-assessment.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-prep/module-7-abc-foundations.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-prep/module-8-equipment-orientation.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-prep/module-9-communication-professionalism.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-prep/module-10-study-testing.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-prep/module-11-physical-emotional-readiness.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-prep/module-12-enrollment-costs.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-prep/practice-center.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-prep/resource-library.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/emt-prep/final-readiness-assessment.html</loc><lastmod>2026-07-24</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://emscodesim.com/vitals/respiratory-rate.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://emscodesim.com/vitals/temperature.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://emscodesim.com/vitals/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url><url><loc>https://emscodesim.com/vitals/avpu.html</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url><url><loc>https://emscodesim.com/vitals/full-vitals-set.html</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url></urlset>
