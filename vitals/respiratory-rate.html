@@ -1,35 +1,36 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <title>Respiratory Rate Simulator | EMSCodeSim</title>
-<link rel="canonical" href="https://emscodesim.com/vitals/respiratory-rate.html">
-<meta name="description" content="Practice counting respiratory rate and describing breathing depth and effort with a randomized EMT respiratory assessment simulator.">
-<meta name="theme-color" content="#087b8f">
+<link href="https://emscodesim.com/vitals/respiratory-rate.html" rel="canonical"/>
+<meta content="Practice counting respiratory rate and describing breathing depth and effort with a randomized EMT respiratory assessment simulator." name="description"/>
+<meta content="#087b8f" name="theme-color"/>
 <style>
 :root{--brand:#087b8f;--brand-dark:#075d6c;--bg:#eef8fb;--card:#fff;--text:#102a36;--muted:#526b75;--line:#cce2e8;--ok:#176a43;--warn:#875b0d}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}header{position:sticky;top:0;z-index:5;background:var(--brand);color:#fff;padding:10px 14px;box-shadow:0 2px 10px #0002}.topbar{max-width:760px;margin:auto;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}.topbar h1{font-size:1.08rem;text-align:center;margin:0}.topbar a{color:#fff;text-decoration:none;font-weight:800;padding:9px 10px;border-radius:10px}.topbar a:hover{background:#ffffff1c}.wrap{max-width:760px;margin:18px auto;padding:0 14px 28px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 10px 28px #082f3d14}.lead{text-align:center;margin-top:0;color:var(--muted)}.patient{position:relative;height:250px;border-radius:16px;background:linear-gradient(180deg,#dff2f7,#f8fcfd);overflow:hidden;border:1px solid var(--line);display:grid;place-items:center}.head{position:absolute;top:28px;width:70px;height:70px;border-radius:50%;background:#e4b99a}.torso{position:absolute;top:92px;width:210px;height:135px;border-radius:46% 46% 22% 22%;background:#7eb6c4;transform-origin:center bottom;transition:transform .32s ease}.chest-line{position:absolute;top:154px;width:150px;height:3px;border-radius:99px;background:#fff8}.effort-cue{position:absolute;bottom:10px;left:10px;right:10px;text-align:center;font-weight:800;color:var(--brand-dark);min-height:1.3em}.timer{text-align:center;margin:14px 0 4px;font-variant-numeric:tabular-nums}.timer strong{font-size:2rem;display:block}.controls{display:grid;gap:11px}.btn{border:0;border-radius:12px;padding:13px 16px;background:var(--brand);color:#fff;font:inherit;font-weight:850;cursor:pointer}.btn.secondary{background:#fff;color:var(--brand-dark);border:2px solid var(--brand)}.response-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.field{display:grid;gap:6px;font-weight:800}.field input,.field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;background:#fff;font:inherit}.result{min-height:58px;margin-top:12px;padding:12px;border-radius:11px;background:#f4fafb;border:1px solid var(--line);font-weight:750}.result.ok{background:#eefaf4;border-color:#70b591;color:var(--ok)}.result.warn{background:#fff8e9;border-color:#d8b56e;color:var(--warn)}.tips{margin-top:16px;color:var(--muted);font-size:.93rem}.tips strong{color:var(--text)}@media(max-width:620px){.response-grid{grid-template-columns:1fr}.patient{height:220px}.torso{width:180px}.topbar{grid-template-columns:auto 1fr}.topbar span{display:none}}
 </style>
-<link rel="stylesheet" href="/styles/responsive.css">
-<link rel="stylesheet" href="/styles/site-enhancements.css">
-<script defer src="/privacy-controls.js"></script>
-</head>
-<body>
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<script defer="" src="/privacy-controls.js"></script>
+<link href="/vitals/app-vitals-learning.css" rel="stylesheet"/></head>
+<body data-vital-topic="respirations">
 <header><div class="topbar"><a href="/emt-prep/module-5-vital-signs.html">← Lesson</a><h1>Respiratory Rate Simulator</h1><span>EMT Prep</span></div></header>
 <main class="wrap"><section class="card">
 <p class="lead">Watch the patient for 15 seconds. Count each chest rise, estimate breaths per minute, and describe depth and effort.</p>
-<div class="patient" aria-label="Animated patient chest"><div class="head"></div><div class="torso" id="torso"><div class="chest-line"></div></div><div class="effort-cue" id="effortCue"></div></div>
+<div aria-label="Animated patient chest" class="patient"><div class="head"></div><div class="torso" id="torso"><div class="chest-line"></div></div><div class="effort-cue" id="effortCue"></div></div>
 <div class="timer"><strong id="timeLeft">15</strong><span>seconds remaining</span></div>
 <div class="controls">
 <button class="btn" id="startBtn" type="button">Start 15-second observation</button>
 <div class="response-grid">
-<label class="field">Estimated rate (breaths/min)<input id="rateGuess" type="number" inputmode="numeric" min="0" max="80" placeholder="Example: 20"></label>
+<label class="field">Estimated rate (breaths/min)<input id="rateGuess" inputmode="numeric" max="80" min="0" placeholder="Example: 20" type="number"/></label>
 <label class="field">Depth<select id="depthGuess"><option value="">Choose</option><option value="shallow">Shallow</option><option value="normal">Normal</option><option value="deep">Deep</option></select></label>
 <label class="field">Effort<select id="effortGuess"><option value="">Choose</option><option value="unlabored">Unlabored</option><option value="labored">Labored</option></select></label>
 </div>
-<button class="btn secondary" id="checkBtn" type="button" disabled>Check assessment</button>
-<div class="result" id="result" role="status" aria-live="polite">Start an observation before entering your findings.</div>
+<button class="btn secondary" disabled="" id="checkBtn" type="button">Check assessment</button>
+<div aria-live="polite" class="result" id="result" role="status">Start an observation before entering your findings.</div>
 </div>
 <div class="tips"><p><strong>Practice point:</strong> Respiratory assessment includes rate, rhythm, depth, effort, chest movement, speech, and associated sounds. Do not announce that you are counting respirations when observing a real patient.</p><p>For irregular breathing, count longer and follow your instructor’s method. This simulator is for education only.</p></div>
 </section></main>
@@ -41,4 +42,4 @@ start.addEventListener('click',()=>{stop();current={rate:choose(rates),depth:cho
 check.addEventListener('click',()=>{if(!current)return;const guess=Number(rateGuess.value);if(!guess||!depthGuess.value||!effortGuess.value){result.className='result warn';result.textContent='Enter a rate, depth, and effort before checking.';return;}const rateOK=Math.abs(guess-current.rate)<=2,depthOK=depthGuess.value===current.depth,effortOK=effortGuess.value===current.effort,score=[rateOK,depthOK,effortOK].filter(Boolean).length;result.className='result '+(score===3?'ok':'warn');result.innerHTML=`${score}/3 correct. Actual finding: <strong>${current.rate}/min, ${current.depth}, ${current.effort}</strong>. ${rateOK?'Rate was close.':'Recount chest rises and multiply the 15-second count by four.'}`;});
 })();
 </script>
-</body></html>
+<script defer="True" src="/vitals/app-vitals-learning.js"></script></body></html>

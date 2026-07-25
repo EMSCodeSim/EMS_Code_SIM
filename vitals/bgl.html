@@ -69,8 +69,8 @@
 <script defer="" src="/privacy-controls.js"></script>
 <script defer="" src="/scripts/engagement-loop.js"></script>
 <meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Blood Glucose Meter Simulator | EMSCodeSim" property="og:title"/><meta content="Practice EMS blood glucose assessment workflow with interactive glucometer readings and patient assessment cues." property="og:description"/><meta content="https://emscodesim.com/vitals/bgl.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
-</head>
-<body>
+<link href="/vitals/app-vitals-learning.css" rel="stylesheet"/></head>
+<body data-vital-topic="bgl">
 <header><h1>Blood Glucose Simulator</h1></header>
 <main>
 <section class="card">
@@ -140,25 +140,7 @@
 </main>
 <!-- Modal -->
 <div aria-modal="true" class="modal" id="modal" role="dialog">
-<div class="modal-card">
-<button class="close" id="closeModal">Close</button>
-<h3>What the Reading Means</h3>
-<h4>Hypoglycemia</h4>
-<ul class="list">
-<li><strong>&lt; 70 mg/dL</strong>: treat as hypoglycemia on the exam; assess and manage per protocols. <span class="note">(teaching threshold)</span></li>
-<li><strong>≤ 60 mg/dL</strong>: many EMS protocols use this as a treatment trigger (oral glucose if able; D10/D50/Glucagon per scope).</li>
-<li><strong>&lt; 45 mg/dL</strong>: high risk for severe neuroglycopenia; prompt dextrose indicated.</li>
-</ul>
-<h4>Normal (field reading)</h4>
-<ul class="list">
-<li>Common teaching window: <strong>~80–140 mg/dL</strong> (non-fasting field checks vary).</li>
-</ul>
-<h4>Hyperglycemia</h4>
-<ul class="list">
-<li><strong>&gt; 180 mg/dL</strong>: hyperglycemia flag. Assess for infection/illness, dehydration, DKA/HHS risk with very high readings.</li>
-</ul>
-<p class="note">These are NREMT-prep friendly ranges; always follow your local protocol specifics during patient care.</p>
-</div>
+<div class="modal-card"><button class="close" id="closeModal">Close</button><h3>What the Reading Means</h3><p>Use the BGL as one part of the patient assessment. Compare it with mental status, symptoms, skin signs, history, medications, and ability to swallow.</p><h4>Low</h4><ul class="list"><li><strong>&lt; 70 mg/dL</strong>: May fit confusion, weakness, diaphoresis, shakiness, combativeness, seizure, or unconsciousness. Follow local protocol.</li></ul><h4>Reference band used by the app</h4><ul class="list"><li><strong>70–180 mg/dL</strong>: A value in this band may not explain an altered patient. Continue evaluating stroke, overdose, hypoxia, infection, trauma, seizure, and other causes.</li></ul><h4>High</h4><ul class="list"><li><strong>181–350 mg/dL</strong>: Assess symptoms, hydration, respiratory pattern, history, and the full patient presentation.</li></ul><h4>Critical / concerning</h4><ul class="list"><li><strong>&gt; 350 mg/dL</strong>: May be associated with significant dehydration or diabetic emergency. Provide supportive care and transport per protocol.</li></ul><p class="note">Do not give anything by mouth when the patient cannot protect the airway or swallow safely. If a reading is an error or does not match the patient, clean and warm the finger as appropriate, obtain an adequate sample, and repeat according to training and device instructions.</p><p class="note">Educational practice only. Follow approved course instruction, local protocols, medical direction, and scope of practice.</p></div>
 </div>
 <script>
 (function(){
@@ -340,5 +322,5 @@
   goto(S.OFF);
 })();
 </script>
-</body>
+<script defer="True" src="/vitals/app-vitals-learning.js"></script></body>
 </html>
