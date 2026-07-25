@@ -33,3 +33,9 @@
 /* Simulator links placed beside each vital-sign explanation */
 .lesson-tool-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}.lesson-tool-card{display:grid;gap:5px;padding:14px;border:1px solid #9bc9dc;border-radius:12px;background:#f3fbff;text-decoration:none;color:var(--text);transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}.lesson-tool-card:hover{transform:translateY(-1px);border-color:#0e6f9f;box-shadow:0 8px 20px rgba(14,111,159,.12)}.lesson-tool-card>span{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:var(--blue-dark)}.lesson-tool-card>strong{font-size:1rem}.lesson-tool-card>small{color:var(--muted);line-height:1.45}.lesson-tool-card>b{color:#075d87;font-size:.9rem;margin-top:2px}
 @media(max-width:680px){.lesson-tool-links{grid-template-columns:1fr}}
+
+/* App-synced vital-sign reference panels */
+.app-content-sync{margin:14px 0;padding:14px 16px;border:1px solid #b9d9e7;border-left:5px solid #0878a8;border-radius:14px;background:#edf7fc;color:#17394a}
+.app-content-sync strong{display:block;margin-bottom:7px;color:#075d87}
+.app-content-sync ul{margin:0;padding-left:20px}
+.app-content-sync li+li{margin-top:6px}
