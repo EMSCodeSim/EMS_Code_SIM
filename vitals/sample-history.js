@@ -27,7 +27,22 @@
     if(priority===state.current.priority){score++;feedback.push('Correctly identified the most important SAMPLE item.');}else feedback.push('Reconsider which answer most directly changes risk, treatment, or transport priority.');
     if(action===state.current.action){score++;feedback.push('Selected the best immediate EMT action.');}else feedback.push('Use the history to guide the next assessment or treatment while continuing ABC reassessment.');
     const terms=['allerg','reaction','medication','takes','history','intake','ate','event','began','denies','reports','prior','last','sAMPLE'.toLowerCase()];const hits=terms.filter(t=>pcr.toLowerCase().includes(t)).length;if(pcr.length>=90&&hits>=5){score++;feedback.push('Documentation includes useful pertinent positives and negatives.');}else feedback.push('Document the relevant SAMPLE answers, allergy reaction, medication details, timing, events, and important negatives.');
-    $('scoreText').textContent=`Score: ${score} of 4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}
+    $('scoreText').textContent=`Score: ${score} of 4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;
+    window.EMSCodeSimAssessmentIntegration?.saveAssessment({
+      assessment: 'sample_history',
+      label: 'Sample History',
+      scenarioTitle: state.current.title || '',
+      finding: state.current.finding || '',
+      details: state.current.detail || state.current.description || '',
+      normality,
+      expectedNormality: state.current.normality,
+      interpretation: typeof priority !== 'undefined' ? priority : '',
+      action: typeof action !== 'undefined' ? action : '',
+      documentation: pcr,
+      score,
+      maxScore: 4
+    });
+$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}
   });
   load();updateProgress();newCase();
 })();

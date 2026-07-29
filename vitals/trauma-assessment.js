@@ -27,7 +27,22 @@
     if(problem===state.current.problem){score++;feedback.push('Correctly identified the clinical importance of the trauma finding.');}else feedback.push('Reconsider whether this is minor, hemorrhagic, chest-related, internal, or neurovascular.');
     if(action===state.current.action){score++;feedback.push('Selected the best immediate EMT priority.');}else feedback.push('Prioritize hemorrhage, airway/breathing, shock, and neurovascular threats before minor findings.');
     const terms=['left','right','bleeding','tender','deform','pulse','motor','sensation','pms','chest','abdomen','reassess','transport','controlled','cm'];const hits=terms.filter(t=>pcr.toLowerCase().includes(t)).length;if(pcr.length>=65&&hits>=3){score++;feedback.push('Documentation is objective and sufficiently detailed.');}else feedback.push('Include location and side, objective appearance, tenderness or instability, bleeding, distal PMS, intervention, and reassessment.');
-    $('scoreText').textContent=`Score: ${score} of 4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}
+    $('scoreText').textContent=`Score: ${score} of 4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;
+    window.EMSCodeSimAssessmentIntegration?.saveAssessment({
+      assessment: 'trauma',
+      label: 'Trauma Assessment',
+      scenarioTitle: state.current.title || '',
+      finding: state.current.finding || '',
+      details: state.current.detail || state.current.description || '',
+      normality,
+      expectedNormality: state.current.normality,
+      interpretation: typeof problem !== 'undefined' ? problem : '',
+      action: typeof action !== 'undefined' ? action : '',
+      documentation: pcr,
+      score,
+      maxScore: 4
+    });
+$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}
   });
   load();updateProgress();newCase();
 })();

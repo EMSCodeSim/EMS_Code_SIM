@@ -26,7 +26,22 @@
     if(problem===state.current.problem){score++;feedback.push('Correctly judged the breathing pattern and ventilation status.');}else feedback.push('Reconsider rate, depth, effort, chest rise, speech, mental status, and air movement together.');
     if(action===state.current.action){score++;feedback.push('Selected the best immediate EMT response for this patient.');}else feedback.push('Choose the action that addresses ventilation adequacy and the most immediate threat.');
     const terms=['respirations','regular','irregular','shallow','deep','labored','unlabored','chest rise','accessory','speech','spo2','oxygen','bvm','reassess'];const hits=terms.filter(t=>pcr.toLowerCase().includes(t)).length;if(pcr.length>=60&&hits>=3){score++;feedback.push('Documentation is objective and sufficiently detailed.');}else feedback.push('Document rate, rhythm, depth, effort, chest movement, speech, intervention, and reassessment.');
-    $('scoreText').textContent=`Score: ${score} of 4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}
+    $('scoreText').textContent=`Score: ${score} of 4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;
+    window.EMSCodeSimAssessmentIntegration?.saveAssessment({
+      assessment: 'breathing',
+      label: 'Breathing Assessment',
+      scenarioTitle: state.current.title || '',
+      finding: state.current.finding || '',
+      details: state.current.detail || state.current.description || '',
+      normality,
+      expectedNormality: state.current.normality,
+      interpretation: typeof problem !== 'undefined' ? problem : '',
+      action: typeof action !== 'undefined' ? action : '',
+      documentation: pcr,
+      score,
+      maxScore: 4
+    });
+$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}
   });
   load();updateProgress();newCase();
 })();

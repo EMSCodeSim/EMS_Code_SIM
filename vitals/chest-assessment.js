@@ -27,6 +27,21 @@ if(normality===state.current.normality){score++;feedback.push('Correctly classif
 if(priority===state.current.priority){score++;feedback.push('Identified the most important chest finding.');}else feedback.push('Reconsider visible injury, symmetry, air movement, bleeding, instability, and respiratory effort.');
 if(action===state.current.action){score++;feedback.push('Selected the best immediate EMT priority.');}else feedback.push('Choose the action that addresses the most immediate breathing or bleeding threat while preparing transport.');
 const terms=['chest','rise','right','left','bilateral','breath','sound','tender','wound','bleed','crepitus','respir','reassess','transport'];const hits=terms.filter(t=>pcr.toLowerCase().includes(t)).length;if(pcr.length>=100&&hits>=6){score++;feedback.push('Documentation includes useful objective chest findings and reassessment language.');}else feedback.push('Document chest rise, location and type of injury, palpation findings, bilateral air movement, respiratory status, treatment, and reassessment.');
-$('scoreText').textContent=`${score}/4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}});
+$('scoreText').textContent=`${score}/4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;
+    window.EMSCodeSimAssessmentIntegration?.saveAssessment({
+      assessment: 'chest',
+      label: 'Chest Assessment',
+      scenarioTitle: state.current.title || '',
+      finding: state.current.finding || '',
+      details: state.current.detail || state.current.description || '',
+      normality,
+      expectedNormality: state.current.normality,
+      interpretation: typeof priority !== 'undefined' ? priority : '',
+      action: typeof action !== 'undefined' ? action : '',
+      documentation: pcr,
+      score,
+      maxScore: 4
+    });
+$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}});
 load();updateProgress();newCase();
 })();

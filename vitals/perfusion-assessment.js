@@ -26,6 +26,21 @@ if(normality===state.current.normality){score++;feedback.push('Correctly classif
 if(priority===state.current.priority){score++;feedback.push('Correctly identified the dominant perfusion pattern.');}else feedback.push('Combine pulse quality, skin, capillary refill, mental status, blood pressure, bleeding, and trend rather than using one finding alone.');
 if(action===state.current.action){score++;feedback.push('Selected the best immediate EMT priority.');}else feedback.push('Address life-threatening bleeding first, then support ABCs, prevent heat loss, transport promptly, and reassess.');
 const terms=['pulse','skin','capillary','refill','bp','blood pressure','bleed','mental','alert','cool','warm','clammy','reassess','transport'];const hits=terms.filter(t=>pcr.toLowerCase().includes(t)).length;if(pcr.length>=100&&hits>=6){score++;feedback.push('Documentation includes useful objective perfusion findings and reassessment language.');}else feedback.push('Document pulse rate/rhythm/quality, skin color-temperature-moisture, capillary refill, mental status, BP, bleeding, treatment, and repeat findings.');
-$('scoreText').textContent=`${score}/4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}});
+$('scoreText').textContent=`${score}/4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;
+    window.EMSCodeSimAssessmentIntegration?.saveAssessment({
+      assessment: 'perfusion',
+      label: 'Perfusion Assessment',
+      scenarioTitle: state.current.title || '',
+      finding: state.current.finding || '',
+      details: state.current.detail || state.current.description || '',
+      normality,
+      expectedNormality: state.current.normality,
+      interpretation: typeof priority !== 'undefined' ? priority : '',
+      action: typeof action !== 'undefined' ? action : '',
+      documentation: pcr,
+      score,
+      maxScore: 4
+    });
+$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}});
 load();updateProgress();newCase();
 })();

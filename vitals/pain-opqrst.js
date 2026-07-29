@@ -26,6 +26,21 @@ if(normality===state.current.normality){score++;feedback.push('Correctly classif
 if(priority===state.current.priority){score++;feedback.push('Identified the most clinically important pain feature.');}else feedback.push('Reconsider onset, quality, radiation, associated symptoms, and mechanism.');
 if(action===state.current.action){score++;feedback.push('Selected the best immediate EMT priority.');}else feedback.push('Choose the action that addresses the highest-risk pattern while continuing ABC reassessment.');
 const terms=['onset','began','worse','better','sharp','pressure','aching','radiat','10','constant','intermittent','denies','associated','reassess'];const hits=terms.filter(t=>pcr.toLowerCase().includes(t)).length;if(pcr.length>=100&&hits>=6){score++;feedback.push('Documentation captures useful OPQRST details and associated findings.');}else feedback.push('Include onset, provoking/relieving factors, quality, region/radiation, severity, time course, associated symptoms, and reassessment.');
-$('scoreText').textContent=`${score}/4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}});
+$('scoreText').textContent=`${score}/4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;
+    window.EMSCodeSimAssessmentIntegration?.saveAssessment({
+      assessment: 'pain_opqrst',
+      label: 'Pain Opqrst',
+      scenarioTitle: state.current.title || '',
+      finding: state.current.finding || '',
+      details: state.current.detail || state.current.description || '',
+      normality,
+      expectedNormality: state.current.normality,
+      interpretation: typeof priority !== 'undefined' ? priority : '',
+      action: typeof action !== 'undefined' ? action : '',
+      documentation: pcr,
+      score,
+      maxScore: 4
+    });
+$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}});
 load();updateProgress();newCase();
 })();

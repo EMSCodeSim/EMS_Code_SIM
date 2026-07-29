@@ -27,7 +27,22 @@
     if(pattern===state.current.pattern){score++;feedback.push('Correctly identified the PAT pattern.');}else feedback.push('Reconsider which PAT arms are abnormal and match the combination to the best physiologic category.');
     if(action===state.current.action){score++;feedback.push('Selected the best immediate EMT priority.');}else feedback.push('Use the PAT to direct the next ABC priority, then perform a hands-on primary assessment.');
     const terms=['appearance','tone','interactive','consol','gaze','cry','breath','retraction','flaring','skin','pale','mottl','cyan','oxygen','ventilat','transport','reassess','pat'];const hits=terms.filter(t=>pcr.toLowerCase().includes(t)).length;if(pcr.length>=70&&hits>=4){score++;feedback.push('Documentation describes the three PAT arms objectively.');}else feedback.push('Document appearance, work of breathing, circulation to skin, your PAT interpretation, intervention, and reassessment.');
-    $('scoreText').textContent=`Score: ${score} of 4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}
+    $('scoreText').textContent=`Score: ${score} of 4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;
+    window.EMSCodeSimAssessmentIntegration?.saveAssessment({
+      assessment: 'pediatric_assessment_triangle',
+      label: 'Pediatric Assessment Triangle',
+      scenarioTitle: state.current.title || '',
+      finding: state.current.finding || '',
+      details: state.current.detail || state.current.description || '',
+      normality,
+      expectedNormality: state.current.normality,
+      interpretation: typeof pattern !== 'undefined' ? pattern : '',
+      action: typeof action !== 'undefined' ? action : '',
+      documentation: pcr,
+      score,
+      maxScore: 4
+    });
+$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}
   });
   load();updateProgress();newCase();
 })();

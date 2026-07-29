@@ -122,7 +122,22 @@
     $('resultTitle').textContent = score === 4 ? 'Strong airway assessment' : score >= 2 ? 'Good start—review the coaching points' : 'Repeat the case and prioritize the airway threat';
     $('feedbackList').innerHTML = feedback.map(item => `<li>${item}</li>`).join('');
     $('modelDocumentation').textContent = state.current.docs;
-    $('resultsPanel').hidden = false;
+    
+    window.EMSCodeSimAssessmentIntegration?.saveAssessment({
+      assessment: 'airway',
+      label: 'Airway Assessment',
+      scenarioTitle: state.current.title || '',
+      finding: state.current.finding || '',
+      details: state.current.detail || state.current.description || '',
+      normality,
+      expectedNormality: state.current.normality,
+      interpretation: typeof problem !== 'undefined' ? problem : '',
+      action: typeof action !== 'undefined' ? action : '',
+      documentation: pcr,
+      score,
+      maxScore: 4
+    });
+$('resultsPanel').hidden = false;
     $('resultsPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
