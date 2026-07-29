@@ -193,55 +193,23 @@
       <div class="app-vitals-learning-shell">
         <section class="app-vitals-learning" aria-labelledby="avl-title">
           <header class="avl-head">
-            <div><p class="avl-kicker">EMSCodeSim Vital Learning Center</p><h2 id="avl-title">${esc(topic.title)}</h2><p>Complete all three lessons: learn how to perform the skill, understand why it matters, then practice interpretation and PCR documentation.</p></div>
-            <span class="avl-badge">How → Why → Practice</span>
+            <div><p class="avl-kicker">EMSCodeSim app learning content</p><h2 id="avl-title">Learn ${esc(topic.title)}</h2><p>${esc(topic.subtitle)}</p></div>
+            <span class="avl-badge">Learn → Practice → Document</span>
           </header>
-          <nav class="avl-lesson-nav" aria-label="Learning center lessons">
-            <a href="#avl-how"><b>1. HOW</b><span>Perform the skill</span></a>
-            <a href="#avl-why"><b>2. WHY</b><span>Understand the finding</span></a>
-            <a href="#avl-practice"><b>3. PRACTICE</b><span>Interpret and document</span></a>
-          </nav>
           <div class="avl-body">
-            <section id="avl-how" class="avl-lesson avl-how">
-              <div class="avl-lesson-heading"><span class="avl-step">Lesson 1</span><div><h3>HOW — Perform the skill correctly</h3><p>Use the simulator above to complete the hands-on portion. Review the setup, technique, and objective details that belong in the assessment.</p></div></div>
-              <section class="${heroClass}"><div><span class="avl-label">Skill goal</span><h3>${esc(topic.title)}</h3><p>${esc(topic.subtitle)}</p><p>${esc(topic.what)}</p><div class="avl-range">Technique reference: ${esc(topic.range)}</div></div>${image}</section>
-              <div class="avl-grid">
-                <section class="avl-card"><span class="avl-label">Perform</span><h3>Complete the full assessment</h3><p>Prepare the patient and equipment, obtain the finding using the simulator, verify that it is reliable, and repeat the assessment when the result does not match the patient.</p></section>
-                <section class="avl-card avl-mistake"><span class="avl-label">Common student mistake</span><h3>Avoid this shortcut</h3><p>${esc(topic.mistake)}</p></section>
-              </div>
-            </section>
-
-            <section id="avl-why" class="avl-lesson avl-why">
-              <div class="avl-lesson-heading"><span class="avl-step">Lesson 2</span><div><h3>WHY — Understand what the finding means</h3><p>Connect the number or observation to physiology, perfusion, breathing, neurologic status, the chief complaint, and changes over time.</p></div></div>
-              <div class="avl-grid">
-                <section class="avl-card"><span class="avl-label">Clinical meaning</span><h3>Connect the finding to the patient</h3><ul>${abnormal}</ul></section>
-                <section class="avl-card"><span class="avl-label">Documentation model</span><h3>Use objective language</h3><div class="avl-document">${esc(topic.document)}</div></section>
-              </div>
-              <div class="avl-examples">
-                <section class="avl-example normal"><strong>Normal example: ${esc(topic.normalExample[0])}</strong>${esc(topic.normalExample[1])}</section>
-                <section class="avl-example abnormal"><strong>${esc(topic.abnormalLabel || 'Not normal')} example: ${esc(topic.abnormalExample[0])}</strong>${esc(topic.abnormalExample[1])}</section>
-              </div>
-              <section class="avl-quiz" data-answer="${topic.quiz[2]}"><h3>Knowledge check</h3><p>${esc(topic.quiz[0])}</p><div class="avl-choices">${choices}</div><div class="avl-feedback" role="status" aria-live="polite"></div></section>
-            </section>
-
-            <section id="avl-practice" class="avl-lesson avl-practice">
-              <div class="avl-lesson-heading"><span class="avl-step">Lesson 3</span><div><h3>PRACTICE — Interpret and document the finding</h3><p>After using the simulator, classify your finding before continuing. Then identify the abnormality and write it as it should appear in a patient care report.</p></div></div>
-              <div class="avl-practice-card">
-                <label class="avl-field-label" for="avl-finding">Finding obtained</label>
-                <input id="avl-finding" class="avl-input" type="text" placeholder="Example: ${esc(topic.normalExample[0])}" autocomplete="off">
-                <fieldset class="avl-normality"><legend>Is this finding normal or not normal?</legend><div class="avl-normality-options"><label><input type="radio" name="avl-normality" value="normal"> Normal</label><label><input type="radio" name="avl-normality" value="abnormal"> Not Normal</label></div></fieldset>
-                <div class="avl-abnormal-detail" hidden><label class="avl-field-label" for="avl-abnormality">What is abnormal?</label><input id="avl-abnormality" class="avl-input" type="text" placeholder="Describe what is high, low, unequal, irregular, absent, or otherwise abnormal"></div>
-                <label class="avl-field-label" for="avl-meaning">What could this finding indicate?</label>
-                <textarea id="avl-meaning" class="avl-textarea" rows="3" placeholder="Connect the finding to the patient presentation and other assessment information."></textarea>
-                <label class="avl-field-label" for="avl-documentation">Document the assessment</label>
-                <textarea id="avl-documentation" class="avl-textarea" rows="4" placeholder="Write an objective PCR-ready statement. Include the value or observation, method/site when applicable, and relevant patient context."></textarea>
-                <button class="avl-review-btn" type="button">Review my practice entry</button>
-                <div class="avl-practice-feedback" role="status" aria-live="polite"></div>
-              </div>
-            </section>
-
-            <section class="avl-related"><h3>Continue the assessment</h3><div class="avl-links">${links}<a href="/vitals/">Vital Learning Centers →</a></div></section>
-            <p class="avl-disclaimer">Educational practice only. Use approved course instruction, local protocols, device guidance, and medical direction. Classification feedback supports learning and does not replace instructor review.</p>
+            <section class="${heroClass}"><div><span class="avl-label">What it means</span><h3>${esc(topic.title)}</h3><p>${esc(topic.what)}</p><div class="avl-range">Quick reference: ${esc(topic.range)}</div></div>${image}</section>
+            <div class="avl-grid">
+              <section class="avl-card"><span class="avl-label">Abnormal findings may suggest</span><h3>Connect the finding to the patient</h3><ul>${abnormal}</ul></section>
+              <section class="avl-card"><span class="avl-label">What to document</span><h3>Use objective language</h3><div class="avl-document">${esc(topic.document)}</div></section>
+            </div>
+            <section class="avl-card avl-mistake"><span class="avl-label">Common student mistake</span><h3>Avoid this shortcut</h3><p>${esc(topic.mistake)}</p></section>
+            <div class="avl-examples">
+              <section class="avl-example normal"><strong>Normal example: ${esc(topic.normalExample[0])}</strong>${esc(topic.normalExample[1])}</section>
+              <section class="avl-example abnormal"><strong>${esc(topic.abnormalLabel || 'Not normal')} example: ${esc(topic.abnormalExample[0])}</strong>${esc(topic.abnormalExample[1])}</section>
+            </div>
+            <section class="avl-quiz" data-answer="${topic.quiz[2]}"><h3>Quick knowledge check</h3><p>${esc(topic.quiz[0])}</p><div class="avl-choices">${choices}</div><div class="avl-feedback" role="status" aria-live="polite"></div></section>
+            <section class="avl-related"><h3>Continue the assessment</h3><div class="avl-links">${links}<a href="/vitals/">Learn Vitals hub →</a></div></section>
+            <p class="avl-disclaimer">Educational practice only. Typical ranges and training bands are copied from the uploaded EMSCodeSim Vitals & Assessment app. Follow approved course instruction, local protocols, device guidance, and medical direction.</p>
           </div>
         </section>
       </div>`;
@@ -264,41 +232,6 @@
     });
   }
 
-  function wirePractice(panel, topic) {
-    const normality = panel.querySelectorAll('input[name="avl-normality"]');
-    const detail = panel.querySelector('.avl-abnormal-detail');
-    const review = panel.querySelector('.avl-review-btn');
-    const feedback = panel.querySelector('.avl-practice-feedback');
-    normality.forEach(input => input.addEventListener('change', () => {
-      detail.hidden = input.value !== 'abnormal';
-      if (detail.hidden) panel.querySelector('#avl-abnormality').value = '';
-    }));
-    review.addEventListener('click', () => {
-      const finding = panel.querySelector('#avl-finding').value.trim();
-      const selected = panel.querySelector('input[name="avl-normality"]:checked');
-      const abnormality = panel.querySelector('#avl-abnormality').value.trim();
-      const meaning = panel.querySelector('#avl-meaning').value.trim();
-      const documentation = panel.querySelector('#avl-documentation').value.trim();
-      const missing = [];
-      if (!finding) missing.push('enter the finding');
-      if (!selected) missing.push('choose Normal or Not Normal');
-      if (selected && selected.value === 'abnormal' && !abnormality) missing.push('describe the abnormality');
-      if (!meaning) missing.push('connect it to the patient');
-      if (!documentation) missing.push('write the PCR documentation');
-      if (missing.length) {
-        feedback.className = 'avl-practice-feedback needs-work';
-        feedback.textContent = `Complete the practice entry: ${missing.join(', ')}.`;
-        return;
-      }
-      const objective = /\d|left|right|patient|room air|manual|regular|irregular|strong|weak|warm|cool|dry|moist|reactive|unresponsive/i.test(documentation);
-      feedback.className = `avl-practice-feedback ${objective ? 'complete' : 'needs-work'}`;
-      feedback.textContent = objective
-        ? 'Practice complete. You classified the finding, explained its significance, and used objective documentation. Compare your wording with the model above.'
-        : 'Good start. Make the documentation more objective by adding the actual value or observation, site/method when applicable, and relevant patient context.';
-      try { localStorage.setItem(`emscodesim-learning-${topic.title}`, JSON.stringify({finding, classification:selected.value, abnormality, meaning, documentation, completedAt:new Date().toISOString()})); } catch (_) {}
-    });
-  }
-
   document.addEventListener('DOMContentLoaded', () => {
     if (document.querySelector('[data-app-vitals-learning]')) return;
     const key = topicFromPath();
@@ -312,6 +245,5 @@
     if (firstScript) document.body.insertBefore(holder, firstScript);
     else document.body.appendChild(holder);
     wireQuiz(holder, topic);
-    wirePractice(holder, topic);
   });
 })();
