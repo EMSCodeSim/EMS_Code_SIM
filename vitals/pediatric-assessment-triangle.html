@@ -12,8 +12,10 @@
   <link rel="stylesheet" href="/vitals/pediatric-assessment-triangle.css">
   <script defer src="/privacy-controls.js"></script>
   <script defer src="/vitals/patient-record.js"></script>
+  <script defer src="/vitals/scenario-runtime.js"></script>
   <script defer src="/vitals/patient-record-integration.js"></script>
   <script defer src="/vitals/pediatric-assessment-triangle.js"></script>
+<link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
 </head>
 <body>
 <header class="topbar"><div class="topbar__inner"><a class="back-link" href="/vitals/" aria-label="Back to Vital Learning Centers">← Vitals</a><div><p class="eyebrow">EMT Learning Center</p><h1>Pediatric Assessment Triangle</h1></div><span class="level-badge">EMT</span></div></header>
@@ -65,6 +67,7 @@
     <button class="complete-btn" data-complete="why" type="button">Mark WHY complete</button>
   </section>
 
+  <div class="scenario-only-note">Full scenario mode: complete this assessment for the active patient. Teaching sections and patient changes are locked until you leave the scenario.</div>
   <section class="lesson-panel" id="practicePanel" hidden>
     <div class="section-heading"><p class="eyebrow">Lesson 3</p><h2>PRACTICE: Observe, classify, and document</h2><p>Review the first-look scene, reveal the PAT findings, classify the pattern, choose the immediate EMT priority, and write a PCR-style observation.</p></div>
     <article class="patient-card"><div class="patient-card__head"><div><p class="eyebrow">Randomized pediatric patient</p><h3 id="caseTitle">Pediatric encounter</h3></div><button class="secondary-btn" id="newCase" type="button">New patient</button></div><p id="caseDescription"></p><button class="primary-btn" id="performAssessment" type="button">Perform PAT observation</button><div class="finding-box" id="findingBox" hidden><p class="eyebrow">Pediatric Assessment Triangle</p><h3 id="findingText"></h3><p id="findingDetail"></p></div></article>
@@ -80,5 +83,5 @@
     <button class="complete-btn" data-complete="practice" type="button">Mark PRACTICE complete</button>
   </section>
 </main>
-</body>
+<script src="/vitals/scenario-status.js"></script></body>
 </html>

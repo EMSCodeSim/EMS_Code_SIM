@@ -186,7 +186,8 @@
 <script defer="" src="/privacy-controls.js"></script>
 <script defer="" src="/scripts/engagement-loop.js"></script>
 <meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Pulse Trainer | EMSCodeSim" property="og:title"/><meta content="Practice pulse rate counting and vital sign assessment with a randomized EMS pulse trainer." property="og:description"/><meta content="https://emscodesim.com/vitals/pulse.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
-<link href="/vitals/app-vitals-learning.css" rel="stylesheet"/></head>
+<link href="/vitals/app-vitals-learning.css" rel="stylesheet"/><link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
+</head>
 <body data-vital-topic="pulse">
 <!-- Sticky top header with Back + Info -->
 <header>
@@ -318,7 +319,7 @@
     let beatIntervalMs = null;
 
     function getRandomBPM(){
-      return Math.floor(Math.random() * 171) + 30; // 30–200
+      return window.EMSCodeSimScenarioRuntime?.active() ? Number(window.EMSCodeSimScenarioRuntime.vital('pulse', 80)) : Math.floor(Math.random() * 171) + 30; // 30–200
     }
 
     function startBeat(){
@@ -393,5 +394,5 @@
       }, {passive:true, once:true});
     });
   </script>
-<script defer="True" src="/vitals/app-vitals-learning.js"></script></body>
+<script defer="True" src="/vitals/app-vitals-learning.js"></script><script src="/vitals/patient-record.js"></script><script src="/vitals/scenario-runtime.js"></script><script src="/vitals/scenario-status.js"></script></body>
 </html>

@@ -12,8 +12,10 @@
   <link rel="stylesheet" href="/vitals/perfusion-assessment.css">
   <script defer src="/privacy-controls.js"></script>
   <script defer src="/vitals/patient-record.js"></script>
+  <script defer src="/vitals/scenario-runtime.js"></script>
   <script defer src="/vitals/patient-record-integration.js"></script>
   <script defer src="/vitals/perfusion-assessment.js"></script>
+<link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
 </head>
 <body>
 <header class="topbar"><div class="topbar__inner"><a class="back-link" href="/vitals/" aria-label="Back to Vital Learning Centers">← Vitals</a><div><p class="eyebrow">EMT Learning Center</p><h1>Circulation &amp; Perfusion Simulator</h1></div><span class="level-badge">EMT</span></div></header>
@@ -46,7 +48,8 @@
 <div class="knowledge-check"><h3>Quick knowledge check</h3><p>Which patient may still be in compensated shock?</p><label><input type="radio" name="whyQuestion" value="reassuring"> BP 118/76, pulse 88 strong, warm dry skin, alert</label><label><input type="radio" name="whyQuestion" value="shock"> BP 112/84, pulse 124 weak, cool clammy skin, anxious</label><button id="checkWhy" class="secondary-btn" type="button">Check answer</button><p id="whyFeedback" class="feedback-text" aria-live="polite"></p></div>
 <button class="primary-btn completion-btn" data-complete="why" type="button">Mark WHY complete</button>
 </section>
-<section class="lesson-panel" id="practicePanel" hidden>
+<div class="scenario-only-note">Full scenario mode: complete this assessment for the active patient. Teaching sections and patient changes are locked until you leave the scenario.</div>
+  <section class="lesson-panel" id="practicePanel" hidden>
 <div class="section-heading"><p class="eyebrow">Lesson 3</p><h2>PRACTICE: Assess, classify, act, and document</h2><p>Review the patient, perform the perfusion assessment, decide whether it is normal, identify the pattern, choose the immediate priority, and document objectively.</p></div>
 <div class="sim-layout"><article class="patient-card"><div class="patient-card__top"><div><p class="eyebrow">Random patient</p><h3 id="caseTitle"></h3></div><button id="newCase" class="secondary-btn" type="button">New patient</button></div><p id="caseDescription"></p><button id="performAssessment" class="primary-btn" type="button">Perform perfusion assessment</button><div id="findingBox" class="finding-box" hidden><p class="eyebrow">Assessment finding</p><h3 id="findingText"></h3><p id="findingDetail"></p></div></article>
 <form id="perfusionForm" class="decision-card">
@@ -60,4 +63,4 @@
 </section>
 <p class="disclaimer">Training content only. Follow your approved education, medical direction, and local protocols.</p>
 </main>
-</body></html>
+<script src="/vitals/scenario-status.js"></script></body></html>

@@ -12,8 +12,10 @@
   <link rel="stylesheet" href="/vitals/pain-opqrst.css">
   <script defer src="/privacy-controls.js"></script>
   <script defer src="/vitals/patient-record.js"></script>
+  <script defer src="/vitals/scenario-runtime.js"></script>
   <script defer src="/vitals/patient-record-integration.js"></script>
   <script defer src="/vitals/pain-opqrst.js"></script>
+<link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
 </head>
 <body>
 <header class="topbar"><div class="topbar__inner"><a class="back-link" href="/vitals/" aria-label="Back to Vital Learning Centers">← Vitals</a><div><p class="eyebrow">EMT Learning Center</p><h1>Pain & OPQRST</h1></div><span class="level-badge">EMT</span></div></header>
@@ -41,7 +43,8 @@
 <div class="knowledge-check"><h3>Knowledge check</h3><fieldset><legend>Which documentation is most useful?</legend><label><input type="radio" name="whyQuestion" value="vague"> Patient has severe chest pain.</label><label><input type="radio" name="whyQuestion" value="objective"> Patient reports 8/10 substernal pressure radiating to the left arm, beginning during exertion 20 minutes ago.</label></fieldset><button id="checkWhy" type="button">Check answer</button><p id="whyFeedback" class="inline-feedback" aria-live="polite"></p></div>
 <button class="complete-btn" data-complete="why" type="button">Mark WHY complete</button>
 </section>
-<section class="lesson-panel" id="practicePanel" hidden>
+<div class="scenario-only-note">Full scenario mode: complete this assessment for the active patient. Teaching sections and patient changes are locked until you leave the scenario.</div>
+  <section class="lesson-panel" id="practicePanel" hidden>
 <div class="section-heading"><p class="eyebrow">Lesson 3</p><h2>PRACTICE: Interview, interpret, and document</h2><p>Reveal a randomized OPQRST interview, decide whether it contains a concerning pattern, select the best next EMT action, and write a PCR-ready pain description.</p></div>
 <article class="patient-card"><div class="patient-card__head"><div><p class="eyebrow">Randomized patient</p><h3 id="caseTitle">Patient encounter</h3></div><button class="secondary-btn" id="newCase" type="button">New patient</button></div><p id="caseDescription"></p><button class="primary-btn" id="performAssessment" type="button">Ask OPQRST questions</button><div class="finding-box" id="findingBox" hidden><p class="eyebrow">Patient's answers</p><h3 id="findingText"></h3><p id="findingDetail"></p></div></article>
 <form id="painForm" class="decision-card">
@@ -55,4 +58,4 @@
 <button class="complete-btn" data-complete="practice" type="button">Mark PRACTICE complete</button>
 </section>
 </main>
-</body></html>
+<script src="/vitals/scenario-status.js"></script></body></html>

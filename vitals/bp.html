@@ -160,7 +160,8 @@
 <script defer="" src="/privacy-controls.js"></script>
 <script defer="" src="/scripts/engagement-loop.js"></script>
 <meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Blood Pressure Simulator | EMSCodeSim" property="og:title"/><meta content="Practice manual blood pressure skills with an interactive EMS blood pressure simulator, Korotkoff sounds, cuff flow, and reading feedback." property="og:description"/><meta content="https://emscodesim.com/vitals/bp.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
-<link href="/vitals/app-vitals-learning.css" rel="stylesheet"/></head>
+<link href="/vitals/app-vitals-learning.css" rel="stylesheet"/><link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
+</head>
 <body data-vital-topic="bp">
 <!-- Sticky Top Header -->
 <div class="topbar" role="banner">
@@ -341,6 +342,7 @@
 
     // ---------- Generate even-number answers (skewed distribution) ----------
     function generateSystolicEven(){
+      if(window.EMSCodeSimScenarioRuntime?.active()) return Number(window.EMSCodeSimScenarioRuntime.vital('systolic',120));
       const r = Math.random();
       let sys;
       if (r < 0.85) {
@@ -353,6 +355,7 @@
       return clamp(sys, 100, 240);
     }
     function generateDiastolicEven(sys){
+      if(window.EMSCodeSimScenarioRuntime?.active()) return Number(window.EMSCodeSimScenarioRuntime.vital('diastolic',80));
       const ratio = 0.58 + Math.random() * 0.10; // 58–68% of SYS
       let dia = toEven(Math.round(sys * ratio));
       dia = clamp(dia, 40, sys - 10);
@@ -461,5 +464,5 @@
       resetBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
     });
   </script>
-<script defer="True" src="/vitals/app-vitals-learning.js"></script></body>
+<script defer="True" src="/vitals/app-vitals-learning.js"></script><script src="/vitals/patient-record.js"></script><script src="/vitals/scenario-runtime.js"></script><script src="/vitals/scenario-status.js"></script></body>
 </html>

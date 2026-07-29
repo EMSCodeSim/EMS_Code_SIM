@@ -11,6 +11,7 @@
     dispatch:scenario.dispatch||'',
     scene:scenario.scene||'',
     goal:scenario.goal||'',
+    profile:scenario.profile||null,
     startedAt:new Date().toISOString(),
     updatedAt:new Date().toISOString(),
     findings:{},

@@ -12,8 +12,10 @@
   <link rel="stylesheet" href="/vitals/breathing-assessment.css">
   <script defer src="/privacy-controls.js"></script>
   <script defer src="/vitals/patient-record.js"></script>
+  <script defer src="/vitals/scenario-runtime.js"></script>
   <script defer src="/vitals/patient-record-integration.js"></script>
   <script defer src="/vitals/breathing-assessment.js"></script>
+<link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
 </head>
 <body>
 <header class="topbar">
@@ -80,6 +82,7 @@
     <button class="complete-btn" data-complete="why" type="button">Mark WHY complete</button>
   </section>
 
+  <div class="scenario-only-note">Full scenario mode: complete this assessment for the active patient. Teaching sections and patient changes are locked until you leave the scenario.</div>
   <section class="lesson-panel" id="practicePanel" hidden>
     <div class="section-heading"><p class="eyebrow">Lesson 3</p><h2>PRACTICE: Assess, classify, act, and document</h2><p>Read the patient presentation, perform the assessment, and decide whether ventilation is adequate.</p></div>
     <article class="patient-card">
@@ -100,5 +103,5 @@
     <button class="complete-btn" data-complete="practice" type="button">Mark PRACTICE complete</button>
   </section>
 </main>
-</body>
+<script src="/vitals/scenario-status.js"></script></body>
 </html>

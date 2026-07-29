@@ -38,8 +38,7 @@
   const $ = (id) => document.getElementById(id);
 
   function selectScenario() {
-    let next;
-    do { next = scenarios[Math.floor(Math.random() * scenarios.length)]; } while (scenarios.length > 1 && next === state.current);
+    let next = window.EMSCodeSimScenarioRuntime?.chooseCase('airway', scenarios, state.current) || scenarios[0];
     state.current = next; state.revealed = false;
     $('scenarioTitle').textContent = next.title;
     $('patientMeta').innerHTML = `<span>${next.age}</span><span>${next.complaint}</span>`;
