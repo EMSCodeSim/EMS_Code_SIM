@@ -1,0 +1,70 @@
+EMSCodeSim suggested improvements update
+ADD: 15 files
+REPLACE: 44 files
+DELETE: 0 files
+
+ADD THESE FILES
+SUGGESTED_CHANGES_README.md
+about.html
+daily-practice.js
+emt-prep.html
+emt-prep.js
+emt-prep/module-1-emt-school-expectations.html
+emt-prep/module-2-medical-terminology.html
+emt-prep/module-3-anatomy-physiology.html
+emt-prep/module-4-vital-signs.html
+emt-prep/module-5-patient-assessment.html
+emt-prep/module-6-student-habits.html
+privacy-controls.js
+scripts/engagement-loop.js
+styles/emt-prep.css
+styles/site-enhancements.css
+
+REPLACE THESE FILES
+APGAR/index.html
+_redirects
+become-an-emt.html
+calcPrivacy.html
+career.js
+ems-career-growth.html
+ems-recertification.html
+ems-resources.html
+ems-retirement.html
+ems-training-tools.html
+ems-wellness.html
+emt-program-cost.html
+emt-school-finder.html
+emt-school-success.html
+explore-ems.html
+first-100-shifts.html
+index.html
+med_sim.html
+privacy.html
+quiz/daily_beat.html
+quiz/daily_sim.html
+quiz/ems_fact.html
+quiz/emt_quiz.html
+quiz/firebase.js
+quiz/home_med.html
+quiz/index.html
+quiz/medword.html
+quiz/paramedic_quiz.html
+search-index.js
+search.html
+sitemap.xml
+vitals/aao.html
+vitals/bgl.html
+vitals/bp.html
+vitals/breath-sound-simulator.html
+vitals/capno.html
+vitals/gcs.html
+vitals/meds.html
+vitals/nines.html
+vitals/pulse-ox.html
+vitals/pulse.html
+vitals/pupil.html
+vitals/skin.html
+vitals/stroke.html
+
+DELETE THESE FILES
+None

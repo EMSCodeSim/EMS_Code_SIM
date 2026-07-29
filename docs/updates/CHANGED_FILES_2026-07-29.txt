@@ -1,0 +1,22 @@
+FUNCTIONAL REPAIRS
+offline-ems-reference.js
+emt-prep/module-2-emt-school-expectations.html
+
+DISCOVERY AND SEO
+sitemap.xml
+search-index.js
+_redirects
+
+NAVIGATION AND CONNECTED WORKFLOW
+index.html
+vitals/index.html
+vitals/scenario-launcher.html
+vitals/scenario-launcher.js
+vitals/scenario-status.css (new)
+vitals/scenario-status.js (new)
+
+ACTIVE-PATIENT STATUS INJECTION
+Updated connected simulator HTML pages under /vitals/ to load patient-record.js, scenario-status.js, and scenario-status.css.
+
+REPOSITORY CLEANUP
+Moved root update manifests/readmes into docs/updates/.
