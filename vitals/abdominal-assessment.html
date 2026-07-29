@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Abdominal Assessment Simulator | EMSCodeSim</title>
+  <meta name="description" content="Learn and practice an EMT abdominal assessment, recognize concerning findings, choose priorities, and document objectively.">
+  <link rel="canonical" href="https://emscodesim.com/vitals/abdominal-assessment.html">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/styles/responsive.css">
+  <link rel="stylesheet" href="/styles/site-enhancements.css">
+  <link rel="stylesheet" href="/vitals/abdominal-assessment.css">
+  <script defer src="/privacy-controls.js"></script>
+  <script defer src="/vitals/abdominal-assessment.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="topbar__inner"><a class="back-link" href="/vitals/" aria-label="Back to Vital Learning Centers">← Vitals</a><div><p class="eyebrow">EMT Learning Center</p><h1>Abdominal Assessment Simulator</h1></div><span class="level-badge">EMT</span></div></header>
+<main class="page-shell">
+<section class="hero-card"><div><p class="eyebrow">How → Why → Practice</p><h2>Assess the abdomen systematically, recognize red flags, and document what you actually find.</h2><p>Practice inspection, gentle palpation, symptom correlation, normal-versus-abnormal classification, transport priorities, and objective PCR wording.</p></div><div class="progress-box"><span id="progressText">0 of 3 lessons complete</span><div class="progress-track"><span id="progressBar"></span></div></div></section>
+<nav class="lesson-tabs" aria-label="Abdominal assessment lessons"><button class="lesson-tab is-active" data-panel="howPanel" type="button"><span>1</span> HOW</button><button class="lesson-tab" data-panel="whyPanel" type="button"><span>2</span> WHY</button><button class="lesson-tab" data-panel="practicePanel" type="button"><span>3</span> PRACTICE</button></nav>
+<section class="lesson-panel is-active" id="howPanel">
+<div class="section-heading"><p class="eyebrow">Lesson 1</p><h2>HOW: Perform an abdominal assessment</h2><p>Expose only as needed, preserve dignity, observe before touching, and palpate gently. Follow your local scope and protocols.</p></div>
+<div class="step-grid">
+<article class="step-card"><span class="step-number">1</span><h3>Ask first</h3><p>Use OPQRST and SAMPLE to locate the complaint, clarify onset, identify associated symptoms, and learn about pregnancy possibility, surgery, medications, bleeding, vomiting, or bowel changes.</p></article>
+<article class="step-card"><span class="step-number">2</span><h3>Position and expose</h3><p>Place the patient comfortably, usually supine with knees relaxed when tolerated. Expose only the area needed and maintain warmth and privacy.</p></article>
+<article class="step-card"><span class="step-number">3</span><h3>Inspect</h3><p>Look for distention, bruising, scars, pulsation, masses, wounds, seat-belt marks, guarding, or asymmetry before palpation.</p></article>
+<article class="step-card"><span class="step-number">4</span><h3>Palpate gently</h3><p>Use light, systematic palpation. Begin away from the painful area and assess all quadrants. Stop if the patient develops severe pain or the exam could worsen an injury.</p></article>
+<article class="step-card"><span class="step-number">5</span><h3>Describe the finding</h3><p>Document location and whether the abdomen is soft, tender, rigid, distended, guarded, or associated with a palpable pulsating mass or trauma finding.</p></article>
+<article class="step-card"><span class="step-number">6</span><h3>Connect and reassess</h3><p>Combine abdominal findings with vitals, skin, mental status, bleeding, pregnancy status, mechanism, and pain pattern. Reassess after movement and during transport.</p></article>
+</div>
+<div class="callout"><strong>Do not repeatedly provoke pain.</strong> Your goal is to identify concerning findings and trends—not to reproduce every possible bedside test.</div>
+<button class="primary-btn completion-btn" data-complete="how" type="button">Mark HOW complete</button>
+</section>
+<section class="lesson-panel" id="whyPanel" hidden>
+<div class="section-heading"><p class="eyebrow">Lesson 2</p><h2>WHY: Understand abdominal red flags</h2><p>Abdominal emergencies can deteriorate before a clear diagnosis is available. EMT care focuses on recognition, supportive care, appropriate transport, and reassessment.</p></div>
+<div class="concept-grid">
+<article class="concept-card"><h3>Localized tenderness</h3><p>Pain and tenderness limited to one area may suggest a focal process, but location alone does not establish a diagnosis.</p></article>
+<article class="concept-card"><h3>Guarding and rigidity</h3><p>Voluntary guarding may occur from pain or fear. Involuntary rigidity is more concerning and should increase transport priority.</p></article>
+<article class="concept-card"><h3>Distention</h3><p>Distention may occur with bleeding, obstruction, pregnancy, ascites, gas, or organ enlargement. Interpret it with the overall presentation.</p></article>
+<article class="concept-card"><h3>Internal bleeding</h3><p>Abdominal trauma, GI bleeding, ectopic pregnancy, and vascular emergencies may produce shock with little or no visible blood loss.</p></article>
+<article class="concept-card"><h3>Pulsating mass</h3><p>A pulsating abdominal mass with pain, syncope, or poor perfusion is a high-risk finding. Avoid repeated palpation and expedite transport.</p></article>
+<article class="concept-card"><h3>Trend and context</h3><p>Vitals, skin signs, mental status, mechanism, medications, age, pregnancy possibility, and repeat exams often matter more than one isolated finding.</p></article>
+</div>
+<div class="knowledge-check"><h3>Quick knowledge check</h3><p>Which finding is most concerning?</p><label><input type="radio" name="whyQuestion" value="minor"> Mild diffuse discomfort with a soft abdomen and stable vitals</label><label><input type="radio" name="whyQuestion" value="urgent"> Sudden abdominal/back pain, syncope, hypotension, and a pulsating abdominal mass</label><button id="checkWhy" class="secondary-btn" type="button">Check answer</button><p id="whyFeedback" class="feedback-text" aria-live="polite"></p></div>
+<button class="primary-btn completion-btn" data-complete="why" type="button">Mark WHY complete</button>
+</section>
+<section class="lesson-panel" id="practicePanel" hidden>
+<div class="section-heading"><p class="eyebrow">Lesson 3</p><h2>PRACTICE: Assess, classify, act, and document</h2><p>Review the complaint, perform the assessment, classify the finding, identify the dominant concern, choose the immediate EMT priority, and document objectively.</p></div>
+<div class="sim-layout"><article class="patient-card"><div class="patient-card__top"><div><p class="eyebrow">Random patient</p><h3 id="caseTitle"></h3></div><button id="newCase" class="secondary-btn" type="button">New patient</button></div><p id="caseDescription"></p><button id="performAssessment" class="primary-btn" type="button">Perform abdominal assessment</button><div id="findingBox" class="finding-box" hidden><p class="eyebrow">Assessment finding</p><h3 id="findingText"></h3><p id="findingDetail"></p></div></article>
+<form id="abdominalForm" class="decision-card">
+<div class="decision-step"><span class="decision-number">1</span><div><h3>Is this finding normal?</h3><div class="choice-row"><label class="choice"><input type="radio" name="normality" value="normal" required><span>Normal</span></label><label class="choice"><input type="radio" name="normality" value="not-normal"><span>Not normal</span></label></div></div></div>
+<div class="decision-step"><span class="decision-number">2</span><div><h3>What is the dominant concern?</h3><select id="prioritySelect" required><option value="">Select one</option><option value="normal-abdomen">No concerning abdominal finding</option><option value="localized">Localized tenderness without shock</option><option value="peritoneal">Guarding or rigid abdomen</option><option value="internal-bleeding">Possible internal bleeding or hemorrhagic shock</option><option value="vascular">Possible vascular emergency</option><option value="obstruction">Distention with vomiting or possible obstruction</option></select></div></div>
+<div class="decision-step"><span class="decision-number">3</span><div><h3>What is the best immediate EMT priority?</h3><select id="actionSelect" required><option value="">Select one</option><option value="monitor">Continue assessment, position of comfort, and reassess</option><option value="supportive">Support ABCs, keep NPO, position of comfort, and transport</option><option value="rapid-transport">Treat for shock as indicated and expedite transport</option><option value="trauma-care">Manage trauma priorities, prevent heat loss, and transport rapidly</option></select></div></div>
+<div class="decision-step"><span class="decision-number">4</span><div><h3>Document the assessment</h3><textarea id="pcrText" rows="7" placeholder="Document complaint, abdomen appearance, quadrant findings, tenderness/guarding/rigidity/distention, relevant vitals, treatment, and reassessment..." required></textarea><p class="microcopy">Describe objective findings. Avoid stating a definitive diagnosis you cannot confirm.</p></div></div>
+<button class="primary-btn submit-btn" type="submit">Grade my assessment</button>
+</form></div>
+<section id="resultsPanel" class="results-panel" hidden><div class="score-ring"><span id="scoreText">0/4</span><small>score</small></div><div><h3>Coaching feedback</h3><ul id="feedbackList"></ul><div class="model-doc"><strong>Example PCR documentation</strong><p id="examplePCR"></p></div><button id="tryAnother" class="secondary-btn" type="button">Try another patient</button></div></section>
+</section>
+<p class="disclaimer">Training content only. Follow your approved education, medical direction, and local protocols.</p>
+</main>
+</body></html>
