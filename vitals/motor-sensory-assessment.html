@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Motor and Sensory Assessment Simulator | EMSCodeSim</title>
+  <meta name="description" content="Learn and practice an EMT motor and sensory assessment, recognize neurologic and distal neurovascular abnormalities, and document objectively.">
+  <link rel="canonical" href="https://emscodesim.com/vitals/motor-sensory-assessment.html">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/styles/responsive.css">
+  <link rel="stylesheet" href="/styles/site-enhancements.css">
+  <link rel="stylesheet" href="/vitals/motor-sensory-assessment.css">
+  <script defer src="/privacy-controls.js"></script>
+  <script defer src="/vitals/motor-sensory-assessment.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="topbar__inner"><a class="back-link" href="/vitals/" aria-label="Back to Vital Learning Centers">← Vitals</a><div><p class="eyebrow">EMT Learning Center</p><h1>Motor &amp; Sensory Assessment Simulator</h1></div><span class="level-badge">EMT</span></div></header>
+<main class="page-shell">
+<section class="hero-card"><div><p class="eyebrow">How → Why → Practice</p><h2>Compare both sides, identify neurologic or limb threats, and document objective findings.</h2><p>Practice facial movement, speech, arm drift, grip strength, lower-extremity movement, sensation, and distal pulse-motor-sensation assessment.</p></div><div class="progress-box"><span id="progressText">0 of 3 lessons complete</span><div class="progress-track"><span id="progressBar"></span></div></div></section>
+<nav class="lesson-tabs" aria-label="Motor and sensory lessons"><button class="lesson-tab is-active" data-panel="howPanel" type="button"><span>1</span> HOW</button><button class="lesson-tab" data-panel="whyPanel" type="button"><span>2</span> WHY</button><button class="lesson-tab" data-panel="practicePanel" type="button"><span>3</span> PRACTICE</button></nav>
+<section class="lesson-panel is-active" id="howPanel">
+<div class="section-heading"><p class="eyebrow">Lesson 1</p><h2>HOW: Perform a focused motor and sensory assessment</h2><p>Explain each request, compare left with right, protect injured extremities, and repeat the exam after movement, splinting, or a change in condition.</p></div>
+<div class="step-grid">
+<article class="step-card"><span class="step-number">1</span><h3>Establish baseline</h3><p>Confirm level of consciousness and orientation. Ask about weakness, numbness, tingling, pain, headache, trauma, or the exact time symptoms began.</p></article>
+<article class="step-card"><span class="step-number">2</span><h3>Observe face and speech</h3><p>Ask the patient to smile or show teeth. Listen for slurred, inappropriate, or absent speech and compare facial movement on both sides.</p></article>
+<article class="step-card"><span class="step-number">3</span><h3>Test upper extremities</h3><p>Assess arm drift when appropriate, compare hand grips, and observe whether each arm moves equally. Do not force movement through suspected injury.</p></article>
+<article class="step-card"><span class="step-number">4</span><h3>Test lower extremities</h3><p>Compare movement and strength with foot pushes and pulls or another approved method. Note inability, weakness, pain limitation, or asymmetry.</p></article>
+<article class="step-card"><span class="step-number">5</span><h3>Check sensation and distal PMS</h3><p>Compare light-touch sensation side to side. For injured limbs, document distal pulse, motor function, and sensation before and after splinting.</p></article>
+<article class="step-card"><span class="step-number">6</span><h3>Localize, trend, and report</h3><p>Determine whether the pattern is focal, generalized, or isolated to an injured limb. Record last-known-well time when stroke is possible and reassess during transport.</p></article>
+</div>
+<div class="callout"><strong>Compare sides.</strong> A subtle difference between left and right may be more important than the absolute strength of either side.</div>
+<button class="primary-btn completion-btn" data-complete="how" type="button">Mark HOW complete</button>
+</section>
+<section class="lesson-panel" id="whyPanel" hidden>
+<div class="section-heading"><p class="eyebrow">Lesson 2</p><h2>WHY: Understand abnormal motor and sensory patterns</h2><p>Weakness or sensory loss may arise from stroke, spinal injury, limb trauma, metabolic illness, intoxication, or generalized critical illness.</p></div>
+<div class="concept-grid">
+<article class="concept-card"><h3>Focal deficit</h3><p>One-sided facial droop, arm weakness, sensory loss, or speech change is concerning for a focal neurologic emergency such as stroke.</p></article>
+<article class="concept-card"><h3>Generalized weakness</h3><p>Symmetric weakness may occur with hypoglycemia, infection, dehydration, medication effects, toxic exposure, or other systemic illness.</p></article>
+<article class="concept-card"><h3>Spinal pattern</h3><p>Weakness or sensory change below a suspected spinal injury, especially when bilateral, is a high-risk finding requiring careful movement and rapid transport.</p></article>
+<article class="concept-card"><h3>Distal neurovascular compromise</h3><p>Absent pulse, worsening numbness, or inability to move distal to an injury may indicate limb-threatening compromise. Reassess before and after splinting.</p></article>
+<article class="concept-card"><h3>Pain-limited movement</h3><p>A patient may not move because of pain rather than neurologic loss. Document what was attempted, what limited the exam, and whether sensation and pulse remain intact.</p></article>
+<article class="concept-card"><h3>Time matters</h3><p>When stroke is possible, document the last time the patient was known normal and communicate the finding early so the receiving system can prepare.</p></article>
+</div>
+<div class="knowledge-check"><h3>Quick knowledge check</h3><p>Which finding is most concerning for an acute focal neurologic emergency?</p><label><input type="radio" name="whyQuestion" value="minor"> Equal grips with movement limited by pain in an injured wrist</label><label><input type="radio" name="whyQuestion" value="urgent"> New facial droop, slurred speech, and right arm drift</label><button id="checkWhy" class="secondary-btn" type="button">Check answer</button><p id="whyFeedback" class="feedback-text" aria-live="polite"></p></div>
+<button class="primary-btn completion-btn" data-complete="why" type="button">Mark WHY complete</button>
+</section>
+<section class="lesson-panel" id="practicePanel" hidden>
+<div class="section-heading"><p class="eyebrow">Lesson 3</p><h2>PRACTICE: Assess, classify, act, and document</h2><p>Review the presentation, perform the focused exam, classify the result, identify the dominant pattern, select the immediate EMT priority, and document objectively.</p></div>
+<div class="sim-layout"><article class="patient-card"><div class="patient-card__top"><div><p class="eyebrow">Random patient</p><h3 id="caseTitle"></h3></div><button id="newCase" class="secondary-btn" type="button">New patient</button></div><p id="caseDescription"></p><button id="performAssessment" class="primary-btn" type="button">Perform motor and sensory assessment</button><div id="findingBox" class="finding-box" hidden><p class="eyebrow">Assessment finding</p><h3 id="findingText"></h3><p id="findingDetail"></p></div></article>
+<form id="motorForm" class="decision-card">
+<div class="decision-step"><span class="decision-number">1</span><div><h3>Is this finding normal?</h3><div class="choice-row"><label class="choice"><input type="radio" name="normality" value="normal" required><span>Normal</span></label><label class="choice"><input type="radio" name="normality" value="not-normal"><span>Not normal</span></label></div></div></div>
+<div class="decision-step"><span class="decision-number">2</span><div><h3>What is the dominant pattern?</h3><select id="prioritySelect" required><option value="">Select one</option><option value="normal-neuro">No concerning motor or sensory deficit</option><option value="focal-neuro">Focal neurologic deficit / possible stroke</option><option value="generalized">Generalized symmetric weakness</option><option value="spinal">Possible spinal cord involvement</option><option value="limb-compromise">Distal neurovascular compromise</option><option value="pain-limited">Movement limited by pain with intact distal function</option></select></div></div>
+<div class="decision-step"><span class="decision-number">3</span><div><h3>What is the best immediate EMT priority?</h3><select id="actionSelect" required><option value="">Select one</option><option value="monitor">Continue assessment and reassess</option><option value="stroke-priority">Determine last-known-well, support ABCs, and expedite stroke-capable transport</option><option value="systemic-check">Check glucose and other causes while supporting ABCs and transporting</option><option value="spinal-care">Limit movement, manage ABCs, and expedite transport</option><option value="limb-care">Address limb threat, reassess distal PMS, and transport promptly</option><option value="splint-reassess">Immobilize as indicated and reassess distal PMS</option></select></div></div>
+<div class="decision-step"><span class="decision-number">4</span><div><h3>Document the assessment</h3><textarea id="pcrText" rows="7" placeholder="Document face, speech, arm drift, grips, lower-extremity movement, sensation, distal PMS, laterality, last-known-well when relevant, treatment, and reassessment..." required></textarea><p class="microcopy">Use patient-left and patient-right. Describe observed deficits rather than writing only “neuro abnormal.”</p></div></div>
+<button class="primary-btn submit-btn" type="submit">Grade my assessment</button>
+</form></div>
+<section id="resultsPanel" class="results-panel" hidden><div class="score-ring"><span id="scoreText">0/4</span><small>score</small></div><div><h3>Coaching feedback</h3><ul id="feedbackList"></ul><div class="model-doc"><strong>Example PCR documentation</strong><p id="examplePCR"></p></div><button id="tryAnother" class="secondary-btn" type="button">Try another patient</button></div></section>
+</section>
+<p class="disclaimer">Training content only. Follow your approved education, medical direction, and local protocols.</p>
+</main>
+</body>
+</html>
