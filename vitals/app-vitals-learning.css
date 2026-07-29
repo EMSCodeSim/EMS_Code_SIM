@@ -61,3 +61,18 @@
   .app-vitals-learning{background:linear-gradient(180deg,#0d2233,#0a1b29)}
   .avl-hero{background:#102c40}.avl-hero img,.avl-card{background:#0d2233}.avl-range{background:#0a1b29;color:#8ce0ff}.avl-document{background:#081a28;color:#d7edf8}.avl-mistake{background:#302510}.avl-example.normal{background:#102e24;color:#b7f1d8}.avl-example.abnormal{background:#341b20;color:#ffc2c8}.avl-links a{background:#12334a;color:#a4e5ff}
 }
+
+/* Three-lesson Vital Learning Center */
+.avl-lesson-nav{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#c7dce7;border-bottom:1px solid var(--av-line)}
+.avl-lesson-nav a{display:flex;flex-direction:column;gap:3px;padding:14px 18px;background:#f7fbfd;color:var(--av-text);text-decoration:none}
+.avl-lesson-nav a:hover,.avl-lesson-nav a:focus-visible{background:#e7f5fb;outline:2px solid #0878a8;outline-offset:-2px}
+.avl-lesson-nav b{color:#0878a8;font-size:.85rem;letter-spacing:.06em}.avl-lesson-nav span{font-size:.84rem;color:var(--av-muted)}
+.avl-lesson{display:grid;gap:16px;scroll-margin-top:18px;padding-bottom:18px;border-bottom:1px solid var(--av-line)}
+.avl-lesson:last-of-type{border-bottom:0}.avl-lesson-heading{display:flex;gap:13px;align-items:flex-start}.avl-lesson-heading h3{margin:0 0 5px;font-size:1.25rem}.avl-lesson-heading p{margin:0;color:var(--av-muted);line-height:1.5}
+.avl-step{flex:0 0 auto;background:#0878a8;color:#fff;border-radius:999px;padding:7px 10px;font-size:.75rem;font-weight:900;letter-spacing:.04em}
+.avl-practice-card{border:1px solid #b8d9e8;background:#f4fbfe;border-radius:18px;padding:18px;display:grid;gap:11px}
+.avl-field-label,.avl-normality legend{font-weight:900;color:var(--av-text)}
+.avl-input,.avl-textarea{width:100%;border:1px solid #9fbfce;border-radius:11px;background:#fff;color:#102a3a;padding:12px;font:inherit}.avl-input:focus,.avl-textarea:focus{outline:3px solid rgba(8,120,168,.22);border-color:#0878a8}
+.avl-normality{border:0;padding:2px 0;margin:0}.avl-normality-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}.avl-normality-options label{display:flex;align-items:center;gap:9px;border:2px solid #bfd6e1;background:#fff;border-radius:12px;padding:13px;font-weight:850;cursor:pointer}.avl-normality-options label:has(input:checked){border-color:#0878a8;background:#e7f7fd}
+.avl-abnormal-detail{display:grid;gap:8px}.avl-review-btn{justify-self:start;border:0;border-radius:12px;background:#0878a8;color:#fff;padding:12px 16px;font:inherit;font-weight:900;cursor:pointer}.avl-review-btn:hover{background:#075f86}.avl-practice-feedback{min-height:1.5em;padding:0;font-weight:800}.avl-practice-feedback.complete{padding:11px;border-radius:10px;background:#e7f8ef;color:#125c41}.avl-practice-feedback.needs-work{padding:11px;border-radius:10px;background:#fff4df;color:#76500b}
+@media(max-width:650px){.avl-lesson-nav{grid-template-columns:1fr}.avl-lesson-nav a{padding:10px 14px}.avl-normality-options{grid-template-columns:1fr}.avl-lesson-heading{display:grid}.avl-step{justify-self:start}}
