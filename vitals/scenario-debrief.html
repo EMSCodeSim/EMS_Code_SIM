@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Scenario Debrief and Performance Report | EMSCodeSim</title>
+  <meta name="description" content="Review a completed EMSCodeSim patient scenario, identify missed findings, compare treatment and reassessment, and print a performance report.">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/styles/career-hub.css">
+  <link rel="stylesheet" href="/styles/responsive.css">
+  <link rel="stylesheet" href="/vitals/scenario-debrief.css">
+</head>
+<body>
+  <header class="debrief-hero">
+    <div>
+      <p class="crumbs"><a href="/">Home</a> / <a href="/vitals/">Vital Learning Center</a> / Scenario Debrief</p>
+      <p class="eyebrow">Complete patient-care cycle</p>
+      <h1>Scenario Debrief &amp; Performance Report</h1>
+      <p>Review what you found, how you interpreted it, what treatment you selected, and whether your documentation tells the patient’s story.</p>
+    </div>
+  </header>
+
+  <main class="debrief-shell">
+    <section id="emptyState" class="empty-state" hidden>
+      <h2>No active patient record</h2>
+      <p>Start a full scenario first. Your completed simulator findings will appear here automatically.</p>
+      <a class="primary-link" href="/vitals/scenario-launcher.html">Start a full scenario</a>
+    </section>
+
+    <div id="reportContent" hidden>
+      <section class="patient-banner" aria-labelledby="patientTitle">
+        <div>
+          <p class="eyebrow">Active scenario</p>
+          <h2 id="patientTitle">Patient scenario</h2>
+          <p id="patientSummary"></p>
+        </div>
+        <div class="banner-actions">
+          <button id="printReport" type="button">Print report</button>
+          <button id="downloadReport" type="button" class="secondary">Download report</button>
+        </div>
+      </section>
+
+      <section class="score-grid" aria-label="Performance summary">
+        <article class="score-card score-total">
+          <span>Overall score</span>
+          <strong id="overallScore">0%</strong>
+          <small id="overallLabel">Needs review</small>
+        </article>
+        <article class="score-card"><span>Assessment</span><strong id="assessmentScore">—</strong><small>Mini-simulator findings</small></article>
+        <article class="score-card"><span>Clinical reasoning</span><strong id="impressionScore">—</strong><small>Impression and differential</small></article>
+        <article class="score-card"><span>Treatment</span><strong id="treatmentScore">—</strong><small>Intervention and reassessment</small></article>
+        <article class="score-card"><span>Documentation</span><strong id="documentationScore">—</strong><small>PCR and verbal handoff</small></article>
+      </section>
+
+      <section class="report-section">
+        <div class="section-heading"><div><p class="eyebrow">Step 1</p><h2>Assessment findings</h2></div><span id="findingCount" class="count-pill">0 findings</span></div>
+        <div id="findingsGrid" class="findings-grid"></div>
+      </section>
+
+      <section class="report-section two-column">
+        <article>
+          <p class="eyebrow">Step 2</p>
+          <h2>Clinical impression</h2>
+          <dl id="impressionDetails" class="detail-list"></dl>
+        </article>
+        <article>
+          <p class="eyebrow">Reasoning check</p>
+          <h2>Strengths and review points</h2>
+          <div id="coachingList" class="coaching-list"></div>
+        </article>
+      </section>
+
+      <section class="report-section">
+        <div class="section-heading"><div><p class="eyebrow">Step 3</p><h2>Treatment and reassessment</h2></div></div>
+        <div class="timeline" id="careTimeline"></div>
+      </section>
+
+      <section class="report-section two-column">
+        <article>
+          <p class="eyebrow">Step 4</p>
+          <h2>PCR narrative</h2>
+          <div id="narrativeText" class="document-box"></div>
+        </article>
+        <article>
+          <p class="eyebrow">Step 5</p>
+          <h2>Verbal handoff</h2>
+          <div id="handoffText" class="document-box"></div>
+        </article>
+      </section>
+
+      <section class="report-section reflection-section">
+        <p class="eyebrow">Guided reflection</p>
+        <h2>Before finishing, answer three questions</h2>
+        <label>What finding mattered most?<textarea id="reflectionFinding" rows="3" placeholder="Identify the finding that most changed your clinical impression or treatment."></textarea></label>
+        <label>What would you do differently?<textarea id="reflectionChange" rows="3" placeholder="Describe one assessment, treatment, or communication improvement."></textarea></label>
+        <label>What will you reassess first next time?<textarea id="reflectionReassess" rows="3" placeholder="Name the first trend or patient threat you would recheck."></textarea></label>
+        <button id="saveReflection" type="button">Save reflection</button>
+        <p id="reflectionStatus" class="save-status" role="status"></p>
+      </section>
+
+      <nav class="next-actions" aria-label="Next actions">
+        <a href="/vitals/patient-record.html">Open patient record</a>
+        <a href="/vitals/scenario-launcher.html">Start another scenario</a>
+        <a href="/vitals/progress-dashboard.html">View learning progress</a>
+      </nav>
+    </div>
+  </main>
+
+  <script src="/vitals/patient-record.js"></script>
+  <script src="/vitals/scenario-debrief.js"></script>
+</body>
+</html>
