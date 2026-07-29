@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Patient Findings and Clinical Impression Simulator | EMSCodeSim</title>
+  <meta name="description" content="Combine EMT assessment findings, classify normal and abnormal results, build a differential diagnosis, choose a working clinical impression, and document patient care.">
+  <link rel="canonical" href="https://emscodesim.com/vitals/clinical-impression.html">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/styles/responsive.css">
+  <link rel="stylesheet" href="/styles/site-enhancements.css">
+  <link rel="stylesheet" href="/vitals/clinical-impression.css">
+  <script defer src="/privacy-controls.js"></script>
+  <script defer src="/vitals/clinical-impression.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="topbar__inner"><a class="back-link" href="/vitals/">← Vitals</a><div><p class="eyebrow">Integrated EMT Scenario</p><h1>Patient Findings &amp; Clinical Impression</h1></div><span class="level-badge">EMT</span></div></header>
+<main class="page-shell">
+<section class="hero-card"><div><p class="eyebrow">Gather → Interpret → Differentiate → Document</p><h2>Turn separate assessment findings into one complete patient picture.</h2><p>Review findings from multiple mini-simulators, decide what is normal or abnormal, select a working clinical impression, consider alternatives, choose the immediate priority, and write an objective summary.</p></div><div class="progress-box"><span id="progressText">0 of 3 lessons complete</span><div class="progress-track"><span id="progressBar"></span></div></div></section>
+<nav class="lesson-tabs" aria-label="Clinical impression lessons"><button class="lesson-tab is-active" data-panel="howPanel" type="button"><span>1</span> HOW</button><button class="lesson-tab" data-panel="whyPanel" type="button"><span>2</span> WHY</button><button class="lesson-tab" data-panel="practicePanel" type="button"><span>3</span> PRACTICE</button></nav>
+<section class="lesson-panel is-active" id="howPanel">
+<div class="section-heading"><p class="eyebrow">Lesson 1</p><h2>HOW: Build a working clinical impression</h2><p>A clinical impression is not a hospital diagnosis. It is the best explanation of the patient’s condition based on the information available to EMS.</p></div>
+<div class="step-grid">
+<article class="step-card"><span class="step-number">1</span><h3>Start with the chief complaint</h3><p>Identify why EMS was called, what changed, when it began, and what the patient or bystander considers most important.</p></article>
+<article class="step-card"><span class="step-number">2</span><h3>Collect objective findings</h3><p>Use airway, breathing, circulation, mental status, vital signs, focused exam, SAMPLE, and OPQRST findings. Do not rely on one number alone.</p></article>
+<article class="step-card"><span class="step-number">3</span><h3>Classify each finding</h3><p>Decide whether each result is normal or not normal for this patient. Note trends, severity, and findings that require immediate action.</p></article>
+<article class="step-card"><span class="step-number">4</span><h3>Look for a pattern</h3><p>Group related findings. For example, wheezing, prolonged exhalation, accessory-muscle use, and low SpO₂ form a respiratory pattern.</p></article>
+<article class="step-card"><span class="step-number">5</span><h3>Build a differential</h3><p>Select the most likely cause and at least one reasonable alternative. Ask what evidence supports or argues against each possibility.</p></article>
+<article class="step-card"><span class="step-number">6</span><h3>Treat, reassess, and revise</h3><p>Address immediate threats, transport appropriately, repeat the assessment, and revise the impression if the patient changes or new information appears.</p></article>
+</div>
+<div class="callout"><strong>Stay within EMT scope.</strong> Identify the emergency pattern and appropriate care without claiming a definitive hospital diagnosis.</div>
+<button class="primary-btn completion-btn" data-complete="how" type="button">Mark HOW complete</button>
+</section>
+<section class="lesson-panel" id="whyPanel" hidden>
+<div class="section-heading"><p class="eyebrow">Lesson 2</p><h2>WHY: Avoid common reasoning errors</h2><p>Good clinical reasoning combines findings, recognizes uncertainty, and protects the patient from premature conclusions.</p></div>
+<div class="concept-grid">
+<article class="concept-card"><h3>One finding is rarely enough</h3><p>A low SpO₂ may be real, inaccurate, or unrelated to the main complaint. Confirm the signal and compare it with work of breathing, skin signs, and mental status.</p></article>
+<article class="concept-card"><h3>Normal vitals do not end the assessment</h3><p>Early shock, stroke, overdose, and serious illness may initially present with some values inside typical ranges.</p></article>
+<article class="concept-card"><h3>Trends matter</h3><p>A blood pressure falling from 122/78 to 96/62 may be more concerning than one isolated reading, even when the second value is not profoundly low.</p></article>
+<article class="concept-card"><h3>Alternatives reduce anchoring</h3><p>Considering at least one other explanation helps prevent locking onto the first idea and ignoring conflicting findings.</p></article>
+<article class="concept-card"><h3>Treatment response is data</h3><p>Improvement or deterioration after airway support, ventilation, oxygen, glucose, epinephrine, bleeding control, or positioning provides new information.</p></article>
+<article class="concept-card"><h3>Document evidence, not certainty</h3><p>Write the findings and the working impression. Avoid unsupported statements such as “definite stroke” or “confirmed sepsis.”</p></article>
+</div>
+<div class="knowledge-check"><h3>Quick knowledge check</h3><p>Which statement best represents an EMT working impression?</p><label><input type="radio" name="whyQuestion" value="absolute"> “The patient definitely has a pulmonary embolism.”</label><label><input type="radio" name="whyQuestion" value="supported"> “Findings are concerning for a time-sensitive respiratory emergency; pulmonary embolism remains one possible cause.”</label><button id="checkWhy" class="secondary-btn" type="button">Check answer</button><p id="whyFeedback" class="feedback-text" aria-live="polite"></p></div>
+<button class="primary-btn completion-btn" data-complete="why" type="button">Mark WHY complete</button>
+</section>
+<section class="lesson-panel" id="practicePanel" hidden>
+<div class="section-heading"><p class="eyebrow">Lesson 3</p><h2>PRACTICE: Interpret a complete patient</h2><p>Review the dispatch, history, and findings. Classify each result, select the most likely impression and alternatives, choose the immediate priority, and document your reasoning.</p></div>
+<div class="scenario-card"><div class="scenario-top"><div><p class="eyebrow">Random integrated case</p><h3 id="caseTitle"></h3></div><button id="newCase" class="secondary-btn" type="button">New patient</button></div><p id="dispatchText" class="dispatch"></p><p id="historyText"></p></div>
+<div class="findings-panel"><div class="findings-header"><div><p class="eyebrow">Collected simulator results</p><h3>Patient Findings</h3></div><span id="findingCount" class="count-badge"></span></div><div id="findingsList" class="findings-list"></div></div>
+<form id="impressionForm" class="decision-card">
+<div class="decision-step"><span class="decision-number">1</span><div><h3>Classify the findings</h3><p class="microcopy">Select Normal or Not Normal for every finding.</p><div id="classificationList" class="classification-list"></div></div></div>
+<div class="decision-step"><span class="decision-number">2</span><div><h3>What is the most likely working impression?</h3><select id="primarySelect" required><option value="">Select one</option></select></div></div>
+<div class="decision-step"><span class="decision-number">3</span><div><h3>Select two reasonable alternatives</h3><div id="differentialChoices" class="check-grid"></div></div></div>
+<div class="decision-step"><span class="decision-number">4</span><div><h3>Which findings best support your impression?</h3><div id="supportChoices" class="check-grid"></div></div></div>
+<div class="decision-step"><span class="decision-number">5</span><div><h3>What is the best immediate EMT priority?</h3><select id="actionSelect" required><option value="">Select one</option></select></div></div>
+<div class="decision-step"><span class="decision-number">6</span><div><h3>Document your clinical impression</h3><textarea id="pcrText" rows="8" placeholder="Summarize the complaint, important normal and abnormal findings, working impression, care, transport priority, and reassessment..." required></textarea><p class="microcopy">Use language such as “findings concerning for” or “presentation consistent with” rather than claiming a confirmed diagnosis.</p></div></div>
+<button class="primary-btn submit-btn" type="submit">Grade my clinical reasoning</button>
+</form>
+<section id="resultsPanel" class="results-panel" hidden><div class="score-ring"><span id="scoreText"></span></div><div><h3>Coaching feedback</h3><ul id="feedbackList"></ul><div class="model-doc"><strong>Example documentation</strong><p id="examplePCR"></p></div><button id="tryAnother" class="secondary-btn" type="button">Try another patient</button></div></section>
+</section>
+<p class="disclaimer">Training content only. Follow your approved education, medical direction, and local protocols.</p>
+</main>
+</body>
+</html>
