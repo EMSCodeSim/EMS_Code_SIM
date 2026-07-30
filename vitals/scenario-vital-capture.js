@@ -19,8 +19,14 @@ let ready=false,saved=!!api.active()?.findings?.[def.key];
 const host=document.createElement('section');host.id='scenarioVitalCapture';host.innerHTML=`<div class="svc-card"><h2>${def.label}: obtain the finding</h2><p>${def.prompt}</p><button type="button" ${saved?'disabled':''}>${saved?'Finding already recorded':'Record obtained finding'}</button><div class="svc-message" aria-live="polite"></div></div>`;document.body.appendChild(host);
 const btn=host.querySelector('button'),msg=host.querySelector('.svc-message');if(!saved)btn.disabled=true;
 function unlock(){ready=true;if(!saved){btn.disabled=false;btn.textContent='Record obtained finding'}}
-function attach(){def.ready.forEach(sel=>document.querySelectorAll(sel).forEach(el=>el.addEventListener('click',()=>setTimeout(unlock,0),{once:true})))}
-attach();
+function matchesReady(target){return def.ready.some(sel=>target.closest?.(sel))}
+document.addEventListener('click',event=>{if(matchesReady(event.target))setTimeout(unlock,0)});
+// Also observe result/status changes for simulators whose final controls are created dynamically.
+const observer=new MutationObserver(()=>{
+  const text=document.body.innerText||'';
+  if(/correct|result ready|observation complete|actual finding|reading|assessment complete/i.test(text)) unlock();
+});
+observer.observe(document.body,{subtree:true,childList:true,characterData:true});
 // Configure the skin visual to the active patient without printing the answer.
 if(path==='skin.html')setTimeout(()=>{const text=String(v.skin||'').toLowerCase();
  const click=id=>{const el=document.querySelector(id);if(el&&el.getAttribute('aria-pressed')!=='true')el.click()};
@@ -30,6 +36,6 @@ if(path==='skin.html')setTimeout(()=>{const text=String(v.skin||'').toLowerCase(
 },120);
 btn.addEventListener('click',()=>{if(!ready||saved)return;const value=def.value(v);const normality=(()=>{switch(def.key){case'blood_pressure':return v.systolic<90||v.systolic>180||v.diastolic>110?'not-normal':'normal';case'pulse':return v.pulse<60||v.pulse>100?'not-normal':'normal';case'respirations':return v.respirations<12||v.respirations>20?'not-normal':'normal';case'spo2':return v.spo2<94?'not-normal':'normal';case'blood_glucose':return v.bgl<70||v.bgl>200?'not-normal':'normal';case'breath_sounds':return v.breathSoundType==='normal'?'normal':'not-normal';default:return /pale|cool|clammy|diaphoretic|mottled|confused|poor interaction/i.test(String(value))?'not-normal':'normal'}})();
  api.setFinding(def.key,value,{label:def.label,finding:value,normality,status:normality==='normal'?'normal':'abnormal',source:'scenario-simulator',locked:true,recordedAt:new Date().toISOString()});
- saved=true;btn.disabled=true;btn.textContent='Finding recorded';msg.className='svc-message svc-saved';msg.textContent=`${def.label} added to this patient’s findings.`;window.dispatchEvent(new CustomEvent('emscodesim:assessment-saved',{detail:{assessment:def.key,label:def.label,finding:value,normality}}));
+ saved=true;btn.disabled=true;btn.textContent='Finding recorded';msg.className='svc-message svc-saved';msg.textContent=`${def.label} added to this patient’s findings.`;const detail={assessment:def.key,label:def.label,finding:value,normality};window.dispatchEvent(new CustomEvent('emscodesim:assessment-saved',{detail}));setTimeout(()=>window.EMSCodeSimScenarioFlow?.show?.(),0);
 });
 })();

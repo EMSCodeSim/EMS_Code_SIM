@@ -63,6 +63,7 @@
       api.setFinding(entry.assessment, entry.finding, entry);
       showNotice(`Saved ${entry.label} to the active patient record.`, true);
       window.dispatchEvent(new CustomEvent('emscodesim:assessment-saved', { detail: entry }));
+      setTimeout(() => window.EMSCodeSimScenarioFlow?.show?.(), 0);
       return { linked: true, entry };
     }
 

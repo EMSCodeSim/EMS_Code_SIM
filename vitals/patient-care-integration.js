@@ -42,6 +42,7 @@
       writer(api, entry);
       notice(`${payload.label || 'Patient-care step'} saved to the active patient record.`, true);
       window.dispatchEvent(new CustomEvent('emscodesim:care-step-saved', { detail: entry }));
+      setTimeout(() => window.EMSCodeSimScenarioFlow?.show?.(), 0);
       return { linked: true, entry };
     }
     savePending(entry);
