@@ -14,25 +14,12 @@ function chooseCase(key,cases,current){const r=record();if(!r||!cases?.length){l
 function vital(name,fallback){return profile()?.vitals?.[name]??fallback}
 
 function syncProfileFindings(){
- const r=record(),p=profile(),api=window.EMSCodeSimPatientRecord;if(!r||!p||!api?.update)return;
- const v=p.vitals||{};
- const prescribed={
-  blood_pressure:{value:v.bp,label:'Blood pressure',normality:(v.systolic<90||v.systolic>180||v.diastolic>110)?'not-normal':'normal'},
-  pulse:{value:`${v.pulse}/min`,label:'Pulse',normality:(v.pulse<60||v.pulse>100)?'not-normal':'normal'},
-  respirations:{value:`${v.respirations}/min`,label:'Respirations',normality:(v.respirations<12||v.respirations>20)?'not-normal':'normal'},
-  spo2:{value:`${v.spo2}%`,label:'SpO₂',normality:v.spo2<94?'not-normal':'normal'},
-  blood_glucose:{value:`${v.bgl} mg/dL`,label:'Blood glucose',normality:(v.bgl<70||v.bgl>200)?'not-normal':'normal'},
-  temperature:{value:v.temperature,label:'Temperature',normality:parseFloat(v.temperature)>100.4?'not-normal':'normal'},
-  mental_status:{value:v.orientation||v.avpu,label:'Mental status',normality:v.avpu==='A'&&String(v.orientation||'').includes('x4')?'normal':'not-normal'},
-  skin:{value:v.skin,label:'Skin signs',normality:/pale|cool|clammy|diaphoretic|mottled/i.test(v.skin||'')?'not-normal':'normal'},
-  pupils:{value:v.pupils,label:'Pupils',normality:/equal and reactive/i.test(v.pupils||'')?'normal':'not-normal'},
-  breath_sounds:{value:v.breathSounds,label:'Breath sounds',normality:v.breathSoundType==='normal'?'normal':'not-normal'}
- };
- let changed=false;
- api.update(next=>{next.profile=p;next.findings=next.findings||{};for(const [k,item] of Object.entries(prescribed)){if(!next.findings[k]){next.findings[k]={...item,finding:item.value,source:'scenario-profile',locked:true,recordedAt:new Date().toISOString()};changed=true;}}return next});
+ // Scenario profiles are intentionally kept hidden until the learner obtains
+ // each finding in the matching simulator. Do not preload patient findings.
+ return;
 }
 
-function applyMode(){const r=record();if(!r)return;syncProfileFindings();document.documentElement.classList.add('scenario-mode');document.body?.classList.add('scenario-mode');
+function applyMode(){const r=record();if(!r)return;document.documentElement.classList.add('scenario-mode');document.body?.classList.add('scenario-mode');
  const practice=document.getElementById('practicePanel');if(practice){document.querySelectorAll('.lesson-panel').forEach(p=>{p.hidden=p!==practice;p.classList.toggle('is-active',p===practice)});document.querySelectorAll('.lesson-tab').forEach(t=>t.classList.toggle('is-active',t.dataset.panel==='practicePanel'));}
  document.querySelectorAll('#newScenario,#newCase,#nextBtn,#tryAnother,[data-action="new-patient"]').forEach(b=>{b.disabled=true;b.hidden=true;b.setAttribute('aria-hidden','true')});
  document.querySelectorAll('.patient-card__top .eyebrow').forEach(e=>e.textContent='Active scenario patient');

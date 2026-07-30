@@ -16,7 +16,7 @@
 <link href="/styles/site-enhancements.css" rel="stylesheet"/>
 <script defer="" src="/privacy-controls.js"></script>
 <link href="/vitals/app-vitals-learning.css" rel="stylesheet"/><link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
-<link rel="stylesheet" href="/vitals/scenario-flow.css"></head>
+<link rel="stylesheet" href="/vitals/scenario-flow.css"><link rel="stylesheet" href="/vitals/scenario-vital-capture.css"></head>
 <body data-vital-topic="respirations">
 <header><div class="topbar"><a href="/emt-prep/module-5-vital-signs.html">← Lesson</a><h1>Respiratory Rate Simulator</h1><span>EMT Prep</span></div></header>
 <main class="wrap"><section class="card">
@@ -43,4 +43,4 @@ start.addEventListener('click',()=>{stop();current=window.EMSCodeSimScenarioRunt
 check.addEventListener('click',()=>{if(!current)return;const guess=Number(rateGuess.value);if(!guess||!depthGuess.value||!effortGuess.value){result.className='result warn';result.textContent='Enter a rate, depth, and effort before checking.';return;}const rateOK=Math.abs(guess-current.rate)<=2,depthOK=depthGuess.value===current.depth,effortOK=effortGuess.value===current.effort,score=[rateOK,depthOK,effortOK].filter(Boolean).length;result.className='result '+(score===3?'ok':'warn');result.innerHTML=`${score}/3 correct. Actual finding: <strong>${current.rate}/min, ${current.depth}, ${current.effort}</strong>. ${rateOK?'Rate was close.':'Recount chest rises and multiply the 15-second count by four.'}`;});
 })();
 </script>
-<script defer="True" src="/vitals/app-vitals-learning.js"></script><script src="/vitals/patient-record.js"></script><script src="/vitals/scenario-runtime.js"></script><script src="/vitals/scenario-status.js"></script><script src="/vitals/scenario-flow.js"></script></body></html>
+<script defer="True" src="/vitals/app-vitals-learning.js"></script><script src="/vitals/patient-record.js"></script><script src="/vitals/scenario-runtime.js"></script><script src="/vitals/scenario-status.js"></script><script src="/vitals/scenario-flow.js"></script><script src="/vitals/scenario-vital-capture.js"></script></body></html>

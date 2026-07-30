@@ -3,3 +3,5 @@
 .assignment-banner{background:#fff8e8;border:1px solid #efc778;border-radius:20px;box-shadow:0 12px 30px rgba(9,40,61,.08);padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;gap:18px;align-items:center}.assignment-banner h2{margin:.2rem 0}.assignment-banner p{margin:.25rem 0;color:#6c541e}.assignment-banner a{background:#8a5a00;color:#fff;text-decoration:none;font-weight:900;border-radius:12px;padding:12px 15px;white-space:nowrap}@media(max-width:620px){.assignment-banner{flex-direction:column;align-items:stretch}.assignment-banner a{text-align:center}}
 
 .resume-notice{margin:0 0 14px;padding:12px 14px;border:1px solid #8dd8b8;border-radius:12px;background:#ecfff6;color:#075b3d;font-weight:800}
+
+.scenario-rule{margin:14px 0;padding:13px 14px;border-radius:12px;background:#fff7df;border:1px solid #e6c76c;color:#614b05;font-weight:750}
