@@ -92,7 +92,7 @@
 <script defer="" src="/privacy-controls.js"></script>
 <script defer="" src="/scripts/engagement-loop.js"></script>
 <meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Breath Sound Simulator | EMSCodeSim" property="og:title"/><meta content="Practice EMS lung sound assessment with anterior and posterior chest hotspots, normal sounds, wheezes, crackles, stridor, and diminished findings." property="og:description"/><meta content="https://emscodesim.com/vitals/breath-sound-simulator.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
-</head>
+<link rel="stylesheet" href="/vitals/scenario-status.css"><link rel="stylesheet" href="/vitals/scenario-status.css"><link rel="stylesheet" href="/vitals/scenario-runtime.css"><link rel="stylesheet" href="/vitals/scenario-flow.css"></head>
 <body>
 <!-- Sticky Top Header -->
 <div class="topbar" role="banner">
@@ -289,6 +289,7 @@
     };
 
     let sideSound = { left: "normal", right: "normal" };
+    function applyScenarioSound(){const rt=window.EMSCodeSimScenarioRuntime;if(!rt?.active())return;const type=rt.vital("breathSoundType","normal");sideSound={left:type,right:type};document.querySelectorAll("select[id$=Sound]").forEach(sel=>{sel.value=type==="diminished"?"normal":type;sel.disabled=true});note.textContent=`Locked scenario finding: ${rt.vital("breathSounds","Clear and equal bilaterally")}`;}
     const audio = document.getElementById("breathAudio");
     const note  = document.getElementById("note");
 
@@ -352,8 +353,9 @@
     }
 
     // Init to front view
+    setTimeout(applyScenarioSound,0);
     document.getElementById("viewLabel").textContent = "View: FRONT";
     togglePoints("front");
   </script>
-</body>
+<script src="/vitals/patient-record.js"></script><script src="/vitals/scenario-runtime.js"></script><script src="/vitals/scenario-status.js"></script><script src="/vitals/scenario-flow.js"></script></body>
 </html>
