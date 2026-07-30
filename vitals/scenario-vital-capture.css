@@ -5,3 +5,12 @@
 #scenarioVitalCapture button{width:100%;border:0;border-radius:12px;padding:13px 16px;background:#087b8f;color:#fff;font:inherit;font-weight:850;cursor:pointer}
 #scenarioVitalCapture button:disabled{opacity:.45;cursor:not-allowed}
 #scenarioVitalCapture .svc-saved{background:#eaf8f2;border:1px solid #7cc7a6;color:#176241;padding:11px;border-radius:10px;font-weight:750}
+#scenarioVitalCapture .svc-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#scenarioVitalCapture .svc-partner{background:#5d3f8c}
+#scenarioVitalCapture .svc-partner-status{margin-top:12px;padding:12px;border:1px solid #cbbde1;border-radius:12px;background:#f7f3fc}
+#scenarioVitalCapture .svc-partner-row{display:flex;justify-content:space-between;gap:12px;align-items:center;color:#49326d}
+#scenarioVitalCapture .svc-countdown{font-weight:900;font-variant-numeric:tabular-nums}
+#scenarioVitalCapture .svc-progress{height:10px;margin:10px 0;background:#e3dced;border-radius:999px;overflow:hidden}
+#scenarioVitalCapture .svc-progress span{display:block;width:0;height:100%;background:#68479b;transition:width .9s linear}
+#scenarioVitalCapture .svc-cancel{width:auto;padding:8px 11px;background:#fff;color:#5d3f8c;border:1px solid #9e86c3;font-size:.9rem}
+@media(max-width:560px){#scenarioVitalCapture .svc-actions{grid-template-columns:1fr}}
