@@ -231,3 +231,33 @@
   .module3-activity-head{display:grid}
   .module3-actions .btn,.module3-actions button{width:100%}
 }
+
+/* Final EMT School Readiness Assessment */
+.readiness-question{margin:0 0 16px;padding:18px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.readiness-question legend{padding:0 6px;font-weight:900;color:var(--navy);line-height:1.45}
+.readiness-question label{display:flex;gap:10px;align-items:flex-start;margin-top:8px;padding:10px;border-radius:9px;cursor:pointer}
+.readiness-question label:hover{background:#f4f8fb}
+.readiness-question input{margin-top:3px}
+.readiness-question.is-correct{border-color:#4a9d70;background:#f2fbf6}
+.readiness-question.is-incorrect{border-color:#cc6b72;background:#fff6f6}
+.readiness-question.is-unanswered{border-color:#d49a45;background:#fff9ed}
+.question-feedback{margin:12px 0 0;padding:10px 12px;border-radius:9px;background:#edf3f7;font-weight:750;line-height:1.5}
+#finalReadinessForm>.btn{margin:4px 8px 8px 0}
+.readiness-profile{margin-top:22px;border:1px solid #b8d9ec;border-radius:16px;background:#eef8fd;padding:20px}
+.profile-score{display:flex;gap:15px;align-items:center;flex-wrap:wrap;margin:12px 0;padding:16px;border-radius:13px;background:#fff}
+.profile-score strong{font-size:clamp(1.8rem,5vw,3rem);color:var(--navy)}
+.profile-score span{font-weight:900;color:var(--blue-dark)}
+.module-result-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:14px 0 20px}
+.module-result{display:grid;gap:4px;padding:13px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.module-result>span{font-size:.74rem;font-weight:900;text-transform:uppercase;letter-spacing:.07em;color:var(--blue-dark)}
+.module-result small{color:var(--muted)}
+.module-result a{margin-top:5px;font-weight:850}
+.module-result.strong{border-color:#71aa87;background:#f2fbf6}
+.module-result.review{border-color:#d3a15b;background:#fff9ed}
+.assessment-note{margin-top:18px;padding-top:14px;border-top:1px solid #b8d9ec;color:var(--muted);font-size:.92rem}
+@media(max-width:760px){.module-result-grid{grid-template-columns:1fr}.readiness-question{padding:14px}.readiness-question label{padding:9px 5px}.profile-score{align-items:flex-start;display:grid}}
+
+/* Smart EMT Prep dashboard */
+.prep-resume-panel{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(220px,.8fr);gap:1.25rem;align-items:stretch;margin:1.5rem 0;padding:1.35rem;border:1px solid rgba(46,196,182,.28);border-radius:20px;background:linear-gradient(135deg,rgba(11,46,70,.98),rgba(8,22,38,.98));box-shadow:0 16px 40px rgba(0,0,0,.18)}
+.prep-resume-main h2{margin:.15rem 0 .45rem;color:#fff}.prep-resume-main>p:not(.eyebrow){margin:.25rem 0 .8rem;color:#d7e6ef}.prep-resume-meta{display:flex;flex-wrap:wrap;gap:.55rem;margin:.75rem 0 1rem}.prep-resume-meta span{padding:.38rem .7rem;border-radius:999px;background:rgba(255,255,255,.09);color:#eaf7f6;font-size:.88rem}.prep-readiness-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;align-content:center}.prep-readiness-summary div{min-height:92px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:.75rem;border-radius:15px;background:rgba(255,255,255,.08);text-align:center}.prep-readiness-summary strong{font-size:1.65rem;color:#fff}.prep-readiness-summary span{font-size:.78rem;color:#bfd3df}.module-filter-bar{display:flex;flex-wrap:wrap;gap:.55rem;margin:1rem 0}.module-filter-bar button{border:1px solid rgba(25,74,102,.22);border-radius:999px;padding:.55rem .9rem;background:#fff;color:#12334a;font-weight:700;cursor:pointer}.module-filter-bar button.is-active{background:#123f5b;color:#fff;border-color:#123f5b}.module-card[hidden]{display:none!important}.module-card.is-next{outline:3px solid rgba(46,196,182,.35);outline-offset:2px}.module-card.is-next .module-status{background:#dff8f4;color:#075b52}.module-card.is-complete .module-card-number{background:#176f63;color:#fff}
+@media(max-width:760px){.prep-resume-panel{grid-template-columns:1fr;padding:1rem}.prep-readiness-summary{grid-template-columns:repeat(3,1fr)}.prep-readiness-summary div{min-height:76px;padding:.55rem}.prep-readiness-summary strong{font-size:1.35rem}.module-filter-bar{overflow-x:auto;flex-wrap:nowrap;padding-bottom:.25rem}.module-filter-bar button{white-space:nowrap}}
