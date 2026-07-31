@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Patient Assessment Findings | EMSCodeSim</title>
+  <meta name="description" content="Collect, organize, edit, and report EMS assessment findings from EMSCodeSim mini simulators in one shared patient record.">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/styles/career-hub.css">
+  <link rel="stylesheet" href="/styles/responsive.css">
+  <link rel="stylesheet" href="/vitals/patient-record.css">
+</head>
+<body>
+<header class="record-hero">
+  <div class="record-shell record-head">
+    <div>
+      <p><a href="/">Home</a> / <a href="/vitals/">Vital Learning Center</a> / Patient Assessment</p>
+      <h1>Patient Assessment Findings</h1>
+      <p>Collect findings from the mini simulators, classify them, and build one report-ready patient summary.</p>
+    </div>
+    <span class="record-badge">Scenario Mode</span>
+  </div>
+</header>
+
+<main class="record-shell">
+  <section id="noRecord" class="record-card" hidden>
+    <h2>No active patient</h2>
+    <p>Launch a patient scenario first. Findings from each assessment simulator will then report here automatically.</p>
+    <a class="primary-action button-link" href="/vitals/scenario-launcher.html">Open Scenario Launcher</a>
+  </section>
+
+  <div id="recordContent" hidden>
+    <section class="record-card scenario-overview">
+      <div class="record-head">
+        <div>
+          <p class="field-label">Active scenario</p>
+          <h2 id="recordTitle"></h2>
+        </div>
+        <a class="secondary-action button-link" href="/vitals/scenario-launcher.html">Return to scenario</a>
+      </div>
+      <p id="recordDispatch"></p>
+      <div class="record-meta">
+        <div><span>Patient</span><strong id="recordPatient"></strong></div>
+        <div><span>Scene</span><strong id="recordScene"></strong></div>
+        <div><span>Goal</span><strong id="recordGoal"></strong></div>
+      </div>
+    </section>
+
+    <section class="record-card findings-dashboard">
+      <div class="record-head">
+        <div>
+          <p class="field-label">Live patient list</p>
+          <h2>Collected findings</h2>
+          <p>New readings replace the current value while preserving the earlier reading in the timeline.</p>
+        </div>
+        <div class="finding-stats" aria-label="Finding totals">
+          <div><strong id="findingTotal">0</strong><span>Total</span></div>
+          <div><strong id="abnormalTotal">0</strong><span>Not normal</span></div>
+          <div><strong id="updatedTotal">0</strong><span>Repeat readings</span></div>
+        </div>
+      </div>
+
+      <div class="record-toolbar">
+        <div class="filter-group" role="group" aria-label="Filter findings">
+          <button type="button" class="filter-button is-active" data-filter="all">All</button>
+          <button type="button" class="filter-button" data-filter="abnormal">Not normal</button>
+          <button type="button" class="filter-button" data-filter="vitals">Vitals</button>
+          <button type="button" class="filter-button" data-filter="assessment">Assessment</button>
+        </div>
+        <button id="copyFindingSummary" class="secondary-action" type="button">Copy findings summary</button>
+      </div>
+
+      <div id="groupedFindingList" class="finding-groups"></div>
+      <p id="findingEmpty" class="empty-note" hidden>No findings match this filter.</p>
+    </section>
+
+    <section class="record-card report-summary-card">
+      <div class="record-head">
+        <div>
+          <p class="field-label">Report-ready wording</p>
+          <h2>Current assessment summary</h2>
+        </div>
+        <button id="copyHandoffSummary" class="primary-action" type="button">Copy handoff summary</button>
+      </div>
+      <div id="handoffSummary" class="handoff-summary" aria-live="polite"></div>
+    </section>
+
+    <section class="record-grid">
+      <article class="record-card">
+        <h2>Add or correct a finding</h2>
+        <div class="quick-findings" id="quickFindings"></div>
+        <form id="findingForm" class="record-form-grid">
+          <input id="editingFindingKey" type="hidden">
+          <label><span class="field-label">Finding type</span><select id="findingType" required></select></label>
+          <label><span class="field-label">Result</span><input id="findingValue" required placeholder="Example: 88/54 mmHg"></label>
+          <label><span class="field-label">Classification</span><select id="findingStatus" required><option value="normal">Normal</option><option value="not-normal">Not normal</option></select></label>
+          <label><span class="field-label">Interpretation</span><input id="findingInterpretation" placeholder="Example: hypotensive"></label>
+          <label class="span-2"><span class="field-label">Documentation note</span><textarea id="findingNote" placeholder="Objective wording suitable for a PCR"></textarea></label>
+          <div class="span-2 record-actions">
+            <button id="saveFindingButton" class="primary-action" type="submit">Save finding</button>
+            <button id="cancelFindingEdit" class="secondary-action" type="button" hidden>Cancel edit</button>
+          </div>
+        </form>
+      </article>
+
+      <article class="record-card">
+        <div class="record-head">
+          <div><h2>Finding timeline</h2><p>Earlier readings and corrected entries are kept here.</p></div>
+        </div>
+        <div id="findingTimeline" class="record-list timeline-list"></div>
+      </article>
+    </section>
+
+    <section class="record-grid">
+      <article class="record-card">
+        <h2>Treatments and reassessments</h2>
+        <div id="careList" class="record-list"></div>
+      </article>
+      <article class="record-card">
+        <h2>Clinical impression and documentation</h2>
+        <form id="summaryForm" class="record-form-grid">
+          <label><span class="field-label">Working impression</span><input id="primaryImpression" placeholder="Example: suspected hypoglycemia"></label>
+          <label><span class="field-label">Alternative diagnosis</span><input id="alternativeImpression" placeholder="Example: stroke"></label>
+          <label class="span-2"><span class="field-label">PCR narrative</span><textarea id="pcrNarrative"></textarea></label>
+          <label class="span-2"><span class="field-label">Verbal handoff</span><textarea id="verbalHandoff"></textarea></label>
+          <div class="span-2 record-actions">
+            <button class="primary-action" type="submit">Save summary</button>
+            <button id="downloadRecord" class="secondary-action" type="button">Download JSON</button>
+            <button id="clearRecord" class="danger-action" type="button">Clear patient</button>
+          </div>
+        </form>
+      </article>
+    </section>
+
+    <p id="saveMessage" class="record-message" hidden aria-live="polite"></p>
+  </div>
+</main>
+<script src="/vitals/patient-record.js"></script>
+<script src="/vitals/patient-record-page.js"></script>
+</body>
+</html>
