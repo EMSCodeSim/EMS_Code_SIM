@@ -1,0 +1,8 @@
+EMSCodeSim updated-files-only package
+
+1. Copy every file and folder in this package into the root of your existing EMS_Code_SIM-main project.
+2. Allow matching files to be replaced.
+3. Delete the files listed in FILES_TO_DELETE.txt.
+4. Run npm install, then npm run validate before deployment.
+
+The large legacy medical-simulator archive is intentionally excluded from this package.

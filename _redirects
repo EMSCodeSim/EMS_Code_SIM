@@ -11,7 +11,8 @@
 /loc-orientation-simulator       /vitals/aao.html                           301
 /rule-of-nines                   /vitals/nines.html                         301
 /apgar-simulator                 /APGAR/                                    301
-/medical-scenario-simulator      /med_sim.html                              301
+/medical-scenario-simulator      /vitals/scenario-launcher.html             302!
+/med_sim.html                    /vitals/scenario-launcher.html             302!
 
 # Extensionless internal support
 /vitals/bp /vitals/bp.html 301

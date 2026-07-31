@@ -20,7 +20,7 @@
     let progress={modules:{}};try{progress=JSON.parse(localStorage.getItem('emscodesim:emt-prep:progress')||'{}');}catch(e){}
     const keys=['expectations','terminology','anatomy-physiology','vital-signs','assessment','student-habits'];
     const completed=keys.filter(k=>progress.modules&&progress.modules[k]).length;
-    set('dailyPrepProgress',completed+' of 6 modules completed');
+    set('dailyPrepProgress',completed+' of 12 modules completed');
     const next=keys.find(k=>!(progress.modules&&progress.modules[k]));
     const urls={expectations:'/emt-prep/module-1-emt-school-expectations.html',terminology:'/emt-prep/module-2-medical-terminology.html','anatomy-physiology':'/emt-prep/module-3-anatomy-physiology.html','vital-signs':'/emt-prep/module-4-vital-signs.html',assessment:'/emt-prep/module-5-patient-assessment.html','student-habits':'/emt-prep/module-6-student-habits.html'};
     setHref('dailyPrepLink',next?urls[next]:'/emt-prep.html');set('dailyPrepAction',next?'Continue next module':'Review your readiness plan');

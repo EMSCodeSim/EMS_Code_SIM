@@ -1,14 +1,12 @@
 {
-  "name": "ems-code-sim-functions",
-  "version": "1.0.0",
-  "description": "Netlify Functions for EMS Code Sim",
-  "main": "index.js",
+  "name": "ems-code-sim-site",
+  "version": "1.1.0",
+  "private": true,
+  "description": "EMSCodeSim educational website and connected training tools",
   "scripts": {
-    "start": "netlify dev"
-  },
-  "dependencies": {
-    "firebase": "^9.23.0",
-    "openai": "^4.21.0"
+    "start": "netlify dev",
+    "validate": "node tools/validate-site.js",
+    "build": "npm run validate && node tools/build-public.js"
   },
   "engines": {
     "node": "18.x"
