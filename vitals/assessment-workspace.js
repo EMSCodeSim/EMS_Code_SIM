@@ -5,6 +5,12 @@ const $=id=>document.getElementById(id);
 if(!record){$('noPatient').hidden=false;return}
 $('workspace').hidden=false;$('workspaceTitle').textContent=record.title||'Guided Patient Assessment';$('workspaceDispatch').textContent=record.dispatch||record.goal||'Complete the connected assessment pathway.';
 const caseId=record.scenarioId||record.id;
+const scenarioPictures={asthma:'/vitals/assets/scenario-patient-adult.png',stroke:'/vitals/assets/scenario-patient-adult.png',hypoglycemia:'/vitals/assets/scenario-patient-adult.png',trauma:'/vitals/assets/scenario-patient-adult.png',pediatric:'/vitals/assets/scenario-patient-pediatric.png'};
+const scenarioConditions={asthma:'Sitting upright, anxious, and speaking in short sentences.',stroke:'Awake with abnormal speech and right-sided weakness.',hypoglycemia:'Confused, diaphoretic, and slow to follow commands.',trauma:'Pale with guarded breathing after a motor-vehicle collision.',pediatric:'Poor interaction with increased work of breathing.'};
+function loadPatientPicture(img,path){if(!img)return;img.onerror=()=>{img.onerror=null;img.src='/vitals/assets/scenario-patient-adult.png';img.classList.add('image-fallback')};img.src=path||'/vitals/assets/scenario-patient-adult.png';img.hidden=false}
+loadPatientPicture($('workspacePatientImage'),scenarioPictures[caseId]);
+$('workspacePatientLabel').textContent=record.patient||record.title||'Scenario patient';
+$('workspacePatientCondition').textContent=scenarioConditions[caseId]||record.scene||'Observe the patient before beginning the assessment.';
 const common={
  primary:[
   {key:'airway',label:'Airway',description:'Confirm patency and identify immediate threats.',url:'/vitals/airway-assessment.html'},
@@ -18,7 +24,7 @@ const common={
  history:[{key:'sample',label:'SAMPLE history',description:'Gather symptoms, allergies, medications, history, intake, and events.',url:'/vitals/sample-history.html'}],
  report:[
   {key:'clinical_impression',label:'Clinical impression',description:'Choose an EMT-level working impression supported by findings.',url:'/vitals/clinical-impression.html'},
-  {key:'pcr_handoff',label:'PCR and handoff',description:'Build a report directly from the collected patient findings and practice a concise MIST handoff.',url:'/vitals/pcr-handoff.html'}]
+  {key:'pcr_handoff',label:'PCR and handoff',description:'Create a concise report using the collected findings.',url:'/vitals/pcr-handoff.html'}]
 };
 const focused={
  asthma:[
