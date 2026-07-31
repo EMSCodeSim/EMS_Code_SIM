@@ -5,9 +5,9 @@ const $=id=>document.getElementById(id);
 if(!record){$('noPatient').hidden=false;return}
 $('workspace').hidden=false;$('workspaceTitle').textContent=record.title||'Guided Patient Assessment';$('workspaceDispatch').textContent=record.dispatch||record.goal||'Complete the connected assessment pathway.';
 const caseId=record.scenarioId||record.id;
-const scenarioPictures={asthma:'/vitals/assets/scenario-patient-adult.png',stroke:'/vitals/assets/scenario-patient-adult.png',hypoglycemia:'/vitals/assets/scenario-patient-adult.png',trauma:'/vitals/assets/scenario-patient-adult.png',pediatric:'/vitals/assets/scenario-patient-pediatric.png'};
+const scenarioPictures={asthma:'/vitals/assets/scenario-patient-adult-v3.png',stroke:'/vitals/assets/scenario-patient-adult-v3.png',hypoglycemia:'/vitals/assets/scenario-patient-adult-v3.png',trauma:'/vitals/assets/scenario-patient-adult-v3.png',pediatric:'/vitals/assets/scenario-patient-pediatric-v3.png'};
 const scenarioConditions={asthma:'Sitting upright, anxious, and speaking in short sentences.',stroke:'Awake with abnormal speech and right-sided weakness.',hypoglycemia:'Confused, diaphoretic, and slow to follow commands.',trauma:'Pale with guarded breathing after a motor-vehicle collision.',pediatric:'Poor interaction with increased work of breathing.'};
-function loadPatientPicture(img,path){if(!img)return;img.onerror=()=>{img.onerror=null;img.src='/vitals/assets/scenario-patient-adult.png';img.classList.add('image-fallback')};img.src=path||'/vitals/assets/scenario-patient-adult.png';img.hidden=false}
+function loadPatientPicture(img,path){if(!img)return;img.onerror=()=>{img.onerror=null;img.src='/vitals/assets/scenario-patient-adult-v3.png';img.classList.add('image-fallback')};img.src=path||'/vitals/assets/scenario-patient-adult-v3.png';img.hidden=false}
 loadPatientPicture($('workspacePatientImage'),scenarioPictures[caseId]);
 $('workspacePatientLabel').textContent=record.patient||record.title||'Scenario patient';
 $('workspacePatientCondition').textContent=scenarioConditions[caseId]||record.scene||'Observe the patient before beginning the assessment.';
