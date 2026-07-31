@@ -18,7 +18,7 @@ const common={
  history:[{key:'sample',label:'SAMPLE history',description:'Gather symptoms, allergies, medications, history, intake, and events.',url:'/vitals/sample-history.html'}],
  report:[
   {key:'clinical_impression',label:'Clinical impression',description:'Choose an EMT-level working impression supported by findings.',url:'/vitals/clinical-impression.html'},
-  {key:'pcr_handoff',label:'PCR and handoff',description:'Create a concise report using the collected findings.',url:'/vitals/pcr-handoff.html'}]
+  {key:'pcr_handoff',label:'PCR and handoff',description:'Build a report directly from the collected patient findings and practice a concise MIST handoff.',url:'/vitals/pcr-handoff.html'}]
 };
 const focused={
  asthma:[
