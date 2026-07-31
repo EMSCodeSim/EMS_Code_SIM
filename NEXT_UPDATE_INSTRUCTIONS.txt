@@ -1,0 +1,20 @@
+EMSCodeSim — Smart EMT Prep Dashboard Update
+
+Replace these files in your current project:
+1. /emt-prep.html
+2. /emt-prep.js
+3. /styles/emt-prep.css
+
+This update is designed to be installed after the previous recommended update and final-readiness-assessment update.
+
+New features:
+- Resume/continue card that automatically opens the first unfinished module
+- Completed, remaining, and percentage summary
+- Estimated study time remaining based on unfinished modules
+- Recommended-next highlighting in the module list
+- All / Still to do / Completed module filters
+- Final assessment becomes the recommended next action after all 12 modules are completed
+- Improved mobile dashboard layout
+
+Validation:
+The complete project passed the EMSCodeSim validator: 136 HTML files, 67 JavaScript files, and 11 JSON/manifest files.
