@@ -233,6 +233,8 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('mode') === 'scenario' || window.EMSCodeSimScenarioRuntime?.active?.()) return;
     if (document.querySelector('[data-app-vitals-learning]')) return;
     const key = topicFromPath();
     const topic = topics[key];

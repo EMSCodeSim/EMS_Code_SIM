@@ -401,8 +401,8 @@
 
     // ---------- Deflation loop ----------
     const TICK_MS = 90;
-    setInterval(() => {
-      if (!releasing) return;
+    const deflationTimer = setInterval(() => {
+      if (!releasing || document.hidden) return;
 
       if (currentPressure <= 0) {
         currentPressure = 0; updateNeedle();
@@ -451,6 +451,21 @@
         resultEl.textContent = `❌ Not quite. Correct: ${systolic}/${diastolic}.${tip}`;
         resultEl.className = "result bad";
       }
+    });
+
+    function cleanupBpSimulator(){
+      releasing = false;
+      scenarioActive = false;
+      stopHeartbeat();
+      clearInterval(deflationTimer);
+      if (audioCtx && audioCtx.state !== "closed") {
+        audioCtx.close().catch(() => {});
+      }
+    }
+    window.addEventListener("pagehide", cleanupBpSimulator, {once:true});
+    window.addEventListener("beforeunload", cleanupBpSimulator, {once:true});
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) stopHeartbeat();
     });
 
     // ---------- Init ----------
