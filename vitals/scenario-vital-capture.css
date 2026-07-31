@@ -1,16 +1,67 @@
-#scenarioVitalCapture{max-width:760px;margin:18px auto;padding:0 14px 24px}
-#scenarioVitalCapture .svc-card{background:#fff;border:2px solid #0b7a8f;border-radius:16px;padding:16px;box-shadow:0 10px 28px rgba(8,47,61,.12)}
-#scenarioVitalCapture h2{margin:0 0 6px;font-size:1.08rem;color:#0b4250}
-#scenarioVitalCapture p{margin:0 0 12px;color:#49636c}
-#scenarioVitalCapture button{width:100%;border:0;border-radius:12px;padding:13px 16px;background:#087b8f;color:#fff;font:inherit;font-weight:850;cursor:pointer}
-#scenarioVitalCapture button:disabled{opacity:.45;cursor:not-allowed}
-#scenarioVitalCapture .svc-saved{background:#eaf8f2;border:1px solid #7cc7a6;color:#176241;padding:11px;border-radius:10px;font-weight:750}
-#scenarioVitalCapture .svc-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-#scenarioVitalCapture .svc-partner{background:#5d3f8c}
+#scenarioVitalCapture{max-width:760px;margin:14px auto 10px;padding:0 14px;scroll-margin-top:78px}
+#scenarioVitalCapture .svc-card{background:#fff;border:2px solid #0b7a8f;border-radius:16px;padding:16px;box-shadow:0 10px 28px rgba(8,47,61,.14)}
+#scenarioVitalCapture .svc-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+#scenarioVitalCapture .svc-eyebrow{margin:0 0 3px;color:#08778a;font-size:.76rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+#scenarioVitalCapture h2{margin:0;font-size:1.25rem;color:#0b4250}
+#scenarioVitalCapture .svc-list-link{flex:0 0 auto;border:1px solid #9bcbd3;border-radius:999px;padding:8px 11px;color:#075f70;background:#f1fbfc;text-decoration:none;font-size:.86rem;font-weight:850}
+#scenarioVitalCapture .svc-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:14px 0 12px}
+#scenarioVitalCapture .svc-steps span{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 6px;border-radius:10px;background:#edf2f3;color:#60747a;font-size:.83rem;font-weight:800}
+#scenarioVitalCapture .svc-steps b{display:grid;place-items:center;width:21px;height:21px;border-radius:50%;background:#cfdadd;color:#496067;font-size:.75rem}
+#scenarioVitalCapture .svc-steps .is-active{background:#e4f6f8;color:#075d6d;outline:2px solid #43aabc}
+#scenarioVitalCapture .svc-steps .is-active b{background:#087b8f;color:#fff}
+#scenarioVitalCapture .svc-steps .is-complete:not(.is-active){background:#eaf8f2;color:#176241}
+#scenarioVitalCapture .svc-steps .is-complete:not(.is-active) b{background:#21875f;color:#fff}
+#scenarioVitalCapture .svc-prompt{margin:0 0 12px;color:#3f5c64;line-height:1.45}
+#scenarioVitalCapture button{border:0;border-radius:12px;padding:13px 16px;background:#087b8f;color:#fff;font:inherit;font-weight:850;cursor:pointer;touch-action:manipulation}
+#scenarioVitalCapture button:disabled{opacity:.46;cursor:not-allowed}
+#scenarioVitalCapture .svc-obtain-actions{display:flex;justify-content:flex-end}
+#scenarioVitalCapture .svc-partner{width:auto;background:#5d3f8c;padding:10px 14px}
 #scenarioVitalCapture .svc-partner-status{margin-top:12px;padding:12px;border:1px solid #cbbde1;border-radius:12px;background:#f7f3fc}
 #scenarioVitalCapture .svc-partner-row{display:flex;justify-content:space-between;gap:12px;align-items:center;color:#49326d}
 #scenarioVitalCapture .svc-countdown{font-weight:900;font-variant-numeric:tabular-nums}
 #scenarioVitalCapture .svc-progress{height:10px;margin:10px 0;background:#e3dced;border-radius:999px;overflow:hidden}
 #scenarioVitalCapture .svc-progress span{display:block;width:0;height:100%;background:#68479b;transition:width .9s linear}
 #scenarioVitalCapture .svc-cancel{width:auto;padding:8px 11px;background:#fff;color:#5d3f8c;border:1px solid #9e86c3;font-size:.9rem}
-@media(max-width:560px){#scenarioVitalCapture .svc-actions{grid-template-columns:1fr}}
+#scenarioVitalCapture .svc-result{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0;padding:13px 14px;border:1px solid #8ec7d1;border-radius:12px;background:#eef9fb;color:#164c57}
+#scenarioVitalCapture .svc-result span{font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+#scenarioVitalCapture .svc-result strong{text-align:right;font-size:1.12rem}
+#scenarioVitalCapture .svc-classification{margin:12px 0;padding:0;border:0}
+#scenarioVitalCapture .svc-classification legend{margin-bottom:8px;color:#183f49;font-weight:850}
+#scenarioVitalCapture .svc-classification-buttons{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+#scenarioVitalCapture .svc-classification-buttons button{background:#fff;color:#176241;border:2px solid #70b994}
+#scenarioVitalCapture .svc-classification-buttons button[data-classification="not-normal"]{color:#8a3a16;border-color:#df9a78}
+#scenarioVitalCapture .svc-classification-buttons button.is-selected{background:#176241;color:#fff;border-color:#176241;box-shadow:0 0 0 3px rgba(23,98,65,.16)}
+#scenarioVitalCapture .svc-classification-buttons button[data-classification="not-normal"].is-selected{background:#a9461b;border-color:#a9461b;box-shadow:0 0 0 3px rgba(169,70,27,.16)}
+#scenarioVitalCapture .svc-record{width:100%;margin-top:2px}
+#scenarioVitalCapture .svc-message{min-height:1.2em;margin-top:10px;color:#49636c;line-height:1.4}
+#scenarioVitalCapture .svc-saved{background:#eaf8f2;border:1px solid #7cc7a6;color:#176241;padding:11px;border-radius:10px;font-weight:700}
+#scenarioVitalCapture .svc-review{background:#fff4e9;border:1px solid #e6ad7c;color:#7c3b17;padding:11px;border-radius:10px;font-weight:700}
+
+/* Scenario mode removes lesson material and secondary navigation while keeping
+   the actual simulator controls available. Normal teaching mode is unchanged. */
+.scenario-vital-mode [data-app-vitals-learning],
+.scenario-vital-mode .app-vitals-learning,
+.scenario-vital-mode .learning-panel,
+.scenario-vital-mode .lesson-tabs,
+.scenario-vital-mode .lesson-nav,
+.scenario-vital-mode .related-learning,
+.scenario-vital-mode footer:not(.scenario-footer),
+.scenario-vital-mode .footer,
+.scenario-vital-mode #infoBtn,
+.scenario-vital-mode [data-action="learn"],
+.scenario-vital-mode [href*="-training.html"],
+.scenario-vital-mode [href*="-ranges.html"],
+.scenario-vital-mode [href*="-skills.html"]{display:none!important}
+.scenario-vital-mode main{margin-top:8px!important}
+.scenario-vital-mode .container{margin-top:8px!important}
+
+@media(max-width:560px){
+  #scenarioVitalCapture{padding:0 9px;margin-top:9px}
+  #scenarioVitalCapture .svc-card{padding:13px;border-radius:14px}
+  #scenarioVitalCapture .svc-heading{align-items:center}
+  #scenarioVitalCapture .svc-list-link{padding:7px 9px;font-size:.78rem}
+  #scenarioVitalCapture .svc-steps{gap:4px}
+  #scenarioVitalCapture .svc-steps span{font-size:.75rem;padding:7px 3px}
+  #scenarioVitalCapture .svc-result{align-items:flex-start;flex-direction:column}
+  #scenarioVitalCapture .svc-result strong{text-align:left}
+}
