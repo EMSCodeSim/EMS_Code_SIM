@@ -1,0 +1,12 @@
+SCENARIO PICTURE FIX V3
+
+1. Upload every file in this package, preserving folders.
+2. Confirm these URLs open directly in your browser:
+   /vitals/assets/scenario-patient-adult-v3.png
+   /vitals/assets/scenario-patient-pediatric-v3.png
+3. Open this page once after deployment:
+   /vitals/scenario-cache-reset.html
+4. Click "Open scenarios."
+
+Why this is required:
+The original offline-reference service worker cached all site pages and scripts. It could continue returning old scenario files after newer files were uploaded. This update limits offline caching to the reference-pack files only and uses new image filenames that cannot collide with the old browser cache.
