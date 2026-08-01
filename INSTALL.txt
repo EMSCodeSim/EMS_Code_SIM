@@ -1,14 +1,12 @@
-EMS ENCYCLOPEDIA STUDY MODE UPDATE
+EMS ENCYCLOPEDIA DAILY UPDATE
 
-Upload these files while preserving folder structure:
+Upload these files while preserving their paths:
+- ems-encyclopedia-daily.html
+- ems-encyclopedia-daily.js
+- styles/ems-encyclopedia-daily.css
 - ems-encyclopedia.html
-- ems-encyclopedia.js
 - ems-encyclopedia-study.html
-- ems-encyclopedia-study.js
-- styles/ems-encyclopedia.css
-- styles/ems-encyclopedia-study.css
 
-This update depends on the existing file:
-- data/ems-encyclopedia.json
+This update requires the existing /data/ems-encyclopedia.json file from the EMS Encyclopedia installation.
 
-Open /ems-encyclopedia-study.html after uploading.
+Open /ems-encyclopedia-daily.html after uploading.

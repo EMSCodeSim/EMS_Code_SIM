@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Daily EMS Topic & Challenge | EMSCodeSim</title>
+  <meta name="description" content="Learn one EMS Encyclopedia topic each day, complete a three-question challenge, and build a daily EMS study streak.">
+  <link rel="canonical" href="https://emscodesim.com/ems-encyclopedia-daily.html">
+  <link rel="stylesheet" href="/styles/responsive.css">
+  <link rel="stylesheet" href="/styles/ems-encyclopedia-daily.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="/">EMSCodeSim</a>
+  <nav aria-label="Main navigation">
+    <a href="/ems-encyclopedia.html">Encyclopedia</a>
+    <a href="/ems-encyclopedia-study.html">Study mode</a>
+    <a href="/vitals/scenario-launcher.html">Patient scenarios</a>
+  </nav>
+</header>
+<main class="daily-page">
+  <section class="daily-hero">
+    <div>
+      <span class="eyebrow">DAILY EMS ENCYCLOPEDIA</span>
+      <h1>One useful EMS topic. Three quick questions.</h1>
+      <p>Build recall without a long study session. The daily topic changes each calendar day and your progress stays on this device.</p>
+    </div>
+    <div class="streak-card" aria-label="Daily study streak">
+      <strong id="dailyStreak">0</strong>
+      <span>day streak</span>
+      <small id="streakMessage">Complete today’s challenge</small>
+    </div>
+  </section>
+
+  <section id="loadingState" class="daily-panel"><p>Loading today’s EMS topic…</p></section>
+
+  <section id="topicPanel" class="daily-panel topic-panel" hidden>
+    <div class="topic-heading">
+      <div><span id="topicCategory" class="category-pill"></span><h2 id="topicTerm"></h2></div>
+      <span id="todayLabel" class="today-label"></span>
+    </div>
+    <p id="topicSummary" class="topic-summary"></p>
+    <div class="topic-grid">
+      <article><span>What it means</span><p id="topicDetails"></p></article>
+      <article class="field-card"><span>Field takeaway</span><p id="topicRemember"></p></article>
+    </div>
+    <div id="topicLinks" class="topic-links"></div>
+    <button id="startDailyChallenge" class="primary-action" type="button">Start 3-question challenge</button>
+  </section>
+
+  <section id="challengePanel" class="daily-panel" hidden>
+    <div class="challenge-topline"><span id="challengeProgress">Question 1 of 3</span><span id="challengeScore">0 correct</span></div>
+    <div class="progress-track"><span id="challengeBar"></span></div>
+    <article class="challenge-card">
+      <span id="questionType" class="category-pill"></span>
+      <h2 id="questionPrompt"></h2>
+      <div id="answerChoices" class="answer-choices"></div>
+      <div id="answerFeedback" class="answer-feedback" hidden></div>
+      <button id="nextQuestion" class="primary-action" type="button" hidden>Next question</button>
+    </article>
+  </section>
+
+  <section id="completePanel" class="daily-panel complete-panel" hidden>
+    <span class="eyebrow dark">DAILY CHALLENGE COMPLETE</span>
+    <h2 id="completeHeading">Nice work</h2>
+    <p id="completeSummary"></p>
+    <div class="completion-stats">
+      <div><strong id="finalScore">0/3</strong><span>Today’s score</span></div>
+      <div><strong id="finalStreak">0</strong><span>Day streak</span></div>
+      <div><strong id="studiedTopics">0</strong><span>Topics studied</span></div>
+    </div>
+    <div class="completion-actions">
+      <a class="primary-link" href="/ems-encyclopedia-study.html">Continue in study mode</a>
+      <a class="secondary-link" id="reviewTopicLink" href="/ems-encyclopedia.html">Review today’s topic</a>
+    </div>
+  </section>
+
+  <section class="daily-panel continue-panel">
+    <div><span class="eyebrow dark">CONTINUE LEARNING</span><h2>Your EMS knowledge path</h2></div>
+    <div class="continue-grid">
+      <a href="/ems-encyclopedia.html"><strong id="savedCount">0</strong><span>Saved topics</span><small>Open your reference list</small></a>
+      <a href="/ems-encyclopedia-study.html"><strong id="masteredCount">0</strong><span>Mastered topics</span><small>Practice weak areas</small></a>
+      <a href="/vitals/scenario-launcher.html"><strong>Apply</strong><span>Patient assessment</span><small>Use findings in a scenario</small></a>
+    </div>
+  </section>
+</main>
+<footer><a href="/privacy.html">Privacy</a><span>Educational use only. Follow local protocol.</span></footer>
+<script src="/ems-encyclopedia-daily.js" defer></script>
+</body>
+</html>
