@@ -1,0 +1,17 @@
+Delete these files from the existing project after copying the update files:
+
+generate_gpt_readme.js
+netlify/functions/gpt4-turbo.js
+scripts/app.js
+scripts/checklist.js
+scripts/grading.js
+scripts/handoff_inline.js
+scripts/mic.js
+scripts/router.js
+scenarios/chest_pain_002/chat_log.json
+scenarios/chest_pain_002/config.json
+scenarios/chest_pain_002/dispatch.txt
+scenarios/chest_pain_002/ems_database_part1.json
+scenarios/chest_pain_002/ems_database_part2.json
+scenarios/chest_pain_002/ems_database_part3.json
+scenarios/chest_pain_002/patient.txt
