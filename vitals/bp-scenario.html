@@ -473,8 +473,8 @@
       const TOLERANCE = 4;
       const DEFLATION_STEP = 0.24;
       const TICK_MS = 90;
-      const REQUIRED_OVERINFLATION = 18;
-      const REQUIRED_BELOW_DIASTOLIC = 8;
+      const REQUIRED_OVERINFLATION = 10;
+      const REQUIRED_BELOW_DIASTOLIC = 4;
 
       let currentPressure = 0;
       let peakPressure = 0;
@@ -639,7 +639,7 @@
           releasing = false;
           stopHeartbeat();
           elements.releaseBtn.textContent = 'Release';
-          elements.measurementState.textContent = 'No complete reading obtained. Reset and try again.';
+          elements.measurementState.textContent = heardAnyBeat ? 'Reading incomplete. Reset and repeat the full release.' : 'No sounds heard. Reset and inflate higher before releasing.';
         }
       }
 

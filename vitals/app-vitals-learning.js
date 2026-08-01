@@ -146,7 +146,7 @@
 
   document.addEventListener('DOMContentLoaded',()=>{
     const params=new URLSearchParams(location.search);
-    if(params.get('mode')==='scenario'||window.EMSCodeSimScenarioRuntime?.active?.()) return;
+    if(params.get('mode')==='scenario'||document.body.dataset.scenarioOnly==='true') return;
     const t=topics[key()]; if(!t||document.querySelector('[data-app-vitals-learning]')) return;
     const holder=document.createElement('div');holder.className='app-vitals-learning-shell';holder.innerHTML=panel(t);
     const anchor=document.querySelector('.topbar,header');

@@ -160,9 +160,8 @@
 <script defer="" src="/privacy-controls.js"></script>
 <script defer="" src="/scripts/engagement-loop.js"></script>
 <meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Blood Pressure Simulator | EMSCodeSim" property="og:title"/><meta content="Practice manual blood pressure skills with an interactive EMS blood pressure simulator, Korotkoff sounds, cuff flow, and reading feedback." property="og:description"/><meta content="https://emscodesim.com/vitals/bp.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
-<link href="/vitals/app-vitals-learning.css" rel="stylesheet"/><link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
-<link rel="stylesheet" href="/vitals/scenario-flow.css"><link rel="stylesheet" href="/vitals/scenario-vital-capture.css"></head>
-<body data-vital-topic="bp">
+<link href="/vitals/app-vitals-learning.css" rel="stylesheet"/></head>
+<body data-vital-topic="bp" data-standalone-learning="true">
 <!-- Sticky Top Header -->
 <div class="topbar" role="banner">
 <div class="topbar-inner">
@@ -182,7 +181,7 @@
 </div>
 </div>
 <div class="app" role="main">
-<div class="subtitle">Pump to inflate • Toggle release • Beat plays between SYS→DIA</div>
+<div class="subtitle">Inflate the cuff • Release slowly • First sound = systolic • Last sound = diastolic</div>
 <div class="card">
 <div id="gauge-container">
 <img alt="Gauge Dial" id="dial" src="bp_dial.png"/>
@@ -217,7 +216,7 @@
 </div>
 <div aria-live="polite" class="result" id="result" role="status"></div>
 </div>
-<div class="footer">v1.8 • iPhone audio • instant pump • ±4 tolerance • even numbers • Info labeled</div>
+<div class="footer">Practice mode • New hidden patient with every reset • ±4 mmHg answer tolerance</div>
 </div>
 <!-- Info Modal -->
 <div aria-hidden="true" aria-labelledby="bpInfoTitle" class="modal" id="infoModal" role="dialog">
@@ -248,247 +247,241 @@
 </div>
 </div>
 <script>
-    // ---------- Topbar actions ----------
-    const backBtn = document.getElementById('backBtn');
-    const infoBtn = document.getElementById('infoBtn');
-    const infoModal = document.getElementById('infoModal');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const modalOkBtn = document.getElementById('modalOkBtn');
+  (() => {
+    'use strict';
+
+    const $ = (id) => document.getElementById(id);
+    const backBtn = $('backBtn');
+    const infoBtn = $('infoBtn');
+    const infoModal = $('infoModal');
+    const closeModalBtn = $('closeModalBtn');
+    const modalOkBtn = $('modalOkBtn');
+    const needle = $('needle');
+    const pressureDisplay = $('pressureDisplay');
+    const speedSlider = $('speedSlider');
+    const speedValueText = $('speedValue');
+    const pumpBtn = $('pumpBtn');
+    const releaseBtn = $('releaseBtn');
+    const resetBtn = $('resetBtn');
+    const sysInput = $('sysInput');
+    const diaInput = $('diaInput');
+    const submitBtn = $('submitBtn');
+    const resultEl = $('result');
+
+    const MAX_PRESSURE = 280;
+    const TOLERANCE = 4;
+    const TICK_MS = 90;
+    let currentPressure = 0;
+    let peakPressure = 0;
+    let systolic = 120;
+    let diastolic = 80;
+    let releasing = false;
+    let heardAnyBeat = false;
+    let passedBelowDiastolic = false;
+    let measurementComplete = false;
+    let beatPlaying = false;
+    let beatTimer = null;
+    let deflationTimer = null;
+    let audioCtx = null;
+    let beatBuffer = null;
+    let destroyed = false;
+
+    const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+    const even = (v) => Math.round(v / 2) * 2;
 
     function openModal(){ infoModal.setAttribute('aria-hidden','false'); }
     function closeModal(){ infoModal.setAttribute('aria-hidden','true'); }
-
-    backBtn.addEventListener('click', () => {
-      if (window.history.length > 1) { window.history.back(); }
-      else { window.location.href = '/'; }
-    });
+    backBtn.addEventListener('click', () => history.length > 1 ? history.back() : location.assign('/vitals/'));
     infoBtn.addEventListener('click', openModal);
     closeModalBtn.addEventListener('click', closeModal);
     modalOkBtn.addEventListener('click', closeModal);
-    infoModal.addEventListener('click', (e)=>{ if(e.target === infoModal) closeModal(); });
-    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
+    infoModal.addEventListener('click', (e) => { if (e.target === infoModal) closeModal(); });
+    addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
-    // ---------- Helpers ----------
-    const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
-    const toEven = (n) => (n % 2 === 0 ? n : n + 1); // ensure even display
-
-    // ---------- BP sim state ----------
-    let currentPressure = 0;
-    let systolic = 120;   // even
-    let diastolic = 80;   // even
-    let scenarioActive = false;
-    let releasing = false;
-    let beatStarted = false;
-
-    // Elements
-    const needle = document.getElementById("needle");
-    const pressureDisplay = document.getElementById("pressureDisplay");
-    const speedSlider = document.getElementById("speedSlider");
-    const speedValueText = document.getElementById("speedValue");
-    const pumpBtn = document.getElementById("pumpBtn");
-    const releaseBtn = document.getElementById("releaseBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const sysInput = document.getElementById("sysInput");
-    const diaInput = document.getElementById("diaInput");
-    const submitBtn = document.getElementById("submitBtn");
-    const resultEl = document.getElementById("result");
-
-    // ---------- AUDIO (original working pattern) ----------
-    let audioCtx = null, beatBuffer = null, beatTimer = null;
-
-    function ensureAudio() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === "suspended") audioCtx.resume();
-      if (!beatBuffer) {
-        const duration = 0.18, sr = audioCtx.sampleRate;
-        const length = Math.floor(duration * sr);
-        beatBuffer = audioCtx.createBuffer(1, length, sr);
-        const ch = beatBuffer.getChannelData(0), freq = 1000;
-        const attack = Math.floor(0.01 * sr), release = Math.floor(0.16 * sr);
-        for (let i = 0; i < length; i++) {
-          const t = i / sr;
-          const env = i < attack ? i / attack : Math.exp(-4 * (i - attack) / release);
-          ch[i] = Math.sin(2 * Math.PI * freq * t) * 0.9 * env;
-        }
-      }
-    }
-    function playBeat() {
-      if (!audioCtx || !beatBuffer) return;
-      const src = audioCtx.createBufferSource();
-      src.buffer = beatBuffer;
-      src.connect(audioCtx.destination);
-      src.start();
-    }
-    function startHeartbeat() {
-      if (beatStarted) return;
-      beatStarted = true;
-      playBeat();                   // immediate first beat
-      beatTimer = setInterval(playBeat, 666); // ~90 bpm
-    }
-    function stopHeartbeat() {
-      beatStarted = false;
-      clearInterval(beatTimer);
-      beatTimer = null;
+    function generatePatient(){
+      const roll = Math.random();
+      if (roll < 0.18) systolic = even(78 + Math.random() * 18);
+      else if (roll < 0.78) systolic = even(104 + Math.random() * 34);
+      else systolic = even(146 + Math.random() * 54);
+      const ratio = 0.56 + Math.random() * 0.12;
+      diastolic = clamp(even(systolic * ratio), 42, systolic - 18);
     }
 
-    // ---------- Dial math ----------
-    function pressureToAngle(p) { return (p / 280) * 360 - 180; }
-    function updateNeedle() {
+    function pressureToAngle(p){ return (p / MAX_PRESSURE) * 360 - 180; }
+    function updateNeedle(){
       needle.style.transform = `rotate(${pressureToAngle(currentPressure)}deg)`;
-      pressureDisplay.textContent = Math.round(currentPressure);
+      pressureDisplay.textContent = String(Math.round(currentPressure));
     }
-    function updateSpeedDisplay(val) { speedValueText.textContent = val; }
-    speedSlider.addEventListener("input", e => updateSpeedDisplay(e.target.value));
+    function updateSpeedDisplay(){ speedValueText.textContent = speedSlider.value; }
 
-    // ---------- Generate even-number answers (skewed distribution) ----------
-    function generateSystolicEven(){
-      if(window.EMSCodeSimScenarioRuntime?.active()) return Number(window.EMSCodeSimScenarioRuntime.vital('systolic',120));
-      const r = Math.random();
-      let sys;
-      if (r < 0.85) {
-        // 85% 100–178 even
-        sys = 100 + Math.floor(Math.random() * 40) * 2;
-      } else {
-        // 15% 220–240 even
-        sys = 220 + Math.floor(Math.random() * 11) * 2;
-      }
-      return clamp(sys, 100, 240);
-    }
-    function generateDiastolicEven(sys){
-      if(window.EMSCodeSimScenarioRuntime?.active()) return Number(window.EMSCodeSimScenarioRuntime.vital('diastolic',80));
-      const ratio = 0.58 + Math.random() * 0.10; // 58–68% of SYS
-      let dia = toEven(Math.round(sys * ratio));
-      dia = clamp(dia, 40, sys - 10);
-      if (dia % 2 !== 0) dia = clamp(dia - 1, 40, sys - 10);
-      return dia;
-    }
-
-    // ---------- Controls (instant pump; audio prepared) ----------
-    function handlePump(){
-      currentPressure = Math.min(280, currentPressure + 10);
-      updateNeedle();
-      if (scenarioActive) {
-        ensureAudio();
-        if (currentPressure <= systolic && currentPressure >= diastolic) startHeartbeat();
-        else stopHeartbeat();
+    function ensureAudio(){
+      if (destroyed) return;
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      if (!audioCtx || audioCtx.state === 'closed') audioCtx = new AudioContextClass();
+      if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+      if (beatBuffer) return;
+      const duration = 0.16;
+      const sr = audioCtx.sampleRate;
+      const length = Math.floor(duration * sr);
+      beatBuffer = audioCtx.createBuffer(1, length, sr);
+      const data = beatBuffer.getChannelData(0);
+      for (let i=0; i<length; i++){
+        const t=i/sr;
+        data[i]=(Math.sin(2*Math.PI*88*t)+0.3*Math.sin(2*Math.PI*176*t))*Math.exp(-28*t)*0.72;
       }
     }
-    pumpBtn.addEventListener("pointerdown", handlePump, {passive:true});
+    function playBeat(){
+      if (!audioCtx || !beatBuffer || audioCtx.state === 'closed') return;
+      const source=audioCtx.createBufferSource();
+      source.buffer=beatBuffer;
+      source.connect(audioCtx.destination);
+      source.start();
+      heardAnyBeat=true;
+    }
+    function startHeartbeat(){
+      if (beatPlaying) return;
+      beatPlaying=true;
+      playBeat();
+      beatTimer=setInterval(playBeat,666);
+    }
+    function stopHeartbeat(){
+      beatPlaying=false;
+      if (beatTimer !== null){ clearInterval(beatTimer); beatTimer=null; }
+    }
+    function updateSound(){
+      if (releasing && currentPressure <= systolic && currentPressure > diastolic) startHeartbeat();
+      else stopHeartbeat();
+    }
 
-    releaseBtn.addEventListener("pointerdown", () => {
+    function setComplete(){
+      if (measurementComplete) return;
+      measurementComplete=true;
+      releasing=false;
+      stopHeartbeat();
+      releaseBtn.textContent='Release';
+      resultEl.textContent='Measurement complete. Enter the first and last pressures you heard.';
+      resultEl.className='result';
+      sysInput.focus();
+    }
+
+    function evaluateMeasurement(){
+      if (currentPressure <= diastolic - 4) passedBelowDiastolic=true;
+      const highEnough = peakPressure >= systolic + 10;
+      if (highEnough && heardAnyBeat && passedBelowDiastolic) setComplete();
+    }
+
+    function pump(){
+      if (measurementComplete) return;
       ensureAudio();
-      if (!scenarioActive) {
-        scenarioActive = true;
-        systolic = generateSystolicEven();
-        diastolic = generateDiastolicEven(systolic);
-        releasing = true;
-        releaseBtn.textContent = "Pause Release";
-        resultEl.textContent = ""; resultEl.className = "result";
-        return;
-      }
-      releasing = !releasing;
-      releaseBtn.textContent = releasing ? "Pause Release" : "Resume Release";
-    }, {passive:true});
-
-    resetBtn.addEventListener("pointerdown", () => {
+      releasing=false;
       stopHeartbeat();
-      scenarioActive = false; releasing = false;
-      currentPressure = 0; updateNeedle();
-      releaseBtn.textContent = "Release";
-      sysInput.value = ""; diaInput.value = "";
-      resultEl.textContent = ""; resultEl.className = "result";
-    }, {passive:true});
-
-    // ---------- Deflation loop ----------
-    const TICK_MS = 90;
-    const deflationTimer = setInterval(() => {
-      if (!releasing || document.hidden) return;
-
-      if (currentPressure <= 0) {
-        currentPressure = 0; updateNeedle();
-        releasing = false;
-        stopHeartbeat();
-        releaseBtn.textContent = "Release";
-        return;
-      }
-
-      const step = parseFloat(speedSlider.value) || 0.5;
-      const prev = currentPressure;
-
-      currentPressure = Math.max(0, currentPressure - step);
+      currentPressure=clamp(currentPressure+10,0,MAX_PRESSURE);
+      peakPressure=Math.max(peakPressure,currentPressure);
+      releaseBtn.textContent='Release';
       updateNeedle();
+      resultEl.textContent='Cuff inflated. Continue pumping or begin a slow release.';
+      resultEl.className='result';
+    }
 
-      if (!scenarioActive) return;
-
-      if (!beatStarted && currentPressure <= systolic && currentPressure > diastolic) startHeartbeat();
-      if (beatStarted && currentPressure <= diastolic) stopHeartbeat();
-    }, TICK_MS);
-
-    // ---------- Answer submit (±4 mmHg tolerance + tip when not exact) ----------
-    submitBtn.addEventListener("click", () => {
-      const sysRaw = parseInt(sysInput.value, 10);
-      const diaRaw = parseInt(diaInput.value, 10);
-      if (Number.isNaN(sysRaw) || Number.isNaN(diaRaw)) {
-        resultEl.textContent = "Enter both SYS and DIA.";
-        resultEl.className = "result bad";
+    function toggleRelease(){
+      if (measurementComplete) return;
+      ensureAudio();
+      if (currentPressure <= 0){
+        resultEl.textContent='Inflate the cuff before releasing.';
+        resultEl.className='result bad';
         return;
       }
-      const tol = 4;
-      const sysOK = Math.abs(sysRaw - systolic) <= tol;
-      const diaOK = Math.abs(diaRaw - diastolic) <= tol;
+      releasing=!releasing;
+      releaseBtn.textContent=releasing?'Pause Release':'Resume Release';
+      resultEl.textContent=releasing?'Listen carefully for the first and last sound.':'Release paused.';
+      resultEl.className='result';
+      updateSound();
+    }
 
-      const tip = " Tip: For the most accurate reading, deflate the cuff slowly.";
-      if (sysOK && diaOK) {
-        const exact = (sysRaw === systolic && diaRaw === diastolic);
-        if (exact) {
-          resultEl.textContent = "✅ Correct!";
-          resultEl.className = "result ok";
-        } else {
-          resultEl.textContent = `✅ Close enough (±${tol} mmHg). Correct: ${systolic}/${diastolic}.${tip}`;
-          resultEl.className = "result ok";
-        }
-      } else {
-        resultEl.textContent = `❌ Not quite. Correct: ${systolic}/${diastolic}.${tip}`;
-        resultEl.className = "result bad";
-      }
-    });
-
-    function cleanupBpSimulator(){
-      releasing = false;
-      scenarioActive = false;
+    function reset(newPatient=true){
+      releasing=false;
+      measurementComplete=false;
+      heardAnyBeat=false;
+      passedBelowDiastolic=false;
+      currentPressure=0;
+      peakPressure=0;
       stopHeartbeat();
-      clearInterval(deflationTimer);
-      if (audioCtx && audioCtx.state !== "closed") {
-        audioCtx.close().catch(() => {});
+      if (newPatient) generatePatient();
+      updateNeedle();
+      releaseBtn.textContent='Release';
+      sysInput.value='';
+      diaInput.value='';
+      resultEl.textContent='New hidden patient ready. Inflate the cuff to begin.';
+      resultEl.className='result';
+    }
+
+    function tick(){
+      if (!releasing || document.hidden || destroyed) return;
+      const step=Number.parseFloat(speedSlider.value)||0.5;
+      currentPressure=Math.max(0,currentPressure-step);
+      updateNeedle();
+      updateSound();
+      evaluateMeasurement();
+      if (currentPressure <= 0 && !measurementComplete){
+        releasing=false;
+        stopHeartbeat();
+        releaseBtn.textContent='Release';
+        resultEl.textContent=heardAnyBeat
+          ? 'The cuff was released too far without completing the reading. Reset and repeat.'
+          : 'No sounds were heard. Reset and inflate the cuff higher before releasing.';
+        resultEl.className='result bad';
       }
     }
-    window.addEventListener("pagehide", (event) => {
-      if (event.persisted) {
-        stopHeartbeat();
+
+    function startLoop(){ if (deflationTimer===null) deflationTimer=setInterval(tick,TICK_MS); }
+    function stopLoop(){ if (deflationTimer!==null){ clearInterval(deflationTimer); deflationTimer=null; } }
+
+    function submit(){
+      if (!measurementComplete){
+        resultEl.textContent='Complete a full cuff measurement before submitting.';
+        resultEl.className='result bad';
         return;
       }
-      cleanupBpSimulator();
-    });
-    window.addEventListener("pageshow", (event) => {
-      if (!event.persisted) return;
-      updateNeedle();
-      releaseBtn.textContent = releasing ? "Pause Release" : (scenarioActive ? "Resume Release" : "Release");
-    });
-    window.addEventListener("beforeunload", cleanupBpSimulator, {once:true});
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) stopHeartbeat();
-    });
+      const sys=Number.parseInt(sysInput.value,10);
+      const dia=Number.parseInt(diaInput.value,10);
+      if (!Number.isFinite(sys)||!Number.isFinite(dia)){
+        resultEl.textContent='Enter both systolic and diastolic values.';
+        resultEl.className='result bad';
+        return;
+      }
+      const correct=Math.abs(sys-systolic)<=TOLERANCE && Math.abs(dia-diastolic)<=TOLERANCE;
+      if (correct){
+        resultEl.textContent=`Correct — ${systolic}/${diastolic} mmHg. Select Reset for a new patient.`;
+        resultEl.className='result ok';
+      } else {
+        resultEl.textContent='Not quite. Repeat the measurement and listen for the first and last sound. The answer remains hidden.';
+        resultEl.className='result bad';
+        setTimeout(()=>reset(false),900);
+      }
+    }
 
-    // ---------- Init ----------
-    updateNeedle();
-    updateSpeedDisplay(speedSlider.value);
+    pumpBtn.addEventListener('click',pump);
+    releaseBtn.addEventListener('click',toggleRelease);
+    resetBtn.addEventListener('click',()=>reset(true));
+    submitBtn.addEventListener('click',submit);
+    speedSlider.addEventListener('input',updateSpeedDisplay);
+    [sysInput,diaInput].forEach(input=>input.addEventListener('keydown',e=>{ if(e.key==='Enter') submit(); }));
 
-    // Prime audio on first touch/click on main controls
-    ["touchstart","mousedown"].forEach(evt=>{
-      pumpBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
-      releaseBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
-      resetBtn.addEventListener(evt, ensureAudio, {passive:true, once:true});
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden){ releasing=false; stopHeartbeat(); releaseBtn.textContent=currentPressure>0?'Resume Release':'Release'; }
     });
-  </script>
-<script defer="True" src="/vitals/app-vitals-learning.js"></script><script src="/vitals/patient-record.js"></script><script src="/vitals/scenario-runtime.js"></script><script src="/vitals/scenario-status.js"></script><script src="/vitals/scenario-flow.js"></script><script src="/vitals/scenario-vital-capture.js"></script></body>
+    addEventListener('pagehide',(event)=>{
+      releasing=false; stopHeartbeat();
+      if(!event.persisted){ destroyed=true; stopLoop(); if(audioCtx&&audioCtx.state!=='closed') audioCtx.close().catch(()=>{}); }
+    });
+    addEventListener('pageshow',()=>{ destroyed=false; startLoop(); updateNeedle(); });
+    addEventListener('beforeunload',()=>{ destroyed=true; stopHeartbeat(); stopLoop(); },{once:true});
+
+    updateSpeedDisplay();
+    reset(true);
+    startLoop();
+  })();
+</script>
+<script defer src="/vitals/app-vitals-learning.js"></script></body>
 </html>
