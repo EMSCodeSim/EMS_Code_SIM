@@ -17,10 +17,10 @@ const common={
   {key:'breathing',label:'Breathing quality',description:'Assess effort, adequacy, speech, and chest movement.',url:'/vitals/breathing-assessment.html'},
   {key:'perfusion',label:'Circulation and perfusion',description:'Assess pulse quality, skin, capillary refill, and major bleeding.',url:'/vitals/perfusion-assessment.html'}],
  vitals:[
-  {key:'pulse',label:'Pulse',description:'Obtain and report rate, rhythm, and quality.',url:'/vitals/pulse.html'},
-  {key:'blood_pressure',label:'Blood pressure',description:'Obtain and report systolic and diastolic pressure.',url:'/vitals/bp.html'},
-  {key:'respirations',label:'Respiratory rate',description:'Count and report rate, depth, and effort.',url:'/vitals/respiratory-rate.html'},
-  {key:'spo2',label:'SpO₂',description:'Obtain saturation and verify signal quality.',url:'/vitals/pulse-ox.html'}],
+  {key:'pulse',label:'Pulse',description:'Obtain and report rate, rhythm, and quality.',url:'/vitals/pulse-scenario.html'},
+  {key:'blood_pressure',label:'Blood pressure',description:'Obtain and report systolic and diastolic pressure.',url:'/vitals/bp-scenario.html'},
+  {key:'respirations',label:'Respiratory rate',description:'Count and report rate, depth, and effort.',url:'/vitals/respiratory-rate-scenario.html'},
+  {key:'spo2',label:'SpO₂',description:'Obtain saturation and verify signal quality.',url:'/vitals/pulse-ox-scenario.html'}],
  history:[{key:'sample',label:'SAMPLE history',description:'Gather symptoms, allergies, medications, history, intake, and events.',url:'/vitals/sample-history.html'}],
  report:[
   {key:'clinical_impression',label:'Clinical impression',description:'Choose an EMT-level working impression supported by findings.',url:'/vitals/clinical-impression.html'},
@@ -28,22 +28,22 @@ const common={
 };
 const focused={
  asthma:[
-  {key:'breath_sounds',label:'Breath sounds',description:'Auscultate multiple lung fields and report the pattern.',url:'/vitals/breath-sound-simulator.html'}],
+  {key:'breath_sounds',label:'Breath sounds',description:'Auscultate multiple lung fields and report the pattern.',url:'/vitals/breath-sounds-scenario.html'}],
  stroke:[
-  {key:'mental_status',label:'Mental status',description:'Establish alertness and orientation.',url:'/vitals/avpu.html'},
+  {key:'mental_status',label:'Mental status',description:'Establish alertness and orientation.',url:'/vitals/avpu-scenario.html'},
   {key:'motor_sensory',label:'Stroke findings',description:'Compare facial movement, speech, arm drift, strength, and sensation.',url:'/vitals/motor-sensory-assessment.html'},
-  {key:'blood_glucose',label:'Blood glucose',description:'Check for a common reversible stroke mimic.',url:'/vitals/bgl.html'}],
+  {key:'blood_glucose',label:'Blood glucose',description:'Check for a common reversible stroke mimic.',url:'/vitals/bgl-scenario.html'}],
  hypoglycemia:[
-  {key:'mental_status',label:'Mental status',description:'Establish the patient’s neurologic baseline.',url:'/vitals/avpu.html'},
-  {key:'blood_glucose',label:'Blood glucose',description:'Obtain and classify the glucose finding.',url:'/vitals/bgl.html'}],
+  {key:'mental_status',label:'Mental status',description:'Establish the patient’s neurologic baseline.',url:'/vitals/avpu-scenario.html'},
+  {key:'blood_glucose',label:'Blood glucose',description:'Obtain and classify the glucose finding.',url:'/vitals/bgl-scenario.html'}],
  trauma:[
-  {key:'breath_sounds',label:'Breath sounds',description:'Compare lung sounds after blunt chest trauma.',url:'/vitals/breath-sound-simulator.html'},
+  {key:'breath_sounds',label:'Breath sounds',description:'Compare lung sounds after blunt chest trauma.',url:'/vitals/breath-sounds-scenario.html'},
   {key:'chest_assessment',label:'Chest assessment',description:'Inspect and palpate for chest-wall injury.',url:'/vitals/chest-assessment.html'},
   {key:'trauma_assessment',label:'Rapid trauma assessment',description:'Complete a systematic head-to-toe examination.',url:'/vitals/trauma-assessment.html'},
   {key:'abdominal_assessment',label:'Abdominal assessment',description:'Assess tenderness, guarding, rigidity, and distention.',url:'/vitals/abdominal-assessment.html'}],
  pediatric:[
   {key:'pediatric_assessment_triangle',label:'Pediatric Assessment Triangle',description:'Assess appearance, work of breathing, and circulation to skin.',url:'/vitals/pediatric-assessment-triangle.html'},
-  {key:'breath_sounds',label:'Breath sounds',description:'Auscultate and compare pediatric lung fields.',url:'/vitals/breath-sound-simulator.html'}]
+  {key:'breath_sounds',label:'Breath sounds',description:'Auscultate and compare pediatric lung fields.',url:'/vitals/breath-sounds-scenario.html'}]
 };
 const phases=[
  {id:'primary',title:'Primary assessment',steps:common.primary},

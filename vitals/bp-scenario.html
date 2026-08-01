@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Scenario Blood Pressure | EMSCodeSim</title>
+  <style>
+    :root {
+      --bg: #eef4f8;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --accent: #0369a1;
+      --accent-dark: #075985;
+      --danger: #b91c1c;
+      --success: #15803d;
+      --border: rgba(15, 23, 42, 0.12);
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+      --focus: rgba(3, 105, 161, 0.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      min-height: 100%;
+      margin: 0;
+      touch-action: manipulation;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button, input { font: inherit; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: calc(env(safe-area-inset-top) + 8px) 12px 10px;
+      color: #fff;
+      background: linear-gradient(180deg, #0891b2 0%, var(--accent) 100%);
+      box-shadow: 0 8px 20px rgba(3, 105, 161, 0.24);
+    }
+
+    .topbar-inner {
+      width: min(100%, 620px);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-button {
+      min-width: 44px;
+      min-height: 44px;
+      border: 0;
+      border-radius: 12px;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.12);
+      font-size: 1.5rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      text-align: center;
+      font-size: 1.08rem;
+      line-height: 1.2;
+    }
+
+    .mode-chip {
+      padding: 6px 9px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    main {
+      width: min(100%, 560px);
+      margin: 0 auto;
+      padding: 14px 14px calc(env(safe-area-inset-bottom) + 18px);
+      display: grid;
+      gap: 14px;
+    }
+
+    .patient-strip,
+    .card,
+    .error-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .patient-strip {
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .patient-strip p,
+    .patient-strip strong { margin: 0; }
+
+    .patient-strip p {
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .patient-strip strong {
+      display: block;
+      margin-top: 2px;
+      font-size: 1rem;
+    }
+
+    .status-pill {
+      flex: 0 0 auto;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: var(--accent-dark);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .card { padding: 14px; }
+
+    .brief-instruction {
+      margin: 0 0 10px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.94rem;
+      line-height: 1.4;
+    }
+
+    #gauge-container {
+      position: relative;
+      width: min(88vw, 390px);
+      height: min(88vw, 390px);
+      margin: 0 auto;
+    }
+
+    #dial {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 50%;
+      filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.18));
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    #needle {
+      position: absolute;
+      top: 6%;
+      left: 50%;
+      width: 5px;
+      height: 44%;
+      margin-left: -2.5px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #fee2e2 0%, #ef4444 55%, #7f1d1d 100%);
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.35);
+      transform: rotate(-180deg);
+      transform-origin: bottom center;
+      transition: transform 0.075s linear;
+      z-index: 2;
+    }
+
+    .hub {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle at 35% 35%, #f8fafc, #cbd5e1 55%, #64748b 72%, #111827 100%);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      z-index: 3;
+    }
+
+    .pressure-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 7px;
+      margin-top: 6px;
+      color: var(--muted);
+    }
+
+    #pressureDisplay {
+      color: var(--text);
+      font-size: 1.55rem;
+      font-weight: 900;
+    }
+
+    .controls {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+    }
+
+    .button {
+      min-height: 50px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 11px 10px;
+      background: #f8fafc;
+      color: var(--text);
+      font-weight: 850;
+      cursor: pointer;
+      box-shadow: 0 5px 14px rgba(15, 23, 42, 0.08);
+    }
+
+    .button:active { transform: translateY(1px); }
+
+    .button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    .button.primary {
+      border-color: rgba(3, 105, 161, 0.65);
+      background: linear-gradient(180deg, #0891b2, var(--accent));
+      color: #fff;
+    }
+
+    .button.release {
+      border-color: rgba(185, 28, 28, 0.55);
+      background: linear-gradient(180deg, #ef4444, var(--danger));
+      color: #fff;
+    }
+
+    .button:disabled {
+      opacity: 0.52;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .measurement-state {
+      margin: 10px 0 0;
+      min-height: 22px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 750;
+    }
+
+    .answer-card h2 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+    }
+
+    .answer-card > p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .answer-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 9px;
+      align-items: center;
+    }
+
+    .answer-row input {
+      width: 100%;
+      min-width: 0;
+      padding: 13px 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .slash {
+      color: var(--muted);
+      font-size: 1.35rem;
+      font-weight: 900;
+    }
+
+    #submitBtn,
+    #returnBtn {
+      width: 100%;
+      margin-top: 11px;
+    }
+
+    #result {
+      min-height: 24px;
+      margin-top: 10px;
+      text-align: center;
+      font-weight: 850;
+      line-height: 1.35;
+    }
+
+    #result.good { color: var(--success); }
+    #result.bad { color: var(--danger); }
+
+    .error-card {
+      padding: 20px;
+      text-align: center;
+    }
+
+    .error-card h2 { margin-top: 0; }
+    .error-card p { color: var(--muted); }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 390px) {
+      main { padding-inline: 10px; }
+      .card { padding: 11px; }
+      .controls { gap: 6px; }
+      .button { padding-inline: 6px; font-size: 0.92rem; }
+      .mode-chip { display: none; }
+      .topbar-inner { grid-template-columns: 44px 1fr 44px; }
+    }
+  </style>
+</head>
+<body data-vital-topic="bp" data-scenario-only="true">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <button class="back-button" id="backBtn" type="button" aria-label="Return to patient">‹</button>
+      <h1>Obtain Blood Pressure</h1>
+      <span class="mode-chip">Scenario</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="patient-strip" id="patientStrip" hidden>
+      <div>
+        <p>Active patient</p>
+        <strong id="patientName">Patient</strong>
+      </div>
+      <span class="status-pill" id="caseTitle">Assessment</span>
+    </section>
+
+    <section class="error-card" id="scenarioError" hidden>
+      <h2>No active patient scenario</h2>
+      <p>Open this blood pressure check from inside a patient scenario.</p>
+      <button class="button primary" id="launcherBtn" type="button">Return to scenarios</button>
+    </section>
+
+    <section class="card" id="simCard" hidden>
+      <p class="brief-instruction">Inflate the cuff, release it slowly, and listen for the first and last sound.</p>
+
+      <div id="gauge-container">
+        <img id="dial" src="bp_dial.png" alt="Blood pressure gauge dial">
+        <div id="needle" aria-hidden="true"></div>
+        <div class="hub" aria-hidden="true"></div>
+      </div>
+
+      <div class="pressure-row" aria-live="polite">
+        <span id="pressureDisplay">0</span>
+        <span>mmHg</span>
+      </div>
+
+      <div class="controls">
+        <button class="button primary" id="pumpBtn" type="button">Pump +10</button>
+        <button class="button release" id="releaseBtn" type="button">Release</button>
+        <button class="button" id="resetBtn" type="button">Reset</button>
+      </div>
+
+      <p class="measurement-state" id="measurementState" aria-live="polite">Inflate the cuff to begin.</p>
+    </section>
+
+    <section class="card answer-card" id="answerCard" hidden>
+      <h2>Enter the blood pressure</h2>
+      <p>Complete the cuff check before submitting your reading.</p>
+
+      <div class="answer-row">
+        <input id="sysInput" type="number" inputmode="numeric" min="50" max="280" placeholder="SYS" aria-label="Systolic pressure">
+        <span class="slash">/</span>
+        <input id="diaInput" type="number" inputmode="numeric" min="20" max="180" placeholder="DIA" aria-label="Diastolic pressure">
+      </div>
+
+      <button class="button primary" id="submitBtn" type="button" disabled>Check and save</button>
+      <div id="result" role="status" aria-live="polite"></div>
+      <button class="button primary" id="returnBtn" type="button" hidden>Return to patient</button>
+    </section>
+  </main>
+
+  <script src="/vitals/patient-record.js"></script>
+  <script src="/vitals/scenario-runtime.js"></script>
+  <script>
+    (() => {
+      'use strict';
+
+      const patientApi = window.EMSCodeSimPatientRecord;
+      const runtime = window.EMSCodeSimScenarioRuntime;
+      const record = patientApi?.active?.() || null;
+      const params = new URLSearchParams(window.location.search);
+
+      const elements = {
+        backBtn: document.getElementById('backBtn'),
+        launcherBtn: document.getElementById('launcherBtn'),
+        patientStrip: document.getElementById('patientStrip'),
+        patientName: document.getElementById('patientName'),
+        caseTitle: document.getElementById('caseTitle'),
+        scenarioError: document.getElementById('scenarioError'),
+        simCard: document.getElementById('simCard'),
+        answerCard: document.getElementById('answerCard'),
+        needle: document.getElementById('needle'),
+        pressureDisplay: document.getElementById('pressureDisplay'),
+        pumpBtn: document.getElementById('pumpBtn'),
+        releaseBtn: document.getElementById('releaseBtn'),
+        resetBtn: document.getElementById('resetBtn'),
+        measurementState: document.getElementById('measurementState'),
+        sysInput: document.getElementById('sysInput'),
+        diaInput: document.getElementById('diaInput'),
+        submitBtn: document.getElementById('submitBtn'),
+        result: document.getElementById('result'),
+        returnBtn: document.getElementById('returnBtn')
+      };
+
+      function safeReturnUrl() {
+        const requested = params.get('return');
+        if (requested && requested.startsWith('/') && !requested.startsWith('//')) {
+          return requested;
+        }
+        const scenarioId = record?.scenarioId || record?.id;
+        if (scenarioId) {
+          return `/vitals/visual-patient.html?case=${encodeURIComponent(scenarioId)}`;
+        }
+        return '/vitals/scenario-launcher.html';
+      }
+
+      const returnUrl = safeReturnUrl();
+      elements.backBtn.addEventListener('click', () => { window.location.href = returnUrl; });
+      elements.launcherBtn.addEventListener('click', () => { window.location.href = '/vitals/scenario-launcher.html'; });
+      elements.returnBtn.addEventListener('click', () => { window.location.href = returnUrl; });
+
+      const activeScenario = Boolean(runtime?.active?.() && record);
+      let systolic = Number(runtime?.vital?.('systolic', Number.NaN));
+      let diastolic = Number(runtime?.vital?.('diastolic', Number.NaN));
+
+      if ((!Number.isFinite(systolic) || !Number.isFinite(diastolic)) && activeScenario) {
+        const parts = String(runtime?.vital?.('blood_pressure', '') || '').split('/');
+        systolic = Number(parts[0]);
+        diastolic = Number(parts[1]);
+      }
+
+      if (!activeScenario || !Number.isFinite(systolic) || !Number.isFinite(diastolic)) {
+        elements.scenarioError.hidden = false;
+        return;
+      }
+
+      elements.patientStrip.hidden = false;
+      elements.simCard.hidden = false;
+      elements.answerCard.hidden = false;
+      elements.patientName.textContent = record.patient || 'Active patient';
+      elements.caseTitle.textContent = record.title || 'Patient assessment';
+
+      const MAX_PRESSURE = 280;
+      const TOLERANCE = 4;
+      const DEFLATION_STEP = 0.24;
+      const TICK_MS = 90;
+      const REQUIRED_OVERINFLATION = 18;
+      const REQUIRED_BELOW_DIASTOLIC = 8;
+
+      let currentPressure = 0;
+      let peakPressure = 0;
+      let releasing = false;
+      let measurementComplete = false;
+      let heardAnyBeat = false;
+      let deflationTimer = null;
+      let attempts = 0;
+      let audioContext = null;
+      let beatBuffer = null;
+      let beatTimer = null;
+      let beatPlaying = false;
+      let destroyed = false;
+
+      function clamp(value, min, max) {
+        return Math.min(max, Math.max(min, value));
+      }
+
+      function pressureToAngle(pressure) {
+        return (pressure / MAX_PRESSURE) * 360 - 180;
+      }
+
+      function updateNeedle() {
+        elements.needle.style.transform = `rotate(${pressureToAngle(currentPressure)}deg)`;
+        elements.pressureDisplay.textContent = String(Math.round(currentPressure));
+      }
+
+      function ensureAudio() {
+        if (destroyed) return;
+        if (!audioContext) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return;
+          audioContext = new AudioContextClass();
+        }
+        if (audioContext.state === 'suspended') {
+          audioContext.resume().catch(() => {});
+        }
+        if (beatBuffer) return;
+
+        const duration = 0.16;
+        const sampleRate = audioContext.sampleRate;
+        const length = Math.floor(duration * sampleRate);
+        beatBuffer = audioContext.createBuffer(1, length, sampleRate);
+        const channel = beatBuffer.getChannelData(0);
+
+        for (let index = 0; index < length; index += 1) {
+          const time = index / sampleRate;
+          const envelope = Math.exp(-28 * time);
+          const lowThump = Math.sin(2 * Math.PI * 88 * time);
+          const upperClick = Math.sin(2 * Math.PI * 176 * time) * 0.32;
+          channel[index] = (lowThump + upperClick) * envelope * 0.7;
+        }
+      }
+
+      function playBeat() {
+        if (!audioContext || !beatBuffer || audioContext.state === 'closed') return;
+        const source = audioContext.createBufferSource();
+        source.buffer = beatBuffer;
+        source.connect(audioContext.destination);
+        source.start();
+        heardAnyBeat = true;
+      }
+
+      function startHeartbeat() {
+        if (beatPlaying) return;
+        beatPlaying = true;
+        playBeat();
+        beatTimer = window.setInterval(playBeat, 666);
+      }
+
+      function stopHeartbeat() {
+        beatPlaying = false;
+        if (beatTimer !== null) {
+          window.clearInterval(beatTimer);
+          beatTimer = null;
+        }
+      }
+
+      function updateSoundState() {
+        if (!releasing) {
+          stopHeartbeat();
+          return;
+        }
+        if (currentPressure <= systolic && currentPressure > diastolic) {
+          startHeartbeat();
+        } else {
+          stopHeartbeat();
+        }
+      }
+
+      function setMeasurementComplete() {
+        if (measurementComplete) return;
+        measurementComplete = true;
+        releasing = false;
+        stopHeartbeat();
+        elements.releaseBtn.textContent = 'Release';
+        elements.submitBtn.disabled = false;
+        elements.measurementState.textContent = 'Measurement complete. Enter the pressure you heard.';
+        elements.sysInput.focus();
+      }
+
+      function evaluateMeasurementProgress() {
+        const inflatedHighEnough = peakPressure >= systolic + REQUIRED_OVERINFLATION;
+        const releasedLowEnough = currentPressure <= Math.max(0, diastolic - REQUIRED_BELOW_DIASTOLIC);
+        if (inflatedHighEnough && heardAnyBeat && releasedLowEnough) {
+          setMeasurementComplete();
+        }
+      }
+
+      function resetMeasurement(clearResult = true) {
+        releasing = false;
+        measurementComplete = false;
+        heardAnyBeat = false;
+        currentPressure = 0;
+        peakPressure = 0;
+        stopHeartbeat();
+        updateNeedle();
+        elements.releaseBtn.textContent = 'Release';
+        elements.submitBtn.disabled = true;
+        elements.sysInput.value = '';
+        elements.diaInput.value = '';
+        elements.measurementState.textContent = 'Inflate the cuff to begin.';
+        if (clearResult) {
+          elements.result.textContent = '';
+          elements.result.className = '';
+        }
+      }
+
+      function handlePump() {
+        if (measurementComplete) return;
+        ensureAudio();
+        releasing = false;
+        stopHeartbeat();
+        currentPressure = clamp(currentPressure + 10, 0, MAX_PRESSURE);
+        peakPressure = Math.max(peakPressure, currentPressure);
+        elements.releaseBtn.textContent = 'Release';
+        elements.measurementState.textContent = 'Cuff inflated. Release slowly when ready.';
+        updateNeedle();
+      }
+
+      function toggleRelease() {
+        if (measurementComplete) return;
+        ensureAudio();
+        if (currentPressure <= 0) {
+          elements.measurementState.textContent = 'Inflate the cuff before releasing it.';
+          return;
+        }
+        releasing = !releasing;
+        elements.releaseBtn.textContent = releasing ? 'Pause' : 'Resume';
+        elements.measurementState.textContent = releasing ? 'Listen for the first and last sound.' : 'Release paused.';
+        updateSoundState();
+      }
+
+      function tickDeflation() {
+        if (!releasing || document.hidden || destroyed) return;
+        currentPressure = Math.max(0, currentPressure - DEFLATION_STEP);
+        updateNeedle();
+        updateSoundState();
+        evaluateMeasurementProgress();
+
+        if (currentPressure <= 0 && !measurementComplete) {
+          releasing = false;
+          stopHeartbeat();
+          elements.releaseBtn.textContent = 'Release';
+          elements.measurementState.textContent = 'No complete reading obtained. Reset and try again.';
+        }
+      }
+
+      function startDeflationLoop() {
+        if (deflationTimer !== null) return;
+        deflationTimer = window.setInterval(tickDeflation, TICK_MS);
+      }
+
+      function stopDeflationLoop() {
+        if (deflationTimer !== null) {
+          window.clearInterval(deflationTimer);
+          deflationTimer = null;
+        }
+      }
+
+      function saveCorrectFinding(learnerSystolic, learnerDiastolic) {
+        const value = `${systolic}/${diastolic}`;
+        const normality = runtime.classifyFinding('blood_pressure', value);
+        const status = normality === 'normal' ? 'normal' : 'abnormal';
+
+        patientApi.setFinding('blood_pressure', value, {
+          label: 'Blood pressure',
+          finding: value,
+          normality,
+          status,
+          source: 'scenario-bp-simulator',
+          locked: true,
+          learnerReading: `${learnerSystolic}/${learnerDiastolic}`,
+          attempts
+        });
+
+        window.dispatchEvent(new CustomEvent('emscodesim:assessment-saved', {
+          detail: {
+            assessment: 'blood_pressure',
+            label: 'Blood pressure',
+            finding: value,
+            normality,
+            source: 'scenario-bp-simulator'
+          }
+        }));
+      }
+
+      function submitReading() {
+        if (!measurementComplete) {
+          elements.result.textContent = 'Complete the cuff check before entering a reading.';
+          elements.result.className = 'bad';
+          return;
+        }
+
+        const enteredSystolic = Number.parseInt(elements.sysInput.value, 10);
+        const enteredDiastolic = Number.parseInt(elements.diaInput.value, 10);
+
+        if (!Number.isFinite(enteredSystolic) || !Number.isFinite(enteredDiastolic)) {
+          elements.result.textContent = 'Enter both systolic and diastolic pressure.';
+          elements.result.className = 'bad';
+          return;
+        }
+
+        attempts += 1;
+        const systolicCorrect = Math.abs(enteredSystolic - systolic) <= TOLERANCE;
+        const diastolicCorrect = Math.abs(enteredDiastolic - diastolic) <= TOLERANCE;
+
+        if (!systolicCorrect || !diastolicCorrect) {
+          elements.result.textContent = 'Reading not accepted. Repeat the blood pressure and try again.';
+          elements.result.className = 'bad';
+          window.setTimeout(() => resetMeasurement(false), 900);
+          return;
+        }
+
+        saveCorrectFinding(enteredSystolic, enteredDiastolic);
+        elements.result.textContent = `Correct. Blood pressure ${systolic}/${diastolic} saved to the patient record.`;
+        elements.result.className = 'good';
+        elements.submitBtn.disabled = true;
+        elements.pumpBtn.disabled = true;
+        elements.releaseBtn.disabled = true;
+        elements.resetBtn.disabled = true;
+        elements.sysInput.disabled = true;
+        elements.diaInput.disabled = true;
+        elements.returnBtn.hidden = false;
+        elements.measurementState.textContent = 'Finding recorded.';
+      }
+
+      elements.pumpBtn.addEventListener('click', handlePump);
+      elements.releaseBtn.addEventListener('click', toggleRelease);
+      elements.resetBtn.addEventListener('click', () => resetMeasurement(true));
+      elements.submitBtn.addEventListener('click', submitReading);
+
+      [elements.sysInput, elements.diaInput].forEach((input) => {
+        input.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' && !elements.submitBtn.disabled) submitReading();
+        });
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          releasing = false;
+          stopHeartbeat();
+          if (!measurementComplete) elements.releaseBtn.textContent = currentPressure > 0 ? 'Resume' : 'Release';
+        }
+      });
+
+      window.addEventListener('pagehide', (event) => {
+        releasing = false;
+        stopHeartbeat();
+        if (!event.persisted) {
+          destroyed = true;
+          stopDeflationLoop();
+          if (audioContext && audioContext.state !== 'closed') {
+            audioContext.close().catch(() => {});
+          }
+        }
+      });
+
+      window.addEventListener('pageshow', (event) => {
+        if (!event.persisted) return;
+        destroyed = false;
+        startDeflationLoop();
+        updateNeedle();
+      });
+
+      window.addEventListener('beforeunload', () => {
+        destroyed = true;
+        stopHeartbeat();
+        stopDeflationLoop();
+      }, { once: true });
+
+      updateNeedle();
+      startDeflationLoop();
+    })();
+  </script>
+</body>
+</html>
