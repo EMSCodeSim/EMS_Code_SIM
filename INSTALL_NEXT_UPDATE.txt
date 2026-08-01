@@ -1,17 +1,20 @@
-EMS ENCYCLOPEDIA LEVEL + PRINT UPDATE
+EMS ENCYCLOPEDIA + PATIENT ASSESSMENT CONNECTION
 
-Upload these files while preserving folders:
+Upload all included files and preserve their folders.
+
+Replace:
 - ems-encyclopedia.html
 - ems-encyclopedia.js
-- ems-encyclopedia-print.html
-- ems-encyclopedia-print.js
-- data/ems-encyclopedia.json
-- styles/ems-encyclopedia.css
-- styles/ems-encyclopedia-print.css
+- vitals/assessment-workspace.html
+- vitals/assessment-workspace.js
+- vitals/assessment-workspace.css
 
-New features:
-- EMT / Paramedic / All provider-level filter
-- 31 new paramedic-focused reference topics
-- Field View and Classroom View
-- Printable personalized quick-reference sheets from saved topics
-- Updated total: 254 encyclopedia entries
+What changes:
+- Every guided assessment step now has a Quick reference button.
+- The encyclopedia opens pre-searched for that skill/finding.
+- Field View and EMT level are selected automatically.
+- A Return to assessment bar appears at the top.
+- Simulator launch buttons remain separate and unchanged.
+
+After upload, clear the site cache once using:
+/vitals/scenario-cache-reset.html
