@@ -1,0 +1,3165 @@
+{
+  "version": "2026.07",
+  "reviewed": "2026-07-31",
+  "title": "EMS Encyclopedia",
+  "entries": [
+    {
+      "term": "12-lead ECG cable",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Electrode and lead system recording the heart from multiple views.",
+      "details": "Correct placement and skin preparation reduce artifact.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "5 Rights",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Right patient, medication, dose, route, time.",
+      "details": "Many systems add indication, documentation, response, and refusal rights.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "6 Ps",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Pain, Pallor, Pulselessness, Paresthesia, Paralysis, Poikilothermia.",
+      "details": "Possible limb ischemia/compartment concerns; late signs may be ominous.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Skin Signs Learning Center",
+          "url": "/skin-signs-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Acetaminophen",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Analgesic and antipyretic used in selected systems.",
+      "details": "Check total recent intake, liver risk, age/weight requirements, and protocol.",
+      "remember": "Duplicate products, maximum daily exposure.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Activated charcoal",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Adsorbent used rarely for selected ingestions under medical direction.",
+      "details": "Not for caustics, hydrocarbons, altered patients without protected airway, or many other exposures.",
+      "remember": "Poison-center/medical-control direction, aspiration risk.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Acute",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Sudden onset or short duration.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Acute coronary syndrome",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "Group of conditions caused by reduced blood flow to heart muscle.",
+      "details": "Presentations may include pressure, discomfort, dyspnea, diaphoresis, nausea, weakness, or atypical symptoms. Follow local chest-pain and 12-lead protocols.",
+      "remember": "Do not rule out cardiac ischemia because pain is mild or atypical.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Adenosine",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Short-acting antiarrhythmic used for selected regular narrow-complex tachycardias.",
+      "details": "Requires rhythm interpretation, rapid administration, monitoring, and protocol.",
+      "remember": "Transient pause, patient explanation, rhythm strip.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Pulse Learning Center",
+          "url": "/pulse-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Adolescent pulse",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Common EMS teaching range: roughly 60-100/min.",
+      "details": "Approaches adult ranges.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Pulse Learning Center",
+          "url": "/pulse-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Adolescent respirations",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Common EMS teaching range: roughly 12-20/min.",
+      "details": "Interpret similarly to adults while considering age.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Adult oxygen saturation",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Often 95-100% in healthy adults at sea level.",
+      "details": "Baseline, altitude, chronic lung disease, waveform quality, and clinical appearance matter.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Adult resting pulse",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Commonly taught reference: 60-100 beats/min.",
+      "details": "Interpret with symptoms, perfusion, medications, fitness, temperature, and trend.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Pulse Learning Center",
+          "url": "/pulse-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Adult resting respirations",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Commonly taught reference: 12-20 breaths/min.",
+      "details": "Count quality and effort, not only rate. Avoid announcing the count.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Adult systolic blood pressure",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "A single “normal” number is less useful than perfusion and trend. Many courses use about 90-120 mmHg as a basic reference.",
+      "details": "Check cuff size, position, repeated readings, and symptoms.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Blood Pressure Learning Center",
+          "url": "/blood-pressure-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Adult temperature",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "About 97-99°F (36.1-37.2°C) is a common oral reference range.",
+      "details": "Route, environment, age, and device affect readings.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Adverse effect",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Unintended harmful effect of a treatment.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "AEIOU-TIPS",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Alcohol, Epilepsy/electrolytes, Insulin, Overdose/oxygen, Uremia, Trauma/temperature, Infection, Psychiatric/poisoning, Stroke/shock.",
+      "details": "Differential reminder for altered mental status; versions vary.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Airway obstruction",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "Partial or complete blockage of airflow through the upper or lower airway.",
+      "details": "Look for inability to speak, weak or absent air movement, abnormal sounds, altered mental status, and cyanosis. Treat according to age, responsiveness, and local protocol.",
+      "remember": "A quiet airway can be more dangerous than a noisy one.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Albuterol",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Short-acting bronchodilator for bronchospasm.",
+      "details": "Assess breath sounds, work of breathing, heart rate, and ability to use the delivery device.",
+      "remember": "Tremor, tachycardia, response to treatment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Ambulance safety",
+      "category": "operations",
+      "categoryTitle": "EMS Operations",
+      "icon": "🚑",
+      "summary": "Practices that reduce collision and occupant injury risk.",
+      "details": "Use restraints whenever possible, secure equipment, limit unnecessary emergency driving, and maintain situational awareness.",
+      "remember": "An unrestrained provider becomes a patient in a crash.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Amiodarone",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Antiarrhythmic used in selected ventricular dysrhythmias by ALS clinicians.",
+      "details": "Indication, rhythm, route, and sequence are protocol-specific.",
+      "remember": "Rhythm, blood pressure, IV access, reassessment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Anaphylaxis",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "Severe systemic allergic reaction involving airway, breathing, or circulation.",
+      "details": "Recognize rapidly, remove exposure when possible, give protocol-directed epinephrine, support ventilation and perfusion, and prepare for recurrence.",
+      "remember": "Epinephrine is the key time-sensitive treatment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        },
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Anterior",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Toward the front of the body.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "APGAR",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Appearance, Pulse, Grimace, Activity, Respiration.",
+      "details": "Newborn score at defined intervals; not a substitute for resuscitation decisions.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Pulse Learning Center",
+          "url": "/pulse-training.html"
+        },
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "APGAR score",
+      "category": "obstetrics",
+      "categoryTitle": "Obstetrics & Newborn",
+      "icon": "👶",
+      "summary": "Standardized newborn assessment commonly recorded at one and five minutes.",
+      "details": "Scores appearance, pulse, grimace, activity, and respirations. It documents response but does not replace resuscitation decisions.",
+      "remember": "Treat the newborn based on breathing and heart rate, not the score alone.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Aphasia",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Impaired ability to understand or produce language.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Apnea",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Absence of breathing.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Apnea",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "Absence of breathing.",
+      "details": "Confirm quickly, open the airway, begin appropriate ventilation, and assess for cardiac arrest.",
+      "remember": "Apnea requires immediate action.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Appearance",
+      "category": "pediatrics",
+      "categoryTitle": "Pediatrics",
+      "icon": "🧸",
+      "summary": "Pediatric Assessment Triangle component reflecting neurologic and physiologic function.",
+      "details": "Consider tone, interactiveness, consolability, look or gaze, and speech or cry.",
+      "remember": "Abnormal appearance is often a serious sign.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Aspirin",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Antiplatelet medication commonly used for suspected acute coronary syndrome.",
+      "details": "Confirm indications and contraindications; consider allergy, active bleeding, and local protocol.",
+      "remember": "Chewable form, reassessment, bleeding risk.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Ataxia",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Impaired coordination or unsteady movement.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Atropine",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Anticholinergic used for selected symptomatic bradycardia and other indications.",
+      "details": "Use depends on rhythm, symptoms, and protocol.",
+      "remember": "Heart rate, perfusion, pacing readiness.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Pulse Learning Center",
+          "url": "/pulse-training.html"
+        }
+      ]
+    },
+    {
+      "term": "AVPU",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Alert, responds to Verbal, responds to Pain, Unresponsive.",
+      "details": "Rapid mental-status classification; document more detail when possible.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Bag-valve mask (BVM)",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Manual positive-pressure ventilation device with self-inflating bag, valve, mask, and oxygen connection.",
+      "details": "Select correct mask size, maintain seal, watch chest rise, avoid excessive rate/volume.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Bag-valve mask ventilation",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "Positive-pressure ventilation delivered with a self-inflating bag and mask.",
+      "details": "Create a tight seal, position the airway, ventilate only enough to produce visible chest rise, and use two rescuers when available.",
+      "remember": "A good seal and airway position matter more than squeezing harder.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "BE-FAST",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Balance, Eyes, Face, Arm, Speech, Time.",
+      "details": "Stroke recognition; use your local stroke scale and destination plan.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Bilateral",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "On both sides.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Blood glucose",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "A common fasting laboratory reference is about 70-99 mg/dL, but EMS interpretation depends on symptoms, meal timing, diabetes, and protocol.",
+      "details": "Treat the patient and follow local thresholds.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Bradycardia",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Abnormally slow heart rate.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Pulse Learning Center",
+          "url": "/pulse-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Bradypnea",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Abnormally slow breathing.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Bronchiolitis",
+      "category": "pediatrics",
+      "categoryTitle": "Pediatrics",
+      "icon": "🧸",
+      "summary": "Lower respiratory illness in infants commonly associated with viral infection.",
+      "details": "Look for feeding difficulty, retractions, wheezing or crackles, dehydration, and apnea risk.",
+      "remember": "Suctioning the nose may significantly improve breathing in infants.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Burn assessment",
+      "category": "trauma",
+      "categoryTitle": "Trauma",
+      "icon": "🩸",
+      "summary": "Evaluation of burn depth, extent, location, and associated threats.",
+      "details": "Stop the burning process, assess airway risk, estimate involved body surface area appropriately, prevent hypothermia, and follow transport criteria.",
+      "remember": "Do not cool large burns until the patient becomes cold.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "CAGE",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Cut down, Annoyed, Guilty, Eye-opener.",
+      "details": "Alcohol-use screening tool; use respectfully and within role.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Calcium",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Used for selected toxicologic, electrolyte, and resuscitation situations.",
+      "details": "Formulation and compatibility matter. Follow protocol.",
+      "remember": "IV patency, rhythm, medication compatibility.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Capillary refill",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Often less than 2 seconds in a warm, well-perfused patient.",
+      "details": "Cold, age, lighting, and technique affect the result.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Capnography",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Device measuring exhaled CO2 as a number and waveform.",
+      "details": "Interpret waveform, trend, ventilation, perfusion, and clinical context.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Carbon monoxide poisoning",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "Toxic exposure that impairs oxygen delivery.",
+      "details": "Symptoms can include headache, dizziness, nausea, confusion, chest pain, and syncope. Remove from exposure and use appropriate monitoring and oxygen per protocol.",
+      "remember": "A standard pulse oximeter can appear normal.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Cervical collar",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Device used in selected spinal-motion-restriction plans.",
+      "details": "Correct size and fit; collar alone does not fully immobilize the spine.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "CHART narrative",
+      "category": "documentation",
+      "categoryTitle": "Documentation & Communication",
+      "icon": "📝",
+      "summary": "Documentation format: Chief complaint, History, Assessment, Rx, Transport.",
+      "details": "A common EMS structure for organizing a patient care narrative.",
+      "remember": "Do not force important details into the wrong section.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Chronic",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Long-lasting or recurring.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Circulation to skin",
+      "category": "pediatrics",
+      "categoryTitle": "Pediatrics",
+      "icon": "🧸",
+      "summary": "Pediatric Assessment Triangle component reflecting perfusion.",
+      "details": "Assess pallor, mottling, and cyanosis during the initial visual impression.",
+      "remember": "Skin findings can reveal shock before blood pressure falls.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Skin Signs Learning Center",
+          "url": "/skin-signs-training.html"
+        },
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Closed-loop communication",
+      "category": "documentation",
+      "categoryTitle": "Documentation & Communication",
+      "icon": "📝",
+      "summary": "Communication method where an order is directed, repeated back, and confirmed.",
+      "details": "Reduces missed or misunderstood tasks during high-stress care.",
+      "remember": "Name the person, state the task, hear the repeat-back.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Compartment syndrome",
+      "category": "trauma",
+      "categoryTitle": "Trauma",
+      "icon": "🩸",
+      "summary": "Rising pressure within a muscle compartment that threatens circulation and tissue.",
+      "details": "Look for severe pain, pain with passive stretch, tense swelling, sensory changes, and worsening neurovascular findings.",
+      "remember": "Pulse loss is a late finding.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Contraindication",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Reason a treatment or procedure should not be used.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "CPAP",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Noninvasive positive airway-pressure system for selected breathing patients.",
+      "details": "Requires spontaneous breathing, appropriate mental status, seal, and monitoring.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        },
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "CPAP",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "Continuous positive airway pressure for selected spontaneously breathing patients.",
+      "details": "CPAP can improve oxygenation and reduce work of breathing in appropriate patients. Monitor tolerance, blood pressure, mental status, and contraindications.",
+      "remember": "The patient must be breathing and able to cooperate.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        },
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Crackles",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Discontinuous popping lung sounds, often associated with fluid or reopening airways.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        },
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Crackles",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "Discontinuous popping sounds often associated with fluid or reopening small airways.",
+      "details": "Document location, symmetry, timing, and associated findings such as edema, fever, or respiratory distress.",
+      "remember": "Describe what you hear before naming a diagnosis.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Open breath sounds",
+          "url": "/breath-sound-training.html"
+        },
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Croup",
+      "category": "pediatrics",
+      "categoryTitle": "Pediatrics",
+      "icon": "🧸",
+      "summary": "Upper-airway illness commonly associated with barky cough and stridor.",
+      "details": "Keep the child calm, assess severity and oxygenation, and follow local treatment guidance.",
+      "remember": "Agitation can worsen obstruction.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        },
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Crowing",
+      "category": "obstetrics",
+      "categoryTitle": "Obstetrics & Newborn",
+      "icon": "👶",
+      "summary": "Visible presentation of the fetal head at the vaginal opening.",
+      "details": "Prepare for imminent delivery, support controlled delivery, and avoid unnecessary transport movement.",
+      "remember": "Crowning usually means delivery is near.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Cyanosis",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Bluish discoloration associated with deoxygenated blood or poor perfusion.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Skin Signs Learning Center",
+          "url": "/skin-signs-training.html"
+        }
+      ]
+    },
+    {
+      "term": "DCAP-BTLS",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Deformities, Contusions, Abrasions, Punctures/penetrations, Burns, Tenderness, Lacerations, Swelling.",
+      "details": "Systematic trauma exam reminder.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Dextrose",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Intravenous glucose used by appropriately credentialed clinicians for hypoglycemia.",
+      "details": "Concentration and route vary by protocol. Confirm IV patency and reassess glucose.",
+      "remember": "Extravasation, hyperglycemia, repeat assessment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Diaphoresis",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Profuse sweating.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Diphenhydramine",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Antihistamine used in selected allergic reactions.",
+      "details": "It does not replace epinephrine in anaphylaxis. Scope and route vary.",
+      "remember": "Sedation, anticholinergic effects, airway monitoring.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Distal",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Farther from the trunk or point of origin.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Dysarthria",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Difficulty articulating speech from motor dysfunction.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Dysphagia",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Difficulty swallowing.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Dyspnea",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Subjective difficulty breathing.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Eclampsia",
+      "category": "obstetrics",
+      "categoryTitle": "Obstetrics & Newborn",
+      "icon": "👶",
+      "summary": "Seizure associated with pregnancy-related hypertensive disease.",
+      "details": "Protect airway, support oxygenation and ventilation, treat per protocol, and transport urgently.",
+      "remember": "Pregnancy should be considered in seizure differential.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Edema",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Swelling caused by fluid accumulation.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "End-tidal CO2",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "A commonly taught adult reference is about 35-45 mmHg.",
+      "details": "Interpret waveform, ventilation, perfusion, clinical context, and trend.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Endotracheal tube",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Tube passed through the vocal cords into the trachea by trained clinicians.",
+      "details": "Placement confirmation and continuous monitoring are essential.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Epinephrine 0.1 mg/mL",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Dilute epinephrine formulation used for selected resuscitation indications by authorized clinicians.",
+      "details": "Do not confuse with 1 mg/mL. Follow resuscitation protocol.",
+      "remember": "Concentration, route, timing, documentation.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Epinephrine 1 mg/mL",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Concentrated epinephrine formulation used for selected IM indications by authorized clinicians.",
+      "details": "Concentration errors are dangerous. Verify indication, route, and formulation.",
+      "remember": "Read label aloud, cross-check concentration.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Epinephrine auto-injector",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Adrenergic medication used for severe allergic reactions and anaphylaxis.",
+      "details": "Recognize airway swelling, breathing difficulty, shock, or rapidly progressing symptoms.",
+      "remember": "Correct device/site, immediate transport, repeat assessment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Etiology",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Cause or origin of a condition.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Febrile seizure",
+      "category": "pediatrics",
+      "categoryTitle": "Pediatrics",
+      "icon": "🧸",
+      "summary": "Seizure associated with fever in a young child.",
+      "details": "Support airway and breathing, determine duration, assess glucose and temperature as indicated, and evaluate for concerning features.",
+      "remember": "Do not assume every seizure with fever is benign.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Fentanyl",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Opioid analgesic used by authorized clinicians.",
+      "details": "Assess pain, respiratory status, blood pressure, allergies, and protocol.",
+      "remember": "Sedation, ventilation, reassessment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Flail segment",
+      "category": "trauma",
+      "categoryTitle": "Trauma",
+      "icon": "🩸",
+      "summary": "Chest-wall segment moving independently after multiple rib fractures.",
+      "details": "Support ventilation and oxygenation, monitor for underlying pulmonary injury, and avoid delaying transport.",
+      "remember": "Treat the breathing problem, not only the visible chest motion.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Flexible suction catheter",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Soft catheter used for selected airway or tracheal suctioning.",
+      "details": "Depth and technique depend on training and airway type.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "GCS",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Eye, Verbal, Motor.",
+      "details": "Score components separately and document confounders.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Glucagon",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Hormone used for selected severe hypoglycemia when oral glucose is unsafe or ineffective.",
+      "details": "Scope and route vary. Reassess airway, mental status, and glucose.",
+      "remember": "Nausea/vomiting, delayed response, recovery position.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Glucometer",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Point-of-care device for capillary blood glucose.",
+      "details": "Check strip compatibility, expiration, sample technique, and infection control.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Gravida",
+      "category": "obstetrics",
+      "categoryTitle": "Obstetrics & Newborn",
+      "icon": "👶",
+      "summary": "Number of times a person has been pregnant, including the current pregnancy.",
+      "details": "Used as part of obstetric history.",
+      "remember": "Gravida counts pregnancies, not births.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Hazardous materials awareness",
+      "category": "operations",
+      "categoryTitle": "EMS Operations",
+      "icon": "🚑",
+      "summary": "Recognition of possible hazardous substance incidents and protective initial actions.",
+      "details": "Stay uphill, upwind, and upstream when practical; isolate, deny entry, identify from a safe distance, and request specialized resources.",
+      "remember": "Do not enter to identify a product.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Head-tilt/chin-lift",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "Manual airway maneuver for a patient without suspected spinal trauma.",
+      "details": "Tilt the forehead while lifting the chin to move the tongue away from the posterior pharynx.",
+      "remember": "Open the airway before judging breathing.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Hematemesis",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Vomiting blood.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Hematochezia",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Passage of bright red or maroon blood per rectum.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Hemoptysis",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Coughing blood from the respiratory tract.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Hemostatic gauze",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Gauze impregnated with an agent that supports clot formation.",
+      "details": "Pack appropriate wounds firmly and maintain pressure.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Hyperglycemia",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "Elevated blood glucose that may accompany dehydration and metabolic illness.",
+      "details": "Assess mental status, breathing pattern, hydration, infection signs, medication use, and duration.",
+      "remember": "A high number alone does not explain the whole patient.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Hypoglycemia",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "Blood glucose low enough to impair normal function.",
+      "details": "May cause confusion, weakness, diaphoresis, seizure, or coma. Check glucose early in altered patients and treat per protocol.",
+      "remember": "Glucose is a vital sign in altered mental status.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Hypoxemia",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Low oxygen in arterial blood.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Hypoxia",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Inadequate oxygen at the tissue level.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Ibuprofen",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "NSAID used for pain or fever in selected systems.",
+      "details": "Consider allergy, bleeding, kidney disease, pregnancy, and age restrictions.",
+      "remember": "GI upset, hydration status, duplicate NSAID use.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "IMIST-AMBO",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Identification, Mechanism/medical complaint, Injuries/information, Signs, Treatment, Allergies, Medications, Background, Other.",
+      "details": "Structured EMS handoff; local versions vary.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Incident command system",
+      "category": "operations",
+      "categoryTitle": "EMS Operations",
+      "icon": "🚑",
+      "summary": "Standardized structure for managing incidents, resources, communication, and accountability.",
+      "details": "Use clear command, span of control, common terminology, and scalable organization.",
+      "remember": "Announce command early when the incident needs it.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Indication",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Clinical reason to use a treatment or procedure.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Infant pulse",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Common EMS teaching range: roughly 100-160/min.",
+      "details": "Assess perfusion and respiratory status; ranges vary with activity.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Pulse Learning Center",
+          "url": "/pulse-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Infant respirations",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Common EMS teaching range: roughly 30-50/min.",
+      "details": "Count a full minute when irregular.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Inferior",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Below or toward the feet.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "IO device",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Device for intraosseous vascular access when indicated.",
+      "details": "Site, needle, pain management, and confirmation are protocol-specific.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Ipratropium",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Anticholinergic bronchodilator often paired with albuterol in obstructive airway disease.",
+      "details": "Used according to local protocol, commonly for asthma or COPD exacerbation.",
+      "remember": "Dry mouth, delivery method, reassessment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "IV catheter",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Over-the-needle catheter used for vascular access.",
+      "details": "Select site and size based on need; secure and reassess.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Jaundice",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Yellow discoloration from elevated bilirubin.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Jaw-thrust maneuver",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "Manual airway maneuver used when spinal injury is suspected.",
+      "details": "Lift the angles of the jaw forward while minimizing movement of the head and neck. If ineffective, open the airway using the maneuver that works.",
+      "remember": "Airway takes priority over perfect spinal motion restriction.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Ketamine",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Dissociative medication used in selected systems for analgesia, sedation, or behavioral emergencies.",
+      "details": "Indication and dosing vary greatly. Requires monitoring and airway readiness.",
+      "remember": "Airway, emergence reactions, blood pressure.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Lactated Ringer’s",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Balanced crystalloid used in selected systems for fluid replacement.",
+      "details": "Follow protocol and consider patient condition and compatibility.",
+      "remember": "Perfusion, lung sounds, reassessment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Landing zone",
+      "category": "operations",
+      "categoryTitle": "EMS Operations",
+      "icon": "🚑",
+      "summary": "Area prepared for helicopter operations.",
+      "details": "Follow local aviation guidance, maintain scene security, identify hazards, and approach only when directed by the flight crew.",
+      "remember": "Never approach a helicopter without crew direction.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Lateral",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Away from the midline.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Magnesium sulfate",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Medication used for selected dysrhythmias, severe asthma, or obstetric emergencies.",
+      "details": "Indication and route are protocol-specific.",
+      "remember": "Blood pressure, reflexes/respirations when relevant.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Manual BP cuff",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Inflatable cuff, bulb, valve, and aneroid gauge for blood pressure measurement.",
+      "details": "Correct cuff size and positioning are essential.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Blood Pressure Learning Center",
+          "url": "/blood-pressure-training.html"
+        }
+      ]
+    },
+    {
+      "term": "MARCH",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Massive hemorrhage, Airway, Respiration, Circulation, Head injury/Hypothermia.",
+      "details": "Tactical/trauma priority framework; training context varies.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        },
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Mass-casualty incident",
+      "category": "operations",
+      "categoryTitle": "EMS Operations",
+      "icon": "🚑",
+      "summary": "Incident where patient needs may exceed available resources.",
+      "details": "Establish command, request resources early, organize triage-treatment-transport functions, and maintain accountability.",
+      "remember": "Resource management becomes part of patient care.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Mechanism of injury",
+      "category": "trauma",
+      "categoryTitle": "Trauma",
+      "icon": "🩸",
+      "summary": "Forces and events that produced trauma.",
+      "details": "Use mechanism to guide suspicion, but base treatment and destination on the patient’s actual findings and risk factors.",
+      "remember": "Mechanism informs assessment; it does not replace it.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Meconium",
+      "category": "obstetrics",
+      "categoryTitle": "Obstetrics & Newborn",
+      "icon": "👶",
+      "summary": "Fetal stool that may be present in amniotic fluid.",
+      "details": "Note color and thickness and assess the newborn’s breathing, tone, and heart rate according to current neonatal guidance.",
+      "remember": "Do not perform routine invasive suctioning solely because meconium is present.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Medial",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Toward the midline.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Medical necessity",
+      "category": "documentation",
+      "categoryTitle": "Documentation & Communication",
+      "icon": "📝",
+      "summary": "Clinical reason an EMS service or transport was required.",
+      "details": "Document functional limitations, risks, interventions, monitoring, and why alternate transportation was unsuitable when relevant.",
+      "remember": "The narrative should show necessity without copying a stock phrase.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Melena",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Black, tarry stool often associated with upper GI bleeding.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Midazolam",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Benzodiazepine used for seizures, sedation, and selected agitation protocols.",
+      "details": "Monitor ventilation and hemodynamics. Scope and route vary.",
+      "remember": "Respiratory depression, sedation, reassessment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "MIST report",
+      "category": "documentation",
+      "categoryTitle": "Documentation & Communication",
+      "icon": "📝",
+      "summary": "Handoff structure: Mechanism/Medical complaint, Injuries/Information, Signs, Treatments.",
+      "details": "Useful for concise trauma or medical handoffs.",
+      "remember": "Lead with why the receiving team should care.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Naloxone",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Opioid antagonist used when opioid toxicity causes respiratory depression.",
+      "details": "Ventilation remains the priority. Use according to protocol and reassess for recurrent respiratory depression.",
+      "remember": "Airway, breathing, withdrawal, scene safety.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Nasal cannula",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Low-flow oxygen interface placed in the nares.",
+      "details": "Comfortable and useful for selected spontaneously breathing patients.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Nasopharyngeal airway (NPA)",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "Soft airway adjunct inserted through a nostril.",
+      "details": "Useful when some airway reflexes remain or the mouth cannot be opened. Lubricate and follow local contraindications.",
+      "remember": "Measure carefully and never force insertion.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Nebulizer",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Device that aerosolizes medication for inhalation.",
+      "details": "Assemble correctly, maintain gas flow, reassess breath sounds and effort.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Neonatal resuscitation",
+      "category": "obstetrics",
+      "categoryTitle": "Obstetrics & Newborn",
+      "icon": "👶",
+      "summary": "Support of a newborn who does not transition effectively after birth.",
+      "details": "Warm, position, dry, stimulate, assess breathing and heart rate, and provide ventilation according to current training and protocol.",
+      "remember": "Effective ventilation is the central intervention.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Newborn pulse",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Common EMS teaching range: roughly 100-180/min.",
+      "details": "Use age-specific references from your course and protocol.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Pulse Learning Center",
+          "url": "/pulse-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Newborn respirations",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Common EMS teaching range: roughly 30-60/min.",
+      "details": "Watch chest/abdomen, effort, color, and pauses.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Nitroglycerin",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Vasodilator used in selected chest-pain and pulmonary-edema patients.",
+      "details": "Check blood pressure, prescribed use when applicable, recent PDE-5 inhibitor use, and protocol.",
+      "remember": "Hypotension, headache, repeat BP, symptom response.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Nonrebreather mask",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "High-concentration oxygen mask with reservoir bag and one-way valves.",
+      "details": "Inflate reservoir before placement and maintain adequate flow.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Normal saline",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Isotonic crystalloid used for vascular access, medication delivery, and selected volume needs.",
+      "details": "Amount and indication vary by patient and protocol.",
+      "remember": "Lung sounds, perfusion, reassessment, fluid overload.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "NPA",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Soft nasal airway used in selected patients with reduced airway tone.",
+      "details": "Size and lubricate; contraindications vary with trauma and protocol.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Nuchal cord",
+      "category": "obstetrics",
+      "categoryTitle": "Obstetrics & Newborn",
+      "icon": "👶",
+      "summary": "Umbilical cord wrapped around the newborn’s neck.",
+      "details": "Manage according to training and local protocol, avoiding excessive traction.",
+      "remember": "Check for a cord after the head delivers.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Objective documentation",
+      "category": "documentation",
+      "categoryTitle": "Documentation & Communication",
+      "icon": "📝",
+      "summary": "Description based on observable, measurable facts.",
+      "details": "Use direct quotations for important patient statements and describe behavior rather than labeling it.",
+      "remember": "Write “speech slurred” rather than “intoxicated” unless supported.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Occlusive dressing",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Airtight or semi-airtight dressing used for selected open chest or neck wounds.",
+      "details": "Monitor breathing and follow venting protocol.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Ondansetron",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Antiemetic used for nausea and vomiting.",
+      "details": "Consider causes of vomiting, QT-risk factors, and local protocol.",
+      "remember": "Route, response, ongoing hydration/transport needs.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "OPA",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Rigid oral airway used in an unresponsive patient without a gag reflex.",
+      "details": "Size correctly; do not use when gag reflex is present.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Open chest wound",
+      "category": "trauma",
+      "categoryTitle": "Trauma",
+      "icon": "🩸",
+      "summary": "Penetrating chest injury allowing air movement through the chest wall.",
+      "details": "Use protocol-approved dressing techniques, monitor breathing closely, and reassess for deterioration.",
+      "remember": "Reassessment after dressing is essential.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Opioid overdose",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "Toxic opioid effect causing respiratory depression and altered mental status.",
+      "details": "Prioritize ventilation, airway support, oxygenation, naloxone per protocol, and evaluation for co-ingestants or recurrence.",
+      "remember": "The goal is adequate breathing, not necessarily full awakening.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "OPQRST",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Onset, Provocation/palliation, Quality, Region/radiation, Severity, Time.",
+      "details": "Works for pain and many symptoms, but not every letter fits every complaint.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Oral glucose",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Carbohydrate gel or paste used for selected conscious patients with suspected hypoglycemia.",
+      "details": "Patient must be able to protect the airway and swallow. Follow glucose assessment and protocol.",
+      "remember": "Aspiration risk, repeat glucose, symptom response.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Oropharyngeal airway (OPA)",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "Rigid airway adjunct for an unresponsive patient without a gag reflex.",
+      "details": "Size from the corner of the mouth to the angle of the jaw or earlobe, then insert using an age-appropriate technique.",
+      "remember": "Do not use when an intact gag reflex is present.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Orthopnea",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Breathing difficulty when lying flat.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Oxygen",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Medical gas used to correct suspected or confirmed hypoxemia and support critically ill patients.",
+      "details": "Indications depend on patient condition and local protocol. Titrate when appropriate; avoid delaying ventilation or airway management.",
+      "remember": "Delivery device, flow, target saturation, response, fire risk.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Pallor",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Unusual paleness.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Skin Signs Learning Center",
+          "url": "/skin-signs-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Para",
+      "category": "obstetrics",
+      "categoryTitle": "Obstetrics & Newborn",
+      "icon": "👶",
+      "summary": "Number of pregnancies reaching a defined viable gestational age, with local notation conventions varying.",
+      "details": "Clarify the system used when documenting a detailed obstetric history.",
+      "remember": "Para is not simply the number of living children.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Paresthesia",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Abnormal sensation such as tingling or numbness.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "PASS",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Pull, Aim, Squeeze, Sweep.",
+      "details": "Basic extinguisher use when safe and appropriate.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Pathophysiology",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "How disease or injury changes normal body function.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "PCR",
+      "category": "documentation",
+      "categoryTitle": "Documentation & Communication",
+      "icon": "📝",
+      "summary": "Patient care report documenting assessment, care, response, and disposition.",
+      "details": "Write an accurate, chronological, objective record using approved terminology and required data elements.",
+      "remember": "Document what you observed and did, not what you assume.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Pediatric Assessment Triangle",
+      "category": "pediatrics",
+      "categoryTitle": "Pediatrics",
+      "icon": "🧸",
+      "summary": "Rapid visual assessment of appearance, work of breathing, and circulation to skin.",
+      "details": "Use before touching the child to form an initial impression and identify urgency.",
+      "remember": "The PAT is an impression, not a complete assessment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Explore pediatric assessment",
+          "url": "/vitals/scenario-launcher.html"
+        },
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Pediatric respiratory failure",
+      "category": "pediatrics",
+      "categoryTitle": "Pediatrics",
+      "icon": "🧸",
+      "summary": "Inability to maintain adequate oxygenation or ventilation.",
+      "details": "Signs include fatigue, poor air movement, altered mental status, bradycardia, cyanosis, or irregular breathing.",
+      "remember": "A slowing rate in a tiring child may be worsening.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Pediatric shock",
+      "category": "pediatrics",
+      "categoryTitle": "Pediatrics",
+      "icon": "🧸",
+      "summary": "Inadequate tissue perfusion in a child.",
+      "details": "Tachycardia, delayed capillary refill, weak pulses, altered behavior, and cool skin may precede hypotension.",
+      "remember": "Hypotension is a late pediatric shock sign.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Pelvic binder",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Circumferential device for suspected unstable pelvic injury.",
+      "details": "Placement is typically over the greater trochanters, per training.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Pelvic binder",
+      "category": "trauma",
+      "categoryTitle": "Trauma",
+      "icon": "🩸",
+      "summary": "Device used to stabilize a suspected unstable pelvic injury.",
+      "details": "Apply over the greater trochanters, not the waist, following device instructions and local protocol.",
+      "remember": "Correct position is lower than many learners expect.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Perfusion",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Delivery of oxygenated blood to tissues.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "PERRL",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Pupils Equal, Round, Reactive to Light.",
+      "details": "Add size, gaze, and other findings when relevant.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Pertinent negative",
+      "category": "documentation",
+      "categoryTitle": "Documentation & Communication",
+      "icon": "📝",
+      "summary": "Relevant finding that was specifically assessed and found absent.",
+      "details": "Include negatives that help distinguish serious conditions or support decisions.",
+      "remember": "Do not chart a checklist of things you never assessed.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "PMS/CSM",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Pulse, Motor, Sensation / Circulation, Sensation, Movement.",
+      "details": "Document before and after splinting or movement.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Pulse Learning Center",
+          "url": "/pulse-training.html"
+        },
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Posterior",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Toward the back of the body.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Postpartum hemorrhage",
+      "category": "obstetrics",
+      "categoryTitle": "Obstetrics & Newborn",
+      "icon": "👶",
+      "summary": "Excessive bleeding after delivery.",
+      "details": "Recognize rapidly, support circulation, perform protocol-directed uterine massage when indicated, and transport promptly.",
+      "remember": "Estimate bleeding poorly? Describe soaked materials and ongoing flow.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Preeclampsia",
+      "category": "obstetrics",
+      "categoryTitle": "Obstetrics & Newborn",
+      "icon": "👶",
+      "summary": "Pregnancy-related hypertensive disorder with potential organ dysfunction.",
+      "details": "Symptoms may include headache, visual changes, edema, right upper abdominal pain, and hypertension.",
+      "remember": "Severe headache late in pregnancy is a warning sign.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Preschool pulse",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Common EMS teaching range: roughly 80-140/min.",
+      "details": "Trend and appearance matter more than one isolated number.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Pulse Learning Center",
+          "url": "/pulse-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Preschool respirations",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Common EMS teaching range: roughly 22-34/min.",
+      "details": "Retractions, grunting, and nasal flaring are important.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Pressure dressing",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Dressing designed to maintain pressure over a bleeding wound.",
+      "details": "Do not obscure ongoing reassessment of bleeding and distal circulation.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Presyncope",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Feeling of near-fainting without full loss of consciousness.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Primary trauma assessment",
+      "category": "trauma",
+      "categoryTitle": "Trauma",
+      "icon": "🩸",
+      "summary": "Rapid search for immediate threats to airway, breathing, circulation, disability, and exposure.",
+      "details": "Control catastrophic hemorrhage, manage airway and breathing, support perfusion, and determine transport priority.",
+      "remember": "Treat life threats as you find them.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        },
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Proximal",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Closer to the trunk or point of origin.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Pulse oximeter",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Noninvasive estimate of oxygen saturation and pulse rate.",
+      "details": "Confirm waveform/perfusion and compare displayed pulse with palpated pulse.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Pulse Learning Center",
+          "url": "/pulse-training.html"
+        }
+      ]
+    },
+    {
+      "term": "RACE",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Rescue, Alarm, Confine, Extinguish/Evacuate.",
+      "details": "Common fire-response mnemonic in facilities; follow site policy.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Radio report",
+      "category": "documentation",
+      "categoryTitle": "Documentation & Communication",
+      "icon": "📝",
+      "summary": "Brief prearrival communication to the receiving facility.",
+      "details": "Include unit, age, chief problem, important history, critical findings, treatment, response, and ETA according to local expectations.",
+      "remember": "Keep it short enough to be heard and complete enough to prepare.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Reassessment",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Repeat evaluation to identify change or treatment response.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Refusal of care",
+      "category": "operations",
+      "categoryTitle": "EMS Operations",
+      "icon": "🚑",
+      "summary": "Patient decision not to accept recommended assessment, treatment, or transport.",
+      "details": "Assess decision-making capacity, explain risks and alternatives, follow protocol, document thoroughly, and provide return precautions.",
+      "remember": "A signature alone does not make a refusal valid.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Rhonchi",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Low-pitched coarse sounds often associated with secretions.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "SAMPLE",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Signs/symptoms, Allergies, Medications, Past history, Last oral intake, Events leading up.",
+      "details": "Use to organize history; ask follow-up questions rather than treating it as a script.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "SBAR",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Situation, Background, Assessment, Recommendation.",
+      "details": "Structured handoff or consultation format.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "SBAR report",
+      "category": "documentation",
+      "categoryTitle": "Documentation & Communication",
+      "icon": "📝",
+      "summary": "Communication structure: Situation, Background, Assessment, Recommendation.",
+      "details": "Useful for organized clinical communication and escalation.",
+      "remember": "State the immediate concern first.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Scene size-up",
+      "category": "operations",
+      "categoryTitle": "EMS Operations",
+      "icon": "🚑",
+      "summary": "Initial process used to identify hazards, resources, mechanism or nature of illness, and patient count.",
+      "details": "Continue size-up throughout the call because conditions can change.",
+      "remember": "Scene safety is ongoing, not a one-time checkbox.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "School-age pulse",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Common EMS teaching range: roughly 70-120/min.",
+      "details": "Use local pediatric reference tools.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Pulse Learning Center",
+          "url": "/pulse-training.html"
+        }
+      ]
+    },
+    {
+      "term": "School-age respirations",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Common EMS teaching range: roughly 18-30/min.",
+      "details": "Consider fever, anxiety, pain, and exertion.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Scoop stretcher",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Split stretcher that can be assembled around a patient.",
+      "details": "Useful for selected lifts and transfers; follow manufacturer limits.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Seizure",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "Episode of abnormal electrical activity in the brain.",
+      "details": "Protect from injury, manage airway and oxygenation, check glucose, identify duration and recurrence, and assess for causes.",
+      "remember": "Postictal confusion is expected, but persistent abnormalities need reassessment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Sepsis",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "Life-threatening organ dysfunction caused by an abnormal response to infection.",
+      "details": "Look for suspected infection plus abnormal temperature, mental status, respiratory rate, perfusion, blood pressure, or glucose. Follow local screening and alert criteria.",
+      "remember": "Sepsis may present without fever.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "SLUDGE",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Salivation, Lacrimation, Urination, Defecation, GI upset, Emesis.",
+      "details": "Cholinergic toxidrome reminder; some versions add miosis/bronchorrhea.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "SOAP",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "📋",
+      "summary": "Subjective, Objective, Assessment, Plan.",
+      "details": "Documentation framework; EMS PCR structure may differ.",
+      "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "SOAP narrative",
+      "category": "documentation",
+      "categoryTitle": "Documentation & Communication",
+      "icon": "📝",
+      "summary": "Documentation format: Subjective, Objective, Assessment, Plan.",
+      "details": "Useful for organizing symptoms, findings, impression, and care.",
+      "remember": "Choose a format that preserves chronology and clinical reasoning.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Sodium bicarbonate",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Alkalinizing medication used in selected toxicologic and resuscitation situations.",
+      "details": "Not a routine medication for all arrests. Follow protocol.",
+      "remember": "Ventilation, indication, IV compatibility.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Spinal motion restriction",
+      "category": "trauma",
+      "categoryTitle": "Trauma",
+      "icon": "🩸",
+      "summary": "Strategies used to minimize movement when spinal injury risk is present.",
+      "details": "Use assessment-based indications and the least harmful effective method allowed by local protocol.",
+      "remember": "A rigid collar is only one part of motion restriction.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Stair chair",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Chair designed to move selected patients on stairs or through tight spaces.",
+      "details": "Use straps, adequate personnel, and safe lifting technique.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Standard precautions",
+      "category": "operations",
+      "categoryTitle": "EMS Operations",
+      "icon": "🚑",
+      "summary": "Actions used to reduce exposure to blood, body fluids, and infectious material.",
+      "details": "Select PPE based on anticipated exposure and perform hand hygiene and equipment cleaning.",
+      "remember": "PPE should match the hazard.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Status epilepticus",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "Prolonged or repeated seizures without adequate recovery.",
+      "details": "A time-critical emergency requiring airway support, rapid assessment, and protocol-directed medication at the appropriate provider level.",
+      "remember": "Track seizure start and stop times.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Stethoscope",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Acoustic device for breath sounds, blood pressure, and selected cardiac sounds.",
+      "details": "Good seal, correct earpiece direction, quiet technique.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Blood Pressure Learning Center",
+          "url": "/blood-pressure-training.html"
+        },
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Stridor",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Harsh upper-airway sound, often inspiratory.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        },
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Stridor",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "Harsh high-pitched sound caused by upper-airway narrowing.",
+      "details": "Often heard on inspiration and may signal severe airway compromise. Minimize agitation and prepare for rapid deterioration.",
+      "remember": "Stridor is an airway warning, not merely a lung sound.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Open breath sounds",
+          "url": "/breath-sound-training.html"
+        },
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Stroke",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "Acute neurologic injury caused by interrupted blood flow or bleeding in the brain.",
+      "details": "Determine last known well, perform a validated stroke assessment, check glucose, identify anticoagulant use, and transport to an appropriate facility.",
+      "remember": "Time last known well, not time found.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Suction unit",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Device used to remove secretions, blood, or vomit from the airway.",
+      "details": "Check power, tubing, canister, catheter, and function before calls.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Suctioning",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "Removal of blood, vomit, mucus, or other material from the airway.",
+      "details": "Prepare suction early, visualize when possible, limit each attempt, and reoxygenate or ventilate between attempts as needed.",
+      "remember": "Suction before trying to ventilate through contamination.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Superior",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Above or toward the head.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Supraglottic airway",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Advanced airway device seated above the vocal cords.",
+      "details": "Confirm placement with waveform capnography when available and ongoing reassessment.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Syncope",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Temporary loss of consciousness from reduced cerebral perfusion.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Syncope",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "Brief loss of consciousness from transient reduction in cerebral perfusion.",
+      "details": "Assess for cardiac, neurologic, hemorrhagic, metabolic, medication, and situational causes. Obtain orthostatic findings only when safe and allowed.",
+      "remember": "Syncope is a symptom, not a diagnosis.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Tachycardia",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Abnormally rapid heart rate.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Pulse Learning Center",
+          "url": "/pulse-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Tachypnea",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Abnormally rapid breathing.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Tension pneumothorax",
+      "category": "trauma",
+      "categoryTitle": "Trauma",
+      "icon": "🩸",
+      "summary": "Progressive pressure in the chest impairing ventilation and circulation.",
+      "details": "Suspect with severe respiratory distress, asymmetric breath sounds, chest trauma, and shock. Advanced treatment depends on scope and protocol.",
+      "remember": "Do not wait for every textbook sign.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Toddler pulse",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Common EMS teaching range: roughly 90-150/min.",
+      "details": "Crying and fever can increase rate.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Pulse Learning Center",
+          "url": "/pulse-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Toddler respirations",
+      "category": "vital-signs",
+      "categoryTitle": "Vital Signs",
+      "icon": "🩺",
+      "summary": "Common EMS teaching range: roughly 24-40/min.",
+      "details": "Observe before touching when possible.",
+      "remember": "Ranges are teaching references, not universal treatment thresholds.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Tourniquet",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Device that stops life-threatening extremity hemorrhage by circumferential compression.",
+      "details": "Apply for severe extremity bleeding per training; note time.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Tourniquet",
+      "category": "trauma",
+      "categoryTitle": "Trauma",
+      "icon": "🩸",
+      "summary": "Device used to control life-threatening extremity hemorrhage.",
+      "details": "Place according to device instructions and protocol, tighten until bleeding stops, record time, and do not periodically loosen.",
+      "remember": "If bleeding continues, tighten or add a second tourniquet.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Transfer of care",
+      "category": "operations",
+      "categoryTitle": "EMS Operations",
+      "icon": "🚑",
+      "summary": "Formal handoff of patient responsibility to another qualified provider.",
+      "details": "Give a concise report, ensure understanding, transfer documentation, and note the receiving person and time.",
+      "remember": "Responsibility is transferred through communication, not merely arrival.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Transient ischemic attack",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "Temporary neurologic symptoms caused by transient cerebral ischemia.",
+      "details": "Symptoms may resolve before EMS arrival but still require urgent evaluation. Document the original deficit and timing.",
+      "remember": "Resolved symptoms are still important.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Trauma shears",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Heavy scissors designed to cut clothing and some soft materials.",
+      "details": "Protect skin while cutting; clean after use.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Traumatic brain injury",
+      "category": "trauma",
+      "categoryTitle": "Trauma",
+      "icon": "🩸",
+      "summary": "Brain injury caused by external force.",
+      "details": "Prevent hypoxia and hypotension, monitor neurologic status, identify anticoagulants, and transport appropriately.",
+      "remember": "Small changes in mental status matter.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Triage",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Prioritizing patients based on urgency and resources.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Triage",
+      "category": "operations",
+      "categoryTitle": "EMS Operations",
+      "icon": "🚑",
+      "summary": "Prioritization of multiple patients when needs exceed immediately available resources.",
+      "details": "Use the locally adopted system and reassess categories as conditions and resources change.",
+      "remember": "Triage is dynamic.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Unilateral",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "On one side.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Venturi mask",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Fixed-performance oxygen mask using interchangeable adapters.",
+      "details": "More common in facilities; delivers a selected oxygen concentration.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Weight-based dosing",
+      "category": "pediatrics",
+      "categoryTitle": "Pediatrics",
+      "icon": "🧸",
+      "summary": "Medication dosing calculated from patient weight.",
+      "details": "Use measured weight when available, kilograms only, approved references, and an independent double-check.",
+      "remember": "Never convert or calculate mentally when a safer tool is available.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Wheeze",
+      "category": "terminology",
+      "categoryTitle": "Terminology",
+      "icon": "📖",
+      "summary": "Musical sound associated with narrowed lower airways.",
+      "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
+      "remember": "Spelling and exact definitions may vary slightly by source.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        },
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Wheezing",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "Musical sound caused by narrowed lower airways.",
+      "details": "Usually more prominent on exhalation. Assess severity, air movement, work of breathing, and response to treatment.",
+      "remember": "Less wheezing with worsening air movement can mean fatigue.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Open breath sounds",
+          "url": "/breath-sound-training.html"
+        },
+        {
+          "label": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Work of breathing",
+      "category": "pediatrics",
+      "categoryTitle": "Pediatrics",
+      "icon": "🧸",
+      "summary": "Observed effort required to breathe.",
+      "details": "Look for abnormal positioning, retractions, nasal flaring, head bobbing, and abnormal airway sounds.",
+      "remember": "Respiratory rate alone does not show work.",
+      "level": "EMT",
+      "aliases": [],
+      "links": [
+        {
+          "label": "Breath Sounds Learning Center",
+          "url": "/breath-sound-training.html"
+        }
+      ]
+    },
+    {
+      "term": "Wound packing",
+      "category": "trauma",
+      "categoryTitle": "Trauma",
+      "icon": "🩸",
+      "summary": "Firm placement of appropriate gauze into a deep junctional wound.",
+      "details": "Pack directly to the bleeding source and maintain pressure according to protocol and product guidance.",
+      "remember": "Fill the wound cavity; do not merely cover it.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Yankauer catheter",
+      "category": "equipment",
+      "categoryTitle": "Equipment",
+      "icon": "🎒",
+      "summary": "Rigid suction tip for the mouth and oropharynx.",
+      "details": "Use under direct visualization; avoid prolonged suction.",
+      "remember": "Use equipment only within training, authorization, and manufacturer guidance.",
+      "level": "EMT",
+      "aliases": [],
+      "links": []
+    }
+  ],
+  "categories": [
+    {
+      "id": "equipment",
+      "title": "Equipment",
+      "icon": "🎒",
+      "count": 30
+    },
+    {
+      "id": "assessment",
+      "title": "Assessment",
+      "icon": "📋",
+      "count": 20
+    },
+    {
+      "id": "medications",
+      "title": "Medications",
+      "icon": "💊",
+      "count": 28
+    },
+    {
+      "id": "terminology",
+      "title": "Terminology",
+      "icon": "📖",
+      "count": 49
+    },
+    {
+      "id": "medical",
+      "title": "Medical Emergencies",
+      "icon": "❤️",
+      "count": 12
+    },
+    {
+      "id": "vital-signs",
+      "title": "Vital Signs",
+      "icon": "🩺",
+      "count": 20
+    },
+    {
+      "id": "airway",
+      "title": "Airway & Breathing",
+      "icon": "🫁",
+      "count": 12
+    },
+    {
+      "id": "operations",
+      "title": "EMS Operations",
+      "icon": "🚑",
+      "count": 10
+    },
+    {
+      "id": "obstetrics",
+      "title": "Obstetrics & Newborn",
+      "icon": "👶",
+      "count": 10
+    },
+    {
+      "id": "pediatrics",
+      "title": "Pediatrics",
+      "icon": "🧸",
+      "count": 10
+    },
+    {
+      "id": "trauma",
+      "title": "Trauma",
+      "icon": "🩸",
+      "count": 12
+    },
+    {
+      "id": "documentation",
+      "title": "Documentation & Communication",
+      "icon": "📝",
+      "count": 10
+    }
+  ]
+}
