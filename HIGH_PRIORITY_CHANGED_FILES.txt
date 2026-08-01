@@ -1,0 +1,22 @@
+High-priority deployment and interaction-test update
+
+UPDATED
+.gitignore
+DELETE_THESE_RETIRED_FILES.txt
+FILES_TO_DELETE.txt
+netlify.toml
+package.json
+tools/build-public.js
+tools/validate-site.js
+
+NEW
+HIGH_PRIORITY_RELIABILITY_UPDATE.md
+playwright.config.js
+netlify-functions-dist/.gitkeep
+tools/deployment-policy.js
+tools/prepare-functions.js
+tools/serve-dist.js
+tests/interaction/helpers.js
+tests/interaction/deployment-exclusions.spec.js
+tests/interaction/scenario-flow.spec.js
+tests/interaction/blood-pressure.spec.js
