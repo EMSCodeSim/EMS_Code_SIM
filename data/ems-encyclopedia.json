@@ -1,8 +1,20 @@
 {
-  "version": "2026.07",
+  "version": "2026.08",
   "reviewed": "2026-07-31",
   "title": "EMS Encyclopedia",
   "entries": [
+    {
+      "term": "12-lead acquisition",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "🩺",
+      "summary": "Recording a diagnostic-quality 12-lead ECG before interpretation.",
+      "details": "Good skin preparation, correct lead placement, reduced motion, and early acquisition improve usefulness.",
+      "remember": "Confirm lead placement and patient identity before acting on the tracing.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
     {
       "term": "12-lead ECG cable",
       "category": "equipment",
@@ -243,6 +255,18 @@
       "links": []
     },
     {
+      "term": "Afterload",
+      "category": "terminology",
+      "categoryTitle": "Medical Terminology",
+      "icon": "📚",
+      "summary": "The resistance the ventricle must overcome to eject blood.",
+      "details": "Vascular tone and outflow obstruction influence afterload and cardiac work.",
+      "remember": "Connect the concept to perfusion and blood-pressure findings.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
       "term": "Airway obstruction",
       "category": "airway",
       "categoryTitle": "Airway & Breathing",
@@ -473,6 +497,18 @@
       "links": []
     },
     {
+      "term": "Axis deviation",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "🩺",
+      "summary": "A shift in the general direction of ventricular electrical activity.",
+      "details": "Axis can support pattern recognition but should be interpreted with the entire ECG and clinical picture.",
+      "remember": "Treat the patient, not an isolated axis measurement.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
       "term": "Bag-valve mask (BVM)",
       "category": "equipment",
       "categoryTitle": "Equipment",
@@ -620,6 +656,18 @@
       "links": []
     },
     {
+      "term": "Calcium in hyperkalemia",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Calcium may stabilize the cardiac membrane in severe hyperkalemia with ECG changes.",
+      "details": "It does not remove potassium from the body and is only one part of treatment.",
+      "remember": "Use the indicated formulation and dose under protocol.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
       "term": "Capillary refill",
       "category": "vital-signs",
       "categoryTitle": "Vital Signs",
@@ -644,6 +692,18 @@
       "links": []
     },
     {
+      "term": "Capnography waveform",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "The shape of exhaled carbon dioxide over time.",
+      "details": "Waveform quality can help assess ventilation, airway placement, perfusion changes, and equipment problems.",
+      "remember": "A number without a believable waveform can be misleading.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
       "term": "Carbon monoxide poisoning",
       "category": "medical",
       "categoryTitle": "Medical Emergencies",
@@ -652,6 +712,18 @@
       "details": "Symptoms can include headache, dizziness, nausea, confusion, chest pain, and syncope. Remove from exposure and use appropriate monitoring and oxygen per protocol.",
       "remember": "A standard pulse oximeter can appear normal.",
       "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Cardioversion",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "A synchronized electrical shock timed to ventricular depolarization.",
+      "details": "Synchronization reduces the chance of delivering energy during a vulnerable part of repolarization.",
+      "remember": "Verify synchronization and follow the current tachycardia protocol.",
+      "level": "Paramedic",
       "aliases": [],
       "links": []
     },
@@ -688,6 +760,18 @@
       "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
       "remember": "Spelling and exact definitions may vary slightly by source.",
       "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Chronotropy",
+      "category": "terminology",
+      "categoryTitle": "Medical Terminology",
+      "icon": "📚",
+      "summary": "An effect on heart rate.",
+      "details": "Positive chronotropy raises rate; negative chronotropy lowers it.",
+      "remember": "Rate changes matter most in relation to perfusion and patient stability.",
+      "level": "Paramedic",
       "aliases": [],
       "links": []
     },
@@ -871,6 +955,18 @@
       "links": []
     },
     {
+      "term": "Crush syndrome",
+      "category": "trauma",
+      "categoryTitle": "Trauma",
+      "icon": "🩸",
+      "summary": "Systemic illness caused by prolonged muscle compression and reperfusion.",
+      "details": "Hyperkalemia, acidosis, shock, and kidney injury can occur after release.",
+      "remember": "Coordinate release, monitoring, and treatment under the crush-injury protocol.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
       "term": "Cyanosis",
       "category": "terminology",
       "categoryTitle": "Terminology",
@@ -896,6 +992,30 @@
       "details": "Systematic trauma exam reminder.",
       "remember": "Use mnemonics as prompts, not substitutes for clinical judgment.",
       "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Defibrillation",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "An unsynchronized shock used for specific shockable cardiac-arrest rhythms.",
+      "details": "The goal is to interrupt disorganized electrical activity so an organized rhythm can resume.",
+      "remember": "Minimize interruptions and follow current resuscitation guidance.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Delayed sequence intubation",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "A dissociation-assisted approach used when agitation prevents adequate preoxygenation.",
+      "details": "The goal is to improve oxygen reserve before paralysis and airway placement.",
+      "remember": "Use only within protocol with full airway and rescue capability.",
+      "level": "Paramedic",
       "aliases": [],
       "links": []
     },
@@ -944,6 +1064,30 @@
       "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
       "remember": "Spelling and exact definitions may vary slightly by source.",
       "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Dromotropy",
+      "category": "terminology",
+      "categoryTitle": "Medical Terminology",
+      "icon": "📚",
+      "summary": "An effect on conduction speed through cardiac tissue.",
+      "details": "Changes in AV conduction can alter rhythm behavior and medication response.",
+      "remember": "Use the term to explain conduction—not overall contractility.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Dynamic hyperinflation",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "Air trapping caused by incomplete exhalation before the next breath.",
+      "details": "It can raise intrathoracic pressure and worsen ventilation or circulation in obstructive disease.",
+      "remember": "Allow adequate exhalation and reassess after each change.",
+      "level": "Paramedic",
       "aliases": [],
       "links": []
     },
@@ -1013,6 +1157,18 @@
       "links": []
     },
     {
+      "term": "Electrical capture",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "🩺",
+      "summary": "Evidence that pacing stimuli produce ventricular depolarization.",
+      "details": "Monitor spikes alone do not prove capture; electrical and mechanical response must both be assessed.",
+      "remember": "Confirm a corresponding pulse or perfusion change.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
       "term": "End-tidal CO2",
       "category": "vital-signs",
       "categoryTitle": "Vital Signs",
@@ -1069,6 +1225,18 @@
       "details": "Recognize airway swelling, breathing difficulty, shock, or rapidly progressing symptoms.",
       "remember": "Correct device/site, immediate transport, repeat assessment.",
       "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Epinephrine infusion",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "A titratable adrenergic infusion used for selected shock or bradycardia situations.",
+      "details": "Concentration errors can be dangerous because arrest and infusion preparations differ.",
+      "remember": "Use a pump when available and independently verify concentration and rate.",
+      "level": "Paramedic",
       "aliases": [],
       "links": []
     },
@@ -1410,6 +1578,30 @@
       "links": []
     },
     {
+      "term": "Inotrope",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "A medication that changes the force of cardiac contraction.",
+      "details": "Some agents also affect rate and vascular tone, so the net hemodynamic response varies.",
+      "remember": "Titrate to the protocol goal and reassess frequently.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Inotropy",
+      "category": "terminology",
+      "categoryTitle": "Medical Terminology",
+      "icon": "📚",
+      "summary": "The strength of myocardial contraction independent of loading conditions.",
+      "details": "Sympathetic tone, ischemia, medications, and metabolic problems can change contractility.",
+      "remember": "Reassess perfusion rather than relying on blood pressure alone.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
       "term": "IO device",
       "category": "equipment",
       "categoryTitle": "Equipment",
@@ -1590,6 +1782,18 @@
       "links": []
     },
     {
+      "term": "Mechanical capture",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "🩺",
+      "summary": "A palpable pulse or perfusion response produced by transcutaneous pacing.",
+      "details": "Mechanical capture confirms that electrical depolarization is producing effective contraction.",
+      "remember": "Check a central pulse that is not confused with muscle twitching.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
       "term": "Mechanism of injury",
       "category": "trauma",
       "categoryTitle": "Trauma",
@@ -1689,6 +1893,18 @@
           "url": "/breath-sound-training.html"
         }
       ]
+    },
+    {
+      "term": "Narrow-complex tachycardia",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "A rapid rhythm conducted through or near the normal ventricular conduction system.",
+      "details": "Regularity, onset, symptoms, and hemodynamic effect guide classification.",
+      "remember": "Assess stability before focusing on the rhythm name.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
     },
     {
       "term": "Nasal cannula",
@@ -1805,6 +2021,18 @@
           "url": "/breath-sound-training.html"
         }
       ]
+    },
+    {
+      "term": "Norepinephrine",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "A vasopressor with strong alpha and some beta effects.",
+      "details": "It is commonly used for distributive shock after appropriate initial evaluation and resuscitation.",
+      "remember": "Monitor perfusion, blood pressure, rhythm, and the IV site.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
     },
     {
       "term": "Normal saline",
@@ -2127,6 +2355,18 @@
       "links": []
     },
     {
+      "term": "PEEP",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "Positive pressure remaining in the airway at end expiration.",
+      "details": "PEEP can improve alveolar recruitment but may also affect blood pressure and barotrauma risk.",
+      "remember": "Use only within protocol and monitor oxygenation, ventilation, and hemodynamics.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
       "term": "Pelvic binder",
       "category": "equipment",
       "categoryTitle": "Equipment",
@@ -2220,6 +2460,18 @@
       "links": []
     },
     {
+      "term": "Posterior ECG leads",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "🩺",
+      "summary": "Additional leads placed on the posterior chest to evaluate posterior injury.",
+      "details": "Posterior involvement may appear as reciprocal anterior changes on a standard ECG.",
+      "remember": "Use proper placement and document that posterior leads were obtained.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
       "term": "Postpartum hemorrhage",
       "category": "obstetrics",
       "categoryTitle": "Obstetrics & Newborn",
@@ -2240,6 +2492,18 @@
       "details": "Symptoms may include headache, visual changes, edema, right upper abdominal pain, and hypertension.",
       "remember": "Severe headache late in pregnancy is a warning sign.",
       "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Preload",
+      "category": "terminology",
+      "categoryTitle": "Medical Terminology",
+      "icon": "📚",
+      "summary": "The ventricular stretch present before contraction.",
+      "details": "Venous return, volume status, intrathoracic pressure, and ventricular function affect preload.",
+      "remember": "Avoid treating preload as simply “more fluid is better.”",
+      "level": "Paramedic",
       "aliases": [],
       "links": []
     },
@@ -2352,6 +2616,18 @@
       ]
     },
     {
+      "term": "Push-dose vasopressor",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "Small intermittent vasopressor doses used in narrowly defined hypotensive situations.",
+      "details": "Preparation and concentration errors carry substantial risk.",
+      "remember": "Use only under a specific protocol with independent dose verification.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
       "term": "RACE",
       "category": "assessment",
       "categoryTitle": "Assessment",
@@ -2376,6 +2652,18 @@
       "links": []
     },
     {
+      "term": "Rapid sequence intubation",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "A structured airway procedure using sedative and neuromuscular-blocking medications.",
+      "details": "Success depends on preparation, oxygenation, backup planning, hemodynamic management, and confirmation.",
+      "remember": "Treat RSI as a complete airway process, not only medication administration.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
       "term": "Reassessment",
       "category": "terminology",
       "categoryTitle": "Terminology",
@@ -2384,6 +2672,18 @@
       "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
       "remember": "Spelling and exact definitions may vary slightly by source.",
       "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Reciprocal change",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "🩺",
+      "summary": "ST-segment change in leads electrically opposite an area of injury.",
+      "details": "Reciprocal findings can support interpretation but are not required for acute coronary occlusion.",
+      "remember": "Compare contiguous leads and the whole clinical picture.",
+      "level": "Paramedic",
       "aliases": [],
       "links": []
     },
@@ -2408,6 +2708,18 @@
       "details": "Use the term in a complete patient-care sentence to reinforce meaning.",
       "remember": "Spelling and exact definitions may vary slightly by source.",
       "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Right-sided ECG",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "🩺",
+      "summary": "Additional chest leads placed to evaluate the right ventricle.",
+      "details": "It can be useful when inferior injury or right-ventricular involvement is suspected.",
+      "remember": "Follow local acquisition and treatment protocols.",
+      "level": "Paramedic",
       "aliases": [],
       "links": []
     },
@@ -2586,6 +2898,18 @@
       "details": "Use assessment-based indications and the least harmful effective method allowed by local protocol.",
       "remember": "A rigid collar is only one part of motion restriction.",
       "level": "EMT",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "ST elevation",
+      "category": "assessment",
+      "categoryTitle": "Assessment",
+      "icon": "🩺",
+      "summary": "Elevation of the ST segment above the expected baseline in contiguous leads.",
+      "details": "It may represent acute injury but can also occur with mimics and normal variants.",
+      "remember": "Use serial ECGs, symptoms, and local destination criteria.",
+      "level": "Paramedic",
       "aliases": [],
       "links": []
     },
@@ -2897,6 +3221,18 @@
       "links": []
     },
     {
+      "term": "Transcutaneous pacing",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "External electrical pacing delivered through adhesive pads.",
+      "details": "It may support selected unstable bradycardic patients while definitive care is arranged.",
+      "remember": "Confirm electrical and mechanical capture and address discomfort per protocol.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
       "term": "Transfer of care",
       "category": "operations",
       "categoryTitle": "EMS Operations",
@@ -2981,6 +3317,30 @@
       "links": []
     },
     {
+      "term": "Vasopressor",
+      "category": "medications",
+      "categoryTitle": "Medications",
+      "icon": "💊",
+      "summary": "A medication class that raises vascular tone and often blood pressure.",
+      "details": "Different agents have different receptor effects and may change heart rate, afterload, and perfusion.",
+      "remember": "Use the correct concentration, pump setup, and local protocol.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
+      "term": "Ventilation compliance",
+      "category": "airway",
+      "categoryTitle": "Airway & Breathing",
+      "icon": "🫁",
+      "summary": "How easily the lungs and chest wall expand during ventilation.",
+      "details": "Poor compliance may indicate stiff lungs, obstruction, positioning problems, or equipment issues.",
+      "remember": "A sudden change in bag feel requires immediate reassessment.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
       "term": "Venturi mask",
       "category": "equipment",
       "categoryTitle": "Equipment",
@@ -3047,6 +3407,18 @@
       ]
     },
     {
+      "term": "Wide-complex tachycardia",
+      "category": "medical",
+      "categoryTitle": "Medical Emergencies",
+      "icon": "❤️",
+      "summary": "A rapid rhythm with widened ventricular complexes.",
+      "details": "Potential causes include ventricular tachycardia, aberrancy, paced rhythms, and metabolic or toxic conditions.",
+      "remember": "Assume a dangerous rhythm until appropriately evaluated.",
+      "level": "Paramedic",
+      "aliases": [],
+      "links": []
+    },
+    {
       "term": "Work of breathing",
       "category": "pediatrics",
       "categoryTitle": "Pediatrics",
@@ -3099,25 +3471,25 @@
       "id": "assessment",
       "title": "Assessment",
       "icon": "📋",
-      "count": 20
+      "count": 28
     },
     {
       "id": "medications",
       "title": "Medications",
       "icon": "💊",
-      "count": 28
+      "count": 34
     },
     {
       "id": "terminology",
       "title": "Terminology",
       "icon": "📖",
-      "count": 49
+      "count": 54
     },
     {
       "id": "medical",
       "title": "Medical Emergencies",
       "icon": "❤️",
-      "count": 12
+      "count": 17
     },
     {
       "id": "vital-signs",
@@ -3129,7 +3501,7 @@
       "id": "airway",
       "title": "Airway & Breathing",
       "icon": "🫁",
-      "count": 12
+      "count": 18
     },
     {
       "id": "operations",
@@ -3153,7 +3525,7 @@
       "id": "trauma",
       "title": "Trauma",
       "icon": "🩸",
-      "count": 12
+      "count": 13
     },
     {
       "id": "documentation",
