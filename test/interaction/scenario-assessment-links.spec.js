@@ -25,10 +25,10 @@ test('direct vital entry saves and restores the complete pupil finding', async (
   await page.locator('#equalInput').selectOption('equal');
   await page.locator('#leftReactionInput').selectOption('reactive');
   await page.locator('#rightReactionInput').selectOption('reactive');
-  await page.locator('#gazeInput').selectOption('left-deviation');
-  await page.locator('#trackingInput').selectOption('impaired');
+  await page.locator('#gazeInput').selectOption('midline');
+  await page.locator('#trackingInput').selectOption('smooth');
   await page.locator('#submitBtn').click();
-  await expect(page.locator('#result')).toContainText('recorded in the patient findings');
+  await expect(page.locator('#result')).toContainText('Accuracy will be reviewed at the end of the scenario');
 
   const saved = await page.evaluate(() => ({
     activeId: localStorage.getItem('emscodesim_active_patient_record'),
@@ -36,8 +36,10 @@ test('direct vital entry saves and restores the complete pupil finding', async (
     scenario: JSON.parse(localStorage.getItem('emscodesim_scenario_stroke'))
   }));
   expect(saved.activeId).toBe('stroke');
-  expect(saved.patient.findings.pupils.gaze).toBe('left-deviation');
-  expect(saved.patient.findings.pupils.tracking).toBe('impaired');
+  expect(saved.patient.findings.pupils.gaze).toBe('midline');
+  expect(saved.patient.findings.pupils.tracking).toBe('smooth');
+  expect(saved.patient.findings.pupils.expectedFinding).toContain('left gaze deviation');
+  expect(saved.patient.findings.pupils.accurate).toBe(false);
   expect(saved.patient.findings.pupils.leftReactive).toBe(true);
   expect(saved.patient.findings.pupils.rightReactive).toBe(true);
   expect(saved.scenario.findings.pupils.value).toBe(saved.patient.findings.pupils.value);
@@ -50,11 +52,15 @@ test('direct vital entry saves and restores the complete pupil finding', async (
 
 test('skin comparison, complete assessment tools, and assessment return paths remain connected', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
-  await page.goto('/vitals/skin-scenario.html?mode=scenario&resume=1&case=stroke');
+  await page.goto('/vitals/skin-scenario.html?mode=scenario&resume=1&case=hypoglycemia');
   await expect(page.locator('.sv-skin-compare figure')).toHaveCount(2);
   await expect(page.locator('.sv-skin-compare')).toContainText('Normal reference');
   await expect(page.locator('.sv-skin-compare')).toContainText('Patient sample');
   await expect(page.locator('.sv-skin-compare')).toContainText('Pink, warm, and dry');
+  await page.locator('#touchSkin').click();
+  await expect(page.locator('#observations')).toContainText('cool and wet');
+  await page.locator('#moistureSkin').click();
+  await expect(page.locator('#observations')).toContainText('visible sweat or moisture');
 
   await page.goto('/vitals/visual-patient.html?case=stroke');
   await page.locator('[data-panel="assessmentPanel"]').click();
@@ -92,7 +98,7 @@ test('recorded airway finding unlocks treatment choices and returns to the asses
   await page.locator('input[name="normality"][value="normal"]').check();
   await page.locator('#problemSelect').selectOption('patent');
   await page.locator('#actionSelect').selectOption('monitor');
-  await page.locator('#pcrText').fill('Patient alert and speaking clearly with an unobstructed airway and no secretions or abnormal airway sounds. Airway patent and continuously monitored with reassessment planned.');
+  await expect(page.locator('#pcrText')).not.toHaveAttribute('required', '');
   await page.locator('#submitCase').click();
 
   const treatLink = page.locator('#scenarioConnectedTools a', { hasText: 'Treat recorded airway finding' });
