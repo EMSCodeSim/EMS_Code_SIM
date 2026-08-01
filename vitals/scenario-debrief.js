@@ -121,6 +121,27 @@
     $('overallLabel').textContent=!overall?'Complete scored activities':overall.percent>=90?'Excellent':overall.percent>=80?'Strong performance':overall.percent>=70?'Developing':'Needs review';
   }
 
+
+  const HISTORY_KEY='emscodesim_scenario_history_v1';
+  function readHistory(){try{const value=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');return Array.isArray(value)?value:[]}catch{return[]}}
+  function saveHistorySnapshot(record, findings){
+    const assessment=findingScores(record);
+    const impression=scorePair(record.impressions?.score,record.impressions?.maxScore);
+    const treatment=treatmentScores(record);
+    const documentation=scorePair(record.documentation?.documentationScore,record.documentation?.documentationMaxScore);
+    const pairs=[assessment,impression,treatment,documentation].filter(Boolean);
+    const overall=pairs.length?scorePair(pairs.reduce((n,p)=>n+p.score,0),pairs.reduce((n,p)=>n+p.max,0)):null;
+    const reviewAreas=[];
+    if(findings.length<4)reviewAreas.push('assessment');
+    if(findings.some(f=>f.classification==='Not classified'))reviewAreas.push('classification');
+    if(!text(record.impressions?.primary))reviewAreas.push('impression');
+    if(!safeArray(record.reassessments).length)reviewAreas.push('reassessment');
+    if(!text(record.documentation?.narrative)||!text(record.documentation?.handoff))reviewAreas.push('documentation');
+    const snapshot={id:String(record.id||Date.now()),title:record.title||'Patient scenario',completedAt:new Date().toISOString(),overallPercent:overall?.percent??null,findingCount:findings.length,abnormalCount:findings.filter(f=>f.isAbnormal).length,reviewAreas:[...new Set(reviewAreas)]};
+    const history=readHistory();const index=history.findIndex(item=>item.id===snapshot.id);if(index>=0)history[index]=snapshot;else history.push(snapshot);
+    localStorage.setItem(HISTORY_KEY,JSON.stringify(history.slice(-100)));
+  }
+
   function reflectionKey(record){return `emscodesim_debrief_reflection_${record.id}`;}
   function loadReflection(record){
     try{const r=JSON.parse(localStorage.getItem(reflectionKey(record))||'{}');$('reflectionFinding').value=r.finding||'';$('reflectionChange').value=r.change||'';$('reflectionReassess').value=r.reassess||'';}catch{}
@@ -130,6 +151,7 @@
     localStorage.setItem(reflectionKey(record),JSON.stringify(reflection));
     try{window.EMSCodeSimPatientRecord.update(r=>{r.debrief={...(r.debrief||{}),reflection};return r;});}catch{}
     $('reflectionStatus').textContent='Reflection saved to this patient record.';
+    saveHistorySnapshot(record,Object.entries(record.findings||{}).map(([key,item])=>normalizeFinding(key,item)));
   }
 
   function download(record){
@@ -145,7 +167,7 @@
     if(!record)return;
     $('patientTitle').textContent=record.title||'Patient scenario';
     $('patientSummary').textContent=[record.patient,record.dispatch,record.scene].filter(Boolean).join(' • ')||'Active EMSCodeSim patient record';
-    const findings=renderFindings(record);renderImpression(record);renderCoaching(record,findings);renderTimeline(record);renderDocuments(record);renderScores(record);loadReflection(record);
+    const findings=renderFindings(record);renderImpression(record);renderCoaching(record,findings);renderTimeline(record);renderDocuments(record);renderScores(record);loadReflection(record);saveHistorySnapshot(record,findings);
     $('printReport').addEventListener('click',()=>window.print());
     $('downloadReport').addEventListener('click',()=>download(record));
     $('saveReflection').addEventListener('click',()=>saveReflection(record));

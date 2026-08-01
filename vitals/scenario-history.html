@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Patient Scenario History | EMSCodeSim</title>
+  <meta name="description" content="Review previous EMSCodeSim patient scenarios, compare scores, identify repeated weak areas, and launch targeted remediation.">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/styles/career-hub.css">
+  <link rel="stylesheet" href="/styles/responsive.css">
+  <link rel="stylesheet" href="/vitals/scenario-history.css">
+</head>
+<body>
+  <header class="history-hero">
+    <div>
+      <p class="crumbs"><a href="/">Home</a> / <a href="/vitals/scenario-launcher.html">Patient Scenarios</a> / History</p>
+      <p class="eyebrow">Longitudinal learning</p>
+      <h1>Patient Scenario History</h1>
+      <p>Track performance across calls, find repeated weak areas, and choose the next focused practice activity.</p>
+    </div>
+    <a class="hero-action" href="/vitals/scenario-launcher.html">Start another scenario</a>
+  </header>
+
+  <main class="history-shell">
+    <section id="emptyState" class="empty-state" hidden>
+      <h2>No completed debriefs yet</h2>
+      <p>Complete a patient scenario and open its debrief. A compact performance summary will be saved here automatically.</p>
+      <a class="primary-link" href="/vitals/scenario-launcher.html">Start your first scenario</a>
+    </section>
+
+    <div id="historyContent" hidden>
+      <section class="summary-grid" aria-label="Scenario performance summary">
+        <article><span>Scenarios</span><strong id="scenarioCount">0</strong><small>Saved debriefs</small></article>
+        <article><span>Average score</span><strong id="averageScore">—</strong><small>Scored activities</small></article>
+        <article><span>Recent trend</span><strong id="scoreTrend">—</strong><small>Last three vs. prior three</small></article>
+        <article><span>Best score</span><strong id="bestScore">—</strong><small>Personal best</small></article>
+      </section>
+
+      <section class="history-panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">Targeted remediation</p><h2>Repeated review areas</h2></div>
+          <button id="clearHistory" class="danger-button" type="button">Clear history</button>
+        </div>
+        <div id="weakAreas" class="weak-area-grid"></div>
+      </section>
+
+      <section class="history-panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">Performance over time</p><h2>Score trend</h2></div>
+          <label class="filter-label">Show
+            <select id="historyFilter">
+              <option value="all">All scenarios</option>
+              <option value="review">Needs review</option>
+              <option value="strong">80% and above</option>
+            </select>
+          </label>
+        </div>
+        <div id="trendChart" class="trend-chart" role="img" aria-label="Scenario score trend"></div>
+        <div id="historyList" class="history-list"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/vitals/scenario-history.js"></script>
+</body>
+</html>
