@@ -11,8 +11,26 @@ const scenarioSession = read('vitals/scenario-session.js');
 includesAll(scenarioSession, ['SCENARIO_CATALOG', 'saveFinding', 'state.findings[canonical] = saved', 'restoreStateToRecord'], 'Scenario session');
 
 const vitalSimulator = read('vitals/scenario-vital-sims.js');
-includesAll(vitalSimulator, ['leftReactionInput', 'rightReactionInput', 'gazeInput', 'trackingInput', 'Normal reference', 'Patient sample', 'addReturnPaths', 'contextReturnLink', 'patientHomeLink'], 'Scenario vital simulator');
+includesAll(vitalSimulator, ['leftReactionInput', 'rightReactionInput', 'gazeInput', 'trackingInput', 'Normal reference', 'Patient sample', 'cool and wet', 'expectedFinding', 'accurate', 'Accuracy will be reviewed at the end of the scenario', 'addReturnPaths', 'contextReturnLink', 'patientHomeLink'], 'Scenario vital simulator');
 assert(!vitalSimulator.includes('id="leftSize"') && !vitalSimulator.includes('id="rightSize"'), 'Scenario pupils must not require pupil-size fields.');
+assert(!vitalSimulator.includes('Finding not accepted') && !vitalSimulator.includes('fail('), 'Scenario vitals must save learner entries without forcing a correct answer.');
+
+
+const bpScenario = read('vitals/bp-scenario.html');
+includesAll(bpScenario, ['expectedFinding', 'accurate', 'Accuracy will be reviewed at the end of the scenario'], 'Scenario blood pressure');
+assert(!bpScenario.includes('Reading not accepted. Repeat the blood pressure'), 'Scenario blood pressure must not force a correct reading before saving.');
+
+const optionalNarrativePages = [
+  'airway-assessment.html','breathing-assessment.html','perfusion-assessment.html','abdominal-assessment.html',
+  'chest-assessment.html','motor-sensory-assessment.html','trauma-assessment.html','pediatric-assessment-triangle.html',
+  'pain-opqrst.html','sample-history.html','clinical-impression.html','treatment-reassessment.html'
+];
+for (const name of optionalNarrativePages) {
+  const html = read(`vitals/${name}`);
+  assert(/id="pcrText"/.test(html), `${name} should retain an optional note field.`);
+  assert(!/id="pcrText"[^>]*\brequired\b/.test(html), `${name} must not require an intermediate narrative.`);
+}
+assert(/id="pcrText"[^>]*\brequired\b/.test(read('vitals/pcr-handoff.html')), 'The final PCR/handoff activity should retain the full narrative requirement.');
 
 const registry = read('vitals/scenario-tool-registry.js');
 includesAll(registry, [

@@ -65,8 +65,14 @@ assert(created, 'Direct scenario entry should create or restore a patient record
 assert.strictEqual(created.scenarioId, 'stroke');
 assert.strictEqual(created.title, 'Possible Acute Stroke');
 
-session.saveFinding('spo2', '96%', {
+session.saveFinding('spo2', '91%', {
+  learnerFinding: '91%',
+  expectedFinding: '96%',
+  accurate: false,
+  correct: false,
+  reviewAtDebrief: true,
   normality: 'normal',
+  expectedNormality: 'normal',
   status: 'normal',
   source: 'scenario-spo2-simulator',
   locked: true
@@ -74,8 +80,10 @@ session.saveFinding('spo2', '96%', {
 
 let patientRecord = JSON.parse(runtime.storage.getItem('emscodesim_patient_record_stroke'));
 let scenarioState = JSON.parse(runtime.storage.getItem('emscodesim_scenario_stroke'));
-assert.strictEqual(patientRecord.findings.spo2.value, '96%');
-assert.strictEqual(scenarioState.findings.spo2.value, '96%');
+assert.strictEqual(patientRecord.findings.spo2.value, '91%');
+assert.strictEqual(patientRecord.findings.spo2.expectedFinding, '96%');
+assert.strictEqual(patientRecord.findings.spo2.accurate, false);
+assert.strictEqual(scenarioState.findings.spo2.value, '91%');
 assert.strictEqual(scenarioState.lastFinding, 'spo2');
 
 session.saveFinding('airway', 'Airway patent; no obstruction or secretions.', {
@@ -101,7 +109,9 @@ session = runtime.window.EMSCodeSimScenarioSession;
 session.sync('stroke');
 
 const restored = api.load('stroke');
-assert.strictEqual(restored.findings.spo2.value, '96%', 'Scenario state should restore a missing patient-record finding.');
-assert.strictEqual(session.readState('stroke').findings.spo2.value, '96%');
+assert.strictEqual(restored.findings.spo2.value, '91%', 'Scenario state should restore a missing learner-entered finding.');
+assert.strictEqual(restored.findings.spo2.expectedFinding, '96%');
+assert.strictEqual(restored.findings.spo2.accurate, false);
+assert.strictEqual(session.readState('stroke').findings.spo2.value, '91%');
 
 console.log('Scenario persistence test passed: direct entry, mirrored saves, treatment/reassessment, and recovery all work.');
