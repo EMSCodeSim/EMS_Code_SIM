@@ -15,7 +15,7 @@
   <script defer src="/vitals/scenario-session.js?v=2"></script>
   <script defer src="/vitals/scenario-runtime.js?v=2"></script>
   <script defer src="/vitals/patient-record-integration.js?v=2"></script>
-  <script defer src="/vitals/motor-sensory-assessment.js"></script>
+  <script defer src="/vitals/motor-sensory-assessment.js?v=3"></script>
 <link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
   <link rel="stylesheet" href="/vitals/scenario-flow.css">
 </head>
@@ -58,10 +58,10 @@
 <div class="decision-step"><span class="decision-number">1</span><div><h3>Is this finding normal?</h3><div class="choice-row"><label class="choice"><input type="radio" name="normality" value="normal" required><span>Normal</span></label><label class="choice"><input type="radio" name="normality" value="not-normal"><span>Not normal</span></label></div></div></div>
 <div class="decision-step"><span class="decision-number">2</span><div><h3>What is the dominant pattern?</h3><select id="prioritySelect" required><option value="">Select one</option><option value="normal-neuro">No concerning motor or sensory deficit</option><option value="focal-neuro">Focal neurologic deficit / possible stroke</option><option value="generalized">Generalized symmetric weakness</option><option value="spinal">Possible spinal cord involvement</option><option value="limb-compromise">Distal neurovascular compromise</option><option value="pain-limited">Movement limited by pain with intact distal function</option></select></div></div>
 <div class="decision-step"><span class="decision-number">3</span><div><h3>What is the best immediate EMT priority?</h3><select id="actionSelect" required><option value="">Select one</option><option value="monitor">Continue assessment and reassess</option><option value="stroke-priority">Determine last-known-well, support ABCs, and expedite stroke-capable transport</option><option value="systemic-check">Check glucose and other causes while supporting ABCs and transporting</option><option value="spinal-care">Limit movement, manage ABCs, and expedite transport</option><option value="limb-care">Address limb threat, reassess distal PMS, and transport promptly</option><option value="splint-reassess">Immobilize as indicated and reassess distal PMS</option></select></div></div>
-<div class="decision-step"><span class="decision-number">4</span><div><h3>Document the assessment</h3><textarea id="pcrText" rows="7" placeholder="Document face, speech, arm drift, grips, lower-extremity movement, sensation, distal PMS, laterality, last-known-well when relevant, treatment, and reassessment..." required></textarea><p class="microcopy">Use patient-left and patient-right. Describe observed deficits rather than writing only “neuro abnormal.”</p></div></div>
+<div class="decision-step"><span class="decision-number">4</span><div><h3>Optional finding note</h3><textarea id="pcrText" rows="7" placeholder="Document face, speech, arm drift, grips, lower-extremity movement, sensation, distal PMS, laterality, last-known-well when relevant, treatment, and reassessment..."></textarea><p class="microcopy">Optional: add a short objective note using patient-left and patient-right. Full narrative documentation is completed later.</p></div></div>
 <button class="primary-btn submit-btn" type="submit">Grade my assessment</button>
 </form></div>
-<section id="resultsPanel" class="results-panel" hidden><div class="score-ring"><span id="scoreText">0/4</span><small>score</small></div><div><h3>Coaching feedback</h3><ul id="feedbackList"></ul><div class="model-doc"><strong>Example PCR documentation</strong><p id="examplePCR"></p></div><button id="tryAnother" class="secondary-btn" type="button">Try another patient</button></div></section>
+<section id="resultsPanel" class="results-panel" hidden><div class="score-ring"><span id="scoreText">0/3</span><small>score</small></div><div><h3>Coaching feedback</h3><ul id="feedbackList"></ul><div class="model-doc"><strong>Optional documentation example</strong><p id="examplePCR"></p></div><button id="tryAnother" class="secondary-btn" type="button">Try another patient</button></div></section>
 </section>
 <p class="disclaimer">Training content only. Follow your approved education, medical direction, and local protocols.</p>
 </main>

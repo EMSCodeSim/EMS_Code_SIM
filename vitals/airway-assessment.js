@@ -112,13 +112,11 @@
     if (action === state.current.action) { score++; feedback.push('Selected the best immediate EMT action for this case.'); }
     else feedback.push('The next action should address the airway threat before lower-priority assessment steps.');
 
-    const objectiveTerms = ['patient','airway','voice','speak','speech','snoring','gurgling','stridor','blood','secretions','air movement','suction','reassess','obstruction'];
-    const termHits = objectiveTerms.filter(term => pcr.toLowerCase().includes(term)).length;
-    if (pcr.length >= 55 && termHits >= 2) { score++; feedback.push('Documentation is sufficiently objective and specific.'); }
-    else feedback.push('Documentation should name the observed finding, action taken, and reassessment response.');
+    if (pcr) feedback.push('Optional finding note saved. Full narrative documentation is completed later in the scenario.');
+    else feedback.push('No finding narrative required. Continue the assessment and complete documentation near the end of the scenario.');
 
     $('scoreValue').textContent = score;
-    $('resultTitle').textContent = score === 4 ? 'Strong airway assessment' : score >= 2 ? 'Good start—review the coaching points' : 'Repeat the case and prioritize the airway threat';
+    $('resultTitle').textContent = score === 3 ? 'Strong airway assessment' : score >= 2 ? 'Good start—review the coaching points' : 'Repeat the case and prioritize the airway threat';
     $('feedbackList').innerHTML = feedback.map(item => `<li>${item}</li>`).join('');
     $('modelDocumentation').textContent = state.current.docs;
     
@@ -134,7 +132,7 @@
       action: typeof action !== 'undefined' ? action : '',
       documentation: pcr,
       score,
-      maxScore: 4
+      maxScore: 3
     });
 $('resultsPanel').hidden = false;
     $('resultsPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });

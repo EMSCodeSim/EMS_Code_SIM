@@ -16,7 +16,7 @@
   <script defer src="/vitals/scenario-runtime.js?v=2"></script>
   <script defer src="/vitals/scenario-tool-registry.js?v=2"></script>
   <script defer src="/vitals/patient-record-integration.js?v=2"></script>
-  <script defer src="/vitals/airway-assessment.js"></script>
+  <script defer src="/vitals/airway-assessment.js?v=3"></script>
 <link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
   <link rel="stylesheet" href="/vitals/scenario-flow.css">
 <link rel="stylesheet" href="/vitals/assessment-crosslinks.css?v=2">
@@ -209,8 +209,8 @@
         <section class="decision-step" data-step="4">
           <div class="decision-number">4</div>
           <div>
-            <h3>Document the assessment</h3>
-            <label for="pcrText">Write an objective PCR statement</label>
+            <h3>Optional finding note</h3>
+            <label for="pcrText">Optional finding note</label>
             <textarea id="pcrText" rows="5" placeholder="Example: Patient speaking in full sentences with clear voice; no visible obstruction, secretions, or abnormal upper-airway sounds. Airway patent at time of assessment."></textarea>
             <p class="microcopy">Include what you observed, what you did, and the patient's response. Avoid documenting only “airway patent.”</p>
           </div>
@@ -221,12 +221,12 @@
     </div>
 
     <section id="resultsPanel" class="results-panel" hidden aria-live="polite">
-      <div class="score-ring"><span id="scoreValue">0</span><small>/ 4</small></div>
+      <div class="score-ring"><span id="scoreValue">0</span><small>/ 3</small></div>
       <div>
         <p class="eyebrow">Coaching feedback</p>
         <h3 id="resultTitle"></h3>
         <ul id="feedbackList"></ul>
-        <div class="model-doc"><strong>Example documentation:</strong><p id="modelDocumentation"></p></div>
+        <div class="model-doc"><strong>Optional documentation example:</strong><p id="modelDocumentation"></p></div>
       </div>
     </section>
 

@@ -15,7 +15,7 @@
   <script defer src="/vitals/scenario-session.js?v=2"></script>
   <script defer src="/vitals/scenario-runtime.js?v=2"></script>
   <script defer src="/vitals/patient-record-integration.js?v=2"></script>
-  <script defer src="/vitals/pain-opqrst.js"></script>
+  <script defer src="/vitals/pain-opqrst.js?v=3"></script>
 <link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
   <link rel="stylesheet" href="/vitals/scenario-flow.css">
 </head>
@@ -53,10 +53,10 @@
 <fieldset><legend>1. Is this pain pattern normal/nonconcerning or not normal/concerning?</legend><div class="choice-row"><label class="choice-card"><input type="radio" name="normality" value="normal" required><span>Normal / expected</span></label><label class="choice-card"><input type="radio" name="normality" value="not-normal" required><span>Not normal / concerning</span></label></div></fieldset>
 <label class="form-field"><span>2. Which feature is most important?</span><select id="prioritySelect" required><option value="">Select one</option><option value="localized">Localized pain consistent with minor injury</option><option value="exertional">Exertional pressure with radiation/associated symptoms</option><option value="sudden">Sudden maximal onset</option><option value="pleuritic">Sharp pain worse with breathing</option><option value="abdominal">Focal abdominal pain with guarding or worsening symptoms</option><option value="trauma">Pain with significant trauma finding</option></select></label>
 <label class="form-field"><span>3. What is the best next EMT action?</span><select id="actionSelect" required><option value="">Select one</option><option value="routine">Continue focused assessment, support, and routine transport</option><option value="cardiac">Treat as potentially serious chest pain and expedite transport per protocol</option><option value="neuro">Perform focused neurologic assessment and expedite transport</option><option value="respiratory">Reassess ABCs, oxygenation/ventilation, and transport promptly</option><option value="abdominal-care">Monitor for shock, avoid oral intake, and transport</option><option value="trauma-care">Manage trauma priorities, reassess distal function, and transport</option></select></label>
-<label class="form-field"><span>4. Document the pain assessment</span><textarea id="pcrText" rows="7" required placeholder="Include onset, provoking/relieving factors, quality, region/radiation, severity, time course, associated symptoms, and reassessment."></textarea></label>
+<label class="form-field"><span>4. Optional finding note</span><textarea id="pcrText" rows="7" placeholder="Include onset, provoking/relieving factors, quality, region/radiation, severity, time course, associated symptoms, and reassessment."></textarea></label>
 <button class="primary-btn" type="submit">Grade my assessment</button>
 </form>
-<section class="results-panel" id="resultsPanel" hidden><div class="score-ring"><span id="scoreText">0/4</span></div><div><p class="eyebrow">Coaching feedback</p><h3>Your OPQRST assessment</h3><ul id="feedbackList"></ul><div class="model-doc"><strong>Example PCR documentation</strong><p id="examplePCR"></p></div><button class="secondary-btn" id="tryAnother" type="button">Try another patient</button></div></section>
+<section class="results-panel" id="resultsPanel" hidden><div class="score-ring"><span id="scoreText">0/3</span></div><div><p class="eyebrow">Coaching feedback</p><h3>Your OPQRST assessment</h3><ul id="feedbackList"></ul><div class="model-doc"><strong>Optional documentation example</strong><p id="examplePCR"></p></div><button class="secondary-btn" id="tryAnother" type="button">Try another patient</button></div></section>
 <button class="complete-btn" data-complete="practice" type="button">Mark PRACTICE complete</button>
 </section>
 </main>

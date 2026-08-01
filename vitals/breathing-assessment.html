@@ -16,7 +16,7 @@
   <script defer src="/vitals/scenario-runtime.js?v=2"></script>
   <script defer src="/vitals/scenario-tool-registry.js?v=2"></script>
   <script defer src="/vitals/patient-record-integration.js?v=2"></script>
-  <script defer src="/vitals/breathing-assessment.js"></script>
+  <script defer src="/vitals/breathing-assessment.js?v=3"></script>
 <link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
   <link rel="stylesheet" href="/vitals/scenario-flow.css">
 <link rel="stylesheet" href="/vitals/assessment-crosslinks.css?v=2">
@@ -100,10 +100,10 @@
       <fieldset><legend>1. Is this finding normal?</legend><div class="choice-row"><label class="choice-card"><input type="radio" name="normality" value="normal" required><span>Normal</span></label><label class="choice-card"><input type="radio" name="normality" value="not-normal" required><span>Not Normal</span></label></div></fieldset>
       <label class="form-field"><span>2. What best describes the breathing?</span><select id="problemSelect" required><option value="">Select one</option><option value="adequate">Adequate ventilation</option><option value="distress">Respiratory distress with adequate ventilation</option><option value="failure">Inadequate ventilation / respiratory failure</option><option value="asymmetric">Asymmetric chest movement</option></select></label>
       <label class="form-field"><span>3. What is the best immediate EMT action?</span><select id="actionSelect" required><option value="">Select one</option><option value="monitor">Continue assessment and monitor</option><option value="oxygen">Provide oxygen as indicated and reassess</option><option value="assist">Assist ventilations with BVM and oxygen</option><option value="trauma">Support breathing, address chest injury, and expedite transport</option></select></label>
-      <label class="form-field"><span>4. Document the finding as you would on a PCR.</span><textarea id="pcrText" rows="5" required placeholder="Include rate, rhythm, depth, effort, chest movement, speech, intervention, and reassessment when applicable."></textarea></label>
+      <label class="form-field"><span>4. Optional finding note</span><textarea id="pcrText" rows="5" placeholder="Include rate, rhythm, depth, effort, chest movement, speech, intervention, and reassessment when applicable."></textarea></label>
       <button class="primary-btn" type="submit">Grade this patient</button>
     </form>
-    <section class="results-panel" id="resultsPanel" hidden aria-live="polite"><p class="eyebrow">Practice feedback</p><h3 id="scoreText"></h3><ul id="feedbackList"></ul><div class="documentation-example"><h4>Example documentation</h4><p id="examplePCR"></p></div><button class="secondary-btn" id="tryAnother" type="button">Try another patient</button></section>
+    <section class="results-panel" id="resultsPanel" hidden aria-live="polite"><p class="eyebrow">Practice feedback</p><h3 id="scoreText"></h3><ul id="feedbackList"></ul><div class="documentation-example"><h4>Optional documentation example</h4><p id="examplePCR"></p></div><button class="secondary-btn" id="tryAnother" type="button">Try another patient</button></section>
     <button class="complete-btn" data-complete="practice" type="button">Mark PRACTICE complete</button>
   </section>
 </main>

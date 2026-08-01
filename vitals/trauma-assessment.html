@@ -15,7 +15,7 @@
   <script defer src="/vitals/scenario-session.js?v=2"></script>
   <script defer src="/vitals/scenario-runtime.js?v=2"></script>
   <script defer src="/vitals/patient-record-integration.js?v=2"></script>
-  <script defer src="/vitals/trauma-assessment.js"></script>
+  <script defer src="/vitals/trauma-assessment.js?v=3"></script>
 <link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
   <link rel="stylesheet" href="/vitals/scenario-flow.css">
 </head>
@@ -77,10 +77,10 @@
       <fieldset><legend>1. Is this finding normal?</legend><div class="choice-row"><label class="choice-card"><input type="radio" name="normality" value="normal" required><span>Normal</span></label><label class="choice-card"><input type="radio" name="normality" value="not-normal" required><span>Not Normal</span></label></div></fieldset>
       <label class="form-field"><span>2. What best describes the finding?</span><select id="problemSelect" required><option value="">Select one</option><option value="minor">Minor isolated injury</option><option value="hemorrhage">Life-threatening external hemorrhage</option><option value="chest">Potential major chest injury</option><option value="internal">Possible internal bleeding</option><option value="neurovascular">Extremity neurovascular compromise</option><option value="normal-exam">No significant traumatic finding</option></select></label>
       <label class="form-field"><span>3. What is the best immediate EMT priority?</span><select id="actionSelect" required><option value="">Select one</option><option value="continue">Continue systematic exam and monitor</option><option value="bleeding-control">Control hemorrhage immediately</option><option value="breathing-transport">Support breathing and expedite transport</option><option value="shock-transport">Treat for shock and initiate rapid transport</option><option value="splint-reassess">Stabilize, reassess PMS, and transport</option></select></label>
-      <label class="form-field"><span>4. Document the finding as you would on a PCR.</span><textarea id="pcrText" rows="5" required placeholder="Include location, side, appearance, tenderness or instability, bleeding, PMS, intervention, and reassessment as applicable."></textarea></label>
+      <label class="form-field"><span>4. Optional finding note</span><textarea id="pcrText" rows="5" placeholder="Include location, side, appearance, tenderness or instability, bleeding, PMS, intervention, and reassessment as applicable."></textarea></label>
       <button class="primary-btn" type="submit">Grade this patient</button>
     </form>
-    <section class="results-panel" id="resultsPanel" hidden aria-live="polite"><p class="eyebrow">Practice feedback</p><h3 id="scoreText"></h3><ul id="feedbackList"></ul><div class="documentation-example"><h4>Example documentation</h4><p id="examplePCR"></p></div><button class="secondary-btn" id="tryAnother" type="button">Try another patient</button></section>
+    <section class="results-panel" id="resultsPanel" hidden aria-live="polite"><p class="eyebrow">Practice feedback</p><h3 id="scoreText"></h3><ul id="feedbackList"></ul><div class="documentation-example"><h4>Optional documentation example</h4><p id="examplePCR"></p></div><button class="secondary-btn" id="tryAnother" type="button">Try another patient</button></section>
     <button class="complete-btn" data-complete="practice" type="button">Mark PRACTICE complete</button>
   </section>
 </main>

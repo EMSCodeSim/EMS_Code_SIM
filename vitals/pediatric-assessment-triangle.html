@@ -15,7 +15,7 @@
   <script defer src="/vitals/scenario-session.js?v=2"></script>
   <script defer src="/vitals/scenario-runtime.js?v=2"></script>
   <script defer src="/vitals/patient-record-integration.js?v=2"></script>
-  <script defer src="/vitals/pediatric-assessment-triangle.js"></script>
+  <script defer src="/vitals/pediatric-assessment-triangle.js?v=3"></script>
 <link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
   <link rel="stylesheet" href="/vitals/scenario-flow.css">
 </head>
@@ -78,10 +78,10 @@
       <fieldset><legend>1. Is the overall PAT finding normal?</legend><div class="choice-row"><label class="choice-card"><input type="radio" name="normality" value="normal" required><span>Normal</span></label><label class="choice-card"><input type="radio" name="normality" value="not-normal" required><span>Not Normal</span></label></div></fieldset>
       <label class="form-field"><span>2. Which pattern best fits?</span><select id="patternSelect" required><option value="">Select one</option><option value="stable">Stable first impression</option><option value="resp-distress">Respiratory distress</option><option value="resp-failure">Respiratory failure</option><option value="shock">Shock</option><option value="neuro-metabolic">Neurologic or metabolic concern</option><option value="cardiopulmonary">Cardiopulmonary failure</option></select></label>
       <label class="form-field"><span>3. What is the best immediate EMT priority?</span><select id="actionSelect" required><option value="">Select one</option><option value="continue">Continue primary assessment and age-appropriate vitals</option><option value="oxygen-assess">Position, oxygen as indicated, and focused breathing assessment</option><option value="ventilate-transport">Support ventilation and initiate rapid transport</option><option value="shock-transport">Support perfusion, keep warm, and initiate rapid transport</option><option value="ams-assess">Assess ABCs, glucose, temperature, and neurologic status</option><option value="resuscitate">Begin immediate resuscitative support and rapid transport</option></select></label>
-      <label class="form-field"><span>4. Document the first-look assessment as you would on a PCR.</span><textarea id="pcrText" rows="5" required placeholder="Document appearance, work of breathing, circulation to skin, PAT interpretation, intervention, and reassessment."></textarea></label>
+      <label class="form-field"><span>4. Optional finding note</span><textarea id="pcrText" rows="5" placeholder="Document appearance, work of breathing, circulation to skin, PAT interpretation, intervention, and reassessment."></textarea></label>
       <button class="primary-btn" type="submit">Grade this patient</button>
     </form>
-    <section class="results-panel" id="resultsPanel" hidden aria-live="polite"><p class="eyebrow">Practice feedback</p><h3 id="scoreText"></h3><ul id="feedbackList"></ul><div class="documentation-example"><h4>Example documentation</h4><p id="examplePCR"></p></div><button class="secondary-btn" id="tryAnother" type="button">Try another patient</button></section>
+    <section class="results-panel" id="resultsPanel" hidden aria-live="polite"><p class="eyebrow">Practice feedback</p><h3 id="scoreText"></h3><ul id="feedbackList"></ul><div class="documentation-example"><h4>Optional documentation example</h4><p id="examplePCR"></p></div><button class="secondary-btn" id="tryAnother" type="button">Try another patient</button></section>
     <button class="complete-btn" data-complete="practice" type="button">Mark PRACTICE complete</button>
   </section>
 </main>

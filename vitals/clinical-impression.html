@@ -13,7 +13,7 @@
   <script defer src="/privacy-controls.js"></script>
   <script defer src="/vitals/patient-record.js"></script>
   <script defer src="/vitals/scenario-session.js?v=2"></script>
-  <script defer src="/vitals/scenario-runtime.js?v=2"></script><script defer src="/vitals/patient-care-integration.js?v=2"></script><script defer src="/vitals/clinical-impression.js"></script>
+  <script defer src="/vitals/scenario-runtime.js?v=2"></script><script defer src="/vitals/patient-care-integration.js?v=2"></script><script defer src="/vitals/clinical-impression.js?v=3"></script>
 <link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
   <link rel="stylesheet" href="/vitals/scenario-flow.css">
 </head>
@@ -59,10 +59,10 @@
 <div class="decision-step"><span class="decision-number">3</span><div><h3>Select two reasonable alternatives</h3><div id="differentialChoices" class="check-grid"></div></div></div>
 <div class="decision-step"><span class="decision-number">4</span><div><h3>Which findings best support your impression?</h3><div id="supportChoices" class="check-grid"></div></div></div>
 <div class="decision-step"><span class="decision-number">5</span><div><h3>What is the best immediate EMT priority?</h3><select id="actionSelect" required><option value="">Select one</option></select></div></div>
-<div class="decision-step"><span class="decision-number">6</span><div><h3>Document your clinical impression</h3><textarea id="pcrText" rows="8" placeholder="Summarize the complaint, important normal and abnormal findings, working impression, care, transport priority, and reassessment..." required></textarea><p class="microcopy">Use language such as “findings concerning for” or “presentation consistent with” rather than claiming a confirmed diagnosis.</p></div></div>
+<div class="decision-step"><span class="decision-number">6</span><div><h3>Optional reasoning note</h3><textarea id="pcrText" rows="5" placeholder="Optional: briefly explain why the findings support your impression."></textarea><p class="microcopy">Not required to continue. The full PCR narrative is completed later in the scenario.</p></div></div>
 <button class="primary-btn submit-btn" type="submit">Grade my clinical reasoning</button>
 </form>
-<section id="resultsPanel" class="results-panel" hidden><div class="score-ring"><span id="scoreText"></span></div><div><h3>Coaching feedback</h3><ul id="feedbackList"></ul><div class="model-doc"><strong>Example documentation</strong><p id="examplePCR"></p></div><button id="tryAnother" class="secondary-btn" type="button">Try another patient</button></div></section>
+<section id="resultsPanel" class="results-panel" hidden><div class="score-ring"><span id="scoreText"></span></div><div><h3>Coaching feedback</h3><ul id="feedbackList"></ul><div class="model-doc"><strong>Optional reasoning example</strong><p id="examplePCR"></p></div><button id="tryAnother" class="secondary-btn" type="button">Try another patient</button></div></section>
 </section>
 <p class="disclaimer">Training content only. Follow your approved education, medical direction, and local protocols.</p>
 </main>

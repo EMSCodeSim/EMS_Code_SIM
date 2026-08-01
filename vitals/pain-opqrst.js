@@ -25,8 +25,8 @@ $('painForm').addEventListener('submit',e=>{e.preventDefault();if(!state.reveale
 if(normality===state.current.normality){score++;feedback.push('Correctly classified the pain pattern as expected or concerning.');}else feedback.push(`This case should be classified as ${state.current.normality==='normal'?'normal/expected':'not normal/concerning'}.`);
 if(priority===state.current.priority){score++;feedback.push('Identified the most clinically important pain feature.');}else feedback.push('Reconsider onset, quality, radiation, associated symptoms, and mechanism.');
 if(action===state.current.action){score++;feedback.push('Selected the best immediate EMT priority.');}else feedback.push('Choose the action that addresses the highest-risk pattern while continuing ABC reassessment.');
-const terms=['onset','began','worse','better','sharp','pressure','aching','radiat','10','constant','intermittent','denies','associated','reassess'];const hits=terms.filter(t=>pcr.toLowerCase().includes(t)).length;if(pcr.length>=100&&hits>=6){score++;feedback.push('Documentation captures useful OPQRST details and associated findings.');}else feedback.push('Include onset, provoking/relieving factors, quality, region/radiation, severity, time course, associated symptoms, and reassessment.');
-$('scoreText').textContent=`${score}/4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;
+if(pcr){feedback.push('Optional finding note saved. Full narrative documentation is completed later in the scenario.');}else feedback.push('No finding narrative required. Complete the full narrative near the end of the scenario.');
+$('scoreText').textContent=`${score}/3`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;
     window.EMSCodeSimAssessmentIntegration?.saveAssessment({
       assessment: 'pain_opqrst',
       label: 'Pain Opqrst',
@@ -39,8 +39,8 @@ $('scoreText').textContent=`${score}/4`;$('feedbackList').innerHTML=feedback.map
       action: typeof action !== 'undefined' ? action : '',
       documentation: pcr,
       score,
-      maxScore: 4
+      maxScore: 3
     });
-$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}});
+$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===3){state.complete.practice=true;save();updateProgress();}});
 load();updateProgress();newCase();
 })();

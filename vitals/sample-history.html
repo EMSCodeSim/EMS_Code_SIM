@@ -15,7 +15,7 @@
   <script defer src="/vitals/scenario-session.js?v=2"></script>
   <script defer src="/vitals/scenario-runtime.js?v=2"></script>
   <script defer src="/vitals/patient-record-integration.js?v=2"></script>
-  <script defer src="/vitals/sample-history.js"></script>
+  <script defer src="/vitals/sample-history.js?v=3"></script>
 <link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
   <link rel="stylesheet" href="/vitals/scenario-flow.css">
 </head>
@@ -77,10 +77,10 @@
       <fieldset><legend>1. Does this history contain a clinically important abnormal or high-risk finding?</legend><div class="choice-row"><label class="choice-card"><input type="radio" name="normality" value="normal" required><span>No significant finding</span></label><label class="choice-card"><input type="radio" name="normality" value="not-normal" required><span>Important finding present</span></label></div></fieldset>
       <label class="form-field"><span>2. Which history item matters most?</span><select id="prioritySelect" required><option value="">Select one</option><option value="none">No high-risk history item</option><option value="allergy">Allergy or reaction</option><option value="medication">Medication or missed dose</option><option value="history">Pertinent medical history</option><option value="intake">Last oral intake</option><option value="events">Events leading to illness or injury</option></select></label>
       <label class="form-field"><span>3. What is the best next EMT action?</span><select id="actionSelect" required><option value="">Select one</option><option value="continue">Continue assessment and routine monitoring</option><option value="allergy-care">Assess for anaphylaxis and treat per protocol</option><option value="bleeding-risk">Increase concern for occult bleeding and expedite evaluation</option><option value="glucose">Check blood glucose and treat per findings</option><option value="overdose">Assess for overdose or medication effect and support ABCs</option><option value="rapid-transport">Prioritize rapid transport and ongoing reassessment</option></select></label>
-      <label class="form-field"><span>4. Document the SAMPLE history as you would on a PCR.</span><textarea id="pcrText" rows="6" required placeholder="Document pertinent positives and negatives, allergy reactions, medications, history, last intake, and events. Avoid unsupported conclusions."></textarea></label>
+      <label class="form-field"><span>4. Optional finding note</span><textarea id="pcrText" rows="6" placeholder="Document pertinent positives and negatives, allergy reactions, medications, history, last intake, and events. Avoid unsupported conclusions."></textarea></label>
       <button class="primary-btn" type="submit">Grade this patient</button>
     </form>
-    <section class="results-panel" id="resultsPanel" hidden aria-live="polite"><p class="eyebrow">Practice feedback</p><h3 id="scoreText"></h3><ul id="feedbackList"></ul><div class="documentation-example"><h4>Example documentation</h4><p id="examplePCR"></p></div><button class="secondary-btn" id="tryAnother" type="button">Try another patient</button></section>
+    <section class="results-panel" id="resultsPanel" hidden aria-live="polite"><p class="eyebrow">Practice feedback</p><h3 id="scoreText"></h3><ul id="feedbackList"></ul><div class="documentation-example"><h4>Optional documentation example</h4><p id="examplePCR"></p></div><button class="secondary-btn" id="tryAnother" type="button">Try another patient</button></section>
     <button class="complete-btn" data-complete="practice" type="button">Mark PRACTICE complete</button>
   </section>
 </main>

@@ -223,12 +223,10 @@
     else feedback.push('Use objective before-and-after findings to classify the response.');
     if (next === current.next) { score += 1; feedback.push('Selected an appropriate next step.'); }
     else feedback.push('Decide whether to continue, repeat, escalate, ventilate, or expedite transport.');
-    const terms = ['airway','breathing','treatment','reassess','repeat','spo2','respir','pulse','blood pressure','transport','improved','unchanged','worsened'];
-    const hits = terms.filter(term => documentation.toLowerCase().includes(term)).length;
-    if (documentation.length >= 90 && hits >= 4) { score += 1; feedback.push('Documentation includes treatment and objective reassessment findings.'); }
-    else feedback.push('Document the initial finding, treatment, timing, repeat findings, response, and next action.');
+    if (documentation) feedback.push('Optional treatment note saved. Full narrative documentation is completed later in the scenario.');
+    else feedback.push('No treatment narrative required here. Continue to the final documentation step when ready.');
 
-    $('scoreText').textContent = `${score}/5`;
+    $('scoreText').textContent = `${score}/4`;
     $('feedbackList').innerHTML = feedback.map(item => `<li>${item}</li>`).join('');
     $('examplePCR').textContent = `Initial ${context} and relevant vital findings reviewed. ${TREATMENTS.find(item => item[0] === treatment)?.[1] || 'Treatment'} performed or selected according to scope and protocol. Repeat findings compared with baseline; patient classified as ${response || 'not yet classified'}. ${NEXT.find(item => item[0] === next)?.[1] || 'Continued reassessment and transport.'}`;
     $('resultsPanel').hidden = false;
@@ -246,10 +244,10 @@
       repeatFindings: current.repeat,
       documentation,
       score,
-      maxScore: 5
+      maxScore: 4
     });
 
-    if (score === 5) { state.done.practice = true; saveProgress(); progress(); }
+    if (score === 4) { state.done.practice = true; saveProgress(); progress(); }
     insertReturnNavigation();
   });
 

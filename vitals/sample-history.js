@@ -26,8 +26,8 @@
     if(normality===state.current.normality){score++;feedback.push('Correctly identified whether the history contains an important abnormal or high-risk finding.');}else feedback.push(`Review the history significance: this case ${state.current.normality==='normal'?'does not contain':'does contain'} a major high-risk finding.`);
     if(priority===state.current.priority){score++;feedback.push('Correctly identified the most important SAMPLE item.');}else feedback.push('Reconsider which answer most directly changes risk, treatment, or transport priority.');
     if(action===state.current.action){score++;feedback.push('Selected the best immediate EMT action.');}else feedback.push('Use the history to guide the next assessment or treatment while continuing ABC reassessment.');
-    const terms=['allerg','reaction','medication','takes','history','intake','ate','event','began','denies','reports','prior','last','sAMPLE'.toLowerCase()];const hits=terms.filter(t=>pcr.toLowerCase().includes(t)).length;if(pcr.length>=90&&hits>=5){score++;feedback.push('Documentation includes useful pertinent positives and negatives.');}else feedback.push('Document the relevant SAMPLE answers, allergy reaction, medication details, timing, events, and important negatives.');
-    $('scoreText').textContent=`Score: ${score} of 4`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;
+    if(pcr){feedback.push('Optional finding note saved. Full narrative documentation is completed later in the scenario.');}else feedback.push('No finding narrative required. Complete the full narrative near the end of the scenario.');
+    $('scoreText').textContent=`Score: ${score} of 3`;$('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=state.current.example;
     window.EMSCodeSimAssessmentIntegration?.saveAssessment({
       assessment: 'sample_history',
       label: 'Sample History',
@@ -40,9 +40,9 @@
       action: typeof action !== 'undefined' ? action : '',
       documentation: pcr,
       score,
-      maxScore: 4
+      maxScore: 3
     });
-$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===4){state.complete.practice=true;save();updateProgress();}
+$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});if(score===3){state.complete.practice=true;save();updateProgress();}
   });
   load();updateProgress();newCase();
 })();

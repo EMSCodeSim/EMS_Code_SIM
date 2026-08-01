@@ -15,7 +15,7 @@
   <script defer src="/vitals/scenario-session.js?v=2"></script>
   <script defer src="/vitals/scenario-runtime.js?v=2"></script>
   <script defer src="/vitals/patient-record-integration.js?v=2"></script>
-  <script defer src="/vitals/chest-assessment.js"></script>
+  <script defer src="/vitals/chest-assessment.js?v=3"></script>
 <link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
   <link rel="stylesheet" href="/vitals/scenario-flow.css">
 </head>
@@ -58,10 +58,10 @@
 <div class="decision-step"><span class="decision-number">1</span><div><h3>Is the chest assessment normal?</h3><div class="choice-row"><label class="choice"><input type="radio" name="normality" value="normal" required><span>Normal</span></label><label class="choice"><input type="radio" name="normality" value="not-normal"><span>Not normal</span></label></div></div></div>
 <div class="decision-step"><span class="decision-number">2</span><div><h3>What is the most important finding?</h3><select id="prioritySelect" required><option value="">Select one</option><option value="normal-chest">Symmetric chest with no concerning finding</option><option value="open-wound">Open chest wound</option><option value="unequal">Unequal rise or unilateral reduced air movement</option><option value="flail">Paradoxical chest-wall movement</option><option value="rib-injury">Localized rib tenderness or crepitus</option><option value="bleeding">Major external chest bleeding</option></select></div></div>
 <div class="decision-step"><span class="decision-number">3</span><div><h3>What is the best immediate EMT priority?</h3><select id="actionSelect" required><option value="">Select one</option><option value="monitor">Continue assessment, monitoring, and reassessment</option><option value="seal">Manage the open chest wound per local protocol and reassess</option><option value="ventilate">Support ventilation and expedite transport</option><option value="stabilize">Minimize movement, support injury, and monitor breathing</option><option value="bleeding-control">Control major bleeding immediately</option></select></div></div>
-<div class="decision-step"><span class="decision-number">4</span><div><h3>Document the assessment</h3><textarea id="pcrText" rows="7" placeholder="Describe chest rise, visible injuries, palpation findings, breath sounds, respiratory status, actions, and reassessment..." required></textarea><p class="microcopy">Use objective findings. Do not document a diagnosis you did not establish.</p></div></div>
+<div class="decision-step"><span class="decision-number">4</span><div><h3>Optional finding note</h3><textarea id="pcrText" rows="7" placeholder="Describe chest rise, visible injuries, palpation findings, breath sounds, respiratory status, actions, and reassessment..."></textarea><p class="microcopy">Optional: add a short objective note. Full narrative documentation is completed later in the scenario.</p></div></div>
 <button class="primary-btn submit-btn" type="submit">Grade my assessment</button>
 </form></div>
-<section id="resultsPanel" class="results-panel" hidden><div class="score-ring"><span id="scoreText">0/4</span><small>score</small></div><div><h3>Coaching feedback</h3><ul id="feedbackList"></ul><div class="model-doc"><strong>Example PCR documentation</strong><p id="examplePCR"></p></div><button id="tryAnother" class="secondary-btn" type="button">Try another patient</button></div></section>
+<section id="resultsPanel" class="results-panel" hidden><div class="score-ring"><span id="scoreText">0/3</span><small>score</small></div><div><h3>Coaching feedback</h3><ul id="feedbackList"></ul><div class="model-doc"><strong>Optional documentation example</strong><p id="examplePCR"></p></div><button id="tryAnother" class="secondary-btn" type="button">Try another patient</button></div></section>
 </section>
 <p class="disclaimer">Training content only. Follow your approved education, medical direction, and local protocols.</p>
 </main>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Obtain Blood Glucose | EMSCodeSim Scenario</title>
-<link rel="stylesheet" href="/vitals/scenario-vital-sims.css?v=2">
+<link rel="stylesheet" href="/vitals/scenario-vital-sims.css?v=3">
 </head>
 <body data-scenario-vital="bgl" data-scenario-only="true">
 <header class="sv-topbar"><div class="sv-topbar-inner"><button class="sv-back" id="backBtn" type="button" aria-label="Return to patient">‹</button><h1 id="pageTitle">Obtain Blood Glucose</h1><span class="sv-mode">Scenario</span></div></header>
@@ -13,11 +13,11 @@
 <section class="sv-patient" id="patientStrip" hidden><div><p>Active patient</p><strong id="patientName">Patient</strong></div><span class="sv-chip" id="caseTitle">Assessment</span></section>
 <section class="sv-error" id="scenarioError" hidden><h2>No active patient scenario</h2><p>Open this assessment from inside a patient scenario.</p><button class="sv-btn primary" id="launcherBtn" type="button">Return to scenarios</button></section>
 <section class="sv-card" id="simCard" hidden><p class="sv-instruction" id="instruction"></p><div class="sv-stage" id="stage"></div><div class="sv-actions" id="simActions"></div><p class="sv-state" id="state" aria-live="polite"></p></section>
-<section class="sv-card sv-answer" id="answerCard" hidden><h2>Document the finding</h2><p>Only a correct scenario finding will be added to the patient record.</p><div id="answerFields"></div><button class="sv-btn primary" id="submitBtn" type="button">Check and save</button><div class="sv-result" id="result" role="status" aria-live="polite"></div><button class="sv-btn primary sv-return" id="returnBtn" type="button" hidden>Return to patient</button></section>
+<section class="sv-card sv-answer" id="answerCard" hidden><h2>Document the finding</h2><p>Your finding will be saved as entered and reviewed at the end of the scenario.</p><div id="answerFields"></div><button class="sv-btn primary" id="submitBtn" type="button">Save finding</button><div class="sv-result" id="result" role="status" aria-live="polite"></div><button class="sv-btn primary sv-return" id="returnBtn" type="button" hidden>Return to patient</button></section>
 </main>
 <script src="/vitals/patient-record.js"></script>
-<script src="/vitals/scenario-session.js?v=2"></script>
-<script src="/vitals/scenario-runtime.js?v=2"></script>
-<script src="/vitals/scenario-vital-sims.js?v=2"></script>
+<script src="/vitals/scenario-session.js?v=3"></script>
+<script src="/vitals/scenario-runtime.js?v=3"></script>
+<script src="/vitals/scenario-vital-sims.js?v=3"></script>
 </body>
 </html>

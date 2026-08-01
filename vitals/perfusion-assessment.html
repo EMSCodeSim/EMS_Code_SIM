@@ -16,7 +16,7 @@
   <script defer src="/vitals/scenario-runtime.js?v=2"></script>
   <script defer src="/vitals/scenario-tool-registry.js?v=2"></script>
   <script defer src="/vitals/patient-record-integration.js?v=2"></script>
-  <script defer src="/vitals/perfusion-assessment.js"></script>
+  <script defer src="/vitals/perfusion-assessment.js?v=3"></script>
 <link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
   <link rel="stylesheet" href="/vitals/scenario-flow.css">
 <link rel="stylesheet" href="/vitals/assessment-crosslinks.css?v=2">
@@ -60,10 +60,10 @@
 <div class="decision-step"><span class="decision-number">1</span><div><h3>Is perfusion normal?</h3><div class="choice-row"><label class="choice"><input type="radio" name="normality" value="normal" required><span>Normal</span></label><label class="choice"><input type="radio" name="normality" value="not-normal"><span>Not normal</span></label></div></div></div>
 <div class="decision-step"><span class="decision-number">2</span><div><h3>What pattern best fits?</h3><select id="prioritySelect" required><option value="">Select one</option><option value="normal-perfusion">Adequate perfusion</option><option value="compensated">Possible compensated shock</option><option value="decompensated">Decompensated shock</option><option value="bleeding">Life-threatening external hemorrhage</option><option value="neurogenic">Warm skin with hypotension and relative bradycardia</option><option value="pediatric">Pediatric poor perfusion with late hypotension risk</option></select></div></div>
 <div class="decision-step"><span class="decision-number">3</span><div><h3>What is the best immediate EMT priority?</h3><select id="actionSelect" required><option value="">Select one</option><option value="monitor">Continue assessment and repeat perfusion findings</option><option value="shock-care">Support ABCs, prevent heat loss, expedite transport, and reassess</option><option value="bleeding-control">Control major bleeding immediately, then treat for shock</option><option value="ventilate">Support ventilation and oxygenation while expediting transport</option><option value="spinal-shock">Maintain spinal precautions as indicated, support ABCs, and transport rapidly</option></select></div></div>
-<div class="decision-step"><span class="decision-number">4</span><div><h3>Document the assessment</h3><textarea id="pcrText" rows="7" placeholder="Document pulse rate/rhythm/quality, skin, capillary refill, mental status, blood pressure, bleeding, treatment, and reassessment..." required></textarea><p class="microcopy">Describe the findings and trend. Avoid writing only “patient in shock.”</p></div></div>
+<div class="decision-step"><span class="decision-number">4</span><div><h3>Optional finding note</h3><textarea id="pcrText" rows="7" placeholder="Document pulse rate/rhythm/quality, skin, capillary refill, mental status, blood pressure, bleeding, treatment, and reassessment..."></textarea><p class="microcopy">Optional: add a short objective note. Full narrative documentation is completed later in the scenario.</p></div></div>
 <button class="primary-btn submit-btn" type="submit">Grade my assessment</button>
 </form></div>
-<section id="resultsPanel" class="results-panel" hidden><div class="score-ring"><span id="scoreText">0/4</span><small>score</small></div><div><h3>Coaching feedback</h3><ul id="feedbackList"></ul><div class="model-doc"><strong>Example PCR documentation</strong><p id="examplePCR"></p></div><button id="tryAnother" class="secondary-btn" type="button">Try another patient</button></div></section>
+<section id="resultsPanel" class="results-panel" hidden><div class="score-ring"><span id="scoreText">0/3</span><small>score</small></div><div><h3>Coaching feedback</h3><ul id="feedbackList"></ul><div class="model-doc"><strong>Optional documentation example</strong><p id="examplePCR"></p></div><button id="tryAnother" class="secondary-btn" type="button">Try another patient</button></div></section>
 </section>
 <p class="disclaimer">Training content only. Follow your approved education, medical direction, and local protocols.</p>
 </main>

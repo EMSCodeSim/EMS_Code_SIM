@@ -15,7 +15,7 @@
   <script defer src="/vitals/scenario-session.js?v=2"></script>
   <script defer src="/vitals/scenario-runtime.js?v=2"></script>
   <script defer src="/vitals/patient-record-integration.js?v=2"></script>
-  <script defer src="/vitals/abdominal-assessment.js"></script>
+  <script defer src="/vitals/abdominal-assessment.js?v=3"></script>
 <link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
   <link rel="stylesheet" href="/vitals/scenario-flow.css">
 </head>
@@ -58,10 +58,10 @@
 <div class="decision-step"><span class="decision-number">1</span><div><h3>Is this finding normal?</h3><div class="choice-row"><label class="choice"><input type="radio" name="normality" value="normal" required><span>Normal</span></label><label class="choice"><input type="radio" name="normality" value="not-normal"><span>Not normal</span></label></div></div></div>
 <div class="decision-step"><span class="decision-number">2</span><div><h3>What is the dominant concern?</h3><select id="prioritySelect" required><option value="">Select one</option><option value="normal-abdomen">No concerning abdominal finding</option><option value="localized">Localized tenderness without shock</option><option value="peritoneal">Guarding or rigid abdomen</option><option value="internal-bleeding">Possible internal bleeding or hemorrhagic shock</option><option value="vascular">Possible vascular emergency</option><option value="obstruction">Distention with vomiting or possible obstruction</option></select></div></div>
 <div class="decision-step"><span class="decision-number">3</span><div><h3>What is the best immediate EMT priority?</h3><select id="actionSelect" required><option value="">Select one</option><option value="monitor">Continue assessment, position of comfort, and reassess</option><option value="supportive">Support ABCs, keep NPO, position of comfort, and transport</option><option value="rapid-transport">Treat for shock as indicated and expedite transport</option><option value="trauma-care">Manage trauma priorities, prevent heat loss, and transport rapidly</option></select></div></div>
-<div class="decision-step"><span class="decision-number">4</span><div><h3>Document the assessment</h3><textarea id="pcrText" rows="7" placeholder="Document complaint, abdomen appearance, quadrant findings, tenderness/guarding/rigidity/distention, relevant vitals, treatment, and reassessment..." required></textarea><p class="microcopy">Describe objective findings. Avoid stating a definitive diagnosis you cannot confirm.</p></div></div>
+<div class="decision-step"><span class="decision-number">4</span><div><h3>Optional finding note</h3><textarea id="pcrText" rows="7" placeholder="Document complaint, abdomen appearance, quadrant findings, tenderness/guarding/rigidity/distention, relevant vitals, treatment, and reassessment..."></textarea><p class="microcopy">Optional: add a short objective note. Full narrative documentation is completed later in the scenario.</p></div></div>
 <button class="primary-btn submit-btn" type="submit">Grade my assessment</button>
 </form></div>
-<section id="resultsPanel" class="results-panel" hidden><div class="score-ring"><span id="scoreText">0/4</span><small>score</small></div><div><h3>Coaching feedback</h3><ul id="feedbackList"></ul><div class="model-doc"><strong>Example PCR documentation</strong><p id="examplePCR"></p></div><button id="tryAnother" class="secondary-btn" type="button">Try another patient</button></div></section>
+<section id="resultsPanel" class="results-panel" hidden><div class="score-ring"><span id="scoreText">0/3</span><small>score</small></div><div><h3>Coaching feedback</h3><ul id="feedbackList"></ul><div class="model-doc"><strong>Optional documentation example</strong><p id="examplePCR"></p></div><button id="tryAnother" class="secondary-btn" type="button">Try another patient</button></div></section>
 </section>
 <p class="disclaimer">Training content only. Follow your approved education, medical direction, and local protocols.</p>
 </main>

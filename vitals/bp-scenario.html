@@ -392,15 +392,15 @@
         <input id="diaInput" type="number" inputmode="numeric" min="20" max="180" placeholder="DIA" aria-label="Diastolic pressure">
       </div>
 
-      <button class="button primary" id="submitBtn" type="button" disabled>Check and save</button>
+      <button class="button primary" id="submitBtn" type="button" disabled>Save reading</button>
       <div id="result" role="status" aria-live="polite"></div>
       <button class="button primary" id="returnBtn" type="button" hidden>Return to patient</button>
     </section>
   </main>
 
   <script src="/vitals/patient-record.js"></script>
-  <script src="/vitals/scenario-session.js?v=2"></script>
-  <script src="/vitals/scenario-runtime.js?v=2"></script>
+  <script src="/vitals/scenario-session.js?v=3"></script>
+  <script src="/vitals/scenario-runtime.js?v=3"></script>
   <script>
     (() => {
       'use strict';
@@ -660,14 +660,23 @@
         }
       }
 
-      function saveCorrectFinding(learnerSystolic, learnerDiastolic) {
-        const value = `${systolic}/${diastolic}`;
-        const normality = runtime.classifyFinding('blood_pressure', value);
+      function saveFinding(learnerSystolic, learnerDiastolic) {
+        const expectedValue = `${systolic}/${diastolic}`;
+        const learnerValue = `${learnerSystolic}/${learnerDiastolic}`;
+        const accurate = Math.abs(learnerSystolic - systolic) <= TOLERANCE && Math.abs(learnerDiastolic - diastolic) <= TOLERANCE;
+        const normality = runtime.classifyFinding('blood_pressure', expectedValue);
         const status = normality === 'normal' ? 'normal' : 'abnormal';
 
         const payload = {
           label: 'Blood pressure',
-          finding: value,
+          finding: learnerValue,
+          learnerFinding: learnerValue,
+          expectedFinding: expectedValue,
+          actualFinding: expectedValue,
+          accurate,
+          correct: accurate,
+          reviewAtDebrief: true,
+          expectedNormality: normality,
           normality,
           status,
           source: 'scenario-bp-simulator',
@@ -675,14 +684,21 @@
           learnerReading: `${learnerSystolic}/${learnerDiastolic}`,
           attempts
         };
-        if (session?.saveFinding) session.saveFinding('blood_pressure', value, payload);
-        else patientApi.setFinding('blood_pressure', value, payload);
+        if (session?.saveFinding) session.saveFinding('blood_pressure', learnerValue, payload);
+        else patientApi.setFinding('blood_pressure', learnerValue, payload);
 
         window.dispatchEvent(new CustomEvent('emscodesim:assessment-saved', {
           detail: {
             assessment: 'blood_pressure',
             label: 'Blood pressure',
-            finding: value,
+            finding: learnerValue,
+          learnerFinding: learnerValue,
+          expectedFinding: expectedValue,
+          actualFinding: expectedValue,
+          accurate,
+          correct: accurate,
+          reviewAtDebrief: true,
+          expectedNormality: normality,
             normality,
             source: 'scenario-bp-simulator'
           }
@@ -706,18 +722,8 @@
         }
 
         attempts += 1;
-        const systolicCorrect = Math.abs(enteredSystolic - systolic) <= TOLERANCE;
-        const diastolicCorrect = Math.abs(enteredDiastolic - diastolic) <= TOLERANCE;
-
-        if (!systolicCorrect || !diastolicCorrect) {
-          elements.result.textContent = 'Reading not accepted. Repeat the blood pressure and try again.';
-          elements.result.className = 'bad';
-          window.setTimeout(() => resetMeasurement(false), 900);
-          return;
-        }
-
-        saveCorrectFinding(enteredSystolic, enteredDiastolic);
-        elements.result.textContent = `Correct. Blood pressure ${systolic}/${diastolic} saved to the patient record.`;
+        saveFinding(enteredSystolic, enteredDiastolic);
+        elements.result.textContent = `Blood pressure ${enteredSystolic}/${enteredDiastolic} saved. Accuracy will be reviewed at the end of the scenario.`;
         elements.result.className = 'good';
         elements.submitBtn.disabled = true;
         elements.pumpBtn.disabled = true;

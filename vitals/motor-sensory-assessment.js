@@ -67,8 +67,8 @@ $('motorForm').addEventListener('submit',(event)=>{ event.preventDefault(); if($
 if(normality===state.current.normality){score++;feedback.push('Correctly classified the finding as normal or not normal.');}else feedback.push('Compare left with right and consider whether movement, strength, sensation, speech, or distal PMS differs from the expected baseline.');
 if(priority===state.current.priority){score++;feedback.push('Correctly identified the dominant motor or sensory pattern.');}else feedback.push('Decide whether the pattern is focal, generalized, spinal, isolated to an injured limb, or limited primarily by pain.');
 if(action===state.current.action){score++;feedback.push('Selected the best immediate EMT priority.');}else feedback.push('Match the action to the threat: stroke timing and transport, systemic cause checks, spinal precautions, or distal PMS protection and reassessment.');
-const terms=['face','facial','speech','drift','grip','strength','motor','sensation','sensory','left','right','pulse','pms','reassess','known well','transport']; const hits=terms.filter(t=>pcr.toLowerCase().includes(t)).length; if(pcr.length>=100&&hits>=6){score++;feedback.push('Documentation includes useful objective motor, sensory, laterality, and reassessment details.');}else feedback.push('Document laterality, face and speech, arm drift, grips, leg movement, sensation, distal PMS, timing, treatment, and repeat findings.');
-$('scoreText').textContent=`${score}/4`; $('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join(''); $('examplePCR').textContent=state.current.example; 
+if(pcr){feedback.push('Optional finding note saved. Full narrative documentation is completed later in the scenario.');}else feedback.push('No finding narrative required. Complete the full narrative near the end of the scenario.');
+$('scoreText').textContent=`${score}/3`; $('feedbackList').innerHTML=feedback.map(x=>`<li>${x}</li>`).join(''); $('examplePCR').textContent=state.current.example; 
     window.EMSCodeSimAssessmentIntegration?.saveAssessment({
       assessment: 'motor_sensory',
       label: 'Motor Sensory Assessment',
@@ -81,9 +81,9 @@ $('scoreText').textContent=`${score}/4`; $('feedbackList').innerHTML=feedback.ma
       action: typeof action !== 'undefined' ? action : '',
       documentation: pcr,
       score,
-      maxScore: 4
+      maxScore: 3
     });
-$('resultsPanel').hidden=false; $('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'}); if(score===4){state.complete.practice=true;save();updateProgress();}
+$('resultsPanel').hidden=false; $('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'}); if(score===3){state.complete.practice=true;save();updateProgress();}
 });
 load(); updateProgress(); newCase();
 })();

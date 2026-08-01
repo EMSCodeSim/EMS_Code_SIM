@@ -14,7 +14,13 @@
   }
 
   function findingScores(record) {
-    const pairs = Object.values(record.findings || {}).map(f => scorePair(f.score, f.maxScore)).filter(Boolean);
+    const pairs = Object.values(record.findings || {}).map(f => {
+      const scored = scorePair(f?.score, f?.maxScore);
+      if (scored) return scored;
+      const hasAccuracy = typeof f?.accurate === 'boolean' || typeof f?.correct === 'boolean';
+      if (hasAccuracy) return scorePair((f.accurate ?? f.correct) ? 1 : 0, 1);
+      return null;
+    }).filter(Boolean);
     if (!pairs.length) return null;
     const total = pairs.reduce((n,p)=>n+p.score,0);
     const max = pairs.reduce((n,p)=>n+p.max,0);
@@ -34,15 +40,20 @@
     const value = item && typeof item === 'object' ? item : {value:item};
     const classification = text(value.classification || value.normality || value.status || value.selectedNormality);
     const isAbnormal = /not normal|abnormal|concerning|inadequate|unstable/i.test(classification);
+    const hasAccuracy = typeof value.accurate === 'boolean' || typeof value.correct === 'boolean';
+    const accurate = hasAccuracy ? Boolean(value.accurate ?? value.correct) : null;
     return {
       key,
       label: titleCase(value.label || key),
-      value: text(value.value || value.finding || value.observation || 'Recorded'),
+      value: text(value.learnerFinding || value.learnerReading || value.value || value.finding || value.observation || 'Recorded'),
+      expected: text(value.expectedFinding || value.actualFinding || ''),
       classification: classification || 'Not classified',
       interpretation: text(value.interpretation || value.problem || value.pattern || ''),
       documentation: text(value.documentation || value.pcr || ''),
       isAbnormal,
-      score: scorePair(value.score,value.maxScore)
+      hasAccuracy,
+      accurate,
+      score: scorePair(value.score,value.maxScore) || (hasAccuracy ? scorePair(accurate ? 1 : 0, 1) : null)
     };
   }
 
@@ -50,10 +61,12 @@
     const findings = Object.entries(record.findings || {}).map(([key,item])=>normalizeFinding(key,item));
     $('findingCount').textContent = `${findings.length} finding${findings.length===1?'':'s'}`;
     $('findingsGrid').innerHTML = findings.length ? findings.map(f => `
-      <article class="finding-card ${f.isAbnormal?'not-normal':'normal'}">
+      <article class="finding-card ${f.isAbnormal?'not-normal':'normal'} ${f.hasAccuracy?(f.accurate?'accurate':'needs-review'):''}">
         <h3>${escapeHtml(f.label)}</h3>
         <span class="status-badge">${escapeHtml(f.classification)}</span>
-        <p><strong>Finding:</strong> ${escapeHtml(f.value)}</p>
+        <p><strong>Learner recorded:</strong> ${escapeHtml(f.value)}</p>
+        ${f.hasAccuracy?`<p class="accuracy-line"><strong>Accuracy:</strong> ${f.accurate?'Accurate':'Review this finding'}</p>`:''}
+        ${f.hasAccuracy&&!f.accurate&&f.expected?`<p><strong>Expected finding:</strong> ${escapeHtml(f.expected)}</p>`:''}
         ${f.interpretation?`<p><strong>Interpretation:</strong> ${escapeHtml(f.interpretation)}</p>`:''}
         ${f.score?`<p><strong>Score:</strong> ${f.score.score}/${f.score.max}</p>`:''}
       </article>`).join('') : '<p>No mini-simulator findings have been saved yet.</p>';
@@ -84,6 +97,10 @@
     const unclassified=findings.filter(f=>f.classification==='Not classified').length;
     if (!unclassified && findings.length) items.push(['good','Every recorded finding was classified as normal or not normal.']);
     else if (unclassified) items.push(['review',`${unclassified} finding${unclassified===1?' was':'s were'} not classified.`]);
+    const accuracyFindings=findings.filter(f=>f.hasAccuracy);
+    const inaccurate=accuracyFindings.filter(f=>!f.accurate);
+    if(accuracyFindings.length&&!inaccurate.length)items.push(['good','All measured vital and assessment findings matched the scenario findings.']);
+    else if(inaccurate.length)items.push(['review',`${inaccurate.length} measured finding${inaccurate.length===1?' needs':'s need'} review. Compare the learner entry with the expected finding shown above.`]);
     if (text(record.impressions?.primary)) items.push(['good','A working clinical impression was documented.']);
     else items.push(['review','Add a working clinical impression based on the full pattern of findings.']);
     if (safeArray(record.reassessments).length) items.push(['good','The patient was reassessed after treatment.']);
