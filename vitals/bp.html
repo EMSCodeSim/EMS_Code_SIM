@@ -12,7 +12,6 @@
       --bg:#f7fafc; --card:#ffffff; --text:#0f172a; --muted:#334155;
       --accent:#0284c7; --accent-2:#dc2626; --ring: rgba(2,132,199,.35);
       --shadow: 0 10px 28px rgba(15,23,42,.12); --overlay: rgba(15,23,42,.48);
-      --nudge-mobile:-16px; /* moved a bit more left on phones */
       --ok:#16a34a; --bad:#b91c1c;
     }
     *{box-sizing:border-box}
@@ -59,16 +58,15 @@
     /* Gauge */
     #gauge-container{
       position:relative;
-      width:min(94vw, 420px);
-      height:min(94vw, 420px);
-      margin: 4px auto 0; /* centered by default */
+      width:min(100%, 420px);
+      aspect-ratio:1 / 1;
+      height:auto;
+      margin:4px auto 0;
     }
-    /* MOBILE NUDGE */
     @media (max-width: 480px){
-      #gauge-container{ transform: translateX(var(--nudge-mobile)); }
-    }
-    @media (max-width: 360px){
-      :root{ --nudge-mobile:-22px; }
+      .app{padding-left:10px;padding-right:10px;}
+      .card{padding:12px;}
+      #gauge-container{width:min(100%, 390px);transform:none;}
     }
 
     #dial{
@@ -153,6 +151,20 @@
     .legend div{ background:#f8fafc; border:1px solid rgba(15,23,42,.08); padding:10px; border-radius:12px; }
     .muted{ color: var(--muted); font-size:.92rem; }
     .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:10px; }
+
+    .learn-hero{display:grid;grid-template-columns:minmax(180px,.8fr) 1.2fr;gap:18px;align-items:center;margin:14px 0}
+    .learn-hero img{width:100%;max-width:330px;margin:auto;display:block;border-radius:50%;filter:drop-shadow(0 8px 20px rgba(15,23,42,.18))}
+    .learn-list{padding-left:20px;line-height:1.55}.learn-list li{margin:7px 0}
+    .learn-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.learn-tab{border:1px solid rgba(15,23,42,.15);background:#eef7fb;color:#075d87;border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer}.learn-tab.active{background:var(--accent);color:#fff}
+    .learn-panel{display:none}.learn-panel.active{display:block}
+    .cuff-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.mini-card{border:1px solid rgba(15,23,42,.1);background:#f8fafc;border-radius:14px;padding:12px}
+    .demo-stage{border:1px solid rgba(15,23,42,.12);border-radius:16px;padding:14px;background:#f8fafc}.demo-gauge{position:relative;width:min(260px,75vw);aspect-ratio:1;margin:10px auto}.demo-gauge img{width:100%;height:100%;border-radius:50%}.demo-needle{position:absolute;width:4px;height:43%;left:50%;top:7%;background:#dc2626;transform-origin:bottom center;transform:rotate(-180deg);transition:transform .6s ease;margin-left:-2px}.demo-caption{font-weight:800;text-align:center;min-height:48px}.demo-controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.palp-step{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;margin:10px 0}.step-num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;font-weight:900}
+    .post-review{display:none}.post-review.show{display:block}.question{border-top:1px solid rgba(15,23,42,.1);padding-top:14px;margin-top:14px}.choice-row{display:grid;gap:8px;margin-top:8px}.choice-row button{border:1px solid rgba(15,23,42,.15);background:#fff;border-radius:12px;padding:11px;text-align:left;font-weight:750;cursor:pointer}.choice-row button.correct{background:#e8f8f1;border-color:#5bbf91}.choice-row button.incorrect{background:#fff0f1;border-color:#d98a91}.learning-point{margin-top:12px;padding:12px;border-radius:12px;background:#edf7fc;border:1px solid #bdddea;line-height:1.5}
+    @media(max-width:650px){.learn-hero,.cuff-grid{grid-template-columns:1fr}.modal{padding:10px}.modal-card{max-height:92dvh}}
+
+    body[data-vital-topic="bp"]{background:#f7fafc !important;color:#0f172a !important;color-scheme:light;}
+    body[data-vital-topic="bp"] .app,
+    body[data-vital-topic="bp"] .card{background:#fff;color:#0f172a;}
   </style>
 <link href="../styles/modern-theme.css" rel="stylesheet"/>
 <link href="/styles/responsive.css" rel="stylesheet"/>
@@ -171,12 +183,12 @@
 </svg>
 </button>
 <h1 class="topbar-title tool-h1">Blood Pressure Simulator</h1>
-<button aria-label="Blood pressure info" class="iconbtn" id="infoBtn" title="Info">
+<button aria-label="Learn how to take a blood pressure" class="iconbtn" id="infoBtn" title="Learn How">
 <svg aria-hidden="true" fill="none" height="20" viewbox="0 0 24 24" width="20">
 <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"></circle>
 <path d="M12 8h.01M11 11h2v6h-2z" fill="currentColor"></path>
 </svg>
-<span class="btn-label">Info</span>
+<span class="btn-label">Learn How</span>
 </button>
 </div>
 </div>
@@ -216,36 +228,39 @@
 </div>
 <div aria-live="polite" class="result" id="result" role="status"></div>
 </div>
+<div class="card post-review" id="postReview">
+<h2>Reinforce the reading</h2>
+<p id="readingSummary"></p>
+<div class="question"><strong>1. Which pressure is the first repeated Korotkoff sound?</strong><div class="choice-row" data-answer="Systolic"><button type="button">Systolic</button><button type="button">Diastolic</button><button type="button">Mean arterial pressure</button></div></div>
+<div class="question"><strong>2. What should you do when the reading does not fit the patient?</strong><div class="choice-row" data-answer="Repeat"><button type="button">Accept it without question</button><button type="button">Repeat the measurement and reassess technique</button><button type="button">Change the number to a normal value</button></div></div>
+<div class="question"><strong>3. Classify this practice reading.</strong><div class="choice-row" id="classificationChoices"></div></div>
+<div class="learning-point" id="postLearningPoint">Answer the questions to reinforce the skill.</div>
+</div>
 <div class="footer">Practice mode • New hidden patient with every reset • ±4 mmHg answer tolerance</div>
 </div>
 <!-- Info Modal -->
 <div aria-hidden="true" aria-labelledby="bpInfoTitle" class="modal" id="infoModal" role="dialog">
 <div class="modal-card">
 <div class="modal-header">
-<div class="modal-title" id="bpInfoTitle">Understanding Blood Pressure <span class="badge">SYS/DIA (mmHg)</span></div>
-<button aria-label="Close info" class="iconbtn" id="closeModalBtn" title="Close">
-<svg aria-hidden="true" fill="none" height="22" viewbox="0 0 24 24" width="22">
-<path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
-</svg>
-</button>
+<div class="modal-title" id="bpInfoTitle">Learn How to Take a Manual Blood Pressure</div>
+<button aria-label="Close learning guide" class="iconbtn" id="closeModalBtn" title="Close"><svg aria-hidden="true" fill="none" height="22" viewBox="0 0 24 24" width="22"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path></svg></button>
 </div>
-<div>
-<p><strong>Systolic (SYS)</strong> is the pressure when the heart contracts. <strong>Diastolic (DIA)</strong> is the pressure when the heart relaxes. In this simulator, you’ll hear beats while the cuff pressure is between the patient’s SYS and DIA.</p>
-<div aria-label="Common categories (adults)" class="legend">
-<div><strong>Normal:</strong> &lt;120 and &lt;80</div>
-<div><strong>Elevated:</strong> 120–129 and &lt;80</div>
-<div><strong>Stage 1 HTN:</strong> 130–139 or 80–89</div>
-<div><strong>Stage 2 HTN:</strong> ≥140 or ≥90</div>
-<div><strong>Crisis:</strong> ≥180 and/or ≥120 <em>→ evaluate promptly</em></div>
-<div><strong>Notes:</strong> Single readings don’t diagnose; use clinical context.</div>
+<div class="learn-tabs" role="tablist" aria-label="Blood pressure lessons">
+<button class="learn-tab active" type="button" data-panel="howPanel">How to take it</button>
+<button class="learn-tab" type="button" data-panel="cuffPanel">Cuff sizing</button>
+<button class="learn-tab" type="button" data-panel="demoPanel">Guided walkthrough</button>
+<button class="learn-tab" type="button" data-panel="palpPanel">Palpated systolic</button>
+<button class="learn-tab" type="button" data-panel="normalPanel">What is normal?</button>
 </div>
-<p class="muted">Training use only. Always follow your local protocols and device instructions.</p>
-</div>
-<div class="modal-actions">
-<button class="btn btn-primary" id="modalOkBtn">Got it</button>
-</div>
-</div>
-</div>
+<section class="learn-panel active" id="howPanel">
+<div class="learn-hero"><img src="bp_dial.png" alt="Large manual blood pressure gauge dial"><div><h2>Manual auscultated blood pressure</h2><ol class="learn-list"><li>Position the patient with the arm supported near heart level.</li><li>Select the correct cuff and wrap it snugly over bare skin.</li><li>Locate the brachial artery and place the stethoscope bell or diaphragm over it.</li><li>Inflate above the expected systolic pressure.</li><li>Deflate slowly and listen: the first repeated sound is systolic; disappearance of sounds is diastolic.</li><li>Record systolic/diastolic in mmHg, the arm, position, and method when relevant.</li></ol></div></div>
+</section>
+<section class="learn-panel" id="cuffPanel"><h2>Cuff sizing and positioning</h2><div class="cuff-grid"><div class="mini-card"><strong>Bladder width</strong><p>About 40% of the arm circumference.</p></div><div class="mini-card"><strong>Bladder length</strong><p>About 80% of the arm circumference.</p></div><div class="mini-card"><strong>Too small</strong><p>Can produce a falsely high reading.</p></div><div class="mini-card"><strong>Too large</strong><p>Can produce a reading that is lower than the true pressure.</p></div></div><p class="learning-point"><strong>Technique check:</strong> The artery marker should align with the brachial artery, the lower cuff edge should sit above the antecubital space, and clothing should not be trapped beneath the cuff.</p></section>
+<section class="learn-panel" id="demoPanel"><h2>Guided inflation and deflation walkthrough</h2><div class="demo-stage"><div class="demo-gauge"><img src="bp_dial.png" alt="Animated blood pressure gauge"><div class="demo-needle" id="demoNeedle"></div></div><div class="demo-caption" id="demoCaption">Press Start Walkthrough.</div><div class="demo-controls"><button class="btn btn-primary" id="startDemoBtn" type="button">Start Walkthrough</button><button class="btn btn-ghost" id="nextDemoBtn" type="button" disabled>Next Step</button></div></div></section>
+<section class="learn-panel" id="palpPanel"><h2>How to obtain a palpated systolic pressure</h2><div class="palp-step"><span class="step-num">1</span><div>Palpate the radial pulse while inflating the cuff.</div></div><div class="palp-step"><span class="step-num">2</span><div>Note the pressure where the radial pulse disappears.</div></div><div class="palp-step"><span class="step-num">3</span><div>Deflate completely and wait briefly before reinflating.</div></div><div class="palp-step"><span class="step-num">4</span><div>For an auscultated reading, inflate approximately 20–30 mmHg above the palpated systolic value, then deflate slowly.</div></div><p class="learning-point">A palpated pressure gives only the systolic value. Document it clearly, such as <strong>“BP 104/P”</strong> or according to local documentation practice.</p></section>
+<section class="learn-panel" id="normalPanel"><h2>Interpreting an adult reading</h2><div class="legend"><div><strong>Normal:</strong> systolic below 120 and diastolic below 80</div><div><strong>Elevated:</strong> systolic 120–129 and diastolic below 80</div><div><strong>Stage 1 range:</strong> systolic 130–139 or diastolic 80–89</div><div><strong>Stage 2 range:</strong> systolic at least 140 or diastolic at least 90</div></div><p class="learning-point">EMS interpretation depends on the entire patient: symptoms, trends, perfusion, medications, age, position, recent exertion, and the accuracy of the measurement. One number alone does not make a diagnosis.</p></section>
+<div class="modal-actions"><button class="btn btn-primary" id="modalOkBtn" type="button">Practice Now</button></div>
+</div></div>
 <script>
   (() => {
     'use strict';
@@ -267,6 +282,10 @@
     const diaInput = $('diaInput');
     const submitBtn = $('submitBtn');
     const resultEl = $('result');
+    const postReview = $('postReview');
+    const readingSummary = $('readingSummary');
+    const classificationChoices = $('classificationChoices');
+    const postLearningPoint = $('postLearningPoint');
 
     const MAX_PRESSURE = 280;
     const TOLERANCE = 4;
@@ -297,6 +316,34 @@
     modalOkBtn.addEventListener('click', closeModal);
     infoModal.addEventListener('click', (e) => { if (e.target === infoModal) closeModal(); });
     addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    document.querySelectorAll('.learn-tab').forEach((tab) => tab.addEventListener('click', () => {
+      document.querySelectorAll('.learn-tab').forEach((item) => item.classList.toggle('active', item === tab));
+      document.querySelectorAll('.learn-panel').forEach((panel) => panel.classList.toggle('active', panel.id === tab.dataset.panel));
+    }));
+    const demoNeedle = $('demoNeedle');
+    const demoCaption = $('demoCaption');
+    const startDemoBtn = $('startDemoBtn');
+    const nextDemoBtn = $('nextDemoBtn');
+    const demoSteps = [
+      {pressure:0,text:'Start with the cuff fully deflated and the arm supported.'},
+      {pressure:150,text:'Inflate above the expected systolic pressure or 20–30 mmHg above the palpated systolic.'},
+      {pressure:122,text:'Deflate slowly. The first repeated tapping sound marks the systolic pressure.'},
+      {pressure:82,text:'Continue a controlled deflation while listening to the sounds change.'},
+      {pressure:76,text:'The point where the sounds disappear marks the diastolic pressure.'},
+      {pressure:0,text:'Deflate completely, remove the cuff, and document the result and method.'}
+    ];
+    let demoIndex = -1;
+    const demoAngle = (pressure) => (pressure / 280) * 360 - 180;
+    function showDemoStep(){
+      const step = demoSteps[demoIndex];
+      demoNeedle.style.transform = `rotate(${demoAngle(step.pressure)}deg)`;
+      demoCaption.textContent = step.text;
+      nextDemoBtn.disabled = demoIndex >= demoSteps.length - 1;
+    }
+    startDemoBtn.addEventListener('click', () => { demoIndex = 0; showDemoStep(); nextDemoBtn.disabled = false; startDemoBtn.textContent='Restart Walkthrough'; });
+    nextDemoBtn.addEventListener('click', () => { if(demoIndex < demoSteps.length - 1){ demoIndex += 1; showDemoStep(); } });
+
 
     function generatePatient(){
       const roll = Math.random();
@@ -414,6 +461,7 @@
       diaInput.value='';
       resultEl.textContent='New hidden patient ready. Inflate the cuff to begin.';
       resultEl.className='result';
+      postReview.classList.remove('show');
     }
 
     function tick(){
@@ -437,6 +485,38 @@
     function startLoop(){ if (deflationTimer===null) deflationTimer=setInterval(tick,TICK_MS); }
     function stopLoop(){ if (deflationTimer!==null){ clearInterval(deflationTimer); deflationTimer=null; } }
 
+
+    function bpCategory(sys,dia){
+      if(sys < 120 && dia < 80) return 'Normal';
+      if(sys >= 120 && sys <= 129 && dia < 80) return 'Elevated';
+      if((sys >= 130 && sys <= 139) || (dia >= 80 && dia <= 89)) return 'Stage 1 range';
+      return 'Stage 2 range';
+    }
+    function prepareReview(){
+      postReview.classList.add('show');
+      readingSummary.innerHTML = `You obtained <strong>${systolic}/${diastolic} mmHg</strong>. Now connect the number to technique and interpretation.`;
+      const correct = bpCategory(systolic,diastolic);
+      classificationChoices.dataset.answer = correct;
+      classificationChoices.innerHTML = ['Normal','Elevated','Stage 1 range','Stage 2 range'].map(label => `<button type="button">${label}</button>`).join('');
+      classificationChoices.querySelectorAll('button').forEach(bindChoice);
+      postReview.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+    function bindChoice(button){
+      button.addEventListener('click',()=>{
+        const row=button.parentElement;
+        const answer=row.dataset.answer;
+        const normalized = button.textContent.startsWith('Repeat') ? 'Repeat' : button.textContent.trim();
+        const correct = normalized === answer;
+        row.querySelectorAll('button').forEach(btn=>btn.disabled=true);
+        button.classList.add(correct?'correct':'incorrect');
+        if(!correct){
+          [...row.querySelectorAll('button')].find(btn => (btn.textContent.startsWith('Repeat')?'Repeat':btn.textContent.trim())===answer)?.classList.add('correct');
+        }
+        postLearningPoint.textContent = correct ? 'Correct. Good technique and interpretation reinforce one another.' : 'Review the highlighted answer and repeat the skill until the sequence is automatic.';
+      });
+    }
+    document.querySelectorAll('.choice-row button').forEach(bindChoice);
+
     function submit(){
       if (!measurementComplete){
         resultEl.textContent='Complete a full cuff measurement before submitting.';
@@ -454,6 +534,7 @@
       if (correct){
         resultEl.textContent=`Correct — ${systolic}/${diastolic} mmHg. Select Reset for a new patient.`;
         resultEl.className='result ok';
+        prepareReview();
       } else {
         resultEl.textContent='Not quite. Repeat the measurement and listen for the first and last sound. The answer remains hidden.';
         resultEl.className='result bad';
@@ -483,5 +564,5 @@
     startLoop();
   })();
 </script>
-<script defer src="/vitals/app-vitals-learning.js"></script></body>
+</body>
 </html>

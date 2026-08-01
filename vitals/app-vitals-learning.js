@@ -182,8 +182,17 @@
     if(params.get('mode')==='scenario'||document.body.dataset.scenarioOnly==='true') return;
     const t=topics[key()]; if(!t||document.querySelector('[data-app-vitals-learning]')) return;
     const holder=document.createElement('div');holder.className='app-vitals-learning-shell';holder.innerHTML=panel(t);
-    const anchor=document.querySelector('.topbar,header');
-    if(anchor&&anchor.parentNode) anchor.insertAdjacentElement('afterend',holder); else document.body.prepend(holder);
-    init(holder.querySelector('.app-vitals-learning'));
+    const simulator=document.querySelector('main,.app,.container');
+    if(simulator&&simulator.parentNode) simulator.insertAdjacentElement('afterend',holder); else document.body.append(holder);
+    const learningRoot=holder.querySelector('.app-vitals-learning');
+    init(learningRoot);
+
+    const launcher=document.createElement('section');
+    launcher.className='avl-pre-sim-launcher';
+    launcher.setAttribute('aria-label',`Learn how to assess ${t.title}`);
+    launcher.innerHTML=`<div><span class="avl-label">New to this skill?</span><h2>${t.icon} Learn how to assess ${esc(t.title)}</h2><p>Review equipment, positioning, the complete skill sequence, normal findings, and common errors before starting the simulator.</p></div><button type="button" class="avl-pre-sim-button">Learn How</button>`;
+    const launchAnchor=simulator||document.querySelector('.topbar,header');
+    if(launchAnchor&&launchAnchor.parentNode) launchAnchor.insertAdjacentElement('beforebegin',launcher); else document.body.prepend(launcher);
+    launcher.querySelector('.avl-pre-sim-button').addEventListener('click',()=>learningRoot.querySelector('.avl-learn-how').click());
   });
 })();
