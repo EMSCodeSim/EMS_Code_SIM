@@ -1,0 +1,32 @@
+EMSCodeSim Scenario Deferred-Feedback Update 1.3.1
+
+Core scenario vital changes:
+- vitals/scenario-vital-sims.js
+- vitals/bp-scenario.html
+- vitals/scenario-vital-capture.js
+- vitals/scenario-debrief.js
+- vitals/scenario-debrief.css
+- all vitals/*-scenario.html pages (instruction and cache version updates)
+
+Narrative workflow changes:
+- vitals/airway-assessment.html / .js
+- vitals/breathing-assessment.html / .js
+- vitals/perfusion-assessment.html / .js
+- vitals/abdominal-assessment.html / .js
+- vitals/chest-assessment.html / .js
+- vitals/motor-sensory-assessment.html / .js
+- vitals/trauma-assessment.html / .js
+- vitals/pediatric-assessment-triangle.html / .js
+- vitals/pain-opqrst.html / .js
+- vitals/sample-history.html / .js
+- vitals/clinical-impression.html / .js
+- vitals/treatment-reassessment.html / .js
+- vitals/assessment-sim.js
+
+Tests and metadata:
+- tools/verify-scenario-contracts.js
+- tools/test-scenario-persistence.js
+- tests/interaction/scenario-flow.spec.js
+- tests/interaction/blood-pressure.spec.js
+- tests/interaction/scenario-assessment-links.spec.js
+- package.json
