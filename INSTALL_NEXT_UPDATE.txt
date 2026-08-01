@@ -1,0 +1,17 @@
+EMS ENCYCLOPEDIA LEVEL + PRINT UPDATE
+
+Upload these files while preserving folders:
+- ems-encyclopedia.html
+- ems-encyclopedia.js
+- ems-encyclopedia-print.html
+- ems-encyclopedia-print.js
+- data/ems-encyclopedia.json
+- styles/ems-encyclopedia.css
+- styles/ems-encyclopedia-print.css
+
+New features:
+- EMT / Paramedic / All provider-level filter
+- 31 new paramedic-focused reference topics
+- Field View and Classroom View
+- Printable personalized quick-reference sheets from saved topics
+- Updated total: 254 encyclopedia entries

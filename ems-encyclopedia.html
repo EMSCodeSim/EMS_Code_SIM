@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>EMS Encyclopedia | Search 220+ EMS Terms</title>
-  <meta name="description" content="Search more than 220 EMS terms covering assessment, airway, vital signs, medications, trauma, medical emergencies, pediatrics, obstetrics, equipment, operations, and documentation.">
+  <meta name="description" content="Search more than 250 EMS terms covering assessment, airway, vital signs, medications, trauma, medical emergencies, pediatrics, obstetrics, equipment, operations, and documentation.">
   <link rel="canonical" href="https://emscodesim.com/ems-encyclopedia.html">
   <link rel="stylesheet" href="/styles/responsive.css">
   <link rel="stylesheet" href="/styles/ems-encyclopedia.css">
@@ -24,7 +24,7 @@
     <div>
       <span class="eyebrow">FREE EMS KNOWLEDGE HUB</span>
       <h1>EMS Encyclopedia</h1>
-      <p>Search EMS concepts in plain language, review the field takeaway, and jump directly into related EMSCodeSim learning centers and simulators.</p>
+      <p>Search EMT and paramedic concepts in plain language, switch between field and classroom depth, and jump directly into related learning centers and simulators.</p>
       <div class="hero-search">
         <label class="sr-only" for="encyclopediaSearch">Search the EMS Encyclopedia</label>
         <input id="encyclopediaSearch" type="search" autocomplete="off" placeholder="Search stroke, CPAP, MIST, tourniquet…">
@@ -48,9 +48,12 @@
       <div id="categoryGrid" class="category-grid"></div>
     </div>
     <div class="view-tools">
+      <label for="levelFilter">Provider level <select id="levelFilter"><option value="all">All levels</option><option value="EMT">EMT</option><option value="Paramedic">Paramedic</option></select></label>
+      <div class="depth-toggle" aria-label="Reading depth"><button class="active" type="button" data-view="field">Field view</button><button type="button" data-view="classroom">Classroom view</button></div>
       <label><input id="favoritesOnly" type="checkbox"> Saved topics only</label>
       <label><input id="recentOnly" type="checkbox"> Recently viewed</label>
       <button id="randomTopic" type="button">Surprise me</button>
+      <a class="print-saved" href="/ems-encyclopedia-print.html">Print saved topics</a>
     </div>
   </section>
 
