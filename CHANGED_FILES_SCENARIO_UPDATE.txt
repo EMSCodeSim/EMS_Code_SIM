@@ -1,0 +1,79 @@
+EMSCodeSim Scenario Connected-Care Update 1.3.0
+
+Primary changes:
+- Reliable mirrored vital/assessment saving and storage recovery
+- Direct-entry scenario record creation
+- Full PERL plus gaze/tracking pupil assessment without size entry
+- Normal-versus-patient skin comparison
+- Complete assessment tool registry
+- Airway/breathing/perfusion cross-links with return navigation
+- Finding-triggered treatment links
+- Treatment range from monitoring through advanced airway options
+- Persistence and scenario contract tests included in every build
+- New Playwright interaction coverage included
+
+Changed or added files:
+- package.json
+- visual-patient.html
+- patient-record.html
+- SCENARIO_CONNECTED_CARE_UPDATE.md
+- styles/scenario-debrief.html
+- styles/assessment-workspace.html
+- vitals/pulse-scenario.html
+- vitals/pulse.html
+- vitals/respiratory-rate-scenario.html
+- vitals/pain-opqrst.html
+- vitals/bgl-scenario.html
+- vitals/abdominal-assessment.html
+- vitals/avpu.html
+- vitals/scenario-session.js
+- vitals/aao.html
+- vitals/scenario-progress-sync.js
+- vitals/scenario-runtime.js
+- vitals/assessment-workspace.js
+- vitals/bgl.html
+- vitals/scenario-tool-registry.js
+- vitals/patient-record-page.js
+- vitals/temperature-scenario.html
+- vitals/bp-scenario.html
+- vitals/respiratory-rate.html
+- vitals/pupil.html
+- vitals/chest-assessment.html
+- vitals/treatment-reassessment.html
+- vitals/temperature.html
+- vitals/scenario-vital-sims.css
+- vitals/breath-sounds-scenario.html
+- vitals/pupil-scenario.html
+- vitals/airway-assessment.html
+- vitals/perfusion-assessment.html
+- vitals/pulse-ox-scenario.html
+- vitals/pediatric-assessment-triangle.html
+- vitals/sample-history.html
+- vitals/visual-patient.html
+- vitals/motor-sensory-assessment.html
+- vitals/patient-care-integration.js
+- vitals/clinical-impression.html
+- vitals/assessment-crosslinks.js
+- vitals/trauma-assessment.html
+- vitals/treatment-reassessment.js
+- vitals/scenario-vital-sims.js
+- vitals/full-vitals-set.html
+- vitals/patient-record-integration.js
+- vitals/pcr-handoff.html
+- vitals/assessment-workspace.html
+- vitals/visual-patient.js
+- vitals/breath-sound-simulator.html
+- vitals/patient-record.html
+- vitals/pulse-ox.html
+- vitals/visual-patient.css
+- vitals/breathing-assessment.html
+- vitals/skin.html
+- vitals/scenario-launcher.html
+- vitals/skin-scenario.html
+- vitals/treatment-reassessment.css
+- vitals/avpu-scenario.html
+- vitals/assessment-crosslinks.css
+- tools/test-scenario-persistence.js
+- tools/verify-scenario-contracts.js
+- tests/interaction/scenario-assessment-links.spec.js
+- CHANGED_FILES_SCENARIO_UPDATE.txt
