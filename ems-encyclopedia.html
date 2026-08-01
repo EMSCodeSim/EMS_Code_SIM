@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EMS Encyclopedia | Search 220+ EMS Terms</title>
+  <meta name="description" content="Search more than 220 EMS terms covering assessment, airway, vital signs, medications, trauma, medical emergencies, pediatrics, obstetrics, equipment, operations, and documentation.">
+  <link rel="canonical" href="https://emscodesim.com/ems-encyclopedia.html">
+  <link rel="stylesheet" href="/styles/responsive.css">
+  <link rel="stylesheet" href="/styles/ems-encyclopedia.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="/">EMSCodeSim</a>
+  <nav aria-label="Main navigation">
+    <a href="/emt-prep.html">EMT Prep</a>
+    <a href="/ems-training-tools.html">Training Tools</a>
+    <a href="/offline-ems-reference.html">Offline Pack</a>
+    <a href="/search.html">Search</a>
+  </nav>
+</header>
+<main>
+  <section class="hero">
+    <div>
+      <span class="eyebrow">FREE EMS KNOWLEDGE HUB</span>
+      <h1>EMS Encyclopedia</h1>
+      <p>Search EMS concepts in plain language, review the field takeaway, and jump directly into related EMSCodeSim learning centers and simulators.</p>
+      <div class="hero-search">
+        <label class="sr-only" for="encyclopediaSearch">Search the EMS Encyclopedia</label>
+        <input id="encyclopediaSearch" type="search" autocomplete="off" placeholder="Search stroke, CPAP, MIST, tourniquet…">
+        <button id="clearSearch" type="button" hidden>Clear</button>
+      </div>
+      <div class="hero-meta"><strong id="entryTotal">Loading…</strong><span>Reviewed July 2026</span></div>
+    </div>
+    <aside class="hero-card">
+      <strong>Designed for fast field review</strong>
+      <span>Definition</span><span>Clinical meaning</span><span>What to remember</span><span>Related practice</span>
+    </aside>
+  </section>
+
+  <section class="safety" aria-label="Educational disclaimer">
+    <strong>Education, not medical direction.</strong> Scope, medication use, treatment thresholds, and destination decisions vary. Follow your current agency protocols, course materials, medical director, and local law.
+  </section>
+
+  <section class="quick-tools" aria-label="Encyclopedia controls">
+    <div class="category-wrap">
+      <h2>Browse by subject</h2>
+      <div id="categoryGrid" class="category-grid"></div>
+    </div>
+    <div class="view-tools">
+      <label><input id="favoritesOnly" type="checkbox"> Saved topics only</label>
+      <label><input id="recentOnly" type="checkbox"> Recently viewed</label>
+      <button id="randomTopic" type="button">Surprise me</button>
+    </div>
+  </section>
+
+  <section class="alphabet" aria-label="Browse alphabetically">
+    <span>Jump to:</span><div id="alphabetButtons"></div>
+  </section>
+
+  <section class="results-head">
+    <div><span class="eyebrow dark">REFERENCE RESULTS</span><h2 id="resultsTitle">All topics</h2></div>
+    <span id="resultCount" aria-live="polite"></span>
+  </section>
+
+  <div id="encyclopediaList" class="encyclopedia-list" aria-live="polite"></div>
+
+  <section class="empty-state" id="emptyState" hidden>
+    <h2>No matching topic</h2>
+    <p>Try a broader word, a symptom, an abbreviation, or another category.</p>
+    <button id="showAll" type="button">Show all topics</button>
+  </section>
+
+  <section class="study-callout">
+    <div><span class="eyebrow dark">KEEP LEARNING</span><h2>Turn reference knowledge into patient assessment skill</h2><p>Use the learning centers for How → Why → Practice, then apply the finding inside a guided patient scenario.</p></div>
+    <div class="study-actions"><a href="/emt-prep.html">Open EMT Prep</a><a href="/vitals/scenario-launcher.html">Practice patient assessment</a></div>
+  </section>
+
+  <section class="sources">
+    <h2>Content boundaries</h2>
+    <p>The encyclopedia is organized around the National EMS Education Standards and common EMT educational terminology. Resuscitation references should be checked against the current American Heart Association guidelines and local protocol.</p>
+    <p><a href="https://www.ems.gov/education.html" target="_blank" rel="noopener">National EMS Education Standards</a> · <a href="https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines" target="_blank" rel="noopener">AHA CPR &amp; ECC Guidelines</a> · <a href="https://www.nremt.org/Pages/Examinations/EMR-and-EMT-Certification-Examinations" target="_blank" rel="noopener">National Registry EMT Examination</a></p>
+  </section>
+</main>
+<footer><a href="/privacy.html">Privacy</a><span>Educational use only. No patient information.</span></footer>
+<script src="/ems-encyclopedia.js" defer></script>
+</body>
+</html>

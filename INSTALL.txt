@@ -1,0 +1,19 @@
+EMS ENCYCLOPEDIA UPDATE
+
+Upload every file while preserving the folder structure.
+
+New files:
+- ems-encyclopedia.html
+- ems-encyclopedia.js
+- styles/ems-encyclopedia.css
+- data/ems-encyclopedia.json
+
+Updated files:
+- ems-training-tools.html
+- search-index.js
+- sitemap.xml
+
+Open after upload:
+/ems-encyclopedia.html
+
+The encyclopedia includes 223 searchable EMS topics across 12 categories.
