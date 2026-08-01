@@ -355,7 +355,7 @@
 
     <section class="error-card" id="scenarioError" hidden>
       <h2>No active patient scenario</h2>
-      <p>This page needs a valid patient scenario. Return to the scenario and open Blood Pressure again.</p>
+      <p>Open this blood pressure check from inside a patient scenario.</p>
       <button class="button primary" id="launcherBtn" type="button">Return to scenarios</button>
     </section>
 
@@ -406,26 +406,8 @@
 
       const patientApi = window.EMSCodeSimPatientRecord;
       const runtime = window.EMSCodeSimScenarioRuntime;
+      const record = patientApi?.active?.() || null;
       const params = new URLSearchParams(window.location.search);
-      const requestedCase = params.get('case');
-
-      const CASE_META = {
-        asthma: { title: 'Respiratory Distress', patient: '24-year-old adult', dispatch: 'Worsening shortness of breath and wheezing.', scene: 'Apartment; rescue inhaler nearby' },
-        stroke: { title: 'Possible Acute Stroke', patient: '68-year-old adult', dispatch: 'Sudden speech difficulty and right-sided weakness.', scene: 'Private residence; family present' },
-        hypoglycemia: { title: 'Altered Mental Status', patient: '57-year-old adult', dispatch: 'Confused, sweaty, and behaving abnormally.', scene: 'Workplace break room' },
-        trauma: { title: 'Blunt Trauma', patient: '36-year-old adult', dispatch: 'Two-vehicle collision with chest and abdominal pain.', scene: 'Roadway collision; moderate vehicle damage' },
-        pediatric: { title: 'Sick Pediatric Patient', patient: '3-year-old child', dispatch: 'Fever, poor interaction, and increased work of breathing.', scene: 'Home; caregiver present' }
-      };
-
-      function resolveRecord() {
-        let current = patientApi?.active?.() || null;
-        if (requestedCase && CASE_META[requestedCase] && current?.scenarioId !== requestedCase) {
-          current = patientApi?.create?.({ id: requestedCase, ...CASE_META[requestedCase] }) || null;
-        }
-        return current;
-      }
-
-      const record = resolveRecord();
 
       const elements = {
         backBtn: document.getElementById('backBtn'),
@@ -466,14 +448,12 @@
       elements.launcherBtn.addEventListener('click', () => { window.location.href = '/vitals/scenario-launcher.html'; });
       elements.returnBtn.addEventListener('click', () => { window.location.href = returnUrl; });
 
-      const scenarioId = record?.scenarioId || requestedCase;
-      const profileVitals = runtime?.PROFILES?.[scenarioId]?.vitals || null;
-      const activeScenario = Boolean(record && scenarioId && profileVitals);
-      let systolic = Number(profileVitals?.systolic ?? runtime?.vital?.('systolic', Number.NaN));
-      let diastolic = Number(profileVitals?.diastolic ?? runtime?.vital?.('diastolic', Number.NaN));
+      const activeScenario = Boolean(runtime?.active?.() && record);
+      let systolic = Number(runtime?.vital?.('systolic', Number.NaN));
+      let diastolic = Number(runtime?.vital?.('diastolic', Number.NaN));
 
       if ((!Number.isFinite(systolic) || !Number.isFinite(diastolic)) && activeScenario) {
-        const parts = String(profileVitals?.blood_pressure ?? runtime?.vital?.('blood_pressure', '') ?? '').split('/');
+        const parts = String(runtime?.vital?.('blood_pressure', '') || '').split('/');
         systolic = Number(parts[0]);
         diastolic = Number(parts[1]);
       }
@@ -493,8 +473,8 @@
       const TOLERANCE = 4;
       const DEFLATION_STEP = 0.24;
       const TICK_MS = 90;
-      const REQUIRED_OVERINFLATION = 10;
-      const REQUIRED_BELOW_DIASTOLIC = 4;
+      const REQUIRED_OVERINFLATION = 18;
+      const REQUIRED_BELOW_DIASTOLIC = 8;
 
       let currentPressure = 0;
       let peakPressure = 0;
@@ -659,7 +639,7 @@
           releasing = false;
           stopHeartbeat();
           elements.releaseBtn.textContent = 'Release';
-          elements.measurementState.textContent = heardAnyBeat ? 'Reading incomplete. Reset and repeat the full release.' : 'No sounds heard. Reset and inflate higher before releasing.';
+          elements.measurementState.textContent = 'No complete reading obtained. Reset and try again.';
         }
       }
 
