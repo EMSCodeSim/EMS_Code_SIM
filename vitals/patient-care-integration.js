@@ -38,8 +38,9 @@
   function saveOrQueue(type, payload, writer) {
     const entry = { type, ...payload, recordedAt: new Date().toISOString(), source: location.pathname };
     const api = window.EMSCodeSimPatientRecord;
-    if (api?.active?.()) {
-      writer(api, entry);
+    const session = window.EMSCodeSimScenarioSession;
+    if (session?.sync?.() || api?.active?.()) {
+      writer(api, entry, session);
       notice(`${payload.label || 'Patient-care step'} saved to the active patient record.`, true);
       window.dispatchEvent(new CustomEvent('emscodesim:care-step-saved', { detail: entry }));
       setTimeout(() => window.EMSCodeSimScenarioFlow?.show?.(), 0);
@@ -66,20 +67,25 @@
   }
 
   function saveTreatmentReassessment(payload) {
-    return saveOrQueue('treatment-reassessment', payload, (api, entry) => {
-      api.addTreatment({
+    return saveOrQueue('treatment-reassessment', payload, (api, entry, session) => {
+      const treatment = {
+        name: entry.treatmentLabel || entry.treatment || 'Treatment',
+        description: entry.treatmentLabel || entry.treatment || '',
         treatment: entry.treatment || '',
+        context: entry.context || '',
         expectedResponse: entry.expectedResponse || '',
         scenario: entry.scenario || '',
         score: entry.score || 0,
         maxScore: entry.maxScore || 5
-      });
-      api.addReassessment({
+      };
+      if (session?.addTreatment) session.addTreatment(treatment); else api.addTreatment(treatment);
+      const reassessment = {
         response: entry.response || '',
         nextAction: entry.nextAction || '',
         findings: entry.repeatFindings || [],
         documentation: entry.documentation || ''
-      });
+      };
+      if (session?.addReassessment) session.addReassessment(reassessment); else api.addReassessment(reassessment);
     });
   }
 

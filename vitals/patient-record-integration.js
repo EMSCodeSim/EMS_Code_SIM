@@ -58,9 +58,11 @@
     };
 
     const api = window.EMSCodeSimPatientRecord;
-    const record = api?.active?.();
+    const session = window.EMSCodeSimScenarioSession;
+    const record = session?.sync?.() || api?.active?.();
     if (record) {
-      api.setFinding(entry.assessment, entry.finding, entry);
+      if (session?.saveFinding) session.saveFinding(entry.assessment, entry.finding, entry);
+      else api.setFinding(entry.assessment, entry.finding, entry);
       showNotice(`Saved ${entry.label} to the active patient record.`, true);
       window.dispatchEvent(new CustomEvent('emscodesim:assessment-saved', { detail: entry }));
       setTimeout(() => window.EMSCodeSimScenarioFlow?.show?.(), 0);

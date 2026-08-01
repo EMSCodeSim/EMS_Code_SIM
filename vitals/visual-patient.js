@@ -1,30 +1,313 @@
-(()=>{'use strict';
-const CASES={
- asthma:{title:'Respiratory Distress',visible:'Sitting upright, anxious, speaking in short sentences',image:'/vitals/assets/scenario-patient-adult-v3.png',assess:[['General appearance','Observe posture, speech, distress, and interaction.','Appears anxious; sitting upright; speaking in short sentences'],['Work of breathing','Watch the chest and neck for effort.','Accessory muscle use with increased work of breathing'],['Breath sounds','Listen to all lung fields.','Expiratory wheezes bilaterally','/vitals/breath-sounds-scenario.html'],['Skin','Inspect color and moisture; assess temperature.','Warm, pink, mildly diaphoretic','/vitals/skin-scenario.html']],treat:[['Position of comfort','Allow the patient to remain upright.','Did the patient tolerate the position?'],['Oxygen','Choose an oxygen device appropriate to the patient.','Which device did you select?'],['Assist inhaler / albuterol','Confirm indications and medication rights.','Did you verify the medication, dose, and expiration?']]},
- stroke:{title:'Possible Acute Stroke',visible:'Awake with abnormal speech and right-sided weakness',image:'/vitals/assets/scenario-patient-adult-v3.png',assess:[['Facial movement','Ask the patient to smile.','Facial asymmetry is present'],['Arm drift','Ask the patient to hold both arms out.','Right arm drift and weakness'],['Speech','Ask the patient to repeat a simple sentence.','Speech is slurred and difficult to understand'],['Pupils','Inspect and test both pupils.','3 mm, equal and reactive','/vitals/pupil-scenario.html']],treat:[['Position and airway protection','Position safely and prepare for vomiting.','Is the airway currently protected?'],['Rapid transport','Select the most appropriate destination and priority.','Was last known well established?']]},
- hypoglycemia:{title:'Altered Mental Status',visible:'Confused, sweaty, and slow to follow commands',image:'/vitals/assets/scenario-patient-adult-v3.png',assess:[['Mental status','Assess AVPU and orientation.','Responds to verbal stimuli; confused','/vitals/avpu-scenario.html'],['Skin','Inspect and feel the skin.','Pale, cool, and diaphoretic','/vitals/skin-scenario.html'],['Stroke screen','Check for focal neurologic deficits.','No focal unilateral deficit identified']],treat:[['Oral glucose','Confirm the patient can swallow and follow commands.','Can this patient safely swallow?'],['Airway support','Prepare suction and airway equipment.','What would make oral glucose unsafe?']]},
- trauma:{title:'Blunt Trauma',visible:'Pale patient with guarded breathing after a collision',image:'/vitals/assets/scenario-patient-adult-v3.png',assess:[['General impression','Look for immediate threats and distress.','Pale, anxious, and in significant pain'],['Chest','Inspect and palpate the chest.','Left chest tenderness with unequal movement'],['Abdomen','Inspect and palpate all quadrants.','Diffuse tenderness with guarding'],['Skin / perfusion','Assess skin and peripheral perfusion.','Pale, cool, clammy; weak radial pulse']],treat:[['Spinal motion restriction','Use only when indicated by the assessment.','What finding supports this decision?'],['Oxygen / ventilation support','Treat hypoxia or inadequate ventilation.','Is breathing adequate or inadequate?'],['Hemorrhage and shock care','Control bleeding and prevent heat loss.','What transport priority is appropriate?']]},
- pediatric:{title:'Sick Pediatric Patient',visible:'Poor interaction with increased work of breathing',image:'/vitals/assets/scenario-patient-pediatric-v3.png',assess:[['Pediatric first look','Assess appearance, breathing, and circulation to skin.','Poor interaction; increased effort; flushed skin'],['Breathing effort','Observe retractions, position, and sounds.','Tachypnea with visible retractions'],['Skin / perfusion','Inspect color and assess capillary refill.','Flushed, hot, mildly mottled']],treat:[['Position and oxygen','Keep the child with caregiver when possible.','Which oxygen method will the child tolerate?'],['Temperature management','Avoid aggressive cooling and reassess.','What is the safest supportive action?']]}
-};
-const VITALS=[['Blood pressure','/vitals/bp-scenario.html','blood_pressure',24],['Pulse','/vitals/pulse-scenario.html','pulse',15],['Respirations','/vitals/respiratory-rate-scenario.html','respirations',20],['Breath sounds','/vitals/breath-sounds-scenario.html','breath_sounds',22],['Blood glucose','/vitals/bgl-scenario.html','blood_glucose',28],['SpO₂','/vitals/pulse-ox-scenario.html','spo2',12],['Temperature','/vitals/temperature-scenario.html','temperature',18],['Pupils','/vitals/pupil-scenario.html','pupils',12],['Skin signs','/vitals/skin-scenario.html','skin',10],['Mental status','/vitals/avpu-scenario.html','mental_status',8]];
-const TITLES={vitalsPanel:'Vitals',assessmentPanel:'Assessment',treatmentPanel:'Treatment',findingsPanel:'Findings'};
-const params=new URLSearchParams(location.search);const id=params.get('case')||window.EMSCodeSimPatientRecord?.active?.()?.scenarioId||'asthma';const scenario=CASES[id]||CASES.asthma;let seconds=0;let activeFocus=null;
-const $=x=>document.getElementById(x);function record(){return window.EMSCodeSimPatientRecord?.active?.()}function profile(){return window.EMSCodeSimScenarioRuntime?.profile?.()}function toast(msg){$('toast').textContent=msg;$('toast').hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>$('toast').hidden=true,2500)}
-function setPatientImage(img,path){if(!img)return;img.onerror=()=>{img.onerror=null;img.src='/vitals/assets/scenario-patient-adult-v3.png';img.classList.add('image-fallback')};img.src=path;img.hidden=false}
-function ensureRecord(){if(record()?.scenarioId===id)return;window.EMSCodeSimPatientRecord?.create?.({id,title:scenario.title,patient:id==='pediatric'?'3-year-old child':'Adult patient',dispatch:scenario.title,scene:'Active scene',goal:'Assess, treat, and reassess'})}
-function labelFor(k){return window.EMSCodeSimPatientRecord?.labelFor?.(k)||k.replace(/^treatment_\d+$/,'Treatment').replace(/_/g,' ')}
-function valueFor(k){return window.EMSCodeSimScenarioRuntime?.formatVital?.(k)||'Obtained'}
-function addFinding(k,v,source='assessment'){const normality=window.EMSCodeSimScenarioRuntime?.classifyFinding?.(k,v)||'';window.EMSCodeSimPatientRecord?.setFinding?.(k,v,{source,normality,status:normality==='normal'?'normal':normality==='not-normal'?'abnormal':''});renderFindings();updateCounts();toast(`${labelFor(k)} recorded`)}
-function existing(k){return Boolean(window.EMSCodeSimPatientRecord?.hasFinding?.(k))}
-function buildVitals(){const box=$('vitalTools');box.innerHTML='';VITALS.forEach(([name,url,key,delay])=>{const d=document.createElement('article');d.className=`tool${existing(key)?' done':''}`;d.innerHTML=`<div class="tool-head"><div><h3>${name}</h3><p>Perform the skill or delegate it without seeing the answer.</p></div><span class="status-chip ${existing(key)?'done':''}">${existing(key)?'Obtained':'Not taken'}</span></div><div class="tool-actions"><a href="${url}?mode=scenario&return=${encodeURIComponent(`/vitals/visual-patient.html?case=${id}`)}">Perform</a><button class="partner-action" type="button" ${existing(key)?'disabled':''}>${existing(key)?'Complete':'Assign to partner'}</button></div><div class="assignment-progress" hidden></div>`;const btn=d.querySelector('button'),status=d.querySelector('.assignment-progress');btn.addEventListener('click',()=>{btn.disabled=true;let left=delay;status.hidden=false;status.textContent=`Partner gathering ${name.toLowerCase()}… ${left}s`;const timer=setInterval(()=>{left--;status.textContent=`Partner gathering ${name.toLowerCase()}… ${left}s`;if(left<=0){clearInterval(timer);addFinding(key,valueFor(key),'partner');status.textContent=`Partner reports: ${valueFor(key)}`;btn.textContent='Complete';d.classList.add('done');d.querySelector('.status-chip').textContent='Obtained';d.querySelector('.status-chip').classList.add('done')}},1000)});box.appendChild(d)})}
-function openFocus(title,help,finding,key){activeFocus={title,help,finding,key};$('focusTitle').textContent=title;$('focusInstruction').textContent=help;setPatientImage($('focusImage'),scenario.image);$('recordFocus').disabled=true;$('recordFocus').textContent='Observe patient…';$('focusTimer').innerHTML='';void $('focusTimer').offsetWidth;$('assessmentFocus').hidden=false;setTimeout(()=>{if(!activeFocus)return;$('recordFocus').disabled=false;$('recordFocus').textContent='Record observed finding'},4000)}
-function buildAssessments(){const box=$('assessmentTools');box.innerHTML='';scenario.assess.forEach(([title,help,finding,url])=>{const key=title.toLowerCase().replace(/\W+/g,'_');const d=document.createElement('article');d.className='assessment-card';d.innerHTML=`<span class="visual-tag">${url?'AUDIO / INTERACTIVE':'VISUAL ASSESSMENT'}</span><h3>${title}</h3><p>${help}</p>${url?`<a class="primary-action" style="display:inline-block;padding:10px 12px;border-radius:10px;text-decoration:none" href="${url}?mode=scenario&return=${encodeURIComponent(`/vitals/visual-patient.html?case=${id}`)}">Open assessment</a>`:`<button type="button" ${existing(key)?'disabled':''}>${existing(key)?'Finding recorded':'Focus on patient'}</button>`}`;const b=d.querySelector('button');if(b)b.addEventListener('click',()=>openFocus(title,help,finding,key));box.appendChild(d)})}
-function buildTreatments(){const box=$('treatmentTools');box.innerHTML='';scenario.treat.forEach(([title,help,question],idx)=>{const key=`treatment_${idx+1}`;const d=document.createElement('article');d.className='treatment-card';d.innerHTML=`<span class="visual-tag">CLINICAL DECISION</span><h3>${title}</h3><p>${help}</p><button type="button" ${existing(key)?'disabled':''}>${existing(key)?'Treatment recorded':'Select treatment'}</button><div class="followup" hidden><label>${question}</label><select><option value="">Choose an answer</option><option>Yes / appropriate</option><option>No / not appropriate</option><option>Need more assessment first</option></select><button type="button" class="primary-action" style="margin-top:8px">Apply and record</button></div>`;const first=d.querySelector('button'),f=d.querySelector('.followup'),save=f.querySelector('button'),sel=f.querySelector('select');first.addEventListener('click',()=>{f.hidden=false;first.hidden=true});save.addEventListener('click',()=>{if(!sel.value){toast('Answer the follow-up question first');return}window.EMSCodeSimPatientRecord?.addTreatment?.({name:title,response:sel.value});addFinding(key,`${title}: ${sel.value}`,'treatment');save.textContent='Treatment recorded';save.disabled=true});box.appendChild(d)})}
-function renderFindings(){const list=$('findingList'),items=Object.entries(record()?.findings||{});list.innerHTML='';if(!items.length){list.innerHTML='<li class="empty">No findings yet. Obtain vitals or perform an assessment.</li>';return}items.sort((a,b)=>(a[1].recordedAt||'').localeCompare(b[1].recordedAt||''));items.forEach(([k,o])=>{const li=document.createElement('li');li.innerHTML=`<span>${labelFor(k)}</span><strong>${o.value}</strong>`;list.appendChild(li)})}
-function updateCounts(){const findings=record()?.findings||{};const keys=Object.keys(findings);const vitalCount=VITALS.filter(([, ,key])=>keys.includes(key)).length;const treatmentCount=keys.filter(k=>k.startsWith('treatment_')).length;$('vitalCount').textContent=`${vitalCount} / ${VITALS.length}`;$('findingCount').textContent=String(keys.length);$('treatmentCount').textContent=String(treatmentCount);$('findingBadge').hidden=!keys.length;$('findingBadge').textContent=String(keys.length)}
-function openSheet(panelId){document.querySelectorAll('.vp-panel').forEach(p=>p.hidden=p.id!==panelId);document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.toggle('active',b.dataset.panel===panelId));$('sheetTitle').textContent=TITLES[panelId];$('actionSheet').hidden=false;$('sheetBackdrop').hidden=false;document.body.style.overflow='hidden';if(panelId==='findingsPanel')renderFindings()}
-function closeSheet(){$('actionSheet').hidden=true;$('sheetBackdrop').hidden=true;document.body.style.overflow='';document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active'))}
-function finishFocus(){if(!activeFocus)return;addFinding(activeFocus.key,activeFocus.finding,'visual assessment');$('assessmentFocus').hidden=true;activeFocus=null;buildAssessments();openSheet('findingsPanel')}
-function refreshFromRecord(){buildVitals();buildAssessments();buildTreatments();renderFindings();updateCounts();$('patientLabel').textContent=record()?.patient||'Patient';$('dispatch').textContent=record()?.dispatch||scenario.title;$('scene').textContent=record()?.scene||''}ensureRecord();$('caseTitle').textContent=scenario.title;$('visibleCondition').textContent=scenario.visible;setPatientImage($('patientImage'),scenario.image);setPatientImage($('focusImage'),scenario.image);refreshFromRecord();
-document.querySelectorAll('.bottom-nav button').forEach(b=>b.addEventListener('click',()=>openSheet(b.dataset.panel)));$('closeSheet').addEventListener('click',closeSheet);$('sheetBackdrop').addEventListener('click',closeSheet);$('recordFocus').addEventListener('click',finishFocus);$('cancelFocus').addEventListener('click',()=>{$('assessmentFocus').hidden=true;activeFocus=null});$('endScenario').addEventListener('click',()=>{if(confirm('End this scenario and return to the launcher?'))location.href='/vitals/scenario-launcher.html'});document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('assessmentFocus').hidden){$('assessmentFocus').hidden=true;activeFocus=null}else closeSheet()}});window.addEventListener('emscodesim:patient-record-updated',refreshFromRecord);window.addEventListener('pageshow',refreshFromRecord);setInterval(()=>{seconds++;$('timer').textContent=`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`},1000);
+(() => {
+  'use strict';
+
+  const api = window.EMSCodeSimPatientRecord;
+  const session = window.EMSCodeSimScenarioSession;
+  const runtime = window.EMSCodeSimScenarioRuntime;
+  const registry = window.EMSCodeSimToolRegistry;
+  const params = new URLSearchParams(location.search);
+  const requestedId = params.get('case') || session?.requestedCaseId?.() || api?.active?.()?.scenarioId || 'asthma';
+
+  const CASES = {
+    asthma: {
+      title: 'Respiratory Distress', visible: 'Sitting upright, anxious, speaking in short sentences', image: '/vitals/assets/scenario-patient-adult-v3.png',
+      recommended: ['airway','breathing','respirations','breath_sounds','spo2','skin','pulse','blood_pressure','sample'],
+      visual: ['General appearance','Observe posture, speech, distress, and interaction.','Appears anxious; sitting upright; speaking in short sentences'],
+      treatments: ['Position of comfort','Oxygen based on assessment','Assist prescribed inhaler / bronchodilator per protocol']
+    },
+    stroke: {
+      title: 'Possible Acute Stroke', visible: 'Awake with abnormal speech and right-sided weakness', image: '/vitals/assets/scenario-patient-adult-v3.png',
+      recommended: ['airway','mental_status','pupils','motor_sensory','blood_glucose','blood_pressure','pulse','respirations','spo2','sample'],
+      visual: ['General neurologic appearance','Observe speech, facial movement, gaze, and spontaneous movement.','Abnormal speech with right-sided weakness'],
+      treatments: ['Airway protection and safe positioning','Establish last known well','Rapid stroke-center transport']
+    },
+    hypoglycemia: {
+      title: 'Altered Mental Status', visible: 'Confused, sweaty, and slow to follow commands', image: '/vitals/assets/scenario-patient-adult-v3.png',
+      recommended: ['airway','mental_status','pupils','motor_sensory','blood_glucose','skin','pulse','blood_pressure','sample'],
+      visual: ['General appearance','Observe interaction, diaphoresis, and ability to follow commands.','Confused, pale, cool, and diaphoretic'],
+      treatments: ['Protect the airway','Oral glucose only if swallowing is safe','Ventilation support / naloxone when indicated by findings']
+    },
+    trauma: {
+      title: 'Blunt Trauma', visible: 'Pale patient with guarded breathing after a collision', image: '/vitals/assets/scenario-patient-adult-v3.png',
+      recommended: ['airway','breathing','perfusion','respirations','breath_sounds','spo2','chest_assessment','trauma_assessment','abdominal_assessment','skin','blood_pressure','pulse'],
+      visual: ['General trauma impression','Look for immediate threats, respiratory distress, bleeding, and patient position.','Pale, anxious, and guarding the chest and abdomen'],
+      treatments: ['Airway and ventilation support','Control hemorrhage and prevent heat loss','Rapid trauma transport']
+    },
+    pediatric: {
+      title: 'Sick Pediatric Patient', visible: 'Poor interaction with increased work of breathing', image: '/vitals/assets/scenario-patient-pediatric-v3.png',
+      recommended: ['pediatric_assessment_triangle','airway','breathing','respirations','breath_sounds','spo2','perfusion','skin','temperature','pulse'],
+      visual: ['Pediatric first look','Observe appearance, work of breathing, and circulation to skin before touching the child.','Poor interaction, visible increased effort, and flushed skin'],
+      treatments: ['Position with caregiver when possible','Oxygen or ventilation support based on adequacy','Supportive fever and perfusion care']
+    }
+  };
+
+  const scenario = CASES[requestedId] || CASES.asthma;
+  const id = CASES[requestedId] ? requestedId : 'asthma';
+  const $ = value => document.getElementById(value);
+  let seconds = 0;
+  let activeFocus = null;
+  const partnerTimers = new Set();
+
+  function ensureRecord() {
+    const restored = session?.sync?.(id) || api?.active?.();
+    if (restored && restored.scenarioId === id) return restored;
+    const stored = api?.load?.(id);
+    if (stored) return api.save(stored);
+    return api?.create?.({
+      id,
+      title: scenario.title,
+      patient: id === 'pediatric' ? '3-year-old child' : 'Adult patient',
+      dispatch: runtime?.PROFILES?.[id]?.dispatch || scenario.title,
+      scene: runtime?.PROFILES?.[id]?.scene || 'Active scene',
+      goal: 'Assess, treat, reassess, and report'
+    });
+  }
+
+  function record() { return session?.sync?.(id) || api?.active?.(); }
+  function existing(key) { return Boolean(api?.hasFinding?.(key, record())); }
+  function labelFor(key) { return api?.labelFor?.(key) || key.replace(/_/g, ' '); }
+  function valueFor(key) { return runtime?.formatVital?.(key) || 'Obtained'; }
+
+  function toast(message) {
+    $('toast').textContent = message;
+    $('toast').hidden = false;
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => { $('toast').hidden = true; }, 2800);
+  }
+
+  function setPatientImage(image, path) {
+    if (!image) return;
+    image.onerror = () => {
+      image.onerror = null;
+      image.src = '/vitals/assets/scenario-patient-adult-v3.png';
+      image.classList.add('image-fallback');
+    };
+    image.src = path;
+    image.hidden = false;
+  }
+
+  function saveFinding(key, value, source = 'assessment', meta = {}) {
+    const normality = runtime?.classifyFinding?.(key, value) || '';
+    const payload = { source, normality, status: normality === 'normal' ? 'normal' : normality === 'not-normal' ? 'abnormal' : '', ...meta };
+    try {
+      if (session?.saveFinding) session.saveFinding(key, value, payload);
+      else api?.setFinding?.(key, value, payload);
+      refreshFromRecord();
+      toast(`${labelFor(key)} recorded`);
+    } catch (error) {
+      console.error(error);
+      toast('Finding was not saved. Try again before leaving this screen.');
+    }
+  }
+
+  function toolUrl(url, returnLabel = 'patient scenario', context = '') {
+    return registry?.buildUrl?.(url, {
+      caseId: id,
+      returnTo: `/vitals/visual-patient.html?case=${encodeURIComponent(id)}`,
+      returnLabel,
+      context
+    }) || url;
+  }
+
+  function buildVitals() {
+    const box = $('vitalTools');
+    box.innerHTML = '';
+    (registry?.vitalTools || []).forEach(tool => {
+      const complete = existing(tool.key);
+      const article = document.createElement('article');
+      article.className = `tool${complete ? ' done' : ''}`;
+      article.innerHTML = `
+        <div class="tool-head"><div><h3>${tool.label}</h3><p>${tool.description}</p></div>
+        <span class="status-chip ${complete ? 'done' : ''}">${complete ? 'Obtained' : 'Not taken'}</span></div>
+        <div class="tool-actions"><a href="${toolUrl(tool.url)}">Perform</a>
+        <button class="partner-action" type="button" ${complete ? 'disabled' : ''}>${complete ? 'Complete' : 'Assign to partner'}</button></div>
+        <div class="assignment-progress" hidden></div>`;
+      const button = article.querySelector('button');
+      const status = article.querySelector('.assignment-progress');
+      button.addEventListener('click', () => {
+        button.disabled = true;
+        let left = tool.delay || 12;
+        status.hidden = false;
+        status.textContent = `Partner gathering ${tool.label.toLowerCase()}… ${left}s`;
+        const timer = setInterval(() => {
+          left -= 1;
+          status.textContent = `Partner gathering ${tool.label.toLowerCase()}… ${Math.max(0, left)}s`;
+          if (left <= 0) {
+            clearInterval(timer);
+            partnerTimers.delete(timer);
+            saveFinding(tool.key, valueFor(tool.key), 'partner-assignment', { locked: true });
+          }
+        }, 1000);
+        partnerTimers.add(timer);
+      });
+      box.appendChild(article);
+    });
+  }
+
+  function openFocus(title, instruction, finding, key) {
+    activeFocus = { title, instruction, finding, key };
+    $('focusTitle').textContent = title;
+    $('focusInstruction').textContent = instruction;
+    setPatientImage($('focusImage'), scenario.image);
+    $('recordFocus').disabled = true;
+    $('recordFocus').textContent = 'Observe patient…';
+    $('focusTimer').innerHTML = '';
+    void $('focusTimer').offsetWidth;
+    $('assessmentFocus').hidden = false;
+    setTimeout(() => {
+      if (!activeFocus) return;
+      $('recordFocus').disabled = false;
+      $('recordFocus').textContent = 'Record observed finding';
+    }, 4000);
+  }
+
+  function renderAssessmentTool(tool, recommended) {
+    const complete = existing(tool.key);
+    const article = document.createElement('article');
+    article.className = `assessment-card${complete ? ' complete' : ''}`;
+    article.innerHTML = `
+      <span class="visual-tag">${recommended ? 'RECOMMENDED FOR THIS PATIENT' : tool.category.toUpperCase()}</span>
+      <h3>${tool.label}</h3><p>${tool.description}</p>
+      <div class="tool-actions"><a class="primary-action" href="${toolUrl(tool.url, tool.label)}">${complete ? 'Review' : 'Open assessment'}</a>
+      <span class="status-chip ${complete ? 'done' : ''}">${complete ? 'Recorded' : 'Available'}</span></div>`;
+    return article;
+  }
+
+  function buildAssessments() {
+    const box = $('assessmentTools');
+    box.innerHTML = '';
+
+    const visual = document.createElement('article');
+    visual.className = `assessment-card${existing('general_appearance') ? ' complete' : ''}`;
+    visual.innerHTML = `<span class="visual-tag">VISUAL ASSESSMENT</span><h3>${scenario.visual[0]}</h3><p>${scenario.visual[1]}</p><button type="button" ${existing('general_appearance') ? 'disabled' : ''}>${existing('general_appearance') ? 'Finding recorded' : 'Focus on patient'}</button>`;
+    visual.querySelector('button').addEventListener('click', () => openFocus(scenario.visual[0], scenario.visual[1], scenario.visual[2], 'general_appearance'));
+    box.appendChild(visual);
+
+    const tools = [...(registry?.assessmentTools || [])].sort((a, b) => {
+      const ar = scenario.recommended.includes(a.key) ? 0 : 1;
+      const br = scenario.recommended.includes(b.key) ? 0 : 1;
+      return ar - br || a.category.localeCompare(b.category) || a.label.localeCompare(b.label);
+    });
+
+    let currentCategory = '';
+    tools.forEach(tool => {
+      const category = scenario.recommended.includes(tool.key) ? 'Recommended for this patient' : tool.category;
+      if (category !== currentCategory) {
+        currentCategory = category;
+        const heading = document.createElement('h3');
+        heading.className = 'assessment-group-title';
+        heading.textContent = category;
+        box.appendChild(heading);
+      }
+      box.appendChild(renderAssessmentTool(tool, scenario.recommended.includes(tool.key)));
+    });
+  }
+
+  function buildTreatments() {
+    const box = $('treatmentTools');
+    box.innerHTML = '';
+    scenario.treatments.forEach((title, index) => {
+      const article = document.createElement('article');
+      article.className = 'treatment-card';
+      article.innerHTML = `<span class="visual-tag">PATIENT-SPECIFIC OPTION</span><h3>${title}</h3><p>Open the treatment tool to decide whether this intervention is indicated and to document reassessment.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'patient scenario', index === 0 ? 'airway' : 'general')}">Assess and treat</a>`;
+      box.appendChild(article);
+    });
+
+    const full = document.createElement('article');
+    full.className = 'treatment-card';
+    full.innerHTML = `<span class="visual-tag">FULL TREATMENT MENU</span><h3>All treatment and reassessment options</h3><p>Choose from monitoring only through basic and advanced airway, breathing, circulation, medication, and transport actions.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'patient scenario', 'general')}">Open full treatment menu</a>`;
+    box.appendChild(full);
+  }
+
+  function renderFindings() {
+    const list = $('findingList');
+    const items = Object.entries(record()?.findings || {});
+    list.innerHTML = '';
+    if (!items.length) {
+      list.innerHTML = '<li class="empty">No findings yet. Obtain vitals or perform an assessment.</li>';
+      return;
+    }
+    items.sort((a, b) => (a[1].recordedAt || '').localeCompare(b[1].recordedAt || ''));
+    items.forEach(([key, finding]) => {
+      const item = document.createElement('li');
+      item.innerHTML = `<span>${labelFor(key)}</span><strong>${finding.value ?? finding.finding ?? ''}</strong>`;
+      list.appendChild(item);
+    });
+  }
+
+  function updateCounts() {
+    const current = record() || {};
+    const keys = Object.keys(current.findings || {});
+    const vitalKeys = (registry?.vitalTools || []).map(tool => tool.key);
+    $('vitalCount').textContent = `${vitalKeys.filter(key => keys.includes(key)).length} / ${vitalKeys.length}`;
+    $('findingCount').textContent = String(keys.length);
+    $('treatmentCount').textContent = String((current.treatments || []).length);
+    $('findingBadge').hidden = !keys.length;
+    $('findingBadge').textContent = String(keys.length);
+  }
+
+  function openSheet(panelId) {
+    document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
+    document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
+    $('sheetTitle').textContent = { vitalsPanel: 'Vitals', assessmentPanel: 'All assessment tools', treatmentPanel: 'Treatment', findingsPanel: 'Findings' }[panelId];
+    $('actionSheet').hidden = false;
+    $('sheetBackdrop').hidden = false;
+    document.body.style.overflow = 'hidden';
+    if (panelId === 'findingsPanel') renderFindings();
+  }
+
+  function closeSheet() {
+    $('actionSheet').hidden = true;
+    $('sheetBackdrop').hidden = true;
+    document.body.style.overflow = '';
+    document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
+  }
+
+  function finishFocus() {
+    if (!activeFocus) return;
+    saveFinding(activeFocus.key, activeFocus.finding, 'visual-assessment');
+    $('assessmentFocus').hidden = true;
+    activeFocus = null;
+    buildAssessments();
+    openSheet('findingsPanel');
+  }
+
+  function refreshFromRecord() {
+    const current = record();
+    buildVitals();
+    buildAssessments();
+    buildTreatments();
+    renderFindings();
+    updateCounts();
+    $('patientLabel').textContent = current?.patient || 'Patient';
+    $('dispatch').textContent = current?.dispatch || scenario.title;
+    $('scene').textContent = current?.scene || '';
+  }
+
+  ensureRecord();
+  $('caseTitle').textContent = scenario.title;
+  $('visibleCondition').textContent = scenario.visible;
+  setPatientImage($('patientImage'), scenario.image);
+  setPatientImage($('focusImage'), scenario.image);
+  refreshFromRecord();
+
+  document.querySelectorAll('.bottom-nav button').forEach(button => button.addEventListener('click', () => openSheet(button.dataset.panel)));
+  $('closeSheet').addEventListener('click', closeSheet);
+  $('sheetBackdrop').addEventListener('click', closeSheet);
+  $('recordFocus').addEventListener('click', finishFocus);
+  $('cancelFocus').addEventListener('click', () => { $('assessmentFocus').hidden = true; activeFocus = null; });
+  $('endScenario').addEventListener('click', () => { if (confirm('End this scenario and return to the launcher?')) location.href = `/vitals/scenario-launcher.html?case=${encodeURIComponent(id)}&resume=1`; });
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    if (!$('assessmentFocus').hidden) { $('assessmentFocus').hidden = true; activeFocus = null; }
+    else closeSheet();
+  });
+  window.addEventListener('emscodesim:patient-record-updated', refreshFromRecord);
+  window.addEventListener('emscodesim:scenario-finding-saved', refreshFromRecord);
+  window.addEventListener('pageshow', refreshFromRecord);
+  window.addEventListener('pagehide', () => partnerTimers.forEach(timer => clearInterval(timer)), { once: true });
+  setInterval(() => {
+    seconds += 1;
+    $('timer').textContent = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+  }, 1000);
 })();

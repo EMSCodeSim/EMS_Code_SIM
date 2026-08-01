@@ -399,14 +399,16 @@
   </main>
 
   <script src="/vitals/patient-record.js"></script>
-  <script src="/vitals/scenario-runtime.js"></script>
+  <script src="/vitals/scenario-session.js?v=2"></script>
+  <script src="/vitals/scenario-runtime.js?v=2"></script>
   <script>
     (() => {
       'use strict';
 
       const patientApi = window.EMSCodeSimPatientRecord;
+      const session = window.EMSCodeSimScenarioSession;
       const runtime = window.EMSCodeSimScenarioRuntime;
-      const record = patientApi?.active?.() || null;
+      const record = session?.sync?.() || patientApi?.active?.() || null;
       const params = new URLSearchParams(window.location.search);
 
       const elements = {
@@ -444,6 +446,9 @@
       }
 
       const returnUrl = safeReturnUrl();
+      const returnLabel = params.get('returnLabel') || 'patient';
+      elements.returnBtn.textContent = `Return to ${returnLabel}`;
+      elements.backBtn.setAttribute('aria-label', `Return to ${returnLabel}`);
       elements.backBtn.addEventListener('click', () => { window.location.href = returnUrl; });
       elements.launcherBtn.addEventListener('click', () => { window.location.href = '/vitals/scenario-launcher.html'; });
       elements.returnBtn.addEventListener('click', () => { window.location.href = returnUrl; });
@@ -660,7 +665,7 @@
         const normality = runtime.classifyFinding('blood_pressure', value);
         const status = normality === 'normal' ? 'normal' : 'abnormal';
 
-        patientApi.setFinding('blood_pressure', value, {
+        const payload = {
           label: 'Blood pressure',
           finding: value,
           normality,
@@ -669,7 +674,9 @@
           locked: true,
           learnerReading: `${learnerSystolic}/${learnerDiastolic}`,
           attempts
-        });
+        };
+        if (session?.saveFinding) session.saveFinding('blood_pressure', value, payload);
+        else patientApi.setFinding('blood_pressure', value, payload);
 
         window.dispatchEvent(new CustomEvent('emscodesim:assessment-saved', {
           detail: {

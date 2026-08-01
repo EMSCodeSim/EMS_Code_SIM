@@ -1,0 +1,196 @@
+(() => {
+  'use strict';
+
+  const api = window.EMSCodeSimPatientRecord;
+  if (!api) return;
+
+  const STATE_PREFIX = 'emscodesim_scenario_';
+  const params = new URLSearchParams(location.search);
+  let syncing = false;
+
+  const SCENARIO_CATALOG = Object.freeze({
+    asthma: {
+      id: 'asthma', title: 'Respiratory Distress', patient: '24-year-old adult',
+      dispatch: 'Worsening shortness of breath and wheezing.', scene: 'Apartment; rescue inhaler nearby',
+      goal: 'Assess respiratory adequacy, treat, reassess, and report.'
+    },
+    stroke: {
+      id: 'stroke', title: 'Possible Acute Stroke', patient: '68-year-old adult',
+      dispatch: 'Sudden speech difficulty and right-sided weakness.', scene: 'Private residence; family present',
+      goal: 'Identify time-sensitive neurologic findings and prepare rapid stroke-center transport.'
+    },
+    hypoglycemia: {
+      id: 'hypoglycemia', title: 'Altered Mental Status', patient: '57-year-old adult',
+      dispatch: 'Confused, sweaty, and behaving abnormally.', scene: 'Workplace break room',
+      goal: 'Find a reversible cause, protect the airway, treat, and reassess.'
+    },
+    trauma: {
+      id: 'trauma', title: 'Blunt Trauma', patient: '36-year-old adult',
+      dispatch: 'Two-vehicle collision with chest and abdominal pain.', scene: 'Roadway collision; moderate vehicle damage',
+      goal: 'Find immediate threats, support ABCs, and expedite trauma transport.'
+    },
+    pediatric: {
+      id: 'pediatric', title: 'Sick Pediatric Patient', patient: '3-year-old child',
+      dispatch: 'Fever, poor interaction, and increased work of breathing.', scene: 'Home; caregiver present',
+      goal: 'Use the pediatric first look, support ABCs, and reassess response.'
+    }
+  });
+
+  function requestedCaseId() {
+    return params.get('case') || api.active()?.scenarioId || api.active()?.id || '';
+  }
+
+  function stateKey(caseId) {
+    return `${STATE_PREFIX}${caseId}`;
+  }
+
+  function readState(caseId = requestedCaseId()) {
+    const fallback = { done: [], complete: false, findings: {}, treatments: [], reassessments: [] };
+    if (!caseId) return fallback;
+    try {
+      const parsed = JSON.parse(localStorage.getItem(stateKey(caseId)) || '{}');
+      return {
+        ...fallback,
+        ...parsed,
+        done: Array.isArray(parsed.done) ? parsed.done : [],
+        findings: parsed.findings && typeof parsed.findings === 'object' ? parsed.findings : {},
+        treatments: Array.isArray(parsed.treatments) ? parsed.treatments : [],
+        reassessments: Array.isArray(parsed.reassessments) ? parsed.reassessments : []
+      };
+    } catch {
+      return fallback;
+    }
+  }
+
+  function writeState(caseId, state) {
+    if (!caseId) return state;
+    const next = { ...state, updatedAt: new Date().toISOString() };
+    localStorage.setItem(stateKey(caseId), JSON.stringify(next));
+    return next;
+  }
+
+  function ensureRecord(caseId = requestedCaseId()) {
+    let record = api.active?.() || null;
+    if (!caseId) return record;
+    if (record && (record.scenarioId === caseId || record.id === caseId)) return record;
+
+    const stored = api.load?.(caseId) || null;
+    if (stored) {
+      api.save(stored);
+      return api.active?.() || stored;
+    }
+
+    const scenario = SCENARIO_CATALOG[caseId];
+    if (scenario && api.create) return api.create(scenario);
+    return null;
+  }
+
+  function mirrorRecordToState(record, state) {
+    const caseId = record?.scenarioId || record?.id;
+    if (!caseId) return state;
+    const next = { ...state, patientRecordId: record.id, findings: { ...(state.findings || {}) } };
+    Object.entries(record.findings || {}).forEach(([key, finding]) => {
+      next.findings[key] = finding;
+    });
+    next.treatments = Array.isArray(record.treatments) ? record.treatments : next.treatments;
+    next.reassessments = Array.isArray(record.reassessments) ? record.reassessments : next.reassessments;
+    return writeState(caseId, next);
+  }
+
+  function restoreStateToRecord(record, state) {
+    if (!record) return record;
+    let changed = false;
+    Object.entries(state.findings || {}).forEach(([key, finding]) => {
+      if (api.hasFinding?.(key, record)) return;
+      api.setFinding(key, finding.value ?? finding.finding ?? '', finding);
+      changed = true;
+    });
+    return changed ? api.active?.() || record : record;
+  }
+
+  function sync(caseId = requestedCaseId()) {
+    if (syncing) return api.active?.() || null;
+    syncing = true;
+    try {
+      let record = ensureRecord(caseId);
+      if (!record) return null;
+      const resolvedCase = record.scenarioId || record.id;
+      let state = readState(resolvedCase);
+      record = restoreStateToRecord(record, state);
+      state = mirrorRecordToState(record, state);
+      return record;
+    } finally {
+      syncing = false;
+    }
+  }
+
+  function saveFinding(category, value, meta = {}) {
+    const record = sync();
+    if (!record) throw new Error('No active scenario patient record.');
+    const canonical = api.normalizeKey?.(category) || category;
+    api.setFinding(canonical, value, meta);
+    const saved = api.getFinding?.(canonical);
+    if (!saved) throw new Error(`Unable to verify saved finding: ${canonical}`);
+
+    const caseId = record.scenarioId || record.id;
+    const state = readState(caseId);
+    state.findings[canonical] = saved;
+    state.lastFinding = canonical;
+    writeState(caseId, state);
+
+    window.dispatchEvent(new CustomEvent('emscodesim:scenario-finding-saved', {
+      detail: { caseId, category: canonical, finding: saved }
+    }));
+    return saved;
+  }
+
+  function addTreatment(treatment = {}) {
+    const record = sync();
+    if (!record) throw new Error('No active scenario patient record.');
+    api.addTreatment(treatment);
+    const updated = api.active?.() || record;
+    const caseId = updated.scenarioId || updated.id;
+    const state = readState(caseId);
+    state.treatments = updated.treatments || [];
+    writeState(caseId, state);
+    return state.treatments[state.treatments.length - 1] || treatment;
+  }
+
+  function addReassessment(entry = {}) {
+    const record = sync();
+    if (!record) throw new Error('No active scenario patient record.');
+    api.addReassessment(entry);
+    const updated = api.active?.() || record;
+    const caseId = updated.scenarioId || updated.id;
+    const state = readState(caseId);
+    state.reassessments = updated.reassessments || [];
+    writeState(caseId, state);
+    return state.reassessments[state.reassessments.length - 1] || entry;
+  }
+
+  function scenarioHome(caseId = requestedCaseId()) {
+    return caseId
+      ? `/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}`
+      : '/vitals/scenario-launcher.html';
+  }
+
+  window.EMSCodeSimScenarioSession = {
+    requestedCaseId,
+    readState,
+    writeState,
+    ensureRecord,
+    sync,
+    saveFinding,
+    addTreatment,
+    addReassessment,
+    scenarioHome,
+    SCENARIO_CATALOG
+  };
+
+  setTimeout(() => {
+    try { sync(); } catch (error) { console.error('Scenario session sync failed', error); }
+  }, 0);
+  window.addEventListener('pageshow', () => {
+    try { sync(); } catch (error) { console.error('Scenario session restore failed', error); }
+  });
+})();

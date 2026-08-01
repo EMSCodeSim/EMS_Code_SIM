@@ -1,1 +1,264 @@
-(()=>{'use strict';const $=id=>document.getElementById(id),key='emscodesim-treatment-reassessment-v1';const tx=[['oxygen','Administer oxygen as indicated and position for breathing'],['bvm','Assist ventilations with a BVM and appropriate oxygen'],['glucose','Administer oral glucose if permitted and the patient can swallow'],['naloxone','Administer naloxone per protocol and support ventilation'],['bleeding','Apply direct pressure / wound packing / tourniquet as indicated'],['epi','Assist with or administer epinephrine per protocol'],['stroke','Initiate stroke care and rapid transport'],['support','Provide supportive care and continue focused assessment']];const expected=[['breathing','Improved respiratory effort, air movement, oxygenation, and mental status'],['glucose','Improved mental status and repeat blood glucose'],['perfusion','Controlled bleeding with stronger perfusion findings'],['allergy','Improved airway, breathing, skin, and perfusion findings'],['neuro','No immediate reversal expected; prevent delay and monitor for deterioration'],['none','No meaningful change is expected']];const next=[['continue','Continue treatment, monitor, and transport'],['escalate','Escalate airway/breathing support and expedite transport'],['repeat','Repeat the appropriate treatment per protocol and reassess'],['revise','Revise the working impression and address the new priority'],['stroke','Continue stroke alert and rapid transport without delay']];const cases=[{t:'Asthma with poor air movement',d:'Difficulty breathing.',h:'A 22-year-old with asthma is speaking in two-word phrases.',i:[['Respirations','32/min, labored'],['Lung sounds','Diffuse wheezing with reduced air movement'],['SpO₂','88% room air'],['Mental status','Alert and anxious']],tx:'oxygen',exp:'breathing',r:[['Respirations','22/min, less labored'],['Speech','Full sentences'],['SpO₂','95% with oxygen'],['Lung sounds','Improved air movement; wheezing remains']],response:'improved',next:'continue',doc:'Oxygen administered and patient positioned for comfort. On reassessment, respirations decreased from 32 to 22/min, speech improved to full sentences, SpO₂ increased from 88% on room air to 95%, and air movement improved. Patient remained alert. Treatment continued with ongoing monitoring and transport.'},{t:'Opioid overdose with inadequate breathing',d:'Unresponsive person.',h:'A 34-year-old is minimally responsive with pinpoint pupils and slow shallow respirations.',i:[['Airway','Patent with snoring'],['Respirations','6/min, shallow'],['SpO₂','79%'],['Pulse','58/min']],tx:'bvm',exp:'breathing',r:[['Respirations','Assisted at an adequate rate and volume'],['Chest rise','Visible and equal'],['SpO₂','94%'],['Mental status','Still minimally responsive']],response:'improved',next:'repeat',doc:'Airway opened and BVM ventilations initiated with visible chest rise. SpO₂ improved from 79% to 94%; patient remained minimally responsive. Ventilatory support continued and naloxone considered/administered per protocol with frequent reassessment during transport.'},{t:'Hypoglycemia with intact swallowing',d:'Altered patient.',h:'A diabetic patient is confused but follows commands and can swallow.',i:[['Blood glucose','42 mg/dL'],['Airway','Patent'],['Swallowing','Intact'],['Skin','Cool and diaphoretic']],tx:'glucose',exp:'glucose',r:[['Blood glucose','78 mg/dL'],['Mental status','Alert and oriented'],['Skin','Less diaphoretic'],['Complaint','Feels improved']],response:'improved',next:'continue',doc:'Oral glucose administered per protocol after confirming intact swallowing. Repeat BGL increased from 42 to 78 mg/dL. Mental status improved from confused to alert and oriented; diaphoresis decreased. Patient monitored for recurrence and transported for further evaluation.'},{t:'Severe external bleeding',d:'Traumatic injury with bleeding.',h:'A patient has a deep lower-leg wound with continuous heavy bleeding.',i:[['Bleeding','Heavy and uncontrolled'],['Pulse','126, weak'],['Skin','Pale, cool, diaphoretic'],['Mental status','Anxious']],tx:'bleeding',exp:'perfusion',r:[['Bleeding','Controlled after tourniquet'],['Pulse','118, weak'],['Skin','Still pale and cool'],['Mental status','Alert']],response:'improved',next:'continue',doc:'Severe lower-leg hemorrhage controlled with tourniquet after initial measures were ineffective. Bleeding stopped. Repeat pulse 118 and weak; skin remained pale and cool. Tourniquet time documented, shock care continued, and rapid transport initiated with serial reassessment.'},{t:'Possible stroke',d:'Sudden weakness and speech difficulty.',h:'A 70-year-old has new facial droop, arm drift, and slurred speech. BGL is normal.',i:[['FAST findings','Positive'],['Last known well','30 minutes ago'],['Blood glucose','108 mg/dL'],['Airway/Breathing','Adequate']],tx:'stroke',exp:'neuro',r:[['Facial droop','Unchanged'],['Arm drift','Unchanged'],['Speech','Still slurred'],['Airway/Breathing','Remains adequate']],response:'unchanged',next:'stroke',doc:'Stroke screen remained positive on repeat assessment with unchanged facial droop, arm drift, and slurred speech. BGL 108 mg/dL and airway/breathing remained adequate. Last known well confirmed at 30 minutes prior. Stroke alert continued and transport expedited without delaying for symptom improvement.'},{t:'Anaphylaxis with deterioration',d:'Allergic reaction.',h:'A patient has hives, wheezing, hoarse voice, and dizziness after a bee sting.',i:[['Airway','Hoarse voice'],['Breathing','Wheezing, labored'],['Skin','Generalized hives'],['Blood pressure','88/54']],tx:'epi',exp:'allergy',r:[['Airway','Increasing stridor'],['Breathing','More labored'],['Mental status','Becoming confused'],['Blood pressure','76/42']],response:'worsened',next:'escalate',doc:'Epinephrine administered per protocol for anaphylaxis. Reassessment showed worsening stridor, increased work of breathing, new confusion, and BP decrease from 88/54 to 76/42. Airway and ventilation support escalated, additional treatment prepared per protocol, and emergent transport continued with immediate notification.'}];let state={c:null,done:{how:false,why:false,practice:false},applied:false};function save(){localStorage.setItem(key,JSON.stringify(state.done))}function load(){try{state.done={...state.done,...JSON.parse(localStorage.getItem(key)||'{}')}}catch(e){}}function progress(){let n=Object.values(state.done).filter(Boolean).length;$('progressText').textContent=`${n} of 3 lessons complete`;$('progressBar').style.width=`${n/3*100}%`;document.querySelectorAll('.completion-btn').forEach(b=>{let k=b.dataset.complete;b.classList.toggle('is-complete',state.done[k]);b.textContent=state.done[k]?`${k.toUpperCase()} complete ✓`:`Mark ${k.toUpperCase()} complete`})}function opts(id,a){$(id).innerHTML='<option value="">Select one</option>'+a.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('')}function render(){let c=state.c;$('caseTitle').textContent=c.t;$('dispatchText').textContent='Dispatch: '+c.d;$('historyText').textContent=c.h;$('initialFindings').innerHTML=c.i.map(x=>`<div class="finding-item"><strong>${x[0]}</strong><span>${x[1]}</span></div>`).join('');$('repeatFindings').innerHTML=c.r.map(x=>`<div class="finding-item"><strong>${x[0]}</strong><span>${x[1]}</span></div>`).join('');opts('treatmentSelect',tx);opts('expectedSelect',expected);opts('nextSelect',next);$('treatmentForm').reset();$('repeatSection').hidden=true;$('resultsPanel').hidden=true;state.applied=false}function fresh(){let c=cases[Math.floor(Math.random()*cases.length)];while(c===state.c)c=cases[Math.floor(Math.random()*cases.length)];state.c=c;render()}document.querySelectorAll('.lesson-tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.lesson-tab').forEach(x=>x.classList.remove('is-active'));document.querySelectorAll('.lesson-panel').forEach(x=>{x.hidden=true;x.classList.remove('is-active')});t.classList.add('is-active');let p=$(t.dataset.panel);p.hidden=false;p.classList.add('is-active')});document.querySelectorAll('.completion-btn').forEach(b=>b.onclick=()=>{state.done[b.dataset.complete]=true;save();progress()});$('checkWhy').onclick=()=>{let v=document.querySelector('input[name="whyQuestion"]:checked')?.value;$('whyFeedback').textContent=v==='strong'?'Correct. Objective before-and-after findings show exactly how the patient responded.':v?'Try again. Document measurable repeat findings, not only a general impression.':'Choose an answer first.';if(v==='strong'){state.done.why=true;save();progress()}};$('applyTreatment').onclick=()=>{if(!$('treatmentSelect').value||!$('expectedSelect').value){alert('Select a treatment and expected response first.');return}state.applied=true;$('repeatSection').hidden=false;$('repeatSection').scrollIntoView({behavior:'smooth',block:'start'})};$('treatmentForm').onsubmit=e=>{e.preventDefault();if(!state.applied)return;let c=state.c,s=0,f=[];if($('treatmentSelect').value===c.tx){s++;f.push('Selected the best immediate EMT action.')}else f.push('Match the treatment to the most immediate airway, breathing, circulation, neurologic, or perfusion problem.');if($('expectedSelect').value===c.exp){s++;f.push('Correctly predicted the expected treatment response.')}else f.push('Predict measurable changes in the specific problem being treated.');let rv=document.querySelector('input[name="response"]:checked')?.value;if(rv===c.response){s++;f.push('Correctly classified the patient response.')}else f.push('Compare the initial and repeat findings before deciding whether the patient improved, worsened, or remained unchanged.');if($('nextSelect').value===c.next){s++;f.push('Selected the appropriate next step.')}else f.push('Use the repeat findings to decide whether to continue, repeat, escalate, or revise care.');let p=$('pcrText').value.toLowerCase(),terms=['administer','treatment','repeat','reassess','increased','decreased','improved','unchanged','worsen','transport','continued','blood pressure','spo2','respir'];let h=terms.filter(x=>p.includes(x)).length;if(p.length>=130&&h>=5){s++;f.push('Documentation includes treatment and objective reassessment findings.')}else f.push('Document the initial problem, treatment, timing, repeat values, response, next action, and transport.');$('scoreText').textContent=`${s}/5`;$('feedbackList').innerHTML=f.map(x=>`<li>${x}</li>`).join('');$('examplePCR').textContent=c.doc;$('resultsPanel').hidden=false;$('resultsPanel').scrollIntoView({behavior:'smooth'});window.EMSCodeSimPatientCareIntegration?.saveTreatmentReassessment({label:'Treatment and reassessment',scenario:c.t,treatment:$('treatmentSelect').value,expectedResponse:$('expectedSelect').value,response:rv||'',nextAction:$('nextSelect').value,repeatFindings:c.r,documentation:$('pcrText').value.trim(),score:s,maxScore:5});if(s===5){state.done.practice=true;save();progress()}};$('newCase').onclick=fresh;$('tryAnother').onclick=fresh;load();progress();fresh()})();
+(() => {
+  'use strict';
+
+  const $ = id => document.getElementById(id);
+  const api = window.EMSCodeSimPatientRecord;
+  const session = window.EMSCodeSimScenarioSession;
+  const runtime = window.EMSCodeSimScenarioRuntime;
+  const registry = window.EMSCodeSimToolRegistry;
+  const params = new URLSearchParams(location.search);
+  const STORAGE_KEY = 'emscodesim-treatment-reassessment-v2';
+  const scenarioRecord = session?.sync?.() || api?.active?.();
+  const scenarioMode = Boolean(scenarioRecord && (params.get('mode') === 'scenario' || params.get('case')));
+  const scenarioId = scenarioRecord?.scenarioId || scenarioRecord?.id || '';
+  const context = params.get('context') || 'general';
+  const returnTo = registry?.safeReturn?.(params.get('return'), '') || (scenarioId ? `/vitals/visual-patient.html?case=${encodeURIComponent(scenarioId)}` : '/vitals/scenario-launcher.html');
+  const returnLabel = params.get('returnLabel') || 'patient scenario';
+
+  const TREATMENTS = [
+    ['monitor', 'No immediate treatment — continue monitoring and reassessment', 'All levels'],
+    ['position', 'Open/reposition airway: head-tilt/chin-lift or jaw-thrust as indicated', 'EMT'],
+    ['suction', 'Clear and suction the airway', 'EMT'],
+    ['opa', 'Insert an oropharyngeal airway when indicated', 'EMT'],
+    ['npa', 'Insert a nasopharyngeal airway when indicated', 'EMT / protocol'],
+    ['fbao', 'Treat severe foreign-body airway obstruction', 'EMT'],
+    ['oxygen', 'Administer oxygen using the appropriate device', 'EMT'],
+    ['bvm', 'Assist ventilations with BVM and oxygen', 'EMT'],
+    ['cpap', 'Apply CPAP when indicated and permitted', 'EMT / protocol'],
+    ['lma', 'Insert a supraglottic airway / LMA', 'Advanced / protocol'],
+    ['intubation', 'Perform endotracheal intubation', 'Paramedic / protocol'],
+    ['cric', 'Perform emergency surgical airway', 'Advanced rescue / protocol'],
+    ['glucose', 'Administer oral glucose if swallowing is safe', 'EMT / protocol'],
+    ['naloxone', 'Administer naloxone and support ventilation', 'EMT / protocol'],
+    ['epi', 'Administer epinephrine for anaphylaxis per protocol', 'EMT / protocol'],
+    ['bleeding', 'Control major bleeding with pressure, packing, or tourniquet', 'EMT'],
+    ['shock', 'Treat for shock, prevent heat loss, and expedite transport', 'EMT'],
+    ['rapid', 'Rapid transport / request ALS while continuing supportive care', 'All levels']
+  ];
+
+  const EXPECTED = [
+    ['stable', 'No deterioration; airway and breathing remain stable'],
+    ['airway', 'Improved air movement or reduced obstruction sounds'],
+    ['ventilation', 'Improved chest rise, rate, mental status, or ventilation'],
+    ['oxygenation', 'Improved SpO₂, color, speech, or respiratory distress'],
+    ['mentation', 'Improved mental status and ability to protect the airway'],
+    ['perfusion', 'Improved pulse, skin, blood pressure, or capillary refill'],
+    ['bleeding', 'Bleeding controlled with improved perfusion trend'],
+    ['escalate', 'Little or no improvement; prepare escalation and transport']
+  ];
+
+  const NEXT = [
+    ['monitor', 'Continue monitoring and repeat focused assessment'],
+    ['repeat', 'Repeat or adjust the current treatment and reassess'],
+    ['basic-airway', 'Add or change a basic airway adjunct'],
+    ['advanced-airway', 'Escalate to advanced airway / ALS support'],
+    ['ventilate', 'Begin or improve BVM ventilations'],
+    ['transport', 'Expedite transport and communicate patient changes'],
+    ['revise', 'Revise the working impression and treatment plan']
+  ];
+
+  const STANDALONE_CASES = [
+    { title: 'Asthma with hypoxia', dispatch: 'Worsening shortness of breath.', history: 'Known asthma; rescue inhaler used twice.', initial: [['Respirations','30/min, labored'],['SpO₂','89%'],['Speech','Short phrases'],['Breath sounds','Wheezes']], repeat: [['Respirations','22/min, less labored'],['SpO₂','95%'],['Speech','Full sentences'],['Breath sounds','Improved wheeze']], treatment: 'oxygen', expected: 'oxygenation', response: 'improved', next: 'monitor' },
+    { title: 'Opioid-associated respiratory failure', dispatch: 'Unresponsive patient.', history: 'Slow shallow respirations and pinpoint pupils.', initial: [['Respirations','6/min, shallow'],['SpO₂','82%'],['Mental status','Responds to pain']], repeat: [['Respirations','12/min assisted'],['SpO₂','96%'],['Mental status','Responds to voice']], treatment: 'bvm', expected: 'ventilation', response: 'improved', next: 'monitor' },
+    { title: 'Major bleeding with poor perfusion', dispatch: 'Traumatic extremity injury.', history: 'Active severe bleeding.', initial: [['Pulse','132 weak'],['Skin','Pale, cool, clammy'],['Blood pressure','88/54']], repeat: [['Bleeding','Controlled'],['Pulse','116'],['Blood pressure','96/60']], treatment: 'bleeding', expected: 'bleeding', response: 'improved', next: 'transport' }
+  ];
+
+  const state = { done: { how: false, why: false, practice: false }, applied: false, current: null };
+
+  function loadProgress() {
+    try { Object.assign(state.done, JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}')); } catch {}
+  }
+  function saveProgress() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.done)); }
+  function progress() {
+    const count = Object.values(state.done).filter(Boolean).length;
+    $('progressText').textContent = `${count} of 3 lessons complete`;
+    $('progressBar').style.width = `${(count / 3) * 100}%`;
+    document.querySelectorAll('.completion-btn').forEach(button => {
+      const done = Boolean(state.done[button.dataset.complete]);
+      button.classList.toggle('is-complete', done);
+      button.textContent = done ? 'Completed ✓' : `Mark ${button.dataset.complete.toUpperCase()} complete`;
+    });
+  }
+
+  function optionList(selectId, entries) {
+    const select = $(selectId);
+    select.innerHTML = '<option value="">Select one</option>' + entries.map(([value, label, scope]) => `<option value="${value}">${label}${scope ? ` — ${scope}` : ''}</option>`).join('');
+  }
+
+  function findingValue(key) {
+    const finding = api?.getFinding?.(key, scenarioRecord);
+    return finding?.value || finding?.finding || runtime?.formatVital?.(key) || '';
+  }
+
+  function scenarioCase() {
+    const airwayFinding = api?.getFinding?.('airway', scenarioRecord);
+    const breathingFinding = api?.getFinding?.('breathing', scenarioRecord);
+    const initial = [];
+    if (airwayFinding) initial.push(['Airway', airwayFinding.value || airwayFinding.finding]);
+    if (breathingFinding) initial.push(['Breathing', breathingFinding.value || breathingFinding.finding]);
+    ['respirations','breath_sounds','spo2','pulse','blood_pressure','skin','mental_status','blood_glucose'].forEach(key => {
+      const value = findingValue(key);
+      if (value) initial.push([api?.labelFor?.(key) || key, value]);
+    });
+    if (!initial.length) initial.push(['Assessment status','No findings recorded yet — return to assessment if more information is needed.']);
+
+    const expectedByContext = {
+      airway: { asthma:'monitor', stroke:'monitor', hypoglycemia:'monitor', trauma:'suction', pediatric:'oxygen' },
+      breathing: { asthma:'oxygen', stroke:'monitor', hypoglycemia:'monitor', trauma:'oxygen', pediatric:'bvm' },
+      perfusion: { asthma:'monitor', stroke:'monitor', hypoglycemia:'monitor', trauma:'shock', pediatric:'shock' },
+      general: { asthma:'oxygen', stroke:'rapid', hypoglycemia:'glucose', trauma:'shock', pediatric:'oxygen' }
+    };
+    const treatment = expectedByContext[context]?.[scenarioId] || expectedByContext.general[scenarioId] || 'monitor';
+    const expected = treatment === 'monitor' ? 'stable' : ['position','suction','opa','npa','fbao','lma','intubation','cric'].includes(treatment) ? 'airway' : treatment === 'bvm' ? 'ventilation' : ['oxygen','cpap','epi'].includes(treatment) ? 'oxygenation' : treatment === 'glucose' ? 'mentation' : ['bleeding','shock'].includes(treatment) ? 'perfusion' : 'escalate';
+    const response = treatment === 'monitor' ? 'unchanged' : 'improved';
+    const next = ['lma','intubation','cric'].includes(treatment) ? 'transport' : treatment === 'monitor' ? 'monitor' : ['suction','position','opa','npa'].includes(treatment) ? 'monitor' : 'transport';
+
+    const repeatByScenario = {
+      asthma: [['Respirations','24/min, less labored'],['SpO₂','95%'],['Speech','Longer phrases']],
+      stroke: [['Airway','Remains patent'],['Mental status','No acute deterioration'],['Transport','Stroke alert initiated']],
+      hypoglycemia: [['Mental status','More alert when treatment is appropriate'],['Blood glucose','Improving trend'],['Airway','Remains protected']],
+      trauma: [['Airway','Gurgling reduced after suction'],['SpO₂','Improved with support'],['Perfusion','Remains concerning; transport expedited']],
+      pediatric: [['Work of breathing','Reassessed after support'],['SpO₂','Improving'],['Interaction','Slightly improved']]
+    };
+
+    return {
+      title: `${scenarioRecord?.title || 'Active patient'} — ${context === 'general' ? 'treatment decision' : `${context} treatment`}`,
+      dispatch: scenarioRecord?.dispatch || 'Active EMS patient',
+      history: `Use only treatments supported by the findings and your level of care. Advanced airway choices are included for decision practice and remain protocol-dependent.`,
+      initial,
+      repeat: repeatByScenario[scenarioId] || [['Patient','Reassess the finding treated'],['Vitals','Repeat relevant measurements']],
+      treatment, expected, response, next
+    };
+  }
+
+  function insertScenarioContext() {
+    if (!scenarioMode || document.getElementById('activeTreatmentContext')) return;
+    const section = document.createElement('section');
+    section.id = 'activeTreatmentContext';
+    section.className = 'scenario-treatment-context';
+    const sourceFinding = context === 'airway' ? api?.getFinding?.('airway', scenarioRecord) : context === 'breathing' ? api?.getFinding?.('breathing', scenarioRecord) : context === 'perfusion' ? api?.getFinding?.('perfusion', scenarioRecord) : null;
+    section.innerHTML = `<p class="eyebrow">Active patient treatment</p><h2>${context === 'general' ? 'Choose care from the complete treatment range' : `Treat the recorded ${context} finding`}</h2><p>${sourceFinding ? `<strong>Recorded finding:</strong> ${sourceFinding.value || sourceFinding.finding}` : 'Review the patient findings before selecting an intervention.'}</p><div class="scope-key"><span>EMT</span><span>Protocol dependent</span><span>Advanced / paramedic</span></div>`;
+    $('practicePanel').insertBefore(section, $('practicePanel').querySelector('.scenario-card'));
+  }
+
+  function insertReturnNavigation() {
+    if (!scenarioMode || document.getElementById('treatmentReturnNav')) return;
+    const nav = document.createElement('div');
+    nav.id = 'treatmentReturnNav';
+    nav.className = 'scenario-treatment-nav';
+    nav.innerHTML = `<a class="primary-btn" href="${returnTo}">Return to ${returnLabel}</a><a class="secondary-btn" href="${session?.scenarioHome?.(scenarioId) || `/vitals/visual-patient.html?case=${encodeURIComponent(scenarioId)}`}">Patient home</a>`;
+    $('practicePanel').appendChild(nav);
+  }
+
+  function renderCase(current) {
+    state.current = current;
+    $('caseTitle').textContent = current.title;
+    $('dispatchText').textContent = `Dispatch: ${current.dispatch}`;
+    $('historyText').textContent = current.history;
+    $('initialFindings').innerHTML = current.initial.map(([label, value]) => `<div class="finding-item"><strong>${label}</strong><span>${value}</span></div>`).join('');
+    $('repeatFindings').innerHTML = current.repeat.map(([label, value]) => `<div class="finding-item"><strong>${label}</strong><span>${value}</span></div>`).join('');
+    optionList('treatmentSelect', TREATMENTS);
+    optionList('expectedSelect', EXPECTED);
+    optionList('nextSelect', NEXT);
+    $('treatmentForm').reset();
+    $('repeatSection').hidden = true;
+    $('resultsPanel').hidden = true;
+    state.applied = false;
+  }
+
+  function fresh() {
+    if (scenarioMode) { renderCase(scenarioCase()); return; }
+    let next = STANDALONE_CASES[Math.floor(Math.random() * STANDALONE_CASES.length)];
+    while (STANDALONE_CASES.length > 1 && next === state.current) next = STANDALONE_CASES[Math.floor(Math.random() * STANDALONE_CASES.length)];
+    renderCase(next);
+  }
+
+  document.querySelectorAll('.lesson-tab').forEach(tab => tab.addEventListener('click', () => {
+    document.querySelectorAll('.lesson-tab').forEach(item => item.classList.toggle('is-active', item === tab));
+    document.querySelectorAll('.lesson-panel').forEach(panel => {
+      const active = panel.id === tab.dataset.panel;
+      panel.hidden = !active;
+      panel.classList.toggle('is-active', active);
+    });
+  }));
+  document.querySelectorAll('.completion-btn').forEach(button => button.addEventListener('click', () => {
+    state.done[button.dataset.complete] = true;
+    saveProgress();
+    progress();
+  }));
+
+  $('checkWhy').addEventListener('click', () => {
+    const value = document.querySelector('input[name="whyQuestion"]:checked')?.value;
+    $('whyFeedback').textContent = value === 'strong' ? 'Correct. Objective before-and-after findings show exactly how the patient responded.' : value ? 'Try again. Document measurable repeat findings, not only a general impression.' : 'Choose an answer first.';
+    if (value === 'strong') { state.done.why = true; saveProgress(); progress(); }
+  });
+
+  $('applyTreatment').addEventListener('click', () => {
+    if (!$('treatmentSelect').value || !$('expectedSelect').value) {
+      alert('Select a treatment and expected response first.');
+      return;
+    }
+    state.applied = true;
+    $('repeatSection').hidden = false;
+    $('repeatSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  $('treatmentForm').addEventListener('submit', event => {
+    event.preventDefault();
+    if (!state.applied) return;
+    const current = state.current;
+    const treatment = $('treatmentSelect').value;
+    const expected = $('expectedSelect').value;
+    const response = document.querySelector('input[name="response"]:checked')?.value || '';
+    const next = $('nextSelect').value;
+    const documentation = $('pcrText').value.trim();
+    let score = 0;
+    const feedback = [];
+
+    if (treatment === current.treatment) { score += 1; feedback.push('Selected the treatment that best matches the current findings.'); }
+    else feedback.push('Reconsider the immediate threat, the patient’s airway/breathing adequacy, and your scope before choosing the intervention.');
+    if (expected === current.expected) { score += 1; feedback.push('Predicted a measurable response connected to the treatment.'); }
+    else feedback.push('The expected response should match the specific problem being treated.');
+    if (response === current.response) { score += 1; feedback.push('Correctly compared the repeat findings with the initial assessment.'); }
+    else feedback.push('Use objective before-and-after findings to classify the response.');
+    if (next === current.next) { score += 1; feedback.push('Selected an appropriate next step.'); }
+    else feedback.push('Decide whether to continue, repeat, escalate, ventilate, or expedite transport.');
+    const terms = ['airway','breathing','treatment','reassess','repeat','spo2','respir','pulse','blood pressure','transport','improved','unchanged','worsened'];
+    const hits = terms.filter(term => documentation.toLowerCase().includes(term)).length;
+    if (documentation.length >= 90 && hits >= 4) { score += 1; feedback.push('Documentation includes treatment and objective reassessment findings.'); }
+    else feedback.push('Document the initial finding, treatment, timing, repeat findings, response, and next action.');
+
+    $('scoreText').textContent = `${score}/5`;
+    $('feedbackList').innerHTML = feedback.map(item => `<li>${item}</li>`).join('');
+    $('examplePCR').textContent = `Initial ${context} and relevant vital findings reviewed. ${TREATMENTS.find(item => item[0] === treatment)?.[1] || 'Treatment'} performed or selected according to scope and protocol. Repeat findings compared with baseline; patient classified as ${response || 'not yet classified'}. ${NEXT.find(item => item[0] === next)?.[1] || 'Continued reassessment and transport.'}`;
+    $('resultsPanel').hidden = false;
+    $('resultsPanel').scrollIntoView({ behavior: 'smooth' });
+
+    window.EMSCodeSimPatientCareIntegration?.saveTreatmentReassessment({
+      label: 'Treatment and reassessment',
+      scenario: current.title,
+      context,
+      treatment,
+      treatmentLabel: TREATMENTS.find(item => item[0] === treatment)?.[1] || treatment,
+      expectedResponse: expected,
+      response,
+      nextAction: next,
+      repeatFindings: current.repeat,
+      documentation,
+      score,
+      maxScore: 5
+    });
+
+    if (score === 5) { state.done.practice = true; saveProgress(); progress(); }
+    insertReturnNavigation();
+  });
+
+  $('newCase').addEventListener('click', fresh);
+  $('tryAnother').addEventListener('click', fresh);
+
+  loadProgress();
+  progress();
+  insertScenarioContext();
+  insertReturnNavigation();
+  fresh();
+})();
