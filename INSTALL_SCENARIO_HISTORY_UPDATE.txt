@@ -1,0 +1,15 @@
+EMSCodeSim Scenario History Update
+
+Upload these files while preserving folders:
+- vitals/scenario-history.html (new)
+- vitals/scenario-history.css (new)
+- vitals/scenario-history.js (new)
+- vitals/scenario-debrief.html (updated)
+- vitals/scenario-debrief.js (updated)
+
+How it works:
+1. Open a scenario debrief after completing a patient assessment.
+2. A compact performance summary is saved locally on that device.
+3. Open /vitals/scenario-history.html to view trends and repeated weak areas.
+
+No full patient record, narrative, or identifying patient data is copied into history.
