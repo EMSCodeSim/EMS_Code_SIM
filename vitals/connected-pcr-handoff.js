@@ -51,7 +51,7 @@
     reassessmentValues.length&&`Reassessment: ${reassessmentValues.join('; ')}.`
   ].filter(Boolean).join(' ');
   practice.innerHTML=`<div class="connected-report">
-    <section class="report-mode-banner"><div><p class="eyebrow">Active patient report</p><h2>${esc(record.title||'Patient handoff')}</h2><p>Build the report only from findings already collected in this scenario.</p></div><a href="/vitals/assessment-workspace.html?resume=1">Return to assessment</a></section>
+    <section class="report-mode-banner"><div><p class="eyebrow">Active patient report</p><h2>${esc(record.title||'Patient handoff')}</h2><p>Build the report only from findings already collected in this scenario.</p></div><a href="/vitals/visual-patient.html">Return to assessment</a></section>
     <section class="readiness-grid">${readiness.map(([name,ok,detail])=>`<article class="readiness-item ${ok?'is-complete':'is-missing'}"><strong>${ok?'✓':'!'} ${esc(name)}</strong><span>${esc(detail)}</span></article>`).join('')}</section>
     <p id="missingAlert" class="missing-alert ${readiness.every(x=>x[1])?'is-ready':''}">${readiness.every(x=>x[1])?'Core report elements are present. Review wording before saving.':`${readiness.filter(x=>!x[1]).length} core report area${readiness.filter(x=>!x[1]).length===1?' is':'s are'} incomplete. You may continue, but identify unknown information rather than guessing.`}</p>
     <div class="connected-grid">
