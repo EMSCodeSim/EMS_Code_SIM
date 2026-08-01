@@ -3,249 +3,154 @@
 
   const topics = {
     bp: {
-      title: 'Blood Pressure',
-      subtitle: 'Connect the cuff reading to perfusion, patient presentation, technique, and trends.',
-      image: '/vitals/assets/bp-cuff-stethoscope-placement.png',
-      what: 'Blood pressure is the force of blood against arterial walls. In EMS it helps describe perfusion and identify patterns that may be consistent with shock, stress, pain, or severe hypertension when combined with the rest of the assessment.',
-      range: 'App adult practice rule: about 90–119 systolic and 60–79 diastolic is marked Normal.',
-      abnormal: [
-        'Low pressure with cool or clammy skin, weak pulse, or altered mental status may suggest poor perfusion or shock.',
-        'High pressure can occur with pain, anxiety, or illness. Severe readings must be interpreted with symptoms and local guidance.',
-        'Weak pulses, noise, incorrect cuff size, poor positioning, and fast deflation can make the result inaccurate.'
-      ],
-      document: 'BP 92/60 mmHg, left arm, seated, manual; patient pale and cool.',
-      mistake: 'Treating the number as a standalone answer instead of comparing it with pulse quality, skin signs, mental status, complaint, and trend.',
-      normalExample: ['BP 118/76', 'Within the app’s adult practice range when the patient is warm, alert, and otherwise stable.'],
-      abnormalExample: ['BP 84/50', 'Low systolic pressure is concerning when paired with weak pulse, cool/clammy skin, or altered mental status.'],
-      abnormalLabel: 'Not normal',
-      quiz: ['Which finding is most concerning for shock in an adult?', ['BP 118/76 with warm, dry skin', 'BP 92/60 with cool, clammy skin', 'BP 146/92 with anxiety'], 1, 'The low pressure plus cool, clammy skin creates a poor-perfusion pattern.'],
-      links: [['Pulse', '/vitals/pulse.html'], ['Skin signs', '/vitals/skin.html'], ['Full vitals set', '/vitals/full-vitals-set.html']]
+      title:'Blood Pressure', icon:'🩺', subtitle:'Learn cuff selection, positioning, Korotkoff sounds, interpretation, and documentation.',
+      steps:['Explain the procedure and position the patient when possible.','Choose a cuff whose bladder fits the arm; place it on bare skin.','Support the arm near heart level and locate the brachial artery.','Inflate above the estimated systolic pressure.','Deflate slowly while listening for the first and last Korotkoff sounds.','Repeat or confirm unusual readings and compare the trend.'],
+      why:['Systolic pressure reflects arterial pressure during ventricular contraction.','Diastolic pressure reflects arterial pressure while the heart relaxes.','Cuff size, arm position, movement, noise, and deflation speed can alter the reading.','A BP matters most when combined with pulse, skin, mental status, complaint, and trend.'],
+      normal:'A common adult reference is roughly 90–119 systolic and 60–79 diastolic, interpreted in context.',
+      abnormal:['Low BP with cool, clammy skin or altered mental status may indicate poor perfusion.','High BP can accompany pain, anxiety, illness, or a hypertensive emergency when symptoms are present.','A narrowing pulse pressure or falling trend may be clinically important.'],
+      docExample:'BP 92/60 mmHg, left arm, seated, manual; patient pale and cool.',
+      prompts:[['Which sound marks systolic pressure?',['The first clear tapping sound','The loudest sound','The last sound heard'],0],['Which technique most improves accuracy?',['Deflate as fast as possible','Support the arm near heart level','Place the cuff over clothing'],1]],
+      challenge:'Obtain three readings. Before submitting each answer, predict whether the result is normal or not normal and explain which patient findings would change its significance.'
     },
     pulse: {
-      title: 'Pulse Rate, Rhythm, and Quality',
-      subtitle: 'A pulse assessment is more than a heart-rate number.',
-      image: '/vitals/assets/pulse-points-diagram.png',
-      what: 'Pulse rate reflects how fast the heart is beating. A complete pulse assessment also includes rhythm, strength or quality, and the location used.',
-      range: 'Typical resting adult reference used in the app: about 60–100 BPM.',
-      abnormal: [
-        'Tachycardia may occur with pain, fever, dehydration, anxiety, hypoxia, or shock.',
-        'Bradycardia may be a normal athletic finding or may relate to medications, hypoxia, or conduction problems.',
-        'A weak rapid pulse changes the perfusion picture even when the rate alone is not extreme.'
-      ],
-      document: 'Radial pulse 124/min, weak and regular.',
-      mistake: 'Documenting only the rate and forgetting rhythm and quality.',
-      normalExample: ['Pulse 78, strong and regular', 'A typical adult rate with reassuring rhythm and quality when other perfusion findings agree.'],
-      abnormalExample: ['Pulse 110, weak and irregular', 'Fast, weak, and irregular requires correlation with BP, skin, complaint, and mental status.'],
-      abnormalLabel: 'Not normal',
-      quiz: ['A weak rapid pulse with cool, clammy skin suggests:', ['Good perfusion', 'Possible shock or poor perfusion', 'A normal finding'], 1, 'The pulse quality and skin signs together are concerning for poor perfusion.'],
-      links: [['Blood pressure', '/vitals/bp.html'], ['Skin signs', '/vitals/skin.html'], ['Full vitals set', '/vitals/full-vitals-set.html']]
+      title:'Pulse', icon:'❤️', subtitle:'Measure rate, rhythm, and quality—not just a number.',
+      steps:['Explain the assessment and select the appropriate pulse site.','Use finger pads, not your thumb.','Count for 30 seconds and multiply by two when regular; count a full minute when irregular.','Assess rhythm as regular or irregular.','Assess quality as strong, weak, bounding, or absent.','Compare peripheral pulses and reassess after treatment.'],
+      why:['Rate reflects how quickly the heart is beating.','Rhythm can reveal irregular cardiac activity.','Quality helps describe perfusion and stroke volume.','A rapid weak pulse is more concerning than the same rate with strong pulses and normal skin.'],
+      normal:'Typical resting adult rate: about 60–100 beats/min, regular, and strong.',
+      abnormal:['Tachycardia may occur with pain, fever, dehydration, anxiety, hypoxia, or shock.','Bradycardia may be normal or may accompany hypoxia, medications, or conduction problems.','Weak, irregular, or absent pulses require correlation with the whole patient.'],
+      docExample:'Radial pulse 124/min, weak and regular.',
+      prompts:[['A pulse is irregular. How long should you count?',['15 seconds','30 seconds','A full minute'],2],['Which documentation is most complete?',['Pulse 110','Pulse fast','Radial pulse 110, weak and regular'],2]],
+      challenge:'Complete five pulse assessments and document rate, rhythm, quality, and site each time.'
     },
     respirations: {
-      title: 'Respiratory Rate and Effort',
-      subtitle: 'Count quietly, then describe the full breathing pattern.',
-      image: '/vitals/assets/respirations-tutorial.png',
-      what: 'Respiratory rate is breaths per minute, but the complete assessment includes rate, rhythm, depth, effort, chest movement, ability to speak, and associated sounds.',
-      range: 'Typical adult reference used in the app: about 12–20 breaths/min.',
-      abnormal: [
-        'Tachypnea may occur with respiratory distress, pain, fever, anxiety, hypoxia, or shock.',
-        'Bradypnea may occur with central nervous system depression, opioid exposure, or fatigue.',
-        'Shallow or labored respirations and declining mental status may be more important than the rate alone.'
-      ],
-      document: 'RR 28/min, shallow and labored; speaks in short phrases.',
-      mistake: 'Counting the number but missing increased work of breathing, shallow depth, irregular rhythm, or fatigue.',
-      normalExample: ['RR 16, unlabored', 'A typical adult rate without obvious increased work of breathing.'],
-      abnormalExample: ['RR 32, shallow and labored', 'Fast breathing with increased effort may indicate respiratory distress, shock, pain, fever, or fatigue.'],
-      abnormalLabel: 'Not normal',
-      quiz: ['Which respiratory finding is abnormal for a typical adult?', ['16/min, unlabored', '12/min, unlabored', '28/min with increased effort'], 2, 'The rate is elevated and the increased effort adds concern.'],
-      links: [['Breath sounds', '/vitals/breath-sound-simulator.html'], ['SpO₂', '/vitals/pulse-ox.html'], ['Full vitals set', '/vitals/full-vitals-set.html']]
-    },
-    skin: {
-      title: 'Skin Signs',
-      subtitle: 'Describe color, temperature, and moisture together.',
-      what: 'Skin signs provide a rapid picture of perfusion and physiologic stress. Compare the finding with the patient’s baseline, environment, mental status, pulse, and blood pressure.',
-      range: 'Typical adult description used in the app: warm, pink, and dry, while recognizing normal appearance varies by baseline and skin tone.',
-      abnormal: [
-        'Cool or clammy skin may occur with shock or a sympathetic stress response.',
-        'Hot or flushed skin may occur with fever, sepsis, or heat illness.',
-        'Cyanosis suggests severe oxygenation concern; pale or mottled skin may suggest poor perfusion.'
-      ],
-      document: 'Skin pale, cool, and diaphoretic.',
-      mistake: 'Writing “skin normal” instead of documenting color, temperature, and moisture.',
-      normalExample: ['Warm, pink, dry', 'A reassuring basic perfusion picture when the patient’s other findings agree.'],
-      abnormalExample: ['Pale, cool, clammy', 'A poor-perfusion or stress pattern, especially with a rapid weak pulse or low BP.'],
-      abnormalLabel: 'Not normal',
-      quiz: ['Cool, pale, diaphoretic skin most strongly suggests:', ['Good perfusion', 'Possible shock or poor perfusion', 'A normal baseline'], 1, 'This combination is a classic poor-perfusion or sympathetic stress pattern.'],
-      links: [['Blood pressure', '/vitals/bp.html'], ['Pulse', '/vitals/pulse.html'], ['Full vitals set', '/vitals/full-vitals-set.html']]
-    },
-    pupils: {
-      title: 'Pupil Assessment',
-      subtitle: 'Document size, equality, shape, reactivity, and the patient’s left and right sides.',
-      what: 'Pupils can provide clues about neurologic status, drug or toxin effects, hypoxia, and head injury. Always name the patient’s left and patient’s right when findings differ.',
-      range: 'App reference: PERRL — pupils equal, round, and reactive to light.',
-      abnormal: [
-        'Pinpoint pupils may occur with opioid effects or selected neurologic/toxicologic conditions.',
-        'Dilated pupils may occur with stimulants, hypoxia, or other neurologic conditions.',
-        'Unequal, sluggish, or nonreactive pupils may be a neurologic red flag and require context.'
-      ],
-      document: 'Patient-right pupil 6 mm and sluggish; patient-left pupil 3 mm and brisk.',
-      mistake: 'Saying “right pupil” without clarifying whether it is the patient’s right or the provider’s right.',
-      normalExample: ['PERRL', 'Equal, round pupils that react to light are a typical finding, but still compare with mental status and complaint.'],
-      abnormalExample: ['Unequal or sluggish pupils', 'May indicate head injury, stroke, drug effect, or another neurologic problem.'],
-      abnormalLabel: 'Not normal',
-      quiz: ['Which documentation is most objective?', ['Right pupil bigger', 'Patient-right 6 mm sluggish; patient-left 3 mm brisk', 'Pupils abnormal'], 1, 'The second option identifies patient side, size, and reactivity.'],
-      links: [['AVPU', '/vitals/avpu.html'], ['A&O×4', '/vitals/aao.html'], ['Stroke trainer', '/vitals/stroke.html']]
+      title:'Respiratory Rate', icon:'🫁', subtitle:'Count without alerting the patient, then describe the complete breathing pattern.',
+      steps:['Observe without telling the patient you are counting respirations.','Watch chest or abdominal rise and fall.','Count for 30 seconds and multiply by two when regular; count a full minute when irregular.','Assess rhythm, depth, and effort.','Note position, speech, accessory muscle use, and chest movement.','Reassess after oxygen, ventilation, positioning, or other treatment.'],
+      why:['Rate alone can miss respiratory failure.','Depth and effort help distinguish compensation from fatigue.','A slowing rate with worsening mental status may be more dangerous than tachypnea.','Speaking ability and accessory muscle use reveal functional respiratory distress.'],
+      normal:'Typical adult reference: about 12–20 breaths/min, regular, adequate depth, and unlabored.',
+      abnormal:['Tachypnea may occur with distress, pain, fever, anxiety, hypoxia, or shock.','Bradypnea may occur with CNS depression, overdose, or fatigue.','Shallow, irregular, or labored respirations require prompt attention.'],
+      docExample:'RR 28/min, shallow and labored; speaks in short phrases.',
+      prompts:[['Why should you avoid announcing the count?',['The patient may change breathing','It improves oxygen saturation','It makes the pulse slower'],0],['Which finding is most concerning?',['RR 16 unlabored','RR 28 with accessory muscle use','RR 12 regular'],1]],
+      challenge:'Perform five timed counts and include rate, rhythm, depth, and effort in every entry.'
     },
     spo2: {
-      title: 'Pulse Oximetry (SpO₂)',
-      subtitle: 'Confirm signal quality and compare the number with the patient.',
-      what: 'SpO₂ is a noninvasive estimate of oxygen saturation. It supports—but does not replace—assessment of respiratory rate, effort, lung sounds, skin signs, mental status, pulse quality, and overall appearance.',
-      range: 'Typical healthy-adult reference used in the app: about 95–100%.',
-      abnormal: [
-        'The app treats 90–94% as a low range that requires evaluation and patient-context review.',
-        'A reading below 90% is a significant oxygenation concern in the app scenarios.',
-        'Cold fingers, movement, weak pulse, poor perfusion, nail coverings, dirt, or loose placement can produce an unreliable value.'
-      ],
-      document: 'SpO₂ 88% on room air, pulse 112; RR 30 labored, pale/diaphoretic; oxygen applied and reassessed.',
-      mistake: 'Ignoring work of breathing because the SpO₂ value still looks acceptable.',
-      normalExample: ['SpO₂ 97% on room air', 'Reassuring only when the waveform or signal is stable and the patient’s breathing and mental status also look appropriate.'],
-      abnormalExample: ['SpO₂ 86% with cyanosis', 'A significant oxygenation concern. Treat the patient, verify the signal, and reassess per protocol.'],
-      abnormalLabel: 'Not normal',
-      quiz: ['Which SpO₂ reading is most urgent to address?', ['97%', '93%', '84%'], 2, 'The lowest value is the most urgent, especially when it matches a concerning patient presentation.'],
-      links: [['Respiratory rate', '/vitals/respiratory-rate.html'], ['Breath sounds', '/vitals/breath-sound-simulator.html'], ['Full vitals set', '/vitals/full-vitals-set.html']]
+      title:'Pulse Oximetry', icon:'📟', subtitle:'Obtain a reliable signal and interpret SpO₂ with the patient—not in isolation.',
+      steps:['Choose a warm, well-perfused site and remove barriers when appropriate.','Apply the probe correctly and minimize motion.','Wait for a stable reading and pulse signal.','Compare the displayed pulse with the patient’s palpated pulse.','Check for factors that may distort the value.','Document the reading, oxygen device, flow, and patient response.'],
+      why:['SpO₂ estimates oxygen saturation but does not measure ventilation.','Poor perfusion, motion, cold extremities, nail products, and device limitations can distort results.','A normal SpO₂ does not rule out respiratory distress or carbon monoxide exposure.','Trend and response to treatment are often more useful than one number.'],
+      normal:'Typical healthy-adult reference: about 95–100%, while baseline and condition matter.',
+      abnormal:['90–94% warrants assessment and context.','Below 90% is generally a significant oxygenation concern.','Any number that conflicts with the patient should be verified.'],
+      docExample:'SpO₂ 88% on room air with good waveform; improved to 95% after oxygen per protocol.',
+      prompts:[['SpO₂ primarily estimates:',['Ventilation','Oxygen saturation','Blood pressure'],1],['A reading conflicts with the patient. First action?',['Ignore the patient','Verify signal and reassess','Document it as exact'],1]],
+      challenge:'Practice obtaining stable readings under different simulated signal conditions and decide whether each value is trustworthy.'
     },
     bgl: {
-      title: 'Blood Glucose (BGL)',
-      subtitle: 'Interpret the number with mental status, symptoms, history, and ability to swallow.',
-      what: 'The app prompts BGL checks for altered mental status, weakness, seizure, stroke-like symptoms, diabetic history, overdose, or unexplained behavior changes. A normal value does not end the assessment.',
-      range: 'App practice bands: low <70 mg/dL; reference band 70–180; high 181–350; critical or concerning >350.',
-      abnormal: [
-        'Low glucose may cause confusion, weakness, diaphoresis, shakiness, combativeness, seizure, or unconsciousness.',
-        'High glucose may be associated with thirst, frequent urination, dehydration, nausea, vomiting, deep or rapid breathing, weakness, or altered mental status.',
-        'Never give anything by mouth when the patient cannot protect the airway or swallow safely.'
-      ],
-      document: 'BGL 48 mg/dL at 14:20; confused, pale, cool, diaphoretic; able to swallow; treated per protocol and reassessed.',
-      mistake: 'Treating the number alone instead of comparing it with the patient’s mental status and whole presentation.',
-      normalExample: ['BGL 104 mg/dL', 'The glucose may not explain altered mental status; continue evaluating stroke, overdose, hypoxia, infection, trauma, seizure, and other causes.'],
-      abnormalExample: ['BGL 48 mg/dL with confusion and diaphoresis', 'Low glucose fits the presentation and requires rapid recognition and protocol-based care.'],
-      abnormalLabel: 'Concerning',
-      quiz: ['A patient has BGL 39 mg/dL and is unresponsive. What is the key safety point?', ['Give oral glucose immediately', 'Do not give anything by mouth; support ABCs and follow protocol', 'Ignore the reading'], 1, 'An unresponsive patient cannot safely protect the airway or swallow.'],
-      links: [['Stroke trainer', '/vitals/stroke.html'], ['AVPU', '/vitals/avpu.html'], ['Full vitals set', '/vitals/full-vitals-set.html']]
+      title:'Blood Glucose', icon:'🩸', subtitle:'Perform a safe glucose check and connect the result to mental status and symptoms.',
+      steps:['Use standard precautions and confirm the indication.','Prepare the meter and insert the test strip.','Choose and clean an appropriate puncture site; allow it to dry.','Use the lancet safely and obtain an adequate sample.','Apply blood according to device instructions and read the result.','Control bleeding, dispose of sharps, document, treat, and reassess.'],
+      why:['Glucose abnormalities can mimic stroke, intoxication, seizure, and psychiatric conditions.','A normal glucose does not end the altered mental-status assessment.','Ability to swallow and protect the airway determines whether oral treatment is safe.','Device errors, contaminated fingers, and poor samples can produce inaccurate results.'],
+      normal:'App practice bands: low below 70 mg/dL; reference band 70–180; high above 180.',
+      abnormal:['Hypoglycemia may cause confusion, diaphoresis, weakness, combativeness, seizure, or unconsciousness.','Hyperglycemia may cause thirst, polyuria, dehydration, weakness, vomiting, or altered mental status.','Very abnormal results should be confirmed when inconsistent with the patient.'],
+      docExample:'BGL 48 mg/dL at 14:20; confused and diaphoretic; treated per protocol and reassessed.',
+      prompts:[['An unresponsive patient has BGL 39. Safest principle?',['Give oral glucose','Nothing by mouth; support ABCs','Ignore the reading'],1],['A normal BGL in an altered patient means:',['Assessment is complete','Continue searching for other causes','Stroke is excluded'],1]],
+      challenge:'Complete the meter sequence without hints, interpret five values, and state whether oral treatment would be safe.'
+    },
+    temperature: {
+      title:'Temperature', icon:'🌡️', subtitle:'Use correct technique, recognize measurement limitations, and interpret the trend.',
+      steps:['Choose the measurement route appropriate for the patient and device.','Inspect and prepare the device according to instructions.','Position the probe correctly for the selected route.','Wait for a completed reading without disrupting placement.','Consider environmental exposure and route-specific differences.','Document route, value, time, and associated findings.'],
+      why:['Temperature helps identify infection, heat illness, cold exposure, and metabolic stress.','Different routes can produce different values.','One reading should be interpreted with history, skin, mental status, and trend.','Environmental conditions and recent hot or cold intake can alter some measurements.'],
+      normal:'A common adult oral reference is approximately 97–99°F, but route and patient baseline matter.',
+      abnormal:['Fever may accompany infection, inflammation, or heat illness.','Hypothermia may impair mental status, coagulation, and cardiac stability.','Extreme values require prompt confirmation and treatment according to protocol.'],
+      docExample:'Tympanic temperature 103.1°F; skin hot and flushed; patient reports chills.',
+      prompts:[['Why document the measurement route?',['Routes can yield different values','It changes the pulse','It is never necessary'],0],['A single abnormal value should be:',['Ignored','Interpreted with patient findings and trend','Used alone for diagnosis'],1]],
+      challenge:'Measure five simulated patients, identify fever or hypothermia, and document route plus associated findings.'
+    },
+    pupils: {
+      title:'Pupil Assessment', icon:'👁️', subtitle:'Assess size, equality, shape, and reactivity while naming the patient’s sides correctly.',
+      steps:['Observe both pupils in ambient light before using a light.','Compare size and shape.','Shine light from the side and assess direct reaction.','Repeat on the other eye and compare responses.','Document patient-left and patient-right findings separately when abnormal.','Correlate with mental status, trauma, medications, and neurologic findings.'],
+      why:['Pupils can provide clues about neurologic injury, hypoxia, and drug effects.','Baseline inequality may exist, so history and trend matter.','Side labeling errors can create dangerous documentation mistakes.','Pupil findings do not replace a complete neurologic assessment.'],
+      normal:'PERRL: pupils equal, round, and reactive to light.',
+      abnormal:['Unequal, sluggish, or nonreactive pupils may be neurologic red flags.','Pinpoint pupils may occur with opioid effects and other conditions.','Dilated pupils may occur with stimulants, hypoxia, or neurologic injury.'],
+      docExample:'Patient-right pupil 6 mm and sluggish; patient-left pupil 3 mm and brisk.',
+      prompts:[['Best documentation for unequal pupils?',['Right bigger','Patient-right 6 mm sluggish; patient-left 3 mm brisk','Pupils abnormal'],1],['PERRL means:',['Equal, round, reactive to light','Painful, equal, rapid, reactive','Pupils enlarged and reactive'],0]],
+      challenge:'Assess five pupil patterns and correctly identify patient-left versus patient-right every time.'
+    },
+    skin: {
+      title:'Skin Signs', icon:'✋', subtitle:'Describe color, temperature, and moisture together and relate them to perfusion.',
+      steps:['Inspect exposed skin and compare with the patient’s normal appearance.','Assess color in multiple appropriate areas and consider skin tone.','Use the back of your hand to assess temperature.','Assess moisture and note diaphoresis.','Look for mottling, cyanosis, flushing, pallor, or jaundice.','Reassess after treatment and document objective descriptors.'],
+      why:['Skin signs provide a rapid picture of perfusion and physiologic stress.','Color assessment must account for the patient’s baseline and skin tone.','Temperature and moisture often add meaning that color alone cannot.','Changes over time can reveal improvement or deterioration.'],
+      normal:'A common description is warm and dry with color appropriate for the patient.',
+      abnormal:['Cool, pale, clammy skin may indicate poor perfusion or sympathetic stress.','Hot, flushed skin may occur with fever, sepsis, or heat illness.','Cyanosis and mottling are concerning findings requiring context and action.'],
+      docExample:'Skin pale, cool, and diaphoretic.',
+      prompts:[['Most objective documentation?',['Skin bad','Pale, cool, and diaphoretic','Looks shocky'],1],['Skin signs should be compared with:',['Only age','Pulse, BP, mental status, and environment','Nothing else'],1]],
+      challenge:'Identify color, temperature, and moisture in five patients and write one complete objective sentence for each.'
     },
     avpu: {
-      title: 'Level of Consciousness (AVPU)',
-      subtitle: 'Use the least stimulus needed and describe what produced the response.',
-      what: 'AVPU is a rapid level-of-consciousness check: Alert, responds to Verbal stimulus, responds to Painful stimulus, or Unresponsive.',
-      range: 'Typical awake adult finding: Alert (A).',
-      abnormal: [
-        'V, P, or U may occur with hypoxia, shock, head injury, stroke, intoxication, overdose, seizure, sepsis, or hypoglycemia.',
-        'A change from the patient’s baseline is important even when the patient still responds.',
-        'AVPU is a rapid screen and does not replace a complete neurologic assessment.'
-      ],
-      document: 'AVPU: P — opens eyes and withdraws only after painful stimulus.',
-      mistake: 'Calling a patient “alert” when the patient responds only after voice or physical stimulation.',
-      normalExample: ['Alert', 'The patient responds normally without additional stimulation.'],
-      abnormalExample: ['Responds to pain only', 'A decreased level of consciousness requiring investigation of oxygenation, perfusion, neurologic, metabolic, toxicologic, and trauma causes.'],
-      abnormalLabel: 'Not normal',
-      quiz: ['A patient opens the eyes only after a painful stimulus. AVPU is:', ['A', 'V', 'P', 'U'], 2, 'A response only after painful stimulus is P.'],
-      links: [['A&O×4', '/vitals/aao.html'], ['Blood glucose', '/vitals/bgl.html'], ['Pupils', '/vitals/pupil.html']]
+      title:'AVPU', icon:'🧠', subtitle:'Use the least stimulus needed and describe exactly what produced a response.',
+      steps:['Observe whether the patient is spontaneously alert.','Speak clearly and assess response to verbal stimulus.','If needed, apply an appropriate painful stimulus according to training and policy.','If there is no response, classify as unresponsive.','Immediately assess airway, breathing, circulation, and reversible causes.','Reassess and document changes after treatment.'],
+      why:['AVPU is a rapid neurologic screen, not a full mental-status exam.','A response to voice is not the same as being alert.','Declining AVPU may reflect hypoxia, shock, head injury, stroke, overdose, seizure, sepsis, or hypoglycemia.','Changes from baseline are clinically important.'],
+      normal:'A typical awake patient is Alert (A).',
+      abnormal:['V, P, or U indicate decreased responsiveness.','Any decline requires rapid ABC assessment and investigation of reversible causes.','AVPU should be paired with pupils, glucose, orientation, and other neurologic findings.'],
+      docExample:'AVPU: P — opens eyes and withdraws only after painful stimulus.',
+      prompts:[['Eyes open only after painful stimulus. AVPU?',['A','V','P','U'],2],['A patient responds when spoken to but was not awake before. AVPU?',['A','V','P','U'],1]],
+      challenge:'Classify five response patterns and state the least stimulus that produced each response.'
     },
-    aao: {
-      title: 'Orientation (A&O×4 / AAOx4)',
-      subtitle: 'Identify exactly which orientation domains the patient knows.',
-      what: 'A&O or AAOx describes orientation to person, place, time, and event. It communicates more than simply writing “alert” or “confused.”',
-      range: 'AAOx4: oriented to person, place, time, and event.',
-      abnormal: [
-        'Confusion may occur with hypoxia, shock, stroke, head injury, sepsis, intoxication, overdose, seizure, or hypoglycemia.',
-        'Baseline cognition and communication barriers must be considered.',
-        'Document the specific domains the patient knows and misses.'
-      ],
-      document: 'AAOx2 to person and place; unable to identify date or events leading to EMS activation.',
-      mistake: 'Writing “confused” without stating which orientation questions the patient missed.',
-      normalExample: ['AAOx4', 'Oriented to person, place, time, and event.'],
-      abnormalExample: ['AAOx2', 'The patient knows only two of the four domains; identify which two in the report.'],
-      abnormalLabel: 'Not normal',
-      quiz: ['The patient knows name and location but not the date or what happened. This is:', ['AAOx4', 'AAOx3', 'AAOx2', 'AAOx1'], 2, 'The patient is oriented to two domains: person and place.'],
-      links: [['AVPU', '/vitals/avpu.html'], ['Pupils', '/vitals/pupil.html'], ['Blood glucose', '/vitals/bgl.html']]
+    breath: {
+      title:'Breath Sounds', icon:'🎧', subtitle:'Auscultate systematically, identify sounds, and connect them to respiratory findings.',
+      steps:['Position the patient when possible and expose the chest appropriately.','Use the diaphragm of the stethoscope directly on skin.','Ask for slow deep breaths through the mouth when tolerated.','Compare matching locations side to side.','Listen through a full respiratory cycle at each site.','Describe location, timing, intensity, and sound quality; reassess after treatment.'],
+      why:['Comparing side to side helps identify focal abnormalities.','Wheezes suggest narrowed lower airways; crackles suggest fluid or reopening of small airways.','Stridor is an upper-airway emergency sound.','Absent or diminished sounds can be subtle and clinically significant.'],
+      normal:'Normal vesicular sounds are soft and heard over most peripheral lung fields.',
+      abnormal:['Wheezing is commonly associated with lower-airway narrowing.','Crackles may occur with pulmonary edema, pneumonia, or other fluid/alveolar processes.','Stridor indicates upper-airway obstruction and requires urgent attention.','Unequal or absent sounds may suggest pneumothorax, obstruction, poor effort, or positioning issues.'],
+      docExample:'Bilateral expiratory wheezes, louder at bases; respirations labored at 28/min.',
+      prompts:[['Which sound suggests upper-airway obstruction?',['Crackles','Stridor','Vesicular'],1],['Best auscultation method?',['Listen over clothing','Compare matching sites side to side','Listen to one location only'],1]],
+      challenge:'Identify each available sound twice, then document location, timing, and associated respiratory effort.'
     }
   };
 
-  function esc(value) {
-    return String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const map = {
+    'bp.html':'bp','pulse.html':'pulse','respiratory-rate.html':'respirations','pulse-ox.html':'spo2',
+    'bgl.html':'bgl','temperature.html':'temperature','pupil.html':'pupils','skin.html':'skin',
+    'avpu.html':'avpu','breath-sound-simulator.html':'breath'
+  };
+  const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const key = () => document.body.dataset.vitalTopic || map[location.pathname.split('/').pop()];
+
+  function panel(t){
+    const steps=t.steps.map((s,i)=>`<label class="avl-step"><input type="checkbox" data-step="${i}"><span><b>${i+1}</b>${esc(s)}</span></label>`).join('');
+    const why=t.why.map(x=>`<li>${esc(x)}</li>`).join('');
+    const abnormal=t.abnormal.map(x=>`<li>${esc(x)}</li>`).join('');
+    const qs=t.prompts.map((q,qi)=>`<fieldset class="avl-q" data-answer="${q[2]}"><legend>${esc(q[0])}</legend>${q[1].map((a,ai)=>`<label><input type="radio" name="q${qi}" value="${ai}"> ${esc(a)}</label>`).join('')}<div class="avl-q-feedback" aria-live="polite"></div></fieldset>`).join('');
+    return `<section class="app-vitals-learning" data-app-vitals-learning>
+      <header class="avl-head"><div><p class="avl-kicker">Standalone vital learning center</p><h2>${t.icon} Learn ${esc(t.title)}</h2><p>${esc(t.subtitle)}</p></div><div class="avl-progress"><span>Lesson progress</span><b>0%</b><div><i></i></div></div></header>
+      <nav class="avl-tabs" aria-label="Lesson phases"><button class="active" data-tab="how">1. How</button><button data-tab="why">2. Why</button><button data-tab="practice">3. Practice</button><button data-tab="review">4. Review</button></nav>
+      <div class="avl-body">
+        <section class="avl-pane active" data-pane="how"><div class="avl-intro"><span class="avl-label">Skill sequence</span><h3>How to perform the assessment</h3><p>Complete each step before moving into the simulator.</p></div><div class="avl-checklist">${steps}</div><button class="avl-next" type="button" data-next="why">Continue to Why</button></section>
+        <section class="avl-pane" data-pane="why"><div class="avl-grid"><article><span class="avl-label">Why it matters</span><h3>Understand the physiology and limitations</h3><ul>${why}</ul></article><article><span class="avl-label">Quick reference</span><h3>Typical and abnormal findings</h3><p class="avl-normal">${esc(t.normal)}</p><ul>${abnormal}</ul></article></div><div class="avl-doc"><span class="avl-label">Objective documentation</span><code>${esc(t.docExample)}</code></div><button class="avl-next" type="button" data-next="practice">Continue to Practice</button></section>
+        <section class="avl-pane" data-pane="practice"><div class="avl-practice"><div><span class="avl-label">Interactive simulator</span><h3>Perform the skill yourself</h3><p>${esc(t.challenge)}</p><ol><li>Perform the assessment using the simulator on this page.</li><li>Enter or identify the finding before viewing feedback.</li><li>Decide whether it is normal or not normal.</li><li>Repeat until you can perform the skill without hints.</li></ol></div><button type="button" class="avl-launch">Open simulator</button></div><div class="avl-reflection"><label>What finding did you obtain?<input id="avlFinding" type="text" placeholder="Enter the complete finding"></label><label>Interpretation<select id="avlInterpret"><option value="">Choose…</option><option>Normal</option><option>Not normal</option></select></label><label>How would you document it?<textarea id="avlDocument" rows="3" placeholder="Write an objective PCR-style statement"></textarea></label><button type="button" class="avl-save-practice">Save practice entry</button><div class="avl-practice-feedback" aria-live="polite"></div></div><button class="avl-next" type="button" data-next="review">Continue to Review</button></section>
+        <section class="avl-pane" data-pane="review"><span class="avl-label">Knowledge check</span><h3>Confirm what you learned</h3>${qs}<button type="button" class="avl-grade">Check answers</button><div class="avl-score" aria-live="polite"></div><div class="avl-finish"><button type="button" class="avl-reset">Practice lesson again</button><a href="/vitals/">Return to Vitals Learning Center</a></div></section>
+      </div></section>`;
   }
 
-  function topicFromPath() {
-    const page = location.pathname.split('/').pop() || '';
-    const map = {
-      'bp.html':'bp', 'pulse.html':'pulse', 'respiratory-rate.html':'respirations',
-      'skin.html':'skin', 'pupil.html':'pupils', 'pulse-ox.html':'spo2',
-      'bgl.html':'bgl', 'avpu.html':'avpu', 'aao.html':'aao'
-    };
-    return document.body.dataset.vitalTopic || map[page];
+  function init(root){
+    const tabs=[...root.querySelectorAll('[data-tab]')], panes=[...root.querySelectorAll('[data-pane]')];
+    const progress=root.querySelector('.avl-progress');
+    const completed=new Set();
+    function update(){const pct=Math.round((completed.size/4)*100);progress.querySelector('b').textContent=pct+'%';progress.querySelector('i').style.width=pct+'%';}
+    function show(name){tabs.forEach(b=>b.classList.toggle('active',b.dataset.tab===name));panes.forEach(p=>p.classList.toggle('active',p.dataset.pane===name));completed.add(name);update();root.scrollIntoView({behavior:'smooth',block:'start'});}
+    tabs.forEach(b=>b.addEventListener('click',()=>show(b.dataset.tab)));
+    root.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.next)));
+    root.querySelector('.avl-launch').addEventListener('click',()=>{const candidates=[...document.body.children].filter(el=>!root.contains(el)&&!['SCRIPT','STYLE','LINK'].includes(el.tagName));const target=candidates.find(el=>el.querySelector?.('button,input,canvas,img'))||document.querySelector('main,.app,.container');if(target) target.scrollIntoView({behavior:'smooth',block:'start'});});
+    root.querySelector('.avl-save-practice').addEventListener('click',()=>{const f=root.querySelector('#avlFinding').value.trim(),i=root.querySelector('#avlInterpret').value,d=root.querySelector('#avlDocument').value.trim(),out=root.querySelector('.avl-practice-feedback');if(!f||!i||!d){out.textContent='Complete the finding, interpretation, and documentation before saving.';out.className='avl-practice-feedback bad';return;}out.textContent='Practice entry complete. Compare your wording with the objective example, then repeat the simulator with a new finding.';out.className='avl-practice-feedback good';completed.add('practice');update();});
+    root.querySelector('.avl-grade').addEventListener('click',()=>{let correct=0;const qs=[...root.querySelectorAll('.avl-q')];qs.forEach(q=>{const pick=q.querySelector('input:checked');const fb=q.querySelector('.avl-q-feedback');if(!pick){fb.textContent='Choose an answer.';fb.className='avl-q-feedback bad';return;}const ok=Number(pick.value)===Number(q.dataset.answer);if(ok)correct++;fb.textContent=ok?'Correct.':'Review this concept and try again.';fb.className='avl-q-feedback '+(ok?'good':'bad');});const score=root.querySelector('.avl-score');score.textContent=`Score: ${correct}/${qs.length}. ${correct===qs.length?'Lesson complete.':'Review missed items and check again.'}`;if(correct===qs.length){completed.add('review');update();}});
+    root.querySelector('.avl-reset').addEventListener('click',()=>{root.querySelectorAll('input').forEach(x=>{if(x.type==='checkbox'||x.type==='radio')x.checked=false;else x.value='';});root.querySelectorAll('textarea,select').forEach(x=>x.value='');root.querySelectorAll('.avl-q-feedback,.avl-score,.avl-practice-feedback').forEach(x=>x.textContent='');completed.clear();show('how');});
+    root.querySelectorAll('[data-step]').forEach(x=>x.addEventListener('change',()=>{const all=[...root.querySelectorAll('[data-step]')];if(all.every(y=>y.checked)){completed.add('how');update();}}));
+    show('how');
   }
 
-  function buildPanel(topic) {
-    const image = topic.image ? `<img src="${esc(topic.image)}" alt="${esc(topic.title)} visual guide" loading="lazy">` : '';
-    const heroClass = topic.image ? 'avl-hero' : 'avl-hero no-image';
-    const abnormal = topic.abnormal.map(x => `<li>${esc(x)}</li>`).join('');
-    const choices = topic.quiz[1].map((x, i) => `<button class="avl-choice" type="button" data-choice="${i}">${esc(x)}</button>`).join('');
-    const links = topic.links.map(([label, href]) => `<a href="${esc(href)}">${esc(label)} →</a>`).join('');
-    return `
-      <div class="app-vitals-learning-shell">
-        <section class="app-vitals-learning" aria-labelledby="avl-title">
-          <header class="avl-head">
-            <div><p class="avl-kicker">EMSCodeSim app learning content</p><h2 id="avl-title">Learn ${esc(topic.title)}</h2><p>${esc(topic.subtitle)}</p></div>
-            <span class="avl-badge">Learn → Practice → Document</span>
-          </header>
-          <div class="avl-body">
-            <section class="${heroClass}"><div><span class="avl-label">What it means</span><h3>${esc(topic.title)}</h3><p>${esc(topic.what)}</p><div class="avl-range">Quick reference: ${esc(topic.range)}</div></div>${image}</section>
-            <div class="avl-grid">
-              <section class="avl-card"><span class="avl-label">Abnormal findings may suggest</span><h3>Connect the finding to the patient</h3><ul>${abnormal}</ul></section>
-              <section class="avl-card"><span class="avl-label">What to document</span><h3>Use objective language</h3><div class="avl-document">${esc(topic.document)}</div></section>
-            </div>
-            <section class="avl-card avl-mistake"><span class="avl-label">Common student mistake</span><h3>Avoid this shortcut</h3><p>${esc(topic.mistake)}</p></section>
-            <div class="avl-examples">
-              <section class="avl-example normal"><strong>Normal example: ${esc(topic.normalExample[0])}</strong>${esc(topic.normalExample[1])}</section>
-              <section class="avl-example abnormal"><strong>${esc(topic.abnormalLabel || 'Not normal')} example: ${esc(topic.abnormalExample[0])}</strong>${esc(topic.abnormalExample[1])}</section>
-            </div>
-            <section class="avl-quiz" data-answer="${topic.quiz[2]}"><h3>Quick knowledge check</h3><p>${esc(topic.quiz[0])}</p><div class="avl-choices">${choices}</div><div class="avl-feedback" role="status" aria-live="polite"></div></section>
-            <section class="avl-related"><h3>Continue the assessment</h3><div class="avl-links">${links}<a href="/vitals/">Learn Vitals hub →</a></div></section>
-            <p class="avl-disclaimer">Educational practice only. Typical ranges and training bands are copied from the uploaded EMSCodeSim Vitals & Assessment app. Follow approved course instruction, local protocols, device guidance, and medical direction.</p>
-          </div>
-        </section>
-      </div>`;
-  }
-
-  function wireQuiz(panel, topic) {
-    const quiz = panel.querySelector('.avl-quiz');
-    const feedback = panel.querySelector('.avl-feedback');
-    quiz.querySelectorAll('.avl-choice').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const picked = Number(btn.dataset.choice);
-        const correct = topic.quiz[2];
-        quiz.querySelectorAll('.avl-choice').forEach((choice, i) => {
-          choice.disabled = true;
-          if (i === correct) choice.classList.add('correct');
-          else if (i === picked) choice.classList.add('incorrect');
-        });
-        feedback.textContent = `${picked === correct ? 'Correct. ' : 'Review this. '}${topic.quiz[3]}`;
-      });
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(location.search);
-    if (params.get('mode') === 'scenario' || window.EMSCodeSimScenarioRuntime?.active?.()) return;
-    if (document.querySelector('[data-app-vitals-learning]')) return;
-    const key = topicFromPath();
-    const topic = topics[key];
-    if (!topic) return;
-    const holder = document.createElement('div');
-    holder.dataset.appVitalsLearning = '';
-    holder.innerHTML = buildPanel(topic);
-    const scripts = [...document.body.children].filter(el => el.tagName === 'SCRIPT');
-    const firstScript = scripts[0];
-    if (firstScript) document.body.insertBefore(holder, firstScript);
-    else document.body.appendChild(holder);
-    wireQuiz(holder, topic);
+  document.addEventListener('DOMContentLoaded',()=>{
+    const params=new URLSearchParams(location.search);
+    if(params.get('mode')==='scenario'||window.EMSCodeSimScenarioRuntime?.active?.()) return;
+    const t=topics[key()]; if(!t||document.querySelector('[data-app-vitals-learning]')) return;
+    const holder=document.createElement('div');holder.className='app-vitals-learning-shell';holder.innerHTML=panel(t);
+    const anchor=document.querySelector('.topbar,header');
+    if(anchor&&anchor.parentNode) anchor.insertAdjacentElement('afterend',holder); else document.body.prepend(holder);
+    init(holder.querySelector('.app-vitals-learning'));
   });
 })();
