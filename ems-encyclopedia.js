@@ -9,7 +9,7 @@ async function init(){
   if(!response.ok)throw new Error('Encyclopedia data could not load');
   state.data=await response.json();
   $('#entryTotal').textContent=`${state.data.entries.length} EMS topics across ${state.data.categories.length} subjects`;
-  renderCategories();renderAlphabet();bind();render();
+  renderCategories();renderAlphabet();bind();render();renderStudySummary();
   const hash=decodeURIComponent(location.hash.slice(1));
   if(hash)setTimeout(()=>openTopic(hash),50);
 }
@@ -56,11 +56,17 @@ function render(){
   $('#encyclopediaList').ontoggle=e=>{if(e.target.matches?.('.topic')&&e.target.open)rememberRecent(e.target.id);};
 }
 function topicCard(e){
-  const id=slug(e.term),saved=state.favorites.has(id),links=(e.links||[]).map(l=>`<a href="${esc(l.url)}">${esc(l.label)}</a>`).join('');
+  const id=slug(e.term),saved=state.favorites.has(id),links=[`<a href="/ems-encyclopedia-study.html?topic=${id}">Practice this topic</a>`,...(e.links||[]).map(l=>`<a href="${esc(l.url)}">${esc(l.label)}</a>`)].join('');
   return `<details class="topic" id="${id}"><summary><span class="topic-icon">${esc(e.icon)}</span><div><h3>${highlight(e.term)}</h3><p class="topic-summary">${highlight(e.summary)}</p></div><div class="topic-actions"><button class="save-topic ${saved?'saved':''}" data-id="${id}" aria-label="${saved?'Remove':'Save'} ${esc(e.term)}">★</button><span class="chevron">⌄</span></div></summary><div class="topic-body"><p>${highlight(e.details)}</p><p class="remember"><strong>Field takeaway:</strong> ${highlight(e.remember)}</p><div class="topic-meta"><span class="pill">${esc(e.categoryTitle)}</span><span class="pill">${esc(e.level||'EMS')}</span></div>${links?`<div class="related-links">${links}</div>`:''}</div></details>`;
 }
 function highlight(text){const safe=esc(text);if(!state.query)return safe;const q=state.query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return safe.replace(new RegExp(`(${q})`,'ig'),'<mark>$1</mark>');}
 function toggleFavorite(id){state.favorites.has(id)?state.favorites.delete(id):state.favorites.add(id);localStorage.setItem('emsEncyclopediaFavorites',JSON.stringify([...state.favorites]));render();}
 function rememberRecent(id){state.recent=[id,...state.recent.filter(x=>x!==id)].slice(0,12);localStorage.setItem('emsEncyclopediaRecent',JSON.stringify(state.recent));history.replaceState(null,'','#'+id);}
+
+function renderStudySummary(){
+  const el=$('#studyProgressSummary');if(!el)return;
+  try{const p=JSON.parse(localStorage.getItem('emsEncyclopediaStudyV1')||'{}'),topics=Object.values(p.topics||{}),mastered=topics.filter(r=>r.correct>=2&&r.correct>r.wrong).length,review=topics.filter(r=>r.wrong>r.correct||r.lastResult==='wrong').length;el.textContent=p.totalAnswered?`${mastered} mastered · ${review} need review · ${Math.round((p.totalCorrect||0)/p.totalAnswered*100)}% accuracy`:'No study history yet';}catch{el.textContent='Study progress available';}
+}
+
 function openTopic(id,scroll=false){const el=document.getElementById(id);if(!el){reset();setTimeout(()=>openTopic(id,scroll),20);return}el.open=true;rememberRecent(id);if(scroll)el.scrollIntoView({behavior:'smooth',block:'start'});}
 init().catch(err=>{$('#entryTotal').textContent='Encyclopedia unavailable';$('#encyclopediaList').innerHTML='<section class="empty-state"><h2>Could not load the encyclopedia</h2><p>Check that <code>/data/ems-encyclopedia.json</code> was uploaded with this page.</p></section>';console.error(err);});
