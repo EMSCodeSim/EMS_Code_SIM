@@ -1,6 +1,6 @@
 (()=>{'use strict';
 const api=window.EMSCodeSimPatientRecord;
-const record=api?.active?.();
+let record=api?.active?.();
 const $=id=>document.getElementById(id);
 if(!record){$('noPatient').hidden=false;return}
 $('workspace').hidden=false;$('workspaceTitle').textContent=record.title||'Guided Patient Assessment';$('workspaceDispatch').textContent=record.dispatch||record.goal||'Complete the connected assessment pathway.';
@@ -52,7 +52,7 @@ const phases=[
  {id:'history',title:'History',steps:common.history},
  {id:'report',title:'Impression and report',steps:common.report}
 ].filter(p=>p.steps.length);
-function findingFor(step){const f=record.findings||{};if(f[step.key])return f[step.key];const aliases={airway:['airway_assessment'],breathing:['breathing_assessment','breathing_quality'],perfusion:['perfusion_assessment','skin'],sample:['sample_history'],motor_sensory:['motor_sensory_assessment'],chest_assessment:['chest'],trauma_assessment:['trauma'],abdominal_assessment:['abdominal'],clinical_impression:['impression'],pcr_handoff:['handoff']};for(const key of aliases[step.key]||[])if(f[key])return f[key];if(step.key==='sample'&&Object.keys(record.history||{}).length)return{value:'History recorded'};if(step.key==='clinical_impression'&&record.impressions?.primary)return{value:record.impressions.primary};if(step.key==='pcr_handoff'&&(record.documentation?.narrative||record.documentation?.handoff))return{value:'Report prepared'};return null}
+function findingFor(step){record=api?.active?.()||record;const f=record.findings||{};const canonical=api?.getFinding?.(step.key,record);if(canonical)return canonical;const aliases={airway:['airway_assessment'],breathing:['breathing_assessment','breathing_quality'],perfusion:['perfusion_assessment','skin'],sample:['sample_history'],motor_sensory:['motor_sensory_assessment'],chest_assessment:['chest'],trauma_assessment:['trauma'],abdominal_assessment:['abdominal'],clinical_impression:['impression'],pcr_handoff:['handoff']};for(const key of aliases[step.key]||[])if(f[key])return f[key];if(step.key==='sample'&&Object.keys(record.history||{}).length)return{value:'History recorded'};if(step.key==='clinical_impression'&&record.impressions?.primary)return{value:record.impressions.primary};if(step.key==='pcr_handoff'&&(record.documentation?.narrative||record.documentation?.handoff))return{value:'Report prepared'};return null}
 function stepUrl(step){return `${step.url}?mode=scenario&resume=1&case=${encodeURIComponent(caseId)}`}
 function referenceQuery(step){const map={airway:'airway assessment',breathing:'work of breathing respiratory assessment',perfusion:'perfusion circulation skin signs',pulse:'pulse rate rhythm quality',blood_pressure:'blood pressure',respirations:'respiratory rate',spo2:'pulse oximetry SpO2',sample:'SAMPLE history',breath_sounds:'breath sounds',mental_status:'AVPU mental status',motor_sensory:'stroke assessment',blood_glucose:'blood glucose hypoglycemia',chest_assessment:'chest trauma assessment',trauma_assessment:'rapid trauma assessment',abdominal_assessment:'abdominal assessment',pediatric_assessment_triangle:'Pediatric Assessment Triangle',clinical_impression:'clinical impression differential diagnosis',pcr_handoff:'MIST handoff PCR documentation'};return map[step.key]||step.label}
 function referenceUrl(step){const back=`/vitals/assessment-workspace.html?resume=1&case=${encodeURIComponent(caseId)}`;return `/ems-encyclopedia.html?q=${encodeURIComponent(referenceQuery(step))}&level=EMT&view=field&return=${encodeURIComponent(back)}`}
@@ -64,5 +64,5 @@ function render(filter='all'){
 }
 function escapeHtml(value){return value.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 document.querySelectorAll('[data-phase]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-phase]').forEach(b=>b.classList.toggle('active',b===button));render(button.dataset.phase)}));
-window.addEventListener('emscodesim:patient-record-updated',()=>location.reload());render();
+let activeFilter='all';document.querySelectorAll('[data-phase]').forEach(button=>button.addEventListener('click',()=>{activeFilter=button.dataset.phase}));function refresh(){record=api?.active?.()||record;render(activeFilter)}window.addEventListener('emscodesim:patient-record-updated',refresh);window.addEventListener('pageshow',refresh);render();
 })();

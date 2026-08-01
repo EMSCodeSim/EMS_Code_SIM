@@ -420,7 +420,7 @@
 
       if (!scenarioActive) return;
 
-      if (!beatStarted && prev >= systolic && currentPressure <= systolic) startHeartbeat();
+      if (!beatStarted && currentPressure <= systolic && currentPressure > diastolic) startHeartbeat();
       if (beatStarted && currentPressure <= diastolic) stopHeartbeat();
     }, TICK_MS);
 
@@ -462,7 +462,18 @@
         audioCtx.close().catch(() => {});
       }
     }
-    window.addEventListener("pagehide", cleanupBpSimulator, {once:true});
+    window.addEventListener("pagehide", (event) => {
+      if (event.persisted) {
+        stopHeartbeat();
+        return;
+      }
+      cleanupBpSimulator();
+    });
+    window.addEventListener("pageshow", (event) => {
+      if (!event.persisted) return;
+      updateNeedle();
+      releaseBtn.textContent = releasing ? "Pause Release" : (scenarioActive ? "Resume Release" : "Release");
+    });
     window.addEventListener("beforeunload", cleanupBpSimulator, {once:true});
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) stopHeartbeat();

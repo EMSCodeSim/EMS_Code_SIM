@@ -36,12 +36,49 @@
 <div class="tips"><p><strong>Practice point:</strong> Respiratory assessment includes rate, rhythm, depth, effort, chest movement, speech, and associated sounds. Do not announce that you are counting respirations when observing a real patient.</p><p>For irregular breathing, count longer and follow your instructor’s method. This simulator is for education only.</p></div>
 </section></main>
 <script>
-(()=>{const rates=[8,12,16,20,24,28,32,36],depths=['shallow','normal','deep'],efforts=['unlabored','labored'];const torso=document.getElementById('torso'),cue=document.getElementById('effortCue'),time=document.getElementById('timeLeft'),start=document.getElementById('startBtn'),check=document.getElementById('checkBtn'),result=document.getElementById('result'),rateGuess=document.getElementById('rateGuess'),depthGuess=document.getElementById('depthGuess'),effortGuess=document.getElementById('effortGuess');let current=null,timer=null,breather=null;
-function choose(a){return a[Math.floor(Math.random()*a.length)]}function stop(){clearInterval(timer);clearInterval(breather);timer=breather=null;torso.style.transform='scaleY(1)';}
-function breathe(){let up=false;const amplitude=current.depth==='shallow'?1.025:current.depth==='deep'?1.105:1.065;const interval=60000/current.rate/2;breather=setInterval(()=>{if(document.hidden)return;up=!up;torso.style.transform=`scaleY(${up?amplitude:1}) translateY(${up?-2:0}px)`;cue.textContent=current.effort==='labored'&&up?'Visible accessory-muscle effort':'';},interval)}
-start.addEventListener('click',()=>{stop();current=window.EMSCodeSimScenarioRuntime?.active()?{rate:Number(window.EMSCodeSimScenarioRuntime.vital('respirations',18)),depth:(Number(window.EMSCodeSimScenarioRuntime.vital('respirations',18))>26?'shallow':'normal'),effort:(Number(window.EMSCodeSimScenarioRuntime.vital('respirations',18))>24?'labored':'unlabored')}:{rate:choose(rates),depth:choose(depths),effort:Math.random()<.32?'labored':'unlabored'};let left=15;time.textContent=left;result.className='result';result.textContent='Observe quietly and count each chest rise.';check.disabled=true;start.disabled=true;rateGuess.value='';depthGuess.value='';effortGuess.value='';breathe();timer=setInterval(()=>{left--;time.textContent=left;if(left<=0){stop();start.disabled=false;check.disabled=false;result.textContent='Observation complete. Enter your findings, then check your assessment.';}},1000)});
-check.addEventListener('click',()=>{if(!current)return;const guess=Number(rateGuess.value);if(!guess||!depthGuess.value||!effortGuess.value){result.className='result warn';result.textContent='Enter a rate, depth, and effort before checking.';return;}const rateOK=Math.abs(guess-current.rate)<=2,depthOK=depthGuess.value===current.depth,effortOK=effortGuess.value===current.effort,score=[rateOK,depthOK,effortOK].filter(Boolean).length;result.className='result '+(score===3?'ok':'warn');result.innerHTML=`${score}/3 correct. Actual finding: <strong>${current.rate}/min, ${current.depth}, ${current.effort}</strong>. ${rateOK?'Rate was close.':'Recount chest rises and multiply the 15-second count by four.'}`;});
-window.addEventListener('pagehide',stop,{once:true});window.addEventListener('beforeunload',stop,{once:true});document.addEventListener('visibilitychange',()=>{if(document.hidden)stop()});
+(()=>{
+  const rates=[8,12,16,20,24,28,32,36],depths=['shallow','normal','deep'];
+  const torso=document.getElementById('torso'),cue=document.getElementById('effortCue'),time=document.getElementById('timeLeft'),start=document.getElementById('startBtn'),check=document.getElementById('checkBtn'),result=document.getElementById('result'),rateGuess=document.getElementById('rateGuess'),depthGuess=document.getElementById('depthGuess'),effortGuess=document.getElementById('effortGuess');
+  let current=null,timer=null,breather=null,observing=false,remainingMs=15000,deadline=0;
+  function choose(a){return a[Math.floor(Math.random()*a.length)]}
+  function stopIntervals(){clearInterval(timer);clearInterval(breather);timer=breather=null;torso.style.transform='scaleY(1)';cue.textContent=''}
+  function breathe(){
+    clearInterval(breather);
+    let up=false;const amplitude=current.depth==='shallow'?1.025:current.depth==='deep'?1.105:1.065;const interval=60000/current.rate/2;
+    breather=setInterval(()=>{if(document.hidden||!observing)return;up=!up;torso.style.transform=`scaleY(${up?amplitude:1}) translateY(${up?-2:0}px)`;cue.textContent=current.effort==='labored'&&up?'Visible accessory-muscle effort':''},interval);
+  }
+  function finishObservation(){observing=false;remainingMs=0;stopIntervals();time.textContent='0';start.disabled=false;check.disabled=false;result.textContent='Observation complete. Enter your findings, then check your assessment.'}
+  function updateTimer(){
+    if(!observing)return;
+    remainingMs=Math.max(0,deadline-Date.now());
+    time.textContent=String(Math.ceil(remainingMs/1000));
+    if(remainingMs<=0)finishObservation();
+  }
+  function resumeObservation(){
+    if(!observing||remainingMs<=0||document.hidden)return;
+    deadline=Date.now()+remainingMs;breathe();clearInterval(timer);timer=setInterval(updateTimer,200);updateTimer();
+  }
+  function pauseObservation(){
+    if(!observing)return;remainingMs=Math.max(0,deadline-Date.now());stopIntervals();time.textContent=String(Math.ceil(remainingMs/1000));
+  }
+  function startObservation(){
+    stopIntervals();
+    const rr=Number(window.EMSCodeSimScenarioRuntime?.vital?.('respirations',18));
+    current=window.EMSCodeSimScenarioRuntime?.active?.()?{rate:rr,depth:rr>26?'shallow':'normal',effort:rr>24?'labored':'unlabored'}:{rate:choose(rates),depth:choose(depths),effort:Math.random()<.32?'labored':'unlabored'};
+    observing=true;remainingMs=15000;time.textContent='15';result.className='result';result.textContent='Observe quietly and count each chest rise.';check.disabled=true;start.disabled=true;rateGuess.value='';depthGuess.value='';effortGuess.value='';resumeObservation();
+  }
+  start.addEventListener('click',startObservation);
+  check.addEventListener('click',()=>{
+    if(!current)return;
+    const guess=Number(rateGuess.value);
+    if(!guess||!depthGuess.value||!effortGuess.value){result.className='result warn';result.textContent='Enter a rate, depth, and effort before checking.';return}
+    const rateOK=Math.abs(guess-current.rate)<=2,depthOK=depthGuess.value===current.depth,effortOK=effortGuess.value===current.effort,score=[rateOK,depthOK,effortOK].filter(Boolean).length;
+    result.className='result '+(score===3?'ok':'warn');result.innerHTML=`${score}/3 correct. Actual finding: <strong>${current.rate}/min, ${current.depth}, ${current.effort}</strong>. ${rateOK?'Rate was close.':'Recount chest rises and multiply the 15-second count by four.'}`;
+  });
+  window.addEventListener('pagehide',event=>{if(event.persisted)pauseObservation();else{observing=false;stopIntervals()}});
+  window.addEventListener('pageshow',event=>{if(event.persisted&&observing)resumeObservation();else if(event.persisted&&!observing){start.disabled=false;check.disabled=!current||remainingMs>0}});
+  window.addEventListener('beforeunload',()=>{observing=false;stopIntervals()},{once:true});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseObservation();else resumeObservation()});
 })();
 </script>
 <script defer="True" src="/vitals/app-vitals-learning.js"></script><script src="/vitals/patient-record.js"></script><script src="/vitals/scenario-runtime.js"></script><script src="/vitals/scenario-status.js"></script><script src="/vitals/scenario-flow.js"></script><script src="/vitals/scenario-vital-capture.js"></script></body></html>
