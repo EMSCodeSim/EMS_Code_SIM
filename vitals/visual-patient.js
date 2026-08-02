@@ -322,18 +322,47 @@
     return `${url.pathname}${url.search}${url.hash}`;
   }
 
-  function renderAssessmentTool(tool) {
+  function assessmentStatusText(tool, state) {
+    if (state.code === 'reassessment-due') return 'Treatment performed — repeat this assessment now.';
+    if (['improved','unchanged','worsened'].includes(state.code)) {
+      return state.reassessment?.finding || state.reassessment?.response || state.finding?.value || state.finding?.finding || `${state.label} on reassessment.`;
+    }
+    if (state.finding) return state.finding.value || state.finding.finding || 'Assessment recorded.';
+    return tool.description || 'Not yet assessed.';
+  }
+
+  function renderAssessmentRow(tool) {
     const state = assessmentState(tool.key);
-    const complete = state.code !== 'not-assessed';
     const kind = classificationClass(tool.key);
+    const complete = state.code !== 'not-assessed';
+    const actionLabel = state.code === 'reassessment-due' ? 'Reassess' : complete ? 'Review' : 'Assess';
+    const row = document.createElement('div');
+    row.className = `primary-assessment-row assessment-tool-row ${kind} state-${state.code}`;
+    row.innerHTML = `
+      <div>
+        <span>${escapeHtml(tool.label)} <em class="clinical-state ${state.code}">${escapeHtml(state.label)}</em></span>
+        <strong>${escapeHtml(assessmentStatusText(tool, state))}</strong>
+        <small class="assessment-row-requirement ${kind}">${escapeHtml(classificationLabel(tool.key))}</small>
+      </div>
+      <a href="${assessmentHref(tool, tool.key)}">${escapeHtml(actionLabel)}</a>`;
+    return row;
+  }
+
+  function buildAssessmentGroup(title, copy, tools, options = {}) {
     const article = document.createElement('article');
-    article.className = `assessment-card ${kind}${complete ? ' complete' : ''} state-${state.code}`;
-    const actionLabel = state.code === 'reassessment-due' ? 'Reassess now' : complete ? 'Review assessment' : 'Open assessment';
+    const completed = tools.filter(tool => assessmentState(tool.key).code !== 'not-assessed').length;
+    article.className = `assessment-card unified-primary-card unified-assessment-group${completed === tools.length && tools.length ? ' complete' : ''}`;
     article.innerHTML = `
-      <div class="assessment-card-top"><span class="requirement-tag ${kind}">${classificationLabel(tool.key)}</span><span class="clinical-state ${state.code}">${escapeHtml(state.label)}</span></div>
-      <h3>${escapeHtml(tool.label)}</h3><p>${escapeHtml(tool.description)}</p>
-      <div class="tool-actions"><a class="primary-action" href="${assessmentHref(tool, tool.key)}">${actionLabel}</a>
-      <span class="status-chip ${complete ? 'done' : ''}">${state.code === 'reassessment-due' ? 'Repeat required' : complete ? 'Recorded' : 'Available'}</span></div>`;
+      <div class="primary-card-heading">
+        <div><span class="requirement-tag ${options.tagClass || 'appropriate'}">${escapeHtml(options.tag || 'Patient relevant')}</span><h3>${escapeHtml(title)}</h3></div>
+        <span class="status-chip ${completed === tools.length && tools.length ? 'done' : ''}">${completed} of ${tools.length} assessed</span>
+      </div>
+      <p class="primary-assessment-copy">${escapeHtml(copy)}</p>
+      <div class="primary-assessment-table" role="table" aria-label="${escapeHtml(title)} status and actions">
+        <div class="primary-assessment-header" role="row"><span>Area</span><span>Current status</span><span>Action</span></div>
+      </div>`;
+    const table = article.querySelector('.primary-assessment-table');
+    tools.forEach(tool => table.appendChild(renderAssessmentRow(tool)));
     return article;
   }
 
@@ -422,11 +451,12 @@
     const more = focused.filter(tool => !relevant.includes(tool));
 
     if (relevant.length) {
-      const heading = document.createElement('div');
-      heading.className = 'assessment-sequence-heading focused-heading';
-      heading.innerHTML = '<h3>Relevant assessment and history</h3><p>These tools fit the current presentation. Select only those that will change care, priority, or transport.</p>';
-      box.appendChild(heading);
-      relevant.forEach(tool => box.appendChild(renderAssessmentTool(tool)));
+      box.appendChild(buildAssessmentGroup(
+        'Relevant assessment and history',
+        'These assessments fit the current presentation. Each row uses the same status-and-action design as Primary Assessment.',
+        relevant,
+        { tag: 'Patient relevant', tagClass: 'appropriate' }
+      ));
     }
 
     if (more.length) {
@@ -435,7 +465,12 @@
       details.innerHTML = '<summary>More assessments <span>Optional or not indicated by the current presentation</span></summary><div class="more-assessment-list"></div>';
       const list = details.querySelector('.more-assessment-list');
       more.sort((a, b) => classificationClass(a.key).localeCompare(classificationClass(b.key)) || a.label.localeCompare(b.label));
-      more.forEach(tool => list.appendChild(renderAssessmentTool(tool)));
+      list.appendChild(buildAssessmentGroup(
+        'Additional Assessment Tools',
+        'Use these only when the patient presentation, mechanism, history, or new findings make them clinically useful.',
+        more,
+        { tag: 'Additional tools', tagClass: 'optional' }
+      ));
       box.appendChild(details);
     }
   }
