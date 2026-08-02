@@ -183,7 +183,7 @@
     visual.querySelector('button').addEventListener('click', () => openFocus(scenario.visual[0], scenario.visual[1], scenario.visual[2], 'general_appearance'));
     box.appendChild(visual);
 
-    const tools = [...(registry?.assessmentTools || [])].sort((a, b) => {
+    const tools = [...(registry?.assessmentTools || [])].filter(tool => tool.key !== 'scene_size_up').sort((a, b) => {
       const ar = scenario.recommended.includes(a.key) ? 0 : 1;
       const br = scenario.recommended.includes(b.key) ? 0 : 1;
       return ar - br || a.category.localeCompare(b.category) || a.label.localeCompare(b.label);

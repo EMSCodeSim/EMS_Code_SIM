@@ -7,11 +7,11 @@
   if (!record) return;
 
   const STEP_PATHS = {
-    asthma: ['/vitals/airway-assessment.html','/vitals/breathing-assessment.html','/vitals/respiratory-rate-scenario.html','/vitals/breath-sounds-scenario.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/sample-history.html','/vitals/clinical-impression.html','/vitals/treatment-reassessment.html','/vitals/pcr-handoff.html'],
-    stroke: ['/vitals/airway-assessment.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/respiratory-rate-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/breath-sounds-scenario.html','/vitals/motor-sensory-assessment.html','/vitals/bgl-scenario.html','/vitals/sample-history.html','/vitals/clinical-impression.html','/vitals/pcr-handoff.html'],
-    hypoglycemia: ['/vitals/airway-assessment.html','/vitals/avpu-scenario.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/respiratory-rate-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/bgl-scenario.html','/vitals/sample-history.html','/vitals/clinical-impression.html','/vitals/treatment-reassessment.html','/vitals/pcr-handoff.html'],
-    trauma: ['/vitals/airway-assessment.html','/vitals/breathing-assessment.html','/vitals/respiratory-rate-scenario.html','/vitals/breath-sounds-scenario.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/chest-assessment.html','/vitals/trauma-assessment.html','/vitals/abdominal-assessment.html','/vitals/perfusion-assessment.html','/vitals/pcr-handoff.html'],
-    pediatric: ['/vitals/pediatric-assessment-triangle.html','/vitals/airway-assessment.html','/vitals/breathing-assessment.html','/vitals/respiratory-rate-scenario.html','/vitals/breath-sounds-scenario.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/perfusion-assessment.html','/vitals/sample-history.html','/vitals/treatment-reassessment.html','/vitals/pcr-handoff.html']
+    asthma: ['/vitals/visual-patient.html','/vitals/airway-assessment.html','/vitals/breathing-assessment.html','/vitals/respiratory-rate-scenario.html','/vitals/breath-sounds-scenario.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/sample-history.html','/vitals/clinical-impression.html','/vitals/treatment-reassessment.html','/vitals/pcr-handoff.html'],
+    stroke: ['/vitals/visual-patient.html','/vitals/airway-assessment.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/respiratory-rate-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/breath-sounds-scenario.html','/vitals/motor-sensory-assessment.html','/vitals/bgl-scenario.html','/vitals/sample-history.html','/vitals/clinical-impression.html','/vitals/pcr-handoff.html'],
+    hypoglycemia: ['/vitals/visual-patient.html','/vitals/airway-assessment.html','/vitals/avpu-scenario.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/respiratory-rate-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/bgl-scenario.html','/vitals/sample-history.html','/vitals/clinical-impression.html','/vitals/treatment-reassessment.html','/vitals/pcr-handoff.html'],
+    trauma: ['/vitals/visual-patient.html','/vitals/airway-assessment.html','/vitals/breathing-assessment.html','/vitals/respiratory-rate-scenario.html','/vitals/breath-sounds-scenario.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/chest-assessment.html','/vitals/trauma-assessment.html','/vitals/abdominal-assessment.html','/vitals/perfusion-assessment.html','/vitals/pcr-handoff.html'],
+    pediatric: ['/vitals/visual-patient.html','/vitals/pediatric-assessment-triangle.html','/vitals/airway-assessment.html','/vitals/breathing-assessment.html','/vitals/respiratory-rate-scenario.html','/vitals/breath-sounds-scenario.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/perfusion-assessment.html','/vitals/sample-history.html','/vitals/treatment-reassessment.html','/vitals/pcr-handoff.html']
   };
 
   const scenarioId = record.scenarioId || record.id;
@@ -33,6 +33,7 @@
 
   function completeForPath(path) {
     switch (path) {
+      case '/vitals/visual-patient.html': return has('scene_size_up');
       case '/vitals/airway-assessment.html': return has('airway');
       case '/vitals/breathing-assessment.html': return has('breathing');
       case '/vitals/respiratory-rate-scenario.html': return has('respirations');

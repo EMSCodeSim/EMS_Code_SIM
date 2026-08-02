@@ -5,3 +5,4 @@
 .finding-card.needs-review{border-left-color:var(--red);background:#fff8f6}
 .finding-card.needs-review .status-badge{background:#fde8e5;color:#8f1d15}
 .accuracy-line{font-weight:800}.accurate .accuracy-line{color:var(--teal)}.needs-review .accuracy-line{color:var(--red)}
+.skill-sheet-breakdown{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}.skill-sheet-breakdown summary{cursor:pointer;font-weight:900;color:#075d87}.skill-answer-list{display:grid;gap:8px;margin-top:10px}.skill-answer{border-radius:10px;padding:10px;background:#fff;border:1px solid var(--line)}.skill-answer.correct{border-left:4px solid var(--teal)}.skill-answer.review{border-left:4px solid var(--red);background:#fff8f6}.skill-answer h4{margin:0 0 5px}.skill-answer p{margin:3px 0!important;font-size:.88rem}

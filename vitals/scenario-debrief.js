@@ -53,8 +53,21 @@
       isAbnormal,
       hasAccuracy,
       accurate,
+      skipped: Boolean(value.skipped),
+      answers: safeArray(value.answers).filter(answer => answer && typeof answer === 'object'),
       score: scorePair(value.score,value.maxScore) || (hasAccuracy ? scorePair(accurate ? 1 : 0, 1) : null)
     };
+  }
+
+  function renderAnswerReview(finding) {
+    if (!finding.answers.length) return '';
+    return `<details class="skill-sheet-breakdown" ${finding.accurate ? '' : 'open'}><summary>Review guided scene decisions</summary><div class="skill-answer-list">${finding.answers.map(answer => `
+      <article class="skill-answer ${answer.correct ? 'correct' : 'review'}">
+        <h4>${escapeHtml(answer.question || answer.key)}</h4>
+        <p><strong>Your choice:</strong> ${escapeHtml(answer.selected)}</p>
+        ${answer.correct ? '' : `<p><strong>Preferred choice:</strong> ${escapeHtml(answer.expected)}</p>`}
+        ${answer.rationale ? `<p>${escapeHtml(answer.rationale)}</p>` : ''}
+      </article>`).join('')}</div></details>`;
   }
 
   function renderFindings(record) {
@@ -69,6 +82,7 @@
         ${f.hasAccuracy&&!f.accurate&&f.expected?`<p><strong>Expected finding:</strong> ${escapeHtml(f.expected)}</p>`:''}
         ${f.interpretation?`<p><strong>Interpretation:</strong> ${escapeHtml(f.interpretation)}</p>`:''}
         ${f.score?`<p><strong>Score:</strong> ${f.score.score}/${f.score.max}</p>`:''}
+        ${renderAnswerReview(f)}
       </article>`).join('') : '<p>No mini-simulator findings have been saved yet.</p>';
     return findings;
   }
@@ -97,6 +111,13 @@
     const unclassified=findings.filter(f=>f.classification==='Not classified').length;
     if (!unclassified && findings.length) items.push(['good','Every recorded finding was classified as normal or not normal.']);
     else if (unclassified) items.push(['review',`${unclassified} finding${unclassified===1?' was':'s were'} not classified.`]);
+    const sceneSizeUp=findings.find(f=>f.key==='scene_size_up');
+    if(!sceneSizeUp)items.push(['review','Complete the guided scene size-up before moving into the patient assessment.']);
+    else if(sceneSizeUp.skipped)items.push(['review','The guided scene size-up was skipped. Review PPE, safety, patient count, NOI/MOI, resources, spinal precautions, general impression, AVPU, and priority.']);
+    else if(sceneSizeUp.answers.length){
+      const missed=sceneSizeUp.answers.filter(answer=>!answer.correct).length;
+      items.push(missed?['review',`${missed} scene-size-up decision${missed===1?' needs':'s need'} review. Open the guided decision breakdown above.`]:['good','All guided scene-size-up decisions matched the expected first-look sequence.']);
+    }
     const accuracyFindings=findings.filter(f=>f.hasAccuracy);
     const inaccurate=accuracyFindings.filter(f=>!f.accurate);
     if(accuracyFindings.length&&!inaccurate.length)items.push(['good','All measured vital and assessment findings matched the scenario findings.']);

@@ -2,6 +2,7 @@
   'use strict';
 
   const assessmentTools = [
+    { category: 'Scene size-up', key: 'scene_size_up', label: 'Scene size-up & first impression', description: 'Use dispatch and the patient picture to decide PPE, safety, patient count, NOI/MOI, resources, spinal precautions, general impression, responsiveness, and priority.', url: '/vitals/visual-patient.html' },
     { category: 'Primary assessment', key: 'airway', label: 'Airway assessment', description: 'Determine patency, threats, sounds, secretions, and protection.', url: '/vitals/airway-assessment.html' },
     { category: 'Primary assessment', key: 'breathing', label: 'Breathing assessment', description: 'Judge rate, depth, effort, chest rise, speech, and adequacy.', url: '/vitals/breathing-assessment.html' },
     { category: 'Primary assessment', key: 'perfusion', label: 'Circulation and perfusion', description: 'Assess pulse quality, major bleeding, skin, and capillary refill.', url: '/vitals/perfusion-assessment.html' },

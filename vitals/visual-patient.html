@@ -6,6 +6,7 @@
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/vitals/visual-patient.css?v=4">
+  <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=1">
 </head>
 <body>
   <main class="vp-shell">
@@ -21,10 +22,39 @@
 
     <section class="patient-stage" aria-label="Patient view">
       <img id="patientImage" src="/vitals/assets/scenario-patient-adult-v3.png" alt="Patient awaiting assessment">
-      <div class="patient-status"><span>VISIBLE CONDITION</span><b id="visibleCondition">Observe before touching the patient</b></div>
+      <div class="patient-status"><span>VISIBLE CONDITION</span><b id="visibleCondition">Observe before touching the patient</b><button id="reviewSceneGuide" class="scene-guide-launch" type="button">Start guided scene size-up</button></div>
       <div class="patient-caption">
         <h2 id="patientLabel">Patient</h2>
         <p id="patientPrompt">Choose a category below to continue your assessment.</p>
+      </div>
+    </section>
+
+    <section id="sceneGuide" class="scene-guide" hidden aria-labelledby="sceneGuideTitle">
+      <div class="scene-guide-head">
+        <div>
+          <p>Guided skill-sheet start</p>
+          <h2 id="sceneGuideTitle">Scene size-up and first impression</h2>
+          <p class="guide-copy">Use only the dispatch information and first patient view. Make each decision before moving into the primary assessment. A missed choice will not stop the scenario; it will be reviewed again in the final debrief.</p>
+        </div>
+        <a href="/nremt-skill-sheets.html" target="_blank" rel="noopener">View skill-sheet library</a>
+      </div>
+      <div class="scene-guide-progress"><span id="sceneGuideProgress">Scene size-up 1 of 9</span><div aria-hidden="true"><i id="sceneGuideBar"></i></div></div>
+      <div id="sceneGuideQuestion" class="scene-guide-question"></div>
+      <div id="sceneGuideFeedback" class="scene-guide-feedback" hidden aria-live="polite"></div>
+      <div class="scene-guide-actions">
+        <button id="sceneGuideSkip" class="secondary" type="button">Skip guided start</button>
+        <button id="sceneGuideNext" class="primary" type="button" disabled>Check and continue</button>
+      </div>
+      <p class="guide-note">This is coaching practice, not a pass/fail testing station. Your choices are saved for the final scenario review.</p>
+    </section>
+
+    <section id="sceneGuideComplete" class="scene-guide-complete" hidden aria-live="polite">
+      <h2>Scene size-up recorded</h2>
+      <p id="sceneGuideCompleteSummary">Your first-look decisions are saved.</p>
+      <div class="complete-actions">
+        <button id="beginPrimaryAssessment" type="button">Begin primary assessment</button>
+        <a href="/vitals/assessment-workspace.html">Open assessment workspace</a>
+        <button id="reviewCompletedSceneGuide" type="button">Review decisions</button>
       </div>
     </section>
 
@@ -89,7 +119,8 @@
   <script src="/vitals/patient-record.js"></script>
   <script src="/vitals/scenario-session.js?v=2"></script>
   <script src="/vitals/scenario-runtime.js?v=2"></script>
-  <script src="/vitals/scenario-tool-registry.js?v=2"></script>
-  <script src="/vitals/visual-patient.js?v=4"></script>
+  <script src="/vitals/scenario-tool-registry.js?v=3"></script>
+  <script src="/vitals/visual-patient.js?v=5"></script>
+  <script src="/vitals/scenario-guided-start.js?v=1"></script>
 </body>
 </html>

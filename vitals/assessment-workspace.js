@@ -40,13 +40,15 @@
   document.querySelector('.workspace-hero-actions a:last-child').textContent = 'Patient home';
 
   const vitalKeys = new Set((registry.vitalTools || []).map(tool => tool.key));
+  const sceneKeys = new Set(['scene_size_up']);
   const primaryKeys = new Set(['airway', 'breathing', 'perfusion']);
   const historyKeys = new Set(['sample', 'pain']);
 
+  const scene = registry.assessmentTools.filter(tool => sceneKeys.has(tool.key));
   const primary = registry.assessmentTools.filter(tool => primaryKeys.has(tool.key));
   const vitals = registry.vitalTools.map(tool => ({ ...tool, category: 'Vital signs' }));
   const history = registry.assessmentTools.filter(tool => historyKeys.has(tool.key));
-  const focused = registry.assessmentTools.filter(tool => !primaryKeys.has(tool.key) && !historyKeys.has(tool.key) && !vitalKeys.has(tool.key));
+  const focused = registry.assessmentTools.filter(tool => !sceneKeys.has(tool.key) && !primaryKeys.has(tool.key) && !historyKeys.has(tool.key) && !vitalKeys.has(tool.key));
   const care = [
     { key: 'treatment_reassessment', label: 'Treatment and reassessment', description: 'Select care, repeat relevant findings, and document response.', url: '/vitals/treatment-reassessment.html' },
     { key: 'clinical_impression', label: 'Clinical impression', description: 'Choose a working impression supported by collected findings.', url: '/vitals/clinical-impression.html' },
@@ -54,6 +56,7 @@
   ];
 
   const phases = [
+    { id: 'scene', title: 'Scene size-up and first impression', steps: scene },
     { id: 'primary', title: 'Primary assessment', steps: primary },
     { id: 'vitals', title: 'All vital and bedside tools', steps: vitals },
     { id: 'focused', title: 'All focused assessment tools', steps: focused },

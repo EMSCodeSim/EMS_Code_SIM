@@ -6,6 +6,7 @@
   const CURRENT_VERSION=2;
 
   const FIELD_DEFINITIONS={
+    scene_size_up:{label:'Scene size-up and first impression',aliases:['scene_assessment','scene_sizeup']},
     airway:{label:'Airway',aliases:['airway_assessment']},
     breathing:{label:'Breathing quality',aliases:['breathing_assessment','breathing_quality']},
     perfusion:{label:'Circulation and perfusion',aliases:['perfusion_assessment']},
