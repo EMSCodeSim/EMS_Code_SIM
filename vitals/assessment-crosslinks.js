@@ -13,6 +13,35 @@
   const currentReturn = `${path}?mode=scenario&resume=1&case=${encodeURIComponent(caseId)}`;
 
 
+
+  const scenarioFindings = {
+    asthma: {
+      airway: ['Airway patent at this time; patient is speaking in short sentences.', 'No visible obstruction, secretions, swelling, or abnormal upper-airway sound noted.'],
+      breathing: ['Breathing is labored with increased work of breathing and limited speech.', 'Upright positioning and accessory-muscle use are present. Respiratory rate, lung sounds, and SpO₂ require separate tools.'],
+      perfusion: ['A perfusing pulse is present; detailed perfusion remains unconfirmed.', 'Patient is awake and responsive. Pulse quality, skin signs, capillary refill, and blood pressure require separate tools.']
+    },
+    stroke: {
+      airway: ['Airway patent at this time; patient can speak, although speech is abnormal.', 'Continue to monitor airway protection because neurologic status may change.'],
+      breathing: ['Spontaneous breathing is present without an obvious immediate ventilatory threat.', 'Rate, depth, lung sounds, and oxygenation require separate tools.'],
+      perfusion: ['A perfusing pulse is present; no major external hemorrhage is visible.', 'Pulse quality, skin signs, capillary refill, and blood pressure require separate tools.']
+    },
+    hypoglycemia: {
+      airway: ['Airway is open, but protection may be at risk because the patient is confused.', 'No visible obstruction is present. Continue monitoring mental status and airway protection.'],
+      breathing: ['Spontaneous breathing is present without an obvious immediate ventilatory threat.', 'Rate, depth, lung sounds, and oxygenation require separate tools.'],
+      perfusion: ['A perfusing pulse is present; the patient appears diaphoretic.', 'Pulse quality, blood pressure, capillary refill, and complete skin findings require separate tools.']
+    },
+    trauma: {
+      airway: ['Airway is currently open, but trauma risk requires continued reassessment.', 'No obvious airway obstruction is visible. Maintain spinal precautions when indicated.'],
+      breathing: ['Breathing is present but guarded and may be inadequate.', 'Chest symmetry, rate, depth, breath sounds, and oxygenation require focused assessment.'],
+      perfusion: ['A perfusing pulse is present, but the patient appears pale after significant trauma.', 'Check for major bleeding, pulse quality, skin signs, capillary refill, and blood pressure.']
+    },
+    pediatric: {
+      airway: ['Air is moving, but airway patency and protection are not fully confirmed.', 'Poor interaction increases concern for deterioration. Assess airway sounds and secretions.'],
+      breathing: ['Breathing is present with visibly increased work.', 'Rate, depth, retractions, breath sounds, chest rise, and oxygenation require focused assessment.'],
+      perfusion: ['Circulation is present; complete perfusion status is not yet known.', 'Assess pulse quality, capillary refill, skin temperature and moisture, and blood pressure when indicated.']
+    }
+  };
+
   const assessmentPages = {
     '/vitals/airway-assessment.html': ['airway', 'Airway Assessment'],
     '/vitals/breathing-assessment.html': ['breathing', 'Breathing Assessment'],
@@ -62,6 +91,18 @@
       if (!perform.disabled) perform.click();
     }
 
+    const patientFinding = scenarioFindings[caseId]?.[key];
+    if (patientFinding) {
+      setTimeout(() => {
+        const findingText = document.getElementById('findingText');
+        const findingDetail = document.getElementById('findingDetail');
+        const findingBox = document.getElementById('findingBox');
+        if (findingText) findingText.textContent = patientFinding[0];
+        if (findingDetail) findingDetail.textContent = patientFinding[1];
+        if (findingBox) findingBox.hidden = false;
+      }, 20);
+    }
+
     document.querySelectorAll('#pcrText,#docText').forEach(field => {
       const wrapper = field.closest('.decision-step,.form-field,label') || field.parentElement;
       wrapper?.classList.add('scenario-note-field');
@@ -104,19 +145,19 @@
     '/vitals/airway-assessment.html': {
       key: 'airway', label: 'Airway assessment',
       title: 'Continue the airway and breathing assessment',
-      text: 'Airway patency is only one part of the respiratory picture. Gather the remaining information without revealing the patient’s answers.',
+      text: 'Open additional tools when you need more airway or breathing information.',
       links: [['Breathing assessment','/vitals/breathing-assessment.html','primary'],['Respiratory rate','/vitals/respiratory-rate-scenario.html'],['Breath sounds','/vitals/breath-sounds-scenario.html'],['SpO₂','/vitals/pulse-ox-scenario.html']]
     },
     '/vitals/breathing-assessment.html': {
       key: 'breathing', label: 'Breathing assessment',
       title: 'Complete the respiratory picture',
-      text: 'Measure rate and oxygenation, auscultate the lungs, then return here to interpret whether ventilation is adequate.',
+      text: 'Open additional tools when you need respiratory rate, lung sounds, or oxygenation.',
       links: [['Airway assessment','/vitals/airway-assessment.html','primary'],['Respiratory rate','/vitals/respiratory-rate-scenario.html'],['Breath sounds','/vitals/breath-sounds-scenario.html'],['SpO₂','/vitals/pulse-ox-scenario.html']]
     },
     '/vitals/perfusion-assessment.html': {
       key: 'perfusion', label: 'Perfusion assessment',
       title: 'Complete circulation and perfusion',
-      text: 'Obtain objective vital signs and skin findings, then return to interpret the overall perfusion picture.',
+      text: 'Open additional tools when you need pulse, blood pressure, or skin findings.',
       links: [['Pulse','/vitals/pulse-scenario.html'],['Blood pressure','/vitals/bp-scenario.html'],['Skin signs','/vitals/skin-scenario.html']]
     }
   };

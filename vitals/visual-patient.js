@@ -303,6 +303,48 @@
     box.appendChild(article);
   }
 
+
+  function openRapidABC() {
+    closeSheet();
+    let modal = document.getElementById('rapidAbcModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'rapidAbcModal';
+      modal.className = 'rapid-abc-modal';
+      modal.innerHTML = `
+        <form class="rapid-abc-card" id="rapidAbcForm">
+          <p class="eyebrow">RAPID LIFE-THREAT CHECK</p>
+          <h2>Airway, breathing, circulation</h2>
+          <p>Make a rapid initial decision from the patient view. Use the detailed tools afterward when more information is needed.</p>
+          <label>Is the airway patent?<select name="airway" required><option value="">Choose…</option><option>Yes</option><option>No</option><option>Uncertain</option></select></label>
+          <label>Is breathing adequate?<select name="breathing" required><option value="">Choose…</option><option>Yes</option><option>No</option><option>Uncertain</option></select></label>
+          <label>Is perfusion adequate?<select name="perfusion" required><option value="">Choose…</option><option>Yes</option><option>No</option><option>Uncertain</option></select></label>
+          <div class="rapid-abc-actions"><button type="button" class="secondary" data-close>Cancel</button><button type="submit">Record rapid assessment</button></div>
+        </form>`;
+      document.body.appendChild(modal);
+      modal.querySelector('[data-close]').addEventListener('click',()=>modal.hidden=true);
+      modal.addEventListener('click',e=>{if(e.target===modal) modal.hidden=true;});
+      modal.querySelector('form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const fd=new FormData(e.currentTarget);
+        const summary=`Airway: ${fd.get('airway')}; Breathing adequate: ${fd.get('breathing')}; Perfusion adequate: ${fd.get('perfusion')}`;
+        saveFinding('rapid_abc', summary, 'rapid-primary-assessment', { category:'assessment' });
+        modal.hidden=true;
+        openSheet('assessmentPanel');
+      });
+    }
+    modal.hidden=false;
+  }
+
+  function buildRapidABCCard(box) {
+    const complete = existing('rapid_abc');
+    const article = document.createElement('article');
+    article.className = `assessment-card sequence-card rapid-abc-card-row${complete ? ' complete' : ''}`;
+    article.innerHTML = `<span class="sequence-number">2</span><div class="sequence-card-body"><span class="visual-tag">RAPID PRIMARY ASSESSMENT</span><h3>Rapid ABC life-threat check</h3><p>Decide whether the airway is patent, breathing is adequate, and perfusion is adequate.</p><div class="tool-actions"><button class="primary-action" type="button">${complete?'Review / repeat':'Begin rapid ABC'}</button><span class="status-chip ${complete?'done':''}">${complete?'Recorded':'Not completed'}</span></div></div>`;
+    article.querySelector('button').addEventListener('click', openRapidABC);
+    box.appendChild(article);
+  }
+
   function buildPrimaryCard(box, key, number) {
     const config = scenario.primary?.[key];
     if (!config) return;
@@ -340,12 +382,13 @@
     box.appendChild(intro);
 
     buildSceneSizeUpCard(box);
-    appendAssessmentHeading(box, 'Primary assessment', 'Airway, breathing, and circulation findings can be explored in any order the patient condition requires.', 'primary-heading');
-    buildPrimaryCard(box, 'airway', 2);
-    buildPrimaryCard(box, 'breathing', 3);
-    buildPrimaryCard(box, 'perfusion', 4);
+    appendAssessmentHeading(box, 'Primary assessment', '', 'primary-heading');
+    buildRapidABCCard(box);
+    buildPrimaryCard(box, 'airway', 3);
+    buildPrimaryCard(box, 'breathing', 4);
+    buildPrimaryCard(box, 'perfusion', 5);
 
-    const primaryKeys = new Set(['scene_size_up','airway','breathing','perfusion']);
+    const primaryKeys = new Set(['scene_size_up','rapid_abc','airway','breathing','perfusion']);
     const tools = [...(registry?.assessmentTools || [])].filter(tool => !primaryKeys.has(tool.key)).sort((a, b) => {
       const ar = scenario.recommended.includes(a.key) ? 0 : 1;
       const br = scenario.recommended.includes(b.key) ? 0 : 1;

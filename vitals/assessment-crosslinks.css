@@ -18,3 +18,17 @@
 .scenario-mode .scenario-assessment-direct .scenario-assessment-actions .continue-patient{display:inline-flex;align-items:center;justify-content:center;min-height:48px;border:0;border-radius:12px;background:#173247;color:#fff;text-decoration:none;font-weight:900;cursor:pointer}
 .scenario-mode .scenario-assessment-direct .scenario-assessment-actions .optional-grade{min-height:48px}
 @media(max-width:620px){.scenario-mode .scenario-assessment-direct .scenario-assessment-actions{grid-template-columns:1fr}}
+
+/* Scenario assessments show only the active patient's newly obtained finding. */
+.scenario-mode .hero-card,
+.scenario-mode .lesson-tabs,
+.scenario-mode #howPanel,
+.scenario-mode #whyPanel,
+.scenario-mode .scenario-only-note,
+.scenario-mode .scenario-assessment-direct .section-heading,
+.scenario-mode .scenario-assessment-direct .patient-card__top,
+.scenario-mode .scenario-assessment-direct .patient-card__head,
+.scenario-mode .scenario-assessment-direct .decision-step:has(#pcrText),
+.scenario-mode .scenario-assessment-direct .decision-step:has(#docText){display:none!important}
+.scenario-mode .page-shell{padding-top:16px}
+.scenario-mode .scenario-assessment-direct{display:block!important;padding:16px}
