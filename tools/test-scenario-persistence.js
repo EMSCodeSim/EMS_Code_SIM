@@ -115,6 +115,29 @@ assert.strictEqual(patientRecord.findings.airway.value, 'Airway patent; no obstr
 assert.strictEqual(patientRecord.treatments.at(-1).treatment, 'monitor');
 assert.strictEqual(scenarioState.treatments.at(-1).context, 'airway');
 assert.strictEqual(scenarioState.reassessments.at(-1).nextAction, 'monitor');
+assert(Array.isArray(patientRecord.careLog), 'Patient record should include a chronological care log.');
+assert(patientRecord.careLog.some(event => event.key === 'scene_size_up' && event.type === 'finding'));
+assert(patientRecord.careLog.some(event => event.key === 'spo2' && event.category === 'vital'));
+assert(patientRecord.careLog.some(event => event.type === 'treatment' && event.category === 'treatment'));
+assert(patientRecord.careLog.some(event => event.type === 'reassessment' && event.category === 'treatment'));
+assert.strictEqual(scenarioState.careLog.length, patientRecord.careLog.length, 'Scenario state should mirror the complete care log.');
+
+const firstPulse = session.saveFinding('pulse', '88/min; regular; strong', { source: 'persistence-test', normality: 'normal' });
+const secondPulse = session.saveFinding('pulse', '104/min; regular; weak', { source: 'persistence-test-reassessment', normality: 'not-normal' });
+patientRecord = JSON.parse(runtime.storage.getItem('emscodesim_patient_record_stroke'));
+const pulseEvents = patientRecord.careLog.filter(event => event.key === 'pulse');
+assert.strictEqual(pulseEvents.length, 2, 'Repeat vital signs should create separate chronological events.');
+assert.strictEqual(patientRecord.findings.pulse.value, secondPulse.value, 'The findings summary should retain the newest pulse.');
+assert.strictEqual(pulseEvents[0].value, firstPulse.value);
+assert.strictEqual(pulseEvents[1].value, secondPulse.value);
+
+session.saveFinding('sample_history', 'SAMPLE history obtained', { details: 'S: weakness. A: NKDA. M: insulin. P: diabetes. L: skipped breakfast. E: became confused at work.', source: 'sample-history-test' });
+session.saveFinding('pain_opqrst', 'OPQRST symptom assessment obtained', { details: 'O: sudden. P: exertion. Q: pressure. R: left arm. S: 8/10. T: 20 minutes.', source: 'opqrst-test' });
+patientRecord = JSON.parse(runtime.storage.getItem('emscodesim_patient_record_stroke'));
+assert(patientRecord.findings.sample, 'SAMPLE should use the canonical history key.');
+assert(patientRecord.findings.pain, 'OPQRST should use the canonical pain/history key.');
+assert(patientRecord.careLog.some(event => event.key === 'sample' && event.category === 'history'));
+assert(patientRecord.careLog.some(event => event.key === 'pain' && event.category === 'history'));
 
 // Simulate a partial storage loss: the patient record loses SpO2 while scenario state retains it.
 delete patientRecord.findings.spo2;
