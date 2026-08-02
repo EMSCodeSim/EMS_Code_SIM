@@ -45,7 +45,6 @@ test('direct vital entry saves and restores the complete pupil finding', async (
   expect(saved.scenario.findings.pupils.value).toBe(saved.patient.findings.pupils.value);
 
   await page.goto('/vitals/visual-patient.html?case=stroke');
-  await page.locator('#sceneGuideSkip').click();
   await page.locator('[data-panel="findingsPanel"]').click();
   await expect(page.locator('#findingList')).toContainText('Pupils');
   await assertNoPageErrors();
@@ -64,7 +63,6 @@ test('skin comparison, complete assessment tools, and assessment return paths re
   await expect(page.locator('#observations')).toContainText('visible sweat or moisture');
 
   await page.goto('/vitals/visual-patient.html?case=stroke');
-  await page.locator('#sceneGuideSkip').click();
   await page.locator('[data-panel="assessmentPanel"]').click();
   await expect(page.locator('#assessmentTools')).toContainText('Airway assessment');
   await expect(page.locator('#assessmentTools')).toContainText('Glasgow Coma Scale');

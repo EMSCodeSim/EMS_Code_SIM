@@ -8,10 +8,18 @@ test.beforeEach(async ({ page }) => {
   await clearSiteStorage(page);
 });
 
-test('visual patient guides scene size-up without blocking a missed decision', async ({ page }) => {
+test('visual patient keeps scene size-up manual and guides it without blocking a missed decision', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
   await page.goto('/vitals/visual-patient.html?case=asthma&mode=scenario&resume=1');
   await expect(page.locator('#patientImage')).toBeVisible();
+  await expect(page.locator('#sceneGuide')).toBeHidden();
+  await page.locator('[data-panel="assessmentPanel"]').click();
+  await expect(page.locator('#assessmentTools .scene-size-card')).toBeVisible();
+  await expect(page.locator('#assessmentTools .sequence-card').nth(0)).toContainText('Scene size-up');
+  await expect(page.locator('#assessmentTools .sequence-card').nth(1)).toContainText('Airway');
+  await expect(page.locator('#assessmentTools .sequence-card').nth(2)).toContainText('Breathing');
+  await expect(page.locator('#assessmentTools .sequence-card').nth(3)).toContainText('Circulation');
+  await page.locator('.scene-guide-card-button').click();
   await expect(page.locator('#sceneGuide')).toBeVisible();
   await expect(page.locator('#sceneGuideQuestion')).toContainText('What PPE should you use?');
 
