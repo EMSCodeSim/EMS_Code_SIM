@@ -237,11 +237,11 @@
     article.innerHTML = `
       <span class="sequence-number">1</span>
       <div class="sequence-card-body">
-        <span class="visual-tag">START HERE — NREMT THINKING ORDER</span>
+        <span class="visual-tag">SCENE AND FIRST IMPRESSION</span>
         <h3>Scene size-up and first impression</h3>
         <p>Use the dispatch and first picture to consider PPE, scene safety, patient count, NOI/MOI, resources, spinal precautions, general impression, responsiveness, and priority.</p>
         <p class="reasoning-tip"><strong>Picture-based:</strong> Several answers come from what you can already see. Do not wait for a vital sign to form a general impression.</p>
-        <div class="tool-actions"><button class="primary-action scene-guide-card-button" type="button">${complete ? 'Review scene size-up' : 'Open scene size-up questions'}</button>
+        <div class="tool-actions"><button class="primary-action scene-guide-card-button" type="button">${complete ? 'Review scene size-up' : 'Scene size-up'}</button>
         <span class="status-chip ${complete ? 'done' : ''}">${complete ? 'Recorded' : 'Not started'}</span></div>
       </div>`;
     article.querySelector('button').addEventListener('click', () => {
@@ -285,11 +285,11 @@
 
     const intro = document.createElement('div');
     intro.className = 'assessment-order-note';
-    intro.innerHTML = '<strong>Work from immediate threats toward details.</strong><span>Use the picture for visible findings and reasonable first inferences. Use the linked tools for anything you have not actually measured or assessed.</span>';
+    intro.innerHTML = '<strong>Assessment options</strong><span>Use what is visible, then select the tools needed to confirm findings or answer remaining questions.</span>';
     box.appendChild(intro);
 
     buildSceneSizeUpCard(box);
-    appendAssessmentHeading(box, 'Primary assessment', 'After scene size-up, move through airway, breathing, then circulation. Do not treat an inference as a complete assessment.', 'primary-heading');
+    appendAssessmentHeading(box, 'Primary assessment', 'Airway, breathing, and circulation findings can be explored in any order the patient condition requires.', 'primary-heading');
     buildPrimaryCard(box, 'airway', 2);
     buildPrimaryCard(box, 'breathing', 3);
     buildPrimaryCard(box, 'perfusion', 4);
@@ -301,10 +301,10 @@
       return ar - br || a.category.localeCompare(b.category) || a.label.localeCompare(b.label);
     });
 
-    appendAssessmentHeading(box, 'Focused assessment and history', 'Choose tools that answer the patient-specific questions raised by your primary assessment. All other assessment tools remain available below.', 'focused-heading');
+    appendAssessmentHeading(box, 'Focused assessment and history', 'Select additional tools based on the presentation and information already collected.', 'focused-heading');
     let currentCategory = '';
     tools.forEach(tool => {
-      const category = scenario.recommended.includes(tool.key) ? 'Most relevant next tools' : tool.category;
+      const category = scenario.recommended.includes(tool.key) ? 'Commonly useful for this presentation' : tool.category;
       if (category !== currentCategory) {
         currentCategory = category;
         const heading = document.createElement('h3');
@@ -462,7 +462,6 @@
     buildTreatments();
     renderFindings();
     updateCounts();
-    updateNextAction();
     $('patientLabel').textContent = current?.patient || 'Patient';
     $('dispatch').textContent = current?.dispatch || scenario.title;
     $('scene').textContent = current?.scene || '';

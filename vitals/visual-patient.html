@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=6">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=7">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2">
 </head>
 <body>
@@ -22,10 +22,10 @@
 
     <section class="patient-stage" aria-label="Patient view">
       <img id="patientImage" src="/vitals/assets/scenario-patient-adult-v3.png" alt="Patient awaiting assessment">
-      <div class="patient-status"><span>VISIBLE CONDITION</span><b id="visibleCondition">Observe before touching the patient</b><button id="reviewSceneGuide" class="scene-guide-launch" type="button">Start guided scene size-up</button></div>
+      <div class="patient-status"><span>VISIBLE CONDITION</span><b id="visibleCondition">Observe before touching the patient</b></div>
       <div class="patient-caption">
         <h2 id="patientLabel">Patient</h2>
-        <p id="patientPrompt">Use the recommended next action or choose any clinical tool below.</p>
+        <p id="patientPrompt">Observe the patient, then choose what you want to assess, measure, or treat.</p>
       </div>
     </section>
 
@@ -59,11 +59,6 @@
     </section>
 
 
-    <section id="nextActionCard" class="next-action-card" aria-live="polite">
-      <div><p>RECOMMENDED NEXT ACTION</p><h2 id="nextActionTitle">Begin assessment</h2><span id="nextActionReason">Start with scene size-up, then move through airway, breathing, and circulation.</span></div>
-      <div id="nextActionButtons" class="next-action-buttons"></div>
-    </section>
-
     <section class="quick-status" aria-label="Scenario progress">
       <div><span>Vitals obtained</span><strong id="vitalCount">0 / 8</strong></div>
       <div><span>Log entries</span><strong id="findingCount">0</strong></div>
@@ -72,8 +67,8 @@
   </main>
 
   <nav class="bottom-nav" aria-label="Scenario controls">
-    <button data-panel="vitalsPanel" type="button"><span>♥</span>Tools</button>
     <button data-panel="assessmentPanel" type="button"><span>◎</span>Assessment</button>
+    <button data-panel="vitalsPanel" type="button"><span>♥</span>Tools</button>
     <button data-panel="treatmentPanel" type="button"><span>✚</span>Treatment</button>
     <button data-panel="findingsPanel" type="button"><span>☷</span>Log <em id="findingBadge" hidden>0</em></button>
   </nav>
@@ -92,7 +87,7 @@
     </section>
 
     <section id="assessmentPanel" class="vp-panel" hidden>
-      <p class="sub">Follow the clinical order: scene size-up, airway, breathing, circulation, then patient-specific focused tools. Use visible clues only for what they can support.</p>
+      <p class="sub">Choose the assessment that fits what you see and what you still need to know. Scene size-up is available first, followed by primary and focused assessment tools.</p>
       <div id="assessmentTools" class="assessment-list"></div>
     </section>
 

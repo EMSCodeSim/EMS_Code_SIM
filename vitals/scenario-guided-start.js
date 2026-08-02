@@ -182,7 +182,7 @@
     setLocked(false);
     const finding = completedFinding || api?.getFinding?.('scene_size_up', api?.active?.());
     $('sceneGuideCompleteSummary').textContent = finding?.value || finding?.finding || 'Scene size-up recorded.';
-    $('reviewSceneGuide').textContent = 'Review guided scene size-up';
+    if ($('reviewSceneGuide')) $('reviewSceneGuide').textContent = 'Review scene size-up';
   }
 
   function startGuide(review = false) {
@@ -207,7 +207,7 @@
     $('sceneGuide').hidden = true;
     $('sceneGuideComplete').hidden = true;
     setLocked(false);
-    $('reviewSceneGuide').textContent = 'Open scene size-up';
+    if ($('reviewSceneGuide')) $('reviewSceneGuide').textContent = 'Scene size-up';
   }
 
   function init() {
@@ -222,7 +222,7 @@
       else saveGuide(false);
     });
     $('sceneGuideSkip').addEventListener('click', () => reviewMode ? showComplete() : saveGuide(true));
-    $('reviewSceneGuide').addEventListener('click', () => startGuide(Boolean(completedFinding)));
+    $('reviewSceneGuide')?.addEventListener('click', () => startGuide(Boolean(completedFinding)));
     $('beginPrimaryAssessment').addEventListener('click', openAssessment);
     $('reviewCompletedSceneGuide').addEventListener('click', () => startGuide(true));
     if (completedFinding) showComplete();
