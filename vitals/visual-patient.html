@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=14">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=15">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=3">
 </head>
 <body>
@@ -73,6 +73,7 @@
     <button data-panel="assessmentPanel" type="button"><span>◎</span>Assessment</button>
     <button data-panel="vitalsPanel" type="button"><span>♥</span>Tools</button>
     <button data-panel="treatmentPanel" type="button"><span>✚</span>Treatment</button>
+    <button data-panel="transportPanel" type="button"><span>➜</span>Transport</button>
     <button data-panel="findingsPanel" type="button"><span>☷</span>Log <em id="findingBadge" hidden>0</em></button>
   </nav>
 
@@ -97,6 +98,24 @@
     <section id="treatmentPanel" class="vp-panel" hidden>
       <p class="sub">Select an intervention, answer the clinical follow-up, then reassess.</p>
       <div id="treatmentTools" class="treatment-list"></div>
+    </section>
+
+
+    <section id="transportPanel" class="vp-panel transport-panel" hidden>
+      <p class="sub">Choose transport priority and destination from the patient information you have obtained. Review readiness before giving handoff.</p>
+      <div id="transportDecisionCard" class="transport-card"></div>
+      <div id="destinationCard" class="transport-card"></div>
+      <div class="transport-card">
+        <div class="transport-card-head"><div><span class="requirement-tag required">Required</span><h3>Handoff readiness</h3></div><span id="transportReadinessStatus" class="status-chip">Review</span></div>
+        <div id="transportReadinessList" class="transport-readiness-list"></div>
+      </div>
+      <div class="transport-card">
+        <div class="transport-card-head"><div><span class="requirement-tag required">Required</span><h3>Patient handoff</h3></div><span id="handoffStatusChip" class="status-chip">Not saved</span></div>
+        <p class="transport-help">Generate a concise report from the patient record, edit it as needed, then save it before ending the scenario.</p>
+        <textarea id="handoffDraft" rows="8" aria-label="Patient handoff report" placeholder="Generate or enter a handoff report"></textarea>
+        <div class="transport-actions"><button id="generateHandoff" type="button" class="secondary">Generate from record</button><button id="saveHandoff" type="button" class="primary-action">Save handoff</button></div>
+        <a id="openFullHandoff" class="transport-full-link" href="/vitals/pcr-handoff.html">Open full PCR and verbal handoff tool</a>
+      </div>
     </section>
 
     <section id="findingsPanel" class="vp-panel" hidden>
@@ -140,7 +159,7 @@
   <script src="/vitals/scenario-runtime.js?v=2"></script>
   <script src="/vitals/scenario-tool-registry.js?v=3"></script>
   <script src="/vitals/scenario-phase-model.js?v=1"></script>
-  <script src="/vitals/visual-patient.js?v=15"></script>
+  <script src="/vitals/visual-patient.js?v=16"></script>
   <script src="/vitals/scenario-guided-start.js?v=2"></script>
 </body>
 </html>

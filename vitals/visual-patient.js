@@ -130,6 +130,14 @@
   let infoUpdateIndex = 0;
   let lastInfoSignature = '';
   let timerInterval = 0;
+  const TRANSPORT_PLANS = {
+    asthma: { impressions:['Acute asthma exacerbation','Respiratory distress with hypoxia','Impending respiratory failure'], priorities:['Routine transport','Prompt transport','Emergent transport / ALS intercept'], destinations:['Closest appropriate emergency department','Respiratory-capable emergency department'], bestPriority:'Prompt transport', bestDestination:'Closest appropriate emergency department' },
+    stroke: { impressions:['Acute stroke syndrome','Hypoglycemia mimicking stroke','Nonspecific weakness'], priorities:['Routine transport','Emergent stroke transport','Remain on scene for complete exam'], destinations:['Stroke-capable center','Closest emergency department','Trauma center'], bestPriority:'Emergent stroke transport', bestDestination:'Stroke-capable center' },
+    hypoglycemia: { impressions:['Symptomatic hypoglycemia','Acute stroke','Medication overdose'], priorities:['Routine transport after improvement','Prompt transport / ALS intercept','No transport needed'], destinations:['Closest appropriate emergency department','Stroke-capable center','Trauma center'], bestPriority:'Prompt transport / ALS intercept', bestDestination:'Closest appropriate emergency department' },
+    trauma: { impressions:['Blunt multisystem trauma with shock','Isolated chest-wall pain','Minor collision without injury'], priorities:['Routine transport','Emergent trauma transport','Remain on scene for complete history'], destinations:['Trauma center','Closest emergency department','Stroke-capable center'], bestPriority:'Emergent trauma transport', bestDestination:'Trauma center' },
+    pediatric: { impressions:['Pediatric respiratory distress','Simple febrile illness','Foreign-body airway obstruction'], priorities:['Routine transport','Prompt pediatric transport','Emergent transport / ALS intercept'], destinations:['Pediatric-capable emergency department','Closest appropriate emergency department'], bestPriority:'Prompt pediatric transport', bestDestination:'Pediatric-capable emergency department' }
+  };
+
   let partnerInterval = 0;
 
   function ensureRecord() {
@@ -739,6 +747,68 @@ Record this decision and its consequence?`;
     layer.innerHTML = scenario.sceneClues.map((clue, index) => `<span class="scene-clue clue-${index + 1}">${escapeHtml(clue)}</span>`).join('');
   }
 
+  function transportPlan() { return TRANSPORT_PLANS[id] || TRANSPORT_PLANS.asthma; }
+  function selectOptions(values, selected, placeholder) {
+    return `<option value="">${escapeHtml(placeholder)}</option>${values.map(value => `<option value="${escapeHtml(value)}" ${value === selected ? 'selected' : ''}>${escapeHtml(value)}</option>`).join('')}`;
+  }
+  function saveTransportDecision() {
+    const impression = $('transportImpression')?.value || '';
+    const priority = $('transportPriority')?.value || '';
+    const destination = $('transportDestination')?.value || '';
+    const rationale = ($('transportRationale')?.value || '').trim();
+    if (!impression || !priority || !destination) { toast('Choose an impression, transport priority, and destination'); return; }
+    api?.setImpressions?.({ primary: impression, action: priority, source: 'transport-decision', updatedAt: new Date().toISOString() });
+    api?.setDocumentation?.({ transportPriority: priority, destination, transportRationale: rationale, transportDecisionAt: new Date().toISOString() });
+    api?.setFinding?.('transport_decision', `${priority} to ${destination}`, { label: 'Transport decision', source: 'transport-decision', details: rationale || `Working impression: ${impression}` });
+    const plan = transportPlan();
+    const feedback = priority === plan.bestPriority && destination === plan.bestDestination
+      ? 'Transport plan matches this patient’s current presentation.'
+      : 'Transport plan recorded. The final debrief will compare it with the patient’s presentation and timing.';
+    toast('Transport decision saved');
+    const box = $('transportDecisionFeedback'); if (box) { box.hidden = false; box.textContent = feedback; }
+    renderTransport(); renderProgress(); renderInfoUpdate(true);
+  }
+  function handoffText(current = record() || {}) {
+    const findings = current.findings || {};
+    const age = current.patient || (id === 'pediatric' ? '3-year-old child' : 'Adult patient');
+    const impression = current.impressions?.primary || 'working impression not yet selected';
+    const initialVitals = ['blood_pressure','pulse','respirations','spo2','blood_glucose','temperature'].filter(key => findings[key]).map(key => `${labelFor(key)} ${findings[key].value}`).join(', ');
+    const important = ['airway','breathing','perfusion','mental_status','motor_sensory','breath_sounds','skin'].filter(key => findings[key]).map(key => `${labelFor(key)}: ${findings[key].value}`).join('; ');
+    const treatments = (current.treatments || []).map(item => item.description || item.name || item.treatmentLabel || item.value).filter(Boolean).join('; ');
+    const reassess = (current.reassessments || []).slice(-3).map(item => item.description || item.response || item.value).filter(Boolean).join('; ');
+    const priority = current.documentation?.transportPriority || current.impressions?.action || 'transport priority not yet selected';
+    const destination = current.documentation?.destination || 'destination not yet selected';
+    return `${age} with ${current.dispatch || scenario.title}. Working impression: ${impression}. Key findings: ${important || 'assessment findings pending'}. Vitals: ${initialVitals || 'initial vitals pending'}. Treatments: ${treatments || 'none recorded'}. Response/reassessment: ${reassess || 'reassessment pending'}. Transporting ${priority.toLowerCase()} to ${destination}.`;
+  }
+  function generateHandoff() { $('handoffDraft').value = handoffText(); }
+  function saveHandoff() {
+    const text = ($('handoffDraft')?.value || '').trim();
+    if (!text) { toast('Generate or enter the handoff report first'); return; }
+    api?.setDocumentation?.({ handoff: text, handoffSavedAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    toast('Handoff saved'); renderTransport(); renderProgress();
+  }
+  function renderTransport() {
+    const current = record() || {};
+    const plan = transportPlan();
+    const impression = current.impressions?.primary || '';
+    const priority = current.documentation?.transportPriority || current.impressions?.action || '';
+    const destination = current.documentation?.destination || '';
+    $('transportDecisionCard').innerHTML = `<div class="transport-card-head"><div><span class="requirement-tag required">Required</span><h3>Impression and transport priority</h3></div><span class="status-chip ${impression && priority ? 'done' : ''}">${impression && priority ? 'Recorded' : 'Not recorded'}</span></div><label>Working impression<select id="transportImpression">${selectOptions(plan.impressions, impression, 'Choose the best impression')}</select></label><label>Transport priority<select id="transportPriority">${selectOptions(plan.priorities, priority, 'Choose transport priority')}</select></label>`;
+    $('destinationCard').innerHTML = `<div class="transport-card-head"><div><span class="requirement-tag required">Required</span><h3>Destination</h3></div><span class="status-chip ${destination ? 'done' : ''}">${destination ? 'Selected' : 'Not selected'}</span></div><label>Receiving facility<select id="transportDestination">${selectOptions(plan.destinations, destination, 'Choose destination')}</select></label><label>Reason for this choice<textarea id="transportRationale" rows="3" placeholder="Use findings, time sensitivity, and specialty needs">${escapeHtml(current.documentation?.transportRationale || '')}</textarea></label><button id="saveTransportDecision" class="primary-action" type="button">Save transport decision</button><p id="transportDecisionFeedback" class="transport-feedback" hidden></p>`;
+    $('saveTransportDecision')?.addEventListener('click', saveTransportDecision);
+    const evaluation = phases?.evaluate?.(current);
+    const relevant = (evaluation?.phases || []).filter(phase => ['scene','primary','focused','vitals','treatment','reassessment','impression','handoff'].includes(phase.id));
+    $('transportReadinessList').innerHTML = relevant.map(phase => `<div class="transport-ready-row ${phase.complete ? 'complete' : phase.started ? 'in-progress' : 'missing'}"><span>${phase.complete ? '✓' : phase.started ? '•' : '!'}</span><div><strong>${escapeHtml(phase.label)}</strong><small>${escapeHtml(phase.complete ? 'Complete' : phase.detail || phase.requirement)}</small></div></div>`).join('');
+    const careReady = relevant.filter(phase => !['handoff'].includes(phase.id)).every(phase => phase.complete);
+    $('transportReadinessStatus').textContent = careReady ? 'Ready for handoff' : 'Items remain';
+    $('transportReadinessStatus').classList.toggle('done', careReady);
+    const savedHandoff = current.documentation?.handoff || '';
+    if (!$('handoffDraft').value || $('handoffDraft').dataset.loaded !== current.id) { $('handoffDraft').value = savedHandoff; $('handoffDraft').dataset.loaded = current.id || id; }
+    $('handoffStatusChip').textContent = savedHandoff ? 'Saved' : 'Not saved';
+    $('handoffStatusChip').classList.toggle('done', Boolean(savedHandoff));
+    $('openFullHandoff').href = toolUrl('/vitals/pcr-handoff.html', 'Patient');
+  }
+
   function renderProgress() {
     const current = record();
     const evaluation = phases?.evaluate?.(current);
@@ -751,7 +821,8 @@ Record this decision and its consequence?`;
       </div>`).join('');
     const completed = evaluation.phases.filter(phase => phase.complete).length;
     $('scenarioProgressSummary').textContent = `${completed} of ${evaluation.phases.length} phases addressed`;
-    $('handoffFromProgress').href = toolUrl('/vitals/pcr-handoff.html', 'Patient');
+    $('handoffFromProgress').href = '#';
+    $('handoffFromProgress').onclick = event => { event.preventDefault(); openSheet('transportPanel'); };
     const button = $('completeScenarioFromPatient');
     button.textContent = evaluation.essentialComplete ? 'Open debrief' : 'Check completion';
     button.dataset.ready = evaluation.essentialComplete ? 'true' : 'false';
@@ -834,7 +905,7 @@ Record this decision and its consequence?`;
   function openSheet(panelId) {
     document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
-    $('sheetTitle').textContent = { vitalsPanel: 'Patient tools', assessmentPanel: 'Assessment', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
+    $('sheetTitle').textContent = { vitalsPanel: 'Patient tools', assessmentPanel: 'Assessment', treatmentPanel: 'Treatment', transportPanel: 'Transport and handoff', findingsPanel: 'Patient care log' }[panelId];
     $('actionSheet').hidden = false;
     $('sheetBackdrop').hidden = false;
     document.body.style.overflow = 'hidden';
@@ -861,6 +932,7 @@ Record this decision and its consequence?`;
     buildVitals();
     buildAssessments();
     buildTreatments();
+    renderTransport();
     renderFindings();
     updateCounts();
     renderProgress();
@@ -875,6 +947,8 @@ Record this decision and its consequence?`;
   setPatientImage($('patientImage'), scenario.image);
   setPatientImage($('focusImage'), scenario.image);
   renderSceneClues();
+  $('generateHandoff').addEventListener('click', generateHandoff);
+  $('saveHandoff').addEventListener('click', saveHandoff);
   $('recordTreatmentLink').href = toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general');
   $('fullPatientRecordLink').href = `/vitals/patient-record.html?mode=scenario&resume=1&case=${encodeURIComponent(id)}&return=${encodeURIComponent(`/vitals/visual-patient.html?case=${id}`)}`;
   refreshFromRecord();
