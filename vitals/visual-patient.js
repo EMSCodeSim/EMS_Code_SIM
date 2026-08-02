@@ -864,20 +864,26 @@ Record this decision and its consequence?`;
     if (!evaluation.essentialComplete) {
       const remaining = evaluation.missing.slice(0, 7);
       message.className = 'scenario-completion-message incomplete';
-      message.innerHTML = `<strong>Essential care is not complete.</strong><span>${escapeHtml(remaining.join(' • '))}${evaluation.missing.length > remaining.length ? ` • +${evaluation.missing.length - remaining.length} more` : ''}</span>`;
+      message.innerHTML = `<strong>Before finishing</strong><span>${escapeHtml(remaining.join(' • '))}${evaluation.missing.length > remaining.length ? ` • +${evaluation.missing.length - remaining.length} more` : ''}</span><div class="completion-choice-actions"><button id="continueScenarioCare" type="button">Return to patient care</button><button id="finishScenarioAnyway" class="secondary" type="button">Finish anyway</button></div>`;
+      $('continueScenarioCare')?.addEventListener('click', () => { message.hidden = true; });
+      $('finishScenarioAnyway')?.addEventListener('click', () => finishScenarioAndOpenDebrief(current, evaluation, true));
       return;
     }
+    finishScenarioAndOpenDebrief(current, evaluation, false);
+  }
+
+  function finishScenarioAndOpenDebrief(current, evaluation, incomplete) {
     const assignment = assignmentSessionForScenario();
     const state = session?.readState?.(id) || {};
-    state.clinicalComplete = true;
+    state.clinicalComplete = !incomplete;
     state.clinicalCompletedAt = new Date().toISOString();
-    state.complete = !assignment?.requireDebrief;
+    state.complete = !assignment?.requireDebrief && !incomplete;
     if (state.complete) state.completedAt = state.clinicalCompletedAt;
     session?.writeState?.(id, state);
-    localStorage.setItem(`emscodesim_mastered_scenario_${id}`, 'true');
-    if (assignment && !assignment.requireDebrief) markAssignmentComplete(assignment);
+    if (!incomplete) localStorage.setItem(`emscodesim_mastered_scenario_${id}`, 'true');
+    if (assignment && !assignment.requireDebrief && !incomplete) markAssignmentComplete(assignment);
     message.className = 'scenario-completion-message complete';
-    message.innerHTML = '<strong>Essential patient care is complete.</strong><span>Open the debrief to review timing, missed choices, unnecessary assessments, and documentation.</span>';
+    message.innerHTML = incomplete ? '<strong>Scenario ended with care items outstanding.</strong><span>The debrief will identify the missing and delayed actions.</span>' : '<strong>Essential patient care is complete.</strong><span>Open the debrief to review timing, missed choices, unnecessary assessments, and documentation.</span>';
     location.href = toolUrl('/vitals/scenario-debrief.html', 'Patient');
   }
 

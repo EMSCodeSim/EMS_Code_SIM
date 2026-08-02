@@ -1,242 +1,84 @@
 (() => {
   'use strict';
-
   const $ = id => document.getElementById(id);
-  const activeRecord = () => window.EMSCodeSimPatientRecord?.active?.() || null;
-  const text = value => String(value ?? '').trim();
-  const safeArray = value => Array.isArray(value) ? value : value ? [value] : [];
-  const escapeHtml = value => text(value).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  const titleCase = value => text(value).replace(/[-_]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  const api = window.EMSCodeSimPatientRecord;
+  const phaseApi = window.EMSCodeSimScenarioPhases;
+  const text = v => String(v ?? '').trim();
+  const arr = v => Array.isArray(v) ? v : [];
+  const esc = v => text(v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const ts = v => { const n = new Date(v || 0).getTime(); return Number.isFinite(n) ? n : 0; };
+  const fmt = sec => `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(Math.max(0,sec%60)).padStart(2,'0')}`;
+  const label = key => phaseApi?.labelFor?.(key) || text(key).replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
 
-  function scorePair(score, max) {
-    const s = Number(score); const m = Number(max);
-    return Number.isFinite(s) && Number.isFinite(m) && m > 0 ? {score:s,max:m,percent:Math.round((s/m)*100)} : null;
+  const SCENARIO_EXPECTATIONS = {
+    asthma:{critical:['airway','breathing','perfusion','respirations','breath_sounds','spo2'], maxTreatmentDelay:180, destination:'Closest appropriate emergency department'},
+    stroke:{critical:['airway','breathing','perfusion','mental_status','motor_sensory','blood_glucose','blood_pressure'], maxTreatmentDelay:240, destination:'Stroke-capable center'},
+    hypoglycemia:{critical:['airway','breathing','perfusion','mental_status','blood_glucose'], maxTreatmentDelay:180, destination:'Closest appropriate emergency department'},
+    trauma:{critical:['airway','breathing','perfusion','blood_pressure','pulse','chest_assessment','trauma_assessment'], maxTreatmentDelay:180, destination:'Trauma center'},
+    pediatric:{critical:['pediatric_assessment_triangle','airway','breathing','perfusion','respirations','spo2'], maxTreatmentDelay:180, destination:'Pediatric-capable emergency department'}
+  };
+
+  function record(){ return api?.active?.() || null; }
+  function elapsed(record, when){ return Math.max(0, Math.round((ts(when)-ts(record.startedAt))/1000)); }
+  function statusRating(score){ return score>=90?'Strong':score>=75?'Appropriate':score>=60?'Developing':'Needs improvement'; }
+  function classification(record,key){ return phaseApi?.classification?.(record.scenarioId||record.id,key) || 'optional'; }
+  function has(record,key){ return Boolean(record.findings?.[key]); }
+  function newestTime(items){ return items.length ? Math.max(...items.map(x=>ts(x.recordedAt||x.time))) : 0; }
+  function firstTime(items){ return items.length ? Math.min(...items.map(x=>ts(x.recordedAt||x.time))) : 0; }
+
+  function grade(record){
+    const evaluation=phaseApi.evaluate(record); const scenarioId=evaluation.caseId; const expected=SCENARIO_EXPECTATIONS[scenarioId]||SCENARIO_EXPECTATIONS.asthma;
+    const strengths=[], opportunities=[], selection=[], handoff=[]; const ratings=[];
+    const phaseMap={scene:'Initial priorities',primary:'Primary assessment',focused:'Assessment selection',vitals:'Vital signs',treatment:'Treatment',reassessment:'Reassessment',impression:'Transport',handoff:'Handoff'};
+    evaluation.phases.filter(p=>phaseMap[p.id]).forEach(p=>{
+      let score=p.complete?90:p.started?60:25;
+      if(p.id==='focused'){
+        const unnecessary=Object.keys(record.findings||{}).filter(k=>classification(record,k)==='not-indicated');
+        score=Math.max(20,score-unnecessary.length*8);
+      }
+      ratings.push({id:p.id,label:phaseMap[p.id],score,rating:statusRating(score),detail:p.complete?'Completed':p.detail||p.requirement});
+    });
+    expected.critical.filter(k=>has(record,k)).length>=Math.ceil(expected.critical.length*.8) ? strengths.push('The key threats and time-sensitive findings were assessed.') : opportunities.push('Several high-priority findings were not obtained before the call ended.');
+    if(arr(record.treatments).length) strengths.push('At least one treatment decision was recorded and linked to the patient record.'); else opportunities.push('No treatment decision was recorded.');
+    const firstAbnormal=Object.values(record.findings||{}).filter(f=>/abnormal|not-normal|inadequate|unstable/i.test(text(f.status||f.normality||f.classification))).sort((a,b)=>ts(a.recordedAt)-ts(b.recordedAt))[0];
+    const firstTreatment=arr(record.treatments).slice().sort((a,b)=>ts(a.recordedAt||a.time)-ts(b.recordedAt||b.time))[0];
+    if(firstAbnormal&&firstTreatment){ const delay=Math.max(0,(ts(firstTreatment.recordedAt||firstTreatment.time)-ts(firstAbnormal.recordedAt))/1000); if(delay<=expected.maxTreatmentDelay) strengths.push(`Treatment began ${fmt(Math.round(delay))} after the first abnormal finding.`); else opportunities.push(`Treatment was delayed ${fmt(Math.round(delay))} after the first abnormal finding.`); }
+    if(arr(record.treatments).length && !phaseApi.hasReassessmentAfterTreatment(record)) opportunities.push('The patient was not formally reassessed after treatment.');
+    if(phaseApi.hasReassessmentAfterTreatment(record)) strengths.push('A formal reassessment was recorded after treatment.');
+    const notIndicated=Object.keys(record.findings||{}).filter(k=>classification(record,k)==='not-indicated');
+    if(notIndicated.length) selection.push(`Potentially unnecessary assessments: ${notIndicated.map(label).join(', ')}.`); else selection.push('No clearly non-indicated assessments were recorded.');
+    const duplicateKeys={}; arr(record.careLog).filter(e=>e.type==='finding').forEach(e=>{duplicateKeys[e.key]=(duplicateKeys[e.key]||0)+1});
+    const duplicates=Object.entries(duplicateKeys).filter(([,n])=>n>2).map(([k])=>label(k));
+    if(duplicates.length) selection.push(`Repeated frequently: ${duplicates.join(', ')}. Confirm that each repeat changed care or represented reassessment.`);
+    const destination=text(record.documentation?.destination); const priority=text(record.documentation?.transportPriority||record.impressions?.action);
+    if(destination===expected.destination) handoff.push(`Destination selection matched the scenario need: ${destination}.`); else if(destination) handoff.push(`Review destination choice: ${destination}. Expected best option: ${expected.destination}.`); else handoff.push('No destination was selected.');
+    if(priority) handoff.push(`Transport priority recorded: ${priority}.`); else handoff.push('Transport priority was not recorded.');
+    const report=text(record.documentation?.handoff); if(report){
+      const missing=[]; if(!/treat|oxygen|glucose|albuterol|intervention|care/i.test(report)&&arr(record.treatments).length) missing.push('treatments'); if(!/vital|bp|pulse|spo|resp/i.test(report)) missing.push('vital signs'); if(!/response|reassess|improv|unchanged|worsen/i.test(report)&&arr(record.reassessments).length) missing.push('patient response');
+      missing.length?handoff.push(`Handoff may be missing: ${missing.join(', ')}.`):handoff.push('Handoff includes the major clinical story elements.');
+    } else handoff.push('No verbal handoff was saved.');
+    evaluation.missing.forEach(item=>opportunities.push(`Missing before scenario end: ${item}.`));
+    const avg=Math.round(ratings.reduce((n,r)=>n+r.score,0)/Math.max(1,ratings.length));
+    return {evaluation,ratings,strengths:[...new Set(strengths)],opportunities:[...new Set(opportunities)],selection:[...new Set(selection)],handoff:[...new Set(handoff)],score:avg,label:statusRating(avg)};
   }
 
-  function findingScores(record) {
-    const pairs = Object.values(record.findings || {}).map(f => {
-      const scored = scorePair(f?.score, f?.maxScore);
-      if (scored) return scored;
-      const hasAccuracy = typeof f?.accurate === 'boolean' || typeof f?.correct === 'boolean';
-      if (hasAccuracy) return scorePair((f.accurate ?? f.correct) ? 1 : 0, 1);
-      return null;
-    }).filter(Boolean);
-    if (!pairs.length) return null;
-    const total = pairs.reduce((n,p)=>n+p.score,0);
-    const max = pairs.reduce((n,p)=>n+p.max,0);
-    return scorePair(total,max);
+  function renderList(id,items,type){ $(id).innerHTML=items.length?items.map(x=>`<div class="feedback-item ${type}">${esc(x)}</div>`).join(''):`<div class="feedback-item neutral">No items recorded.</div>`; }
+  function renderTimeline(record){
+    const events=arr(record.careLog).slice().sort((a,b)=>(ts(a.recordedAt)-ts(b.recordedAt))||((a.sequence||0)-(b.sequence||0)));
+    const end=Math.max(Date.now(),newestTime(events)); $('timelineDuration').textContent=`Call time ${fmt(elapsed(record,end))}`;
+    $('careTimeline').innerHTML=events.length?events.map(e=>`<article class="timeline-item ${esc(e.type||'event')}"><time>${fmt(elapsed(record,e.recordedAt))}</time><div><h3>${esc(e.label||label(e.key||e.type))}</h3><p>${esc(e.value||e.details||'Recorded')}</p>${e.details&&e.details!==e.value?`<small>${esc(e.details)}</small>`:''}</div></article>`).join(''):'<p>No care events were recorded.</p>';
   }
-
-  function treatmentScores(record) {
-    const pairs = [...safeArray(record.treatments), ...safeArray(record.reassessments)]
-      .map(v => scorePair(v.score, v.maxScore)).filter(Boolean);
-    if (!pairs.length) return null;
-    return scorePair(pairs.reduce((n,p)=>n+p.score,0),pairs.reduce((n,p)=>n+p.max,0));
+  function render(record){
+    const g=grade(record); $('patientTitle').textContent=record.title||'Patient scenario'; $('patientSummary').textContent=[record.patient,record.dispatch,record.scene].filter(Boolean).join(' • ');
+    $('overallScore').textContent=`${g.score}%`; $('overallLabel').textContent=g.label; $('overallSummary').textContent=g.opportunities.length?`The call contained ${g.strengths.length} documented strengths and ${g.opportunities.length} coaching points.`:'All essential phases were addressed.';
+    $('phaseRatings').innerHTML=g.ratings.map(r=>`<article class="phase-rating"><div><strong>${esc(r.label)}</strong><small>${esc(r.detail)}</small></div><span class="rating ${r.rating.toLowerCase().replace(/\s+/g,'-')}">${esc(r.rating)}</span></article>`).join('');
+    renderTimeline(record); renderList('strengthList',g.strengths,'good'); renderList('opportunityList',g.opportunities,'review'); renderList('selectionReview',g.selection,'neutral'); renderList('handoffReview',g.handoff,'neutral');
+    return g;
   }
-
-  function showScore(id, pair) { $(id).textContent = pair ? `${pair.percent}%` : '—'; }
-
-  function normalizeFinding(key, item) {
-    const value = item && typeof item === 'object' ? item : {value:item};
-    const classification = text(value.classification || value.normality || value.status || value.selectedNormality);
-    const isAbnormal = /not normal|abnormal|concerning|inadequate|unstable/i.test(classification);
-    const hasAccuracy = typeof value.accurate === 'boolean' || typeof value.correct === 'boolean';
-    const accurate = hasAccuracy ? Boolean(value.accurate ?? value.correct) : null;
-    return {
-      key,
-      label: titleCase(value.label || key),
-      value: text(value.learnerFinding || value.learnerReading || value.value || value.finding || value.observation || 'Recorded'),
-      expected: text(value.expectedFinding || value.actualFinding || ''),
-      classification: classification || 'Not classified',
-      interpretation: text(value.interpretation || value.problem || value.pattern || ''),
-      documentation: text(value.documentation || value.pcr || ''),
-      isAbnormal,
-      hasAccuracy,
-      accurate,
-      skipped: Boolean(value.skipped),
-      answers: safeArray(value.answers).filter(answer => answer && typeof answer === 'object'),
-      score: scorePair(value.score,value.maxScore) || (hasAccuracy ? scorePair(accurate ? 1 : 0, 1) : null)
-    };
-  }
-
-  function renderAnswerReview(finding) {
-    if (!finding.answers.length) return '';
-    return `<details class="skill-sheet-breakdown" ${finding.accurate ? '' : 'open'}><summary>Review guided scene decisions</summary><div class="skill-answer-list">${finding.answers.map(answer => `
-      <article class="skill-answer ${answer.correct ? 'correct' : 'review'}">
-        <h4>${escapeHtml(answer.question || answer.key)}</h4>
-        <p><strong>Your choice:</strong> ${escapeHtml(answer.selected)}</p>
-        ${answer.correct ? '' : `<p><strong>Preferred choice:</strong> ${escapeHtml(answer.expected)}</p>`}
-        ${answer.rationale ? `<p>${escapeHtml(answer.rationale)}</p>` : ''}
-      </article>`).join('')}</div></details>`;
-  }
-
-  function renderFindings(record) {
-    const findings = Object.entries(record.findings || {}).map(([key,item])=>normalizeFinding(key,item));
-    $('findingCount').textContent = `${findings.length} finding${findings.length===1?'':'s'}`;
-    $('findingsGrid').innerHTML = findings.length ? findings.map(f => `
-      <article class="finding-card ${f.isAbnormal?'not-normal':'normal'} ${f.hasAccuracy?(f.accurate?'accurate':'needs-review'):''}">
-        <h3>${escapeHtml(f.label)}</h3>
-        <span class="status-badge">${escapeHtml(f.classification)}</span>
-        <p><strong>Learner recorded:</strong> ${escapeHtml(f.value)}</p>
-        ${f.hasAccuracy?`<p class="accuracy-line"><strong>Accuracy:</strong> ${f.accurate?'Accurate':'Review this finding'}</p>`:''}
-        ${f.hasAccuracy&&!f.accurate&&f.expected?`<p><strong>Expected finding:</strong> ${escapeHtml(f.expected)}</p>`:''}
-        ${f.interpretation?`<p><strong>Interpretation:</strong> ${escapeHtml(f.interpretation)}</p>`:''}
-        ${f.score?`<p><strong>Score:</strong> ${f.score.score}/${f.score.max}</p>`:''}
-        ${renderAnswerReview(f)}
-      </article>`).join('') : '<p>No mini-simulator findings have been saved yet.</p>';
-    return findings;
-  }
-
-  function addDetail(label,value) {
-    if (!text(value)) return '';
-    const display = Array.isArray(value) ? value.join(', ') : value;
-    return `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(display)}</dd></div>`;
-  }
-
-  function renderImpression(record) {
-    const i = record.impressions || {};
-    $('impressionDetails').innerHTML = [
-      addDetail('Primary impression',i.primary),
-      addDetail('Differential diagnoses',safeArray(i.differentials)),
-      addDetail('Supporting findings',safeArray(i.supporting)),
-      addDetail('Immediate priority',i.action),
-      addDetail('Reasoning documentation',i.documentation)
-    ].join('') || '<p>No clinical impression has been saved.</p>';
-  }
-
-  function renderCoaching(record, findings) {
-    const items=[];
-    if (findings.length >= 4) items.push(['good','You collected findings from multiple assessment areas.']);
-    else items.push(['review','Collect at least four relevant findings before forming the final impression.']);
-    const unclassified=findings.filter(f=>f.classification==='Not classified').length;
-    if (!unclassified && findings.length) items.push(['good','Every recorded finding was classified as normal or not normal.']);
-    else if (unclassified) items.push(['review',`${unclassified} finding${unclassified===1?' was':'s were'} not classified.`]);
-    const sceneSizeUp=findings.find(f=>f.key==='scene_size_up');
-    if(!sceneSizeUp)items.push(['review','Complete the guided scene size-up before moving into the patient assessment.']);
-    else if(sceneSizeUp.skipped)items.push(['review','The guided scene size-up was skipped. Review PPE, safety, patient count, NOI/MOI, resources, spinal precautions, general impression, AVPU, and priority.']);
-    else if(sceneSizeUp.answers.length){
-      const missed=sceneSizeUp.answers.filter(answer=>!answer.correct).length;
-      items.push(missed?['review',`${missed} scene-size-up decision${missed===1?' needs':'s need'} review. Open the guided decision breakdown above.`]:['good','All guided scene-size-up decisions matched the expected first-look sequence.']);
-    }
-    const accuracyFindings=findings.filter(f=>f.hasAccuracy);
-    const inaccurate=accuracyFindings.filter(f=>!f.accurate);
-    if(accuracyFindings.length&&!inaccurate.length)items.push(['good','All measured vital and assessment findings matched the scenario findings.']);
-    else if(inaccurate.length)items.push(['review',`${inaccurate.length} measured finding${inaccurate.length===1?' needs':'s need'} review. Compare the learner entry with the expected finding shown above.`]);
-    if (text(record.impressions?.primary)) items.push(['good','A working clinical impression was documented.']);
-    else items.push(['review','Add a working clinical impression based on the full pattern of findings.']);
-    if (safeArray(record.reassessments).length) items.push(['good','The patient was reassessed after treatment.']);
-    else items.push(['review','Record repeat findings after intervention or during transport.']);
-    if (text(record.documentation?.narrative) && text(record.documentation?.handoff)) items.push(['good','Both a PCR narrative and verbal handoff were completed.']);
-    else items.push(['review','Complete both the PCR narrative and verbal handoff.']);
-    $('coachingList').innerHTML=items.map(([type,msg])=>`<div class="coaching-item ${type}">${escapeHtml(msg)}</div>`).join('');
-  }
-
-  function renderTimeline(record) {
-    const events=[];
-    safeArray(record.treatments).forEach((t,i)=>events.push({title:`Treatment ${i+1}`,body:[t.treatment,t.expectedResponse&&`Expected response: ${t.expectedResponse}`,t.scenario].filter(Boolean)}));
-    safeArray(record.reassessments).forEach((r,i)=>events.push({title:`Reassessment ${i+1}`,body:[r.response,r.nextAction&&`Next action: ${r.nextAction}`,...safeArray(r.findings)].filter(Boolean)}));
-    $('careTimeline').innerHTML=events.length?events.map(e=>`<article class="timeline-item"><h3>${escapeHtml(e.title)}</h3>${e.body.map(v=>`<p>${escapeHtml(v)}</p>`).join('')}</article>`).join(''):'<p>No treatment or reassessment entries have been saved.</p>';
-  }
-
-  function renderDocuments(record) {
-    const narrative=text(record.documentation?.narrative);
-    const handoff=text(record.documentation?.handoff);
-    $('narrativeText').textContent=narrative||'No PCR narrative has been saved.';
-    $('handoffText').textContent=handoff||'No verbal handoff has been saved.';
-    $('narrativeText').classList.toggle('empty',!narrative);
-    $('handoffText').classList.toggle('empty',!handoff);
-  }
-
-  function renderScores(record) {
-    const assessment=findingScores(record);
-    const impression=scorePair(record.impressions?.score,record.impressions?.maxScore);
-    const treatment=treatmentScores(record);
-    const documentation=scorePair(record.documentation?.documentationScore,record.documentation?.documentationMaxScore);
-    showScore('assessmentScore',assessment);showScore('impressionScore',impression);showScore('treatmentScore',treatment);showScore('documentationScore',documentation);
-    const pairs=[assessment,impression,treatment,documentation].filter(Boolean);
-    const overall=pairs.length?scorePair(pairs.reduce((n,p)=>n+p.score,0),pairs.reduce((n,p)=>n+p.max,0)):null;
-    $('overallScore').textContent=overall?`${overall.percent}%`:'—';
-    $('overallLabel').textContent=!overall?'Complete scored activities':overall.percent>=90?'Excellent':overall.percent>=80?'Strong performance':overall.percent>=70?'Developing':'Needs review';
-  }
-
-
-  const HISTORY_KEY='emscodesim_scenario_history_v1';
-  function readHistory(){try{const value=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]');return Array.isArray(value)?value:[]}catch{return[]}}
-  function saveHistorySnapshot(record, findings){
-    const assessment=findingScores(record);
-    const impression=scorePair(record.impressions?.score,record.impressions?.maxScore);
-    const treatment=treatmentScores(record);
-    const documentation=scorePair(record.documentation?.documentationScore,record.documentation?.documentationMaxScore);
-    const pairs=[assessment,impression,treatment,documentation].filter(Boolean);
-    const overall=pairs.length?scorePair(pairs.reduce((n,p)=>n+p.score,0),pairs.reduce((n,p)=>n+p.max,0)):null;
-    const reviewAreas=[];
-    if(findings.length<4)reviewAreas.push('assessment');
-    if(findings.some(f=>f.classification==='Not classified'))reviewAreas.push('classification');
-    if(!text(record.impressions?.primary))reviewAreas.push('impression');
-    if(!safeArray(record.reassessments).length)reviewAreas.push('reassessment');
-    if(!text(record.documentation?.narrative)||!text(record.documentation?.handoff))reviewAreas.push('documentation');
-    const snapshot={id:String(record.id||Date.now()),title:record.title||'Patient scenario',completedAt:new Date().toISOString(),overallPercent:overall?.percent??null,findingCount:findings.length,abnormalCount:findings.filter(f=>f.isAbnormal).length,reviewAreas:[...new Set(reviewAreas)]};
-    const history=readHistory();const index=history.findIndex(item=>item.id===snapshot.id);if(index>=0)history[index]=snapshot;else history.push(snapshot);
-    localStorage.setItem(HISTORY_KEY,JSON.stringify(history.slice(-100)));
-  }
-
-  function reflectionKey(record){return `emscodesim_debrief_reflection_${record.id}`;}
-  function loadReflection(record){
-    try{const r=JSON.parse(localStorage.getItem(reflectionKey(record))||'{}');$('reflectionFinding').value=r.finding||'';$('reflectionChange').value=r.change||'';$('reflectionReassess').value=r.reassess||'';}catch{}
-  }
-  function finishAssignedScenario(record) {
-    let assignment = null;
-    try { assignment = JSON.parse(localStorage.getItem('emscodesim_student_assignment_v1') || 'null'); } catch {}
-    const caseId = record.scenarioId || record.id;
-    const assignedCase = assignment?.scenario === 'respiratory' ? 'asthma' : assignment?.scenario;
-    const stateKey = `emscodesim_scenario_${caseId}`;
-    let state = {};
-    try { state = JSON.parse(localStorage.getItem(stateKey) || '{}'); } catch {}
-    state.clinicalComplete = true;
-    state.complete = true;
-    state.completedAt = new Date().toISOString();
-    localStorage.setItem(stateKey, JSON.stringify(state));
-    if (!assignment || assignedCase !== caseId) return;
-    const completedAt = state.completedAt;
-    assignment = { ...assignment, completedAt, scenarioComplete: true };
-    localStorage.setItem('emscodesim_student_assignment_v1', JSON.stringify(assignment));
-    localStorage.setItem('emscodesim_assignment_completion_v1', JSON.stringify({
-      assignmentCode: assignment.assignmentCode,
-      assignmentId: assignment.assignmentId || null,
-      learnerName: assignment.learnerName || '',
-      scenario: caseId,
-      scenarioTitle: record.title || 'Patient scenario',
-      completedAt,
-      requireDebrief: Boolean(assignment.requireDebrief)
-    }));
-  }
-
-  function saveReflection(record){
-    const reflection={finding:$('reflectionFinding').value.trim(),change:$('reflectionChange').value.trim(),reassess:$('reflectionReassess').value.trim(),savedAt:new Date().toISOString()};
-    localStorage.setItem(reflectionKey(record),JSON.stringify(reflection));
-    try{window.EMSCodeSimPatientRecord.update(r=>{r.debrief={...(r.debrief||{}),reflection};r.documentation={...(r.documentation||{}),debrief:{...(r.documentation?.debrief||{}),savedAt:reflection.savedAt,reflection}};return r;});}catch{}
-    finishAssignedScenario(record);
-    $('reflectionStatus').textContent='Reflection saved. Scenario completion is recorded.';
-    saveHistorySnapshot(record,Object.entries(record.findings||{}).map(([key,item])=>normalizeFinding(key,item)));
-  }
-
-  function download(record){
-    const reflection=JSON.parse(localStorage.getItem(reflectionKey(record))||'{}');
-    const report={generatedAt:new Date().toISOString(),record,reflection};
-    const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'});
-    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`EMSCodeSim-${record.id}-debrief.json`;a.click();URL.revokeObjectURL(a.href);
-  }
-
-  function init(){
-    const record=activeRecord();
-    $('emptyState').hidden=!!record;$('reportContent').hidden=!record;
-    if(!record)return;
-    $('patientTitle').textContent=record.title||'Patient scenario';
-    $('patientSummary').textContent=[record.patient,record.dispatch,record.scene].filter(Boolean).join(' • ')||'Active EMSCodeSim patient record';
-    const findings=renderFindings(record);renderImpression(record);renderCoaching(record,findings);renderTimeline(record);renderDocuments(record);renderScores(record);loadReflection(record);saveHistorySnapshot(record,findings);
-    $('printReport').addEventListener('click',()=>window.print());
-    $('downloadReport').addEventListener('click',()=>download(record));
-    $('saveReflection').addEventListener('click',()=>saveReflection(record));
-  }
+  function reflectionKey(r){return `emscodesim_debrief_reflection_${r.id}`}
+  function loadReflection(r){try{const x=JSON.parse(localStorage.getItem(reflectionKey(r))||'{}');$('reflectionFinding').value=x.finding||'';$('reflectionChange').value=x.change||'';$('reflectionReassess').value=x.reassess||'';}catch{}}
+  function saveReflection(r,g){ const savedAt=new Date().toISOString(); const reflection={finding:$('reflectionFinding').value.trim(),change:$('reflectionChange').value.trim(),reassess:$('reflectionReassess').value.trim(),savedAt}; localStorage.setItem(reflectionKey(r),JSON.stringify(reflection)); api.update(x=>{x.debrief={...(x.debrief||{}),reflection,score:g.score,label:g.label};x.documentation={...(x.documentation||{}),debrief:{savedAt,score:g.score,label:g.label,reflection}};return x}); const stateKey=`emscodesim_scenario_${r.scenarioId||r.id}`; let state={};try{state=JSON.parse(localStorage.getItem(stateKey)||'{}')}catch{} state.complete=true;state.completedAt=savedAt;localStorage.setItem(stateKey,JSON.stringify(state));$('reflectionStatus').textContent='Reflection saved. Scenario marked complete.'; }
+  function download(r,g){ const blob=new Blob([JSON.stringify({generatedAt:new Date().toISOString(),grade:g,record:r},null,2)],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`EMSCodeSim-${r.id}-full-call-debrief.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500); }
+  function init(){ const r=record(); $('emptyState').hidden=!!r; $('reportContent').hidden=!r; if(!r)return; const g=render(r);loadReflection(r);$('returnToPatient').onclick=()=>location.href=`/vitals/visual-patient.html?case=${encodeURIComponent(r.scenarioId||r.id)}`;$('printReport').onclick=()=>print();$('downloadReport').onclick=()=>download(r,g);$('saveReflection').onclick=()=>saveReflection(r,g); }
   document.addEventListener('DOMContentLoaded',init);
 })();
