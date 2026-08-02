@@ -178,18 +178,18 @@
   function showComplete() {
     reviewMode = false;
     $('sceneGuide').hidden = true;
-    $('sceneGuideComplete').hidden = false;
+    if ($('sceneGuideComplete')) $('sceneGuideComplete').hidden = true;
     setLocked(false);
-    const finding = completedFinding || api?.getFinding?.('scene_size_up', api?.active?.());
-    $('sceneGuideCompleteSummary').textContent = finding?.value || finding?.finding || 'Scene size-up recorded.';
     if ($('reviewSceneGuide')) $('reviewSceneGuide').textContent = 'Review scene size-up';
+    window.dispatchEvent(new CustomEvent('emscodesim:patient-record-updated'));
+    document.querySelector('.bottom-nav button[data-panel="assessmentPanel"]')?.click();
   }
 
   function startGuide(review = false) {
     reviewMode = review;
     index = 0;
     answers = [];
-    $('sceneGuideComplete').hidden = true;
+    if ($('sceneGuideComplete')) $('sceneGuideComplete').hidden = true;
     $('sceneGuideSkip').textContent = review ? 'Close review' : 'Skip guided start';
     $('sceneGuide').hidden = false;
     setLocked(!completedFinding && !review);
@@ -205,7 +205,7 @@
   function showReady() {
     reviewMode = false;
     $('sceneGuide').hidden = true;
-    $('sceneGuideComplete').hidden = true;
+    if ($('sceneGuideComplete')) $('sceneGuideComplete').hidden = true;
     setLocked(false);
     if ($('reviewSceneGuide')) $('reviewSceneGuide').textContent = 'Scene size-up';
   }
@@ -223,8 +223,8 @@
     });
     $('sceneGuideSkip').addEventListener('click', () => reviewMode ? showComplete() : saveGuide(true));
     $('reviewSceneGuide')?.addEventListener('click', () => startGuide(Boolean(completedFinding)));
-    $('beginPrimaryAssessment').addEventListener('click', openAssessment);
-    $('reviewCompletedSceneGuide').addEventListener('click', () => startGuide(true));
+    $('beginPrimaryAssessment')?.addEventListener('click', openAssessment);
+    $('reviewCompletedSceneGuide')?.addEventListener('click', () => startGuide(true));
     if (completedFinding) showComplete();
     else showReady();
   }

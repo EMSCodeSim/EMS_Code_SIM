@@ -271,8 +271,7 @@
       <div class="sequence-card-body">
         <span class="visual-tag">${config.label.toUpperCase()}</span>
         <h3>${title}</h3>
-        <div class="reasoning-row known"><span>What you can say now</span><strong>${config.known}</strong><p>${config.evidence}</p></div>
-        <div class="reasoning-row unknown"><span>What is still unknown</span><strong>Use assessment and vital tools before deciding adequacy.</strong><p>${config.unknown}</p></div>
+        <p class="primary-assessment-copy">Choose the assessment tools needed to evaluate ${title.toLowerCase()}.</p>
         <div class="primary-tool-path" aria-label="Tools for ${title}">${links}</div>
         <span class="status-chip ${complete ? 'done' : ''}">${complete ? 'Primary finding recorded' : 'Primary finding pending'}</span>
       </div>`;
@@ -388,9 +387,9 @@
     const vitalKeys = (registry?.vitalTools || []).map(tool => tool.key);
     const log = api?.listCareLog?.(current, 'all') || [];
     const treatmentEvents = log.filter(event => event.category === 'treatment');
-    $('vitalCount').textContent = `${vitalKeys.filter(key => keys.includes(key)).length} / ${vitalKeys.length}`;
-    $('findingCount').textContent = String(log.length);
-    $('treatmentCount').textContent = String(treatmentEvents.length);
+    if ($('vitalCount')) $('vitalCount').textContent = `${vitalKeys.filter(key => keys.includes(key)).length} / ${vitalKeys.length}`;
+    if ($('findingCount')) $('findingCount').textContent = String(log.length);
+    if ($('treatmentCount')) $('treatmentCount').textContent = String(treatmentEvents.length);
     $('findingBadge').hidden = !log.length;
     $('findingBadge').textContent = String(log.length);
   }
