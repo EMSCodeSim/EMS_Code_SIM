@@ -46,17 +46,19 @@ const visualPatient = read('vitals/visual-patient.html');
 includesAll(visualPatient, ['/vitals/scenario-guided-start.css', '/vitals/scenario-guided-start.js', 'sceneGuideQuestion', 'Skip guided start', 'nremt-skill-sheets.html'], 'Visual patient guided start');
 const visualPatientJs = read('vitals/visual-patient.js');
 includesAll(visualPatientJs, [
-  'SCENE AND FIRST IMPRESSION', 'Primary assessment', "buildPrimaryCard(box, 'airway', 2)",
-  "buildPrimaryCard(box, 'breathing', 3)", "buildPrimaryCard(box, 'perfusion', 4)",
+  'SCENE AND FIRST IMPRESSION', 'Primary assessment', "buildRapidABCCard(box)",
+  "buildPrimaryCard(box, 'airway', 3)", "buildPrimaryCard(box, 'breathing', 4)",
+  "buildPrimaryCard(box, 'perfusion', 5)",
   'Choose the assessment tools needed to evaluate'
 ], 'Assessment-tab clinical ordering');
 assert(!visualPatientJs.includes('What you can say now'), 'Primary assessment cards must not reveal picture-based conclusions to the learner.');
 assert(!visualPatientJs.includes('Use assessment and vital tools before deciding adequacy.'), 'Primary assessment cards should not contain prescriptive coaching text.');
 assert(!visualPatient.includes('Vitals obtained') && !visualPatient.includes('Log entries') && !visualPatient.includes('Care events'), 'The patient home must not display summary-count boxes.');
 assert(guidedStart.includes("if ($('sceneGuideComplete')) $('sceneGuideComplete').hidden = true;"), 'Completed scene size-up must collapse instead of remaining on the patient screen.');
-assert(visualPatientJs.indexOf("buildSceneSizeUpCard(box)") < visualPatientJs.indexOf("buildPrimaryCard(box, 'airway', 2)"), 'Scene size-up must appear before airway in the assessment tab.');
-assert(visualPatientJs.indexOf("buildPrimaryCard(box, 'airway', 2)") < visualPatientJs.indexOf("buildPrimaryCard(box, 'breathing', 3)"), 'Airway must appear before breathing.');
-assert(visualPatientJs.indexOf("buildPrimaryCard(box, 'breathing', 3)") < visualPatientJs.indexOf("buildPrimaryCard(box, 'perfusion', 4)"), 'Breathing must appear before circulation.');
+assert(visualPatientJs.indexOf("buildSceneSizeUpCard(box)") < visualPatientJs.indexOf("buildRapidABCCard(box)"), 'Scene size-up must appear before rapid ABC in the assessment tab.');
+assert(visualPatientJs.indexOf("buildRapidABCCard(box)") < visualPatientJs.indexOf("buildPrimaryCard(box, 'airway', 3)"), 'Rapid ABC must appear before detailed airway assessment.');
+assert(visualPatientJs.indexOf("buildPrimaryCard(box, 'airway', 3)") < visualPatientJs.indexOf("buildPrimaryCard(box, 'breathing', 4)"), 'Airway must appear before breathing.');
+assert(visualPatientJs.indexOf("buildPrimaryCard(box, 'breathing', 4)") < visualPatientJs.indexOf("buildPrimaryCard(box, 'perfusion', 5)"), 'Breathing must appear before circulation.');
 assert(guidedStart.includes('else showReady();') && !guidedStart.includes('else startGuide(false);'), 'Scene size-up must not autoplay when a scenario opens.');
 assert(!visualPatient.includes('id="reviewSceneGuide"'), 'Scene size-up must be launched only from the Assessment tab.');
 assert(!visualPatient.includes('id="nextActionCard"'), 'The patient home should not display a prescriptive recommended-next-action card.');
