@@ -35,3 +35,15 @@
 
 /* One consistent scenario return action */
 .scenario-mode .scenario-assessment-direct .scenario-assessment-actions{grid-template-columns:1fr}.scenario-mode .scenario-assessment-direct .scenario-assessment-actions .continue-patient{background:#0878a8;color:#fff;width:100%}
+
+
+/* Streamlined scenario assessment: the assessment was already selected on the patient screen. */
+.scenario-mode .scenario-assessment-direct .scenario-grade-hidden,
+.scenario-mode .scenario-assessment-direct button[type="submit"].scenario-grade-hidden,
+.scenario-mode .scenario-assessment-direct .results-panel,
+.scenario-mode .scenario-assessment-direct .model-doc,
+.scenario-mode .scenario-assessment-direct .complete-btn {display:none!important}
+.scenario-mode .scenario-assessment-direct .sim-layout{display:block}
+.scenario-mode .scenario-assessment-direct .patient-card{margin:0 0 14px}
+.scenario-mode .scenario-assessment-direct .finding-box{display:block!important}
+.scenario-mode .scenario-assessment-direct .scenario-assessment-actions{margin-top:18px}

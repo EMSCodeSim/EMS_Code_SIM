@@ -1,15 +1,13 @@
 (() => {
   'use strict';
 
-  const api = window.EMSCodeSimPatientRecord;
-  const registry = window.EMSCodeSimToolRegistry;
-  const session = window.EMSCodeSimScenarioSession;
-  const record = session?.sync?.() || api?.active?.();
-  if (!record || !registry) return;
-
+  let api = window.EMSCodeSimPatientRecord;
+  let registry = window.EMSCodeSimToolRegistry;
+  let session = window.EMSCodeSimScenarioSession;
   const path = location.pathname;
-  const caseId = record.scenarioId || record.id;
-  const scenarioHome = session?.scenarioHome?.(caseId) || `/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}`;
+  let record = null;
+  let caseId = '';
+  let scenarioHome = '/vitals/visual-patient.html';
 
   const scenarioFindings = {
     asthma: {
@@ -114,9 +112,9 @@
     const form = document.querySelector('form[id$="Form"],#painForm,#sampleForm,#patForm') || practice;
     const grade = form?.querySelector('button[type="submit"],input[type="submit"]');
     if (grade) {
-      if ('value' in grade && grade.tagName === 'INPUT') grade.value = 'Grade my assessment (optional)';
-      else grade.textContent = 'Grade my assessment (optional)';
-      grade.classList.add('optional-grade');
+      grade.hidden = true;
+      grade.setAttribute('aria-hidden', 'true');
+      grade.classList.add('scenario-grade-hidden');
     }
 
     if (form && !form.querySelector('.scenario-assessment-actions')) {
@@ -125,7 +123,7 @@
       const returnButton = document.createElement('button');
       returnButton.type = 'button';
       returnButton.className = 'continue-patient';
-      returnButton.textContent = 'Save and Return to Patient';
+      returnButton.textContent = 'Continue to Patient Home';
       returnButton.addEventListener('click', () => {
         saveViewedFinding();
         location.href = scenarioHome;
@@ -140,6 +138,28 @@
     }, 60);
   }
 
-  setTimeout(simplifyScenarioAssessment, 80);
-  window.addEventListener('pageshow', () => setTimeout(simplifyScenarioAssessment, 40));
+  function initializeScenarioAssessment() {
+    api = window.EMSCodeSimPatientRecord;
+    registry = window.EMSCodeSimToolRegistry;
+    session = window.EMSCodeSimScenarioSession;
+    record = session?.sync?.() || api?.active?.();
+    if (!record || !registry) return false;
+    caseId = record.scenarioId || record.id;
+    scenarioHome = session?.scenarioHome?.(caseId) || `/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}`;
+    simplifyScenarioAssessment();
+    return true;
+  }
+
+  function initializeWithRetry(attempt = 0) {
+    if (initializeScenarioAssessment()) return;
+    if (attempt < 12) setTimeout(() => initializeWithRetry(attempt + 1), 75);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => initializeWithRetry(), { once: true });
+  } else {
+    initializeWithRetry();
+  }
+  window.addEventListener('load', () => initializeWithRetry());
+  window.addEventListener('pageshow', () => setTimeout(() => initializeWithRetry(), 40));
 })();
