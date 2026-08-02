@@ -390,14 +390,17 @@
     if ($('vitalCount')) $('vitalCount').textContent = `${vitalKeys.filter(key => keys.includes(key)).length} / ${vitalKeys.length}`;
     if ($('findingCount')) $('findingCount').textContent = String(log.length);
     if ($('treatmentCount')) $('treatmentCount').textContent = String(treatmentEvents.length);
-    $('findingBadge').hidden = !log.length;
-    $('findingBadge').textContent = String(log.length);
+    if ($('findingBadge')) {
+      $('findingBadge').hidden = !log.length;
+      $('findingBadge').textContent = String(log.length);
+    }
   }
 
   function openSheet(panelId) {
     document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
-    $('sheetTitle').textContent = { vitalsPanel: 'Patient tools', assessmentPanel: 'Assessment sequence', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
+    if ($('sheetTitle')) $('sheetTitle').textContent = { vitalsPanel: 'Patient tools', assessmentPanel: 'Assessment sequence', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
+    if (!$('actionSheet') || !$('sheetBackdrop')) return;
     $('actionSheet').hidden = false;
     $('sheetBackdrop').hidden = false;
     document.body.style.overflow = 'hidden';
