@@ -48,9 +48,12 @@ const visualPatientJs = read('vitals/visual-patient.js');
 includesAll(visualPatientJs, [
   'SCENE AND FIRST IMPRESSION', 'Primary assessment', "buildPrimaryCard(box, 'airway', 2)",
   "buildPrimaryCard(box, 'breathing', 3)", "buildPrimaryCard(box, 'perfusion', 4)",
-  'Known from speech', 'Airway is patent at this moment.', 'Respiratory rate, depth, chest rise, breath sounds, and SpO₂ are still unknown.',
-  'A perfusing pulse is present.', 'Use assessment and vital tools before deciding adequacy.'
+  'Choose the assessment tools needed to evaluate'
 ], 'Assessment-tab clinical ordering');
+assert(!visualPatientJs.includes('What you can say now'), 'Primary assessment cards must not reveal picture-based conclusions to the learner.');
+assert(!visualPatientJs.includes('Use assessment and vital tools before deciding adequacy.'), 'Primary assessment cards should not contain prescriptive coaching text.');
+assert(!visualPatient.includes('Vitals obtained') && !visualPatient.includes('Log entries') && !visualPatient.includes('Care events'), 'The patient home must not display summary-count boxes.');
+assert(guidedStart.includes("if ($('sceneGuideComplete')) $('sceneGuideComplete').hidden = true;"), 'Completed scene size-up must collapse instead of remaining on the patient screen.');
 assert(visualPatientJs.indexOf("buildSceneSizeUpCard(box)") < visualPatientJs.indexOf("buildPrimaryCard(box, 'airway', 2)"), 'Scene size-up must appear before airway in the assessment tab.');
 assert(visualPatientJs.indexOf("buildPrimaryCard(box, 'airway', 2)") < visualPatientJs.indexOf("buildPrimaryCard(box, 'breathing', 3)"), 'Airway must appear before breathing.');
 assert(visualPatientJs.indexOf("buildPrimaryCard(box, 'breathing', 3)") < visualPatientJs.indexOf("buildPrimaryCard(box, 'perfusion', 4)"), 'Breathing must appear before circulation.');
