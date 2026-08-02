@@ -65,6 +65,19 @@ assert(created, 'Direct scenario entry should create or restore a patient record
 assert.strictEqual(created.scenarioId, 'stroke');
 assert.strictEqual(created.title, 'Possible Acute Stroke');
 
+session.saveFinding('scene_size_up', 'Scene size-up completed: 7/9 guided decisions matched the expected sequence', {
+  label: 'Scene size-up and first impression',
+  answers: [
+    { key: 'ppe', question: 'What PPE should you use?', selected: 'Gloves and eye protection as indicated', expected: 'Gloves and eye protection as indicated', correct: true },
+    { key: 'spine', question: 'Is cervical-spine stabilization needed now?', selected: 'Manual stabilization is indicated', expected: 'Not indicated from the information currently available', correct: false }
+  ],
+  score: 7,
+  maxScore: 9,
+  accurate: false,
+  reviewAtDebrief: true,
+  source: 'guided-scenario-entry'
+});
+
 session.saveFinding('spo2', '91%', {
   learnerFinding: '91%',
   expectedFinding: '96%',
@@ -80,6 +93,10 @@ session.saveFinding('spo2', '91%', {
 
 let patientRecord = JSON.parse(runtime.storage.getItem('emscodesim_patient_record_stroke'));
 let scenarioState = JSON.parse(runtime.storage.getItem('emscodesim_scenario_stroke'));
+assert.strictEqual(patientRecord.findings.scene_size_up.score, 7);
+assert.strictEqual(patientRecord.findings.scene_size_up.maxScore, 9);
+assert.strictEqual(patientRecord.findings.scene_size_up.answers.length, 2);
+assert.strictEqual(scenarioState.findings.scene_size_up.answers[1].correct, false);
 assert.strictEqual(patientRecord.findings.spo2.value, '91%');
 assert.strictEqual(patientRecord.findings.spo2.expectedFinding, '96%');
 assert.strictEqual(patientRecord.findings.spo2.accurate, false);

@@ -32,9 +32,32 @@ for (const name of optionalNarrativePages) {
 }
 assert(/id="pcrText"[^>]*\brequired\b/.test(read('vitals/pcr-handoff.html')), 'The final PCR/handoff activity should retain the full narrative requirement.');
 
+
+const guidedStart = read('vitals/scenario-guided-start.js');
+includesAll(guidedStart, [
+  'What PPE should you use?', 'Is the scene safe?', 'How many patients are present?', 'What is the NOI or MOI?',
+  'What additional resources may be needed?', 'Is cervical-spine stabilization needed now?', 'What is your general impression?',
+  'What is the initial AVPU level?', 'What is the initial patient priority?', "saveFinding('scene_size_up'",
+  'reviewAtDebrief: true', 'answers', 'score', 'maxScore'
+], 'Guided scene size-up');
+assert(!guidedStart.includes('return false') || guidedStart.includes('missed choice'), 'Guided scene-size-up decisions must not block progress for an incorrect answer.');
+
+const visualPatient = read('vitals/visual-patient.html');
+includesAll(visualPatient, ['/vitals/scenario-guided-start.css', '/vitals/scenario-guided-start.js', 'sceneGuideQuestion', 'Skip guided start', 'nremt-skill-sheets.html'], 'Visual patient guided start');
+
+const skillSheetPage = read('nremt-skill-sheets.html');
+includesAll(skillSheetPage, [
+  'E201_NREMT.pdf','E202_NREMT.pdf','E203_NREMT.pdf','E204_NREMT.pdf','E211_NREMT.pdf',
+  'E212_NREMT.pdf','E213_NREMT.pdf','E215_NREMT.pdf','E216_NREMT.pdf','E217_NREMT.pdf',
+  'Practice companion—not an official testing authority'
+], 'NREMT skill-sheet library');
+
+const progressSync = read('vitals/scenario-progress-sync.js');
+includesAll(progressSync, ["'/vitals/visual-patient.html'", "has('scene_size_up')"], 'Scenario progress synchronization');
+
 const registry = read('vitals/scenario-tool-registry.js');
 includesAll(registry, [
-  '/vitals/airway-assessment.html', '/vitals/breathing-assessment.html', '/vitals/perfusion-assessment.html',
+  '/vitals/visual-patient.html', 'scene_size_up', '/vitals/airway-assessment.html', '/vitals/breathing-assessment.html', '/vitals/perfusion-assessment.html',
   '/vitals/avpu-scenario.html', '/vitals/pupil-scenario.html', '/vitals/motor-sensory-assessment.html',
   '/vitals/gcs.html', '/vitals/breath-sounds-scenario.html', '/vitals/chest-assessment.html',
   '/vitals/skin-scenario.html', '/vitals/abdominal-assessment.html', '/vitals/trauma-assessment.html',
