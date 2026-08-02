@@ -233,23 +233,54 @@
     return tasks || {};
   }
 
+  // Partner queue states include status: 'pending' for the one active skill and 'queued' for later skills.
+  function taskTime(value) {
+    const parsed = new Date(value || 0).getTime();
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function normalizePartnerQueue(tasks = {}) {
+    const ordered = Object.values(tasks)
+      .filter(task => task && ['pending','queued'].includes(task.status))
+      .sort((a,b) => taskTime(a.assignedAt) - taskTime(b.assignedAt));
+    let cursor = Date.now();
+    ordered.forEach((task, index) => {
+      const duration = Math.max(1, Number(task.delaySeconds || 12)) * 1000;
+      if (index === 0) {
+        task.status = 'pending';
+        task.startedAt = task.startedAt || new Date(Math.max(cursor, taskTime(task.assignedAt))).toISOString();
+        const start = Math.max(cursor, taskTime(task.startedAt));
+        if (!task.dueAt) task.dueAt = new Date(start + duration).toISOString();
+        cursor = taskTime(task.dueAt) || (start + duration);
+      } else {
+        task.status = 'queued';
+        task.startedAt = '';
+        task.dueAt = '';
+        task.queuePosition = index + 1;
+      }
+    });
+    return tasks;
+  }
+
   function assignPartnerTask(task = {}, caseId = requestedCaseId()) {
     const record = sync(caseId);
     const resolvedCase = caseId || record?.scenarioId || record?.id;
     if (!resolvedCase || !task.key) throw new Error('A scenario and partner task key are required.');
     const assignedAt = new Date().toISOString();
     const delaySeconds = Math.max(1, Number(task.delaySeconds || task.delay || 12));
-    const dueAt = new Date(Date.now() + delaySeconds * 1000).toISOString();
     const tasks = readPartnerTasks(resolvedCase);
+    const alreadyBusy = Object.values(tasks).some(item => item && ['pending','queued'].includes(item.status));
     tasks[task.key] = {
       key: task.key,
       label: task.label || api.labelFor?.(task.key) || task.key,
       value: task.value == null ? 'Obtained' : String(task.value),
       assignedAt,
-      dueAt,
+      startedAt: alreadyBusy ? '' : assignedAt,
+      dueAt: alreadyBusy ? '' : new Date(Date.now() + delaySeconds * 1000).toISOString(),
       delaySeconds,
-      status: 'pending'
+      status: alreadyBusy ? 'queued' : 'pending'
     };
+    normalizePartnerQueue(tasks);
     writePartnerTasks(resolvedCase, tasks);
     window.dispatchEvent(new CustomEvent('emscodesim:partner-task-updated', { detail: { caseId: resolvedCase, task: tasks[task.key] } }));
     return tasks[task.key];
@@ -259,30 +290,29 @@
     const record = sync(caseId);
     const resolvedCase = caseId || record?.scenarioId || record?.id;
     if (!resolvedCase) return [];
-    const tasks = readPartnerTasks(resolvedCase);
+    const tasks = normalizePartnerQueue(readPartnerTasks(resolvedCase));
     const completed = [];
-    Object.values(tasks).forEach(task => {
-      if (!task || task.status !== 'pending') return;
-      if (new Date(task.dueAt).getTime() > Date.now()) return;
+    const active = Object.values(tasks).find(task => task && task.status === 'pending');
+    if (active && taskTime(active.dueAt) <= Date.now()) {
       try {
-        saveFinding(task.key, task.value, {
-          label: task.label,
+        saveFinding(active.key, active.value, {
+          label: active.label,
           source: 'partner-assignment',
           locked: true,
-          partnerAssignedAt: task.assignedAt,
+          partnerAssignedAt: active.assignedAt,
+          partnerStartedAt: active.startedAt,
           partnerCompletedAt: new Date().toISOString()
         });
-        task.status = 'complete';
-        task.completedAt = new Date().toISOString();
-        completed.push(task);
+        active.status = 'complete';
+        active.completedAt = new Date().toISOString();
+        completed.push(active);
       } catch (error) {
         console.error('Partner task could not be completed', error);
       }
-    });
-    if (completed.length) {
-      writePartnerTasks(resolvedCase, tasks);
-      completed.forEach(task => window.dispatchEvent(new CustomEvent('emscodesim:partner-task-completed', { detail: { caseId: resolvedCase, task } })));
     }
+    normalizePartnerQueue(tasks);
+    writePartnerTasks(resolvedCase, tasks);
+    completed.forEach(task => window.dispatchEvent(new CustomEvent('emscodesim:partner-task-completed', { detail: { caseId: resolvedCase, task } })));
     return completed;
   }
 

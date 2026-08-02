@@ -50,36 +50,75 @@
     '/vitals/pain-opqrst.html': ['pain', 'OPQRST Assessment']
   };
 
+  const airwayActions = {
+    position: {
+      treatment: 'Head-tilt/chin-lift performed to open the airway.',
+      response: 'Airway opened and the patient begins breathing with improved air movement.'
+    },
+    suction: {
+      treatment: 'Airway exposed, cleared, and suctioned.',
+      response: 'Secretions decreased, gurgling improved, and air movement increased.'
+    },
+    support: {
+      treatment: 'Immediate airway obstruction or ventilation support performed per training and protocol.',
+      response: 'Air movement improved after airway support; breathing was reassessed.'
+    },
+    rapid: {
+      treatment: 'Airway maintained, oxygen support initiated as indicated, and rapid transport/ALS support requested.',
+      response: 'Airway remains open with continued close monitoring during rapid transport preparation.'
+    }
+  };
+
   const meta = assessmentPages[path];
   if (!meta) return;
   const [key, label] = meta;
 
-  function saveViewedFinding() {
+  const text = id => document.getElementById(id)?.textContent?.trim() || '';
+  const selected = selector => document.querySelector(selector)?.value || '';
+
+  function saveFinding(normality) {
     const latest = session?.sync?.(caseId) || api?.active?.();
-    if (api?.hasFinding?.(key, latest)) return true;
-    const finding = document.getElementById('findingText')?.textContent?.trim() || '';
-    const details = document.getElementById('findingDetail')?.textContent?.trim() || '';
+    const finding = text('findingText');
+    const details = text('findingDetail');
     if (!finding) return false;
-    if (window.EMSCodeSimAssessmentIntegration?.saveAssessment) {
-      window.EMSCodeSimAssessmentIntegration.saveAssessment({
-        assessment: key,
-        label,
-        scenarioTitle: latest?.title || '',
-        finding,
-        details,
-        normality: '',
-        expectedNormality: '',
-        interpretation: '',
-        action: '',
-        documentation: '',
-        score: null,
-        maxScore: null,
-        viewedOnly: true
-      });
-      return true;
-    }
-    session?.saveFinding?.(key, finding, { label, details, source: path, viewedOnly: true });
+    session?.saveFinding?.(key, finding, {
+      label,
+      details,
+      normality: normality === 'normal' ? 'normal' : 'not-normal',
+      status: normality === 'normal' ? 'normal' : 'abnormal',
+      interpretation: selected('#problemSelect'),
+      action: selected('#actionSelect'),
+      source: path,
+      scenarioTitle: latest?.title || ''
+    });
     return true;
+  }
+
+  function recordSelectedTreatment() {
+    if (key !== 'airway') return;
+    const action = selected('#actionSelect');
+    const effect = airwayActions[action];
+    if (!effect) return;
+    session?.addTreatment?.({
+      treatment: effect.treatment,
+      description: effect.treatment,
+      label: 'Airway treatment',
+      source: 'assessment-follow-up',
+      assessment: key,
+      action
+    });
+    session?.addReassessment?.({
+      response: effect.response,
+      description: effect.response,
+      label: 'Patient response to airway treatment',
+      source: 'assessment-follow-up',
+      assessment: key,
+      action
+    });
+  }
+
+  function returnHome() {
+    location.href = scenarioHome;
   }
 
   function simplifyScenarioAssessment() {
@@ -106,16 +145,30 @@
 
     document.querySelectorAll('#pcrText,#docText').forEach(field => {
       const wrapper = field.closest('.decision-step,.form-field,label') || field.parentElement;
-      wrapper?.classList.add('scenario-note-field');
+      wrapper?.remove();
     });
 
     const form = document.querySelector('form[id$="Form"],#painForm,#sampleForm,#patForm') || practice;
     const grade = form?.querySelector('button[type="submit"],input[type="submit"]');
-    if (grade) {
-      grade.hidden = true;
-      grade.setAttribute('aria-hidden', 'true');
-      grade.classList.add('scenario-grade-hidden');
-    }
+    if (grade) { grade.classList.add('scenario-grade-hidden'); grade.remove(); }
+
+    const followUpSteps = [...document.querySelectorAll('.decision-step')].filter(step => {
+      return step.querySelector('#problemSelect,#actionSelect') || ['2','3'].includes(step.dataset.step);
+    });
+    followUpSteps.forEach(step => { step.hidden = true; step.classList.add('scenario-abnormal-followup'); });
+
+    document.querySelectorAll('input[name="normality"],input[name="classification"]').forEach(input => {
+      input.addEventListener('change', () => {
+        const value = input.value === 'normal' ? 'normal' : 'not-normal';
+        if (value === 'normal') {
+          saveFinding('normal');
+          returnHome();
+          return;
+        }
+        followUpSteps.forEach(step => { step.hidden = false; });
+        document.querySelector('.scenario-assessment-actions')?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      });
+    });
 
     if (form && !form.querySelector('.scenario-assessment-actions')) {
       const actions = document.createElement('div');
@@ -125,8 +178,23 @@
       returnButton.className = 'continue-patient';
       returnButton.textContent = 'Continue to Patient Home';
       returnButton.addEventListener('click', () => {
-        saveViewedFinding();
-        location.href = scenarioHome;
+        const normality = document.querySelector('input[name="normality"]:checked,input[name="classification"]:checked')?.value;
+        if (!normality) {
+          alert('Classify the finding as Normal or Not Normal first.');
+          return;
+        }
+        if (normality !== 'normal') {
+          const required = [...document.querySelectorAll('.scenario-abnormal-followup select[required]')];
+          const missing = required.find(field => !field.value);
+          if (missing) {
+            missing.focus();
+            alert('Complete the abnormal finding follow-up before continuing.');
+            return;
+          }
+        }
+        saveFinding(normality === 'normal' ? 'normal' : 'not-normal');
+        if (normality !== 'normal') recordSelectedTreatment();
+        returnHome();
       });
       actions.appendChild(returnButton);
       form.appendChild(actions);
@@ -155,11 +223,8 @@
     if (attempt < 12) setTimeout(() => initializeWithRetry(attempt + 1), 75);
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => initializeWithRetry(), { once: true });
-  } else {
-    initializeWithRetry();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => initializeWithRetry(), { once: true });
+  else initializeWithRetry();
   window.addEventListener('load', () => initializeWithRetry());
   window.addEventListener('pageshow', () => setTimeout(() => initializeWithRetry(), 40));
 })();

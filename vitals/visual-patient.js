@@ -200,15 +200,16 @@
     const complete = existing(tool.key);
     const task = partnerTaskFor(tool.key);
     const pending = task?.status === 'pending' && !complete;
+    const queued = task?.status === 'queued' && !complete;
     const article = document.createElement('article');
     article.className = `tool ${classificationClass(tool.key)}${complete ? ' done' : ''}`;
     article.dataset.toolKey = tool.key;
     article.innerHTML = `
       <div class="tool-head"><div><span class="requirement-tag ${classificationClass(tool.key)}">${classificationLabel(tool.key)}</span><h3>${escapeHtml(tool.label)}</h3><p>${escapeHtml(tool.description)}</p></div>
-      <span class="status-chip ${complete ? 'done' : pending ? 'pending' : ''}">${complete ? 'Obtained' : pending ? 'Partner assigned' : 'Not taken'}</span></div>
+      <span class="status-chip ${complete ? 'done' : pending || queued ? 'pending' : ''}">${complete ? 'Obtained' : pending ? 'Partner working' : queued ? 'Waiting for partner' : 'Not taken'}</span></div>
       <div class="tool-actions"><a href="${toolUrl(tool.url)}">Perform</a>
-      <button class="partner-action" type="button" ${complete || pending ? 'disabled' : ''}>${complete ? 'Complete' : pending ? 'In progress' : 'Assign to partner'}</button></div>
-      <div class="assignment-progress" ${pending ? '' : 'hidden'}>${pending ? `Partner gathering ${escapeHtml(tool.label.toLowerCase())}… ${secondsRemaining(task)}s` : ''}</div>`;
+      <button class="partner-action" type="button" ${complete || pending || queued ? 'disabled' : ''}>${complete ? 'Complete' : pending ? 'In progress' : queued ? 'Queued' : 'Assign to partner'}</button></div>
+      <div class="assignment-progress" ${pending || queued ? '' : 'hidden'}>${pending ? `Partner gathering ${escapeHtml(tool.label.toLowerCase())}… ${secondsRemaining(task)}s` : queued ? `Queued — partner will start after the current skill.` : ''}</div>`;
     const button = article.querySelector('.partner-action');
     button?.addEventListener('click', () => {
       try {
@@ -583,9 +584,11 @@
     const tasks = session?.readPartnerTasks?.(id) || {};
     document.querySelectorAll('[data-tool-key]').forEach(article => {
       const task = tasks[article.dataset.toolKey];
-      if (!task || task.status !== 'pending') return;
+      if (!task || !['pending','queued'].includes(task.status)) return;
       const progress = article.querySelector('.assignment-progress');
-      if (progress) progress.textContent = `Partner gathering ${String(task.label || '').toLowerCase()}… ${secondsRemaining(task)}s`;
+      if (progress) progress.textContent = task.status === 'pending'
+        ? `Partner gathering ${String(task.label || '').toLowerCase()}… ${secondsRemaining(task)}s`
+        : 'Queued — partner will start after the current skill.';
     });
   }
 
