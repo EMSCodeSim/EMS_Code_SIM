@@ -83,6 +83,30 @@
   };
 
 
+  const CONDITION_STAGES = {
+    asthma: [
+      { id:'fatigue', after:180, title:'Respiratory fatigue developing', text:'The patient is speaking fewer words per breath. Wheezing is quieter and air movement is decreasing.', targets:['breathing','breath_sounds','respirations','spo2'], blockedBy:['bronchodilator','oxygen'], imageMode:'respiratory-worse' },
+      { id:'failure', after:360, title:'Impending respiratory failure', text:'The patient is becoming less responsive. Respiratory effort is weaker and air movement is now poor.', targets:['airway','breathing','mental_status','respirations','spo2'], blockedBy:['bvm','bronchodilator'], imageMode:'critical' }
+    ],
+    stroke: [
+      { id:'neuro_worse', after:240, title:'Neurologic condition worsening', text:'Speech is more difficult to understand and the right-sided weakness is more pronounced.', targets:['mental_status','motor_sensory','airway'], blockedBy:['rapid_transport'], imageMode:'stroke-worse' },
+      { id:'airway_risk', after:420, title:'Airway protection is declining', text:'The patient is increasingly drowsy and is no longer managing oral secretions reliably.', targets:['airway','breathing','mental_status','spo2'], blockedBy:['airway_position','rapid_transport'], imageMode:'critical' }
+    ],
+    hypoglycemia: [
+      { id:'ams_worse', after:180, title:'Mental status declining', text:'The patient is harder to arouse and can no longer follow commands consistently.', targets:['mental_status','airway','blood_glucose'], blockedBy:['oral_glucose','airway_support'], imageMode:'hypoglycemia-worse' },
+      { id:'unresponsive', after:360, title:'Patient becomes unresponsive', text:'The patient no longer responds to verbal stimuli and airway protection is now uncertain.', targets:['airway','breathing','mental_status','spo2'], blockedBy:['oral_glucose','airway_support'], imageMode:'critical' }
+    ],
+    trauma: [
+      { id:'shock_worse', after:180, title:'Shock is progressing', text:'The patient is more pale and restless. The radial pulse is weaker and faster.', targets:['perfusion','pulse','blood_pressure','skin'], blockedBy:['hemorrhage_shock','rapid_transport'], imageMode:'trauma-worse' },
+      { id:'decompensated', after:360, title:'Decompensated shock', text:'The patient is becoming confused with worsening perfusion and increasingly shallow breathing.', targets:['breathing','perfusion','mental_status','pulse','blood_pressure'], blockedBy:['hemorrhage_shock','rapid_transport'], imageMode:'critical' }
+    ],
+    pediatric: [
+      { id:'fatigue', after:180, title:'Pediatric respiratory fatigue', text:'Retractions continue, interaction is poorer, and the child is becoming less active.', targets:['pediatric_assessment_triangle','breathing','respirations','spo2'], blockedBy:['oxygen','caregiver_position'], imageMode:'pediatric-worse' },
+      { id:'failure', after:360, title:'Respiratory effort is failing', text:'The child is now minimally responsive with weak respiratory effort and poor air movement.', targets:['airway','breathing','mental_status','respirations','spo2'], blockedBy:['bvm','oxygen'], imageMode:'critical' }
+    ]
+  };
+
+
   const TREATMENT_PLANS = {
     asthma: [
       { id:'position_comfort', label:'Position of comfort', summary:'Allow the patient to remain upright and reduce respiratory effort.', evidence:['breathing'], targets:['breathing','respirations'], response:'The patient tolerates the upright position and can speak with slightly less effort.', effective:'appropriate-effective' },
@@ -139,6 +163,7 @@
   };
 
   let partnerInterval = 0;
+  let conditionEvaluationActive = false;
 
   function ensureRecord() {
     const restored = session?.sync?.(id) || api?.active?.();
@@ -321,6 +346,59 @@
     return Number.isFinite(time) ? time : 0;
   }
 
+  function conditionState(current = record()) {
+    return current?.documentation?.conditionEngine || { stageIds: [], pendingTargets: [], lastCheckpoint: '', imageMode: scenario.imageMode || '', updatedAt: current?.startedAt || new Date().toISOString() };
+  }
+
+  function effectiveTreatmentIds(current = record()) {
+    return new Set((current?.treatments || []).filter(item => item.classification === 'appropriate-effective' || !item.classification).map(item => item.actionId).filter(Boolean));
+  }
+
+  function evaluatePatientCondition(checkpoint = 'patient-home') {
+    if (conditionEvaluationActive) return false;
+    const current = record();
+    if (!current?.startedAt) return false;
+    const stages = CONDITION_STAGES[id] || [];
+    if (!stages.length) return false;
+    const state = conditionState(current);
+    const completed = new Set(state.stageIds || []);
+    const treatments = effectiveTreatmentIds(current);
+    const elapsed = Math.max(0, Math.floor((Date.now() - new Date(current.startedAt).getTime()) / 1000));
+    const stage = stages.find(item => !completed.has(item.id) && elapsed >= item.after);
+    if (!stage) return false;
+    const protectedByCare = (stage.blockedBy || []).some(actionId => treatments.has(actionId));
+    conditionEvaluationActive = true;
+    try {
+      const recordedAt = new Date().toISOString();
+      const nextStageIds = [...completed, stage.id];
+      const pendingTargets = protectedByCare ? (state.pendingTargets || []) : [...new Set([...(state.pendingTargets || []), ...(stage.targets || [])])];
+      api?.update?.(draft => {
+        draft.documentation = draft.documentation || {};
+        draft.documentation.conditionEngine = {
+          ...state,
+          stageIds: nextStageIds,
+          pendingTargets,
+          lastCheckpoint: checkpoint,
+          imageMode: protectedByCare ? (state.imageMode || scenario.imageMode || '') : (stage.imageMode || state.imageMode || scenario.imageMode || ''),
+          updatedAt: recordedAt
+        };
+        return draft;
+      });
+      if (!protectedByCare) {
+        api?.mergeCareLog?.([{
+          id:`condition-${id}-${stage.id}`,
+          eventId:`condition-${id}-${stage.id}`,
+          type:'condition_change', category:'assessment', key:'patient_condition', label:stage.title,
+          value:stage.text, details:`Triggered at ${checkpoint}. Reassessment due: ${(stage.targets || []).map(labelFor).join(', ')}.`,
+          status:'abnormal', normality:'not-normal', source:'dynamic-condition-engine', recordedAt
+        }]);
+      }
+      return !protectedByCare;
+    } finally {
+      conditionEvaluationActive = false;
+    }
+  }
+
   function treatmentTargets(item = {}) {
     const explicit = Array.isArray(item.targetKeys) ? item.targetKeys : [];
     if (explicit.length) return explicit;
@@ -330,9 +408,17 @@
   }
 
   function latestTreatmentFor(key) {
-    return (record()?.treatments || [])
-      .filter(item => treatmentTargets(item).includes(key))
-      .sort((a, b) => eventTime(b.recordedAt || b.time) - eventTime(a.recordedAt || a.time))[0] || null;
+    const current = record();
+    const treatments = (current?.treatments || [])
+      .filter(item => treatmentTargets(item).includes(key));
+    const condition = conditionState(current);
+    const latestReassessmentTime = Math.max(0, ...(current?.reassessments || [])
+      .filter(item => (Array.isArray(item.targetKeys) && item.targetKeys.includes(key)) || item.assessment === key || item.context === key)
+      .map(item => eventTime(item.recordedAt || item.time)));
+    if ((condition.pendingTargets || []).includes(key) && eventTime(condition.updatedAt) > latestReassessmentTime) treatments.push({
+      actionId:'condition-change', treatment:'Patient condition changed', targetKeys:condition.pendingTargets, recordedAt:condition.updatedAt, time:condition.updatedAt, source:'dynamic-condition-engine'
+    });
+    return treatments.sort((a, b) => eventTime(b.recordedAt || b.time) - eventTime(a.recordedAt || a.time))[0] || null;
   }
 
   function latestReassessmentFor(key) {
@@ -653,7 +739,7 @@ Record this decision and its consequence?`;
   }
   function isInformationUpdate(event) {
     if (event.source === 'partner-assignment') return true;
-    if (event.type === 'treatment' || event.type === 'reassessment' || event.type === 'patient_response') return true;
+    if (event.type === 'treatment' || event.type === 'reassessment' || event.type === 'patient_response' || event.type === 'condition_change') return true;
     if (event.type === 'impression' || event.type === 'documentation') return true;
     if (abnormalEvent(event)) return true;
     if (event.category === 'history' && significantHistory(event)) return true;
@@ -664,6 +750,7 @@ Record this decision and its consequence?`;
     if (event.source === 'partner-assignment') return { id: event.id || event.eventId, type: 'PARTNER UPDATE', title: `${event.label || labelFor(event.key)} obtained`, text: event.value || 'Partner task complete.', kind: 'partner', recordedAt: event.recordedAt };
     if (event.type === 'treatment') return { id: event.id || event.eventId, type: 'TREATMENT', title: event.label || 'Treatment performed', text: event.value || event.details || 'Treatment was recorded.', kind: 'treatment', recordedAt: event.recordedAt };
     if (event.type === 'reassessment') return { id: event.id || event.eventId, type: 'REASSESSMENT', title: event.label || 'Patient reassessed', text: event.value || event.details || 'The patient condition was reassessed.', kind: 'reassessment', recordedAt: event.recordedAt };
+    if (event.type === 'condition_change') return { id: event.id || event.eventId, type: 'PATIENT CONDITION CHANGE', title: event.label || 'Patient condition changed', text: event.value || event.details || 'The patient condition changed.', kind: 'alert', recordedAt: event.recordedAt };
     if (event.type === 'patient_response') return { id: event.id || event.eventId, type: 'PATIENT RESPONSE', title: event.label || 'Response to treatment', text: event.value || event.details || 'The patient responded to treatment.', kind: 'reassessment', recordedAt: event.recordedAt };
     if (event.category === 'history') return { id: event.id || event.eventId, type: 'HISTORY ALERT', title: event.label || 'Important history', text: event.value || event.details || 'Relevant history was obtained.', kind: 'history', recordedAt: event.recordedAt };
     if (event.type === 'impression' || event.type === 'documentation') return { id: event.id || event.eventId, type: 'TRANSPORT / REPORT', title: event.label || 'Care plan updated', text: event.value || event.details || 'The care plan was updated.', kind: 'transport', recordedAt: event.recordedAt };
@@ -908,6 +995,7 @@ Record this decision and its consequence?`;
   }
 
   function openSheet(panelId) {
+    evaluatePatientCondition(panelId === 'transportPanel' ? 'transport-review' : 'patient-tool-open');
     document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
     $('sheetTitle').textContent = { vitalsPanel: 'Patient tools', assessmentPanel: 'Assessment', treatmentPanel: 'Treatment', transportPanel: 'Transport and handoff', findingsPanel: 'Patient care log' }[panelId];
@@ -933,7 +1021,11 @@ Record this decision and its consequence?`;
   }
 
   function refreshFromRecord() {
+    if (!conditionEvaluationActive) evaluatePatientCondition('patient-home');
     const current = record();
+    const dynamicState = conditionState(current);
+    const patientImage = $('patientImage');
+    if (patientImage) patientImage.dataset.conditionMode = dynamicState.imageMode || scenario.imageMode || '';
     buildVitals();
     buildAssessments();
     buildTreatments();
