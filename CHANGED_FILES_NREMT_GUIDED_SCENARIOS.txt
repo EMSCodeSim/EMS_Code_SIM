@@ -1,0 +1,33 @@
+Version 1.4.0 — NREMT Skill Sheets and Guided Scenario Entry
+
+New files:
+- nremt-skill-sheets.html
+- nremt-skill-sheets.js
+- styles/nremt-skill-sheets.css
+- vitals/scenario-guided-start.js
+- vitals/scenario-guided-start.css
+- NREMT_SKILL_SHEETS_GUIDED_SCENARIOS_UPDATE.md
+
+Updated files:
+- package.json
+- ems-training-tools.html
+- search-index.js
+- sitemap.xml
+- vitals/visual-patient.html
+- vitals/visual-patient.js
+- vitals/scenario-tool-registry.js
+- vitals/assessment-workspace.html
+- vitals/assessment-workspace.js
+- vitals/patient-record.js
+- vitals/scenario-launcher.html
+- vitals/scenario-launcher.js
+- vitals/scenario-launcher.css
+- vitals/scenario-progress-sync.js
+- vitals/scenario-flow.js
+- vitals/scenario-debrief.html
+- vitals/scenario-debrief.js
+- vitals/scenario-debrief.css
+- tools/verify-scenario-contracts.js
+- tools/test-scenario-persistence.js
+- tests/interaction/scenario-flow.spec.js
+- tests/interaction/scenario-assessment-links.spec.js
