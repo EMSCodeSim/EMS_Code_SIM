@@ -506,7 +506,9 @@
       else if(!(current.documentation?.handoff||current.documentation?.narrative)){title='Prepare handoff and debrief';reason='Review the chronological care log, give the handoff, and finish with scenario feedback.';actions=[{label:'PCR and handoff',url:toolUrl('/vitals/pcr-handoff.html','patient scenario')},{label:'Review log',panel:'findingsPanel',secondary:true}];}
       else {title='Review the scenario';reason='Use the debrief to review missed findings, treatment timing, reassessment, and documentation.';actions=[{label:'Open debrief',url:toolUrl('/vitals/scenario-debrief.html','patient scenario')},{label:'Review log',panel:'findingsPanel',secondary:true}];}
     }
-    $('nextActionTitle').textContent=title;$('nextActionReason').textContent=reason;const host=$('nextActionButtons');host.innerHTML='';actions.forEach(action=>{const el=document.createElement(action.url?'a':'button');el.textContent=action.label;if(action.secondary)el.className='secondary';if(action.url)el.href=action.url;else el.type='button';if(action.panel)el.addEventListener('click',()=>openSheet(action.panel));if(action.scene)el.addEventListener('click',()=>window.EMSCodeSimSceneGuide?.start?.(has('scene_size_up')));host.appendChild(el)});
+    const nextTitle=$('nextActionTitle'); const nextReason=$('nextActionReason'); const host=$('nextActionButtons');
+    if (!nextTitle || !nextReason || !host) return;
+    nextTitle.textContent=title; nextReason.textContent=reason; host.innerHTML=''; actions.forEach(action=>{const el=document.createElement(action.url?'a':'button');el.textContent=action.label;if(action.secondary)el.className='secondary';if(action.url)el.href=action.url;else el.type='button';if(action.panel)el.addEventListener('click',()=>openSheet(action.panel));if(action.scene)el.addEventListener('click',()=>window.EMSCodeSimSceneGuide?.start?.(has('scene_size_up')));host.appendChild(el)});
   }
 
   function refreshFromRecord() {
@@ -516,7 +518,7 @@
     buildTreatments();
     renderFindings();
     updateCounts();
-    $('patientLabel').textContent = current?.patient || 'Patient';
+    if ($('patientLabel')) $('patientLabel').textContent = current?.patient || 'Patient';
     $('dispatch').textContent = current?.dispatch || scenario.title;
     $('scene').textContent = current?.scene || '';
     renderInfoUpdate();
