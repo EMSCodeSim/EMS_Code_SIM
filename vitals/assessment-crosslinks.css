@@ -2,3 +2,19 @@
 .treatment-locked-note{display:inline-flex;align-items:center;min-height:44px;padding:10px 13px;border-radius:11px;border:1px dashed #c2a56d;background:#fff9ed;color:#76531b;font-size:.86rem;font-weight:800}
 
 .lesson-panel .scenario-connected-tools{max-width:none;margin:18px 0 0;padding:0}
+
+/* Scenario assessment result mode */
+.scenario-mode .scenario-assessment-direct .patient-card__top,
+.scenario-mode .scenario-assessment-direct .patient-card__head,
+.scenario-mode .scenario-assessment-direct #scenarioText,
+.scenario-mode .scenario-assessment-direct #caseDescription,
+.scenario-mode .scenario-assessment-direct .scenario-text,
+.scenario-mode .scenario-assessment-direct [data-scenario-description],
+.scenario-mode .scenario-assessment-direct .scenario-perform-button,
+.scenario-mode .scenario-assessment-direct .scenario-note-field{display:none!important}
+.scenario-mode .scenario-assessment-direct .patient-card{padding:0;background:transparent;border:0;box-shadow:none}
+.scenario-mode .scenario-assessment-direct .finding-box{margin:0;padding:20px;border-radius:16px}
+.scenario-mode .scenario-assessment-direct .scenario-assessment-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.scenario-mode .scenario-assessment-direct .scenario-assessment-actions .continue-patient{display:inline-flex;align-items:center;justify-content:center;min-height:48px;border:0;border-radius:12px;background:#173247;color:#fff;text-decoration:none;font-weight:900;cursor:pointer}
+.scenario-mode .scenario-assessment-direct .scenario-assessment-actions .optional-grade{min-height:48px}
+@media(max-width:620px){.scenario-mode .scenario-assessment-direct .scenario-assessment-actions{grid-template-columns:1fr}}

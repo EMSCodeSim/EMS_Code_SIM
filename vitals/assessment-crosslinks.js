@@ -12,6 +12,94 @@
   const scenarioHome = session?.scenarioHome?.(caseId) || `/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}`;
   const currentReturn = `${path}?mode=scenario&resume=1&case=${encodeURIComponent(caseId)}`;
 
+
+  const assessmentPages = {
+    '/vitals/airway-assessment.html': ['airway', 'Airway Assessment'],
+    '/vitals/breathing-assessment.html': ['breathing', 'Breathing Assessment'],
+    '/vitals/perfusion-assessment.html': ['perfusion', 'Perfusion Assessment'],
+    '/vitals/chest-assessment.html': ['chest', 'Chest Assessment'],
+    '/vitals/abdominal-assessment.html': ['abdominal', 'Abdominal Assessment'],
+    '/vitals/trauma-assessment.html': ['trauma', 'Trauma Assessment'],
+    '/vitals/motor-sensory-assessment.html': ['motor_sensory', 'Motor and Sensory Assessment'],
+    '/vitals/pediatric-assessment-triangle.html': ['pat', 'Pediatric Assessment Triangle'],
+    '/vitals/sample-history.html': ['sample', 'SAMPLE History'],
+    '/vitals/pain-opqrst.html': ['opqrst', 'OPQRST Assessment']
+  };
+
+  function saveViewedFinding(key, label) {
+    const latest = session?.sync?.(caseId) || api?.active?.();
+    if (api?.hasFinding?.(key, latest)) return;
+    const finding = document.getElementById('findingText')?.textContent?.trim() || '';
+    const details = document.getElementById('findingDetail')?.textContent?.trim() || '';
+    if (!finding) return;
+    window.EMSCodeSimAssessmentIntegration?.saveAssessment?.({
+      assessment: key,
+      label,
+      scenarioTitle: latest?.title || '',
+      finding,
+      details,
+      normality: '',
+      expectedNormality: '',
+      interpretation: '',
+      action: '',
+      documentation: '',
+      score: null,
+      maxScore: null,
+      viewedOnly: true
+    });
+  }
+
+  function simplifyScenarioAssessment() {
+    const meta = assessmentPages[path];
+    if (!meta) return;
+    const [key, label] = meta;
+    const practice = document.getElementById('practicePanel') || document.querySelector('main');
+    practice?.classList.add('scenario-assessment-direct');
+
+    const perform = document.querySelector('#assessAirway,#performAssessment,[data-action="perform-assessment"]');
+    if (perform) {
+      perform.classList.add('scenario-perform-button');
+      if (!perform.disabled) perform.click();
+    }
+
+    document.querySelectorAll('#pcrText,#docText').forEach(field => {
+      const wrapper = field.closest('.decision-step,.form-field,label') || field.parentElement;
+      wrapper?.classList.add('scenario-note-field');
+    });
+
+    const form = document.querySelector('form[id$="Form"],#painForm,#sampleForm,#patForm');
+    const grade = form?.querySelector('button[type="submit"],input[type="submit"]');
+    if (grade) {
+      grade.textContent = 'Grade my assessment (optional)';
+      grade.classList.add('optional-grade');
+    }
+
+    if (form && !form.querySelector('.scenario-assessment-actions')) {
+      const actions = document.createElement('div');
+      actions.className = 'scenario-assessment-actions';
+      if (grade) actions.appendChild(grade);
+      const continueButton = document.createElement('button');
+      continueButton.type = 'button';
+      continueButton.className = 'continue-patient';
+      continueButton.textContent = 'Continue to patient';
+      continueButton.addEventListener('click', () => {
+        saveViewedFinding(key, label);
+        location.href = scenarioHome;
+      });
+      actions.appendChild(continueButton);
+      form.appendChild(actions);
+    }
+
+    // Wait for the page-specific assessment script to populate the finding.
+    setTimeout(() => {
+      const box = document.getElementById('findingBox');
+      if (box) box.hidden = false;
+    }, 60);
+  }
+
+  setTimeout(simplifyScenarioAssessment, 80);
+  window.addEventListener('pageshow', () => setTimeout(simplifyScenarioAssessment, 40));
+
   const configs = {
     '/vitals/airway-assessment.html': {
       key: 'airway', label: 'Airway assessment',
