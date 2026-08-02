@@ -8,12 +8,43 @@ test.beforeEach(async ({ page }) => {
   await clearSiteStorage(page);
 });
 
+test('visual patient guides scene size-up without blocking a missed decision', async ({ page }) => {
+  const assertNoPageErrors = watchPageErrors(page);
+  await page.goto('/vitals/visual-patient.html?case=asthma&mode=scenario&resume=1');
+  await expect(page.locator('#patientImage')).toBeVisible();
+  await expect(page.locator('#sceneGuide')).toBeVisible();
+  await expect(page.locator('#sceneGuideQuestion')).toContainText('What PPE should you use?');
+
+  for (let index = 0; index < 9; index += 1) {
+    await page.locator('input[name="sceneGuideAnswer"]').first().check();
+    await page.locator('#sceneGuideNext').click();
+    await expect(page.locator('#sceneGuideFeedback')).toBeVisible();
+    await page.locator('#sceneGuideNext').click();
+  }
+
+  await expect(page.locator('#sceneGuideComplete')).toBeVisible();
+  const saved = await page.evaluate(() => {
+    const record = JSON.parse(localStorage.getItem('emscodesim_patient_record_asthma'));
+    const state = JSON.parse(localStorage.getItem('emscodesim_scenario_asthma'));
+    return { finding: record.findings.scene_size_up, done: state.done };
+  });
+  expect(saved.finding.answers).toHaveLength(9);
+  expect(saved.finding.score).toBeLessThan(9);
+  expect(saved.done).toContain(0);
+
+  await page.goto('/vitals/scenario-debrief.html');
+  const sceneCard = page.locator('.finding-card', { hasText: 'Scene Size Up' });
+  await expect(sceneCard).toContainText('Review guided scene decisions');
+  await expect(sceneCard).toContainText('Preferred choice');
+  await assertNoPageErrors();
+});
+
 test('picture-first scenario launches, records a timed respiratory rate, and restores progress', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
   await openScenario(page, 'asthma');
 
   await expect(page.locator('#caseTitle')).toHaveText('Respiratory Distress');
-  await expect(page.locator('#progressLabel')).toHaveText('0 of 11 complete');
+  await expect(page.locator('#progressLabel')).toHaveText('0 of 12 complete');
   await expect(page.locator('#scenarioPatientImage')).toBeVisible();
   await expect.poll(() => page.locator('#scenarioPatientImage').evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
 
@@ -50,12 +81,12 @@ test('picture-first scenario launches, records a timed respiratory rate, and res
   await expect(respiratoryCard).toContainText('28/min; labored');
 
   await page.goto('/vitals/scenario-launcher.html?case=asthma&resume=1');
-  await expect(page.locator('#progressLabel')).toHaveText('1 of 11 complete');
+  await expect(page.locator('#progressLabel')).toHaveText('1 of 12 complete');
   const respiratoryStep = page.locator('.step').filter({ hasText: 'Respiratory rate' });
   await expect(respiratoryStep.locator('.step-status')).toHaveText('Recorded');
 
   await page.reload();
-  await expect(page.locator('#progressLabel')).toHaveText('1 of 11 complete');
+  await expect(page.locator('#progressLabel')).toHaveText('1 of 12 complete');
   await assertNoPageErrors();
 });
 
@@ -66,12 +97,12 @@ test('scenario completion blocks incomplete work and persists completed state', 
 
   await page.evaluate(() => {
     localStorage.setItem('emscodesim_scenario_asthma', JSON.stringify({
-      done: Array.from({ length: 11 }, (_, index) => index),
+      done: Array.from({ length: 12 }, (_, index) => index),
       complete: false
     }));
   });
   await page.reload();
-  await expect(page.locator('#progressLabel')).toHaveText('11 of 11 complete');
+  await expect(page.locator('#progressLabel')).toHaveText('12 of 12 complete');
   await page.locator('#completeScenario').click();
   await expect(page.locator('#completionMessage')).toContainText('Scenario complete');
 
