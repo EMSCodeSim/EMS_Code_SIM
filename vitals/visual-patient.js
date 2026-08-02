@@ -82,6 +82,43 @@
     }
   };
 
+
+  const TREATMENT_PLANS = {
+    asthma: [
+      { id:'position_comfort', label:'Position of comfort', summary:'Allow the patient to remain upright and reduce respiratory effort.', evidence:['breathing'], targets:['breathing','respirations'], response:'The patient tolerates the upright position and can speak with slightly less effort.', effective:'appropriate-effective' },
+      { id:'oxygen', label:'Administer oxygen', summary:'Select oxygen based on respiratory effort and measured oxygen saturation.', evidence:['breathing','spo2'], targets:['breathing','spo2','respirations'], response:'Oxygen is applied. The patient remains anxious but oxygenation begins to improve.', effective:'appropriate-effective' },
+      { id:'bronchodilator', label:'Assist prescribed inhaler / bronchodilator', summary:'Verify indication, medication rights, dose, and local protocol.', evidence:['breathing','breath_sounds'], targets:['breathing','breath_sounds','respirations','spo2'], response:'After bronchodilator treatment, air movement improves and wheezing is less prominent, but reassessment is required.', effective:'appropriate-effective' },
+      { id:'bvm', label:'Begin assisted ventilation', summary:'Use only when breathing becomes inadequate.', evidence:['breathing'], targets:['airway','breathing','respirations','spo2'], response:'Assisted ventilation is initiated. Chest rise improves with each ventilation.', requireText:/inadequate|apne|absent|poor air movement/i }
+    ],
+    stroke: [
+      { id:'airway_position', label:'Protect airway and position safely', summary:'Maintain airway protection and prepare for vomiting or deterioration.', evidence:['airway','mental_status'], targets:['airway','breathing','mental_status'], response:'The patient remains positioned safely with the airway monitored continuously.', effective:'appropriate-effective' },
+      { id:'glucose_check', label:'Check blood glucose', summary:'Exclude hypoglycemia as a stroke mimic before final destination decisions.', evidence:['mental_status','motor_sensory'], targets:['blood_glucose','mental_status'], response:'Blood glucose is obtained so a reversible stroke mimic can be evaluated.', effective:'appropriate-effective' },
+      { id:'rapid_transport', label:'Initiate rapid stroke-center transport', summary:'Use last-known-well time and local destination protocol.', evidence:['motor_sensory','mental_status'], targets:['mental_status','motor_sensory'], response:'Rapid transport is initiated with stroke-center notification and last-known-well information.', effective:'appropriate-effective' }
+    ],
+    hypoglycemia: [
+      { id:'oral_glucose', label:'Administer oral glucose', summary:'Give only when the patient can follow commands and swallow safely.', evidence:['blood_glucose','mental_status','airway'], targets:['blood_glucose','mental_status','airway'], response:'Oral glucose is administered. The patient becomes more alert and follows commands more consistently.', contraindication: rec => {
+          const airway=rec?.findings?.airway; const mental=rec?.findings?.mental_status;
+          const text=`${airway?.value||''} ${mental?.value||''}`;
+          return airway?.status==='abnormal' || /unresponsive|cannot swallow|unable to protect|gurgling|snoring/i.test(text);
+        }
+      },
+      { id:'airway_support', label:'Provide airway support', summary:'Position, suction, or ventilate when airway protection or breathing is inadequate.', evidence:['airway','breathing','mental_status'], targets:['airway','breathing','mental_status','spo2'], response:'Airway support is provided and ventilation is maintained while the reversible cause is treated.', effective:'appropriate-effective' },
+      { id:'rapid_transport', label:'Begin transport and request ALS', summary:'Escalate when the patient cannot safely take oral glucose or fails to improve.', evidence:['mental_status','blood_glucose'], targets:['mental_status','blood_glucose'], response:'Transport is initiated and advanced support is requested because the patient remains high risk.', effective:'appropriate-effective' }
+    ],
+    trauma: [
+      { id:'oxygen_ventilation', label:'Provide oxygen or ventilation support', summary:'Treat hypoxia or inadequate ventilation based on the breathing assessment.', evidence:['breathing','spo2','breath_sounds'], targets:['breathing','respirations','spo2','breath_sounds'], response:'Respiratory support is started. Chest movement and oxygenation require immediate reassessment.', effective:'appropriate-effective' },
+      { id:'hemorrhage_shock', label:'Control hemorrhage and treat for shock', summary:'Control bleeding, keep the patient warm, and minimize scene delay.', evidence:['perfusion','skin','trauma_assessment','abdominal_assessment'], targets:['perfusion','pulse','blood_pressure','skin'], response:'Bleeding and heat-loss precautions are addressed. Perfusion remains concerning and must be reassessed.', effective:'appropriate-effective' },
+      { id:'spinal_motion', label:'Apply spinal-motion precautions when indicated', summary:'Base the decision on mechanism, pain, tenderness, neurologic findings, and reliability.', evidence:['trauma_assessment','motor_sensory'], targets:['trauma_assessment','motor_sensory'], response:'Spinal-motion precautions are applied without delaying treatment of immediate life threats.', effective:'appropriate-effective' },
+      { id:'rapid_transport', label:'Initiate rapid trauma transport', summary:'Use the mechanism, primary assessment, and signs of shock to set priority.', evidence:['breathing','perfusion','trauma_assessment'], targets:['breathing','perfusion'], response:'Rapid transport is initiated with early trauma-center notification.', effective:'appropriate-effective' }
+    ],
+    pediatric: [
+      { id:'caregiver_position', label:'Position with caregiver when possible', summary:'Reduce distress while maintaining a position that supports breathing.', evidence:['pediatric_assessment_triangle','breathing'], targets:['breathing','pediatric_assessment_triangle'], response:'The child remains with the caregiver and appears less distressed while breathing is monitored.', effective:'appropriate-effective' },
+      { id:'oxygen', label:'Provide tolerated oxygen', summary:'Choose the least upsetting method that still supports oxygenation.', evidence:['breathing','spo2'], targets:['breathing','respirations','spo2'], response:'Oxygen is introduced with caregiver assistance. The child tolerates the device and oxygenation begins to improve.', effective:'appropriate-effective' },
+      { id:'bvm', label:'Begin assisted ventilation', summary:'Use when respiratory effort or air movement becomes inadequate.', evidence:['breathing'], targets:['airway','breathing','respirations','spo2'], response:'Assisted ventilation produces visible chest rise and improved air movement.', requireText:/inadequate|poor air movement|fatigue|apne|absent/i },
+      { id:'supportive_fever', label:'Provide supportive fever care', summary:'Avoid aggressive cooling; prevent heat loss and continue perfusion assessment.', evidence:['temperature','skin','perfusion'], targets:['temperature','skin','perfusion'], response:'Supportive care is provided while the child is reassessed for respiratory and perfusion changes.', effective:'appropriate-effective' }
+    ]
+  };
+
   const scenario = CASES[requestedId] || CASES.asthma;
   const id = CASES[requestedId] ? requestedId : 'asthma';
   const $ = value => document.getElementById(value);
@@ -475,18 +512,128 @@
     }
   }
 
+  function treatmentEvidence(plan, current = record()) {
+    const findings = current?.findings || {};
+    const present = (plan.evidence || []).filter(key => findings[key]);
+    const abnormal = present.filter(key => {
+      const finding = findings[key] || {};
+      return finding.status === 'abnormal' || finding.normality === 'not-normal';
+    });
+    const text = present.map(key => `${findings[key]?.value || ''} ${findings[key]?.finding || ''}`).join(' ');
+    return { present, abnormal, text };
+  }
+
+  function treatmentDecision(plan, current = record()) {
+    const evidence = treatmentEvidence(plan, current);
+    if (typeof plan.contraindication === 'function' && plan.contraindication(current)) {
+      return { code:'contraindicated', label:'Contraindicated', detail:'Current findings make this treatment unsafe.' };
+    }
+    if (plan.requireText && !plan.requireText.test(evidence.text)) {
+      if (!evidence.present.length) return { code:'assessment-needed', label:'Assessment needed', detail:'Obtain the supporting assessment before choosing this intervention.' };
+      return { code:'not-indicated', label:'Not indicated', detail:'The current finding does not support this intervention.' };
+    }
+    if (evidence.abnormal.length) return { code:'indicated', label:'Indicated', detail:`Supported by ${evidence.abnormal.map(labelFor).join(', ')}.` };
+    if (!evidence.present.length) return { code:'assessment-needed', label:'Assessment needed', detail:'Obtain the supporting assessment before choosing this intervention.' };
+    return { code:'not-indicated', label:'Not indicated', detail:'Available findings are normal or do not support this treatment.' };
+  }
+
+  function treatmentAlreadyRecorded(plan) {
+    return (record()?.treatments || []).some(item => item.actionId === plan.id);
+  }
+
+  function recordTreatment(plan) {
+    const current = record();
+    const decision = treatmentDecision(plan, current);
+    const startedAt = new Date(current?.startedAt || Date.now()).getTime();
+    const elapsedSeconds = Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
+    let classification = 'appropriate-effective';
+    let response = plan.response;
+    if (decision.code === 'contraindicated') {
+      classification = 'contraindicated';
+      response = 'The intervention is unsafe for the current patient condition and does not improve the patient.';
+    } else if (decision.code === 'assessment-needed') {
+      classification = 'premature';
+      response = 'The intervention was selected before the indication was established. Obtain the missing assessment and reevaluate.';
+    } else if (decision.code === 'not-indicated') {
+      classification = 'unnecessary';
+      response = 'The intervention does not address a current abnormal finding and produces no meaningful improvement.';
+    }
+    const treatment = {
+      actionId: plan.id,
+      treatment: plan.label,
+      name: plan.label,
+      description: plan.label,
+      label: 'Treatment performed',
+      source: 'scenario-aware-treatment',
+      classification,
+      indicationStatus: decision.code,
+      indication: decision.detail,
+      targetKeys: plan.targets || [],
+      reassessmentRequired: classification === 'appropriate-effective',
+      patientResponse: response,
+      elapsedSeconds,
+      elapsedLabel: `${String(Math.floor(elapsedSeconds / 60)).padStart(2,'0')}:${String(elapsedSeconds % 60).padStart(2,'0')}`
+    };
+    if (session?.addTreatment) session.addTreatment(treatment);
+    else api?.addTreatment?.(treatment);
+    api?.mergeCareLog?.([{
+      type:'patient_response', category:'treatment', key:plan.targets?.[0] || 'treatment',
+      label: classification === 'appropriate-effective' ? 'Patient response' : 'Treatment consequence',
+      value: response,
+      details: classification === 'appropriate-effective' ? `Targeted reassessment is due: ${(plan.targets || []).map(labelFor).join(', ')}.` : decision.detail,
+      source:'scenario-aware-treatment', recordedAt:new Date(Date.now() + 1).toISOString()
+    }]);
+    refreshFromRecord();
+    toast(classification === 'appropriate-effective' ? `${plan.label} recorded — reassessment due` : `${plan.label} recorded — ${classification.replace('-', ' ')}`);
+  }
+
+  function renderTreatmentCard(plan) {
+    const decision = treatmentDecision(plan);
+    const recorded = treatmentAlreadyRecorded(plan);
+    const article = document.createElement('article');
+    article.className = `treatment-card treatment-decision-card state-${decision.code}${recorded ? ' complete' : ''}`;
+    article.innerHTML = `
+      <div class="treatment-card-heading">
+        <div><span class="requirement-tag ${decision.code === 'indicated' ? 'appropriate' : decision.code === 'contraindicated' ? 'not-indicated' : 'optional'}">${escapeHtml(decision.label)}</span><h3>${escapeHtml(plan.label)}</h3></div>
+        <span class="status-chip ${recorded ? 'done' : ''}">${recorded ? 'Recorded' : decision.label}</span>
+      </div>
+      <p>${escapeHtml(plan.summary)}</p>
+      <div class="treatment-indication"><strong>Clinical check:</strong> ${escapeHtml(decision.detail)}</div>
+      <div class="treatment-targets"><strong>Reassess after treatment:</strong> ${escapeHtml((plan.targets || []).map(labelFor).join(', ') || 'Patient condition')}</div>
+      <button class="primary-action treatment-apply" type="button" ${recorded ? 'disabled' : ''}>${recorded ? 'Treatment recorded' : 'Perform treatment'}</button>`;
+    article.querySelector('.treatment-apply')?.addEventListener('click', () => {
+      const warning = decision.code === 'indicated' ? `Perform ${plan.label}?` : `${decision.label}: ${decision.detail}
+
+Record this decision and its consequence?`;
+      if (!window.confirm(warning)) return;
+      recordTreatment(plan);
+    });
+    return article;
+  }
+
   function buildTreatments() {
     const box = $('treatmentTools');
     box.innerHTML = '';
-    scenario.treatments.forEach((title, index) => {
-      const article = document.createElement('article');
-      article.className = 'treatment-card';
-      article.innerHTML = `<span class="requirement-tag appropriate">Patient-specific option</span><h3>${escapeHtml(title)}</h3><p>Open the treatment tool to decide whether this intervention is indicated and document the reassessment.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', index === 0 ? 'airway' : 'general')}">Assess and treat</a>`;
-      box.appendChild(article);
-    });
+    const plans = TREATMENT_PLANS[id] || [];
+    const indicated = plans.filter(plan => treatmentDecision(plan).code === 'indicated');
+    const others = plans.filter(plan => !indicated.includes(plan));
+    const intro = document.createElement('div');
+    intro.className = 'treatment-guidance';
+    intro.innerHTML = `<strong>Treat findings, not the scenario title.</strong><span>Options supported by abnormal findings appear first. Every decision is timed, logged, and linked to targeted reassessment.</span>`;
+    box.appendChild(intro);
+    indicated.forEach(plan => box.appendChild(renderTreatmentCard(plan)));
+    if (others.length) {
+      const details = document.createElement('details');
+      details.className = 'more-treatments';
+      details.open = indicated.length === 0;
+      details.innerHTML = '<summary>Other treatment options <span>Assessment needed, not indicated, or contraindicated</span></summary><div class="more-treatment-list"></div>';
+      const list = details.querySelector('.more-treatment-list');
+      others.forEach(plan => list.appendChild(renderTreatmentCard(plan)));
+      box.appendChild(details);
+    }
     const full = document.createElement('article');
-    full.className = 'treatment-card';
-    full.innerHTML = `<span class="requirement-tag optional">Complete treatment menu</span><h3>Other treatment and reassessment options</h3><p>Use the full menu when another intervention is supported by the findings or local protocol.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general')}">Open treatment menu</a>`;
+    full.className = 'treatment-card full-treatment-menu';
+    full.innerHTML = `<span class="requirement-tag optional">Protocol-dependent options</span><h3>Complete treatment and reassessment tool</h3><p>Use this only when the needed intervention is not represented above or when advanced decision practice is required.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general')}">Open complete treatment tool</a>`;
     box.appendChild(full);
   }
 
