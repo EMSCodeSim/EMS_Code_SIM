@@ -5,57 +5,78 @@
   const session = window.EMSCodeSimScenarioSession;
   const runtime = window.EMSCodeSimScenarioRuntime;
   const registry = window.EMSCodeSimToolRegistry;
+  const phases = window.EMSCodeSimScenarioPhases;
   const params = new URLSearchParams(location.search);
   const requestedId = params.get('case') || session?.requestedCaseId?.() || api?.active?.()?.scenarioId || 'asthma';
 
   const CASES = {
     asthma: {
-      title: 'Respiratory Distress', visible: 'Sitting upright, anxious, speaking in short sentences', image: '/vitals/assets/scenario-patient-adult-v3.png',
+      title: 'Respiratory Distress',
+      visible: 'Sitting upright, anxious, speaking in short sentences',
+      image: '/vitals/assets/scenario-patient-adult-v3.png',
+      imageMode: 'respiratory',
+      sceneClues: ['Upright position', 'Short sentences', 'Rescue inhaler nearby'],
       recommended: ['airway','breathing','perfusion','respirations','breath_sounds','spo2','skin','pulse','blood_pressure','sample'],
       primary: {
-        airway: { label: 'Known from speech', known: 'Airway is patent at this moment.', evidence: 'The patient is speaking to you in short sentences, so air is moving through the upper airway.', unknown: 'Airway sounds, swelling, secretions, fatigue, and the ability to keep protecting the airway still need assessment.', tools: ['airway'] },
-        breathing: { label: 'Known from the picture', known: 'Breathing is present and visibly labored.', evidence: 'The upright posture, anxiety, and short sentences suggest increased work of breathing.', unknown: 'Respiratory rate, depth, chest rise, breath sounds, and SpO₂ are still unknown.', tools: ['breathing','respirations','breath_sounds','spo2'] },
-        perfusion: { label: 'Reasonable clinical inference', known: 'A perfusing pulse is present.', evidence: 'An awake patient who is speaking has enough circulation at this moment to perfuse the brain.', unknown: 'Pulse rate and quality, blood pressure, skin signs, capillary refill, and hidden bleeding remain unknown.', tools: ['perfusion','pulse','blood_pressure','skin'] }
+        airway: { initial: 'Unknown — speech suggests airflow', action: 'Assess', urgent: false },
+        breathing: { initial: 'Visibly labored', action: 'Assess now', urgent: true },
+        perfusion: { initial: 'Pulse appears present', action: 'Assess', urgent: false }
       },
       treatments: ['Position of comfort','Oxygen based on assessment','Assist prescribed inhaler / bronchodilator per protocol']
     },
     stroke: {
-      title: 'Possible Acute Stroke', visible: 'Awake with abnormal speech and right-sided weakness', image: '/vitals/assets/scenario-patient-adult-v3.png',
+      title: 'Possible Acute Stroke',
+      visible: 'Awake with abnormal speech and right-sided weakness',
+      image: '/vitals/assets/scenario-patient-adult-v3.png',
+      imageMode: 'stroke',
+      sceneClues: ['Abnormal speech', 'Right arm weakness', 'Family reports sudden onset'],
       recommended: ['airway','breathing','perfusion','mental_status','pupils','motor_sensory','blood_glucose','blood_pressure','pulse','respirations','spo2','sample'],
       primary: {
-        airway: { label: 'Partly known from interaction', known: 'Air is moving and the patient can vocalize.', evidence: 'The patient is awake with abnormal speech, which supports current airflow but does not prove airway protection.', unknown: 'Secretions, facial weakness, swallowing, gag protection, and aspiration risk still need assessment.', tools: ['airway'] },
-        breathing: { label: 'Reasonable clinical inference', known: 'Spontaneous breathing is present.', evidence: 'An awake patient who can attempt speech is breathing, but adequacy cannot be judged from that alone.', unknown: 'Respiratory rate, depth, effort, breath sounds, and SpO₂ are still unknown.', tools: ['breathing','respirations','breath_sounds','spo2'] },
-        perfusion: { label: 'Reasonable clinical inference', known: 'A perfusing pulse is present.', evidence: 'Awake interaction indicates current cerebral perfusion.', unknown: 'Pulse rate and quality, blood pressure, skin signs, and perfusion trend remain unknown.', tools: ['perfusion','pulse','blood_pressure','skin'] }
+        airway: { initial: 'Air moving; protection uncertain', action: 'Assess now', urgent: true },
+        breathing: { initial: 'Breathing present; adequacy unknown', action: 'Assess', urgent: false },
+        perfusion: { initial: 'Pulse appears present', action: 'Assess', urgent: false }
       },
       treatments: ['Airway protection and safe positioning','Establish last known well','Rapid stroke-center transport']
     },
     hypoglycemia: {
-      title: 'Altered Mental Status', visible: 'Confused, sweaty, and slow to follow commands', image: '/vitals/assets/scenario-patient-adult-v3.png',
+      title: 'Altered Mental Status',
+      visible: 'Confused, sweaty, and slow to follow commands',
+      image: '/vitals/assets/scenario-patient-adult-v3.png',
+      imageMode: 'hypoglycemia',
+      sceneClues: ['Diaphoretic', 'Confused behavior', 'Diabetic supplies nearby'],
       recommended: ['airway','breathing','perfusion','mental_status','pupils','motor_sensory','blood_glucose','skin','pulse','blood_pressure','respirations','spo2','sample'],
       primary: {
-        airway: { label: 'Partly known from interaction', known: 'The airway is open enough for the patient to respond.', evidence: 'The patient is confused and slow to follow commands, so airflow is present but protection is uncertain.', unknown: 'Swallowing ability, secretions, gag protection, and risk of deterioration still need assessment.', tools: ['airway'] },
-        breathing: { label: 'Reasonable clinical inference', known: 'Spontaneous breathing is present.', evidence: 'The patient is responsive, but a picture does not establish adequate ventilation.', unknown: 'Respiratory rate, depth, effort, breath sounds, and SpO₂ are still unknown.', tools: ['breathing','respirations','breath_sounds','spo2'] },
-        perfusion: { label: 'Known from picture plus inference', known: 'A perfusing pulse is present, with abnormal skin clues visible.', evidence: 'Responsiveness implies a pulse; pallor and diaphoresis suggest possible perfusion or metabolic stress.', unknown: 'Pulse rate and quality, blood pressure, capillary refill, and exact skin temperature remain unknown.', tools: ['perfusion','pulse','blood_pressure','skin'] }
+        airway: { initial: 'Open; protection uncertain', action: 'Assess now', urgent: true },
+        breathing: { initial: 'Breathing present; adequacy unknown', action: 'Assess', urgent: false },
+        perfusion: { initial: 'Pulse present; skin appears abnormal', action: 'Assess', urgent: false }
       },
       treatments: ['Protect the airway','Oral glucose only if swallowing is safe','Ventilation support / naloxone when indicated by findings']
     },
     trauma: {
-      title: 'Blunt Trauma', visible: 'Pale patient with guarded breathing after a collision', image: '/vitals/assets/scenario-patient-adult-v3.png',
+      title: 'Blunt Trauma',
+      visible: 'Pale patient with guarded breathing after a collision',
+      image: '/vitals/assets/scenario-patient-adult-v3.png',
+      imageMode: 'trauma',
+      sceneClues: ['Collision mechanism', 'Guarded chest', 'Pale appearance'],
       recommended: ['airway','breathing','perfusion','respirations','breath_sounds','spo2','chest_assessment','trauma_assessment','abdominal_assessment','skin','blood_pressure','pulse'],
       primary: {
-        airway: { label: 'Not fully known from the picture', known: 'The patient appears responsive, but airway patency is not confirmed.', evidence: 'A responsive appearance suggests some airflow; trauma can still create blood, teeth, swelling, or loss of protection.', unknown: 'Patency, sounds, secretions, facial injury, and protection must be checked directly.', tools: ['airway'] },
-        breathing: { label: 'Known from the picture', known: 'Breathing is present but guarded and potentially inadequate.', evidence: 'Guarded breathing and chest discomfort are visible after a significant mechanism.', unknown: 'Respiratory rate, depth, chest symmetry, breath sounds, and SpO₂ are still unknown.', tools: ['breathing','respirations','breath_sounds','spo2','chest_assessment'] },
-        perfusion: { label: 'Reasonable clinical inference', known: 'A perfusing pulse is present, but shock is possible.', evidence: 'The patient is responsive; pallor and the trauma mechanism raise concern for hemorrhage or poor perfusion.', unknown: 'Major hidden bleeding, pulse rate and quality, blood pressure, skin temperature/moisture, and capillary refill remain unknown.', tools: ['perfusion','pulse','blood_pressure','skin','trauma_assessment'] }
+        airway: { initial: 'Unknown after trauma', action: 'Assess now', urgent: true },
+        breathing: { initial: 'Guarded and potentially inadequate', action: 'Assess now', urgent: true },
+        perfusion: { initial: 'Pulse present; shock possible', action: 'Assess now', urgent: true }
       },
       treatments: ['Airway and ventilation support','Control hemorrhage and prevent heat loss','Rapid trauma transport']
     },
     pediatric: {
-      title: 'Sick Pediatric Patient', visible: 'Poor interaction with increased work of breathing', image: '/vitals/assets/scenario-patient-pediatric-v3.png',
+      title: 'Sick Pediatric Patient',
+      visible: 'Poor interaction with increased work of breathing',
+      image: '/vitals/assets/scenario-patient-pediatric-v3.png',
+      imageMode: 'pediatric',
+      sceneClues: ['Poor interaction', 'Visible retractions', 'Caregiver present'],
       recommended: ['pediatric_assessment_triangle','airway','breathing','perfusion','respirations','breath_sounds','spo2','skin','temperature','pulse'],
       primary: {
-        airway: { label: 'Partly known from the first look', known: 'Air is moving, but airway patency and protection are not confirmed.', evidence: 'Visible breathing shows airflow; poor interaction makes deterioration and loss of protection important concerns.', unknown: 'Airway sounds, secretions, positioning, tone, and ability to protect the airway still need assessment.', tools: ['airway'] },
-        breathing: { label: 'Known from the picture', known: 'Breathing is present with increased work.', evidence: 'The first look shows increased effort before the child is touched.', unknown: 'Respiratory rate, depth, breath sounds, chest rise, and SpO₂ are still unknown.', tools: ['breathing','respirations','breath_sounds','spo2'] },
-        perfusion: { label: 'Partly known from the picture', known: 'Circulation is present, with flushed skin visible.', evidence: 'The child is interacting poorly but is not pulseless; skin appearance offers an early perfusion clue.', unknown: 'Pulse rate and quality, capillary refill, blood pressure when indicated, skin temperature/moisture, and perfusion trend remain unknown.', tools: ['perfusion','pulse','skin','blood_pressure'] }
+        airway: { initial: 'Air moving; patency uncertain', action: 'Assess now', urgent: true },
+        breathing: { initial: 'Increased work of breathing', action: 'Assess now', urgent: true },
+        perfusion: { initial: 'Circulation present; status unknown', action: 'Assess', urgent: false }
       },
       treatments: ['Position with caregiver when possible','Oxygen or ventilation support based on adequacy','Supportive fever and perfusion care']
     }
@@ -64,13 +85,15 @@
   const scenario = CASES[requestedId] || CASES.asthma;
   const id = CASES[requestedId] ? requestedId : 'asthma';
   const $ = value => document.getElementById(value);
-  let seconds = 0;
+  const MEASURABLE_TOOL_KEYS = new Set(['blood_pressure','pulse','respirations','spo2','blood_glucose','temperature']);
+  const PRIMARY_KEYS = new Set(['scene_size_up','airway','breathing','perfusion']);
   let activeFocus = null;
   let findingFilter = 'all';
   let infoUpdates = [];
   let infoUpdateIndex = 0;
   let lastInfoSignature = '';
-  const partnerTimers = new Set();
+  let timerInterval = 0;
+  let partnerInterval = 0;
 
   function ensureRecord() {
     const restored = session?.sync?.(id) || api?.active?.();
@@ -89,23 +112,21 @@
 
   function record() { return session?.sync?.(id) || api?.active?.(); }
   function existing(key) { return Boolean(api?.hasFinding?.(key, record())); }
-  function labelFor(key) { return api?.labelFor?.(key) || key.replace(/_/g, ' '); }
+  function labelFor(key) { return api?.labelFor?.(key) || phases?.labelFor?.(key) || String(key).replace(/_/g, ' '); }
   function valueFor(key) { return runtime?.formatVital?.(key) || 'Obtained'; }
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
   }
   function formatClock(value) {
     const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? 'Time not recorded' : date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', second: '2-digit' });
+    return Number.isFinite(date.getTime()) ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
   }
   function elapsedLabel(value, startedAt) {
     const eventTime = new Date(value).getTime();
     const startTime = new Date(startedAt).getTime();
-    if (!Number.isFinite(eventTime) || !Number.isFinite(startTime) || eventTime < startTime) return '';
-    const totalSeconds = Math.floor((eventTime - startTime) / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `+${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    if (!Number.isFinite(eventTime) || !Number.isFinite(startTime) || eventTime < startTime) return '00:00';
+    const total = Math.floor((eventTime - startTime) / 1000);
+    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
   }
   function eventTypeLabel(event) {
     if (event.type === 'treatment') return 'Treatment';
@@ -115,55 +136,6 @@
     if (event.type === 'impression') return 'Impression';
     if (event.type === 'documentation') return 'Report';
     return 'Assessment';
-  }
-
-  function infoElapsed(value, startedAt) {
-    const eventTime = new Date(value).getTime();
-    const startTime = new Date(startedAt).getTime();
-    if (!Number.isFinite(eventTime) || !Number.isFinite(startTime) || eventTime < startTime) return '00:00';
-    const total = Math.floor((eventTime - startTime) / 1000);
-    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
-  }
-
-  function updateFromCareEvent(event, current) {
-    const isAbnormal = event.status === 'abnormal' || event.normality === 'not-normal' || /critical|severe|inadequate|absent|low|high|hypox|shock|unresponsive/i.test(`${event.value || ''} ${event.details || ''}`);
-    if (event.type === 'treatment') return { id: event.id || event.eventId, type: 'TREATMENT', title: event.label || 'Treatment performed', text: event.value || event.details || 'Treatment was recorded.', kind: 'treatment', recordedAt: event.recordedAt };
-    if (event.type === 'reassessment') return { id: event.id || event.eventId, type: 'PATIENT UPDATE', title: event.label || 'Patient reassessed', text: event.value || event.details || 'The patient condition was reassessed.', kind: 'reassessment', recordedAt: event.recordedAt };
-    if (event.category === 'vital') return { id: event.id || event.eventId, type: isAbnormal ? 'CONDITION ALERT' : 'VITAL UPDATE', title: event.label || labelFor(event.key), text: event.value || 'Vital sign obtained.', kind: isAbnormal ? 'alert' : 'assessment', recordedAt: event.recordedAt };
-    if (event.category === 'history') return { id: event.id || event.eventId, type: 'HISTORY UPDATE', title: event.label || 'History obtained', text: event.value || event.details || 'New history information was obtained.', kind: 'history', recordedAt: event.recordedAt };
-    return { id: event.id || event.eventId, type: isAbnormal ? 'CONDITION ALERT' : 'ASSESSMENT UPDATE', title: event.label || labelFor(event.key), text: event.value || event.details || 'New assessment information was obtained.', kind: isAbnormal ? 'alert' : 'assessment', recordedAt: event.recordedAt };
-  }
-
-  function buildInfoUpdates(current) {
-    const startedAt = current?.startedAt || new Date().toISOString();
-    const updates = [
-      { id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information', text: current?.dispatch || scenario.title, kind: 'dispatch', recordedAt: startedAt },
-      { id: 'visible', type: 'VISIBLE CONDITION', title: 'First patient view', text: scenario.visible, kind: 'visible', recordedAt: new Date(new Date(startedAt).getTime() + 1).toISOString() }
-    ];
-    const log = api?.listCareLog?.(current, 'all') || [];
-    log.forEach(event => updates.push(updateFromCareEvent(event, current)));
-    return updates;
-  }
-
-  function renderInfoUpdate(forceLatest = false) {
-    const current = record() || {};
-    const nextUpdates = buildInfoUpdates(current);
-    const signature = nextUpdates.map(item => `${item.id}:${item.text}`).join('|');
-    const changed = signature !== lastInfoSignature;
-    infoUpdates = nextUpdates;
-    if (forceLatest || changed) infoUpdateIndex = Math.max(0, infoUpdates.length - 1);
-    infoUpdateIndex = Math.max(0, Math.min(infoUpdateIndex, infoUpdates.length - 1));
-    lastInfoSignature = signature;
-    const item = infoUpdates[infoUpdateIndex];
-    if (!item || !$('infoUpdateWindow')) return;
-    $('infoUpdateWindow').className = `info-update-window info-${item.kind || 'assessment'}`;
-    $('infoUpdateType').textContent = item.type;
-    $('infoUpdateTitle').textContent = item.title;
-    $('infoUpdateText').textContent = item.text;
-    $('infoUpdateTime').textContent = infoElapsed(item.recordedAt, current.startedAt);
-    $('infoUpdateCount').textContent = `${infoUpdateIndex + 1} of ${infoUpdates.length}`;
-    $('infoUpdatePrevious').disabled = infoUpdateIndex <= 0;
-    $('infoUpdateNext').disabled = infoUpdateIndex >= infoUpdates.length - 1;
   }
 
   function toast(message) {
@@ -177,7 +149,7 @@
     if (!image) return;
     image.onerror = () => {
       image.onerror = null;
-      image.src = '/vitals/assets/scenario-patient-adult-v3.png';
+      image.src = id === 'pediatric' ? '/vitals/assets/scenario-patient-pediatric-v3.png' : '/vitals/assets/scenario-patient-adult-v3.png';
       image.classList.add('image-fallback');
     };
     image.src = path;
@@ -198,7 +170,7 @@
     }
   }
 
-  function toolUrl(url, returnLabel = 'patient scenario', context = '') {
+  function toolUrl(url, returnLabel = 'Patient', context = '') {
     return registry?.buildUrl?.(url, {
       caseId: id,
       returnTo: `/vitals/visual-patient.html?case=${encodeURIComponent(id)}`,
@@ -207,39 +179,75 @@
     }) || url;
   }
 
+  function classificationLabel(key) {
+    const value = phases?.classification?.(id, key) || (scenario.recommended.includes(key) ? 'appropriate' : 'optional');
+    return {
+      required: 'Required',
+      appropriate: 'Clinically appropriate',
+      optional: 'Optional',
+      'not-indicated': 'Not indicated now'
+    }[value] || 'Optional';
+  }
+
+  function classificationClass(key) {
+    return phases?.classification?.(id, key) || (scenario.recommended.includes(key) ? 'appropriate' : 'optional');
+  }
+
+  function partnerTaskFor(key) { return session?.readPartnerTasks?.(id)?.[key] || null; }
+  function secondsRemaining(task) { return Math.max(0, Math.ceil((new Date(task?.dueAt).getTime() - Date.now()) / 1000)); }
+
+  function renderVitalTool(tool) {
+    const complete = existing(tool.key);
+    const task = partnerTaskFor(tool.key);
+    const pending = task?.status === 'pending' && !complete;
+    const article = document.createElement('article');
+    article.className = `tool ${classificationClass(tool.key)}${complete ? ' done' : ''}`;
+    article.dataset.toolKey = tool.key;
+    article.innerHTML = `
+      <div class="tool-head"><div><span class="requirement-tag ${classificationClass(tool.key)}">${classificationLabel(tool.key)}</span><h3>${escapeHtml(tool.label)}</h3><p>${escapeHtml(tool.description)}</p></div>
+      <span class="status-chip ${complete ? 'done' : pending ? 'pending' : ''}">${complete ? 'Obtained' : pending ? 'Partner assigned' : 'Not taken'}</span></div>
+      <div class="tool-actions"><a href="${toolUrl(tool.url)}">Perform</a>
+      <button class="partner-action" type="button" ${complete || pending ? 'disabled' : ''}>${complete ? 'Complete' : pending ? 'In progress' : 'Assign to partner'}</button></div>
+      <div class="assignment-progress" ${pending ? '' : 'hidden'}>${pending ? `Partner gathering ${escapeHtml(tool.label.toLowerCase())}… ${secondsRemaining(task)}s` : ''}</div>`;
+    const button = article.querySelector('.partner-action');
+    button?.addEventListener('click', () => {
+      try {
+        session?.assignPartnerTask?.({ key: tool.key, label: tool.label, value: valueFor(tool.key), delaySeconds: tool.delay || 12 }, id);
+        buildVitals();
+        toast(`${tool.label} assigned to partner`);
+      } catch (error) {
+        console.error(error);
+        toast('Partner task could not be assigned.');
+      }
+    });
+    return article;
+  }
+
+  function appendToolGroup(host, title, copy, tools, className = '') {
+    if (!tools.length) return;
+    const heading = document.createElement('div');
+    heading.className = `tool-group-heading ${className}`;
+    heading.innerHTML = `<h3>${escapeHtml(title)}</h3>${copy ? `<p>${escapeHtml(copy)}</p>` : ''}`;
+    host.appendChild(heading);
+    tools.forEach(tool => host.appendChild(renderVitalTool(tool)));
+  }
+
   function buildVitals() {
     const box = $('vitalTools');
     box.innerHTML = '';
-    (registry?.vitalTools || []).forEach(tool => {
-      const complete = existing(tool.key);
-      const article = document.createElement('article');
-      article.className = `tool${complete ? ' done' : ''}`;
-      article.innerHTML = `
-        <div class="tool-head"><div><h3>${tool.label}</h3><p>${tool.description}</p></div>
-        <span class="status-chip ${complete ? 'done' : ''}">${complete ? 'Obtained' : 'Not taken'}</span></div>
-        <div class="tool-actions"><a href="${toolUrl(tool.url)}">Perform</a>
-        <button class="partner-action" type="button" ${complete ? 'disabled' : ''}>${complete ? 'Complete' : 'Assign to partner'}</button></div>
-        <div class="assignment-progress" hidden></div>`;
-      const button = article.querySelector('button');
-      const status = article.querySelector('.assignment-progress');
-      button.addEventListener('click', () => {
-        button.disabled = true;
-        let left = tool.delay || 12;
-        status.hidden = false;
-        status.textContent = `Partner gathering ${tool.label.toLowerCase()}… ${left}s`;
-        const timer = setInterval(() => {
-          left -= 1;
-          status.textContent = `Partner gathering ${tool.label.toLowerCase()}… ${Math.max(0, left)}s`;
-          if (left <= 0) {
-            clearInterval(timer);
-            partnerTimers.delete(timer);
-            saveFinding(tool.key, valueFor(tool.key), 'partner-assignment', { locked: true });
-          }
-        }, 1000);
-        partnerTimers.add(timer);
-      });
-      box.appendChild(article);
-    });
+    session?.resolvePartnerTasks?.(id);
+    const tools = (registry?.vitalTools || []).filter(tool => MEASURABLE_TOOL_KEYS.has(tool.key));
+    const relevant = tools.filter(tool => ['required','appropriate'].includes(classificationClass(tool.key)));
+    const more = tools.filter(tool => !relevant.includes(tool));
+    appendToolGroup(box, 'Relevant for this patient', 'Required and clinically appropriate measurable tools appear first.', relevant, 'relevant');
+    if (more.length) {
+      const details = document.createElement('details');
+      details.className = 'more-tools';
+      details.innerHTML = '<summary>More tools <span>Optional or not currently indicated</span></summary><div class="more-tools-grid"></div>';
+      const grid = details.querySelector('.more-tools-grid');
+      more.forEach(tool => grid.appendChild(renderVitalTool(tool)));
+      box.appendChild(details);
+    }
   }
 
   function openFocus(title, instruction, finding, key) {
@@ -259,27 +267,21 @@
     }, 4000);
   }
 
-  function renderAssessmentTool(tool, recommended) {
-    const complete = existing(tool.key);
-    const article = document.createElement('article');
-    article.className = `assessment-card${complete ? ' complete' : ''}`;
-    article.innerHTML = `
-      <span class="visual-tag">${recommended ? 'RELEVANT FOR THIS PATIENT' : tool.category.toUpperCase()}</span>
-      <h3>${tool.label}</h3><p>${tool.description}</p>
-      <div class="tool-actions"><a class="primary-action" href="${toolUrl(tool.url, tool.label)}">${complete ? 'Review' : 'Open assessment'}</a>
-      <span class="status-chip ${complete ? 'done' : ''}">${complete ? 'Recorded' : 'Available'}</span></div>`;
-    return article;
-  }
-
   function registryTool(key) {
     return [...(registry?.assessmentTools || []), ...(registry?.vitalTools || [])].find(tool => tool.key === key);
   }
 
-  function appendAssessmentHeading(box, title, copy, level = '') {
-    const heading = document.createElement('div');
-    heading.className = `assessment-sequence-heading${level ? ` ${level}` : ''}`;
-    heading.innerHTML = `<h3>${title}</h3>${copy ? `<p>${copy}</p>` : ''}`;
-    box.appendChild(heading);
+  function renderAssessmentTool(tool) {
+    const complete = existing(tool.key);
+    const kind = classificationClass(tool.key);
+    const article = document.createElement('article');
+    article.className = `assessment-card ${kind}${complete ? ' complete' : ''}`;
+    article.innerHTML = `
+      <span class="requirement-tag ${kind}">${classificationLabel(tool.key)}</span>
+      <h3>${escapeHtml(tool.label)}</h3><p>${escapeHtml(tool.description)}</p>
+      <div class="tool-actions"><a class="primary-action" href="${toolUrl(tool.url, 'Patient')}">${complete ? 'Review assessment' : 'Open assessment'}</a>
+      <span class="status-chip ${complete ? 'done' : ''}">${complete ? 'Recorded' : 'Available'}</span></div>`;
+    return article;
   }
 
   function buildSceneSizeUpCard(box) {
@@ -289,11 +291,10 @@
     article.innerHTML = `
       <span class="sequence-number">1</span>
       <div class="sequence-card-body">
-        <span class="visual-tag">SCENE AND FIRST IMPRESSION</span>
+        <span class="requirement-tag required">Required</span>
         <h3>Scene size-up and first impression</h3>
-        <p>Use the dispatch and first picture to consider PPE, scene safety, patient count, NOI/MOI, resources, spinal precautions, general impression, responsiveness, and priority.</p>
-        <p class="reasoning-tip"><strong>Picture-based:</strong> Several answers come from what you can already see. Do not wait for a vital sign to form a general impression.</p>
-        <div class="tool-actions"><button class="primary-action scene-guide-card-button" type="button">${complete ? 'Review scene size-up' : 'Scene size-up'}</button>
+        <p>Use the dispatch and first patient picture to establish safety, patient count, NOI/MOI, resources, general impression, responsiveness, and priority.</p>
+        <div class="tool-actions"><button class="primary-action scene-guide-card-button" type="button">${complete ? 'Review scene size-up' : 'Begin scene size-up'}</button>
         <span class="status-chip ${complete ? 'done' : ''}">${complete ? 'Recorded' : 'Not started'}</span></div>
       </div>`;
     article.querySelector('button').addEventListener('click', () => {
@@ -303,71 +304,52 @@
     box.appendChild(article);
   }
 
-
-  function openRapidABC() {
-    closeSheet();
-    let modal = document.getElementById('rapidAbcModal');
-    if (!modal) {
-      modal = document.createElement('div');
-      modal.id = 'rapidAbcModal';
-      modal.className = 'rapid-abc-modal';
-      modal.innerHTML = `
-        <form class="rapid-abc-card" id="rapidAbcForm">
-          <p class="eyebrow">RAPID LIFE-THREAT CHECK</p>
-          <h2>Airway, breathing, circulation</h2>
-          <p>Make a rapid initial decision from the patient view. Use the detailed tools afterward when more information is needed.</p>
-          <label>Is the airway patent?<select name="airway" required><option value="">Choose…</option><option>Yes</option><option>No</option><option>Uncertain</option></select></label>
-          <label>Is breathing adequate?<select name="breathing" required><option value="">Choose…</option><option>Yes</option><option>No</option><option>Uncertain</option></select></label>
-          <label>Is perfusion adequate?<select name="perfusion" required><option value="">Choose…</option><option>Yes</option><option>No</option><option>Uncertain</option></select></label>
-          <div class="rapid-abc-actions"><button type="button" class="secondary" data-close>Cancel</button><button type="submit">Record rapid assessment</button></div>
-        </form>`;
-      document.body.appendChild(modal);
-      modal.querySelector('[data-close]').addEventListener('click',()=>modal.hidden=true);
-      modal.addEventListener('click',e=>{if(e.target===modal) modal.hidden=true;});
-      modal.querySelector('form').addEventListener('submit',e=>{
-        e.preventDefault();
-        const fd=new FormData(e.currentTarget);
-        const summary=`Airway: ${fd.get('airway')}; Breathing adequate: ${fd.get('breathing')}; Perfusion adequate: ${fd.get('perfusion')}`;
-        saveFinding('rapid_abc', summary, 'rapid-primary-assessment', { category:'assessment' });
-        modal.hidden=true;
-        openSheet('assessmentPanel');
-      });
-    }
-    modal.hidden=false;
+  function primaryStatus(key) {
+    const finding = api?.getFinding?.(key, record());
+    if (finding) return finding.value || finding.finding || 'Assessment recorded';
+    return scenario.primary[key]?.initial || 'Unknown';
   }
 
-  function buildRapidABCCard(box) {
-    const complete = existing('rapid_abc');
-    const article = document.createElement('article');
-    article.className = `assessment-card sequence-card rapid-abc-card-row${complete ? ' complete' : ''}`;
-    article.innerHTML = `<span class="sequence-number">2</span><div class="sequence-card-body"><span class="visual-tag">RAPID PRIMARY ASSESSMENT</span><h3>Rapid ABC life-threat check</h3><p>Decide whether the airway is patent, breathing is adequate, and perfusion is adequate.</p><div class="tool-actions"><button class="primary-action" type="button">${complete?'Review / repeat':'Begin rapid ABC'}</button><span class="status-chip ${complete?'done':''}">${complete?'Recorded':'Not completed'}</span></div></div>`;
-    article.querySelector('button').addEventListener('click', openRapidABC);
-    box.appendChild(article);
+  function primaryToolLink(key) {
+    const tool = registryTool(key);
+    const config = scenario.primary[key] || {};
+    return {
+      href: toolUrl(tool?.url || `/vitals/${key}-assessment.html`, 'Patient', key),
+      label: existing(key) ? 'Review' : (config.action || 'Assess'),
+      urgent: Boolean(config.urgent)
+    };
   }
 
-  function buildPrimaryCard(box, key, number) {
-    const config = scenario.primary?.[key];
-    if (!config) return;
-    const primaryTool = registryTool(key);
-    const complete = existing(key);
-    const title = key === 'perfusion' ? 'Circulation and perfusion' : key.charAt(0).toUpperCase() + key.slice(1);
+  function buildPrimaryAssessmentCard(box) {
+    const completed = ['airway','breathing','perfusion'].filter(existing).length;
+    const treatments = record()?.treatments || [];
     const article = document.createElement('article');
-    article.className = `assessment-card sequence-card primary-reasoning-card${complete ? ' complete' : ''}`;
-    const links = (config.tools || []).map(toolKey => {
-      const tool = registryTool(toolKey);
-      if (!tool) return '';
-      const toolComplete = existing(tool.key);
-      const context = tool.key === 'airway' ? 'airway' : tool.key === 'breathing' ? 'breathing' : tool.key === 'perfusion' ? 'perfusion' : '';
-      return `<a class="assessment-tool-link${toolComplete ? ' complete' : ''}" href="${toolUrl(tool.url, title, context)}">${toolComplete ? '✓ ' : ''}${tool.label}</a>`;
+    article.className = `assessment-card sequence-card unified-primary-card${completed === 3 ? ' complete' : ''}`;
+    const rows = [
+      ['airway','Airway'],
+      ['breathing','Breathing'],
+      ['perfusion','Circulation']
+    ].map(([key, label]) => {
+      const action = primaryToolLink(key);
+      return `<div class="primary-assessment-row ${action.urgent && !existing(key) ? 'urgent' : ''}">
+        <div><span>${label}</span><strong>${escapeHtml(primaryStatus(key))}</strong></div>
+        <a href="${action.href}">${escapeHtml(action.label)}</a>
+      </div>`;
     }).join('');
+    const threatStatus = treatments.length ? `${treatments.length} treatment${treatments.length === 1 ? '' : 's'} recorded` : 'Not yet addressed';
     article.innerHTML = `
-      <span class="sequence-number">${number}</span>
+      <span class="sequence-number">2</span>
       <div class="sequence-card-body">
-        <span class="visual-tag">${config.label.toUpperCase()}</span>
-        <h3>${title}</h3>
-        <p class="primary-assessment-copy">Choose the assessment tools needed to evaluate ${title.toLowerCase()}.</p>
-        <div class="primary-tool-path" aria-label="Tools for ${title}">${links}</div>
-        <span class="status-chip ${complete ? 'done' : ''}">${complete ? 'Primary finding recorded' : 'Primary finding pending'}</span>
+        <div class="primary-card-heading"><div><span class="requirement-tag required">Required</span><h3>Primary Assessment</h3></div><span class="status-chip ${completed === 3 ? 'done' : ''}">${completed} of 3 assessed</span></div>
+        <p>Make the rapid life-threat decision here, then open only the area that needs closer assessment. There is no separate Rapid ABC step.</p>
+        <div class="primary-assessment-table" role="table" aria-label="Primary assessment status and actions">
+          <div class="primary-assessment-header" role="row"><span>Area</span><span>Current status</span><span>Action</span></div>
+          ${rows}
+          <div class="primary-assessment-row immediate-threats">
+            <div><span>Immediate threats</span><strong>${escapeHtml(threatStatus)}</strong></div>
+            <a href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general')}">${treatments.length ? 'Review care' : 'Treat'}</a>
+          </div>
+        </div>
       </div>`;
     box.appendChild(article);
   }
@@ -375,39 +357,30 @@
   function buildAssessments() {
     const box = $('assessmentTools');
     box.innerHTML = '';
-
-    const intro = document.createElement('div');
-    intro.className = 'assessment-order-note';
-    intro.innerHTML = '<strong>Assessment options</strong><span>Use what is visible, then select the tools needed to confirm findings or answer remaining questions.</span>';
-    box.appendChild(intro);
-
     buildSceneSizeUpCard(box);
-    appendAssessmentHeading(box, 'Primary assessment', '', 'primary-heading');
-    buildRapidABCCard(box);
-    buildPrimaryCard(box, 'airway', 3);
-    buildPrimaryCard(box, 'breathing', 4);
-    buildPrimaryCard(box, 'perfusion', 5);
+    buildPrimaryAssessmentCard(box);
 
-    const primaryKeys = new Set(['scene_size_up','rapid_abc','airway','breathing','perfusion']);
-    const tools = [...(registry?.assessmentTools || [])].filter(tool => !primaryKeys.has(tool.key)).sort((a, b) => {
-      const ar = scenario.recommended.includes(a.key) ? 0 : 1;
-      const br = scenario.recommended.includes(b.key) ? 0 : 1;
-      return ar - br || a.category.localeCompare(b.category) || a.label.localeCompare(b.label);
-    });
+    const focused = (registry?.assessmentTools || []).filter(tool => !PRIMARY_KEYS.has(tool.key));
+    const relevant = focused.filter(tool => ['required','appropriate'].includes(classificationClass(tool.key)));
+    const more = focused.filter(tool => !relevant.includes(tool));
 
-    appendAssessmentHeading(box, 'Focused assessment and history', 'Select additional tools based on the presentation and information already collected.', 'focused-heading');
-    let currentCategory = '';
-    tools.forEach(tool => {
-      const category = scenario.recommended.includes(tool.key) ? 'Commonly useful for this presentation' : tool.category;
-      if (category !== currentCategory) {
-        currentCategory = category;
-        const heading = document.createElement('h3');
-        heading.className = 'assessment-group-title';
-        heading.textContent = category;
-        box.appendChild(heading);
-      }
-      box.appendChild(renderAssessmentTool(tool, scenario.recommended.includes(tool.key)));
-    });
+    if (relevant.length) {
+      const heading = document.createElement('div');
+      heading.className = 'assessment-sequence-heading focused-heading';
+      heading.innerHTML = '<h3>Relevant assessment and history</h3><p>These tools fit the current presentation. Select only those that will change care, priority, or transport.</p>';
+      box.appendChild(heading);
+      relevant.forEach(tool => box.appendChild(renderAssessmentTool(tool)));
+    }
+
+    if (more.length) {
+      const details = document.createElement('details');
+      details.className = 'more-assessments';
+      details.innerHTML = '<summary>More assessments <span>Optional or not indicated by the current presentation</span></summary><div class="more-assessment-list"></div>';
+      const list = details.querySelector('.more-assessment-list');
+      more.sort((a, b) => classificationClass(a.key).localeCompare(classificationClass(b.key)) || a.label.localeCompare(b.label));
+      more.forEach(tool => list.appendChild(renderAssessmentTool(tool)));
+      box.appendChild(details);
+    }
   }
 
   function buildTreatments() {
@@ -416,56 +389,90 @@
     scenario.treatments.forEach((title, index) => {
       const article = document.createElement('article');
       article.className = 'treatment-card';
-      article.innerHTML = `<span class="visual-tag">PATIENT-SPECIFIC OPTION</span><h3>${title}</h3><p>Open the treatment tool to decide whether this intervention is indicated and to document reassessment.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'patient scenario', index === 0 ? 'airway' : 'general')}">Assess and treat</a>`;
+      article.innerHTML = `<span class="requirement-tag appropriate">Patient-specific option</span><h3>${escapeHtml(title)}</h3><p>Open the treatment tool to decide whether this intervention is indicated and document the reassessment.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', index === 0 ? 'airway' : 'general')}">Assess and treat</a>`;
       box.appendChild(article);
     });
-
     const full = document.createElement('article');
     full.className = 'treatment-card';
-    full.innerHTML = `<span class="visual-tag">FULL TREATMENT MENU</span><h3>All treatment and reassessment options</h3><p>Choose from monitoring only through basic and advanced airway, breathing, circulation, medication, and transport actions.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'patient scenario', 'general')}">Open full treatment menu</a>`;
+    full.innerHTML = `<span class="requirement-tag optional">Complete treatment menu</span><h3>Other treatment and reassessment options</h3><p>Use the full menu when another intervention is supported by the findings or local protocol.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general')}">Open treatment menu</a>`;
     box.appendChild(full);
+  }
+
+  function infoElapsed(value, startedAt) { return elapsedLabel(value, startedAt); }
+  function abnormalEvent(event) {
+    return event.status === 'abnormal' || event.normality === 'not-normal' || /critical|severe|inadequate|absent|low|high|hypox|shock|unresponsive|weak|labored|wheeze|slurred|drift|diaphoretic|pale/i.test(`${event.value || ''} ${event.details || ''}`);
+  }
+  function significantHistory(event) {
+    return /last known well|anticoagul|allerg|anaphyl|insulin|diabet|overdose|naloxone|seizure|mechanism|blood thinner|pregnan|medication/i.test(`${event.value || ''} ${event.details || ''}`);
+  }
+  function isInformationUpdate(event) {
+    if (event.source === 'partner-assignment') return true;
+    if (event.type === 'treatment' || event.type === 'reassessment') return true;
+    if (event.type === 'impression' || event.type === 'documentation') return true;
+    if (abnormalEvent(event)) return true;
+    if (event.category === 'history' && significantHistory(event)) return true;
+    return false;
+  }
+  function updateFromCareEvent(event) {
+    const isAbnormal = abnormalEvent(event);
+    if (event.source === 'partner-assignment') return { id: event.id || event.eventId, type: 'PARTNER UPDATE', title: `${event.label || labelFor(event.key)} obtained`, text: event.value || 'Partner task complete.', kind: 'partner', recordedAt: event.recordedAt };
+    if (event.type === 'treatment') return { id: event.id || event.eventId, type: 'TREATMENT', title: event.label || 'Treatment performed', text: event.value || event.details || 'Treatment was recorded.', kind: 'treatment', recordedAt: event.recordedAt };
+    if (event.type === 'reassessment') return { id: event.id || event.eventId, type: 'PATIENT UPDATE', title: event.label || 'Patient reassessed', text: event.value || event.details || 'The patient condition was reassessed.', kind: 'reassessment', recordedAt: event.recordedAt };
+    if (event.category === 'history') return { id: event.id || event.eventId, type: 'HISTORY ALERT', title: event.label || 'Important history', text: event.value || event.details || 'Relevant history was obtained.', kind: 'history', recordedAt: event.recordedAt };
+    if (event.type === 'impression' || event.type === 'documentation') return { id: event.id || event.eventId, type: 'TRANSPORT / REPORT', title: event.label || 'Care plan updated', text: event.value || event.details || 'The care plan was updated.', kind: 'transport', recordedAt: event.recordedAt };
+    return { id: event.id || event.eventId, type: isAbnormal ? 'CONDITION ALERT' : 'PATIENT UPDATE', title: event.label || labelFor(event.key), text: event.value || event.details || 'New patient information was obtained.', kind: isAbnormal ? 'alert' : 'assessment', recordedAt: event.recordedAt };
+  }
+  function buildInfoUpdates(current) {
+    const startedAt = current?.startedAt || new Date().toISOString();
+    const updates = [
+      { id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information', text: current?.dispatch || scenario.title, kind: 'dispatch', recordedAt: startedAt },
+      { id: 'visible', type: 'VISIBLE CONDITION', title: 'First patient view', text: scenario.visible, kind: 'visible', recordedAt: new Date(new Date(startedAt).getTime() + 1).toISOString() }
+    ];
+    const log = api?.listCareLog?.(current, 'all') || [];
+    log.filter(isInformationUpdate).forEach(event => updates.push(updateFromCareEvent(event)));
+    return updates;
+  }
+  function renderInfoUpdate(forceLatest = false) {
+    const current = record() || {};
+    const nextUpdates = buildInfoUpdates(current);
+    const signature = nextUpdates.map(item => `${item.id}:${item.text}`).join('|');
+    const changed = signature !== lastInfoSignature;
+    infoUpdates = nextUpdates;
+    if (forceLatest || changed) infoUpdateIndex = Math.max(0, infoUpdates.length - 1);
+    infoUpdateIndex = Math.max(0, Math.min(infoUpdateIndex, infoUpdates.length - 1));
+    lastInfoSignature = signature;
+    const item = infoUpdates[infoUpdateIndex];
+    if (!item || !$('infoUpdateWindow')) return;
+    $('infoUpdateWindow').className = `info-update-window info-${item.kind || 'assessment'}${$('infoUpdateWindow').dataset.collapsed === 'true' ? ' is-collapsed' : ''}`;
+    $('infoUpdateType').textContent = item.type;
+    $('infoUpdateTitle').textContent = item.title;
+    $('infoUpdateText').textContent = item.text;
+    $('infoUpdateTime').textContent = infoElapsed(item.recordedAt, current.startedAt);
+    $('infoUpdateCount').textContent = `${infoUpdateIndex + 1} of ${infoUpdates.length}`;
+    $('infoUpdatePrevious').disabled = infoUpdateIndex <= 0;
+    $('infoUpdateNext').disabled = infoUpdateIndex >= infoUpdates.length - 1;
   }
 
   function renderFindings() {
     const list = $('findingList');
     const current = record() || {};
-    const allEvents = api?.listCareLog?.(current, 'all') || [];
-    const events = api?.listCareLog?.(current, findingFilter) || allEvents;
-    const sequenceById = new Map(allEvents.map((event, index) => [event.id || event.eventId, index + 1]));
-    const counts = {
-      all: allEvents.length,
-      vitals: allEvents.filter(event => event.category === 'vital').length,
-      treatments: allEvents.filter(event => event.category === 'treatment').length,
-      reassessments: allEvents.filter(event => event.type === 'reassessment').length,
-      history: allEvents.filter(event => event.category === 'history').length,
-      assessments: allEvents.filter(event => event.category === 'assessment').length
-    };
-
-    document.querySelectorAll('[data-log-filter]').forEach(button => {
-      const key = button.dataset.logFilter;
-      button.classList.toggle('active', key === findingFilter);
-      button.textContent = `${button.dataset.label || button.textContent.replace(/\s*\(\d+\)$/, '')} (${counts[key] || 0})`;
-    });
-    const filterNames={vitals:'vital-sign',treatments:'treatment',reassessments:'reassessment',history:'history',assessments:'assessment'};
-    $('findingFilterSummary').textContent = findingFilter === 'all'
-      ? `${events.length} patient-care event${events.length === 1 ? '' : 's'} shown in chronological order.`
-      : `${events.length} ${filterNames[findingFilter] || findingFilter} event${events.length === 1 ? '' : 's'} shown.`;
-
+    const filterMap = { vitals: 'vital', treatments: 'treatment', assessments: 'assessment', history: 'history', reassessments: 'reassessment' };
+    let events = api?.listCareLog?.(current, 'all') || [];
+    if (findingFilter === 'reassessments') events = events.filter(event => event.type === 'reassessment');
+    else if (findingFilter !== 'all') events = events.filter(event => event.category === filterMap[findingFilter]);
+    document.querySelectorAll('[data-log-filter]').forEach(button => button.classList.toggle('active', button.dataset.logFilter === findingFilter));
+    const activeFilter = document.querySelector(`[data-log-filter="${findingFilter}"]`)?.dataset.label || 'All log';
+    $('findingFilterSummary').textContent = `${events.length} ${activeFilter.toLowerCase()} entr${events.length === 1 ? 'y' : 'ies'} shown.`;
     list.innerHTML = '';
     if (!events.length) {
-      const emptyMessages={vitals:'No vital signs have been recorded yet.',treatments:'No treatments have been recorded yet.',reassessments:'No reassessments have been recorded yet.',history:'No SAMPLE or OPQRST history has been recorded yet.',assessments:'No assessment findings have been recorded yet.'};
-      const message = emptyMessages[findingFilter] || 'No patient-care information has been recorded yet.';
-      list.innerHTML = `<li class="empty">${message}</li>`;
+      list.innerHTML = '<li class="empty">No matching patient-care events have been recorded.</li>';
       return;
     }
-
-    events.forEach((event, filteredIndex) => {
-      const sequence = sequenceById.get(event.id || event.eventId) || filteredIndex + 1;
-      const elapsed = elapsedLabel(event.recordedAt, current.startedAt);
+    events.forEach((event, index) => {
       const item = document.createElement('li');
       item.className = `care-log-item ${event.category || 'assessment'} ${event.type || 'finding'}`;
       item.innerHTML = `
-        <div class="care-log-order"><b>${sequence}</b><span>${escapeHtml(elapsed)}</span></div>
+        <div class="care-log-order"><b>${index + 1}</b><span>${escapeHtml(elapsedLabel(event.recordedAt, current.startedAt))}</span></div>
         <div class="care-log-content">
           <div class="care-log-heading"><span class="care-log-type">${eventTypeLabel(event)}</span><time datetime="${escapeHtml(event.recordedAt)}">${escapeHtml(formatClock(event.recordedAt))}</time></div>
           <strong>${escapeHtml(event.label || labelFor(event.key))}</strong>
@@ -478,24 +485,114 @@
 
   function updateCounts() {
     const current = record() || {};
-    const keys = Object.keys(current.findings || {});
-    const vitalKeys = (registry?.vitalTools || []).map(tool => tool.key);
     const log = api?.listCareLog?.(current, 'all') || [];
-    const treatmentEvents = log.filter(event => event.category === 'treatment');
-    if ($('vitalCount')) $('vitalCount').textContent = `${vitalKeys.filter(key => keys.includes(key)).length} / ${vitalKeys.length}`;
-    if ($('findingCount')) $('findingCount').textContent = String(log.length);
-    if ($('treatmentCount')) $('treatmentCount').textContent = String(treatmentEvents.length);
     if ($('findingBadge')) {
       $('findingBadge').hidden = !log.length;
       $('findingBadge').textContent = String(log.length);
     }
   }
 
+  function renderSceneClues() {
+    const layer = $('sceneClueLayer');
+    if (!layer) return;
+    document.querySelector('.patient-stage')?.setAttribute('data-scene-mode', scenario.imageMode || id);
+    layer.innerHTML = scenario.sceneClues.map((clue, index) => `<span class="scene-clue clue-${index + 1}">${escapeHtml(clue)}</span>`).join('');
+  }
+
+  function renderProgress() {
+    const current = record();
+    const evaluation = phases?.evaluate?.(current);
+    if (!evaluation) return;
+    const list = $('scenarioPhaseList');
+    list.innerHTML = evaluation.phases.map(phase => `
+      <div class="scenario-phase ${phase.status}">
+        <span class="phase-state" aria-hidden="true">${phase.complete ? '✓' : phase.started ? '•' : ''}</span>
+        <div><strong>${escapeHtml(phase.label)}</strong><small>${escapeHtml(phase.requirement)}${phase.detail ? ` • ${escapeHtml(phase.detail)}` : ''}</small></div>
+      </div>`).join('');
+    const completed = evaluation.phases.filter(phase => phase.complete).length;
+    $('scenarioProgressSummary').textContent = `${completed} of ${evaluation.phases.length} phases addressed`;
+    $('handoffFromProgress').href = toolUrl('/vitals/pcr-handoff.html', 'Patient');
+    const button = $('completeScenarioFromPatient');
+    button.textContent = evaluation.essentialComplete ? 'Open debrief' : 'Check completion';
+    button.dataset.ready = evaluation.essentialComplete ? 'true' : 'false';
+  }
+
+  function assignmentSessionForScenario() {
+    try {
+      const assignment = JSON.parse(localStorage.getItem('emscodesim_student_assignment_v1') || 'null');
+      if (!assignment) return null;
+      const aliases = { respiratory: 'asthma' };
+      const assignedCase = aliases[assignment.scenario] || assignment.scenario;
+      return assignedCase === id ? assignment : null;
+    } catch { return null; }
+  }
+
+  function markAssignmentComplete(assignment) {
+    if (!assignment) return;
+    const completedAt = new Date().toISOString();
+    const next = { ...assignment, completedAt, scenarioComplete: true };
+    localStorage.setItem('emscodesim_student_assignment_v1', JSON.stringify(next));
+    localStorage.setItem('emscodesim_assignment_completion_v1', JSON.stringify({
+      assignmentCode: next.assignmentCode,
+      assignmentId: next.assignmentId || null,
+      learnerName: next.learnerName || '',
+      scenario: id,
+      scenarioTitle: scenario.title,
+      completedAt,
+      requireDebrief: Boolean(next.requireDebrief)
+    }));
+  }
+
+  function checkScenarioCompletion() {
+    const current = record();
+    const evaluation = phases?.evaluate?.(current);
+    const message = $('scenarioCompletionMessage');
+    if (!evaluation) return;
+    $('scenarioProgress').open = true;
+    message.hidden = false;
+    if (!evaluation.essentialComplete) {
+      const remaining = evaluation.missing.slice(0, 7);
+      message.className = 'scenario-completion-message incomplete';
+      message.innerHTML = `<strong>Essential care is not complete.</strong><span>${escapeHtml(remaining.join(' • '))}${evaluation.missing.length > remaining.length ? ` • +${evaluation.missing.length - remaining.length} more` : ''}</span>`;
+      return;
+    }
+    const assignment = assignmentSessionForScenario();
+    const state = session?.readState?.(id) || {};
+    state.clinicalComplete = true;
+    state.clinicalCompletedAt = new Date().toISOString();
+    state.complete = !assignment?.requireDebrief;
+    if (state.complete) state.completedAt = state.clinicalCompletedAt;
+    session?.writeState?.(id, state);
+    localStorage.setItem(`emscodesim_mastered_scenario_${id}`, 'true');
+    if (assignment && !assignment.requireDebrief) markAssignmentComplete(assignment);
+    message.className = 'scenario-completion-message complete';
+    message.innerHTML = '<strong>Essential patient care is complete.</strong><span>Open the debrief to review timing, missed choices, unnecessary assessments, and documentation.</span>';
+    location.href = toolUrl('/vitals/scenario-debrief.html', 'Patient');
+  }
+
+  function updateTimer() {
+    const current = record();
+    const start = new Date(current?.startedAt || Date.now()).getTime();
+    const elapsed = Math.max(0, Math.floor((Date.now() - start) / 1000));
+    $('timer').textContent = `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`;
+  }
+
+  function updatePartnerTasks() {
+    const completed = session?.resolvePartnerTasks?.(id) || [];
+    if (completed.length) { refreshFromRecord(); renderInfoUpdate(true); return; }
+    const tasks = session?.readPartnerTasks?.(id) || {};
+    document.querySelectorAll('[data-tool-key]').forEach(article => {
+      const task = tasks[article.dataset.toolKey];
+      if (!task || task.status !== 'pending') return;
+      const progress = article.querySelector('.assignment-progress');
+      if (progress) progress.textContent = `Partner gathering ${String(task.label || '').toLowerCase()}… ${secondsRemaining(task)}s`;
+    });
+  }
+
   function openSheet(panelId) {
     document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
-    if ($('sheetTitle')) $('sheetTitle').textContent = { vitalsPanel: 'Patient tools', assessmentPanel: 'Assessment sequence', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
-    if (!$('actionSheet') || !$('sheetBackdrop')) return;
+    $('sheetTitle').textContent = { vitalsPanel: 'Patient tools', assessmentPanel: 'Assessment', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
     $('actionSheet').hidden = false;
     $('sheetBackdrop').hidden = false;
     document.body.style.overflow = 'hidden';
@@ -515,43 +612,6 @@
     $('assessmentFocus').hidden = true;
     activeFocus = null;
     buildAssessments();
-    openSheet('findingsPanel');
-  }
-
-  function updateNextAction() {
-    const current=record()||{};
-    const has=key=>existing(key);
-    const log=api?.listCareLog?.(current,'all')||[];
-    const lastTreatment=[...log].reverse().find(event=>event.type==='treatment');
-    const lastReassessment=[...log].reverse().find(event=>event.type==='reassessment');
-    let title='Begin with scene size-up';
-    let reason='Use the first picture and dispatch information, then move through airway, breathing, and circulation.';
-    let actions=[{label:'Open Assessment',panel:'assessmentPanel'}];
-    if(!has('scene_size_up')){
-      actions=[{label:'Start scene size-up',scene:true},{label:'Open Assessment',panel:'assessmentPanel',secondary:true}];
-    }else if(!has('airway')){
-      title='Confirm airway';reason='Use speech and visible clues as a starting point, then complete an airway assessment.';
-      actions=[{label:'Assess airway',url:toolUrl('/vitals/airway-assessment.html','patient scenario','airway')},{label:'View assessment order',panel:'assessmentPanel',secondary:true}];
-    }else if(!has('breathing')){
-      title='Assess breathing adequacy';reason='Breathing may be visible, but rate, depth, effort, chest rise, sounds, and oxygenation still need assessment.';
-      actions=[{label:'Assess breathing',url:toolUrl('/vitals/breathing-assessment.html','patient scenario','breathing')},{label:'Treat now',panel:'treatmentPanel',secondary:true}];
-    }else if(!has('perfusion')){
-      title='Assess circulation and perfusion';reason='A responsive patient likely has a perfusing pulse, but quality, pressure, skin, and bleeding still need evaluation.';
-      actions=[{label:'Assess circulation',url:toolUrl('/vitals/perfusion-assessment.html','patient scenario','perfusion')},{label:'Treat now',panel:'treatmentPanel',secondary:true}];
-    }else if(lastTreatment && (!lastReassessment || new Date(lastReassessment.recordedAt)<new Date(lastTreatment.recordedAt))){
-      title='Reassess after treatment';reason=`${lastTreatment.value||'Treatment'} was recorded. Repeat the findings most likely to change and document the response.`;
-      actions=[{label:'Reassess patient',url:toolUrl('/vitals/treatment-reassessment.html','patient scenario','reassessment')},{label:'Open Tools',panel:'vitalsPanel',secondary:true}];
-    }else{
-      const next=(scenario.recommended||[]).find(key=>!has(key));
-      const tool=next&&registryTool(next);
-      if(tool){title=`Next useful tool: ${tool.label}`;reason=tool.description||'Gather information that will change your working impression or treatment.';actions=[{label:`Open ${tool.label}`,url:toolUrl(tool.url,'patient scenario')},{label:'Choose another tool',panel:'vitalsPanel',secondary:true}];}
-      else if(!current.impressions?.primary){title='Form a working impression';reason='You have enough information to choose a primary impression, transport priority, and supporting findings.';actions=[{label:'Clinical impression',url:toolUrl('/vitals/clinical-impression.html','patient scenario')},{label:'Review log',panel:'findingsPanel',secondary:true}];}
-      else if(!(current.documentation?.handoff||current.documentation?.narrative)){title='Prepare handoff and debrief';reason='Review the chronological care log, give the handoff, and finish with scenario feedback.';actions=[{label:'PCR and handoff',url:toolUrl('/vitals/pcr-handoff.html','patient scenario')},{label:'Review log',panel:'findingsPanel',secondary:true}];}
-      else {title='Review the scenario';reason='Use the debrief to review missed findings, treatment timing, reassessment, and documentation.';actions=[{label:'Open debrief',url:toolUrl('/vitals/scenario-debrief.html','patient scenario')},{label:'Review log',panel:'findingsPanel',secondary:true}];}
-    }
-    const nextTitle=$('nextActionTitle'); const nextReason=$('nextActionReason'); const host=$('nextActionButtons');
-    if (!nextTitle || !nextReason || !host) return;
-    nextTitle.textContent=title; nextReason.textContent=reason; host.innerHTML=''; actions.forEach(action=>{const el=document.createElement(action.url?'a':'button');el.textContent=action.label;if(action.secondary)el.className='secondary';if(action.url)el.href=action.url;else el.type='button';if(action.panel)el.addEventListener('click',()=>openSheet(action.panel));if(action.scene)el.addEventListener('click',()=>window.EMSCodeSimSceneGuide?.start?.(has('scene_size_up')));host.appendChild(el)});
   }
 
   function refreshFromRecord() {
@@ -561,32 +621,45 @@
     buildTreatments();
     renderFindings();
     updateCounts();
-    if ($('patientLabel')) $('patientLabel').textContent = current?.patient || 'Patient';
+    renderProgress();
     $('dispatch').textContent = current?.dispatch || scenario.title;
     $('scene').textContent = current?.scene || '';
     renderInfoUpdate();
+    updateTimer();
   }
 
   ensureRecord();
-  $('recordTreatmentLink').href = toolUrl('/vitals/treatment-reassessment.html', 'patient care log', 'general');
-  $('fullPatientRecordLink').href = `/vitals/patient-record.html?mode=scenario&resume=1&case=${encodeURIComponent(id)}`;
+  $('caseTitle').textContent = scenario.title;
+  setPatientImage($('patientImage'), scenario.image);
+  setPatientImage($('focusImage'), scenario.image);
+  renderSceneClues();
+  $('recordTreatmentLink').href = toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general');
+  $('fullPatientRecordLink').href = `/vitals/patient-record.html?mode=scenario&resume=1&case=${encodeURIComponent(id)}&return=${encodeURIComponent(`/vitals/visual-patient.html?case=${id}`)}`;
+  refreshFromRecord();
+
   document.querySelectorAll('[data-log-filter]').forEach(button => button.addEventListener('click', () => {
     findingFilter = button.dataset.logFilter || 'all';
     renderFindings();
   }));
-  $('caseTitle').textContent = scenario.title;
-  setPatientImage($('patientImage'), scenario.image);
-  setPatientImage($('focusImage'), scenario.image);
-  refreshFromRecord();
-
   $('infoUpdatePrevious').addEventListener('click', () => { infoUpdateIndex = Math.max(0, infoUpdateIndex - 1); renderInfoUpdate(); });
   $('infoUpdateNext').addEventListener('click', () => { infoUpdateIndex = Math.min(infoUpdates.length - 1, infoUpdateIndex + 1); renderInfoUpdate(); });
+  $('infoUpdateCollapse').addEventListener('click', () => {
+    const collapsed = $('infoUpdateWindow').dataset.collapsed !== 'true';
+    $('infoUpdateWindow').dataset.collapsed = collapsed ? 'true' : 'false';
+    $('infoUpdateCollapse').textContent = collapsed ? '⌄' : '⌃';
+    $('infoUpdateCollapse').setAttribute('aria-expanded', String(!collapsed));
+    $('infoUpdateCollapse').setAttribute('aria-label', collapsed ? 'Expand patient update' : 'Collapse patient update');
+    renderInfoUpdate();
+  });
   document.querySelectorAll('.bottom-nav button').forEach(button => button.addEventListener('click', () => openSheet(button.dataset.panel)));
   $('closeSheet').addEventListener('click', closeSheet);
   $('sheetBackdrop').addEventListener('click', closeSheet);
   $('recordFocus').addEventListener('click', finishFocus);
   $('cancelFocus').addEventListener('click', () => { $('assessmentFocus').hidden = true; activeFocus = null; });
-  $('endScenario').addEventListener('click', () => { if (confirm('End this scenario and return to the launcher?')) location.href = `/vitals/scenario-launcher.html?case=${encodeURIComponent(id)}&resume=1`; });
+  $('completeScenarioFromPatient').addEventListener('click', checkScenarioCompletion);
+  $('endScenario').addEventListener('click', () => {
+    if (confirm('Leave this patient and return to scenario selection? Your progress will remain saved.')) location.href = `/vitals/scenario-launcher.html?select=${encodeURIComponent(id)}`;
+  });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
     if (!$('assessmentFocus').hidden) { $('assessmentFocus').hidden = true; activeFocus = null; }
@@ -594,10 +667,9 @@
   });
   window.addEventListener('emscodesim:patient-record-updated', refreshFromRecord);
   window.addEventListener('emscodesim:scenario-finding-saved', refreshFromRecord);
-  window.addEventListener('pageshow', refreshFromRecord);
-  window.addEventListener('pagehide', () => partnerTimers.forEach(timer => clearInterval(timer)), { once: true });
-  setInterval(() => {
-    seconds += 1;
-    $('timer').textContent = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
-  }, 1000);
+  window.addEventListener('emscodesim:partner-task-completed', () => { refreshFromRecord(); renderInfoUpdate(true); });
+  window.addEventListener('pageshow', () => { session?.resolvePartnerTasks?.(id); refreshFromRecord(); });
+  timerInterval = window.setInterval(updateTimer, 1000);
+  partnerInterval = window.setInterval(updatePartnerTasks, 1000);
+  window.addEventListener('pagehide', () => { clearInterval(timerInterval); clearInterval(partnerInterval); }, { once: true });
 })();

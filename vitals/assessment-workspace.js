@@ -1,6 +1,14 @@
 (() => {
   'use strict';
 
+  const routeParams = new URLSearchParams(location.search);
+  const routeRecord = window.EMSCodeSimPatientRecord?.active?.();
+  const routeCase = routeParams.get('case') || routeRecord?.scenarioId || routeRecord?.id || '';
+  if (routeRecord || routeParams.get('mode') === 'scenario' || routeParams.get('resume') || routeParams.get('case')) {
+    location.replace(routeCase ? `/vitals/visual-patient.html?case=${encodeURIComponent(routeCase)}` : '/vitals/scenario-launcher.html');
+    return;
+  }
+
   const api = window.EMSCodeSimPatientRecord;
   const session = window.EMSCodeSimScenarioSession;
   const registry = window.EMSCodeSimToolRegistry;
@@ -37,7 +45,7 @@
   $('workspacePatientCondition').textContent = scenarioConditions[caseId] || record.scene || 'Observe the patient before beginning the assessment.';
   $('workspaceDispatch').textContent = record.dispatch || record.title || 'Active patient scenario';
   document.querySelector('.workspace-hero-actions a:last-child').href = session?.scenarioHome?.(caseId) || `/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}`;
-  document.querySelector('.workspace-hero-actions a:last-child').textContent = 'Patient home';
+  document.querySelector('.workspace-hero-actions a:last-child').textContent = 'Return to Patient';
 
   const vitalKeys = new Set((registry.vitalTools || []).map(tool => tool.key));
   const sceneKeys = new Set(['scene_size_up']);

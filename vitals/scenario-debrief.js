@@ -184,11 +184,39 @@
   function loadReflection(record){
     try{const r=JSON.parse(localStorage.getItem(reflectionKey(record))||'{}');$('reflectionFinding').value=r.finding||'';$('reflectionChange').value=r.change||'';$('reflectionReassess').value=r.reassess||'';}catch{}
   }
+  function finishAssignedScenario(record) {
+    let assignment = null;
+    try { assignment = JSON.parse(localStorage.getItem('emscodesim_student_assignment_v1') || 'null'); } catch {}
+    const caseId = record.scenarioId || record.id;
+    const assignedCase = assignment?.scenario === 'respiratory' ? 'asthma' : assignment?.scenario;
+    const stateKey = `emscodesim_scenario_${caseId}`;
+    let state = {};
+    try { state = JSON.parse(localStorage.getItem(stateKey) || '{}'); } catch {}
+    state.clinicalComplete = true;
+    state.complete = true;
+    state.completedAt = new Date().toISOString();
+    localStorage.setItem(stateKey, JSON.stringify(state));
+    if (!assignment || assignedCase !== caseId) return;
+    const completedAt = state.completedAt;
+    assignment = { ...assignment, completedAt, scenarioComplete: true };
+    localStorage.setItem('emscodesim_student_assignment_v1', JSON.stringify(assignment));
+    localStorage.setItem('emscodesim_assignment_completion_v1', JSON.stringify({
+      assignmentCode: assignment.assignmentCode,
+      assignmentId: assignment.assignmentId || null,
+      learnerName: assignment.learnerName || '',
+      scenario: caseId,
+      scenarioTitle: record.title || 'Patient scenario',
+      completedAt,
+      requireDebrief: Boolean(assignment.requireDebrief)
+    }));
+  }
+
   function saveReflection(record){
     const reflection={finding:$('reflectionFinding').value.trim(),change:$('reflectionChange').value.trim(),reassess:$('reflectionReassess').value.trim(),savedAt:new Date().toISOString()};
     localStorage.setItem(reflectionKey(record),JSON.stringify(reflection));
-    try{window.EMSCodeSimPatientRecord.update(r=>{r.debrief={...(r.debrief||{}),reflection};return r;});}catch{}
-    $('reflectionStatus').textContent='Reflection saved to this patient record.';
+    try{window.EMSCodeSimPatientRecord.update(r=>{r.debrief={...(r.debrief||{}),reflection};r.documentation={...(r.documentation||{}),debrief:{...(r.documentation?.debrief||{}),savedAt:reflection.savedAt,reflection}};return r;});}catch{}
+    finishAssignedScenario(record);
+    $('reflectionStatus').textContent='Reflection saved. Scenario completion is recorded.';
     saveHistorySnapshot(record,Object.entries(record.findings||{}).map(([key,item])=>normalizeFinding(key,item)));
   }
 

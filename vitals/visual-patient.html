@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=10">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=12">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=3">
 </head>
 <body>
@@ -25,7 +25,7 @@
       <aside id="infoUpdateWindow" class="info-update-window info-dispatch" aria-live="polite" aria-label="Scenario information updates">
         <div class="info-update-head">
           <span id="infoUpdateType">DISPATCH</span>
-          <time id="infoUpdateTime">00:00</time>
+          <div class="info-update-head-actions"><time id="infoUpdateTime">00:00</time><button id="infoUpdateCollapse" type="button" aria-expanded="true" aria-label="Collapse patient update">⌃</button></div>
         </div>
         <strong id="infoUpdateTitle">Dispatch information</strong>
         <p id="infoUpdateText">Review the dispatch and patient picture before beginning care.</p>
@@ -35,7 +35,15 @@
           <button id="infoUpdateNext" type="button" aria-label="Next information update">›</button>
         </div>
       </aside>
+      <div id="sceneClueLayer" class="scene-clue-layer" aria-hidden="true"></div>
     </section>
+
+    <details id="scenarioProgress" class="scenario-progress">
+      <summary><span><b>Scenario progress</b><small id="scenarioProgressSummary">Review clinical phases</small></span><i aria-hidden="true">⌄</i></summary>
+      <div id="scenarioPhaseList" class="scenario-phase-list"></div>
+      <div id="scenarioCompletionMessage" class="scenario-completion-message" hidden></div>
+      <div class="scenario-progress-actions"><a id="handoffFromProgress" href="/vitals/pcr-handoff.html">PCR and handoff</a><button id="completeScenarioFromPatient" type="button">Check completion</button></div>
+    </details>
 
     <section id="sceneGuide" class="scene-guide" hidden aria-labelledby="sceneGuideTitle">
       <div class="scene-guide-head">
@@ -77,12 +85,12 @@
     </header>
 
     <section id="vitalsPanel" class="vp-panel" hidden>
-      <p class="sub">No vital sign is given. Perform the simulator or assign it to your partner.</p>
+      <p class="sub">Patient-relevant tools are shown first. Perform the simulator or assign a measurable task to your partner.</p>
       <div id="vitalTools" class="tool-grid"></div>
     </section>
 
     <section id="assessmentPanel" class="vp-panel" hidden>
-      <p class="sub">Choose the assessment that fits what you see and what you still need to know. Scene size-up is available first, followed by primary and focused assessment tools.</p>
+      <p class="sub">Begin with scene size-up and the combined primary assessment. Patient-relevant assessments are shown before optional tools.</p>
       <div id="assessmentTools" class="assessment-list"></div>
     </section>
 
@@ -131,7 +139,8 @@
   <script src="/vitals/scenario-session.js?v=2"></script>
   <script src="/vitals/scenario-runtime.js?v=2"></script>
   <script src="/vitals/scenario-tool-registry.js?v=3"></script>
-  <script src="/vitals/visual-patient.js?v=11"></script>
+  <script src="/vitals/scenario-phase-model.js?v=1"></script>
+  <script src="/vitals/visual-patient.js?v=13"></script>
   <script src="/vitals/scenario-guided-start.js?v=2"></script>
 </body>
 </html>

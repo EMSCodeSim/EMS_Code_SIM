@@ -8,7 +8,7 @@
   const scoreOf=item=>Number.isFinite(Number(item.overallPercent))?Number(item.overallPercent):null;
   const formatDate=value=>{const d=new Date(value);return Number.isNaN(d.valueOf())?'Unknown date':d.toLocaleString([], {dateStyle:'medium',timeStyle:'short'})};
   const weakCatalog={
-    assessment:{label:'Assessment completeness',detail:'Collect a complete baseline and complaint-focused assessment.',href:'/vitals/assessment-workspace.html'},
+    assessment:{label:'Assessment completeness',detail:'Collect a complete baseline and complaint-focused assessment.',href:'/vitals/scenario-launcher.html'},
     classification:{label:'Normal vs. not normal',detail:'Classify each simulator finding before reporting it.',href:'/ems-encyclopedia.html?q=normal%20abnormal&level=emt&view=field'},
     impression:{label:'Clinical impression',detail:'Connect the full pattern of findings to a working impression.',href:'/ems-encyclopedia.html?q=clinical%20impression&level=emt&view=field'},
     reassessment:{label:'Reassessment',detail:'Repeat key findings after treatment and during transport.',href:'/vitals/treatment-reassessment.html?scenario=1'},
@@ -28,7 +28,7 @@
   function renderWeakAreas(items){
     const counts={};items.forEach(item=>(item.reviewAreas||[]).forEach(key=>counts[key]=(counts[key]||0)+1));
     const ranked=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6);
-    $('weakAreas').innerHTML=ranked.length?ranked.map(([key,count])=>{const meta=weakCatalog[key]||{label:key,detail:'Review this recurring performance area.',href:'/vitals/assessment-workspace.html'};return`<article class="weak-card"><h3>${escapeHtml(meta.label)}</h3><p>Flagged in ${count} scenario${count===1?'':'s'}. ${escapeHtml(meta.detail)}</p><a href="${escapeHtml(meta.href)}">Practice this area</a></article>`}).join(''):'<div class="no-weak">No repeated weak areas yet. Complete more debriefs to build a useful trend.</div>';
+    $('weakAreas').innerHTML=ranked.length?ranked.map(([key,count])=>{const meta=weakCatalog[key]||{label:key,detail:'Review this recurring performance area.',href:'/vitals/scenario-launcher.html'};return`<article class="weak-card"><h3>${escapeHtml(meta.label)}</h3><p>Flagged in ${count} scenario${count===1?'':'s'}. ${escapeHtml(meta.detail)}</p><a href="${escapeHtml(meta.href)}">Practice this area</a></article>`}).join(''):'<div class="no-weak">No repeated weak areas yet. Complete more debriefs to build a useful trend.</div>';
   }
 
   function renderTrend(items){
@@ -38,7 +38,7 @@
 
   function card(item){
     const score=scoreOf(item);const areas=(item.reviewAreas||[]).map(key=>weakCatalog[key]?.label||key);
-    return`<article class="history-card" data-id="${escapeHtml(item.id)}"><div><h3>${escapeHtml(item.title||'Patient scenario')}</h3><div class="history-meta"><span>${escapeHtml(formatDate(item.completedAt||item.updatedAt))}</span><span>${Number(item.findingCount||0)} findings</span><span>${Number(item.abnormalCount||0)} abnormal</span></div><div>${areas.length?areas.map(v=>`<span class="tag review">${escapeHtml(v)}</span>`).join(' '):'<span class="tag">No major review flags</span>'}</div></div><div class="score-pill">${score===null?'—':`${score}%`}</div><div class="history-actions"><a href="/vitals/scenario-launcher.html">Repeat scenario practice</a><a href="/vitals/assessment-workspace.html">Open guided assessment</a><button type="button" data-delete="${escapeHtml(item.id)}">Remove entry</button></div></article>`;
+    return`<article class="history-card" data-id="${escapeHtml(item.id)}"><div><h3>${escapeHtml(item.title||'Patient scenario')}</h3><div class="history-meta"><span>${escapeHtml(formatDate(item.completedAt||item.updatedAt))}</span><span>${Number(item.findingCount||0)} findings</span><span>${Number(item.abnormalCount||0)} abnormal</span></div><div>${areas.length?areas.map(v=>`<span class="tag review">${escapeHtml(v)}</span>`).join(' '):'<span class="tag">No major review flags</span>'}</div></div><div class="score-pill">${score===null?'—':`${score}%`}</div><div class="history-actions"><a href="/vitals/scenario-launcher.html">Repeat scenario practice</a><a href="/vitals/scenario-launcher.html">Choose patient scenario</a><button type="button" data-delete="${escapeHtml(item.id)}">Remove entry</button></div></article>`;
   }
 
   function renderList(items){

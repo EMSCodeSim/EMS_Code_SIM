@@ -5,6 +5,7 @@
   if (!api) return;
 
   const STATE_PREFIX = 'emscodesim_scenario_';
+  const PARTNER_PREFIX = 'emscodesim_partner_tasks_';
   const params = new URLSearchParams(location.search);
   let syncing = false;
 
@@ -212,6 +213,79 @@
     return state.reassessments[state.reassessments.length - 1] || entry;
   }
 
+  function partnerTaskKey(caseId = requestedCaseId()) {
+    return `${PARTNER_PREFIX}${caseId}`;
+  }
+
+  function readPartnerTasks(caseId = requestedCaseId()) {
+    if (!caseId) return {};
+    try {
+      const parsed = JSON.parse(localStorage.getItem(partnerTaskKey(caseId)) || '{}');
+      return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function writePartnerTasks(caseId, tasks) {
+    if (!caseId) return tasks || {};
+    localStorage.setItem(partnerTaskKey(caseId), JSON.stringify(tasks || {}));
+    return tasks || {};
+  }
+
+  function assignPartnerTask(task = {}, caseId = requestedCaseId()) {
+    const record = sync(caseId);
+    const resolvedCase = caseId || record?.scenarioId || record?.id;
+    if (!resolvedCase || !task.key) throw new Error('A scenario and partner task key are required.');
+    const assignedAt = new Date().toISOString();
+    const delaySeconds = Math.max(1, Number(task.delaySeconds || task.delay || 12));
+    const dueAt = new Date(Date.now() + delaySeconds * 1000).toISOString();
+    const tasks = readPartnerTasks(resolvedCase);
+    tasks[task.key] = {
+      key: task.key,
+      label: task.label || api.labelFor?.(task.key) || task.key,
+      value: task.value == null ? 'Obtained' : String(task.value),
+      assignedAt,
+      dueAt,
+      delaySeconds,
+      status: 'pending'
+    };
+    writePartnerTasks(resolvedCase, tasks);
+    window.dispatchEvent(new CustomEvent('emscodesim:partner-task-updated', { detail: { caseId: resolvedCase, task: tasks[task.key] } }));
+    return tasks[task.key];
+  }
+
+  function resolvePartnerTasks(caseId = requestedCaseId()) {
+    const record = sync(caseId);
+    const resolvedCase = caseId || record?.scenarioId || record?.id;
+    if (!resolvedCase) return [];
+    const tasks = readPartnerTasks(resolvedCase);
+    const completed = [];
+    Object.values(tasks).forEach(task => {
+      if (!task || task.status !== 'pending') return;
+      if (new Date(task.dueAt).getTime() > Date.now()) return;
+      try {
+        saveFinding(task.key, task.value, {
+          label: task.label,
+          source: 'partner-assignment',
+          locked: true,
+          partnerAssignedAt: task.assignedAt,
+          partnerCompletedAt: new Date().toISOString()
+        });
+        task.status = 'complete';
+        task.completedAt = new Date().toISOString();
+        completed.push(task);
+      } catch (error) {
+        console.error('Partner task could not be completed', error);
+      }
+    });
+    if (completed.length) {
+      writePartnerTasks(resolvedCase, tasks);
+      completed.forEach(task => window.dispatchEvent(new CustomEvent('emscodesim:partner-task-completed', { detail: { caseId: resolvedCase, task } })));
+    }
+    return completed;
+  }
+
   function scenarioHome(caseId = requestedCaseId()) {
     return caseId
       ? `/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}`
@@ -227,14 +301,19 @@
     saveFinding,
     addTreatment,
     addReassessment,
+    partnerTaskKey,
+    readPartnerTasks,
+    writePartnerTasks,
+    assignPartnerTask,
+    resolvePartnerTasks,
     scenarioHome,
     SCENARIO_CATALOG
   };
 
   setTimeout(() => {
-    try { sync(); } catch (error) { console.error('Scenario session sync failed', error); }
+    try { sync(); resolvePartnerTasks(); } catch (error) { console.error('Scenario session sync failed', error); }
   }, 0);
   window.addEventListener('pageshow', () => {
-    try { sync(); } catch (error) { console.error('Scenario session restore failed', error); }
+    try { sync(); resolvePartnerTasks(); } catch (error) { console.error('Scenario session restore failed', error); }
   });
 })();

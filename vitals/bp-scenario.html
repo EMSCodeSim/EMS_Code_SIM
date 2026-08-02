@@ -315,6 +315,41 @@
     #result.good { color: var(--success); }
     #result.bad { color: var(--danger); }
 
+
+    .post-save-continue {
+      display: grid;
+      gap: 7px;
+      margin-top: 9px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #f4f8fb;
+    }
+
+    .post-save-continue > span {
+      color: var(--muted);
+      font-size: .75rem;
+      font-weight: 800;
+    }
+
+    .post-save-continue > div {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+
+    .post-save-continue a {
+      padding: 9px 8px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: #e7f1f7;
+      color: var(--text);
+      text-align: center;
+      text-decoration: none;
+      font-size: .76rem;
+      font-weight: 850;
+    }
+
     .error-card {
       padding: 20px;
       text-align: center;
@@ -395,6 +430,7 @@
       <button class="button primary" id="submitBtn" type="button" disabled>Save reading</button>
       <div id="result" role="status" aria-live="polite"></div>
       <button class="button primary" id="returnBtn" type="button" hidden>Return to patient</button>
+      <div id="postSaveContinue" class="post-save-continue" hidden><span>Continue with:</span><div><a id="continuePulse" href="/vitals/pulse-scenario.html">Pulse</a><a id="continueTreatment" href="/vitals/treatment-reassessment.html">Treatment</a></div></div>
     </section>
   </main>
 
@@ -430,28 +466,33 @@
         diaInput: document.getElementById('diaInput'),
         submitBtn: document.getElementById('submitBtn'),
         result: document.getElementById('result'),
-        returnBtn: document.getElementById('returnBtn')
+        returnBtn: document.getElementById('returnBtn'),
+        postSaveContinue: document.getElementById('postSaveContinue'),
+        continuePulse: document.getElementById('continuePulse'),
+        continueTreatment: document.getElementById('continueTreatment')
       };
 
       function safeReturnUrl() {
-        const requested = params.get('return');
-        if (requested && requested.startsWith('/') && !requested.startsWith('//')) {
-          return requested;
-        }
         const scenarioId = record?.scenarioId || record?.id;
-        if (scenarioId) {
-          return `/vitals/visual-patient.html?case=${encodeURIComponent(scenarioId)}`;
-        }
+        if (scenarioId) return `/vitals/visual-patient.html?case=${encodeURIComponent(scenarioId)}`;
         return '/vitals/scenario-launcher.html';
       }
 
       const returnUrl = safeReturnUrl();
-      const returnLabel = params.get('returnLabel') || 'patient';
-      elements.returnBtn.textContent = `Return to ${returnLabel}`;
-      elements.backBtn.setAttribute('aria-label', `Return to ${returnLabel}`);
+      elements.returnBtn.textContent = 'Return to Patient';
+      elements.backBtn.setAttribute('aria-label', 'Return to Patient');
       elements.backBtn.addEventListener('click', () => { window.location.href = returnUrl; });
       elements.launcherBtn.addEventListener('click', () => { window.location.href = '/vitals/scenario-launcher.html'; });
       elements.returnBtn.addEventListener('click', () => { window.location.href = returnUrl; });
+      const scenarioIdForLinks = record?.scenarioId || record?.id || '';
+      const buildScenarioLink = (pathname, context = '') => {
+        const query = new URLSearchParams({ mode: 'scenario', resume: '1', return: returnUrl, returnLabel: 'Patient' });
+        if (scenarioIdForLinks) query.set('case', scenarioIdForLinks);
+        if (context) query.set('context', context);
+        return `${pathname}?${query.toString()}`;
+      };
+      elements.continuePulse.href = buildScenarioLink('/vitals/pulse-scenario.html');
+      elements.continueTreatment.href = buildScenarioLink('/vitals/treatment-reassessment.html', 'perfusion');
 
       const activeScenario = Boolean(runtime?.active?.() && record);
       let systolic = Number(runtime?.vital?.('systolic', Number.NaN));
@@ -732,6 +773,7 @@
         elements.sysInput.disabled = true;
         elements.diaInput.disabled = true;
         elements.returnBtn.hidden = false;
+        elements.postSaveContinue.hidden = false;
         elements.measurementState.textContent = 'Finding recorded.';
       }
 

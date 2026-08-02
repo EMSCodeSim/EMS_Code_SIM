@@ -8,10 +8,10 @@
 
   const STEP_PATHS = {
     asthma: ['/vitals/visual-patient.html','/vitals/airway-assessment.html','/vitals/breathing-assessment.html','/vitals/respiratory-rate-scenario.html','/vitals/breath-sounds-scenario.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/sample-history.html','/vitals/clinical-impression.html','/vitals/treatment-reassessment.html','/vitals/pcr-handoff.html'],
-    stroke: ['/vitals/visual-patient.html','/vitals/airway-assessment.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/respiratory-rate-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/breath-sounds-scenario.html','/vitals/motor-sensory-assessment.html','/vitals/bgl-scenario.html','/vitals/sample-history.html','/vitals/clinical-impression.html','/vitals/pcr-handoff.html'],
-    hypoglycemia: ['/vitals/visual-patient.html','/vitals/airway-assessment.html','/vitals/avpu-scenario.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/respiratory-rate-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/bgl-scenario.html','/vitals/sample-history.html','/vitals/clinical-impression.html','/vitals/treatment-reassessment.html','/vitals/pcr-handoff.html'],
-    trauma: ['/vitals/visual-patient.html','/vitals/airway-assessment.html','/vitals/breathing-assessment.html','/vitals/respiratory-rate-scenario.html','/vitals/breath-sounds-scenario.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/chest-assessment.html','/vitals/trauma-assessment.html','/vitals/abdominal-assessment.html','/vitals/perfusion-assessment.html','/vitals/pcr-handoff.html'],
-    pediatric: ['/vitals/visual-patient.html','/vitals/pediatric-assessment-triangle.html','/vitals/airway-assessment.html','/vitals/breathing-assessment.html','/vitals/respiratory-rate-scenario.html','/vitals/breath-sounds-scenario.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/perfusion-assessment.html','/vitals/sample-history.html','/vitals/treatment-reassessment.html','/vitals/pcr-handoff.html']
+    stroke: ['/vitals/visual-patient.html','/vitals/airway-assessment.html','/vitals/breathing-assessment.html','/vitals/perfusion-assessment.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/respiratory-rate-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/motor-sensory-assessment.html','/vitals/bgl-scenario.html','/vitals/sample-history.html','/vitals/clinical-impression.html','/vitals/treatment-reassessment.html','/vitals/pcr-handoff.html'],
+    hypoglycemia: ['/vitals/visual-patient.html','/vitals/airway-assessment.html','/vitals/breathing-assessment.html','/vitals/perfusion-assessment.html','/vitals/avpu-scenario.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/respiratory-rate-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/bgl-scenario.html','/vitals/sample-history.html','/vitals/clinical-impression.html','/vitals/treatment-reassessment.html','/vitals/pcr-handoff.html'],
+    trauma: ['/vitals/visual-patient.html','/vitals/airway-assessment.html','/vitals/breathing-assessment.html','/vitals/perfusion-assessment.html','/vitals/respiratory-rate-scenario.html','/vitals/breath-sounds-scenario.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/chest-assessment.html','/vitals/trauma-assessment.html','/vitals/abdominal-assessment.html','/vitals/clinical-impression.html','/vitals/treatment-reassessment.html','/vitals/pcr-handoff.html'],
+    pediatric: ['/vitals/visual-patient.html','/vitals/pediatric-assessment-triangle.html','/vitals/airway-assessment.html','/vitals/breathing-assessment.html','/vitals/perfusion-assessment.html','/vitals/respiratory-rate-scenario.html','/vitals/breath-sounds-scenario.html','/vitals/pulse-scenario.html','/vitals/bp-scenario.html','/vitals/pulse-ox-scenario.html','/vitals/sample-history.html','/vitals/clinical-impression.html','/vitals/treatment-reassessment.html','/vitals/pcr-handoff.html']
   };
 
   const scenarioId = record.scenarioId || record.id;
@@ -31,11 +31,37 @@
     return Boolean(api.hasFinding?.(canonical, api.active?.() || record) || state.findings[canonical]);
   }
 
+  function timeOf(item) {
+    const value = item?.recordedAt || item?.time || item?.createdAt || 0;
+    const time = new Date(value).getTime();
+    return Number.isFinite(time) ? time : 0;
+  }
+
+  const treatments = Array.isArray(record.treatments) ? record.treatments : (Array.isArray(state.treatments) ? state.treatments : []);
+  const reassessments = Array.isArray(record.reassessments) ? record.reassessments : (Array.isArray(state.reassessments) ? state.reassessments : []);
+  const lastTreatment = treatments.length ? Math.max(...treatments.map(timeOf)) : 0;
+  const lastReassessment = reassessments.length ? Math.max(...reassessments.map(timeOf)) : 0;
+  const treatmentComplete = treatments.length > 0;
+  const reassessmentComplete = treatmentComplete && reassessments.length > 0 && lastReassessment >= lastTreatment;
+
+  state.phaseProgress = {
+    ...(state.phaseProgress || {}),
+    scene: has('scene_size_up'),
+    primary: ['airway','breathing','perfusion'].every(has),
+    treatment: treatmentComplete,
+    reassessment: reassessmentComplete,
+    impression: has('clinical_impression') || Boolean(record.impressions?.primary),
+    transport: Boolean(record.impressions?.action || record.documentation?.transportPriority || record.documentation?.destination),
+    handoff: has('pcr_handoff') || Boolean(record.documentation?.narrative || record.documentation?.handoff),
+    debrief: Boolean(record.documentation?.debrief?.savedAt || record.documentation?.debrief?.score != null)
+  };
+
   function completeForPath(path) {
     switch (path) {
-      case '/vitals/visual-patient.html': return has('scene_size_up');
+      case '/vitals/visual-patient.html': return state.phaseProgress.scene;
       case '/vitals/airway-assessment.html': return has('airway');
       case '/vitals/breathing-assessment.html': return has('breathing');
+      case '/vitals/perfusion-assessment.html': return has('perfusion');
       case '/vitals/respiratory-rate-scenario.html': return has('respirations');
       case '/vitals/breath-sounds-scenario.html': return has('breath_sounds');
       case '/vitals/pulse-scenario.html': return has('pulse');
@@ -47,19 +73,24 @@
       case '/vitals/chest-assessment.html': return has('chest_assessment');
       case '/vitals/trauma-assessment.html': return has('trauma_assessment');
       case '/vitals/abdominal-assessment.html': return has('abdominal_assessment');
-      case '/vitals/perfusion-assessment.html': return has('perfusion');
       case '/vitals/pediatric-assessment-triangle.html': return has('pediatric_assessment_triangle');
       case '/vitals/sample-history.html': return has('sample') || Object.keys(record.history || {}).length > 0;
-      case '/vitals/clinical-impression.html': return has('clinical_impression') || Boolean(record.impressions?.primary);
-      case '/vitals/treatment-reassessment.html': return has('treatment_reassessment') || (record.treatments || []).length > 0 || (state.treatments || []).length > 0 || (record.reassessments || []).length > 0;
-      case '/vitals/pcr-handoff.html': return has('pcr_handoff') || Boolean(record.documentation?.narrative || record.documentation?.handoff);
+      case '/vitals/clinical-impression.html': return state.phaseProgress.impression && state.phaseProgress.transport;
+      case '/vitals/treatment-reassessment.html': return state.phaseProgress.treatment && state.phaseProgress.reassessment;
+      case '/vitals/pcr-handoff.html': return state.phaseProgress.handoff;
       default: return false;
     }
   }
 
   state.done = paths.map((path, index) => completeForPath(path) ? index : null).filter(index => index !== null);
-  if (state.done.length !== paths.length) state.complete = false;
   state.findings = { ...state.findings, ...(api.active?.()?.findings || record.findings || {}) };
+
+  // Never mark a scenario complete merely because a legacy route was opened.
+  // The patient-picture home performs the patient-specific essential-action check.
+  if (!(state.phaseProgress.scene && state.phaseProgress.primary && state.phaseProgress.treatment && state.phaseProgress.reassessment && state.phaseProgress.impression && state.phaseProgress.transport && state.phaseProgress.handoff)) {
+    state.complete = false;
+  }
+
   if (session?.writeState) session.writeState(scenarioId, state);
   else localStorage.setItem(stateKey, JSON.stringify(state));
 })();

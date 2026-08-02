@@ -32,3 +32,6 @@
 .scenario-mode .scenario-assessment-direct .decision-step:has(#docText){display:none!important}
 .scenario-mode .page-shell{padding-top:16px}
 .scenario-mode .scenario-assessment-direct{display:block!important;padding:16px}
+
+/* One consistent scenario return action */
+.scenario-mode .scenario-assessment-direct .scenario-assessment-actions{grid-template-columns:1fr}.scenario-mode .scenario-assessment-direct .scenario-assessment-actions .continue-patient{background:#0878a8;color:#fff;width:100%}

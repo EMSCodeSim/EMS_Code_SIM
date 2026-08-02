@@ -12,8 +12,7 @@
   const scenarioMode = Boolean(scenarioRecord && (params.get('mode') === 'scenario' || params.get('case')));
   const scenarioId = scenarioRecord?.scenarioId || scenarioRecord?.id || '';
   const context = params.get('context') || 'general';
-  const returnTo = registry?.safeReturn?.(params.get('return'), '') || (scenarioId ? `/vitals/visual-patient.html?case=${encodeURIComponent(scenarioId)}` : '/vitals/scenario-launcher.html');
-  const returnLabel = params.get('returnLabel') || 'patient scenario';
+  const returnTo = scenarioId ? `/vitals/visual-patient.html?case=${encodeURIComponent(scenarioId)}` : '/vitals/scenario-launcher.html';
 
   const TREATMENTS = [
     ['monitor', 'No immediate treatment — continue monitoring and reassessment', 'All levels'],
@@ -146,7 +145,7 @@
     const nav = document.createElement('div');
     nav.id = 'treatmentReturnNav';
     nav.className = 'scenario-treatment-nav';
-    nav.innerHTML = `<a class="primary-btn" href="${returnTo}">Return to ${returnLabel}</a><a class="secondary-btn" href="${session?.scenarioHome?.(scenarioId) || `/vitals/visual-patient.html?case=${encodeURIComponent(scenarioId)}`}">Patient home</a>`;
+    nav.innerHTML = `<a class="primary-btn" href="${returnTo}">Return to Patient</a><div class="scenario-treatment-continue"><span>Continue with:</span><a class="secondary-btn" href="${registry?.buildUrl?.('/vitals/pcr-handoff.html',{caseId:scenarioId,returnTo,returnLabel:'Patient'}) || '/vitals/pcr-handoff.html'}">PCR and handoff</a></div>`;
     $('practicePanel').appendChild(nav);
   }
 
