@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Airway Assessment Learning Center | EMSCodeSim</title>
+  <meta name="description" content="Learn how and why EMTs assess an airway, then practice recognizing findings, choosing basic airway actions, and documenting objectively.">
+  <link rel="canonical" href="https://emscodesim.com/vitals/airway-assessment.html">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/styles/responsive.css">
+  <link rel="stylesheet" href="/styles/site-enhancements.css">
+  <link rel="stylesheet" href="/vitals/airway-assessment.css">
+  <script defer src="/privacy-controls.js"></script>
+  <script defer src="/vitals/patient-record.js"></script>
+  <script defer src="/vitals/scenario-session.js?v=3"></script>
+  <script defer src="/vitals/scenario-runtime.js?v=2"></script>
+  <script defer src="/vitals/scenario-tool-registry.js?v=2"></script>
+  <script defer src="/vitals/patient-record-integration.js?v=2"></script>
+  <script defer src="/vitals/airway-assessment.js?v=3"></script>
+<link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
+  <link rel="stylesheet" href="/vitals/scenario-flow.css">
+<link rel="stylesheet" href="/vitals/assessment-crosslinks.css?v=4">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="back-link" href="/vitals/" aria-label="Back to Vital Learning Centers">← Vitals</a>
+    <div>
+      <p class="eyebrow">EMT Learning Center</p>
+      <h1>Airway Assessment Simulator</h1>
+    </div>
+    <span class="level-badge">EMT</span>
+  </div>
+</header>
+
+<main class="page-shell">
+  <section class="hero-card">
+    <div>
+      <p class="eyebrow">How → Why → Practice</p>
+      <h2>Recognize whether the airway is open—and act before it fails.</h2>
+      <p>Work through technique, clinical meaning, and randomized patient encounters. Every practice case requires you to classify the finding, choose the next action, and document it objectively.</p>
+    </div>
+    <div class="progress-box" aria-label="Lesson progress">
+      <span id="progressText">0 of 3 lessons complete</span>
+      <div class="progress-track"><span id="progressBar"></span></div>
+    </div>
+  </section>
+
+  <nav class="lesson-tabs" aria-label="Airway lessons">
+    <button class="lesson-tab is-active" data-panel="howPanel" type="button"><span>1</span> HOW</button>
+    <button class="lesson-tab" data-panel="whyPanel" type="button"><span>2</span> WHY</button>
+    <button class="lesson-tab" data-panel="practicePanel" type="button"><span>3</span> PRACTICE</button>
+  </nav>
+
+  <section class="lesson-panel is-active" id="howPanel">
+    <div class="section-heading">
+      <p class="eyebrow">Lesson 1</p>
+      <h2>HOW: Perform an airway assessment</h2>
+      <p>Assess the airway early, correct immediate threats, and reassess after every intervention.</p>
+    </div>
+
+    <div class="step-grid">
+      <article class="step-card"><span class="step-number">1</span><h3>Form a first impression</h3><p>Look for alertness, posture, visible distress, facial injury, secretions, vomit, blood, swelling, or burns.</p></article>
+      <article class="step-card"><span class="step-number">2</span><h3>Check responsiveness</h3><p>A patient who speaks clearly has airflow at that moment. A reduced level of consciousness increases obstruction risk.</p></article>
+      <article class="step-card"><span class="step-number">3</span><h3>Look, listen, and feel</h3><p>Observe chest movement and the mouth. Listen for normal speech or abnormal sounds such as snoring, gurgling, or stridor.</p></article>
+      <article class="step-card"><span class="step-number">4</span><h3>Open the airway</h3><p>Use a head-tilt/chin-lift when trauma is not suspected. Use a jaw-thrust when spinal injury is suspected, following training and protocol.</p></article>
+      <article class="step-card"><span class="step-number">5</span><h3>Clear and maintain</h3><p>Remove visible, easily reachable material; suction when indicated; and use an appropriate basic airway adjunct within scope.</p></article>
+      <article class="step-card"><span class="step-number">6</span><h3>Assess breathing</h3><p>After opening the airway, determine whether breathing is adequate. Provide oxygen or ventilation support according to findings and local protocol.</p></article>
+    </div>
+
+    <div class="skill-callout">
+      <h3>Quick airway sequence</h3>
+      <p><strong>Can the patient speak?</strong> → <strong>Is air moving?</strong> → <strong>Are abnormal sounds present?</strong> → <strong>Does the airway need opening, clearing, suction, or an adjunct?</strong> → <strong>Is ventilation adequate?</strong></p>
+    </div>
+
+    <div class="two-column">
+      <article class="info-card">
+        <h3>Common findings</h3>
+        <ul>
+          <li><strong>Clear speech:</strong> airway currently patent, but continue assessment.</li>
+          <li><strong>Snoring:</strong> soft-tissue obstruction is likely.</li>
+          <li><strong>Gurgling:</strong> fluid or secretions may be present.</li>
+          <li><strong>Stridor:</strong> upper-airway narrowing or obstruction.</li>
+          <li><strong>Silent airway/no air movement:</strong> critical obstruction or apnea.</li>
+        </ul>
+      </article>
+      <article class="info-card warning-card">
+        <h3>Common mistakes</h3>
+        <ul>
+          <li>Assuming a normal respiratory rate means the airway is open.</li>
+          <li>Placing an adjunct without checking contraindications.</li>
+          <li>Suctioning without preparing oxygen and ventilation support.</li>
+          <li>Failing to reassess after repositioning or suction.</li>
+          <li>Documenting only “airway patent” without objective evidence.</li>
+        </ul>
+      </article>
+    </div>
+
+    <button class="complete-btn" data-complete="how" type="button">Mark HOW complete</button>
+  </section>
+
+  <section class="lesson-panel" id="whyPanel" hidden>
+    <div class="section-heading">
+      <p class="eyebrow">Lesson 2</p>
+      <h2>WHY: Understand what airway findings mean</h2>
+      <p>An airway can deteriorate rapidly. Recognizing the mechanism helps you choose the correct basic intervention.</p>
+    </div>
+
+    <div class="concept-grid">
+      <article class="concept-card"><h3>Loss of muscle tone</h3><p>With reduced consciousness, the tongue and surrounding soft tissue can fall backward and obstruct airflow. Positioning or an adjunct may be needed.</p></article>
+      <article class="concept-card"><h3>Fluid in the airway</h3><p>Blood, vomit, and secretions interfere with airflow and increase aspiration risk. Gurgling is a cue to expose, clear, and suction.</p></article>
+      <article class="concept-card"><h3>Upper-airway swelling</h3><p>Allergic reaction, infection, inhalation injury, or trauma may narrow the upper airway. Stridor, voice change, swelling, and increasing effort are concerning.</p></article>
+      <article class="concept-card"><h3>Foreign-body obstruction</h3><p>Air movement and speech may be partial or absent. Treatment depends on responsiveness and whether the obstruction is mild or severe.</p></article>
+    </div>
+
+    <div class="sound-table" role="table" aria-label="Airway sound interpretation">
+      <div class="sound-row sound-head" role="row"><span>Finding</span><span>Likely meaning</span><span>Priority</span></div>
+      <div class="sound-row" role="row"><strong>Clear voice</strong><span>Air is passing through the upper airway now</span><span>Continue complete assessment</span></div>
+      <div class="sound-row" role="row"><strong>Snoring</strong><span>Soft-tissue obstruction</span><span>Open/reposition; consider adjunct</span></div>
+      <div class="sound-row" role="row"><strong>Gurgling</strong><span>Liquid or secretions</span><span>Clear and suction</span></div>
+      <div class="sound-row" role="row"><strong>Stridor</strong><span>Upper-airway narrowing</span><span>High priority; prepare rapid support</span></div>
+      <div class="sound-row" role="row"><strong>No air movement</strong><span>Complete obstruction or apnea</span><span>Immediate lifesaving action</span></div>
+    </div>
+
+    <div class="knowledge-check">
+      <h3>Knowledge check</h3>
+      <fieldset>
+        <legend>An unresponsive patient has snoring respirations and no obvious trauma. What should happen first?</legend>
+        <label><input type="radio" name="whyCheck" value="oxygen"> Apply oxygen without repositioning</label>
+        <label><input type="radio" name="whyCheck" value="open"> Open the airway with a head-tilt/chin-lift and reassess</label>
+        <label><input type="radio" name="whyCheck" value="history"> Obtain a complete SAMPLE history</label>
+      </fieldset>
+      <button id="checkWhy" type="button">Check answer</button>
+      <p id="whyFeedback" class="feedback" aria-live="polite"></p>
+    </div>
+
+    <button class="complete-btn" data-complete="why" type="button">Mark WHY complete</button>
+  </section>
+
+  <div class="scenario-only-note">Full scenario mode: complete this assessment for the active patient. Teaching sections and patient changes are locked until you leave the scenario.</div>
+  <section class="lesson-panel" id="practicePanel" hidden>
+    <div class="section-heading">
+      <p class="eyebrow">Lesson 3</p>
+      <h2>PRACTICE: Assess, classify, act, and document</h2>
+      <p>Read the encounter, reveal the airway finding, then complete each decision in order.</p>
+    </div>
+
+    <div class="sim-layout">
+      <section class="patient-card" aria-labelledby="scenarioTitle">
+        <div class="patient-card__top">
+          <div><p class="eyebrow">Randomized patient</p><h3 id="scenarioTitle">Patient encounter</h3></div>
+          <button id="newScenario" class="secondary-btn" type="button">New patient</button>
+        </div>
+        <div class="patient-meta" id="patientMeta"></div>
+        <p id="scenarioText" class="scenario-text"></p>
+        <button id="assessAirway" class="primary-btn" type="button">Perform airway assessment</button>
+        <div id="findingBox" class="finding-box" hidden>
+          <p class="eyebrow">Airway finding</p>
+          <h3 id="findingText"></h3>
+          <p id="findingDetail"></p>
+        </div>
+      </section>
+
+      <form id="airwayForm" class="decision-card" novalidate>
+        <section class="decision-step" data-step="1">
+          <div class="decision-number">1</div>
+          <div>
+            <h3>Classify the finding</h3>
+            <p>Is this airway finding normal or not normal?</p>
+            <div class="choice-row">
+              <label class="choice"><input type="radio" name="normality" value="normal"> <span>Normal</span></label>
+              <label class="choice"><input type="radio" name="normality" value="abnormal"> <span>Not Normal</span></label>
+            </div>
+          </div>
+        </section>
+
+        <section class="decision-step" data-step="2">
+          <div class="decision-number">2</div>
+          <div>
+            <h3>Identify the problem</h3>
+            <label for="problemSelect">Best interpretation</label>
+            <select id="problemSelect" required>
+              <option value="">Choose one…</option>
+              <option value="patent">Airway is patent at this time</option>
+              <option value="soft-tissue">Likely soft-tissue obstruction</option>
+              <option value="fluid">Fluid or secretions in the airway</option>
+              <option value="upper-narrowing">Upper-airway narrowing/swelling</option>
+              <option value="complete">Complete obstruction or absent airflow</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="decision-step" data-step="3">
+          <div class="decision-number">3</div>
+          <div>
+            <h3>Choose the next action</h3>
+            <label for="actionSelect">Best immediate EMT action</label>
+            <select id="actionSelect" required>
+              <option value="">Choose one…</option>
+              <option value="monitor">Continue assessment and monitor airway</option>
+              <option value="position">Open/reposition the airway and reassess</option>
+              <option value="suction">Expose, clear, and suction the airway</option>
+              <option value="support">Provide immediate obstruction/ventilation support per training and protocol</option>
+              <option value="rapid">Maintain airway, provide oxygen as indicated, and prepare rapid transport/ALS support</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="decision-step" data-step="4">
+          <div class="decision-number">4</div>
+          <div>
+            <h3>Optional finding note</h3>
+            <label for="pcrText">Optional finding note</label>
+            <textarea id="pcrText" rows="5" placeholder="Example: Patient speaking in full sentences with clear voice; no visible obstruction, secretions, or abnormal upper-airway sounds. Airway patent at time of assessment."></textarea>
+            <p class="microcopy">Include what you observed, what you did, and the patient's response. Avoid documenting only “airway patent.”</p>
+          </div>
+        </section>
+
+        <button class="primary-btn submit-btn" id="submitCase" type="submit">Grade this assessment</button>
+      </form>
+    </div>
+
+    <section id="resultsPanel" class="results-panel" hidden aria-live="polite">
+      <div class="score-ring"><span id="scoreValue">0</span><small>/ 3</small></div>
+      <div>
+        <p class="eyebrow">Coaching feedback</p>
+        <h3 id="resultTitle"></h3>
+        <ul id="feedbackList"></ul>
+        <div class="model-doc"><strong>Optional documentation example:</strong><p id="modelDocumentation"></p></div>
+      </div>
+    </section>
+
+    <button class="complete-btn" data-complete="practice" type="button">Mark PRACTICE complete</button>
+  </section>
+
+  <aside class="disclaimer">Training aid only. Follow your approved curriculum, medical direction, and local protocols. Patient findings must always be interpreted in context.</aside>
+</main>
+<script src="/vitals/scenario-status.js"></script><script src="/vitals/scenario-flow.js"></script>
+<script src="/vitals/assessment-crosslinks.js?v=6"></script>
+</body>
+</html>

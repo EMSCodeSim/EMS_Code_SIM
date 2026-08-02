@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Breathing Quality Assessment Simulator | EMSCodeSim</title>
+  <meta name="description" content="Learn how EMTs assess breathing quality, then practice recognizing adequate and inadequate ventilation, choosing interventions, and documenting findings.">
+  <link rel="canonical" href="https://emscodesim.com/vitals/breathing-assessment.html">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/styles/responsive.css">
+  <link rel="stylesheet" href="/styles/site-enhancements.css">
+  <link rel="stylesheet" href="/vitals/breathing-assessment.css">
+  <script defer src="/privacy-controls.js"></script>
+  <script defer src="/vitals/patient-record.js"></script>
+  <script defer src="/vitals/scenario-session.js?v=3"></script>
+  <script defer src="/vitals/scenario-runtime.js?v=2"></script>
+  <script defer src="/vitals/scenario-tool-registry.js?v=2"></script>
+  <script defer src="/vitals/patient-record-integration.js?v=2"></script>
+  <script defer src="/vitals/breathing-assessment.js?v=3"></script>
+<link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
+  <link rel="stylesheet" href="/vitals/scenario-flow.css">
+<link rel="stylesheet" href="/vitals/assessment-crosslinks.css?v=4">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="back-link" href="/vitals/" aria-label="Back to Vital Learning Centers">← Vitals</a>
+    <div><p class="eyebrow">EMT Learning Center</p><h1>Breathing Quality Simulator</h1></div>
+    <span class="level-badge">EMT</span>
+  </div>
+</header>
+<main class="page-shell">
+  <section class="hero-card">
+    <div><p class="eyebrow">How → Why → Practice</p><h2>Decide whether the patient is breathing adequately—not just how fast.</h2><p>Assess rate, depth, effort, rhythm, chest movement, speech, skin signs, and mental status. Then classify the finding, choose the appropriate EMT response, and document objectively.</p></div>
+    <div class="progress-box"><span id="progressText">0 of 3 lessons complete</span><div class="progress-track"><span id="progressBar"></span></div></div>
+  </section>
+
+  <nav class="lesson-tabs" aria-label="Breathing lessons">
+    <button class="lesson-tab is-active" data-panel="howPanel" type="button"><span>1</span> HOW</button>
+    <button class="lesson-tab" data-panel="whyPanel" type="button"><span>2</span> WHY</button>
+    <button class="lesson-tab" data-panel="practicePanel" type="button"><span>3</span> PRACTICE</button>
+  </nav>
+
+  <section class="lesson-panel is-active" id="howPanel">
+    <div class="section-heading"><p class="eyebrow">Lesson 1</p><h2>HOW: Assess breathing quality</h2><p>Count respirations without announcing it, then describe the entire breathing pattern.</p></div>
+    <div class="step-grid">
+      <article class="step-card"><span class="step-number">1</span><h3>Observe before touching</h3><p>Note position, ability to speak, alertness, visible distress, accessory-muscle use, retractions, nasal flaring, and tripod posture.</p></article>
+      <article class="step-card"><span class="step-number">2</span><h3>Count the rate</h3><p>Count discreetly. Use a full minute when respirations are irregular, very slow, very fast, or difficult to see.</p></article>
+      <article class="step-card"><span class="step-number">3</span><h3>Assess depth and rhythm</h3><p>Describe respirations as shallow, normal, or deep and as regular or irregular.</p></article>
+      <article class="step-card"><span class="step-number">4</span><h3>Inspect chest movement</h3><p>Look for equal rise, symmetry, paradoxical motion, reduced movement, or fatigue.</p></article>
+      <article class="step-card"><span class="step-number">5</span><h3>Listen and feel</h3><p>Listen for audible wheeze, stridor, grunting, or poor air movement. Auscultate lung sounds when indicated.</p></article>
+      <article class="step-card"><span class="step-number">6</span><h3>Judge adequacy</h3><p>Combine breathing findings with skin signs, mental status, pulse, and oxygen saturation. Treat inadequate ventilation promptly.</p></article>
+    </div>
+    <div class="skill-callout"><h3>Breathing-quality checklist</h3><p><strong>Rate + rhythm + depth + effort + chest rise + speech + air movement + perfusion + mental status.</strong></p></div>
+    <div class="two-column">
+      <article class="info-card"><h3>Signs of adequate breathing</h3><ul><li>Appropriate rate for age and condition</li><li>Regular rhythm and adequate depth</li><li>Equal chest rise with minimal effort</li><li>Normal speech and mental status</li><li>Reasonable skin signs and oxygenation</li></ul></article>
+      <article class="info-card warning-card"><h3>Signs of inadequate breathing</h3><ul><li>Very slow, very fast, or irregular respirations</li><li>Shallow depth or poor chest rise</li><li>Exhaustion, decreasing effort, or altered mental status</li><li>Cyanosis, poor air movement, or inability to speak</li><li>Paradoxical movement or severe accessory-muscle use</li></ul></article>
+    </div>
+    <button class="complete-btn" data-complete="how" type="button">Mark HOW complete</button>
+  </section>
+
+  <section class="lesson-panel" id="whyPanel" hidden>
+    <div class="section-heading"><p class="eyebrow">Lesson 2</p><h2>WHY: Understand ventilation and respiratory failure</h2><p>A normal respiratory rate does not prove that ventilation is adequate. Depth, effort, and patient response matter.</p></div>
+    <div class="concept-grid">
+      <article class="concept-card"><h3>Ventilation</h3><p>Ventilation moves air into and out of the lungs. A patient can have an acceptable rate but inadequate tidal volume.</p></article>
+      <article class="concept-card"><h3>Oxygenation</h3><p>Oxygenation describes oxygen transfer into the blood. SpO₂ helps, but it must be interpreted with the whole patient.</p></article>
+      <article class="concept-card"><h3>Compensation</h3><p>Early distress may show tachypnea, anxiety, retractions, and accessory-muscle use while the patient maintains mental status.</p></article>
+      <article class="concept-card"><h3>Failure</h3><p>Slowing respirations, decreasing effort, poor chest rise, altered mental status, and cyanosis may signal impending arrest.</p></article>
+    </div>
+    <div class="sound-table" role="table" aria-label="Breathing finding interpretation">
+      <div class="sound-row sound-head"><span>Finding</span><span>Meaning</span><span>Concern</span></div>
+      <div class="sound-row"><strong>Rapid, deep</strong><span>Possible compensation for acidosis or hypoxia</span><span>Identify cause and reassess</span></div>
+      <div class="sound-row"><strong>Rapid, shallow</strong><span>Low tidal volume despite high rate</span><span>May be inadequate</span></div>
+      <div class="sound-row"><strong>Slow, shallow</strong><span>Depressed respiratory drive or fatigue</span><span>Ventilatory support may be required</span></div>
+      <div class="sound-row"><strong>Unequal chest rise</strong><span>Possible unilateral injury or obstruction</span><span>High-priority assessment</span></div>
+      <div class="sound-row"><strong>Decreasing effort</strong><span>Fatigue or respiratory failure</span><span>Prepare to assist ventilations</span></div>
+    </div>
+    <div class="knowledge-check">
+      <h3>Knowledge check</h3>
+      <fieldset><legend>A patient breathes 18 times/min but has shallow chest rise, cyanosis, and decreasing responsiveness. Is breathing adequate?</legend>
+        <label><input type="radio" name="whyQuestion" value="yes"> Yes, because the rate is normal</label>
+        <label><input type="radio" name="whyQuestion" value="no"> No, ventilation is inadequate</label>
+      </fieldset>
+      <button id="checkWhy" type="button">Check answer</button><p id="whyFeedback" class="inline-feedback" aria-live="polite"></p>
+    </div>
+    <button class="complete-btn" data-complete="why" type="button">Mark WHY complete</button>
+  </section>
+
+  <div class="scenario-only-note">Full scenario mode: complete this assessment for the active patient. Teaching sections and patient changes are locked until you leave the scenario.</div>
+  <section class="lesson-panel" id="practicePanel" hidden>
+    <div class="section-heading"><p class="eyebrow">Lesson 3</p><h2>PRACTICE: Assess, classify, act, and document</h2><p>Read the patient presentation, perform the assessment, and decide whether ventilation is adequate.</p></div>
+    <article class="patient-card">
+      <div class="patient-card__head"><div><p class="eyebrow">Randomized patient</p><h3 id="caseTitle">Patient encounter</h3></div><button class="secondary-btn" id="newCase" type="button">New patient</button></div>
+      <p id="caseDescription"></p>
+      <button class="primary-btn" id="performAssessment" type="button">Perform breathing assessment</button>
+      <div class="finding-box" id="findingBox" hidden><p class="eyebrow">Assessment finding</p><h3 id="findingText"></h3><p id="findingDetail"></p></div>
+    </article>
+
+    <form id="breathingForm" class="decision-card">
+      <fieldset><legend>1. Is this finding normal?</legend><div class="choice-row"><label class="choice-card"><input type="radio" name="normality" value="normal" required><span>Normal</span></label><label class="choice-card"><input type="radio" name="normality" value="not-normal" required><span>Not Normal</span></label></div></fieldset>
+      <label class="form-field"><span>2. What best describes the breathing?</span><select id="problemSelect" required><option value="">Select one</option><option value="adequate">Adequate ventilation</option><option value="distress">Respiratory distress with adequate ventilation</option><option value="failure">Inadequate ventilation / respiratory failure</option><option value="asymmetric">Asymmetric chest movement</option></select></label>
+      <label class="form-field"><span>3. What is the best immediate EMT action?</span><select id="actionSelect" required><option value="">Select one</option><option value="monitor">Continue assessment and monitor</option><option value="oxygen">Provide oxygen as indicated and reassess</option><option value="assist">Assist ventilations with BVM and oxygen</option><option value="trauma">Support breathing, address chest injury, and expedite transport</option></select></label>
+      <label class="form-field"><span>4. Optional finding note</span><textarea id="pcrText" rows="5" placeholder="Include rate, rhythm, depth, effort, chest movement, speech, intervention, and reassessment when applicable."></textarea></label>
+      <button class="primary-btn" type="submit">Grade this patient</button>
+    </form>
+    <section class="results-panel" id="resultsPanel" hidden aria-live="polite"><p class="eyebrow">Practice feedback</p><h3 id="scoreText"></h3><ul id="feedbackList"></ul><div class="documentation-example"><h4>Optional documentation example</h4><p id="examplePCR"></p></div><button class="secondary-btn" id="tryAnother" type="button">Try another patient</button></section>
+    <button class="complete-btn" data-complete="practice" type="button">Mark PRACTICE complete</button>
+  </section>
+</main>
+<script src="/vitals/scenario-status.js"></script><script src="/vitals/scenario-flow.js"></script>
+<script src="/vitals/assessment-crosslinks.js?v=6"></script>
+</body>
+</html>
