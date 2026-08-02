@@ -165,7 +165,16 @@ assert.strictEqual(partnerTasks.pulse.status, 'pending');
 assert.strictEqual(partnerTasks.respirations.status, 'queued');
 partnerTasks.pulse.dueAt = new Date(Date.now() - 1000).toISOString();
 session.writePartnerTasks('stroke', partnerTasks);
+// The patient-record save event is synchronous in the browser. Re-entering the
+// resolver from that event must not repeatedly complete the same pending task.
+let synchronousResolveCount = 0;
+runtime.window.addEventListener('emscodesim:scenario-finding-saved', event => {
+  if (event.detail?.category !== 'pulse') return;
+  synchronousResolveCount += 1;
+  session.resolvePartnerTasks('stroke');
+});
 session.resolvePartnerTasks('stroke');
+assert.strictEqual(synchronousResolveCount, 1, 'A partner vital should survive synchronous UI refresh without a completion loop.');
 partnerTasks = session.readPartnerTasks('stroke');
 patientRecord = api.load('stroke');
 assert.strictEqual(patientRecord.findings.pulse.value, '92/min; regular; strong');
