@@ -95,7 +95,7 @@ includesAll(progressSync, [
 ], 'Scenario progress synchronization');
 
 const crosslinks = read('vitals/assessment-crosslinks.js');
-includesAll(crosslinks, ['Save and Return to Patient', 'scenario-assessment-actions', 'Grade my assessment (optional)', 'scenarioHome'], 'Assessment return flow');
+includesAll(crosslinks, ['Continue to Patient Home', 'scenario-assessment-actions', 'scenario-grade-hidden', 'scenarioHome'], 'Assessment return flow');
 assert(!crosslinks.includes('All assessment tools'), 'Assessment pages must not offer a competing all-tools destination.');
 assert(!crosslinks.includes('Patient home'), 'Assessment pages must not add a second patient-home link beside the primary return control.');
 
