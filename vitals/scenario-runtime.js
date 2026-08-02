@@ -14,7 +14,15 @@
         pupil_equal: true, pupil_left_reactive: true, pupil_right_reactive: true, pupil_gaze: 'midline', pupil_tracking: 'smooth',
         breath_sounds: 'Expiratory wheezes bilaterally', breath_sound_type: 'wheeze'
       },
-      caseIndex: { airway: 0, breathing: 1, sample: 1, chest: 0, perfusion: 0, trauma: 0, abdominal: 0, motor_sensory: 0, pat: 0 }
+      sample: {
+        title: 'Respiratory Distress',
+        description: 'A 24-year-old with worsening shortness of breath and wheezing is seated upright in an apartment with a rescue inhaler nearby.',
+        finding: 'History supports an acute asthma exacerbation',
+        detail: 'S: Worsening shortness of breath, chest tightness, cough, and wheezing; denies fever, chest pain, hives, facial swelling, or choking. A: No known medication allergies. M: Albuterol rescue inhaler; used two doses today with only brief improvement. P: Asthma since childhood; one prior emergency visit, no prior intubation. L: Ate a sandwich approximately 3 hours ago. E: Symptoms began after cleaning a dusty room and worsened over about 2 hours despite the inhaler.',
+        normality: 'not-normal', priority: 'events', action: 'rapid-transport',
+        example: 'SAMPLE obtained: patient reports worsening shortness of breath, chest tightness, cough, and wheezing after cleaning a dusty room. NKDA. Uses an albuterol rescue inhaler and took two doses today with only brief relief. History of asthma with one prior emergency visit and no prior intubation. Last oral intake approximately 3 hours ago. Airway and breathing monitored, indicated respiratory treatment provided, and response reassessed.'
+      },
+      caseIndex: { airway: 0, breathing: 1, sample: 0, chest: 0, perfusion: 0, trauma: 0, abdominal: 0, motor_sensory: 0, pat: 0 }
     },
     stroke: {
       patient: '68-year-old adult',
@@ -28,7 +36,15 @@
         pupil_equal: true, pupil_left_reactive: true, pupil_right_reactive: true, pupil_gaze: 'left-deviation', pupil_tracking: 'impaired',
         breath_sounds: 'Clear and equal bilaterally', breath_sound_type: 'normal'
       },
-      caseIndex: { airway: 0, breathing: 0, sample: 2, chest: 0, perfusion: 0, trauma: 0, abdominal: 0, motor_sensory: 1, pat: 0 }
+      sample: {
+        title: 'Possible Acute Stroke',
+        description: 'A 68-year-old has sudden speech difficulty and right-sided weakness at home with family present.',
+        finding: 'Sudden focal neurologic symptoms with a known last-known-well time',
+        detail: 'S: Sudden slurred speech, right facial droop, and right arm weakness; denies trauma, seizure, headache, or chest pain. A: Penicillin causes a rash. M: Lisinopril and atorvastatin; no anticoagulant reported. P: Hypertension and high cholesterol; no prior stroke. L: Breakfast approximately 2 hours ago. E: Family saw the patient normal at 09:10; symptoms began suddenly at 09:25 while drinking coffee.',
+        normality: 'not-normal', priority: 'events', action: 'rapid-transport',
+        example: 'SAMPLE obtained from patient and family: sudden slurred speech, right facial droop, and right arm weakness began at approximately 09:25; last known well was 09:10. Penicillin allergy causes rash. Medications include lisinopril and atorvastatin. History of hypertension and hyperlipidemia without prior stroke. Last oral intake was breakfast approximately 2 hours ago. Glucose checked, stroke findings documented, and rapid stroke-center transport prioritized.'
+      },
+      caseIndex: { airway: 0, breathing: 0, sample: 0, chest: 0, perfusion: 0, trauma: 0, abdominal: 0, motor_sensory: 1, pat: 0 }
     },
     hypoglycemia: {
       patient: '57-year-old adult',
@@ -42,7 +58,15 @@
         pupil_equal: true, pupil_left_reactive: true, pupil_right_reactive: true, pupil_gaze: 'midline', pupil_tracking: 'smooth',
         breath_sounds: 'Clear and equal bilaterally', breath_sound_type: 'normal'
       },
-      caseIndex: { airway: 0, breathing: 0, sample: 3, chest: 0, perfusion: 0, trauma: 0, abdominal: 0, motor_sensory: 2, pat: 0 }
+      sample: {
+        title: 'Altered Mental Status',
+        description: 'A 57-year-old with diabetes is confused, pale, cool, and diaphoretic in a workplace break room.',
+        finding: 'Insulin use and missed food strongly support hypoglycemia',
+        detail: 'S: Confusion, weakness, shakiness, and diaphoresis; coworker denies witnessed seizure or trauma. A: No known allergies. M: Rapid-acting and long-acting insulin; usual morning insulin was taken. P: Type 1 diabetes. L: No food since dinner the previous evening; skipped breakfast because of an early shift. E: Became progressively confused and sweaty at work about 20 minutes before EMS arrival.',
+        normality: 'not-normal', priority: 'intake', action: 'glucose',
+        example: 'SAMPLE obtained from the patient and coworker: progressive confusion, weakness, shakiness, and diaphoresis developed after the patient took usual morning insulin but skipped breakfast. NKDA. History of type 1 diabetes treated with rapid- and long-acting insulin. No food since the previous evening. Blood glucose was assessed, hypoglycemia treated as appropriate, and mental status and glucose reassessed.'
+      },
+      caseIndex: { airway: 0, breathing: 0, sample: 0, chest: 0, perfusion: 0, trauma: 0, abdominal: 0, motor_sensory: 2, pat: 0 }
     },
     trauma: {
       patient: '36-year-old adult',
@@ -56,7 +80,15 @@
         pupil_equal: true, pupil_left_reactive: true, pupil_right_reactive: true, pupil_gaze: 'midline', pupil_tracking: 'smooth',
         breath_sounds: 'Diminished on the left; present on the right', breath_sound_type: 'diminished'
       },
-      caseIndex: { airway: 5, breathing: 4, sample: 2, chest: 2, perfusion: 2, trauma: 3, abdominal: 2, motor_sensory: 4, pat: 0 }
+      sample: {
+        title: 'Blunt Trauma',
+        description: 'A 36-year-old involved in a two-vehicle collision has chest and abdominal pain with signs of poor perfusion.',
+        finding: 'Mechanism and symptoms raise concern for serious chest and internal abdominal injury',
+        detail: 'S: Severe left chest pain, diffuse abdominal pain, shortness of breath, and dizziness; denies loss of consciousness. A: No known allergies. M: No daily medications and no anticoagulants. P: No significant medical history. L: Ate lunch approximately 1 hour before the collision. E: Restrained driver in a frontal collision at roadway speed; airbags deployed, steering wheel was deformed, and the patient required assistance out of the vehicle.',
+        normality: 'not-normal', priority: 'events', action: 'rapid-transport',
+        example: 'SAMPLE obtained: patient reports severe left chest pain, diffuse abdominal pain, dyspnea, and dizziness following a frontal motor-vehicle collision. Denies loss of consciousness. NKDA. Takes no daily medications or anticoagulants and reports no significant medical history. Last oral intake approximately 1 hour before the crash. Significant mechanism with steering-wheel deformity identified; chest and abdominal injury supported, shock care initiated, and rapid trauma transport prioritized.'
+      },
+      caseIndex: { airway: 5, breathing: 4, sample: 0, chest: 2, perfusion: 2, trauma: 3, abdominal: 2, motor_sensory: 4, pat: 0 }
     },
     pediatric: {
       patient: '3-year-old child',
@@ -70,7 +102,15 @@
         pupil_equal: true, pupil_left_reactive: true, pupil_right_reactive: true, pupil_gaze: 'midline', pupil_tracking: 'smooth',
         breath_sounds: 'Coarse crackles bilaterally', breath_sound_type: 'crackles'
       },
-      caseIndex: { airway: 3, breathing: 3, sample: 1, chest: 0, perfusion: 5, trauma: 0, abdominal: 5, motor_sensory: 2, pat: 2 }
+      sample: {
+        title: 'Sick Pediatric Patient',
+        description: 'A 3-year-old has fever, poor interaction, and increased work of breathing at home with a caregiver present.',
+        finding: 'Several days of respiratory illness with fever and worsening breathing',
+        detail: 'S: Fever, cough, decreased activity, poor fluid intake, and increasing work of breathing; no vomiting, diarrhea, rash, choking episode, or known trauma. A: No known allergies. M: Children’s acetaminophen given 4 hours ago; no daily medications. P: Born at term; immunizations current; no chronic lung or heart disease. L: Small amount of juice approximately 3 hours ago and little solid food today. E: Cough and fever began 2 days ago; breathing became faster overnight and the child became difficult to engage this morning.',
+        normality: 'not-normal', priority: 'events', action: 'rapid-transport',
+        example: 'SAMPLE obtained from caregiver: child has had cough and fever for 2 days with decreased activity and intake; breathing worsened overnight and interaction declined this morning. NKDA. Acetaminophen was given approximately 4 hours ago; no daily medications. Born at term, immunizations current, and no chronic cardiopulmonary history. Last intake was a small amount of juice about 3 hours ago. Airway, breathing, hydration, temperature, and perfusion assessed with supportive care and prompt transport.'
+      },
+      caseIndex: { airway: 3, breathing: 3, sample: 0, chest: 0, perfusion: 5, trauma: 0, abdominal: 5, motor_sensory: 2, pat: 2 }
     }
   };
 
@@ -106,6 +146,16 @@
       return next;
     }
     const selectedProfile = profile();
+    if (key === 'sample' && selectedProfile?.sample) {
+      return {
+        ...selectedProfile.sample,
+        title: currentRecord.title || selectedProfile.sample.title,
+        description: selectedProfile.sample.description || currentRecord.dispatch,
+        context: selectedProfile.sample.description || currentRecord.dispatch,
+        age: currentRecord.patient || '',
+        complaint: currentRecord.title || selectedProfile.sample.title
+      };
+    }
     const index = selectedProfile?.caseIndex?.[key] ?? 0;
     const base = cases[Math.max(0, Math.min(index, cases.length - 1))];
     const clone = { ...base };
