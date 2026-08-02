@@ -95,6 +95,7 @@
   let answers = [];
   let completedFinding = api?.getFinding?.('scene_size_up', api?.active?.());
   let reviewMode = false;
+  let initialized = false;
 
   function setLocked(locked) {
     const nav = document.querySelector('.bottom-nav');
@@ -211,11 +212,8 @@
   }
 
   function init() {
-    if (!$('sceneGuide')) return;
-    window.EMSCodeSimSceneGuide = {
-      start: review => startGuide(Boolean(review && completedFinding)),
-      isComplete: () => Boolean(completedFinding)
-    };
+    if (initialized || !$('sceneGuide')) return;
+    initialized = true;
     $('sceneGuideNext').addEventListener('click', () => {
       if (!feedbackShown) { recordAnswer(); return; }
       if (index < questions.length - 1) { index += 1; render(); }
@@ -229,5 +227,18 @@
     else showReady();
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  window.EMSCodeSimSceneGuide = {
+    start(review = false) {
+      init();
+      if (!$('sceneGuide')) return null;
+      startGuide(Boolean(review && completedFinding));
+      return true;
+    },
+    isComplete() {
+      return Boolean(completedFinding);
+    }
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
+  else init();
 })();

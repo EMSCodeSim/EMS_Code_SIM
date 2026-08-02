@@ -511,7 +511,17 @@
       </div>`;
     article.querySelector('button').addEventListener('click', () => {
       closeSheet();
-      window.EMSCodeSimSceneGuide?.start?.(complete);
+      window.requestAnimationFrame(() => {
+        const opened = window.EMSCodeSimSceneGuide?.start?.(complete);
+        if (opened === false || !window.EMSCodeSimSceneGuide?.start) {
+          const guide = document.getElementById('sceneGuide');
+          if (guide) {
+            guide.hidden = false;
+            guide.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+          showToast('Scene size-up opened. Refresh the page if the questions do not appear.');
+        }
+      });
     });
     box.appendChild(article);
   }
