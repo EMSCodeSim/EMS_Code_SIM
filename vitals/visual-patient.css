@@ -32,3 +32,19 @@
 .scene-clue-layer{position:absolute;inset:0;z-index:3;pointer-events:none}.scene-clue{position:absolute;display:none;padding:5px 8px;border-radius:99px;background:rgba(6,21,33,.82);border:1px solid rgba(140,207,255,.5);color:#e9f7ff;font-size:.62rem;font-weight:800;box-shadow:0 5px 14px rgba(0,0,0,.25)}.patient-stage[data-scene-mode="respiratory"] .scene-clue,.patient-stage[data-scene-mode="stroke"] .scene-clue,.patient-stage[data-scene-mode="hypoglycemia"] .scene-clue,.patient-stage[data-scene-mode="trauma"] .scene-clue,.patient-stage[data-scene-mode="pediatric"] .scene-clue{display:block}.scene-clue.clue-1{left:12px;bottom:18px}.scene-clue.clue-2{right:12px;bottom:18px}.scene-clue.clue-3{right:12px;top:118px}.patient-stage[data-scene-mode="stroke"] img{object-position:54% center;filter:saturate(.86)}.patient-stage[data-scene-mode="hypoglycemia"] img{object-position:47% center;filter:saturate(.72) contrast(1.06)}.patient-stage[data-scene-mode="trauma"] img{object-position:56% center;filter:saturate(.62) contrast(1.12)}.patient-stage[data-scene-mode="pediatric"] img{object-fit:contain;background:#d9d7d0}.patient-stage[data-scene-mode="pediatric"]:after{background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.01) 62%,rgba(3,12,20,.72))}
 
 @media(max-width:520px){.scenario-phase-list{grid-template-columns:1fr}.primary-assessment-header{display:none}.primary-assessment-row>div{grid-template-columns:1fr;gap:2px}.primary-assessment-row span{font-size:.65rem;text-transform:uppercase;letter-spacing:.04em}.primary-assessment-row a{min-width:78px}.scenario-progress-actions{grid-template-columns:1fr}.scene-clue.clue-3{top:112px}.scene-clue{font-size:.58rem;max-width:45%}}
+
+/* Targeted treatment reassessment states */
+.assessment-card-top{display:flex;align-items:center;justify-content:space-between;gap:.65rem;flex-wrap:wrap}
+.clinical-state{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:.24rem .55rem;font-size:.72rem;font-style:normal;font-weight:800;line-height:1.1;background:#e8eef3;color:#33495b}
+.clinical-state.normal,.clinical-state.improved{background:#ddf5e8;color:#11653c}
+.clinical-state.abnormal,.clinical-state.worsened{background:#ffe1df;color:#9b2922}
+.clinical-state.reassessment-due{background:#fff0c7;color:#7b5100;box-shadow:0 0 0 2px rgba(210,142,0,.12)}
+.clinical-state.unchanged{background:#e8edf8;color:#344c78}
+.primary-assessment-row.state-reassessment-due,.assessment-card.state-reassessment-due{border-color:#d99b19;background:#fffaf0}
+.primary-assessment-row.state-worsened,.assessment-card.state-worsened{border-color:#ce4a43;background:#fff7f6}
+.primary-assessment-row.state-improved,.assessment-card.state-improved{border-color:#3c9b6a;background:#f5fcf8}
+.primary-assessment-row span .clinical-state{margin-left:.35rem;vertical-align:middle}
+.reassessment-choice-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem;margin-top:.65rem}
+.reassessment-choice-row button{min-height:46px;border:2px solid #bed2df;border-radius:12px;background:#fff;color:#173044;font-weight:800;padding:.55rem .35rem}
+.reassessment-choice-row button.selected{border-color:#087eae;background:#e7f6fc;color:#075d80}
+@media(max-width:520px){.reassessment-choice-row{grid-template-columns:1fr}.clinical-state{font-size:.68rem}}

@@ -272,16 +272,68 @@
     return [...(registry?.assessmentTools || []), ...(registry?.vitalTools || [])].find(tool => tool.key === key);
   }
 
+  function eventTime(value) {
+    const time = new Date(value || 0).getTime();
+    return Number.isFinite(time) ? time : 0;
+  }
+
+  function treatmentTargets(item = {}) {
+    const explicit = Array.isArray(item.targetKeys) ? item.targetKeys : [];
+    if (explicit.length) return explicit;
+    if (item.assessment) return [item.assessment];
+    if (item.context && item.context !== 'general') return [item.context];
+    return [];
+  }
+
+  function latestTreatmentFor(key) {
+    return (record()?.treatments || [])
+      .filter(item => treatmentTargets(item).includes(key))
+      .sort((a, b) => eventTime(b.recordedAt || b.time) - eventTime(a.recordedAt || a.time))[0] || null;
+  }
+
+  function latestReassessmentFor(key) {
+    return (record()?.reassessments || [])
+      .filter(item => (Array.isArray(item.targetKeys) && item.targetKeys.includes(key)) || item.assessment === key || item.context === key)
+      .sort((a, b) => eventTime(b.recordedAt || b.time) - eventTime(a.recordedAt || a.time))[0] || null;
+  }
+
+  function assessmentState(key) {
+    const finding = api?.getFinding?.(key, record());
+    const treatment = latestTreatmentFor(key);
+    const reassessment = latestReassessmentFor(key);
+    const treatedAt = eventTime(treatment?.recordedAt || treatment?.time);
+    const reassessedAt = eventTime(reassessment?.recordedAt || reassessment?.time);
+    if (treatment && treatedAt > reassessedAt) return { code: 'reassessment-due', label: 'Reassessment due', finding, treatment, reassessment };
+    if (reassessment && reassessedAt >= treatedAt) {
+      const comparison = reassessment.comparison || (/wors/i.test(reassessment.description || '') ? 'worsened' : /unchang/i.test(reassessment.description || '') ? 'unchanged' : 'improved');
+      return { code: comparison, label: comparison.charAt(0).toUpperCase() + comparison.slice(1), finding, treatment, reassessment };
+    }
+    if (!finding) return { code: 'not-assessed', label: 'Not assessed', finding: null, treatment: null, reassessment: null };
+    if (finding.status === 'abnormal' || finding.normality === 'not-normal') return { code: 'abnormal', label: 'Abnormal', finding, treatment, reassessment };
+    return { code: 'normal', label: 'Normal', finding, treatment, reassessment };
+  }
+
+  function assessmentHref(tool, key) {
+    const state = assessmentState(key);
+    const base = toolUrl(tool?.url || `/vitals/${key}-assessment.html`, 'Patient', key);
+    if (state.code !== 'reassessment-due') return base;
+    const url = new URL(base, location.origin);
+    url.searchParams.set('reassess', '1');
+    return `${url.pathname}${url.search}${url.hash}`;
+  }
+
   function renderAssessmentTool(tool) {
-    const complete = existing(tool.key);
+    const state = assessmentState(tool.key);
+    const complete = state.code !== 'not-assessed';
     const kind = classificationClass(tool.key);
     const article = document.createElement('article');
-    article.className = `assessment-card ${kind}${complete ? ' complete' : ''}`;
+    article.className = `assessment-card ${kind}${complete ? ' complete' : ''} state-${state.code}`;
+    const actionLabel = state.code === 'reassessment-due' ? 'Reassess now' : complete ? 'Review assessment' : 'Open assessment';
     article.innerHTML = `
-      <span class="requirement-tag ${kind}">${classificationLabel(tool.key)}</span>
+      <div class="assessment-card-top"><span class="requirement-tag ${kind}">${classificationLabel(tool.key)}</span><span class="clinical-state ${state.code}">${escapeHtml(state.label)}</span></div>
       <h3>${escapeHtml(tool.label)}</h3><p>${escapeHtml(tool.description)}</p>
-      <div class="tool-actions"><a class="primary-action" href="${toolUrl(tool.url, 'Patient')}">${complete ? 'Review assessment' : 'Open assessment'}</a>
-      <span class="status-chip ${complete ? 'done' : ''}">${complete ? 'Recorded' : 'Available'}</span></div>`;
+      <div class="tool-actions"><a class="primary-action" href="${assessmentHref(tool, tool.key)}">${actionLabel}</a>
+      <span class="status-chip ${complete ? 'done' : ''}">${state.code === 'reassessment-due' ? 'Repeat required' : complete ? 'Recorded' : 'Available'}</span></div>`;
     return article;
   }
 
@@ -306,18 +358,22 @@
   }
 
   function primaryStatus(key) {
-    const finding = api?.getFinding?.(key, record());
-    if (finding) return finding.value || finding.finding || 'Assessment recorded';
+    const state = assessmentState(key);
+    if (state.code === 'reassessment-due') return `Treatment performed — ${state.label}`;
+    if (['improved','unchanged','worsened'].includes(state.code)) return `${state.label}: ${state.finding?.value || state.finding?.finding || 'Reassessment recorded'}`;
+    if (state.finding) return state.finding.value || state.finding.finding || 'Assessment recorded';
     return scenario.primary[key]?.initial || 'Unknown';
   }
 
   function primaryToolLink(key) {
     const tool = registryTool(key);
     const config = scenario.primary[key] || {};
+    const state = assessmentState(key);
     return {
-      href: toolUrl(tool?.url || `/vitals/${key}-assessment.html`, 'Patient', key),
-      label: existing(key) ? 'Review' : (config.action || 'Assess'),
-      urgent: Boolean(config.urgent)
+      href: assessmentHref(tool, key),
+      label: state.code === 'reassessment-due' ? 'Reassess' : state.code !== 'not-assessed' ? 'Review' : (config.action || 'Assess'),
+      urgent: Boolean(config.urgent) || state.code === 'reassessment-due',
+      state
     };
   }
 
@@ -332,8 +388,8 @@
       ['perfusion','Circulation']
     ].map(([key, label]) => {
       const action = primaryToolLink(key);
-      return `<div class="primary-assessment-row ${action.urgent && !existing(key) ? 'urgent' : ''}">
-        <div><span>${label}</span><strong>${escapeHtml(primaryStatus(key))}</strong></div>
+      return `<div class="primary-assessment-row ${action.urgent && action.state.code === 'not-assessed' ? 'urgent' : ''} state-${action.state.code}">
+        <div><span>${label} <em class="clinical-state ${action.state.code}">${escapeHtml(action.state.label)}</em></span><strong>${escapeHtml(primaryStatus(key))}</strong></div>
         <a href="${action.href}">${escapeHtml(action.label)}</a>
       </div>`;
     }).join('');
@@ -408,7 +464,7 @@
   }
   function isInformationUpdate(event) {
     if (event.source === 'partner-assignment') return true;
-    if (event.type === 'treatment' || event.type === 'reassessment') return true;
+    if (event.type === 'treatment' || event.type === 'reassessment' || event.type === 'patient_response') return true;
     if (event.type === 'impression' || event.type === 'documentation') return true;
     if (abnormalEvent(event)) return true;
     if (event.category === 'history' && significantHistory(event)) return true;
@@ -418,7 +474,8 @@
     const isAbnormal = abnormalEvent(event);
     if (event.source === 'partner-assignment') return { id: event.id || event.eventId, type: 'PARTNER UPDATE', title: `${event.label || labelFor(event.key)} obtained`, text: event.value || 'Partner task complete.', kind: 'partner', recordedAt: event.recordedAt };
     if (event.type === 'treatment') return { id: event.id || event.eventId, type: 'TREATMENT', title: event.label || 'Treatment performed', text: event.value || event.details || 'Treatment was recorded.', kind: 'treatment', recordedAt: event.recordedAt };
-    if (event.type === 'reassessment') return { id: event.id || event.eventId, type: 'PATIENT UPDATE', title: event.label || 'Patient reassessed', text: event.value || event.details || 'The patient condition was reassessed.', kind: 'reassessment', recordedAt: event.recordedAt };
+    if (event.type === 'reassessment') return { id: event.id || event.eventId, type: 'REASSESSMENT', title: event.label || 'Patient reassessed', text: event.value || event.details || 'The patient condition was reassessed.', kind: 'reassessment', recordedAt: event.recordedAt };
+    if (event.type === 'patient_response') return { id: event.id || event.eventId, type: 'PATIENT RESPONSE', title: event.label || 'Response to treatment', text: event.value || event.details || 'The patient responded to treatment.', kind: 'reassessment', recordedAt: event.recordedAt };
     if (event.category === 'history') return { id: event.id || event.eventId, type: 'HISTORY ALERT', title: event.label || 'Important history', text: event.value || event.details || 'Relevant history was obtained.', kind: 'history', recordedAt: event.recordedAt };
     if (event.type === 'impression' || event.type === 'documentation') return { id: event.id || event.eventId, type: 'TRANSPORT / REPORT', title: event.label || 'Care plan updated', text: event.value || event.details || 'The care plan was updated.', kind: 'transport', recordedAt: event.recordedAt };
     return { id: event.id || event.eventId, type: isAbnormal ? 'CONDITION ALERT' : 'PATIENT UPDATE', title: event.label || labelFor(event.key), text: event.value || event.details || 'New patient information was obtained.', kind: isAbnormal ? 'alert' : 'assessment', recordedAt: event.recordedAt };

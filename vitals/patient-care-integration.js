@@ -66,8 +66,23 @@
     });
   }
 
+  function reassessmentTargets(entry) {
+    if (Array.isArray(entry.targetKeys) && entry.targetKeys.length) return entry.targetKeys;
+    if (entry.context === 'airway') return ['airway','breathing'];
+    if (entry.context === 'breathing') return ['breathing','respirations','spo2','breath_sounds'];
+    if (entry.context === 'perfusion') return ['perfusion','pulse','blood_pressure','skin'];
+    const byTreatment = {
+      oxygen: ['breathing','respirations','spo2'], cpap: ['breathing','respirations','spo2','breath_sounds'],
+      bvm: ['airway','breathing','respirations','spo2'], glucose: ['mental_status','blood_glucose'],
+      bleeding: ['perfusion','pulse','blood_pressure','skin'], shock: ['perfusion','pulse','blood_pressure','skin'],
+      naloxone: ['airway','breathing','respirations','mental_status']
+    };
+    return byTreatment[entry.treatment] || [];
+  }
+
   function saveTreatmentReassessment(payload) {
     return saveOrQueue('treatment-reassessment', payload, (api, entry, session) => {
+      const targetKeys = reassessmentTargets(entry);
       const treatment = {
         name: entry.treatmentLabel || entry.treatment || 'Treatment',
         description: entry.treatmentLabel || entry.treatment || '',
@@ -80,7 +95,9 @@
         recordedAt: entry.recordedAt,
         time: entry.recordedAt,
         source: entry.source,
-        label: 'Treatment'
+        label: 'Treatment',
+        targetKeys,
+        reassessmentRequired: true
       };
       if (session?.addTreatment) session.addTreatment(treatment); else api.addTreatment(treatment);
       const reassessment = {
@@ -91,7 +108,11 @@
         recordedAt: new Date(new Date(entry.recordedAt).getTime() + 1).toISOString(),
         time: new Date(new Date(entry.recordedAt).getTime() + 1).toISOString(),
         source: entry.source,
-        label: 'Reassessment'
+        label: 'Reassessment',
+        assessment: entry.context || '',
+        context: entry.context || '',
+        targetKeys,
+        comparison: entry.response || ''
       };
       if (session?.addReassessment) session.addReassessment(reassessment); else api.addReassessment(reassessment);
     });

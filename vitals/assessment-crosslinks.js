@@ -5,6 +5,8 @@
   let registry = window.EMSCodeSimToolRegistry;
   let session = window.EMSCodeSimScenarioSession;
   const path = location.pathname;
+  const params = new URLSearchParams(location.search);
+  const reassessmentMode = params.get('reassess') === '1';
   let record = null;
   let caseId = '';
   let scenarioHome = '/vitals/visual-patient.html';
@@ -34,6 +36,36 @@
       airway: ['Air is moving, but airway patency and protection are not fully confirmed.', 'Poor interaction increases concern for deterioration. Assess airway sounds and secretions.'],
       breathing: ['Breathing is present with visibly increased work.', 'Rate, depth, retractions, breath sounds, chest rise, and oxygenation require focused assessment.'],
       perfusion: ['Circulation is present; complete perfusion status is not yet known.', 'Assess pulse quality, capillary refill, skin temperature and moisture, and blood pressure when indicated.']
+    }
+  };
+
+
+
+  const reassessmentFindings = {
+    asthma: {
+      airway: ['Airway remains patent. The patient continues to speak in short sentences.', 'No new obstruction, swelling, secretions, or abnormal upper-airway sound is present.'],
+      breathing: ['Breathing remains labored, but air movement is improved after support.', 'Speech is slightly longer and accessory-muscle use is reduced. Repeat respiratory rate, lung sounds, and SpO₂ separately.'],
+      perfusion: ['Perfusion remains adequate without new deterioration.', 'Pulse remains present and the patient remains alert. Repeat pulse, skin signs, and blood pressure when indicated.']
+    },
+    stroke: {
+      airway: ['Airway remains open and the patient continues to handle secretions.', 'Speech remains abnormal from the neurologic deficit, but no new airway obstruction is present.'],
+      breathing: ['Breathing remains spontaneous and adequate.', 'No new respiratory distress is visible. Continue oxygenation monitoring during transport.'],
+      perfusion: ['Perfusion remains present without sudden deterioration.', 'Repeat blood pressure and pulse while preparing rapid stroke transport.']
+    },
+    hypoglycemia: {
+      airway: ['Airway remains open and protection has improved as mentation improves.', 'The patient is more responsive and manages secretions without assistance.'],
+      breathing: ['Breathing remains spontaneous and adequate.', 'No new ventilatory threat is visible.'],
+      perfusion: ['Perfusion remains present and skin moisture is beginning to improve.', 'Repeat pulse, skin signs, and blood pressure as the patient responds.']
+    },
+    trauma: {
+      airway: ['Airway is open after intervention with improved airflow.', 'No new obstruction is visible; continued trauma precautions remain indicated.'],
+      breathing: ['Breathing remains guarded and requires continued support.', 'Chest movement and work of breathing should be compared with the initial finding.'],
+      perfusion: ['Perfusion remains concerning despite initial care.', 'The patient remains pale with a rapid pulse; expedite transport and repeat shock findings.']
+    },
+    pediatric: {
+      airway: ['Air is moving and airway patency is maintained.', 'Continue close monitoring because fatigue or deterioration may occur.'],
+      breathing: ['Work of breathing is slightly improved after support.', 'Retractions remain present but are less pronounced. Repeat rate, lung sounds, and SpO₂.'],
+      perfusion: ['Circulation remains present without new deterioration.', 'Repeat pulse quality, capillary refill, and skin findings.']
     }
   };
 
@@ -99,21 +131,58 @@
     const action = selected('#actionSelect');
     const effect = airwayActions[action];
     if (!effect) return;
+    const targetKeys = action === 'position' || action === 'support' || action === 'rapid' ? ['airway','breathing'] : ['airway'];
     session?.addTreatment?.({
       treatment: effect.treatment,
       description: effect.treatment,
       label: 'Airway treatment',
       source: 'assessment-follow-up',
       assessment: key,
-      action
+      context: key,
+      action,
+      targetKeys,
+      reassessmentRequired: true,
+      patientResponse: effect.response
     });
-    session?.addReassessment?.({
-      response: effect.response,
-      description: effect.response,
-      label: 'Patient response to airway treatment',
+    api?.mergeCareLog?.([{
+      type: 'patient_response',
+      category: 'treatment',
+      key,
+      label: 'Patient response',
+      value: effect.response,
+      details: `Reassessment of ${label.toLowerCase()} is now due.`,
       source: 'assessment-follow-up',
+      recordedAt: new Date(Date.now() + 1).toISOString()
+    }]);
+  }
+
+  function saveReassessment(comparison) {
+    const latest = session?.sync?.(caseId) || api?.active?.();
+    const finding = text('findingText');
+    const details = text('findingDetail');
+    const baseline = latest?.findings?.[key]?.value || latest?.findings?.[key]?.finding || '';
+    const entry = {
       assessment: key,
-      action
+      targetKeys: [key],
+      comparison,
+      response: `${label}: ${finding}`,
+      description: `${label} reassessed — ${comparison}. ${finding}`,
+      finding,
+      details,
+      baseline,
+      label: `${label} reassessment`,
+      source: 'targeted-reassessment'
+    };
+    session?.addReassessment?.(entry);
+    session?.saveFinding?.(key, finding, {
+      label,
+      details,
+      normality: comparison === 'worsened' ? 'not-normal' : 'normal',
+      status: comparison === 'worsened' ? 'abnormal' : 'normal',
+      source: 'targeted-reassessment',
+      reassessment: true,
+      comparison,
+      baseline
     });
   }
 
@@ -124,6 +193,7 @@
   function simplifyScenarioAssessment() {
     const practice = document.getElementById('practicePanel') || document.querySelector('main');
     practice?.classList.add('scenario-assessment-direct');
+    if (reassessmentMode) practice?.classList.add('scenario-reassessment-direct');
 
     const perform = document.querySelector('#assessAirway,#performAssessment,[data-action="perform-assessment"]');
     if (perform) {
@@ -131,7 +201,7 @@
       if (!perform.disabled) perform.click();
     }
 
-    const patientFinding = scenarioFindings[caseId]?.[key];
+    const patientFinding = (reassessmentMode ? reassessmentFindings : scenarioFindings)[caseId]?.[key];
     if (patientFinding) {
       setTimeout(() => {
         const findingText = document.getElementById('findingText');
@@ -157,8 +227,22 @@
     });
     followUpSteps.forEach(step => { step.hidden = true; step.classList.add('scenario-abnormal-followup'); });
 
+    let comparisonValue = '';
+    if (reassessmentMode) {
+      const classification = document.querySelector('input[name="normality"],input[name="classification"]')?.closest('fieldset,.decision-step,.form-field') || document.querySelector('input[name="normality"],input[name="classification"]')?.parentElement;
+      if (classification) {
+        classification.innerHTML = `<legend>Compared with the original finding, is the patient:</legend><div class="reassessment-choice-row"><button type="button" data-comparison="improved">Improved</button><button type="button" data-comparison="unchanged">Unchanged</button><button type="button" data-comparison="worsened">Worsened</button></div>`;
+        classification.querySelectorAll('[data-comparison]').forEach(button => button.addEventListener('click', () => {
+          comparisonValue = button.dataset.comparison;
+          classification.querySelectorAll('[data-comparison]').forEach(item => item.classList.toggle('selected', item === button));
+        }));
+      }
+      followUpSteps.forEach(step => { step.hidden = true; });
+    }
+
     document.querySelectorAll('input[name="normality"],input[name="classification"]').forEach(input => {
       input.addEventListener('change', () => {
+        if (reassessmentMode) return;
         const value = input.value === 'normal' ? 'normal' : 'not-normal';
         if (value === 'normal') {
           saveFinding('normal');
@@ -176,8 +260,14 @@
       const returnButton = document.createElement('button');
       returnButton.type = 'button';
       returnButton.className = 'continue-patient';
-      returnButton.textContent = 'Continue to Patient Home';
+      returnButton.textContent = reassessmentMode ? 'Save Reassessment and Return' : 'Continue to Patient Home';
       returnButton.addEventListener('click', () => {
+        if (reassessmentMode) {
+          if (!comparisonValue) { alert('Classify the patient response as Improved, Unchanged, or Worsened.'); return; }
+          saveReassessment(comparisonValue);
+          returnHome();
+          return;
+        }
         const normality = document.querySelector('input[name="normality"]:checked,input[name="classification"]:checked')?.value;
         if (!normality) {
           alert('Classify the finding as Normal or Not Normal first.');
