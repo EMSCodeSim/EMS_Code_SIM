@@ -281,7 +281,6 @@
   function buildVitals() {
     const box = $('vitalTools');
     box.innerHTML = '';
-    session?.resolvePartnerTasks?.(id);
     const tools = (registry?.vitalTools || []).filter(tool => MEASURABLE_TOOL_KEYS.has(tool.key));
     const relevant = tools.filter(tool => ['required','appropriate'].includes(classificationClass(tool.key)));
     const more = tools.filter(tool => !relevant.includes(tool));

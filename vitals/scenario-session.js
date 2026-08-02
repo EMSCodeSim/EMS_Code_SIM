@@ -323,6 +323,13 @@
     const completed = recoverCompletedPartnerFindings(resolvedCase, tasks);
     const active = Object.values(tasks).find(task => task && task.status === 'pending');
     if (active && taskTime(active.dueAt) <= Date.now()) {
+      // Mark the task as completing before saving the finding. Saving dispatches a
+      // synchronous patient-record event; without this guard, a screen refresh can
+      // call resolvePartnerTasks again while the same task is still pending and
+      // create an infinite completion loop at 0-1 seconds.
+      active.status = 'completing';
+      active.completingAt = new Date().toISOString();
+      writePartnerTasks(resolvedCase, tasks);
       try {
         const completedAt = new Date().toISOString();
         const saved = saveFinding(active.key, active.value, partnerFindingMeta(active, completedAt), resolvedCase);
@@ -330,10 +337,15 @@
         if (!verified) throw new Error(`Partner vital was not verified after save: ${active.key}`);
         active.status = 'complete';
         active.completedAt = completedAt;
+        active.lastError = '';
         completed.push(active);
       } catch (error) {
+        active.status = 'pending';
+        active.dueAt = new Date(Date.now() + 1000).toISOString();
         active.lastError = String(error?.message || error);
         console.error('Partner task could not be completed', error);
+      } finally {
+        delete active.completingAt;
       }
     }
     normalizePartnerQueue(tasks);
