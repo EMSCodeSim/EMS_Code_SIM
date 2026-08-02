@@ -1,4 +1,5 @@
 (()=>{'use strict';
+const routeParams=new URLSearchParams(location.search),routeRecord=window.EMSCodeSimPatientRecord?.active?.(),routeCase=routeParams.get('case')||routeRecord?.scenarioId||routeRecord?.id||'';if(routeRecord||routeParams.get('mode')==='scenario'||routeParams.get('resume')||routeParams.get('case')){location.replace(routeCase?`/vitals/visual-patient.html?case=${encodeURIComponent(routeCase)}`:'/vitals/scenario-launcher.html');return}
 const api=window.EMSCodeSimPatientRecord;
 const record=api?.active?.();
 const $=id=>document.getElementById(id);
