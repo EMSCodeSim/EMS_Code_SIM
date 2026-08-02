@@ -25,7 +25,7 @@
       <div class="patient-status"><span>VISIBLE CONDITION</span><b id="visibleCondition">Observe before touching the patient</b><button id="reviewSceneGuide" class="scene-guide-launch" type="button">Start guided scene size-up</button></div>
       <div class="patient-caption">
         <h2 id="patientLabel">Patient</h2>
-        <p id="patientPrompt">Choose a category below to continue your assessment.</p>
+        <p id="patientPrompt">Use the recommended next action or choose any clinical tool below.</p>
       </div>
     </section>
 
@@ -58,6 +58,12 @@
       </div>
     </section>
 
+
+    <section id="nextActionCard" class="next-action-card" aria-live="polite">
+      <div><p>RECOMMENDED NEXT ACTION</p><h2 id="nextActionTitle">Begin assessment</h2><span id="nextActionReason">Start with scene size-up, then move through airway, breathing, and circulation.</span></div>
+      <div id="nextActionButtons" class="next-action-buttons"></div>
+    </section>
+
     <section class="quick-status" aria-label="Scenario progress">
       <div><span>Vitals obtained</span><strong id="vitalCount">0 / 8</strong></div>
       <div><span>Log entries</span><strong id="findingCount">0</strong></div>
@@ -66,10 +72,10 @@
   </main>
 
   <nav class="bottom-nav" aria-label="Scenario controls">
-    <button data-panel="vitalsPanel" type="button"><span>♥</span>Vitals</button>
+    <button data-panel="vitalsPanel" type="button"><span>♥</span>Tools</button>
     <button data-panel="assessmentPanel" type="button"><span>◎</span>Assessment</button>
     <button data-panel="treatmentPanel" type="button"><span>✚</span>Treatment</button>
-    <button data-panel="findingsPanel" type="button"><span>☷</span>Findings <em id="findingBadge" hidden>0</em></button>
+    <button data-panel="findingsPanel" type="button"><span>☷</span>Log <em id="findingBadge" hidden>0</em></button>
   </nav>
 
   <div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
@@ -102,6 +108,9 @@
           <button class="active" type="button" data-log-filter="all" data-label="All log">All log</button>
           <button type="button" data-log-filter="vitals" data-label="Vitals">Vitals</button>
           <button type="button" data-log-filter="treatments" data-label="Treatments">Treatments</button>
+          <button type="button" data-log-filter="assessments" data-label="Assessments">Assessments</button>
+          <button type="button" data-log-filter="history" data-label="History">History</button>
+          <button type="button" data-log-filter="reassessments" data-label="Reassessments">Reassessments</button>
         </div>
         <div class="finding-quick-actions">
           <a id="recordTreatmentLink" href="/vitals/treatment-reassessment.html">Record treatment</a>

@@ -341,7 +341,10 @@
     const counts = {
       all: allEvents.length,
       vitals: allEvents.filter(event => event.category === 'vital').length,
-      treatments: allEvents.filter(event => event.category === 'treatment').length
+      treatments: allEvents.filter(event => event.category === 'treatment').length,
+      reassessments: allEvents.filter(event => event.type === 'reassessment').length,
+      history: allEvents.filter(event => event.category === 'history').length,
+      assessments: allEvents.filter(event => event.category === 'assessment').length
     };
 
     document.querySelectorAll('[data-log-filter]').forEach(button => {
@@ -349,13 +352,15 @@
       button.classList.toggle('active', key === findingFilter);
       button.textContent = `${button.dataset.label || button.textContent.replace(/\s*\(\d+\)$/, '')} (${counts[key] || 0})`;
     });
+    const filterNames={vitals:'vital-sign',treatments:'treatment',reassessments:'reassessment',history:'history',assessments:'assessment'};
     $('findingFilterSummary').textContent = findingFilter === 'all'
       ? `${events.length} patient-care event${events.length === 1 ? '' : 's'} shown in chronological order.`
-      : `${events.length} ${findingFilter === 'vitals' ? 'vital-sign' : 'treatment and reassessment'} event${events.length === 1 ? '' : 's'} shown.`;
+      : `${events.length} ${filterNames[findingFilter] || findingFilter} event${events.length === 1 ? '' : 's'} shown.`;
 
     list.innerHTML = '';
     if (!events.length) {
-      const message = findingFilter === 'vitals' ? 'No vital signs have been recorded yet.' : findingFilter === 'treatments' ? 'No treatment or reassessment has been recorded yet.' : 'No patient-care information has been recorded yet.';
+      const emptyMessages={vitals:'No vital signs have been recorded yet.',treatments:'No treatments have been recorded yet.',reassessments:'No reassessments have been recorded yet.',history:'No SAMPLE or OPQRST history has been recorded yet.',assessments:'No assessment findings have been recorded yet.'};
+      const message = emptyMessages[findingFilter] || 'No patient-care information has been recorded yet.';
       list.innerHTML = `<li class="empty">${message}</li>`;
       return;
     }
@@ -393,7 +398,7 @@
   function openSheet(panelId) {
     document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
-    $('sheetTitle').textContent = { vitalsPanel: 'Vitals', assessmentPanel: 'Assessment sequence', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
+    $('sheetTitle').textContent = { vitalsPanel: 'Patient tools', assessmentPanel: 'Assessment sequence', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
     $('actionSheet').hidden = false;
     $('sheetBackdrop').hidden = false;
     document.body.style.overflow = 'hidden';
@@ -416,6 +421,40 @@
     openSheet('findingsPanel');
   }
 
+  function updateNextAction() {
+    const current=record()||{};
+    const has=key=>existing(key);
+    const log=api?.listCareLog?.(current,'all')||[];
+    const lastTreatment=[...log].reverse().find(event=>event.type==='treatment');
+    const lastReassessment=[...log].reverse().find(event=>event.type==='reassessment');
+    let title='Begin with scene size-up';
+    let reason='Use the first picture and dispatch information, then move through airway, breathing, and circulation.';
+    let actions=[{label:'Open Assessment',panel:'assessmentPanel'}];
+    if(!has('scene_size_up')){
+      actions=[{label:'Start scene size-up',scene:true},{label:'Open Assessment',panel:'assessmentPanel',secondary:true}];
+    }else if(!has('airway')){
+      title='Confirm airway';reason='Use speech and visible clues as a starting point, then complete an airway assessment.';
+      actions=[{label:'Assess airway',url:toolUrl('/vitals/airway-assessment.html','patient scenario','airway')},{label:'View assessment order',panel:'assessmentPanel',secondary:true}];
+    }else if(!has('breathing')){
+      title='Assess breathing adequacy';reason='Breathing may be visible, but rate, depth, effort, chest rise, sounds, and oxygenation still need assessment.';
+      actions=[{label:'Assess breathing',url:toolUrl('/vitals/breathing-assessment.html','patient scenario','breathing')},{label:'Treat now',panel:'treatmentPanel',secondary:true}];
+    }else if(!has('perfusion')){
+      title='Assess circulation and perfusion';reason='A responsive patient likely has a perfusing pulse, but quality, pressure, skin, and bleeding still need evaluation.';
+      actions=[{label:'Assess circulation',url:toolUrl('/vitals/perfusion-assessment.html','patient scenario','perfusion')},{label:'Treat now',panel:'treatmentPanel',secondary:true}];
+    }else if(lastTreatment && (!lastReassessment || new Date(lastReassessment.recordedAt)<new Date(lastTreatment.recordedAt))){
+      title='Reassess after treatment';reason=`${lastTreatment.value||'Treatment'} was recorded. Repeat the findings most likely to change and document the response.`;
+      actions=[{label:'Reassess patient',url:toolUrl('/vitals/treatment-reassessment.html','patient scenario','reassessment')},{label:'Open Tools',panel:'vitalsPanel',secondary:true}];
+    }else{
+      const next=(scenario.recommended||[]).find(key=>!has(key));
+      const tool=next&&registryTool(next);
+      if(tool){title=`Next useful tool: ${tool.label}`;reason=tool.description||'Gather information that will change your working impression or treatment.';actions=[{label:`Open ${tool.label}`,url:toolUrl(tool.url,'patient scenario')},{label:'Choose another tool',panel:'vitalsPanel',secondary:true}];}
+      else if(!current.impressions?.primary){title='Form a working impression';reason='You have enough information to choose a primary impression, transport priority, and supporting findings.';actions=[{label:'Clinical impression',url:toolUrl('/vitals/clinical-impression.html','patient scenario')},{label:'Review log',panel:'findingsPanel',secondary:true}];}
+      else if(!(current.documentation?.handoff||current.documentation?.narrative)){title='Prepare handoff and debrief';reason='Review the chronological care log, give the handoff, and finish with scenario feedback.';actions=[{label:'PCR and handoff',url:toolUrl('/vitals/pcr-handoff.html','patient scenario')},{label:'Review log',panel:'findingsPanel',secondary:true}];}
+      else {title='Review the scenario';reason='Use the debrief to review missed findings, treatment timing, reassessment, and documentation.';actions=[{label:'Open debrief',url:toolUrl('/vitals/scenario-debrief.html','patient scenario')},{label:'Review log',panel:'findingsPanel',secondary:true}];}
+    }
+    $('nextActionTitle').textContent=title;$('nextActionReason').textContent=reason;const host=$('nextActionButtons');host.innerHTML='';actions.forEach(action=>{const el=document.createElement(action.url?'a':'button');el.textContent=action.label;if(action.secondary)el.className='secondary';if(action.url)el.href=action.url;else el.type='button';if(action.panel)el.addEventListener('click',()=>openSheet(action.panel));if(action.scene)el.addEventListener('click',()=>window.EMSCodeSimSceneGuide?.start?.(has('scene_size_up')));host.appendChild(el)});
+  }
+
   function refreshFromRecord() {
     const current = record();
     buildVitals();
@@ -423,6 +462,7 @@
     buildTreatments();
     renderFindings();
     updateCounts();
+    updateNextAction();
     $('patientLabel').textContent = current?.patient || 'Patient';
     $('dispatch').textContent = current?.dispatch || scenario.title;
     $('scene').textContent = current?.scene || '';

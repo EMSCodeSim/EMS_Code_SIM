@@ -405,7 +405,10 @@
   function listCareLog(record=active(),filter='all'){
     const events=(record?.careLog||[]).map((event,index)=>normalizeCareEvent(event,index)).filter(Boolean);
     const filtered=filter==='vitals'||filter==='vital'?events.filter(event=>event.category==='vital'):
-      filter==='treatments'||filter==='treatment'?events.filter(event=>event.category==='treatment'):events;
+      filter==='treatments'||filter==='treatment'?events.filter(event=>event.category==='treatment'):
+      filter==='reassessments'||filter==='reassessment'?events.filter(event=>event.type==='reassessment'):
+      filter==='history'?events.filter(event=>event.category==='history'):
+      filter==='assessments'||filter==='assessment'?events.filter(event=>event.category==='assessment'):events;
     return filtered.sort((a,b)=>{
       const aTime=new Date(a.recordedAt||0).getTime();
       const bTime=new Date(b.recordedAt||0).getTime();
