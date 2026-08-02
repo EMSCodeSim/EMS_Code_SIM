@@ -44,6 +44,17 @@ assert(!guidedStart.includes('return false') || guidedStart.includes('missed cho
 
 const visualPatient = read('vitals/visual-patient.html');
 includesAll(visualPatient, ['/vitals/scenario-guided-start.css', '/vitals/scenario-guided-start.js', 'sceneGuideQuestion', 'Skip guided start', 'nremt-skill-sheets.html'], 'Visual patient guided start');
+const visualPatientJs = read('vitals/visual-patient.js');
+includesAll(visualPatientJs, [
+  'START HERE — NREMT THINKING ORDER', 'Primary assessment', "buildPrimaryCard(box, 'airway', 2)",
+  "buildPrimaryCard(box, 'breathing', 3)", "buildPrimaryCard(box, 'perfusion', 4)",
+  'Known from speech', 'Airway is patent at this moment.', 'Respiratory rate, depth, chest rise, breath sounds, and SpO₂ are still unknown.',
+  'A perfusing pulse is present.', 'Use assessment and vital tools before deciding adequacy.'
+], 'Assessment-tab clinical ordering');
+assert(visualPatientJs.indexOf("buildSceneSizeUpCard(box)") < visualPatientJs.indexOf("buildPrimaryCard(box, 'airway', 2)"), 'Scene size-up must appear before airway in the assessment tab.');
+assert(visualPatientJs.indexOf("buildPrimaryCard(box, 'airway', 2)") < visualPatientJs.indexOf("buildPrimaryCard(box, 'breathing', 3)"), 'Airway must appear before breathing.');
+assert(visualPatientJs.indexOf("buildPrimaryCard(box, 'breathing', 3)") < visualPatientJs.indexOf("buildPrimaryCard(box, 'perfusion', 4)"), 'Breathing must appear before circulation.');
+assert(guidedStart.includes('else showReady();') && !guidedStart.includes('else startGuide(false);'), 'Scene size-up must not autoplay when a scenario opens.');
 
 const skillSheetPage = read('nremt-skill-sheets.html');
 includesAll(skillSheetPage, [
