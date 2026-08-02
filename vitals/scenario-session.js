@@ -166,23 +166,23 @@
     }
   }
 
-  function saveFinding(category, value, meta = {}) {
-    const record = sync();
+  function saveFinding(category, value, meta = {}, caseId = requestedCaseId()) {
+    const record = sync(caseId);
     if (!record) throw new Error('No active scenario patient record.');
     const canonical = api.normalizeKey?.(category) || category;
     api.setFinding(canonical, value, meta);
     const saved = api.getFinding?.(canonical);
     if (!saved) throw new Error(`Unable to verify saved finding: ${canonical}`);
 
-    const caseId = record.scenarioId || record.id;
-    const state = readState(caseId);
+    const resolvedCase = record.scenarioId || record.id;
+    const state = readState(resolvedCase);
     state.findings[canonical] = saved;
     state.lastFinding = canonical;
     state.careLog = api.active?.()?.careLog || state.careLog || [];
-    writeState(caseId, state);
+    writeState(resolvedCase, state);
 
     window.dispatchEvent(new CustomEvent('emscodesim:scenario-finding-saved', {
-      detail: { caseId, category: canonical, finding: saved }
+      detail: { caseId: resolvedCase, category: canonical, finding: saved }
     }));
     return saved;
   }
@@ -286,27 +286,53 @@
     return tasks[task.key];
   }
 
+  function partnerFindingMeta(task, completedAt = task.completedAt || new Date().toISOString()) {
+    return {
+      label: task.label,
+      source: 'partner-assignment',
+      locked: true,
+      recordedAt: completedAt,
+      partnerAssignedAt: task.assignedAt,
+      partnerStartedAt: task.startedAt,
+      partnerCompletedAt: completedAt
+    };
+  }
+
+  function recoverCompletedPartnerFindings(caseId, tasks) {
+    const recovered = [];
+    Object.values(tasks || {}).forEach(task => {
+      if (!task || task.status !== 'complete' || !task.key) return;
+      const current = api.getFinding?.(task.key, api.active?.());
+      if (current) return;
+      try {
+        const completedAt = task.completedAt || new Date().toISOString();
+        const saved = saveFinding(task.key, task.value, partnerFindingMeta(task, completedAt), caseId);
+        if (saved) recovered.push(task);
+      } catch (error) {
+        console.error('Completed partner result could not be recovered', error);
+      }
+    });
+    return recovered;
+  }
+
   function resolvePartnerTasks(caseId = requestedCaseId()) {
     const record = sync(caseId);
     const resolvedCase = caseId || record?.scenarioId || record?.id;
     if (!resolvedCase) return [];
     const tasks = normalizePartnerQueue(readPartnerTasks(resolvedCase));
-    const completed = [];
+    const completed = recoverCompletedPartnerFindings(resolvedCase, tasks);
     const active = Object.values(tasks).find(task => task && task.status === 'pending');
     if (active && taskTime(active.dueAt) <= Date.now()) {
       try {
-        saveFinding(active.key, active.value, {
-          label: active.label,
-          source: 'partner-assignment',
-          locked: true,
-          partnerAssignedAt: active.assignedAt,
-          partnerStartedAt: active.startedAt,
-          partnerCompletedAt: new Date().toISOString()
-        });
+        const completedAt = new Date().toISOString();
+        const saved = saveFinding(active.key, active.value, partnerFindingMeta(active, completedAt), resolvedCase);
+        const verified = saved || api.getFinding?.(active.key, api.active?.());
+        if (!verified) throw new Error(`Partner vital was not verified after save: ${active.key}`);
         active.status = 'complete';
-        active.completedAt = new Date().toISOString();
+        active.completedAt = completedAt;
         completed.push(active);
       } catch (error) {
+        active.lastError = String(error?.message || error);
         console.error('Partner task could not be completed', error);
       }
     }
