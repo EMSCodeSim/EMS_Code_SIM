@@ -8,16 +8,23 @@ const read = relative => fs.readFileSync(path.join(process.cwd(), relative), 'ut
 const includesAll = (content, values, label) => values.forEach(value => assert(content.includes(value), `${label} is missing ${value}`));
 
 const scenarioSession = read('vitals/scenario-session.js');
-includesAll(scenarioSession, ['SCENARIO_CATALOG', 'saveFinding', 'state.findings[canonical] = saved', 'restoreStateToRecord'], 'Scenario session');
+includesAll(scenarioSession, [
+  'SCENARIO_CATALOG', 'saveFinding', 'state.findings[canonical] = saved', 'restoreStateToRecord',
+  'PARTNER_PREFIX', 'assignPartnerTask', 'assignedAt', 'dueAt', "status: 'pending'", 'resolvePartnerTasks'
+], 'Scenario session');
 
 const vitalSimulator = read('vitals/scenario-vital-sims.js');
-includesAll(vitalSimulator, ['leftReactionInput', 'rightReactionInput', 'gazeInput', 'trackingInput', 'Normal reference', 'Patient sample', 'cool and wet', 'expectedFinding', 'accurate', 'Accuracy will be reviewed at the end of the scenario', 'addReturnPaths', 'contextReturnLink', 'patientHomeLink'], 'Scenario vital simulator');
+includesAll(vitalSimulator, [
+  'leftReactionInput', 'rightReactionInput', 'gazeInput', 'trackingInput', 'Normal reference', 'Patient sample',
+  'cool and wet', 'expectedFinding', 'accurate', 'Accuracy will be reviewed at the end of the scenario',
+  'addReturnPaths', 'patientHomeLink', '← Return to Patient'
+], 'Scenario vital simulator');
+assert(!vitalSimulator.includes('contextReturnLink'), 'Scenario vital simulators should expose one patient-home return path, not a competing context return.');
 assert(!vitalSimulator.includes('id="leftSize"') && !vitalSimulator.includes('id="rightSize"'), 'Scenario pupils must not require pupil-size fields.');
 assert(!vitalSimulator.includes('Finding not accepted') && !vitalSimulator.includes('fail('), 'Scenario vitals must save learner entries without forcing a correct answer.');
 
-
 const bpScenario = read('vitals/bp-scenario.html');
-includesAll(bpScenario, ['expectedFinding', 'accurate', 'Accuracy will be reviewed at the end of the scenario'], 'Scenario blood pressure');
+includesAll(bpScenario, ['expectedFinding', 'accurate', 'Accuracy will be reviewed at the end of the scenario', 'Return to Patient'], 'Scenario blood pressure');
 assert(!bpScenario.includes('Reading not accepted. Repeat the blood pressure'), 'Scenario blood pressure must not force a correct reading before saving.');
 
 const optionalNarrativePages = [
@@ -32,7 +39,6 @@ for (const name of optionalNarrativePages) {
 }
 assert(/id="pcrText"[^>]*\brequired\b/.test(read('vitals/pcr-handoff.html')), 'The final PCR/handoff activity should retain the full narrative requirement.');
 
-
 const guidedStart = read('vitals/scenario-guided-start.js');
 includesAll(guidedStart, [
   'What PPE should you use?', 'Is the scene safe?', 'How many patients are present?', 'What is the NOI or MOI?',
@@ -41,27 +47,67 @@ includesAll(guidedStart, [
   'reviewAtDebrief: true', 'answers', 'score', 'maxScore'
 ], 'Guided scene size-up');
 assert(!guidedStart.includes('return false') || guidedStart.includes('missed choice'), 'Guided scene-size-up decisions must not block progress for an incorrect answer.');
+assert(guidedStart.includes("if ($('sceneGuideComplete')) $('sceneGuideComplete').hidden = true;"), 'Completed scene size-up must collapse instead of remaining on the patient screen.');
+assert(guidedStart.includes('else showReady();') && !guidedStart.includes('else startGuide(false);'), 'Scene size-up must not autoplay when a scenario opens.');
 
 const visualPatient = read('vitals/visual-patient.html');
-includesAll(visualPatient, ['/vitals/scenario-guided-start.css', '/vitals/scenario-guided-start.js', 'sceneGuideQuestion', 'Skip guided start', 'nremt-skill-sheets.html'], 'Visual patient guided start');
+includesAll(visualPatient, [
+  '/vitals/scenario-guided-start.css', '/vitals/scenario-guided-start.js', 'sceneGuideQuestion', 'Skip guided start',
+  'scenarioProgress', 'infoUpdateCollapse', 'sceneClueLayer', '/vitals/scenario-phase-model.js'
+], 'Visual patient home');
+assert(!visualPatient.includes('id="nextActionCard"'), 'The patient home must not display a next-action card.');
+assert(!visualPatient.includes('Vitals obtained') && !visualPatient.includes('Log entries') && !visualPatient.includes('Care events'), 'The patient home must not display summary-count boxes.');
+assert(!visualPatient.includes('id="reviewSceneGuide"'), 'Scene size-up must be launched only from the Assessment tab.');
+
 const visualPatientJs = read('vitals/visual-patient.js');
 includesAll(visualPatientJs, [
-  'SCENE AND FIRST IMPRESSION', 'Primary assessment', "buildRapidABCCard(box)",
-  "buildPrimaryCard(box, 'airway', 3)", "buildPrimaryCard(box, 'breathing', 4)",
-  "buildPrimaryCard(box, 'perfusion', 5)",
-  'Choose the assessment tools needed to evaluate'
-], 'Assessment-tab clinical ordering');
-assert(!visualPatientJs.includes('What you can say now'), 'Primary assessment cards must not reveal picture-based conclusions to the learner.');
-assert(!visualPatientJs.includes('Use assessment and vital tools before deciding adequacy.'), 'Primary assessment cards should not contain prescriptive coaching text.');
-assert(!visualPatient.includes('Vitals obtained') && !visualPatient.includes('Log entries') && !visualPatient.includes('Care events'), 'The patient home must not display summary-count boxes.');
-assert(guidedStart.includes("if ($('sceneGuideComplete')) $('sceneGuideComplete').hidden = true;"), 'Completed scene size-up must collapse instead of remaining on the patient screen.');
-assert(visualPatientJs.indexOf("buildSceneSizeUpCard(box)") < visualPatientJs.indexOf("buildRapidABCCard(box)"), 'Scene size-up must appear before rapid ABC in the assessment tab.');
-assert(visualPatientJs.indexOf("buildRapidABCCard(box)") < visualPatientJs.indexOf("buildPrimaryCard(box, 'airway', 3)"), 'Rapid ABC must appear before detailed airway assessment.');
-assert(visualPatientJs.indexOf("buildPrimaryCard(box, 'airway', 3)") < visualPatientJs.indexOf("buildPrimaryCard(box, 'breathing', 4)"), 'Airway must appear before breathing.');
-assert(visualPatientJs.indexOf("buildPrimaryCard(box, 'breathing', 4)") < visualPatientJs.indexOf("buildPrimaryCard(box, 'perfusion', 5)"), 'Breathing must appear before circulation.');
-assert(guidedStart.includes('else showReady();') && !guidedStart.includes('else startGuide(false);'), 'Scene size-up must not autoplay when a scenario opens.');
-assert(!visualPatient.includes('id="reviewSceneGuide"'), 'Scene size-up must be launched only from the Assessment tab.');
-assert(!visualPatient.includes('id="nextActionCard"'), 'The patient home should not display a prescriptive recommended-next-action card.');
+  'buildSceneSizeUpCard(box)', 'buildPrimaryAssessmentCard(box)', 'Primary Assessment', 'primary-assessment-row',
+  'Immediate threats', 'Relevant assessment and history', 'More assessments', 'required', 'appropriate', 'not-indicated',
+  'current?.startedAt', 'assignPartnerTask', 'resolvePartnerTasks', 'isInformationUpdate', 'infoUpdateCollapse',
+  'checkScenarioCompletion', 'essentialComplete'
+], 'Patient-picture scenario home');
+assert(!visualPatientJs.includes('buildRapidABCCard'), 'Rapid ABC must be combined into the unified Primary Assessment card.');
+assert(!visualPatientJs.includes('openRapidABC'), 'The patient home must not retain a separate Rapid ABC modal.');
+assert(!visualPatientJs.includes('updateNextAction'), 'The patient home must not calculate or display a next-action card.');
+assert(visualPatientJs.indexOf('buildSceneSizeUpCard(box)') < visualPatientJs.indexOf('buildPrimaryAssessmentCard(box)'), 'Scene size-up must appear before the unified Primary Assessment.');
+assert(visualPatientJs.indexOf('buildPrimaryAssessmentCard(box)') < visualPatientJs.indexOf('Relevant assessment and history'), 'Primary Assessment must appear before focused assessments.');
+assert(visualPatientJs.indexOf('Relevant assessment and history') < visualPatientJs.indexOf('More assessments'), 'Patient-relevant assessments must appear before optional/not-indicated assessments.');
+assert(!visualPatientJs.includes('What you can say now'), 'Primary assessment must not reveal picture-based conclusions to the learner.');
+
+const launcher = read('vitals/scenario-launcher.js');
+includesAll(launcher, ['/vitals/visual-patient.html', '`Resume ${', 'function start(caseId)'], 'Scenario launcher');
+assert(!launcher.includes('openAssessmentWorkspace'), 'The launcher must not route into a competing guided-assessment home.');
+
+const workspace = read('vitals/assessment-workspace.js');
+assert(workspace.includes("if (routeRecord || routeParams.get('mode')"), 'The legacy assessment workspace must redirect active scenarios to the patient-picture home.');
+
+const phaseModel = read('vitals/scenario-phase-model.js');
+includesAll(phaseModel, [
+  'Required', 'Clinically appropriate', 'Optional unless assigned', 'notIndicatedFindings',
+  'Immediate treatment', 'Reassessment', 'Impression & transport', 'Handoff', 'Debrief',
+  'hasReassessmentAfterTreatment', 'essentialComplete'
+], 'Scenario phase model');
+
+const progressSync = read('vitals/scenario-progress-sync.js');
+includesAll(progressSync, [
+  "treatment: treatmentComplete", "reassessment: reassessmentComplete", 'lastReassessment >= lastTreatment',
+  "state.phaseProgress.treatment && state.phaseProgress.reassessment", 'legacy route was opened'
+], 'Scenario progress synchronization');
+
+const crosslinks = read('vitals/assessment-crosslinks.js');
+includesAll(crosslinks, ['Save and Return to Patient', 'scenario-assessment-actions', 'Grade my assessment (optional)', 'scenarioHome'], 'Assessment return flow');
+assert(!crosslinks.includes('All assessment tools'), 'Assessment pages must not offer a competing all-tools destination.');
+assert(!crosslinks.includes('Patient home'), 'Assessment pages must not add a second patient-home link beside the primary return control.');
+
+const scenarioFlow = read('vitals/scenario-flow.js');
+includesAll(scenarioFlow, ['recorded', 'Return to Patient', 'Continue with:', 'esf-primary'], 'Post-assessment confirmation');
+assert(!scenarioFlow.includes('Patient record'), 'Post-assessment confirmation must not present the patient record as a competing primary destination.');
+
+const treatment = read('vitals/treatment-reassessment.js');
+includesAll(treatment, [
+  "['monitor'", "['position'", "['suction'", "['opa'", "['npa'", "['bvm'", "['lma'", "['intubation'", "['cric'",
+  'Return to Patient', 'Continue with:', 'Recorded finding:'
+], 'Treatment simulator');
 
 const skillSheetPage = read('nremt-skill-sheets.html');
 includesAll(skillSheetPage, [
@@ -69,9 +115,6 @@ includesAll(skillSheetPage, [
   'E212_NREMT.pdf','E213_NREMT.pdf','E215_NREMT.pdf','E216_NREMT.pdf','E217_NREMT.pdf',
   'Practice companion—not an official testing authority'
 ], 'NREMT skill-sheet library');
-
-const progressSync = read('vitals/scenario-progress-sync.js');
-includesAll(progressSync, ["'/vitals/visual-patient.html'", "has('scene_size_up')"], 'Scenario progress synchronization');
 
 const registry = read('vitals/scenario-tool-registry.js');
 includesAll(registry, [
@@ -81,15 +124,6 @@ includesAll(registry, [
   '/vitals/skin-scenario.html', '/vitals/abdominal-assessment.html', '/vitals/trauma-assessment.html',
   '/vitals/pain-opqrst.html', '/vitals/sample-history.html', '/vitals/pediatric-assessment-triangle.html', '/vitals/nines.html'
 ], 'Assessment registry');
-
-const crosslinks = read('vitals/assessment-crosslinks.js');
-includesAll(crosslinks, ['Respiratory rate', 'Breath sounds', 'SpO₂', 'Treat recorded', 'returnTo: currentReturn', 'Patient home'], 'Assessment cross-links');
-
-const treatment = read('vitals/treatment-reassessment.js');
-includesAll(treatment, [
-  "['monitor'", "['position'", "['suction'", "['opa'", "['npa'", "['bvm'", "['lma'", "['intubation'", "['cric'",
-  'Return to ${returnLabel}', 'Recorded finding:'
-], 'Treatment simulator');
 
 const scenarioPages = fs.readdirSync(path.join(process.cwd(), 'vitals'))
   .filter(name => /-scenario\.html$/.test(name));

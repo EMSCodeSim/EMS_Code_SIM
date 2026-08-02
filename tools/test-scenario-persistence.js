@@ -139,6 +139,23 @@ assert(patientRecord.findings.pain, 'OPQRST should use the canonical pain/histor
 assert(patientRecord.careLog.some(event => event.key === 'sample' && event.category === 'history'));
 assert(patientRecord.careLog.some(event => event.key === 'pain' && event.category === 'history'));
 
+// Partner assignments must persist while the learner navigates away and resolve on the next scenario page load.
+session.assignPartnerTask({ key: 'blood_pressure', label: 'Blood pressure', value: '148/92 mmHg', delaySeconds: 30 }, 'stroke');
+let partnerTasks = session.readPartnerTasks('stroke');
+assert.strictEqual(partnerTasks.blood_pressure.status, 'pending');
+assert(partnerTasks.blood_pressure.assignedAt && partnerTasks.blood_pressure.dueAt, 'Partner tasks should store assignment and expected-completion times.');
+partnerTasks.blood_pressure.dueAt = new Date(Date.now() - 1000).toISOString();
+session.writePartnerTasks('stroke', partnerTasks);
+
+runtime = createRuntime(sharedStorage);
+api = runtime.window.EMSCodeSimPatientRecord;
+session = runtime.window.EMSCodeSimScenarioSession;
+partnerTasks = session.readPartnerTasks('stroke');
+patientRecord = api.load('stroke');
+assert.strictEqual(partnerTasks.blood_pressure.status, 'complete', 'A due partner task should complete after navigation/page restoration.');
+assert.strictEqual(patientRecord.findings.blood_pressure.value, '148/92 mmHg');
+assert.strictEqual(patientRecord.findings.blood_pressure.source, 'partner-assignment');
+
 // Simulate a partial storage loss: the patient record loses SpO2 while scenario state retains it.
 delete patientRecord.findings.spo2;
 runtime.storage.setItem('emscodesim_patient_record_stroke', JSON.stringify(patientRecord));
@@ -154,4 +171,4 @@ assert.strictEqual(restored.findings.spo2.expectedFinding, '96%');
 assert.strictEqual(restored.findings.spo2.accurate, false);
 assert.strictEqual(session.readState('stroke').findings.spo2.value, '91%');
 
-console.log('Scenario persistence test passed: direct entry, mirrored saves, treatment/reassessment, and recovery all work.');
+console.log('Scenario persistence test passed: direct entry, mirrored saves, persistent partner tasks, treatment/reassessment, and recovery all work.');
