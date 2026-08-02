@@ -66,6 +66,7 @@
   const $ = value => document.getElementById(value);
   let seconds = 0;
   let activeFocus = null;
+  let findingFilter = 'all';
   const partnerTimers = new Set();
 
   function ensureRecord() {
@@ -87,6 +88,31 @@
   function existing(key) { return Boolean(api?.hasFinding?.(key, record())); }
   function labelFor(key) { return api?.labelFor?.(key) || key.replace(/_/g, ' '); }
   function valueFor(key) { return runtime?.formatVital?.(key) || 'Obtained'; }
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
+  }
+  function formatClock(value) {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? 'Time not recorded' : date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', second: '2-digit' });
+  }
+  function elapsedLabel(value, startedAt) {
+    const eventTime = new Date(value).getTime();
+    const startTime = new Date(startedAt).getTime();
+    if (!Number.isFinite(eventTime) || !Number.isFinite(startTime) || eventTime < startTime) return '';
+    const totalSeconds = Math.floor((eventTime - startTime) / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `+${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+  function eventTypeLabel(event) {
+    if (event.type === 'treatment') return 'Treatment';
+    if (event.type === 'reassessment') return 'Reassessment';
+    if (event.category === 'vital') return 'Vital';
+    if (event.category === 'history') return 'History';
+    if (event.type === 'impression') return 'Impression';
+    if (event.type === 'documentation') return 'Report';
+    return 'Assessment';
+  }
 
   function toast(message) {
     $('toast').textContent = message;
@@ -308,16 +334,45 @@
 
   function renderFindings() {
     const list = $('findingList');
-    const items = Object.entries(record()?.findings || {});
+    const current = record() || {};
+    const allEvents = api?.listCareLog?.(current, 'all') || [];
+    const events = api?.listCareLog?.(current, findingFilter) || allEvents;
+    const sequenceById = new Map(allEvents.map((event, index) => [event.id || event.eventId, index + 1]));
+    const counts = {
+      all: allEvents.length,
+      vitals: allEvents.filter(event => event.category === 'vital').length,
+      treatments: allEvents.filter(event => event.category === 'treatment').length
+    };
+
+    document.querySelectorAll('[data-log-filter]').forEach(button => {
+      const key = button.dataset.logFilter;
+      button.classList.toggle('active', key === findingFilter);
+      button.textContent = `${button.dataset.label || button.textContent.replace(/\s*\(\d+\)$/, '')} (${counts[key] || 0})`;
+    });
+    $('findingFilterSummary').textContent = findingFilter === 'all'
+      ? `${events.length} patient-care event${events.length === 1 ? '' : 's'} shown in chronological order.`
+      : `${events.length} ${findingFilter === 'vitals' ? 'vital-sign' : 'treatment and reassessment'} event${events.length === 1 ? '' : 's'} shown.`;
+
     list.innerHTML = '';
-    if (!items.length) {
-      list.innerHTML = '<li class="empty">No findings yet. Obtain vitals or perform an assessment.</li>';
+    if (!events.length) {
+      const message = findingFilter === 'vitals' ? 'No vital signs have been recorded yet.' : findingFilter === 'treatments' ? 'No treatment or reassessment has been recorded yet.' : 'No patient-care information has been recorded yet.';
+      list.innerHTML = `<li class="empty">${message}</li>`;
       return;
     }
-    items.sort((a, b) => (a[1].recordedAt || '').localeCompare(b[1].recordedAt || ''));
-    items.forEach(([key, finding]) => {
+
+    events.forEach((event, filteredIndex) => {
+      const sequence = sequenceById.get(event.id || event.eventId) || filteredIndex + 1;
+      const elapsed = elapsedLabel(event.recordedAt, current.startedAt);
       const item = document.createElement('li');
-      item.innerHTML = `<span>${labelFor(key)}</span><strong>${finding.value ?? finding.finding ?? ''}</strong>`;
+      item.className = `care-log-item ${event.category || 'assessment'} ${event.type || 'finding'}`;
+      item.innerHTML = `
+        <div class="care-log-order"><b>${sequence}</b><span>${escapeHtml(elapsed)}</span></div>
+        <div class="care-log-content">
+          <div class="care-log-heading"><span class="care-log-type">${eventTypeLabel(event)}</span><time datetime="${escapeHtml(event.recordedAt)}">${escapeHtml(formatClock(event.recordedAt))}</time></div>
+          <strong>${escapeHtml(event.label || labelFor(event.key))}</strong>
+          <p>${escapeHtml(event.value || 'Recorded')}</p>
+          ${event.details ? `<small>${escapeHtml(event.details)}</small>` : ''}
+        </div>`;
       list.appendChild(item);
     });
   }
@@ -326,17 +381,19 @@
     const current = record() || {};
     const keys = Object.keys(current.findings || {});
     const vitalKeys = (registry?.vitalTools || []).map(tool => tool.key);
+    const log = api?.listCareLog?.(current, 'all') || [];
+    const treatmentEvents = log.filter(event => event.category === 'treatment');
     $('vitalCount').textContent = `${vitalKeys.filter(key => keys.includes(key)).length} / ${vitalKeys.length}`;
-    $('findingCount').textContent = String(keys.length);
-    $('treatmentCount').textContent = String((current.treatments || []).length);
-    $('findingBadge').hidden = !keys.length;
-    $('findingBadge').textContent = String(keys.length);
+    $('findingCount').textContent = String(log.length);
+    $('treatmentCount').textContent = String(treatmentEvents.length);
+    $('findingBadge').hidden = !log.length;
+    $('findingBadge').textContent = String(log.length);
   }
 
   function openSheet(panelId) {
     document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
-    $('sheetTitle').textContent = { vitalsPanel: 'Vitals', assessmentPanel: 'Assessment sequence', treatmentPanel: 'Treatment', findingsPanel: 'Findings' }[panelId];
+    $('sheetTitle').textContent = { vitalsPanel: 'Vitals', assessmentPanel: 'Assessment sequence', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
     $('actionSheet').hidden = false;
     $('sheetBackdrop').hidden = false;
     document.body.style.overflow = 'hidden';
@@ -372,6 +429,12 @@
   }
 
   ensureRecord();
+  $('recordTreatmentLink').href = toolUrl('/vitals/treatment-reassessment.html', 'patient care log', 'general');
+  $('fullPatientRecordLink').href = `/vitals/patient-record.html?mode=scenario&resume=1&case=${encodeURIComponent(id)}`;
+  document.querySelectorAll('[data-log-filter]').forEach(button => button.addEventListener('click', () => {
+    findingFilter = button.dataset.logFilter || 'all';
+    renderFindings();
+  }));
   $('caseTitle').textContent = scenario.title;
   $('visibleCondition').textContent = scenario.visible;
   setPatientImage($('patientImage'), scenario.image);

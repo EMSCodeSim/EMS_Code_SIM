@@ -45,7 +45,7 @@
   }
 
   function readState(caseId = requestedCaseId()) {
-    const fallback = { done: [], complete: false, findings: {}, treatments: [], reassessments: [] };
+    const fallback = { done: [], complete: false, findings: {}, treatments: [], reassessments: [], careLog: [] };
     if (!caseId) return fallback;
     try {
       const parsed = JSON.parse(localStorage.getItem(stateKey(caseId)) || '{}');
@@ -55,7 +55,8 @@
         done: Array.isArray(parsed.done) ? parsed.done : [],
         findings: parsed.findings && typeof parsed.findings === 'object' ? parsed.findings : {},
         treatments: Array.isArray(parsed.treatments) ? parsed.treatments : [],
-        reassessments: Array.isArray(parsed.reassessments) ? parsed.reassessments : []
+        reassessments: Array.isArray(parsed.reassessments) ? parsed.reassessments : [],
+        careLog: Array.isArray(parsed.careLog) ? parsed.careLog : []
       };
     } catch {
       return fallback;
@@ -94,6 +95,7 @@
     });
     next.treatments = Array.isArray(record.treatments) ? record.treatments : next.treatments;
     next.reassessments = Array.isArray(record.reassessments) ? record.reassessments : next.reassessments;
+    next.careLog = Array.isArray(record.careLog) ? record.careLog : next.careLog;
     return writeState(caseId, next);
   }
 
@@ -101,10 +103,49 @@
     if (!record) return record;
     let changed = false;
     Object.entries(state.findings || {}).forEach(([key, finding]) => {
-      if (api.hasFinding?.(key, record)) return;
+      if (api.hasFinding?.(key, api.active?.() || record)) return;
       api.setFinding(key, finding.value ?? finding.finding ?? '', finding);
       changed = true;
     });
+
+    const treatmentExists = item => {
+      const current = api.active?.() || record;
+      return (current.treatments || []).some(saved =>
+        (item.eventId && saved.eventId === item.eventId) ||
+        ((saved.time || saved.recordedAt) === (item.time || item.recordedAt) &&
+          (saved.treatment || saved.name || saved.description) === (item.treatment || item.name || item.description))
+      );
+    };
+    (state.treatments || []).forEach(item => {
+      if (treatmentExists(item)) return;
+      api.addTreatment(item);
+      changed = true;
+    });
+
+    const reassessmentExists = item => {
+      const current = api.active?.() || record;
+      return (current.reassessments || []).some(saved =>
+        (item.eventId && saved.eventId === item.eventId) ||
+        ((saved.time || saved.recordedAt) === (item.time || item.recordedAt) &&
+          (saved.response || saved.description || saved.nextAction) === (item.response || item.description || item.nextAction))
+      );
+    };
+    (state.reassessments || []).forEach(item => {
+      if (reassessmentExists(item)) return;
+      api.addReassessment(item);
+      changed = true;
+    });
+
+    const current = api.active?.() || record;
+    const knownIds = new Set((current.careLog || []).map(event => event.id || event.eventId).filter(Boolean));
+    const missingEvents = (state.careLog || []).filter(event => {
+      const id = event.id || event.eventId;
+      return id ? !knownIds.has(id) : true;
+    });
+    if (missingEvents.length && api.mergeCareLog) {
+      api.mergeCareLog(missingEvents);
+      changed = true;
+    }
     return changed ? api.active?.() || record : record;
   }
 
@@ -136,6 +177,7 @@
     const state = readState(caseId);
     state.findings[canonical] = saved;
     state.lastFinding = canonical;
+    state.careLog = api.active?.()?.careLog || state.careLog || [];
     writeState(caseId, state);
 
     window.dispatchEvent(new CustomEvent('emscodesim:scenario-finding-saved', {
@@ -152,6 +194,7 @@
     const caseId = updated.scenarioId || updated.id;
     const state = readState(caseId);
     state.treatments = updated.treatments || [];
+    state.careLog = updated.careLog || state.careLog || [];
     writeState(caseId, state);
     return state.treatments[state.treatments.length - 1] || treatment;
   }
@@ -164,6 +207,7 @@
     const caseId = updated.scenarioId || updated.id;
     const state = readState(caseId);
     state.reassessments = updated.reassessments || [];
+    state.careLog = updated.careLog || state.careLog || [];
     writeState(caseId, state);
     return state.reassessments[state.reassessments.length - 1] || entry;
   }

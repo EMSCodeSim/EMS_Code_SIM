@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=5">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=6">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2">
 </head>
 <body>
@@ -60,8 +60,8 @@
 
     <section class="quick-status" aria-label="Scenario progress">
       <div><span>Vitals obtained</span><strong id="vitalCount">0 / 8</strong></div>
-      <div><span>Findings</span><strong id="findingCount">0</strong></div>
-      <div><span>Treatments</span><strong id="treatmentCount">0</strong></div>
+      <div><span>Log entries</span><strong id="findingCount">0</strong></div>
+      <div><span>Care events</span><strong id="treatmentCount">0</strong></div>
     </section>
   </main>
 
@@ -96,8 +96,20 @@
     </section>
 
     <section id="findingsPanel" class="vp-panel" hidden>
-      <p class="sub">Only information you have actually obtained appears here.</p>
-      <ul id="findingList" class="finding-list"></ul>
+      <p class="sub">Every obtained finding, history item, vital sign, treatment, and reassessment is recorded in the order it occurred.</p>
+      <div class="finding-toolbar">
+        <div class="finding-filters" role="group" aria-label="Filter patient care log">
+          <button class="active" type="button" data-log-filter="all" data-label="All log">All log</button>
+          <button type="button" data-log-filter="vitals" data-label="Vitals">Vitals</button>
+          <button type="button" data-log-filter="treatments" data-label="Treatments">Treatments</button>
+        </div>
+        <div class="finding-quick-actions">
+          <a id="recordTreatmentLink" href="/vitals/treatment-reassessment.html">Record treatment</a>
+          <a id="fullPatientRecordLink" class="secondary" href="/vitals/patient-record.html?mode=scenario&resume=1">Full record</a>
+        </div>
+      </div>
+      <p id="findingFilterSummary" class="finding-filter-summary" aria-live="polite"></p>
+      <ul id="findingList" class="finding-list care-log-list"></ul>
     </section>
   </section>
 
@@ -120,7 +132,7 @@
   <script src="/vitals/scenario-session.js?v=2"></script>
   <script src="/vitals/scenario-runtime.js?v=2"></script>
   <script src="/vitals/scenario-tool-registry.js?v=3"></script>
-  <script src="/vitals/visual-patient.js?v=6"></script>
+  <script src="/vitals/visual-patient.js?v=7"></script>
   <script src="/vitals/scenario-guided-start.js?v=2"></script>
 </body>
 </html>

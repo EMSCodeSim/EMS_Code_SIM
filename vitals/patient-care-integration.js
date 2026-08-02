@@ -76,14 +76,22 @@
         expectedResponse: entry.expectedResponse || '',
         scenario: entry.scenario || '',
         score: entry.score || 0,
-        maxScore: entry.maxScore || 5
+        maxScore: entry.maxScore || 5,
+        recordedAt: entry.recordedAt,
+        time: entry.recordedAt,
+        source: entry.source,
+        label: 'Treatment'
       };
       if (session?.addTreatment) session.addTreatment(treatment); else api.addTreatment(treatment);
       const reassessment = {
         response: entry.response || '',
         nextAction: entry.nextAction || '',
         findings: entry.repeatFindings || [],
-        documentation: entry.documentation || ''
+        documentation: entry.documentation || '',
+        recordedAt: new Date(new Date(entry.recordedAt).getTime() + 1).toISOString(),
+        time: new Date(new Date(entry.recordedAt).getTime() + 1).toISOString(),
+        source: entry.source,
+        label: 'Reassessment'
       };
       if (session?.addReassessment) session.addReassessment(reassessment); else api.addReassessment(reassessment);
     });
