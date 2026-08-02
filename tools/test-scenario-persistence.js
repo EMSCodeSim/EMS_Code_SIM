@@ -155,6 +155,31 @@ patientRecord = api.load('stroke');
 assert.strictEqual(partnerTasks.blood_pressure.status, 'complete', 'A due partner task should complete after navigation/page restoration.');
 assert.strictEqual(patientRecord.findings.blood_pressure.value, '148/92 mmHg');
 assert.strictEqual(patientRecord.findings.blood_pressure.source, 'partner-assignment');
+assert(patientRecord.careLog.some(event => event.key === 'blood_pressure' && event.source === 'partner-assignment'), 'Partner vital should be written to the care log.');
+
+// Partner skills must remain sequential: the second skill cannot start until the first is complete.
+session.assignPartnerTask({ key: 'pulse', label: 'Pulse', value: '92/min; regular; strong', delaySeconds: 30 }, 'stroke');
+session.assignPartnerTask({ key: 'respirations', label: 'Respirations', value: '18/min; regular; unlabored', delaySeconds: 30 }, 'stroke');
+partnerTasks = session.readPartnerTasks('stroke');
+assert.strictEqual(partnerTasks.pulse.status, 'pending');
+assert.strictEqual(partnerTasks.respirations.status, 'queued');
+partnerTasks.pulse.dueAt = new Date(Date.now() - 1000).toISOString();
+session.writePartnerTasks('stroke', partnerTasks);
+session.resolvePartnerTasks('stroke');
+partnerTasks = session.readPartnerTasks('stroke');
+patientRecord = api.load('stroke');
+assert.strictEqual(patientRecord.findings.pulse.value, '92/min; regular; strong');
+assert.strictEqual(partnerTasks.pulse.status, 'complete');
+assert.strictEqual(partnerTasks.respirations.status, 'pending', 'The next queued partner skill should begin only after the first finishes.');
+assert(partnerTasks.respirations.startedAt && partnerTasks.respirations.dueAt);
+
+// A completed task whose finding was lost must be repaired automatically.
+delete patientRecord.findings.pulse;
+patientRecord.careLog = patientRecord.careLog.filter(event => !(event.key === 'pulse' && event.source === 'partner-assignment'));
+runtime.storage.setItem('emscodesim_patient_record_stroke', JSON.stringify(patientRecord));
+session.resolvePartnerTasks('stroke');
+patientRecord = api.load('stroke');
+assert.strictEqual(patientRecord.findings.pulse.value, '92/min; regular; strong', 'Completed partner results should be recovered if the patient record loses them.');
 
 // Simulate a partial storage loss: the patient record loses SpO2 while scenario state retains it.
 delete patientRecord.findings.spo2;
