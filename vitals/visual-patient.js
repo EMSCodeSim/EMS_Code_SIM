@@ -67,6 +67,9 @@
   let seconds = 0;
   let activeFocus = null;
   let findingFilter = 'all';
+  let infoUpdates = [];
+  let infoUpdateIndex = 0;
+  let lastInfoSignature = '';
   const partnerTimers = new Set();
 
   function ensureRecord() {
@@ -112,6 +115,55 @@
     if (event.type === 'impression') return 'Impression';
     if (event.type === 'documentation') return 'Report';
     return 'Assessment';
+  }
+
+  function infoElapsed(value, startedAt) {
+    const eventTime = new Date(value).getTime();
+    const startTime = new Date(startedAt).getTime();
+    if (!Number.isFinite(eventTime) || !Number.isFinite(startTime) || eventTime < startTime) return '00:00';
+    const total = Math.floor((eventTime - startTime) / 1000);
+    return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+  }
+
+  function updateFromCareEvent(event, current) {
+    const isAbnormal = event.status === 'abnormal' || event.normality === 'not-normal' || /critical|severe|inadequate|absent|low|high|hypox|shock|unresponsive/i.test(`${event.value || ''} ${event.details || ''}`);
+    if (event.type === 'treatment') return { id: event.id || event.eventId, type: 'TREATMENT', title: event.label || 'Treatment performed', text: event.value || event.details || 'Treatment was recorded.', kind: 'treatment', recordedAt: event.recordedAt };
+    if (event.type === 'reassessment') return { id: event.id || event.eventId, type: 'PATIENT UPDATE', title: event.label || 'Patient reassessed', text: event.value || event.details || 'The patient condition was reassessed.', kind: 'reassessment', recordedAt: event.recordedAt };
+    if (event.category === 'vital') return { id: event.id || event.eventId, type: isAbnormal ? 'CONDITION ALERT' : 'VITAL UPDATE', title: event.label || labelFor(event.key), text: event.value || 'Vital sign obtained.', kind: isAbnormal ? 'alert' : 'assessment', recordedAt: event.recordedAt };
+    if (event.category === 'history') return { id: event.id || event.eventId, type: 'HISTORY UPDATE', title: event.label || 'History obtained', text: event.value || event.details || 'New history information was obtained.', kind: 'history', recordedAt: event.recordedAt };
+    return { id: event.id || event.eventId, type: isAbnormal ? 'CONDITION ALERT' : 'ASSESSMENT UPDATE', title: event.label || labelFor(event.key), text: event.value || event.details || 'New assessment information was obtained.', kind: isAbnormal ? 'alert' : 'assessment', recordedAt: event.recordedAt };
+  }
+
+  function buildInfoUpdates(current) {
+    const startedAt = current?.startedAt || new Date().toISOString();
+    const updates = [
+      { id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information', text: current?.dispatch || scenario.title, kind: 'dispatch', recordedAt: startedAt },
+      { id: 'visible', type: 'VISIBLE CONDITION', title: 'First patient view', text: scenario.visible, kind: 'visible', recordedAt: new Date(new Date(startedAt).getTime() + 1).toISOString() }
+    ];
+    const log = api?.listCareLog?.(current, 'all') || [];
+    log.forEach(event => updates.push(updateFromCareEvent(event, current)));
+    return updates;
+  }
+
+  function renderInfoUpdate(forceLatest = false) {
+    const current = record() || {};
+    const nextUpdates = buildInfoUpdates(current);
+    const signature = nextUpdates.map(item => `${item.id}:${item.text}`).join('|');
+    const changed = signature !== lastInfoSignature;
+    infoUpdates = nextUpdates;
+    if (forceLatest || changed) infoUpdateIndex = Math.max(0, infoUpdates.length - 1);
+    infoUpdateIndex = Math.max(0, Math.min(infoUpdateIndex, infoUpdates.length - 1));
+    lastInfoSignature = signature;
+    const item = infoUpdates[infoUpdateIndex];
+    if (!item || !$('infoUpdateWindow')) return;
+    $('infoUpdateWindow').className = `info-update-window info-${item.kind || 'assessment'}`;
+    $('infoUpdateType').textContent = item.type;
+    $('infoUpdateTitle').textContent = item.title;
+    $('infoUpdateText').textContent = item.text;
+    $('infoUpdateTime').textContent = infoElapsed(item.recordedAt, current.startedAt);
+    $('infoUpdateCount').textContent = `${infoUpdateIndex + 1} of ${infoUpdates.length}`;
+    $('infoUpdatePrevious').disabled = infoUpdateIndex <= 0;
+    $('infoUpdateNext').disabled = infoUpdateIndex >= infoUpdates.length - 1;
   }
 
   function toast(message) {
@@ -467,6 +519,7 @@
     $('patientLabel').textContent = current?.patient || 'Patient';
     $('dispatch').textContent = current?.dispatch || scenario.title;
     $('scene').textContent = current?.scene || '';
+    renderInfoUpdate();
   }
 
   ensureRecord();
@@ -477,11 +530,12 @@
     renderFindings();
   }));
   $('caseTitle').textContent = scenario.title;
-  $('visibleCondition').textContent = scenario.visible;
   setPatientImage($('patientImage'), scenario.image);
   setPatientImage($('focusImage'), scenario.image);
   refreshFromRecord();
 
+  $('infoUpdatePrevious').addEventListener('click', () => { infoUpdateIndex = Math.max(0, infoUpdateIndex - 1); renderInfoUpdate(); });
+  $('infoUpdateNext').addEventListener('click', () => { infoUpdateIndex = Math.min(infoUpdates.length - 1, infoUpdateIndex + 1); renderInfoUpdate(); });
   document.querySelectorAll('.bottom-nav button').forEach(button => button.addEventListener('click', () => openSheet(button.dataset.panel)));
   $('closeSheet').addEventListener('click', closeSheet);
   $('sheetBackdrop').addEventListener('click', closeSheet);

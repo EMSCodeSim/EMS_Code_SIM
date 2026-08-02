@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=8">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=9">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=3">
 </head>
 <body>
@@ -22,7 +22,19 @@
 
     <section class="patient-stage" aria-label="Patient view">
       <img id="patientImage" src="/vitals/assets/scenario-patient-adult-v3.png" alt="Patient awaiting assessment">
-      <div class="patient-status"><span>VISIBLE CONDITION</span><b id="visibleCondition">Observe before touching the patient</b></div>
+      <aside id="infoUpdateWindow" class="info-update-window info-dispatch" aria-live="polite" aria-label="Scenario information updates">
+        <div class="info-update-head">
+          <span id="infoUpdateType">DISPATCH</span>
+          <time id="infoUpdateTime">00:00</time>
+        </div>
+        <strong id="infoUpdateTitle">Dispatch information</strong>
+        <p id="infoUpdateText">Review the dispatch and patient picture before beginning care.</p>
+        <div class="info-update-controls">
+          <button id="infoUpdatePrevious" type="button" aria-label="Previous information update">‹</button>
+          <span id="infoUpdateCount">1 of 1</span>
+          <button id="infoUpdateNext" type="button" aria-label="Next information update">›</button>
+        </div>
+      </aside>
       <div class="patient-caption">
         <h2 id="patientLabel">Patient</h2>
         <p id="patientPrompt">Observe the patient, then choose what you want to assess, measure, or treat.</p>
@@ -131,7 +143,7 @@
   <script src="/vitals/scenario-session.js?v=2"></script>
   <script src="/vitals/scenario-runtime.js?v=2"></script>
   <script src="/vitals/scenario-tool-registry.js?v=3"></script>
-  <script src="/vitals/visual-patient.js?v=8"></script>
+  <script src="/vitals/visual-patient.js?v=9"></script>
   <script src="/vitals/scenario-guided-start.js?v=2"></script>
 </body>
 </html>
