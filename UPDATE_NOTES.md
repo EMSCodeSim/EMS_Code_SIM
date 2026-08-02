@@ -1,9 +1,12 @@
-# Partner Queue and Assessment Flow Update
+# Unified Assessment Design Update
 
-- Partner assignments now run one skill at a time.
-- Additional assigned vitals wait in a queue until the active partner skill finishes.
-- Normal assessment classification saves the finding and returns directly to the patient picture.
-- Not Normal classification reveals interpretation and action follow-up fields.
-- Airway treatments selected during abnormal follow-up are added to the care log.
-- A separate reassessment event records the patient's response and appears in the patient information window.
-- Optional assessment note fields remain hidden/removed in scenario mode.
+All focused assessment tools on the patient-picture home now use the same row-based design as Primary Assessment.
+
+Each assessment row displays:
+- Assessment area
+- Current clinical state
+- Patient-specific finding or assessment purpose
+- Required / clinically appropriate / optional / not-indicated classification
+- One Assess, Review, or Reassess action
+
+Patient-relevant assessments remain visible first. Optional and not-indicated tools remain under More assessments.
