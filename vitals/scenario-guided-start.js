@@ -202,8 +202,20 @@
     button?.click();
   }
 
+  function showReady() {
+    reviewMode = false;
+    $('sceneGuide').hidden = true;
+    $('sceneGuideComplete').hidden = true;
+    setLocked(false);
+    $('reviewSceneGuide').textContent = 'Open scene size-up';
+  }
+
   function init() {
     if (!$('sceneGuide')) return;
+    window.EMSCodeSimSceneGuide = {
+      start: review => startGuide(Boolean(review && completedFinding)),
+      isComplete: () => Boolean(completedFinding)
+    };
     $('sceneGuideNext').addEventListener('click', () => {
       if (!feedbackShown) { recordAnswer(); return; }
       if (index < questions.length - 1) { index += 1; render(); }
@@ -214,7 +226,7 @@
     $('beginPrimaryAssessment').addEventListener('click', openAssessment);
     $('reviewCompletedSceneGuide').addEventListener('click', () => startGuide(true));
     if (completedFinding) showComplete();
-    else startGuide(false);
+    else showReady();
   }
 
   document.addEventListener('DOMContentLoaded', init);
