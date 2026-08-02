@@ -1,6 +1,6 @@
 {
   "name": "ems-code-sim-site",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "private": true,
   "description": "EMSCodeSim educational website and connected training tools",
   "scripts": {
@@ -11,12 +11,13 @@
     "build:public": "node tools/build-public.js",
     "build:functions": "node tools/prepare-functions.js",
     "verify:dist": "node tools/validate-site.js --root dist --deployment",
-    "build": "npm run validate && npm run verify:scenario-contracts && npm run test:persistence && npm run build:public && npm run build:functions && npm run verify:dist",
+    "build": "npm run validate && npm run verify:scenario-contracts && npm run test:persistence && npm run test:care-log && npm run build:public && npm run build:functions && npm run verify:dist",
     "serve:dist": "node tools/serve-dist.js",
     "test:interaction": "npm run build && playwright test",
     "test:interaction:headed": "npm run build && playwright test --headed",
     "test:interaction:install": "playwright install chromium",
-    "test:all": "npm run test:interaction"
+    "test:all": "npm run test:interaction",
+    "test:care-log": "node tools/test-care-log.js"
   },
   "engines": {
     "node": ">=18 <23"
