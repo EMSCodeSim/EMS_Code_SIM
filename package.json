@@ -1,6 +1,6 @@
 {
   "name": "ems-code-sim-site",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "private": true,
   "description": "EMSCodeSim educational website and connected training tools",
   "scripts": {
