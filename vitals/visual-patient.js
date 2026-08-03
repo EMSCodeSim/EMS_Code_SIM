@@ -577,20 +577,18 @@
     buildPrimaryAssessmentCard(box);
 
     const unique = new Map();
-    [...(registry?.assessmentTools || []), ...(registry?.vitalTools || [])].forEach(tool => {
+    (registry?.assessmentTools || []).forEach(tool => {
       if (PRIMARY_KEYS.has(tool.key) || tool.key === 'scene_size_up') return;
-      if (!unique.has(tool.key) || (registry?.vitalTools || []).includes(tool)) unique.set(tool.key, tool);
+      if (!MEASURABLE_TOOL_KEYS.has(tool.key) && !unique.has(tool.key)) unique.set(tool.key, tool);
     });
     const tools = [...unique.values()];
     buildRecommendedAssessments(box, tools);
     buildAssessmentFilters(box);
 
     const focused = tools.filter(tool => clinicalCategory(tool) === 'focused');
-    const vitals = tools.filter(tool => clinicalCategory(tool) === 'vitals');
     const history = tools.filter(tool => clinicalCategory(tool) === 'history');
 
-    buildAssessmentCategory(box, 'focused', 'Focused Assessment', 'Respiratory, neurological, trauma, abdominal, pediatric', focused, true);
-    buildAssessmentCategory(box, 'vitals', 'Vitals & Diagnostic Tools', 'Blood pressure, pulse, RR, SpO₂, glucose, temperature', vitals, true);
+    buildAssessmentCategory(box, 'focused', 'Focused Assessment', 'Respiratory, neurological, trauma, abdominal, and pediatric exams', focused, true);
     buildAssessmentCategory(box, 'history', 'History', 'SAMPLE and OPQRST', history, false);
   }
 
@@ -1004,7 +1002,7 @@ Record this decision and its consequence?`;
     evaluatePatientCondition(panelId === 'transportPanel' ? 'transport-review' : 'patient-tool-open');
     document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
-    $('sheetTitle').textContent = { vitalsPanel: 'Patient tools', assessmentPanel: 'Assessment', treatmentPanel: 'Treatment', transportPanel: 'Transport and handoff', findingsPanel: 'Patient care log' }[panelId];
+    $('sheetTitle').textContent = { vitalsPanel: 'Vitals', assessmentPanel: 'Assessment', treatmentPanel: 'Treatment', transportPanel: 'Transport and handoff', findingsPanel: 'Patient care log' }[panelId];
     $('actionSheet').hidden = false;
     $('sheetBackdrop').hidden = false;
     document.body.style.overflow = 'hidden';
