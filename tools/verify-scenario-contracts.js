@@ -50,7 +50,9 @@ assert(guidedStart.includes('Not enough information at this time'), 'Scene size-
 assert(guidedStart.includes('APPROACH OBSERVATION') && guidedStart.includes('showSceneObservation'), 'Scene size-up must send neutral approach observations to the patient information window.');
 assert(!guidedStart.includes('Best choice:') && !guidedStart.includes('Good decision.'), 'Scene size-up must not reveal correctness before the final debrief.');
 assert(guidedStart.includes("if ($('sceneGuideComplete')) $('sceneGuideComplete').hidden = true;"), 'Completed scene size-up must collapse instead of remaining on the patient screen.');
-assert(guidedStart.includes('else startGuide(false);'), 'Incomplete scene size-up should open over the patient photo when a scenario begins.');
+assert(guidedStart.includes('if (!completedFinding) startGuide(false);'), 'Incomplete scene size-up should open over the patient photo when a scenario begins.');
+assert(guidedStart.includes('startPrimary(false)') && guidedStart.includes('Save and begin ABC'), 'Completing scene size-up must continue into the photo-based initial ABC assessment.');
+assert(guidedStart.includes('PRIMARY ASSESSMENT FINDING') && guidedStart.includes('guided-primary-assessment'), 'Initial ABC must use neutral information-window findings and deferred grading metadata.');
 
 const visualPatient = read('vitals/visual-patient.html');
 includesAll(visualPatient, [
@@ -63,7 +65,7 @@ assert(!visualPatient.includes('id="reviewSceneGuide"'), 'Scene size-up must be 
 
 const visualPatientJs = read('vitals/visual-patient.js');
 includesAll(visualPatientJs, [
-  'buildSceneSizeUpCard(box)', 'buildPrimaryAssessmentCard(box)', 'Primary Assessment', 'primary-assessment-row',
+  'buildSceneSizeUpCard(box)', 'buildPrimaryAssessmentCard(box)', 'Initial ABC Assessment', 'primary-assessment-row',
   'buildRecommendedAssessments', 'buildMoreAssessments', 'Immediate assessment', 'More assessments', 'buildVitals',
   'current?.startedAt', 'assignPartnerTask', 'resolvePartnerTasks', 'isInformationUpdate', 'infoUpdateCollapse',
   'checkScenarioCompletion', 'essentialComplete'
