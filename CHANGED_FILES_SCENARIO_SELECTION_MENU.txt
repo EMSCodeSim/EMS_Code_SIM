@@ -1,0 +1,8 @@
+vitals/scenario-launcher.html
+vitals/scenario-launcher.js
+vitals/scenario-launcher.css
+package.json
+tools/test-scenario-selection-menu.js
+tools/verify-scenario-contracts.js
+SCENARIO_SELECTION_MODE_MENU_UPDATE.md
+CHANGED_FILES_SCENARIO_SELECTION_MENU.txt
