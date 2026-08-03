@@ -57,6 +57,9 @@
   }
 
   function record() { return session?.active?.(id) || api?.active?.(); }
+  function trainingMode() { return params.get('training') || record()?.documentation?.trainingMode || 'learning'; }
+  function assessmentMode() { return trainingMode() === 'assessment'; }
+  function modeTag(label, className = 'optional') { return assessmentMode() ? '' : `<span class="requirement-tag ${className}">${escapeHtml(label)}</span>`; }
   function existing(key) { return Boolean(api?.hasFinding?.(key, record())); }
   function labelFor(key) { return api?.labelFor?.(key) || phases?.labelFor?.(key) || String(key).replace(/_/g, ' '); }
   function valueFor(key) { return runtime?.formatVital?.(key) || 'Obtained'; }
@@ -119,13 +122,15 @@
   function toolUrl(url, returnLabel = 'Patient', context = '') {
     return registry?.buildUrl?.(url, {
       caseId: id,
-      returnTo: `/vitals/visual-patient.html?case=${encodeURIComponent(id)}`,
+      returnTo: `/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}`,
+      training: trainingMode(),
       returnLabel,
       context
     }) || url;
   }
 
   function classificationLabel(key) {
+    if (assessmentMode()) return 'Available';
     const value = phases?.classification?.(id, key) || (scenario.recommended.includes(key) ? 'appropriate' : 'optional');
     return {
       required: 'Required',
@@ -151,7 +156,7 @@
     article.className = `tool ${classificationClass(tool.key)}${complete ? ' done' : ''}`;
     article.dataset.toolKey = tool.key;
     article.innerHTML = `
-      <div class="tool-head"><div><span class="requirement-tag ${classificationClass(tool.key)}">${classificationLabel(tool.key)}</span><h3>${escapeHtml(tool.label)}</h3><p>${escapeHtml(tool.description)}</p></div>
+      <div class="tool-head"><div>${modeTag(classificationLabel(tool.key), classificationClass(tool.key))}<h3>${escapeHtml(tool.label)}</h3><p>${escapeHtml(tool.description)}</p></div>
       <span class="status-chip ${complete ? 'done' : pending || queued ? 'pending' : ''}">${complete ? 'Obtained' : pending ? 'Partner working' : queued ? 'Waiting for partner' : 'Not taken'}</span></div>
       <div class="tool-actions"><a href="${toolUrl(tool.url)}">Perform</a>
       <button class="partner-action" type="button" ${complete || pending || queued ? 'disabled' : ''}>${complete ? 'Complete' : pending ? 'In progress' : queued ? 'Queued' : 'Assign to partner'}</button></div>
@@ -183,6 +188,10 @@
     const box = $('vitalTools');
     box.innerHTML = '';
     const tools = (registry?.vitalTools || []).filter(tool => MEASURABLE_TOOL_KEYS.has(tool.key));
+    if (assessmentMode()) {
+      appendToolGroup(box, 'Patient tools', 'Choose the measurements you believe are appropriate. Results and decisions are reviewed during debrief.', tools, 'assessment-mode');
+      return;
+    }
     const relevant = tools.filter(tool => ['required','appropriate'].includes(classificationClass(tool.key)));
     const more = tools.filter(tool => !relevant.includes(tool));
     appendToolGroup(box, 'Relevant for this patient', 'Required and clinically appropriate measurable tools appear first.', relevant, 'relevant');
@@ -348,7 +357,7 @@
       <div>
         <span>${escapeHtml(tool.label)} <em class="clinical-state ${state.code}">${escapeHtml(state.label)}</em></span>
         <strong>${escapeHtml(assessmentStatusText(tool, state))}</strong>
-        <small class="assessment-row-requirement ${kind}">${escapeHtml(classificationLabel(tool.key))}</small>
+        ${assessmentMode() ? '' : `<small class="assessment-row-requirement ${kind}">${escapeHtml(classificationLabel(tool.key))}</small>`}
       </div>
       <a href="${assessmentHref(tool, tool.key)}">${escapeHtml(actionLabel)}</a>`;
     return row;
@@ -360,7 +369,7 @@
     article.className = `assessment-card unified-primary-card unified-assessment-group${completed === tools.length && tools.length ? ' complete' : ''}`;
     article.innerHTML = `
       <div class="primary-card-heading">
-        <div><span class="requirement-tag ${options.tagClass || 'appropriate'}">${escapeHtml(options.tag || 'Patient relevant')}</span><h3>${escapeHtml(title)}</h3></div>
+        <div>${modeTag(options.tag || 'Patient relevant', options.tagClass || 'appropriate')}<h3>${escapeHtml(title)}</h3></div>
         <span class="status-chip ${completed === tools.length && tools.length ? 'done' : ''}">${completed} of ${tools.length} assessed</span>
       </div>
       <p class="primary-assessment-copy">${escapeHtml(copy)}</p>
@@ -379,7 +388,7 @@
     article.innerHTML = `
       <span class="sequence-number">1</span>
       <div class="sequence-card-body">
-        <span class="requirement-tag required">Required</span>
+        ${modeTag('Required', 'required')}
         <h3>Scene size-up and first impression</h3>
         <p>Use the dispatch and first patient picture to establish safety, patient count, NOI/MOI, resources, general impression, responsiveness, and priority.</p>
         <div class="tool-actions"><button class="primary-action scene-guide-card-button" type="button">${complete ? 'Review scene size-up' : 'Begin scene size-up'}</button>
@@ -407,7 +416,7 @@
     if (state.code === 'reassessment-due') return `Treatment performed — ${state.label}`;
     if (['improved','unchanged','worsened'].includes(state.code)) return `${state.label}: ${state.finding?.value || state.finding?.finding || 'Reassessment recorded'}`;
     if (state.finding) return state.finding.value || state.finding.finding || 'Assessment recorded';
-    return scenario.primary[key]?.initial || 'Unknown';
+    return assessmentMode() ? 'Not assessed' : (scenario.primary[key]?.initial || 'Unknown');
   }
 
   function primaryToolLink(key) {
@@ -442,7 +451,7 @@
     article.innerHTML = `
       <span class="sequence-number">2</span>
       <div class="sequence-card-body">
-        <div class="primary-card-heading"><div><span class="requirement-tag required">Required</span><h3>Primary Assessment</h3></div><span class="status-chip ${completed === 3 ? 'done' : ''}">${completed} of 3 assessed</span></div>
+        <div class="primary-card-heading"><div>${modeTag('Required', 'required')}<h3>Primary Assessment</h3></div><span class="status-chip ${completed === 3 ? 'done' : ''}">${completed} of 3 assessed</span></div>
         <p>Make the rapid life-threat decision here, then open only the area that needs closer assessment. There is no separate Rapid ABC step.</p>
         <div class="primary-assessment-table" role="table" aria-label="Primary assessment status and actions">
           <div class="primary-assessment-header" role="row"><span>Area</span><span>Current status</span><span>Action</span></div>
@@ -463,6 +472,15 @@
     buildPrimaryAssessmentCard(box);
 
     const focused = (registry?.assessmentTools || []).filter(tool => !PRIMARY_KEYS.has(tool.key));
+    if (assessmentMode()) {
+      box.appendChild(buildAssessmentGroup(
+        'Assessment and history options',
+        'Select assessments from your clinical judgment. Relevance and missed opportunities are reviewed during debrief.',
+        focused,
+        { tag: '', tagClass: 'optional' }
+      ));
+      return;
+    }
     const relevant = focused.filter(tool => ['required','appropriate'].includes(classificationClass(tool.key)));
     const more = focused.filter(tool => !relevant.includes(tool));
 
@@ -570,18 +588,21 @@
     const decision = treatmentDecision(plan);
     const recorded = treatmentAlreadyRecorded(plan);
     const article = document.createElement('article');
-    article.className = `treatment-card treatment-decision-card state-${decision.code}${recorded ? ' complete' : ''}`;
+    article.className = `treatment-card treatment-decision-card${assessmentMode() ? ' assessment-mode' : ` state-${decision.code}`}${recorded ? ' complete' : ''}`;
+    const decisionTag = assessmentMode() ? '' : `<span class="requirement-tag ${decision.code === 'indicated' ? 'appropriate' : decision.code === 'contraindicated' ? 'not-indicated' : 'optional'}">${escapeHtml(decision.label)}</span>`;
+    const decisionStatus = recorded ? 'Recorded' : assessmentMode() ? 'Available' : decision.label;
+    const clinicalCheck = assessmentMode() ? '' : `<div class="treatment-indication"><strong>Clinical check:</strong> ${escapeHtml(decision.detail)}</div>`;
     article.innerHTML = `
       <div class="treatment-card-heading">
-        <div><span class="requirement-tag ${decision.code === 'indicated' ? 'appropriate' : decision.code === 'contraindicated' ? 'not-indicated' : 'optional'}">${escapeHtml(decision.label)}</span><h3>${escapeHtml(plan.label)}</h3></div>
-        <span class="status-chip ${recorded ? 'done' : ''}">${recorded ? 'Recorded' : decision.label}</span>
+        <div>${decisionTag}<h3>${escapeHtml(plan.label)}</h3></div>
+        <span class="status-chip ${recorded ? 'done' : ''}">${decisionStatus}</span>
       </div>
       <p>${escapeHtml(plan.summary)}</p>
-      <div class="treatment-indication"><strong>Clinical check:</strong> ${escapeHtml(decision.detail)}</div>
+      ${clinicalCheck}
       <div class="treatment-targets"><strong>Reassess after treatment:</strong> ${escapeHtml((plan.targets || []).map(labelFor).join(', ') || 'Patient condition')}</div>
       <button class="primary-action treatment-apply" type="button" ${recorded ? 'disabled' : ''}>${recorded ? 'Treatment recorded' : 'Perform treatment'}</button>`;
     article.querySelector('.treatment-apply')?.addEventListener('click', () => {
-      const warning = decision.code === 'indicated' ? `Perform ${plan.label}?` : `${decision.label}: ${decision.detail}
+      const warning = assessmentMode() ? `Perform ${plan.label}? This decision will be reviewed during debrief.` : decision.code === 'indicated' ? `Perform ${plan.label}?` : `${decision.label}: ${decision.detail}
 
 Record this decision and its consequence?`;
       if (!window.confirm(warning)) return;
@@ -594,25 +615,31 @@ Record this decision and its consequence?`;
     const box = $('treatmentTools');
     box.innerHTML = '';
     const plans = TREATMENT_PLANS[id] || [];
-    const indicated = plans.filter(plan => treatmentDecision(plan).code === 'indicated');
-    const others = plans.filter(plan => !indicated.includes(plan));
     const intro = document.createElement('div');
     intro.className = 'treatment-guidance';
-    intro.innerHTML = `<strong>Treat findings, not the scenario title.</strong><span>Options supported by abnormal findings appear first. Every decision is timed, logged, and linked to targeted reassessment.</span>`;
-    box.appendChild(intro);
-    indicated.forEach(plan => box.appendChild(renderTreatmentCard(plan)));
-    if (others.length) {
-      const details = document.createElement('details');
-      details.className = 'more-treatments';
-      details.open = indicated.length === 0;
-      details.innerHTML = '<summary>Other treatment options <span>Assessment needed, not indicated, or contraindicated</span></summary><div class="more-treatment-list"></div>';
-      const list = details.querySelector('.more-treatment-list');
-      others.forEach(plan => list.appendChild(renderTreatmentCard(plan)));
-      box.appendChild(details);
+    if (assessmentMode()) {
+      intro.innerHTML = `<strong>Choose care from your findings.</strong><span>Treatment indications and decision feedback remain hidden until the final debrief.</span>`;
+      box.appendChild(intro);
+      plans.forEach(plan => box.appendChild(renderTreatmentCard(plan)));
+    } else {
+      const indicated = plans.filter(plan => treatmentDecision(plan).code === 'indicated');
+      const others = plans.filter(plan => !indicated.includes(plan));
+      intro.innerHTML = `<strong>Treat findings, not the scenario title.</strong><span>Options supported by abnormal findings appear first. Every decision is timed, logged, and linked to targeted reassessment.</span>`;
+      box.appendChild(intro);
+      indicated.forEach(plan => box.appendChild(renderTreatmentCard(plan)));
+      if (others.length) {
+        const details = document.createElement('details');
+        details.className = 'more-treatments';
+        details.open = indicated.length === 0;
+        details.innerHTML = '<summary>Other treatment options <span>Assessment needed, not indicated, or contraindicated</span></summary><div class="more-treatment-list"></div>';
+        const list = details.querySelector('.more-treatment-list');
+        others.forEach(plan => list.appendChild(renderTreatmentCard(plan)));
+        box.appendChild(details);
+      }
     }
     const full = document.createElement('article');
     full.className = 'treatment-card full-treatment-menu';
-    full.innerHTML = `<span class="requirement-tag optional">Protocol-dependent options</span><h3>Complete treatment and reassessment tool</h3><p>Use this only when the needed intervention is not represented above or when advanced decision practice is required.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general')}">Open complete treatment tool</a>`;
+    full.innerHTML = `${modeTag('Protocol-dependent options', 'optional')}<h3>Complete treatment and reassessment tool</h3><p>Use this when the needed intervention is not represented above or when advanced decision practice is required.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general')}">Open complete treatment tool</a>`;
     box.appendChild(full);
   }
 
@@ -737,7 +764,7 @@ Record this decision and its consequence?`;
       ? 'Transport plan matches this patient’s current presentation.'
       : 'Transport plan recorded. The final debrief will compare it with the patient’s presentation and timing.';
     toast('Transport decision saved');
-    const box = $('transportDecisionFeedback'); if (box) { box.hidden = false; box.textContent = feedback; }
+    const box = $('transportDecisionFeedback'); if (box) { box.hidden = assessmentMode(); box.textContent = assessmentMode() ? '' : feedback; }
     renderTransport(); renderProgress(); renderInfoUpdate(true);
   }
   function handoffText(current = record() || {}) {
@@ -934,6 +961,10 @@ Record this decision and its consequence?`;
   }
 
   const initialRecord = ensureRecord();
+  const requestedTrainingMode = params.get('training');
+  if (requestedTrainingMode === 'learning' || requestedTrainingMode === 'assessment') api?.setDocumentation?.({ trainingMode: requestedTrainingMode });
+  document.body.dataset.trainingMode = trainingMode();
+  if ($('modeBadge')) $('modeBadge').textContent = assessmentMode() ? 'Assessment Mode' : 'Learning Mode';
   scenarioStartMs = new Date(initialRecord?.startedAt || Date.now()).getTime();
   $('caseTitle').textContent = scenario.title;
   setPatientImage($('patientImage'), scenario.image);
@@ -966,7 +997,7 @@ Record this decision and its consequence?`;
   $('cancelFocus').addEventListener('click', () => { $('assessmentFocus').hidden = true; activeFocus = null; });
   $('completeScenarioFromPatient').addEventListener('click', checkScenarioCompletion);
   $('endScenario').addEventListener('click', () => {
-    if (confirm('Leave this patient and return to scenario selection? Your progress will remain saved.')) location.href = `/vitals/scenario-launcher.html?select=${encodeURIComponent(id)}`;
+    if (confirm('Leave this patient and return to scenario selection? Your progress will remain saved.')) location.href = `/vitals/scenario-launcher.html?select=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}`;
   });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;

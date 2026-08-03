@@ -6,6 +6,8 @@
   const params = new URLSearchParams(location.search);
   const caseId = params.get('case') || session?.requestedCaseId?.() || api?.active?.()?.scenarioId || 'asthma';
   const $ = id => document.getElementById(id);
+  const trainingMode = () => params.get('training') || api?.active?.()?.documentation?.trainingMode || 'learning';
+  const assessmentMode = () => trainingMode() === 'assessment';
 
   const COMMON = {
     ppeMedical: ['Gloves and eye protection as indicated', 'No PPE is needed', 'Only an N95 respirator', 'Structural firefighting PPE'],
@@ -114,7 +116,7 @@
         <label class="scene-option"><input type="radio" name="sceneGuideAnswer" value="${optionIndex}"><span>${option}</span></label>`).join('')}</div>`;
     $('sceneGuideFeedback').hidden = true;
     $('sceneGuideFeedback').className = 'scene-guide-feedback';
-    $('sceneGuideNext').textContent = 'Check and continue';
+    $('sceneGuideNext').textContent = assessmentMode() ? (index === questions.length - 1 ? 'Save scene size-up' : 'Save and continue') : 'Check and continue';
     $('sceneGuideNext').disabled = true;
     feedbackShown = false;
     document.querySelectorAll('input[name="sceneGuideAnswer"]').forEach(input => input.addEventListener('change', () => { $('sceneGuideNext').disabled = false; }));
@@ -191,7 +193,12 @@
     index = 0;
     answers = [];
     if ($('sceneGuideComplete')) $('sceneGuideComplete').hidden = true;
-    $('sceneGuideSkip').textContent = review ? 'Close review' : 'Skip guided start';
+    $('sceneGuideSkip').textContent = review ? 'Close review' : assessmentMode() ? 'Cancel scene size-up' : 'Skip guided start';
+    if (!review && assessmentMode()) $('sceneGuideSkip').hidden = true; else $('sceneGuideSkip').hidden = false;
+    const copy = document.querySelector('.guide-copy');
+    const note = document.querySelector('.guide-note');
+    if (copy) copy.textContent = assessmentMode() && !review ? 'Use only the dispatch information and first patient view. Your decisions are saved without coaching and reviewed during the final debrief.' : 'Use only the dispatch information and first patient view. Make each decision before moving into the primary assessment. A missed choice will not stop the scenario; it will be reviewed again in the final debrief.';
+    if (note) note.textContent = assessmentMode() && !review ? 'Assessment Mode: correctness and rationales remain hidden until debrief.' : 'This is coaching practice, not a pass/fail testing station. Your choices are saved for the final scenario review.';
     $('sceneGuide').hidden = false;
     setLocked(!completedFinding && !review);
     render();
@@ -215,6 +222,16 @@
     if (initialized || !$('sceneGuide')) return;
     initialized = true;
     $('sceneGuideNext').addEventListener('click', () => {
+      if (assessmentMode() && !reviewMode) {
+        const selected = document.querySelector('input[name="sceneGuideAnswer"]:checked');
+        if (!selected) return;
+        const question = questions[index];
+        const selectedIndex = Number(selected.value);
+        answers[index] = { key: question.key, question: question.title, selected: question.options[selectedIndex], expected: question.options[question.correct], correct: selectedIndex === question.correct, rationale: config.rationales[question.key] };
+        if (index < questions.length - 1) { index += 1; render(); }
+        else saveGuide(false);
+        return;
+      }
       if (!feedbackShown) { recordAnswer(); return; }
       if (index < questions.length - 1) { index += 1; render(); }
       else saveGuide(false);

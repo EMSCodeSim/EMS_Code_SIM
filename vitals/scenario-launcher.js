@@ -26,7 +26,8 @@
     select.appendChild(option);
   });
 
-  function patientHome(caseId) { return `/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}`; }
+  function selectedMode() { return document.querySelector('input[name="trainingMode"]:checked')?.value || 'learning'; }
+  function patientHome(caseId, mode = selectedMode()) { return `/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}&training=${encodeURIComponent(mode)}`; }
 
   function renderGallery() {
     gallery.innerHTML = '';
@@ -49,7 +50,8 @@
     const current = api?.active?.();
     if (!current || current.scenarioId !== selected.id) api?.create?.(selected);
     session?.sync?.(selected.id);
-    location.href = patientHome(selected.id);
+    api?.setDocumentation?.({ trainingMode: selectedMode(), trainingModeSetAt: new Date().toISOString() });
+    location.href = patientHome(selected.id, selectedMode());
   }
 
   function showActivePatient() {
@@ -59,7 +61,10 @@
     banner.hidden = false;
     $('activePatientTitle').textContent = `Resume ${current.title || 'active patient'}`;
     $('activePatientText').textContent = `${current.patient || 'Patient'} • Findings, partner tasks, and scene time remain saved.`;
-    $('resumeActivePatient').href = patientHome(current.scenarioId);
+    const savedMode = current.documentation?.trainingMode || 'learning';
+    const modeInput = document.querySelector(`input[name="trainingMode"][value="${savedMode}"]`);
+    if (modeInput) modeInput.checked = true;
+    $('resumeActivePatient').href = patientHome(current.scenarioId, savedMode);
   }
 
   function showAssignment() {

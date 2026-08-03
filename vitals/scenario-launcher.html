@@ -9,7 +9,7 @@
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="stylesheet" href="/styles/career-hub.css">
   <link rel="stylesheet" href="/styles/responsive.css">
-  <link rel="stylesheet" href="/vitals/scenario-launcher.css?v=4">
+  <link rel="stylesheet" href="/vitals/scenario-launcher.css?v=5">
   <link rel="stylesheet" href="/vitals/scenario-status.css">
 </head>
 <body>
@@ -25,6 +25,11 @@
     <section class="control-card picture-first">
       <div class="case-intro"><p class="eyebrow">Patient selection</p><h2>Start with the patient picture</h2><p>Select a patient below. The case opens directly on the visual patient screen rather than a separate guided workspace.</p></div>
       <div id="caseGallery" class="case-gallery" aria-label="Available patient scenarios"></div>
+      <fieldset class="mode-picker" aria-label="Scenario mode">
+        <legend>Choose how this scenario responds</legend>
+        <label class="mode-choice"><input type="radio" name="trainingMode" value="learning" checked><span><strong>Learning Mode</strong><small>Immediate coaching, clinical labels, and decision feedback.</small></span></label>
+        <label class="mode-choice"><input type="radio" name="trainingMode" value="assessment"><span><strong>Assessment Mode</strong><small>No answer-revealing labels or feedback until debrief.</small></span></label>
+      </fieldset>
       <div class="controls compact-controls">
         <label class="sr-only" for="caseSelect">Patient case</label>
         <select id="caseSelect" aria-label="Patient case"></select>
@@ -37,7 +42,7 @@
   </main>
   <script src="/vitals/patient-record.js"></script>
   <script src="/vitals/scenario-definitions.js?v=1"></script><script src="/vitals/scenario-session.js?v=5"></script>
-  <script src="/vitals/scenario-launcher.js?v=7"></script>
+  <script src="/vitals/scenario-launcher.js?v=8"></script>
   <script src="/vitals/scenario-status.js"></script>
 </body>
 </html>
