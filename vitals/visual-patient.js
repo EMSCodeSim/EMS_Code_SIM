@@ -69,6 +69,28 @@
   let conditionEvaluationActive = false;
   let treatmentCategoryFocus = '';
   let nextActionFinding = null;
+  let infoAutoCollapseTimer = 0;
+  let infoManuallyCollapsed = false;
+  let lastInfoItemId = '';
+  let assessmentComplaintFocus = '';
+  const renderSignatures = { vitals:'', assessments:'', treatments:'', findings:'', progress:'' };
+
+  function dataSignature(value) {
+    try { return JSON.stringify(value); } catch { return String(Date.now()); }
+  }
+
+  function detailsState(container, attribute) {
+    if (!container) return new Set();
+    return new Set([...container.querySelectorAll(`details[${attribute}]`)]
+      .filter(item => item.open)
+      .map(item => item.getAttribute(attribute))
+      .filter(Boolean));
+  }
+
+  function restoreSheetScroll(scrollTop) {
+    if (!$('actionSheet') || $('actionSheet').hidden) return;
+    window.requestAnimationFrame(() => { $('actionSheet').scrollTop = scrollTop; });
+  }
 
   function ensureRecord() {
     const restored = session?.sync?.(id) || api?.active?.();
@@ -182,25 +204,43 @@
   function secondsRemaining(task) { return Math.max(0, Math.ceil((new Date(task?.dueAt).getTime() - Date.now()) / 1000)); }
 
   function renderVitalTool(tool) {
-    const complete = existing(tool.key);
-    const repeatHref = complete ? (() => { const u = new URL(toolUrl(tool.url), location.origin); u.searchParams.set('reassess','1'); return `${u.pathname}${u.search}${u.hash}`; })() : toolUrl(tool.url);
+    const current = record() || {};
+    const finding = api?.getFinding?.(tool.key, current) || current.findings?.[tool.key] || null;
+    const complete = Boolean(finding);
+    const repeatHref = complete ? (() => {
+      const u = new URL(toolUrl(tool.url), location.origin);
+      u.searchParams.set('reassess','1');
+      return `${u.pathname}${u.search}${u.hash}`;
+    })() : toolUrl(tool.url);
     const task = partnerTaskFor(tool.key);
-    const pending = task?.status === 'pending' && !complete;
+    const pending = ['active','pending'].includes(task?.status) && !complete;
     const queued = task?.status === 'queued' && !complete;
+    const state = assessmentState(tool.key);
+    const result = complete ? (finding.value || finding.finding || valueFor(tool.key)) : tool.description;
+    const recordedAt = finding?.recordedAt || finding?.time;
+    const timing = complete && recordedAt ? `Obtained at ${elapsedLabel(recordedAt, current.startedAt)}` : 'Not yet obtained';
+    const due = state.code === 'reassessment-due';
     const article = document.createElement('article');
-    article.className = `tool ${classificationClass(tool.key)}${complete ? ' done' : ''}`;
+    article.className = `tool compact-vital-row ${classificationClass(tool.key)}${complete ? ' done' : ''}${due ? ' reassessment-due' : ''}`;
     article.dataset.toolKey = tool.key;
     article.innerHTML = `
-      <div class="tool-head"><div>${modeTag(classificationLabel(tool.key), classificationClass(tool.key))}<h3>${escapeHtml(tool.label)}</h3><p>${escapeHtml(tool.description)}</p></div>
-      <span class="status-chip ${complete ? 'done' : pending || queued ? 'pending' : ''}">${complete ? 'Obtained' : pending ? 'Partner working' : queued ? 'Waiting for partner' : 'Not taken'}</span></div>
-      <div class="tool-actions"><a href="${repeatHref}">${complete ? 'Reassess' : 'Perform'}</a>
-      <button class="partner-action" type="button" ${pending || queued ? 'disabled' : ''}>${pending ? 'In progress' : queued ? 'Queued' : complete ? 'Assign reassessment' : 'Assign to partner'}</button></div>
-      <div class="assignment-progress" ${pending || queued ? '' : 'hidden'}>${pending ? `Partner gathering ${escapeHtml(tool.label.toLowerCase())}… ${secondsRemaining(task)}s` : queued ? `Queued — partner will start after the current skill.` : ''}</div>`;
+      <span class="vital-row-icon" aria-hidden="true">${due ? '↻' : complete ? '✓' : '○'}</span>
+      <div class="vital-row-copy">
+        <div class="vital-row-heading"><h3>${escapeHtml(tool.label)}</h3><span class="status-chip ${complete ? 'done' : pending || queued ? 'pending' : ''}">${due ? 'Reassess' : complete ? 'Obtained' : pending ? 'Partner working' : queued ? 'Queued' : 'Available'}</span></div>
+        <strong class="vital-latest-result">${escapeHtml(result)}</strong>
+        <small>${escapeHtml(due ? 'Treatment performed · reassessment due' : pending ? `Partner gathering this vital · ${secondsRemaining(task)} sec` : queued ? 'Queued behind the current partner skill' : timing)}</small>
+      </div>
+      <div class="vital-row-actions">
+        <a href="${repeatHref}">${complete ? 'Reassess' : 'Perform'}</a>
+        <button class="partner-action compact-partner-action" type="button" ${pending || queued ? 'disabled' : ''}>${pending ? 'Working' : queued ? 'Queued' : 'Partner'}</button>
+      </div>
+      <div class="assignment-progress" ${pending || queued ? '' : 'hidden'}>${pending ? `Partner gathering ${escapeHtml(tool.label.toLowerCase())}… ${secondsRemaining(task)}s` : queued ? 'Queued — partner will start after the current skill.' : ''}</div>`;
     const button = article.querySelector('.partner-action');
     button?.addEventListener('click', () => {
       try {
         session?.assignPartnerTask?.({ key: tool.key, label: tool.label, value: valueFor(tool.key), delaySeconds: tool.delay || 12 }, id);
-        buildVitals();
+        renderSignatures.vitals = '';
+        refreshFromRecord();
         toast(`${tool.label} assigned to partner`);
       } catch (error) {
         console.error(error);
@@ -439,14 +479,15 @@
   }
 
   function buildRecommendedAssessments(box, tools) {
+    if (assessmentMode()) return;
     const recommendations = [...tools]
       .filter(tool => assessmentState(tool.key).code === 'not-assessed' || ['reassessment-due','abnormal','worsened'].includes(assessmentState(tool.key).code))
       .sort((a,b) => recommendationScore(b) - recommendationScore(a))
-      .slice(0,3);
+      .slice(0,4);
     if (!recommendations.length) return;
     const section = document.createElement('section');
-    section.className = 'assessment-recommended';
-    section.innerHTML = `<div class="assessment-section-title"><div><span>Recommended next</span><small>${assessmentMode() ? 'Based on your documented findings and normal assessment order' : 'Based on this patient and your completed findings'}</small></div></div><div class="assessment-recommended-list"></div>`;
+    section.className = 'assessment-recommended assessment-level';
+    section.innerHTML = `<div class="assessment-section-title"><div><span>Recommended next</span><small>Patient-specific suggestions for Learning Mode</small></div></div><div class="assessment-recommended-list"></div>`;
     const list = section.querySelector('.assessment-recommended-list');
     recommendations.forEach(tool => list.appendChild(renderCompactAssessmentRow(tool)));
     box.appendChild(section);
@@ -454,90 +495,99 @@
 
   const COMPLAINT_SORTS = {
     all: { label:'All assessments', keys:[] },
-    breathing: { label:'Breathing / airway', keys:['airway','breathing','breath_sounds','chest_assessment','pediatric_assessment_triangle','skin','mental_status'] },
-    cardiac: { label:'Chest pain / circulation', keys:['perfusion','pain','skin','mental_status','chest_assessment'] },
-    neuro: { label:'Neurologic / altered mental status', keys:['mental_status','pupils','motor_sensory','stroke','blood_glucose','airway'] },
-    trauma: { label:'Trauma', keys:['trauma_assessment','chest_assessment','abdominal_assessment','motor_sensory','skin','pain'] },
+    breathing: { label:'Breathing / airway', keys:['breath_sounds','chest_assessment','skin','mental_status','pediatric_assessment_triangle'] },
+    cardiac: { label:'Chest pain / circulation', keys:['chest_assessment','skin','pain','mental_status'] },
+    neuro: { label:'Neurologic / altered mental status', keys:['mental_status','pupils','motor_sensory','gcs','pain'] },
+    trauma: { label:'Trauma', keys:['trauma_assessment','chest_assessment','abdominal_assessment','motor_sensory','skin','pain','rule_of_nines'] },
     abdominal: { label:'Abdominal / medical', keys:['abdominal_assessment','pain','sample','mental_status','skin'] },
-    pediatric: { label:'Pediatric', keys:['pediatric_assessment_triangle','airway','breathing','skin','mental_status','sample'] },
+    pediatric: { label:'Pediatric', keys:['pediatric_assessment_triangle','skin','mental_status','sample'] },
     history: { label:'History', keys:['sample','pain'] }
   };
 
+  const ASSESSMENT_CATEGORY_META = {
+    respiratory: { label:'Respiratory', subtitle:'Breath sounds and chest examination', icon:'◌' },
+    circulation: { label:'Cardiac / circulation', subtitle:'Skin and perfusion-related clues', icon:'♥' },
+    neurologic: { label:'Neurological', subtitle:'Mental status, pupils, motor, sensory, and GCS', icon:'◎' },
+    trauma: { label:'Trauma / burns', subtitle:'Rapid trauma and burn assessment', icon:'✚' },
+    abdominal: { label:'Abdominal', subtitle:'Focused abdominal examination', icon:'◍' },
+    pediatric: { label:'Pediatric', subtitle:'Pediatric Assessment Triangle', icon:'△' },
+    history: { label:'History', subtitle:'SAMPLE and OPQRST', icon:'▤' }
+  };
+
+  function defaultAssessmentFocus() {
+    if (assessmentMode()) return 'all';
+    return { asthma:'breathing', stroke:'neuro', hypoglycemia:'neuro', trauma:'trauma', pediatric:'pediatric' }[id] || 'all';
+  }
+
+  function assessmentCategoryId(tool) {
+    if (['sample','pain'].includes(tool.key)) return 'history';
+    if (tool.key === 'abdominal_assessment') return 'abdominal';
+    if (tool.key === 'pediatric_assessment_triangle') return 'pediatric';
+    if (['trauma_assessment','rule_of_nines'].includes(tool.key)) return 'trauma';
+    if (['mental_status','pupils','motor_sensory','gcs'].includes(tool.key)) return 'neurologic';
+    if (['breath_sounds','chest_assessment'].includes(tool.key)) return 'respiratory';
+    if (tool.key === 'skin') return 'circulation';
+    return 'trauma';
+  }
+
   function applyAssessmentComplaintSort(box, sortId='all') {
-    const allowed = new Set(COMPLAINT_SORTS[sortId]?.keys || []);
-    box.querySelectorAll('.assessment-compact-row').forEach(row => {
-      row.dataset.complaintHidden = sortId !== 'all' && !allowed.has(row.dataset.assessmentKey) ? 'true' : 'false';
-      if (row.dataset.complaintHidden === 'true') row.hidden = true;
+    assessmentComplaintFocus = COMPLAINT_SORTS[sortId] ? sortId : 'all';
+    const allowed = new Set(COMPLAINT_SORTS[assessmentComplaintFocus]?.keys || []);
+    box.querySelectorAll('.assessment-more .assessment-compact-row').forEach(row => {
+      row.hidden = assessmentComplaintFocus !== 'all' && !allowed.has(row.dataset.assessmentKey);
     });
-    box.querySelectorAll('.assessment-category').forEach(category => {
-      const visible = [...category.querySelectorAll('.assessment-compact-row')].some(row => row.dataset.complaintHidden !== 'true' && !row.hidden);
+    box.querySelectorAll('.assessment-more .assessment-category').forEach(category => {
+      const visible = [...category.querySelectorAll('.assessment-compact-row')].some(row => !row.hidden);
       category.hidden = !visible;
     });
+    const label = box.querySelector('[data-assessment-focus-label]');
+    if (label) label.textContent = COMPLAINT_SORTS[assessmentComplaintFocus]?.label || 'All assessments';
   }
 
-  function buildComplaintSorter(box) {
-    const wrap = document.createElement('div');
-    wrap.className = 'assessment-complaint-sort';
-    wrap.innerHTML = `<label><span>Quick sort by chief complaint</span><select aria-label="Sort assessments by chief complaint">${Object.entries(COMPLAINT_SORTS).map(([key,item]) => `<option value="${key}">${escapeHtml(item.label)}</option>`).join('')}</select></label><small>This changes organization only; it does not identify the diagnosis or correct assessment.</small>`;
-    const select = wrap.querySelector('select');
-    select.addEventListener('change', () => applyAssessmentComplaintSort(box, select.value));
-    box.appendChild(wrap);
-  }
-
-  function buildAssessmentFilters(box) {
-    const nav = document.createElement('div');
-    nav.className = 'assessment-filter-bar';
-    nav.setAttribute('role','group');
-    nav.setAttribute('aria-label','Filter assessments');
-    nav.innerHTML = `
-      <button type="button" data-assessment-filter="next" class="active">Next</button>
-      <button type="button" data-assessment-filter="incomplete">Incomplete</button>
-      <button type="button" data-assessment-filter="abnormal">Abnormal</button>
-      <button type="button" data-assessment-filter="all">All</button>`;
-    box.appendChild(nav);
-    nav.querySelectorAll('button').forEach(button => button.addEventListener('click', () => {
-      nav.querySelectorAll('button').forEach(item => item.classList.toggle('active', item === button));
-      const filter = button.dataset.assessmentFilter;
-      box.querySelectorAll('.assessment-category').forEach(category => {
-        let visible = 0;
-        category.querySelectorAll('.assessment-compact-row').forEach(row => {
-          const state = row.dataset.assessmentState;
-          const show = filter === 'all'
-            || (filter === 'incomplete' && (state === 'not-assessed' || state === 'reassessment-due'))
-            || (filter === 'abnormal' && ['abnormal','reassessment-due','worsened'].includes(state))
-            || (filter === 'next' && (state === 'not-assessed' || state === 'reassessment-due'));
-          const complaintVisible = row.dataset.complaintHidden !== 'true';
-          row.hidden = !(show && complaintVisible);
-          if (show && complaintVisible) visible += 1;
-        });
-        category.hidden = visible === 0;
-      });
-    }));
-  }
-
-  function buildAssessmentCategory(box, id, title, subtitle, tools, open = false) {
+  function buildAssessmentCategory(box, categoryId, tools, openCategories = new Set()) {
     if (!tools.length) return;
+    const meta = ASSESSMENT_CATEGORY_META[categoryId];
     const completedNormal = tools.filter(tool => assessmentState(tool.key).code === 'normal').length;
     const abnormal = tools.filter(tool => ['abnormal','reassessment-due','worsened'].includes(assessmentState(tool.key).code)).length;
     const details = document.createElement('details');
-    details.className = `assessment-category assessment-category-${id}`;
-    details.open = open || abnormal > 0;
+    details.className = `assessment-category assessment-category-${categoryId}`;
+    details.dataset.assessmentCategory = categoryId;
+    details.open = openCategories.has(categoryId) || abnormal > 0;
     details.innerHTML = `
       <summary>
-        <span class="assessment-category-icon" aria-hidden="true">${id === 'vitals' ? '▥' : id === 'history' ? '▤' : '◉'}</span>
-        <span><strong>${escapeHtml(title)}</strong><small>${escapeHtml(subtitle)}</small></span>
-        <em>${abnormal ? `${abnormal} abnormal` : `${completedNormal}/${tools.length} complete`}</em>
+        <span class="assessment-category-icon" aria-hidden="true">${meta.icon}</span>
+        <span><strong>${escapeHtml(meta.label)}</strong><small>${escapeHtml(meta.subtitle)}</small></span>
+        <em>${abnormal ? `${abnormal} abnormal` : `${completedNormal}/${tools.length}`}</em>
       </summary>
       <div class="assessment-category-list"></div>`;
     const list = details.querySelector('.assessment-category-list');
     tools.forEach(tool => list.appendChild(renderCompactAssessmentRow(tool)));
-    if (completedNormal) {
-      const normal = document.createElement('div');
-      normal.className = 'assessment-normal-summary';
-      normal.textContent = `${completedNormal} normal assessment${completedNormal === 1 ? '' : 's'} completed`;
-      list.appendChild(normal);
-    }
     box.appendChild(details);
+  }
+
+  function buildMoreAssessments(box, tools, priorOpen = new Set()) {
+    const abnormalCount = tools.filter(tool => ['abnormal','reassessment-due','worsened'].includes(assessmentState(tool.key).code)).length;
+    const more = document.createElement('details');
+    more.className = 'assessment-more assessment-level';
+    more.dataset.assessmentSection = 'more';
+    more.open = priorOpen.has('more') || abnormalCount > 0;
+    more.innerHTML = `
+      <summary><span><strong>More assessments</strong><small>Open focused exams and history when clinically appropriate</small></span><em>${abnormalCount ? `${abnormalCount} abnormal` : `${tools.length} tools`}</em></summary>
+      <div class="assessment-more-body">
+        <label class="assessment-focus-control"><span>Focus list</span><select aria-label="Focus assessment list">${Object.entries(COMPLAINT_SORTS).map(([key,item]) => `<option value="${key}">${escapeHtml(item.label)}</option>`).join('')}</select></label>
+        <p class="assessment-focus-summary">Showing <strong data-assessment-focus-label>All assessments</strong>. This changes organization only.</p>
+        <div class="assessment-more-categories"></div>
+      </div>`;
+    box.appendChild(more);
+    const categoryHost = more.querySelector('.assessment-more-categories');
+    Object.keys(ASSESSMENT_CATEGORY_META).forEach(categoryId => {
+      buildAssessmentCategory(categoryHost, categoryId, tools.filter(tool => assessmentCategoryId(tool) === categoryId), priorOpen);
+    });
+    const select = more.querySelector('select');
+    select.value = assessmentComplaintFocus || defaultAssessmentFocus();
+    select.addEventListener('change', () => applyAssessmentComplaintSort(box, select.value));
+    applyAssessmentComplaintSort(box, select.value);
+    enforceSingleOpen('.assessment-more-categories', '.assessment-category');
   }
 
   function buildSceneSizeUpCard(box) {
@@ -552,7 +602,7 @@
         if (opened === false || !window.EMSCodeSimSceneGuide?.start) {
           const guide = document.getElementById('sceneGuide');
           if (guide) { guide.hidden = false; guide.scrollIntoView({ behavior:'smooth', block:'start' }); }
-          showToast('Scene size-up opened. Refresh the page if the questions do not appear.');
+          toast('Scene size-up opened. Refresh the page if the questions do not appear.');
         }
       });
     });
@@ -639,10 +689,20 @@
 
   function buildAssessments() {
     const box = $('assessmentTools');
+    const openCategories = detailsState(box, 'data-assessment-category');
+    const openSections = detailsState(box, 'data-assessment-section');
+    const existingFocus = box?.querySelector('.assessment-focus-control select')?.value;
+    if (existingFocus && COMPLAINT_SORTS[existingFocus]) assessmentComplaintFocus = existingFocus;
     box.innerHTML = '';
     box.classList.add('assessment-workflow-clean');
-    buildSceneSizeUpCard(box);
-    buildPrimaryAssessmentCard(box);
+
+    const immediate = document.createElement('section');
+    immediate.className = 'assessment-immediate assessment-level';
+    immediate.innerHTML = '<div class="assessment-section-title"><div><span>Immediate assessment</span><small>Scene safety and rapid Airway, Breathing, Circulation</small></div></div><div class="assessment-immediate-list"></div>';
+    box.appendChild(immediate);
+    const immediateList = immediate.querySelector('.assessment-immediate-list');
+    buildSceneSizeUpCard(immediateList);
+    buildPrimaryAssessmentCard(immediateList);
 
     const unique = new Map();
     (registry?.assessmentTools || []).forEach(tool => {
@@ -650,16 +710,8 @@
       if (!MEASURABLE_TOOL_KEYS.has(tool.key) && !unique.has(tool.key)) unique.set(tool.key, tool);
     });
     const tools = [...unique.values()];
-    buildComplaintSorter(box);
     buildRecommendedAssessments(box, tools);
-    buildAssessmentFilters(box);
-
-    const focused = tools.filter(tool => clinicalCategory(tool) === 'focused');
-    const history = tools.filter(tool => clinicalCategory(tool) === 'history');
-
-    buildAssessmentCategory(box, 'focused', 'Focused Assessment', 'Respiratory, neurological, trauma, abdominal, and pediatric exams', focused, true);
-    buildAssessmentCategory(box, 'history', 'History', 'SAMPLE and OPQRST', history, false);
-    enforceSingleOpen('#assessmentTools', '.assessment-category, .assessment-primary-summary');
+    buildMoreAssessments(box, tools, new Set([...openCategories, ...openSections]));
   }
 
   const TREATMENT_CATEGORY_META = {
@@ -912,6 +964,45 @@
     toast(`${plan.label} recorded — observe and reassess the patient`);
   }
 
+  function captureTreatmentUi() {
+    const box = $('treatmentTools');
+    const drafts = {};
+    box?.querySelectorAll('[data-treatment-id]').forEach(card => {
+      const form = card.querySelector('.treatment-entry-form');
+      if (!form) return;
+      const values = {};
+      [...form.elements].forEach(field => {
+        if (!field.name) return;
+        values[field.name] = field.type === 'checkbox' ? Boolean(field.checked) : field.value;
+      });
+      drafts[card.dataset.treatmentId] = { open: !form.hidden, values };
+    });
+    return {
+      openCategories: detailsState(box, 'data-treatment-category'),
+      drafts,
+      search: $('treatmentSearch')?.value || ''
+    };
+  }
+
+  function restoreTreatmentUi(state = {}) {
+    Object.entries(state.drafts || {}).forEach(([planId, draft]) => {
+      const card = [...document.querySelectorAll('#treatmentTools [data-treatment-id]')]
+        .find(item => item.dataset.treatmentId === planId);
+      const form = card?.querySelector('.treatment-entry-form');
+      const selectButton = card?.querySelector('.treatment-select');
+      if (!form) return;
+      Object.entries(draft.values || {}).forEach(([name, value]) => {
+        const field = form.elements.namedItem(name);
+        if (!field) return;
+        if (field.type === 'checkbox') field.checked = Boolean(value);
+        else field.value = value;
+      });
+      form.hidden = !draft.open;
+      if (selectButton) selectButton.hidden = Boolean(draft.open);
+    });
+    if ($('treatmentSearch')) $('treatmentSearch').value = state.search || '';
+  }
+
   function treatmentFieldMarkup(field) {
     const required = field.required ? 'required' : '';
     const hint = field.hint ? `<small>${escapeHtml(field.hint)}</small>` : '';
@@ -926,6 +1017,7 @@
     const recorded = recordedCount > 0;
     const article = document.createElement('article');
     article.className = `treatment-card treatment-neutral-card${recorded ? ' complete' : ''}`;
+    article.dataset.treatmentId = plan.id;
     const fields = treatmentDocumentation(plan);
     article.innerHTML = `
       <div class="treatment-card-heading">
@@ -955,6 +1047,8 @@
       const certainty = String(form.elements.namedItem('certainty')?.value || 'confident');
       if (certainty === 'need-more-information') { recordUncertainty({ key:plan.id, label:plan.label, value:'Treatment decision deferred pending more information.' }); form.hidden = true; selectButton.hidden = false; return; }
       validation.values.certainty = certainty;
+      form.hidden = true;
+      selectButton.hidden = false;
       recordTreatment(plan, validation.values);
     });
     return article;
@@ -962,11 +1056,12 @@
 
   function buildTreatments() {
     const box = $('treatmentTools');
+    const uiState = captureTreatmentUi();
     box.innerHTML = '';
     box.classList.add('treatment-category-menu');
     const intro = document.createElement('div');
     intro.className = 'treatment-neutral-intro';
-    intro.innerHTML = `<strong>Select care by category.</strong><span>All common EMT-level assessment and treatment choices are available. Local scope, protocol, medication authorization, and medical direction control what may actually be performed. Treatment feedback remain hidden until the final debrief.</span>`;
+    intro.innerHTML = `<strong>Select care by category.</strong><span>All common EMT-level choices remain available. Local scope, protocol, medication authorization, and medical direction control what may actually be performed. Treatment feedback remains hidden until the final debrief.</span>`;
     box.appendChild(intro);
 
     const categories = new Map();
@@ -983,7 +1078,7 @@
       const details = document.createElement('details');
       details.className = `treatment-category treatment-category-${category}`;
       details.dataset.treatmentCategory = category;
-      details.open = treatmentCategoryFocus === category;
+      details.open = treatmentCategoryFocus === category || uiState.openCategories.has(category);
       const recordedCount = plans.filter(treatmentAlreadyRecorded).length;
       details.innerHTML = `<summary><span><strong>${escapeHtml(meta.label)}</strong><small>${escapeHtml(meta.description)}</small></span><em>${recordedCount ? `${recordedCount} recorded` : `${plans.length} options`}</em></summary><div class="treatment-category-list"></div>`;
       const list = details.querySelector('.treatment-category-list');
@@ -991,15 +1086,17 @@
       box.appendChild(details);
     });
 
-    box.appendChild(buildTransportTreatmentCard());
+    const transportCard = buildTransportTreatmentCard();
+    if (uiState.openCategories.has('transport')) transportCard.open = true;
+    box.appendChild(transportCard);
 
     const full = document.createElement('article');
     full.className = 'treatment-card full-treatment-menu';
     full.innerHTML = `<h3>Protocol-specific treatment</h3><p>Use the complete treatment tool for an intervention that is not listed here or requires additional documentation.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general')}">Open complete treatment tool</a>`;
     box.appendChild(full);
+    restoreTreatmentUi(uiState);
     enforceSingleOpen('#treatmentTools', '.treatment-category');
     filterTreatmentMenu($('treatmentSearch')?.value || '');
-    treatmentCategoryFocus = '';
   }
 
   function infoElapsed(value, startedAt) { return elapsedLabel(value, startedAt); }
@@ -1038,18 +1135,59 @@
     log.filter(isInformationUpdate).forEach(event => updates.push(updateFromCareEvent(event)));
     return updates;
   }
+  function setInfoCollapsed(collapsed, options = {}) {
+    const windowEl = $('infoUpdateWindow');
+    if (!windowEl) return;
+    windowEl.dataset.collapsed = collapsed ? 'true' : 'false';
+    windowEl.classList.toggle('is-collapsed', collapsed);
+    const button = $('infoUpdateCollapse');
+    if (button) {
+      button.textContent = collapsed ? '⌄' : '⌃';
+      button.setAttribute('aria-expanded', String(!collapsed));
+      button.setAttribute('aria-label', collapsed ? 'Expand patient update' : 'Collapse patient update');
+    }
+    if (!collapsed && options.markViewed !== false) {
+      const unread = $('infoUpdateUnread');
+      if (unread) unread.hidden = true;
+    }
+  }
+
+  function scheduleInfoCollapse(item, isNew) {
+    clearTimeout(infoAutoCollapseTimer);
+    if (!item || !isNew) return;
+    if (item.kind === 'alert') {
+      infoManuallyCollapsed = false;
+      setInfoCollapsed(false);
+      return;
+    }
+    if (infoManuallyCollapsed) {
+      setInfoCollapsed(true, { markViewed:false });
+      const unread = $('infoUpdateUnread');
+      if (unread) unread.hidden = false;
+      return;
+    }
+    setInfoCollapsed(false);
+    infoAutoCollapseTimer = window.setTimeout(() => {
+      setInfoCollapsed(true, { markViewed:false });
+    }, item.kind === 'dispatch' ? 8000 : 5000);
+  }
+
   function renderInfoUpdate(forceLatest = false) {
     const current = record() || {};
     const nextUpdates = buildInfoUpdates(current);
     const signature = nextUpdates.map(item => `${item.id}:${item.text}`).join('|');
+    const firstRender = !lastInfoSignature;
     const changed = signature !== lastInfoSignature;
     infoUpdates = nextUpdates;
-    if (forceLatest || changed) infoUpdateIndex = Math.max(0, infoUpdates.length - 1);
+    if (firstRender && !forceLatest) infoUpdateIndex = 0;
+    else if (forceLatest || changed) infoUpdateIndex = Math.max(0, infoUpdates.length - 1);
     infoUpdateIndex = Math.max(0, Math.min(infoUpdateIndex, infoUpdates.length - 1));
     lastInfoSignature = signature;
     const item = infoUpdates[infoUpdateIndex];
     if (!item || !$('infoUpdateWindow')) return;
-    $('infoUpdateWindow').className = `info-update-window info-${item.kind || 'assessment'}${$('infoUpdateWindow').dataset.collapsed === 'true' ? ' is-collapsed' : ''}`;
+    const isNew = forceLatest || changed || item.id !== lastInfoItemId;
+    const collapsed = $('infoUpdateWindow').dataset.collapsed === 'true';
+    $('infoUpdateWindow').className = `info-update-window info-${item.kind || 'assessment'}${collapsed ? ' is-collapsed' : ''}`;
     $('infoUpdateType').textContent = item.type;
     $('infoUpdateTitle').textContent = item.title;
     $('infoUpdateText').textContent = item.text;
@@ -1057,6 +1195,8 @@
     $('infoUpdateCount').textContent = `${infoUpdateIndex + 1} of ${infoUpdates.length}`;
     $('infoUpdatePrevious').disabled = infoUpdateIndex <= 0;
     $('infoUpdateNext').disabled = infoUpdateIndex >= infoUpdates.length - 1;
+    scheduleInfoCollapse(item, isNew);
+    lastInfoItemId = item.id || `${item.type}:${item.recordedAt}`;
   }
 
   function discoveredSummary(current = record() || {}) {
@@ -1320,6 +1460,7 @@
   }
 
   function finishScenarioAndOpenDebrief(current, evaluation, incomplete) {
+    const message = $('scenarioCompletionMessage');
     const assignment = assignmentSessionForScenario();
     const state = session?.readState?.(id) || {};
     state.clinicalComplete = !incomplete;
@@ -1396,14 +1537,22 @@
 
   function openSheet(panelId) {
     evaluatePatientCondition(panelId === 'treatmentPanel' ? 'treatment-review' : 'patient-tool-open');
+    refreshFromRecord();
     document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
     $('sheetTitle').textContent = { vitalsPanel: 'Vitals', assessmentPanel: 'Assessment', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
     $('actionSheet').hidden = false;
     $('sheetBackdrop').hidden = false;
     document.body.style.overflow = 'hidden';
-    if (panelId === 'treatmentPanel') buildTreatments();
     if (panelId === 'findingsPanel') renderFindings();
+    if (panelId === 'treatmentPanel' && treatmentCategoryFocus) {
+      const target = document.querySelector(`#treatmentTools [data-treatment-category="${CSS.escape(treatmentCategoryFocus)}"]`);
+      if (target) {
+        target.open = true;
+        window.requestAnimationFrame(() => target.scrollIntoView({ block:'nearest' }));
+      }
+      treatmentCategoryFocus = '';
+    }
   }
 
   function closeSheet() {
@@ -1418,27 +1567,63 @@
     saveFinding(activeFocus.key, activeFocus.finding, 'visual-assessment');
     $('assessmentFocus').hidden = true;
     activeFocus = null;
-    buildAssessments();
   }
 
-  function refreshFromRecord() {
+  function renderDataSignatures(current = record() || {}) {
+    const findings = current.findings || {};
+    const assessmentKeys = (registry?.assessmentTools || []).map(tool => tool.key);
+    const vitalKeys = (registry?.vitalTools || []).filter(tool => MEASURABLE_TOOL_KEYS.has(tool.key)).map(tool => tool.key);
+    const partnerTasks = session?.readPartnerTasks?.(id) || {};
+    const select = keys => Object.fromEntries(keys.map(key => [key, findings[key] || null]));
+    const selectedTasks = keys => Object.fromEntries(keys.map(key => [key, partnerTasks[key] || null]));
+    const careLog = api?.listCareLog?.(current, 'all') || current.careLog || [];
+    return {
+      vitals: dataSignature({ findings:select(vitalKeys), tasks:selectedTasks(vitalKeys), treatments:current.treatments || [], reassessments:current.reassessments || [] }),
+      assessments: dataSignature({ mode:trainingMode(), findings:select(assessmentKeys), tasks:selectedTasks(assessmentKeys), treatments:current.treatments || [], reassessments:current.reassessments || [] }),
+      treatments: dataSignature({ treatments:current.treatments || [], transport:current.transport || current.documentation?.transport || null, handoff:current.documentation?.handoff || null }),
+      findings: dataSignature(careLog),
+      progress: dataSignature({ findings, treatments:current.treatments || [], reassessments:current.reassessments || [], transport:current.transport || null, documentation:current.documentation || {} })
+    };
+  }
+
+  function refreshFromRecord(options = {}) {
+    const force = options === true || options.force === true;
+    const sheetScrollTop = $('actionSheet')?.scrollTop || 0;
     if (!conditionEvaluationActive) evaluatePatientCondition('patient-home');
-    const current = record();
+    const current = record() || {};
     const dynamicState = conditionState(current);
     const patientImage = $('patientImage');
     if (patientImage) patientImage.dataset.conditionMode = dynamicState.imageMode || scenario.imageMode || '';
-    buildVitals();
-    buildAssessments();
-    buildTreatments();
-    renderTransport();
-    renderFindings();
+    const signatures = renderDataSignatures(current);
+
+    if (force || signatures.vitals !== renderSignatures.vitals) {
+      buildVitals();
+      renderSignatures.vitals = signatures.vitals;
+    }
+    if (force || signatures.assessments !== renderSignatures.assessments) {
+      buildAssessments();
+      renderSignatures.assessments = signatures.assessments;
+    }
+    if (force || signatures.treatments !== renderSignatures.treatments) {
+      buildTreatments();
+      renderTransport();
+      renderSignatures.treatments = signatures.treatments;
+    }
+    if (force || signatures.findings !== renderSignatures.findings) {
+      renderFindings();
+      renderSignatures.findings = signatures.findings;
+    }
     renderUnifiedClinicalBar();
     updateCounts();
-    renderProgress();
-    $('dispatch').textContent = current?.dispatch || scenario.title;
-    $('scene').textContent = current?.scene || '';
+    if (force || signatures.progress !== renderSignatures.progress) {
+      renderProgress();
+      renderSignatures.progress = signatures.progress;
+    }
+    $('dispatch').textContent = current.dispatch || scenario.title;
+    $('scene').textContent = current.scene || '';
     renderInfoUpdate();
     updateTimer();
+    restoreSheetScroll(sheetScrollTop);
   }
 
   const initialRecord = ensureRecord();
@@ -1461,15 +1646,29 @@
     findingFilter = button.dataset.logFilter || 'all';
     renderFindings();
   }));
-  $('infoUpdatePrevious').addEventListener('click', () => { infoUpdateIndex = Math.max(0, infoUpdateIndex - 1); renderInfoUpdate(); });
-  $('infoUpdateNext').addEventListener('click', () => { infoUpdateIndex = Math.min(infoUpdates.length - 1, infoUpdateIndex + 1); renderInfoUpdate(); });
-  $('infoUpdateCollapse').addEventListener('click', () => {
-    const collapsed = $('infoUpdateWindow').dataset.collapsed !== 'true';
-    $('infoUpdateWindow').dataset.collapsed = collapsed ? 'true' : 'false';
-    $('infoUpdateCollapse').textContent = collapsed ? '⌄' : '⌃';
-    $('infoUpdateCollapse').setAttribute('aria-expanded', String(!collapsed));
-    $('infoUpdateCollapse').setAttribute('aria-label', collapsed ? 'Expand patient update' : 'Collapse patient update');
+  $('infoUpdatePrevious').addEventListener('click', () => {
+    infoUpdateIndex = Math.max(0, infoUpdateIndex - 1);
+    infoManuallyCollapsed = false;
+    setInfoCollapsed(false);
     renderInfoUpdate();
+  });
+  $('infoUpdateNext').addEventListener('click', () => {
+    infoUpdateIndex = Math.min(infoUpdates.length - 1, infoUpdateIndex + 1);
+    infoManuallyCollapsed = false;
+    setInfoCollapsed(false);
+    renderInfoUpdate();
+  });
+  $('infoUpdateCollapse').addEventListener('click', event => {
+    event.stopPropagation();
+    clearTimeout(infoAutoCollapseTimer);
+    const collapsed = $('infoUpdateWindow').dataset.collapsed !== 'true';
+    infoManuallyCollapsed = collapsed;
+    setInfoCollapsed(collapsed);
+  });
+  $('infoUpdateWindow')?.addEventListener('click', event => {
+    if (event.target.closest('button') || $('infoUpdateWindow').dataset.collapsed !== 'true') return;
+    infoManuallyCollapsed = false;
+    setInfoCollapsed(false);
   });
   document.querySelectorAll('.bottom-nav button').forEach(button => button.addEventListener('click', () => { hideClinicalNextActions(); openSheet(button.dataset.panel); }));
   $('clinicalNextTreatment')?.addEventListener('click', () => {
@@ -1502,8 +1701,6 @@
   $('scenarioControlBackdrop')?.addEventListener('click', closeScenarioControls);
   $('saveAndExitScenario')?.addEventListener('click', endScenario);
   $('resetAndRestartScenario')?.addEventListener('click', resetScenario);
-  $('endScenarioFromProgress')?.addEventListener('click', openScenarioControls);
-  $('resetScenarioFromProgress')?.addEventListener('click', openScenarioControls);
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
     if (!$('assessmentFocus').hidden) { $('assessmentFocus').hidden = true; activeFocus = null; }
@@ -1511,14 +1708,14 @@
   });
   window.addEventListener('emscodesim:patient-record-updated', refreshFromRecord);
   window.addEventListener('emscodesim:scenario-finding-saved', refreshFromRecord);
-  window.addEventListener('emscodesim:partner-task-updated', updatePartnerTasks);
+  window.addEventListener('emscodesim:partner-task-updated', () => { refreshFromRecord(); updatePartnerTasks(); });
   window.addEventListener('emscodesim:partner-task-completed', () => { refreshFromRecord(); renderInfoUpdate(true); updatePartnerTasks(); });
   window.addEventListener('pageshow', () => {
     session?.sync?.(id, { force: true });
     session?.resolvePartnerTasks?.(id);
     const current = record();
     scenarioStartMs = new Date(current?.startedAt || Date.now()).getTime();
-    refreshFromRecord();
+    refreshFromRecord({ force:true });
     window.setTimeout(() => maybeOfferLatestFinding(false), 120);
   });
   timerInterval = window.setInterval(updateTimer, 1000);
@@ -1530,5 +1727,6 @@
     clearInterval(timerInterval);
     clearInterval(partnerInterval);
     clearInterval(conditionInterval);
+    clearTimeout(infoAutoCollapseTimer);
   }, { once: true });
 })();
