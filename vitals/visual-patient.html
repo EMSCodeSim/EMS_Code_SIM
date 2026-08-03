@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=17">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=18">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=3">
 </head>
 <body>
@@ -96,7 +96,7 @@
     </section>
 
     <section id="treatmentPanel" class="vp-panel" hidden>
-      <p class="sub">Select an intervention, answer the clinical follow-up, then reassess.</p>
+      <p class="sub">Choose treatment by clinical category. The menu does not identify which option is correct.</p>
       <div id="treatmentTools" class="treatment-list"></div>
     </section>
 
@@ -153,13 +153,26 @@
     </div>
   </div>
 
+
+  <section id="clinicalNextActions" class="clinical-next-actions" hidden aria-live="polite" aria-labelledby="clinicalNextTitle">
+    <button id="clinicalNextClose" class="clinical-next-close" type="button" aria-label="Dismiss next-action choices">×</button>
+    <p>ABNORMAL FINDING RECORDED</p>
+    <h2 id="clinicalNextTitle">Assessment finding</h2>
+    <span id="clinicalNextText">Choose the next patient-care action.</span>
+    <div class="clinical-next-buttons">
+      <button id="clinicalNextTreatment" type="button">Treat finding</button>
+      <button id="clinicalNextVitals" type="button">Obtain vitals</button>
+      <button id="clinicalNextPatient" type="button">Return to patient</button>
+    </div>
+  </section>
+
   <div id="toast" class="toast" hidden aria-live="polite"></div>
   <script src="/vitals/patient-record.js"></script>
   <script src="/vitals/scenario-definitions.js?v=1"></script><script src="/vitals/scenario-session.js?v=6"></script>
   <script src="/vitals/scenario-runtime.js?v=2"></script>
   <script src="/vitals/scenario-tool-registry.js?v=3"></script>
   <script src="/vitals/scenario-phase-model.js?v=1"></script>
-  <script src="/vitals/visual-patient.js?v=21"></script>
+  <script src="/vitals/visual-patient.js?v=22"></script>
   <script src="/vitals/scenario-guided-start.js?v=4"></script>
 </body>
 </html>

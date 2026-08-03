@@ -40,6 +40,8 @@
 
   let partnerInterval = 0;
   let conditionEvaluationActive = false;
+  let treatmentCategoryFocus = '';
+  let nextActionFinding = null;
 
   function ensureRecord() {
     const restored = session?.sync?.(id) || api?.active?.();
@@ -113,6 +115,9 @@
       else api?.setFinding?.(key, value, payload);
       refreshFromRecord();
       toast(`${labelFor(key)} recorded`);
+      if (payload.status === 'abnormal' || payload.normality === 'not-normal') {
+        window.setTimeout(() => showClinicalNextActions({ key, label: payload.label || labelFor(key), value, finding: value, status: 'abnormal', normality: 'not-normal' }), 80);
+      }
     } catch (error) {
       console.error(error);
       toast('Finding was not saved. Try again before leaving this screen.');
@@ -592,6 +597,82 @@
     buildAssessmentCategory(box, 'history', 'History', 'SAMPLE and OPQRST', history, false);
   }
 
+  const TREATMENT_CATEGORY_META = {
+    airway: { label:'Airway', description:'Positioning, suction, airway protection, and airway support.' },
+    breathing: { label:'Breathing', description:'Oxygenation, ventilation, positioning, and respiratory support.' },
+    circulation: { label:'Circulation', description:'Bleeding control, shock care, perfusion support, and temperature protection.' },
+    medications: { label:'Medications', description:'Medication assistance and protocol-authorized medication care.' },
+    trauma: { label:'Trauma', description:'Trauma-specific stabilization and movement precautions.' },
+    transport: { label:'Transport actions', description:'Time-sensitive movement and destination-related treatment actions.' },
+    support: { label:'Other care', description:'Supportive care and protocol-dependent options.' }
+  };
+
+  function treatmentCategory(plan) {
+    const idValue = String(plan?.id || '').toLowerCase();
+    const labelValue = String(plan?.label || '').toLowerCase();
+    if (/airway_position|airway_support|suction|airway/.test(idValue) || /protect airway|airway support|suction/.test(labelValue)) return 'airway';
+    if (/bronchodilator|oral_glucose|medication|naloxone|epinephrine|aspirin|nitro/.test(idValue) || /inhaler|bronchodilator|oral glucose|medication|naloxone|epinephrine|aspirin|nitro/.test(labelValue)) return 'medications';
+    if (/oxygen|bvm|ventilation|position_comfort|caregiver_position/.test(idValue) || /oxygen|ventilat|position of comfort|caregiver/.test(labelValue)) return 'breathing';
+    if (/hemorrhage|shock|perfusion|warming/.test(idValue) || /hemorrhage|shock|bleeding|keep.*warm/.test(labelValue)) return 'circulation';
+    if (/spinal|trauma/.test(idValue) || /spinal|trauma/.test(labelValue)) return 'trauma';
+    if (/rapid_transport|transport/.test(idValue) || /transport/.test(labelValue)) return 'transport';
+    return 'support';
+  }
+
+  function allTreatmentPlans() {
+    const unique = new Map();
+    const currentPlans = TREATMENT_PLANS[id] || [];
+    currentPlans.forEach(plan => unique.set(plan.id, plan));
+    Object.values(TREATMENT_PLANS).flat().forEach(plan => {
+      if (!unique.has(plan.id)) unique.set(plan.id, plan);
+    });
+    return [...unique.values()];
+  }
+
+  function nextTreatmentCategoryForFinding(key) {
+    if (key === 'airway') return 'airway';
+    if (['breathing','breath_sounds','respirations','spo2','pediatric_assessment_triangle'].includes(key)) return 'breathing';
+    if (['perfusion','pulse','blood_pressure','skin'].includes(key)) return 'circulation';
+    if (['blood_glucose','mental_status'].includes(key)) return 'medications';
+    if (['trauma_assessment','chest_assessment','abdominal_assessment','motor_sensory'].includes(key)) return 'trauma';
+    return 'support';
+  }
+
+  function showClinicalNextActions(finding) {
+    const panel = $('clinicalNextActions');
+    if (!panel || !finding) return;
+    nextActionFinding = finding;
+    const key = finding.key || finding.assessment || finding.context || '';
+    const label = finding.label || labelFor(key) || 'Abnormal finding';
+    const value = finding.value || finding.finding || 'An abnormal finding was recorded.';
+    $('clinicalNextTitle').textContent = label;
+    $('clinicalNextText').textContent = value;
+    panel.hidden = false;
+  }
+
+  function hideClinicalNextActions() {
+    const panel = $('clinicalNextActions');
+    if (panel) panel.hidden = true;
+    nextActionFinding = null;
+  }
+
+  function maybeOfferLatestFinding(force = false) {
+    const current = record();
+    const events = api?.orderedEvents?.(current) || current?.careLog || [];
+    const candidate = [...events].reverse().find(event => {
+      const isAssessment = event.type === 'finding' || event.type === 'assessment' || event.category === 'assessment';
+      return isAssessment && abnormalEvent(event);
+    });
+    if (!candidate) return;
+    const eventId = candidate.id || candidate.eventId || `${candidate.key || ''}:${candidate.recordedAt || ''}:${candidate.value || ''}`;
+    const storageKey = `emscodesim_next_action_${id}`;
+    if (!force && sessionStorage.getItem(storageKey) === eventId) return;
+    const eventTimeMs = new Date(candidate.recordedAt || 0).getTime();
+    if (!force && Number.isFinite(eventTimeMs) && Date.now() - eventTimeMs > 45000) return;
+    sessionStorage.setItem(storageKey, eventId);
+    showClinicalNextActions(candidate);
+  }
+
   function treatmentEvidence(plan, current = record()) {
     const findings = current?.findings || {};
     const present = (plan.evidence || []).filter(key => findings[key]);
@@ -668,27 +749,18 @@
   }
 
   function renderTreatmentCard(plan) {
-    const decision = treatmentDecision(plan);
     const recorded = treatmentAlreadyRecorded(plan);
     const article = document.createElement('article');
-    article.className = `treatment-card treatment-decision-card${assessmentMode() ? ' assessment-mode' : ` state-${decision.code}`}${recorded ? ' complete' : ''}`;
-    const decisionTag = assessmentMode() ? '' : `<span class="requirement-tag ${decision.code === 'indicated' ? 'appropriate' : decision.code === 'contraindicated' ? 'not-indicated' : 'optional'}">${escapeHtml(decision.label)}</span>`;
-    const decisionStatus = recorded ? 'Recorded' : assessmentMode() ? 'Available' : decision.label;
-    const clinicalCheck = assessmentMode() ? '' : `<div class="treatment-indication"><strong>Clinical check:</strong> ${escapeHtml(decision.detail)}</div>`;
+    article.className = `treatment-card treatment-neutral-card${recorded ? ' complete' : ''}`;
     article.innerHTML = `
       <div class="treatment-card-heading">
-        <div>${decisionTag}<h3>${escapeHtml(plan.label)}</h3></div>
-        <span class="status-chip ${recorded ? 'done' : ''}">${decisionStatus}</span>
+        <div><h3>${escapeHtml(plan.label)}</h3></div>
+        <span class="status-chip ${recorded ? 'done' : ''}">${recorded ? 'Recorded' : 'Available'}</span>
       </div>
       <p>${escapeHtml(plan.summary)}</p>
-      ${clinicalCheck}
-      <div class="treatment-targets"><strong>Reassess after treatment:</strong> ${escapeHtml((plan.targets || []).map(labelFor).join(', ') || 'Patient condition')}</div>
       <button class="primary-action treatment-apply" type="button" ${recorded ? 'disabled' : ''}>${recorded ? 'Treatment recorded' : 'Perform treatment'}</button>`;
     article.querySelector('.treatment-apply')?.addEventListener('click', () => {
-      const warning = assessmentMode() ? `Perform ${plan.label}? This decision will be reviewed during debrief.` : decision.code === 'indicated' ? `Perform ${plan.label}?` : `${decision.label}: ${decision.detail}
-
-Record this decision and its consequence?`;
-      if (!window.confirm(warning)) return;
+      if (!window.confirm(`Perform ${plan.label}? This action will be timed, logged, and reviewed during debrief.`)) return;
       recordTreatment(plan);
     });
     return article;
@@ -697,33 +769,39 @@ Record this decision and its consequence?`;
   function buildTreatments() {
     const box = $('treatmentTools');
     box.innerHTML = '';
-    const plans = TREATMENT_PLANS[id] || [];
+    box.classList.add('treatment-category-menu');
     const intro = document.createElement('div');
-    intro.className = 'treatment-guidance';
-    if (assessmentMode()) {
-      intro.innerHTML = `<strong>Choose care from your findings.</strong><span>Treatment indications and decision feedback remain hidden until the final debrief.</span>`;
-      box.appendChild(intro);
-      plans.forEach(plan => box.appendChild(renderTreatmentCard(plan)));
-    } else {
-      const indicated = plans.filter(plan => treatmentDecision(plan).code === 'indicated');
-      const others = plans.filter(plan => !indicated.includes(plan));
-      intro.innerHTML = `<strong>Treat findings, not the scenario title.</strong><span>Options supported by abnormal findings appear first. Every decision is timed, logged, and linked to targeted reassessment.</span>`;
-      box.appendChild(intro);
-      indicated.forEach(plan => box.appendChild(renderTreatmentCard(plan)));
-      if (others.length) {
-        const details = document.createElement('details');
-        details.className = 'more-treatments';
-        details.open = indicated.length === 0;
-        details.innerHTML = '<summary>Other treatment options <span>Assessment needed, not indicated, or contraindicated</span></summary><div class="more-treatment-list"></div>';
-        const list = details.querySelector('.more-treatment-list');
-        others.forEach(plan => list.appendChild(renderTreatmentCard(plan)));
-        box.appendChild(details);
-      }
-    }
+    intro.className = 'treatment-neutral-intro';
+    intro.innerHTML = `<strong>Select care by category.</strong><span>Treatment indications and decision feedback remain hidden until the final debrief. Use your assessment findings, vital signs, protocols, and clinical judgment.</span>`;
+    box.appendChild(intro);
+
+    const categories = new Map();
+    allTreatmentPlans().forEach(plan => {
+      const category = treatmentCategory(plan);
+      if (!categories.has(category)) categories.set(category, []);
+      categories.get(category).push(plan);
+    });
+
+    Object.keys(TREATMENT_CATEGORY_META).forEach(category => {
+      const plans = categories.get(category) || [];
+      if (!plans.length) return;
+      const meta = TREATMENT_CATEGORY_META[category];
+      const details = document.createElement('details');
+      details.className = `treatment-category treatment-category-${category}`;
+      details.dataset.treatmentCategory = category;
+      details.open = treatmentCategoryFocus === category;
+      const recordedCount = plans.filter(treatmentAlreadyRecorded).length;
+      details.innerHTML = `<summary><span><strong>${escapeHtml(meta.label)}</strong><small>${escapeHtml(meta.description)}</small></span><em>${recordedCount ? `${recordedCount} recorded` : `${plans.length} options`}</em></summary><div class="treatment-category-list"></div>`;
+      const list = details.querySelector('.treatment-category-list');
+      plans.forEach(plan => list.appendChild(renderTreatmentCard(plan)));
+      box.appendChild(details);
+    });
+
     const full = document.createElement('article');
     full.className = 'treatment-card full-treatment-menu';
-    full.innerHTML = `${modeTag('Protocol-dependent options', 'optional')}<h3>Complete treatment and reassessment tool</h3><p>Use this when the needed intervention is not represented above or when advanced decision practice is required.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general')}">Open complete treatment tool</a>`;
+    full.innerHTML = `<h3>Protocol-specific treatment</h3><p>Use the complete treatment tool for an intervention that is not listed here or requires additional documentation.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general')}">Open complete treatment tool</a>`;
     box.appendChild(full);
+    treatmentCategoryFocus = '';
   }
 
   function infoElapsed(value, startedAt) { return elapsedLabel(value, startedAt); }
@@ -1006,6 +1084,7 @@ Record this decision and its consequence?`;
     $('actionSheet').hidden = false;
     $('sheetBackdrop').hidden = false;
     document.body.style.overflow = 'hidden';
+    if (panelId === 'treatmentPanel') buildTreatments();
     if (panelId === 'findingsPanel') renderFindings();
   }
 
@@ -1073,7 +1152,15 @@ Record this decision and its consequence?`;
     $('infoUpdateCollapse').setAttribute('aria-label', collapsed ? 'Expand patient update' : 'Collapse patient update');
     renderInfoUpdate();
   });
-  document.querySelectorAll('.bottom-nav button').forEach(button => button.addEventListener('click', () => openSheet(button.dataset.panel)));
+  document.querySelectorAll('.bottom-nav button').forEach(button => button.addEventListener('click', () => { hideClinicalNextActions(); openSheet(button.dataset.panel); }));
+  $('clinicalNextTreatment')?.addEventListener('click', () => {
+    treatmentCategoryFocus = nextTreatmentCategoryForFinding(nextActionFinding?.key || '');
+    hideClinicalNextActions();
+    openSheet('treatmentPanel');
+  });
+  $('clinicalNextVitals')?.addEventListener('click', () => { hideClinicalNextActions(); openSheet('vitalsPanel'); });
+  $('clinicalNextPatient')?.addEventListener('click', () => { hideClinicalNextActions(); closeSheet(); });
+  $('clinicalNextClose')?.addEventListener('click', hideClinicalNextActions);
   $('closeSheet').addEventListener('click', closeSheet);
   $('sheetBackdrop').addEventListener('click', closeSheet);
   $('recordFocus').addEventListener('click', finishFocus);
@@ -1097,6 +1184,7 @@ Record this decision and its consequence?`;
     const current = record();
     scenarioStartMs = new Date(current?.startedAt || Date.now()).getTime();
     refreshFromRecord();
+    window.setTimeout(() => maybeOfferLatestFinding(false), 120);
   });
   timerInterval = window.setInterval(updateTimer, 1000);
   partnerInterval = window.setInterval(updatePartnerTasks, 1000);
