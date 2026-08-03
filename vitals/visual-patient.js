@@ -17,6 +17,33 @@
 
   const TREATMENT_PLANS = window.EMSCodeSimScenarioDefinitions?.TREATMENT_PLANS || {};
 
+  // Broad EMT-level care library. Local protocols and medical direction always control.
+  const EMT_TREATMENT_LIBRARY = [
+    { id:'manual_airway_position', label:'Manual airway positioning', summary:'Open and maintain the airway using positioning appropriate to the patient.', category:'airway', evidence:['airway'], targets:['airway','breathing'], response:'Airway positioning is performed. Reassess patency and breathing.' },
+    { id:'suction_airway', label:'Suction the airway', summary:'Clear visible or audible secretions while limiting suction time.', category:'airway', evidence:['airway'], targets:['airway','breathing','spo2'], response:'Secretions are removed. Reassess airway sounds, patency, and oxygenation.', documentation:[{name:'device',label:'Suction device',type:'select',required:true,options:['Rigid tonsil-tip catheter','Flexible suction catheter']}] },
+    { id:'opa', label:'Insert an oropharyngeal airway', summary:'Select and insert an OPA when the patient lacks a gag reflex.', category:'airway', evidence:['airway','mental_status'], targets:['airway','breathing'], response:'The airway adjunct is placed. Reassess tolerance and ventilation.', documentation:[{name:'size',label:'OPA size / measurement',required:true,placeholder:'Document selected size or measurement'}] },
+    { id:'npa', label:'Insert a nasopharyngeal airway', summary:'Select and insert an NPA when appropriate and not contraindicated.', category:'airway', evidence:['airway','mental_status'], targets:['airway','breathing'], response:'The airway adjunct is placed. Reassess patency and tolerance.', documentation:[{name:'size',label:'NPA size / measurement',required:true,placeholder:'Document selected size or measurement'}] },
+    { id:'foreign_body_airway', label:'Relieve foreign-body airway obstruction', summary:'Use age-appropriate conscious or unconscious choking care.', category:'airway', evidence:['airway'], targets:['airway','breathing','mental_status'], response:'Foreign-body airway care is performed. Reassess air movement and responsiveness.', documentation:[{name:'method',label:'Technique',type:'select',required:true,options:['Abdominal thrusts','Chest thrusts','Back slaps and chest thrusts','CPR with airway checks']}] },
+    { id:'oxygen_general', label:'Administer oxygen', summary:'Choose a delivery device and flow based on the patient presentation and protocol.', category:'breathing', evidence:['breathing','spo2'], targets:['breathing','respirations','spo2'], response:'Oxygen is applied. Reassess respiratory effort and oxygenation.', documentation:[{name:'device',label:'Delivery device',type:'select',required:true,options:['Nasal cannula','Nonrebreather mask','Venturi mask','Blow-by oxygen']},{name:'flow',label:'Flow rate',required:true,placeholder:'L/min'}] },
+    { id:'bvm_general', label:'Assist ventilations with BVM', summary:'Provide age-appropriate assisted ventilations with visible chest rise.', category:'breathing', evidence:['breathing','respirations'], targets:['airway','breathing','respirations','spo2'], response:'Assisted ventilations are started. Reassess chest rise, rate, and oxygenation.', documentation:[{name:'rate',label:'Ventilation rate',required:true,placeholder:'breaths/min'},{name:'device',label:'Airway adjunct / setup',type:'select',required:true,options:['BVM only','BVM with OPA','BVM with NPA','Two-person BVM']}] },
+    { id:'cpap', label:'Apply CPAP', summary:'Apply CPAP when permitted and the patient meets local indications.', category:'breathing', evidence:['breathing','spo2','blood_pressure'], targets:['breathing','respirations','spo2','blood_pressure'], response:'CPAP is applied. Reassess tolerance, blood pressure, breathing, and SpO₂.', documentation:[{name:'pressure',label:'CPAP pressure',required:true,placeholder:'cm H2O'}] },
+    { id:'control_bleeding', label:'Control external bleeding', summary:'Use direct pressure, pressure dressing, wound packing, or tourniquet as indicated.', category:'circulation', evidence:['perfusion','trauma_assessment'], targets:['perfusion','pulse','blood_pressure','skin'], response:'Bleeding-control care is applied. Reassess hemorrhage and perfusion.', documentation:[{name:'method',label:'Method',type:'select',required:true,options:['Direct pressure','Pressure dressing','Wound packing','Hemostatic dressing','Tourniquet']}] },
+    { id:'shock_care', label:'Treat for shock', summary:'Maintain temperature, position appropriately, minimize delays, and reassess perfusion.', category:'circulation', evidence:['perfusion','skin','blood_pressure'], targets:['perfusion','pulse','blood_pressure','skin','mental_status'], response:'Shock precautions are started. Reassess perfusion and mental status.' },
+    { id:'cpr_aed', label:'Begin CPR and apply AED', summary:'Perform high-quality CPR and use the AED for a pulseless patient.', category:'circulation', evidence:['pulse','breathing','mental_status'], targets:['pulse','breathing','mental_status'], response:'Resuscitation is underway. Follow AED prompts and reassess at appropriate intervals.', documentation:[{name:'rate',label:'Compression rate',required:true,placeholder:'compressions/min'},{name:'ratio',label:'Compression-to-ventilation ratio',required:true,placeholder:'Example: 30:2'}] },
+    { id:'aspirin', label:'Administer aspirin', summary:'Administer protocol-approved aspirin for suspected acute coronary syndrome after contraindication screening.', category:'medications', evidence:['pain','blood_pressure'], targets:['pain','blood_pressure'], response:'Aspirin is administered. Continue cardiac assessment and monitor for change.', documentation:[{name:'dose',label:'Dose',required:true,placeholder:'mg'},{name:'route',label:'Route',type:'select',required:true,options:['Oral, chewed']}] },
+    { id:'nitroglycerin_assist', label:'Assist with prescribed nitroglycerin', summary:'Verify prescription, blood pressure, dose, and contraindications before assisting.', category:'medications', evidence:['pain','blood_pressure'], targets:['pain','blood_pressure'], response:'Nitroglycerin assistance is completed. Reassess pain and blood pressure.', documentation:[{name:'dose',label:'Dose',required:true,placeholder:'mg or tablet/spray'},{name:'route',label:'Route',type:'select',required:true,options:['Sublingual tablet','Sublingual spray']}] },
+    { id:'epinephrine_auto', label:'Administer epinephrine auto-injector', summary:'Use for suspected severe allergic reaction/anaphylaxis under protocol.', category:'medications', evidence:['airway','breathing','skin','perfusion'], targets:['airway','breathing','skin','perfusion','pulse'], response:'Epinephrine is administered. Reassess airway, breathing, perfusion, and pulse.', documentation:[{name:'dose',label:'Dose',required:true,placeholder:'mg'},{name:'route',label:'Route',type:'select',required:true,options:['IM auto-injector']}] },
+    { id:'naloxone', label:'Administer naloxone', summary:'Use for suspected opioid toxicity with respiratory depression under protocol.', category:'medications', evidence:['breathing','respirations','mental_status'], targets:['breathing','respirations','mental_status','spo2'], response:'Naloxone is administered. Reassess ventilation and mental status.', documentation:[{name:'dose',label:'Dose',required:true,placeholder:'mg'},{name:'route',label:'Route',type:'select',required:true,options:['Intranasal','Intramuscular','Auto-injector']}] },
+    { id:'oral_glucose_general', label:'Administer oral glucose', summary:'Use when hypoglycemia is suspected and the patient can swallow safely.', category:'medications', evidence:['blood_glucose','mental_status','airway'], targets:['blood_glucose','mental_status','airway'], response:'Oral glucose is administered. Reassess glucose and mental status.', documentation:[{name:'dose',label:'Dose',required:true,placeholder:'g'},{name:'route',label:'Route',type:'select',required:true,options:['Oral / buccal']}] },
+    { id:'bronchodilator_general', label:'Assist/administer bronchodilator', summary:'Use a prescribed or protocol-authorized bronchodilator after medication checks.', category:'medications', evidence:['breathing','breath_sounds'], targets:['breathing','breath_sounds','respirations','spo2','pulse'], response:'Bronchodilator treatment is delivered. Reassess air movement, wheezing, pulse, and SpO₂.', documentation:[{name:'medication',label:'Medication',type:'select',required:true,options:['Albuterol nebulizer','Albuterol MDI']},{name:'dose',label:'Dose',required:true,placeholder:'mg or puffs'},{name:'route',label:'Route',type:'select',required:true,options:['Nebulized inhalation','Metered-dose inhaler']}] },
+    { id:'splint', label:'Splint an extremity injury', summary:'Assess distal function, stabilize the injury, and reassess distal function.', category:'trauma', evidence:['trauma_assessment','motor_sensory'], targets:['trauma_assessment','motor_sensory','pain'], response:'The injury is splinted. Reassess distal pulse, motor function, sensation, and pain.', documentation:[{name:'device',label:'Splint type',required:true,placeholder:'Document splint used'}] },
+    { id:'spinal_precautions', label:'Apply spinal motion restriction', summary:'Apply patient-centered motion restriction when assessment findings indicate it.', category:'trauma', evidence:['trauma_assessment','motor_sensory'], targets:['trauma_assessment','motor_sensory'], response:'Motion restriction is applied. Continue neurologic reassessment.' },
+    { id:'burn_care', label:'Provide burn care', summary:'Stop the burning process, cover appropriately, prevent hypothermia, and reassess.', category:'trauma', evidence:['trauma_assessment','skin'], targets:['skin','pain','perfusion'], response:'Burn care is provided. Reassess pain, perfusion, and temperature.' },
+    { id:'eye_irrigation', label:'Irrigate the eye', summary:'Irrigate chemical contamination while protecting the unaffected eye.', category:'trauma', evidence:['trauma_assessment'], targets:['trauma_assessment','pain'], response:'Eye irrigation is underway. Reassess pain and visual complaint.' },
+    { id:'assist_childbirth', label:'Assist emergency childbirth', summary:'Prepare for delivery, support the newborn, and manage immediate postpartum care.', category:'support', evidence:['abdominal_assessment'], targets:['perfusion','mental_status'], response:'Delivery care is provided and maternal/newborn reassessment continues.' },
+    { id:'request_als', label:'Request ALS / additional resources', summary:'Request resources based on patient acuity, anticipated care, and scene needs.', category:'support', evidence:[], targets:[], response:'Additional resources are requested.' }
+  ];
+
   const scenario = CASES[requestedId] || CASES.asthma;
   const id = CASES[requestedId] ? requestedId : 'asthma';
   const $ = value => document.getElementById(value);
@@ -156,6 +183,7 @@
 
   function renderVitalTool(tool) {
     const complete = existing(tool.key);
+    const repeatHref = complete ? (() => { const u = new URL(toolUrl(tool.url), location.origin); u.searchParams.set('reassess','1'); return `${u.pathname}${u.search}${u.hash}`; })() : toolUrl(tool.url);
     const task = partnerTaskFor(tool.key);
     const pending = task?.status === 'pending' && !complete;
     const queued = task?.status === 'queued' && !complete;
@@ -165,8 +193,8 @@
     article.innerHTML = `
       <div class="tool-head"><div>${modeTag(classificationLabel(tool.key), classificationClass(tool.key))}<h3>${escapeHtml(tool.label)}</h3><p>${escapeHtml(tool.description)}</p></div>
       <span class="status-chip ${complete ? 'done' : pending || queued ? 'pending' : ''}">${complete ? 'Obtained' : pending ? 'Partner working' : queued ? 'Waiting for partner' : 'Not taken'}</span></div>
-      <div class="tool-actions"><a href="${toolUrl(tool.url)}">Perform</a>
-      <button class="partner-action" type="button" ${complete || pending || queued ? 'disabled' : ''}>${complete ? 'Complete' : pending ? 'In progress' : queued ? 'Queued' : 'Assign to partner'}</button></div>
+      <div class="tool-actions"><a href="${repeatHref}">${complete ? 'Reassess' : 'Perform'}</a>
+      <button class="partner-action" type="button" ${pending || queued ? 'disabled' : ''}>${pending ? 'In progress' : queued ? 'Queued' : complete ? 'Assign reassessment' : 'Assign to partner'}</button></div>
       <div class="assignment-progress" ${pending || queued ? '' : 'hidden'}>${pending ? `Partner gathering ${escapeHtml(tool.label.toLowerCase())}… ${secondsRemaining(task)}s` : queued ? `Queued — partner will start after the current skill.` : ''}</div>`;
     const button = article.querySelector('.partner-action');
     button?.addEventListener('click', () => {
@@ -338,7 +366,7 @@
   function assessmentHref(tool, key) {
     const state = assessmentState(key);
     const base = toolUrl(tool?.url || `/vitals/${key}-assessment.html`, 'Patient', key);
-    if (state.code !== 'reassessment-due') return base;
+    if (state.code === 'not-assessed') return base;
     const url = new URL(base, location.origin);
     url.searchParams.set('reassess', '1');
     return `${url.pathname}${url.search}${url.hash}`;
@@ -355,7 +383,7 @@
 
   function assessmentActionLabel(state) {
     if (state.code === 'reassessment-due') return 'Reassess';
-    if (state.code !== 'not-assessed') return 'Review';
+    if (state.code !== 'not-assessed') return 'Reassess';
     return 'Open';
   }
 
@@ -424,6 +452,38 @@
     box.appendChild(section);
   }
 
+  const COMPLAINT_SORTS = {
+    all: { label:'All assessments', keys:[] },
+    breathing: { label:'Breathing / airway', keys:['airway','breathing','breath_sounds','chest_assessment','pediatric_assessment_triangle','skin','mental_status'] },
+    cardiac: { label:'Chest pain / circulation', keys:['perfusion','pain','skin','mental_status','chest_assessment'] },
+    neuro: { label:'Neurologic / altered mental status', keys:['mental_status','pupils','motor_sensory','stroke','blood_glucose','airway'] },
+    trauma: { label:'Trauma', keys:['trauma_assessment','chest_assessment','abdominal_assessment','motor_sensory','skin','pain'] },
+    abdominal: { label:'Abdominal / medical', keys:['abdominal_assessment','pain','sample','mental_status','skin'] },
+    pediatric: { label:'Pediatric', keys:['pediatric_assessment_triangle','airway','breathing','skin','mental_status','sample'] },
+    history: { label:'History', keys:['sample','pain'] }
+  };
+
+  function applyAssessmentComplaintSort(box, sortId='all') {
+    const allowed = new Set(COMPLAINT_SORTS[sortId]?.keys || []);
+    box.querySelectorAll('.assessment-compact-row').forEach(row => {
+      row.dataset.complaintHidden = sortId !== 'all' && !allowed.has(row.dataset.assessmentKey) ? 'true' : 'false';
+      if (row.dataset.complaintHidden === 'true') row.hidden = true;
+    });
+    box.querySelectorAll('.assessment-category').forEach(category => {
+      const visible = [...category.querySelectorAll('.assessment-compact-row')].some(row => row.dataset.complaintHidden !== 'true' && !row.hidden);
+      category.hidden = !visible;
+    });
+  }
+
+  function buildComplaintSorter(box) {
+    const wrap = document.createElement('div');
+    wrap.className = 'assessment-complaint-sort';
+    wrap.innerHTML = `<label><span>Quick sort by chief complaint</span><select aria-label="Sort assessments by chief complaint">${Object.entries(COMPLAINT_SORTS).map(([key,item]) => `<option value="${key}">${escapeHtml(item.label)}</option>`).join('')}</select></label><small>This changes organization only; it does not identify the diagnosis or correct assessment.</small>`;
+    const select = wrap.querySelector('select');
+    select.addEventListener('change', () => applyAssessmentComplaintSort(box, select.value));
+    box.appendChild(wrap);
+  }
+
   function buildAssessmentFilters(box) {
     const nav = document.createElement('div');
     nav.className = 'assessment-filter-bar';
@@ -446,8 +506,9 @@
             || (filter === 'incomplete' && (state === 'not-assessed' || state === 'reassessment-due'))
             || (filter === 'abnormal' && ['abnormal','reassessment-due','worsened'].includes(state))
             || (filter === 'next' && (state === 'not-assessed' || state === 'reassessment-due'));
-          row.hidden = !show;
-          if (show) visible += 1;
+          const complaintVisible = row.dataset.complaintHidden !== 'true';
+          row.hidden = !(show && complaintVisible);
+          if (show && complaintVisible) visible += 1;
         });
         category.hidden = visible === 0;
       });
@@ -589,6 +650,7 @@
       if (!MEASURABLE_TOOL_KEYS.has(tool.key) && !unique.has(tool.key)) unique.set(tool.key, tool);
     });
     const tools = [...unique.values()];
+    buildComplaintSorter(box);
     buildRecommendedAssessments(box, tools);
     buildAssessmentFilters(box);
 
@@ -610,6 +672,7 @@
   };
 
   function treatmentCategory(plan) {
+    if (plan?.category && TREATMENT_CATEGORY_META[plan.category]) return plan.category;
     const idValue = String(plan?.id || '').toLowerCase();
     const labelValue = String(plan?.label || '').toLowerCase();
     if (/airway_position|airway_support|suction|airway/.test(idValue) || /protect airway|airway support|suction/.test(labelValue)) return 'airway';
@@ -627,6 +690,10 @@
     currentPlans.forEach(plan => unique.set(plan.id, plan));
     Object.values(TREATMENT_PLANS).flat().forEach(plan => {
       if (!unique.has(plan.id)) unique.set(plan.id, plan);
+    });
+    EMT_TREATMENT_LIBRARY.forEach(plan => {
+      const normalized = { ...plan, category: plan.category || treatmentCategory(plan) };
+      if (!unique.has(normalized.id)) unique.set(normalized.id, normalized);
     });
     return [...unique.values()].filter(plan => treatmentCategory(plan) !== 'transport');
   }
@@ -700,9 +767,11 @@
     return { code:'not-indicated', label:'Not indicated', detail:'Available findings are normal or do not support this treatment.' };
   }
 
-  function treatmentAlreadyRecorded(plan) {
-    return (record()?.treatments || []).some(item => item.actionId === plan.id);
+  function treatmentCount(plan) {
+    return (record()?.treatments || []).filter(item => item.actionId === plan.id).length;
   }
+
+  function treatmentAlreadyRecorded(plan) { return treatmentCount(plan) > 0; }
 
   function treatmentDocumentation(plan) {
     return Array.isArray(plan.documentation) ? plan.documentation : [];
@@ -852,17 +921,18 @@
   }
 
   function renderTreatmentCard(plan) {
-    const recorded = treatmentAlreadyRecorded(plan);
+    const recordedCount = treatmentCount(plan);
+    const recorded = recordedCount > 0;
     const article = document.createElement('article');
     article.className = `treatment-card treatment-neutral-card${recorded ? ' complete' : ''}`;
     const fields = treatmentDocumentation(plan);
     article.innerHTML = `
       <div class="treatment-card-heading">
         <div><h3>${escapeHtml(plan.label)}</h3></div>
-        <span class="status-chip ${recorded ? 'done' : ''}">${recorded ? 'Recorded' : 'Available'}</span>
+        <span class="status-chip ${recorded ? 'done' : ''}">${recorded ? `${recordedCount} recorded` : 'Available'}</span>
       </div>
       <p>${escapeHtml(plan.summary)}</p>
-      <button class="primary-action treatment-select" type="button" ${recorded ? 'disabled' : ''}>${recorded ? 'Treatment recorded' : 'Select treatment'}</button>
+      <button class="primary-action treatment-select" type="button">${recorded ? (/medication|aspirin|nitro|epinephrine|naloxone|glucose|bronchodilator/i.test(`${plan.id} ${plan.label}`) ? 'Give another dose' : 'Perform again') : 'Select treatment'}</button>
       <form class="treatment-entry-form" hidden>
         ${fields.map(treatmentFieldMarkup).join('')}
         <label>Decision confidence<select name="certainty"><option value="confident">Confident</option><option value="uncertain">Uncertain — proceeding while monitoring</option><option value="need-more-information">Need more information before committing</option></select></label>
@@ -895,7 +965,7 @@
     box.classList.add('treatment-category-menu');
     const intro = document.createElement('div');
     intro.className = 'treatment-neutral-intro';
-    intro.innerHTML = `<strong>Select care by category.</strong><span>Treatment indications and decision feedback remain hidden until the final debrief. Use your assessment findings, vital signs, protocols, and clinical judgment.</span>`;
+    intro.innerHTML = `<strong>Select care by category.</strong><span>All common EMT-level assessment and treatment choices are available. Local scope, protocol, medication authorization, and medical direction control what may actually be performed. Treatment feedback remain hidden until the final debrief.</span>`;
     box.appendChild(intro);
 
     const categories = new Map();
@@ -1234,6 +1304,26 @@
     }
   }
 
+  function resetScenario() {
+    const confirmed = window.confirm('Reset this scenario? This permanently clears findings, vitals, treatments, partner tasks, transport decisions, and the care log for this patient.');
+    if (!confirmed) return;
+    try {
+      api?.clear?.();
+      const partnerKey = session?.partnerTaskKey?.(id);
+      [partnerKey, partnerKey && `${partnerKey}_backup`, partnerKey && `${partnerKey}_shadow`, `emscodesim_scenario_${id}`, `emscodesim_scenario_${id}_backup`, `emscodesim_scenario_${id}_shadow`].filter(Boolean).forEach(key => localStorage.removeItem(key));
+      location.href = `/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&reset=1`;
+    } catch (error) {
+      console.error(error);
+      toast('Scenario could not be reset. Try returning to the launcher.');
+    }
+  }
+
+  function endScenario() {
+    if (confirm('End this scenario and return to scenario selection? Your current progress will remain saved.')) {
+      location.href = `/vitals/scenario-launcher.html?select=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}`;
+    }
+  }
+
   function openSheet(panelId) {
     evaluatePatientCondition(panelId === 'treatmentPanel' ? 'treatment-review' : 'patient-tool-open');
     document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
@@ -1325,9 +1415,9 @@
   $('recordFocus').addEventListener('click', finishFocus);
   $('cancelFocus').addEventListener('click', () => { $('assessmentFocus').hidden = true; activeFocus = null; });
   $('completeScenarioFromPatient').addEventListener('click', checkScenarioCompletion);
-  $('endScenario').addEventListener('click', () => {
-    if (confirm('Leave this patient and return to scenario selection? Your progress will remain saved.')) location.href = `/vitals/scenario-launcher.html?select=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}`;
-  });
+  $('endScenario').addEventListener('click', endScenario);
+  $('endScenarioFromProgress')?.addEventListener('click', endScenario);
+  $('resetScenarioFromProgress')?.addEventListener('click', resetScenario);
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
     if (!$('assessmentFocus').hidden) { $('assessmentFocus').hidden = true; activeFocus = null; }

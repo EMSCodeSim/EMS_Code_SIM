@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=18">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=19">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=3">
 </head>
 <body>
@@ -42,7 +42,7 @@
       <summary><span><b>Scenario progress</b><small id="scenarioProgressSummary">Review clinical phases</small></span><i aria-hidden="true">⌄</i></summary>
       <div id="scenarioPhaseList" class="scenario-phase-list"></div>
       <div id="scenarioCompletionMessage" class="scenario-completion-message" hidden></div>
-      <div class="scenario-progress-actions"><a id="handoffFromProgress" href="/vitals/pcr-handoff.html">PCR and handoff</a><button id="completeScenarioFromPatient" type="button">Check completion</button></div>
+      <div class="scenario-progress-actions"><a id="handoffFromProgress" href="/vitals/pcr-handoff.html">PCR and handoff</a><button id="completeScenarioFromPatient" type="button">Check completion</button><button id="endScenarioFromProgress" class="scenario-end-action" type="button">End scenario</button><button id="resetScenarioFromProgress" class="scenario-reset-action" type="button">Reset scenario</button></div>
     </details>
 
     <section id="sceneGuide" class="scene-guide" hidden aria-labelledby="sceneGuideTitle">
@@ -170,7 +170,7 @@
   <script src="/vitals/scenario-runtime.js?v=2"></script>
   <script src="/vitals/scenario-tool-registry.js?v=3"></script>
   <script src="/vitals/scenario-phase-model.js?v=1"></script>
-  <script src="/vitals/visual-patient.js?v=24"></script>
+  <script src="/vitals/visual-patient.js?v=25"></script>
   <script src="/vitals/scenario-guided-start.js?v=4"></script>
 </body>
 </html>
