@@ -400,6 +400,7 @@
       return { code: comparison, label: comparison.charAt(0).toUpperCase() + comparison.slice(1), finding, treatment, reassessment };
     }
     if (!finding) return { code: 'not-assessed', label: 'Not assessed', finding: null, treatment: null, reassessment: null };
+    if (finding.status === 'uncertain' || finding.normality === 'uncertain') return { code: 'uncertain', label: 'Needs more information', finding, treatment, reassessment };
     if (finding.status === 'abnormal' || finding.normality === 'not-normal') return { code: 'abnormal', label: 'Abnormal', finding, treatment, reassessment };
     return { code: 'normal', label: 'Normal', finding, treatment, reassessment };
   }
@@ -424,6 +425,7 @@
 
   function assessmentActionLabel(state) {
     if (state.code === 'reassessment-due') return 'Reassess';
+    if (state.code === 'uncertain') return 'Gather more';
     if (state.code !== 'not-assessed') return 'Reassess';
     return 'Open';
   }
@@ -436,6 +438,7 @@
     if (task?.status === 'queued') return 'Queued for partner';
     if (state.code === 'reassessment-due') return 'Abnormal finding documented · Reassessment due';
     if (state.code === 'abnormal') return 'Abnormal finding documented';
+    if (state.code === 'uncertain') return 'Decision deferred · More information needed';
     if (['improved','unchanged','worsened'].includes(state.code)) return `${state.label} on reassessment`;
     if (state.code === 'normal') return 'Completed · Normal';
     return 'Not started';
@@ -449,7 +452,7 @@
     row.dataset.assessmentState = state.code;
     row.dataset.assessmentKey = tool.key;
     const abnormal = state.code === 'abnormal' || state.code === 'reassessment-due' || state.code === 'worsened';
-    const icon = state.code === 'reassessment-due' ? '↻' : abnormal ? '!' : state.code === 'not-assessed' ? '○' : '✓';
+    const icon = state.code === 'reassessment-due' ? '↻' : abnormal ? '!' : state.code === 'uncertain' ? '?' : state.code === 'not-assessed' ? '○' : '✓';
     row.innerHTML = `
       <span class="assessment-status-icon" aria-hidden="true">${icon}</span>
       <div class="assessment-compact-copy">
@@ -610,46 +613,13 @@
     box.appendChild(article);
   }
 
-  const RAPID_PRIMARY_CHOICES = {
-    airway: [
-      { value:'Patent', label:'Patent', normality:'normal' },
-      { value:'Threatened or obstructed', label:'Threatened', normality:'not-normal' }
-    ],
-    breathing: [
-      { value:'Breathing adequate', label:'Adequate', normality:'normal' },
-      { value:'Breathing inadequate', label:'Inadequate', normality:'not-normal' }
-    ],
-    perfusion: [
-      { value:'Perfusion adequate; no major bleeding', label:'Adequate', normality:'normal' },
-      { value:'Poor perfusion or major bleeding', label:'Poor / bleeding', normality:'not-normal' }
-    ]
-  };
-
-  const EXPECTED_RAPID_PRIMARY = {
-    asthma: { airway:'normal', breathing:'not-normal', perfusion:'normal' },
-    stroke: { airway:'normal', breathing:'normal', perfusion:'normal' },
-    hypoglycemia: { airway:'normal', breathing:'normal', perfusion:'not-normal' },
-    trauma: { airway:'normal', breathing:'not-normal', perfusion:'not-normal' },
-    pediatric: { airway:'normal', breathing:'not-normal', perfusion:'normal' }
-  };
-
   function primaryStatus(key) {
     const state = assessmentState(key);
     if (state.code === 'reassessment-due') return `Treatment performed — ${state.label}`;
+    if (state.code === 'uncertain') return 'Not enough information recorded — gather more information';
     if (['improved','unchanged','worsened'].includes(state.code)) return `${state.label}: ${state.finding?.value || state.finding?.finding || 'Reassessment recorded'}`;
     if (state.finding) return state.finding.value || state.finding.finding || 'Assessment recorded';
-    return 'Choose the rapid finding';
-  }
-
-  function recordRapidPrimary(key, choice) {
-    const expectedNormality = EXPECTED_RAPID_PRIMARY[id]?.[key] || '';
-    const accurate = !expectedNormality || choice.normality === expectedNormality;
-    saveFinding(key, choice.value, 'rapid-primary-assessment', {
-      label: labelFor(key), finding: choice.value, normality: choice.normality,
-      status: choice.normality === 'normal' ? 'normal' : 'abnormal', learnerFinding: choice.value,
-      expectedNormality, accurate, correct: accurate, reviewAtDebrief: true, rapidAssessment: true
-    });
-    if (!assessmentMode()) toast(accurate ? `${labelFor(key)} rapid decision recorded` : `${labelFor(key)} recorded — confirm with the detailed assessment`);
+    return 'Initial decision not yet recorded';
   }
 
   function primaryToolLink(key) {
@@ -659,6 +629,18 @@
     return { href: assessmentHref(tool, key), label: assessmentActionLabel(state), urgent:Boolean(config.urgent) || state.code === 'reassessment-due', state };
   }
 
+  function launchPrimaryPhotoGuide(review = false) {
+    closeSheet();
+    window.requestAnimationFrame(() => {
+      const opened = window.EMSCodeSimSceneGuide?.startPrimary?.(review);
+      if (opened === false || !window.EMSCodeSimSceneGuide?.startPrimary) {
+        const guide = document.getElementById('sceneGuide');
+        if (guide) { guide.hidden = false; guide.scrollIntoView({ behavior:'smooth', block:'center' }); }
+        toast('Initial ABC assessment opened. Refresh the page if the questions do not appear.');
+      }
+    });
+  }
+
   function buildPrimaryAssessmentCard(box) {
     const primaryKeys = ['airway','breathing','perfusion'];
     const completed = primaryKeys.filter(existing).length;
@@ -666,25 +648,31 @@
     article.className = `assessment-primary-summary${completed === 3 ? ' complete' : ''}`;
     article.open = completed < 3;
     const summaryText = completed === 3
-      ? primaryKeys.map(key => `${key === 'perfusion' ? 'Circulation' : labelFor(key)} ${assessmentState(key).code === 'normal' ? 'adequate' : 'abnormal'}`).join(' · ')
-      : `${completed} of 3 classified`;
-    article.innerHTML = `<summary><span class="assessment-primary-check">${completed === 3 ? '✓' : completed}</span><span><strong>${completed === 3 ? 'Primary Assessment Complete' : 'Rapid Primary Assessment'}</strong><small>${escapeHtml(summaryText)}</small></span><em>${completed === 3 ? 'Review' : 'Complete'}</em></summary><div class="rapid-primary-list"></div>`;
+      ? primaryKeys.map(key => {
+          const state = assessmentState(key);
+          const label = key === 'perfusion' ? 'Circulation' : labelFor(key);
+          return `${label} ${state.code === 'uncertain' ? 'undetermined' : state.code === 'normal' ? 'adequate' : 'abnormal'}`;
+        }).join(' · ')
+      : `${completed} of 3 decisions recorded`;
+    article.innerHTML = `<summary><span class="assessment-primary-check">${completed === 3 ? '✓' : completed}</span><span><strong>${completed === 3 ? 'Initial ABC Recorded' : 'Initial ABC Assessment'}</strong><small>${escapeHtml(summaryText)}</small></span><em>${completed === 3 ? 'Review' : 'Begin'}</em></summary><div class="rapid-primary-list"></div>`;
     const list = article.querySelector('.rapid-primary-list');
     primaryKeys.forEach(key => {
       const label = key === 'perfusion' ? 'Circulation' : labelFor(key);
       const action = primaryToolLink(key);
       const row = document.createElement('div');
       row.className = `primary-assessment-row rapid-primary-clean-row state-${action.state.code}`;
-      const choices = RAPID_PRIMARY_CHOICES[key] || [];
-      row.innerHTML = `<div><strong>${escapeHtml(label)}</strong><small>${escapeHtml(primaryStatus(key))}</small></div>${action.state.code === 'not-assessed' ? `<div class="rapid-primary-choices">${choices.map((choice,index)=>`<button type="button" data-primary-key="${key}" data-primary-choice="${index}" class="${choice.normality === 'normal' ? 'rapid-normal' : 'rapid-abnormal'}">${escapeHtml(choice.label)}</button>`).join('')}</div>` : `<a href="${action.href}">${escapeHtml(action.label)}</a>`}`;
+      row.innerHTML = `<div><strong>${escapeHtml(label)}</strong><small>${escapeHtml(primaryStatus(key))}</small></div>${action.state.code === 'not-assessed' ? '<span class="primary-photo-pending">Photo assessment</span>' : `<a href="${action.href}">${escapeHtml(action.label)}</a>`}`;
       list.appendChild(row);
     });
-    article.querySelectorAll('[data-primary-key][data-primary-choice]').forEach(button => button.addEventListener('click', event => {
+    const launch = document.createElement('button');
+    launch.type = 'button';
+    launch.className = 'primary-photo-launch';
+    launch.textContent = completed === 3 ? 'Review initial ABC over patient photo' : completed > 0 ? 'Continue initial ABC over patient photo' : 'Begin initial ABC over patient photo';
+    launch.addEventListener('click', event => {
       event.preventDefault();
-      const key = button.dataset.primaryKey;
-      const choice = RAPID_PRIMARY_CHOICES[key]?.[Number(button.dataset.primaryChoice)];
-      if (choice) recordRapidPrimary(key, choice);
-    }));
+      launchPrimaryPhotoGuide(completed === 3);
+    });
+    list.appendChild(launch);
     box.appendChild(article);
   }
 

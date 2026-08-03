@@ -331,14 +331,7 @@ body{margin:0;background:#07131f;color:var(--text);font-family:Inter,system-ui,-
 /* Dynamic patient condition states */
 .patient-image[data-condition-mode$="-worse"],.patient-image[data-condition-mode="critical"]{filter:saturate(.82) contrast(1.08)}
 .patient-image[data-condition-mode="critical"]{filter:saturate(.65) contrast(1.13) brightness(.88)}
-/* Inline rapid ABC decisions */
-.rapid-primary-row{grid-template-columns:minmax(0,1fr) minmax(180px,auto)}
-.rapid-primary-choices{display:grid;grid-template-columns:repeat(2,minmax(82px,1fr));gap:7px;min-width:190px}
-.rapid-primary-choices button{border:1px solid #39789e;border-radius:9px;padding:9px 7px;background:#173f5a;color:#fff;font-size:.68rem;font-weight:900;cursor:pointer}
-.rapid-primary-choices button.rapid-normal{border-color:#2e946d;background:#0d4938}
-.rapid-primary-choices button.rapid-abnormal{border-color:#c96b62;background:#74312d}
-.rapid-primary-choices button:focus-visible{outline:3px solid #9ed8ff;outline-offset:2px}
-@media(max-width:620px){.rapid-primary-row{grid-template-columns:1fr}.rapid-primary-choices{min-width:0;width:100%;margin-top:5px}.rapid-primary-choices button{min-height:42px}}
+/* Initial ABC decisions are completed over the patient photo. */
 /* Assessment Menu Workflow Cleanup */
 .assessment-workflow-clean{gap:10px}
 .assessment-scene-row,.assessment-primary-summary,.assessment-recommended,.assessment-category{border:1px solid #31566d;border-radius:14px;background:#10283a;overflow:hidden}
@@ -362,8 +355,12 @@ body{margin:0;background:#07131f;color:var(--text);font-family:Inter,system-ui,-
 .rapid-primary-clean-row strong{font-size:.77rem}
 .rapid-primary-clean-row small{color:var(--muted);font-size:.65rem}
 .rapid-primary-clean-row>a{padding:8px 10px;border:1px solid #39789e;border-radius:8px;background:#173f5a;color:#fff;text-decoration:none;font-size:.67rem;font-weight:850}
-.rapid-primary-clean-row .rapid-primary-choices{display:flex;gap:5px}
-.rapid-primary-clean-row .rapid-primary-choices button{margin:0;padding:7px 8px;font-size:.64rem}
+.primary-photo-pending{color:#9ed8ff;font-size:.66rem;font-weight:850;white-space:nowrap}
+.primary-photo-launch{width:100%;min-height:43px;border:1px solid #4b9bd0;border-radius:10px;background:#164c78;color:#fff;padding:9px 12px;font-weight:900;cursor:pointer}
+.primary-photo-launch:hover,.primary-photo-launch:focus-visible{background:#1d659c}
+.rapid-primary-clean-row.state-uncertain{border-color:#8e7126;background:#302817}
+.rapid-primary-clean-row.state-uncertain small{color:#ffe19a}
+.assessment-compact-row.state-uncertain .assessment-status-icon{border-color:#d7a928;color:#ffe19a}
 .assessment-recommended{padding:10px}
 .assessment-section-title{display:flex;justify-content:space-between;align-items:end;margin-bottom:8px}
 .assessment-section-title>div{display:grid;gap:2px}
@@ -391,7 +388,7 @@ body{margin:0;background:#07131f;color:var(--text);font-family:Inter,system-ui,-
 .assessment-category-list{margin:0 9px 9px}
 .assessment-normal-summary{padding:8px 10px;background:#0d3028;color:#9fe5c2;text-align:center;font-size:.65rem;font-weight:800}
 .assessment-category[hidden]{display:none}
-@media(max-width:430px){.assessment-scene-row{padding:9px 10px}.assessment-primary-summary>summary,.assessment-category>summary{padding:10px}.assessment-compact-row{grid-template-columns:25px minmax(0,1fr) auto;padding:8px}.assessment-row-action{min-width:56px}.rapid-primary-clean-row{grid-template-columns:1fr}.rapid-primary-clean-row .rapid-primary-choices,.rapid-primary-clean-row>a{width:100%}.rapid-primary-clean-row .rapid-primary-choices button{flex:1}.assessment-filter-bar{gap:4px}.assessment-filter-bar button{font-size:.61rem;padding:7px 2px}}
+@media(max-width:430px){.assessment-scene-row{padding:9px 10px}.assessment-primary-summary>summary,.assessment-category>summary{padding:10px}.assessment-compact-row{grid-template-columns:25px minmax(0,1fr) auto;padding:8px}.assessment-row-action{min-width:56px}.rapid-primary-clean-row{grid-template-columns:1fr}.rapid-primary-clean-row>a,.primary-photo-pending{width:100%}.primary-photo-pending{padding-top:3px}.assessment-filter-bar{gap:4px}.assessment-filter-bar button{font-size:.61rem;padding:7px 2px}}
 /* Separate Vitals tab */
 .bottom-nav button:nth-child(2).active{background:#164c78}
 .bottom-nav button:nth-child(3).active{background:#216344}

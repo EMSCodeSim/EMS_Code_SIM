@@ -19,21 +19,6 @@
     spineTrauma: 'A significant collision is visible. The patient remains in the vehicle and the full mechanism has not yet been clarified.'
   };
 
-  function showApproachObservation(question) {
-    window.EMSCodeSimPatientInfo?.showSceneObservation?.({
-      id: `scene-observation-${question.key}`,
-      type: 'APPROACH OBSERVATION',
-      title: 'What you notice as you approach',
-      text: question.observation || 'Continue observing the patient and scene before making this decision.',
-      kind: 'observation',
-      sticky: true
-    });
-  }
-
-  function clearApproachObservation() {
-    window.EMSCodeSimPatientInfo?.clearSceneObservation?.();
-  }
-
   const COMMON = {
     ppeMedical: ['Gloves and eye protection as indicated', 'No PPE is needed', 'Only an N95 respirator', 'Structural firefighting PPE'],
     ppeRoadway: ['High-visibility roadway PPE plus gloves and eye protection', 'Gloves only while standing in traffic', 'No PPE until patient contact', 'Only an N95 respirator'],
@@ -137,6 +122,93 @@
     }
   };
 
+  const PRIMARY_CASES = {
+    asthma: {
+      expected: { airway: 'normal', breathing: 'not-normal', perfusion: 'normal' },
+      observations: {
+        airway: 'As you speak with the patient, the patient answers in short phrases. No snoring, gurgling, stridor, or visible material is noted at the mouth.',
+        breathing: 'The chest rises with each breath. The patient sits upright, uses the neck and shoulder muscles, and pauses between words to breathe.',
+        perfusion: 'No major external bleeding is visible. The skin is warm, and a radial pulse is present and rapid.'
+      },
+      rationales: {
+        airway: 'The patient can move air and speak without signs of an immediate obstruction, although the airway still requires continued reassessment.',
+        breathing: 'Visible accessory-muscle use, limited speech, and fatigue indicate that breathing is not adequate despite continued chest rise.',
+        perfusion: 'A present radial pulse, warm skin, and no major external bleeding support adequate initial circulation.'
+      }
+    },
+    stroke: {
+      expected: { airway: 'normal', breathing: 'normal', perfusion: 'normal' },
+      observations: {
+        airway: 'The patient attempts to answer, handles secretions, and has no audible snoring, gurgling, or stridor.',
+        breathing: 'The chest rises regularly. No marked accessory-muscle use, cyanosis, or obvious respiratory distress is visible.',
+        perfusion: 'No major external bleeding is present. The skin is warm and dry, and a radial pulse is readily felt.'
+      },
+      rationales: {
+        airway: 'The patient is moving air, managing secretions, and showing no immediate obstruction.',
+        breathing: 'Regular chest rise without visible distress supports adequate initial breathing.',
+        perfusion: 'Warm skin, a palpable radial pulse, and no major bleeding support adequate initial circulation.'
+      }
+    },
+    hypoglycemia: {
+      expected: { airway: 'normal', breathing: 'normal', perfusion: 'not-normal' },
+      observations: {
+        airway: 'After you speak loudly, the patient looks toward you and swallows without coughing. No snoring, gurgling, or visible obstruction is noted.',
+        breathing: 'The chest rises at a regular rate without marked retractions or accessory-muscle use.',
+        perfusion: 'The patient is pale, cool, and diaphoretic. A radial pulse is present but rapid and weaker than expected.'
+      },
+      rationales: {
+        airway: 'The patient is moving air and handling secretions, but altered mental status makes continued airway monitoring essential.',
+        breathing: 'Regular chest rise without obvious distress supports adequate initial breathing.',
+        perfusion: 'Pale, cool, diaphoretic skin with a rapid weaker pulse is an abnormal initial perfusion finding.'
+      }
+    },
+    trauma: {
+      expected: { airway: 'normal', breathing: 'not-normal', perfusion: 'not-normal' },
+      observations: {
+        airway: 'The patient responds when you speak and produces understandable words. No snoring, gurgling, or visible material is noted in the mouth.',
+        breathing: 'Breaths are shallow and guarded. Chest movement is reduced on one side, and the patient appears uncomfortable with each breath.',
+        perfusion: 'The skin is pale and cool. A radial pulse is rapid and weak, and blood is visible on the patient’s clothing even though the full source is not yet exposed.'
+      },
+      rationales: {
+        airway: 'The patient can move air and speak, so no immediate obstruction is identified during the rapid check.',
+        breathing: 'Shallow guarded respirations and unequal chest movement are abnormal and may represent a life threat.',
+        perfusion: 'Pale cool skin, a rapid weak pulse, and visible blood indicate compromised circulation until proven otherwise.'
+      }
+    },
+    pediatric: {
+      expected: { airway: 'normal', breathing: 'not-normal', perfusion: 'normal' },
+      observations: {
+        airway: 'The child vocalizes when the caregiver speaks and has no drooling, stridor, snoring, or visible foreign material.',
+        breathing: 'The chest rises, but retractions and nasal flaring are visible. The child pauses frequently and appears tired.',
+        perfusion: 'No major bleeding is visible. Skin color remains appropriate, the extremities are warm, and a central pulse is strong.'
+      },
+      rationales: {
+        airway: 'Vocalization and the absence of obstruction signs support a patent airway during the initial check.',
+        breathing: 'Retractions, nasal flaring, and fatigue indicate inadequate breathing despite continued chest rise.',
+        perfusion: 'Warm skin, appropriate color, a strong central pulse, and no major bleeding support adequate initial circulation.'
+      }
+    }
+  };
+
+  const PRIMARY_OPTIONS = {
+    airway: [
+      { label: 'Patent without immediate intervention', value: 'Patent', normality: 'normal' },
+      { label: 'Threatened or obstructed', value: 'Threatened or obstructed', normality: 'not-normal' },
+      { label: UNCERTAIN_OPTION, value: UNCERTAIN_OPTION, normality: 'uncertain' }
+    ],
+    breathing: [
+      { label: 'Breathing appears adequate', value: 'Breathing adequate', normality: 'normal' },
+      { label: 'Breathing is present but inadequate', value: 'Breathing inadequate', normality: 'not-normal' },
+      { label: 'No effective breathing is present', value: 'Breathing absent', normality: 'not-normal' },
+      { label: UNCERTAIN_OPTION, value: UNCERTAIN_OPTION, normality: 'uncertain' }
+    ],
+    perfusion: [
+      { label: 'Perfusion appears adequate; no major bleeding', value: 'Perfusion adequate; no major bleeding', normality: 'normal' },
+      { label: 'Poor perfusion or major bleeding is present', value: 'Poor perfusion or major bleeding', normality: 'not-normal' },
+      { label: UNCERTAIN_OPTION, value: UNCERTAIN_OPTION, normality: 'uncertain' }
+    ]
+  };
+
   function withUncertainty(options) {
     return [...options, UNCERTAIN_OPTION];
   }
@@ -156,13 +228,105 @@
     ];
   }
 
+  function primaryQuestionsFor(caseConfig) {
+    const expected = caseConfig.expected || {};
+    return [
+      {
+        key: 'airway', title: 'What is your initial airway finding?',
+        prompt: 'Use what you can see and hear during the rapid airway check.',
+        observation: caseConfig.observations?.airway,
+        options: PRIMARY_OPTIONS.airway.map(option => option.label), optionMeta: PRIMARY_OPTIONS.airway,
+        correct: PRIMARY_OPTIONS.airway.findIndex(option => option.normality === expected.airway),
+        rationale: caseConfig.rationales?.airway
+      },
+      {
+        key: 'breathing', title: 'What is your initial breathing finding?',
+        prompt: 'Look for chest rise, effort, rate, speech, position, and signs of fatigue.',
+        observation: caseConfig.observations?.breathing,
+        options: PRIMARY_OPTIONS.breathing.map(option => option.label), optionMeta: PRIMARY_OPTIONS.breathing,
+        correct: PRIMARY_OPTIONS.breathing.findIndex(option => option.normality === expected.breathing),
+        rationale: caseConfig.rationales?.breathing
+      },
+      {
+        key: 'perfusion', title: 'What is your initial circulation finding?',
+        prompt: 'Look for major bleeding, skin signs, and the quality of a quickly checked pulse.',
+        observation: caseConfig.observations?.perfusion,
+        options: PRIMARY_OPTIONS.perfusion.map(option => option.label), optionMeta: PRIMARY_OPTIONS.perfusion,
+        correct: PRIMARY_OPTIONS.perfusion.findIndex(option => option.normality === expected.perfusion),
+        rationale: caseConfig.rationales?.perfusion
+      }
+    ];
+  }
+
   const config = CASES[caseId] || CASES.asthma;
-  const questions = questionsFor(config);
+  const primaryConfig = PRIMARY_CASES[caseId] || PRIMARY_CASES.asthma;
+  const sceneQuestions = questionsFor(config);
+  const primaryQuestions = primaryQuestionsFor(primaryConfig);
+  let activeGuide = 'scene';
   let index = 0;
   let answers = [];
   let completedFinding = api?.getFinding?.('scene_size_up', api?.active?.());
   let reviewMode = false;
   let initialized = false;
+
+  function guideQuestions() {
+    return activeGuide === 'primary' ? primaryQuestions : sceneQuestions;
+  }
+
+  function guideLabel() {
+    return activeGuide === 'primary' ? 'Initial ABC assessment' : 'Scene size-up';
+  }
+
+  function guideEyebrow() {
+    return activeGuide === 'primary' ? 'INITIAL PRIMARY ASSESSMENT' : 'SCENE SIZE-UP';
+  }
+
+  function guideTitle() {
+    return activeGuide === 'primary'
+      ? 'Assess airway, breathing, and circulation while viewing the patient'
+      : 'Look at the patient and make a decision';
+  }
+
+  function primaryComplete() {
+    return ['airway', 'breathing', 'perfusion'].every(key => Boolean(api?.getFinding?.(key, api?.active?.())));
+  }
+
+  function recordedPrimaryAnswers() {
+    return primaryQuestions.map(question => {
+      const finding = api?.getFinding?.(question.key, api?.active?.());
+      if (!finding) return null;
+      const selected = finding.selected || finding.learnerFinding || finding.value || finding.finding;
+      const optionIndex = question.optionMeta?.findIndex(option => option.label === selected || option.value === selected) ?? -1;
+      const matched = optionIndex >= 0 ? question.optionMeta[optionIndex] : null;
+      return {
+        key: question.key,
+        question: question.title,
+        selected: matched?.label || selected,
+        findingValue: matched?.value || finding.value || selected,
+        normality: matched?.normality || finding.normality || 'uncertain',
+        expected: question.options[question.correct],
+        expectedNormality: primaryConfig.expected?.[question.key] || '',
+        correct: typeof finding.correct === 'boolean' ? finding.correct : optionIndex === question.correct,
+        uncertain: (matched?.normality || finding.normality) === 'uncertain',
+        rationale: question.rationale
+      };
+    });
+  }
+
+  function showGuideObservation(question) {
+    window.EMSCodeSimPatientInfo?.showSceneObservation?.({
+      id: `${activeGuide}-observation-${question.key}`,
+      type: activeGuide === 'primary' ? 'PRIMARY ASSESSMENT FINDING' : 'APPROACH OBSERVATION',
+      title: activeGuide === 'primary' ? 'What you find during the rapid check' : 'What you notice as you approach',
+      text: question.observation || 'Continue observing the patient before making this decision.',
+      kind: 'observation',
+      sticky: true
+    });
+  }
+
+  function clearGuideObservation() {
+    window.EMSCodeSimPatientInfo?.clearSceneObservation?.();
+  }
 
   function setLocked(locked) {
     const nav = document.querySelector('.bottom-nav');
@@ -171,9 +335,12 @@
   }
 
   function render() {
+    const questions = guideQuestions();
     const question = questions[index];
     const savedAnswer = answers[index] || null;
-    $('sceneGuideProgress').textContent = `Scene size-up ${index + 1} of ${questions.length}`;
+    if ($('sceneGuideEyebrow')) $('sceneGuideEyebrow').textContent = guideEyebrow();
+    $('sceneGuideTitle').textContent = guideTitle();
+    $('sceneGuideProgress').textContent = `${guideLabel()} ${index + 1} of ${questions.length}`;
     $('sceneGuideBar').style.width = `${((index + 1) / questions.length) * 100}%`;
     $('sceneGuideQuestion').innerHTML = `
       <h3>${question.title}</h3>
@@ -192,20 +359,38 @@
       : '';
     $('sceneGuideNext').textContent = reviewMode
       ? (index === questions.length - 1 ? 'Close review' : 'Next decision')
-      : (index === questions.length - 1 ? 'Save scene size-up' : 'Record and continue');
+      : (index === questions.length - 1
+          ? (activeGuide === 'scene' ? 'Save and begin ABC' : 'Save initial ABC')
+          : 'Record and continue');
     $('sceneGuideNext').disabled = reviewMode ? false : !savedAnswer;
     $('sceneGuideAnswer')?.addEventListener('change', event => {
-      $('sceneGuideNext').disabled = !event.target.value;
+      $('sceneGuideNext').disabled = event.target.value === '';
     });
-    showApproachObservation(question);
+    showGuideObservation(question);
   }
 
   function recordAnswer() {
     const selected = $('sceneGuideAnswer');
-    if (!selected?.value) return false;
-    const question = questions[index];
+    if (!selected || selected.value === '') return false;
+    const question = guideQuestions()[index];
     const selectedIndex = Number(selected.value);
     const selectedText = question.options[selectedIndex];
+    if (activeGuide === 'primary') {
+      const choice = question.optionMeta[selectedIndex];
+      answers[index] = {
+        key: question.key,
+        question: question.title,
+        selected: selectedText,
+        findingValue: choice.value,
+        normality: choice.normality,
+        expected: question.options[question.correct],
+        expectedNormality: primaryConfig.expected?.[question.key] || '',
+        correct: selectedIndex === question.correct,
+        uncertain: choice.normality === 'uncertain',
+        rationale: question.rationale
+      };
+      return true;
+    }
     answers[index] = {
       key: question.key,
       question: question.title,
@@ -226,29 +411,57 @@
     session?.writeState?.(caseId, state);
   }
 
-  function saveGuide(skipped = false) {
-    const score = skipped ? 0 : answers.filter(answer => answer?.correct).length;
-    const value = skipped
-      ? 'Scene size-up closed before completion'
-      : `Scene size-up completed; ${answers.length} decisions recorded for final debrief review`;
+  function saveSceneGuide() {
+    const score = answers.filter(answer => answer?.correct).length;
+    const value = `Scene size-up completed; ${answers.length} decisions recorded for final debrief review`;
     const meta = {
       label: 'Scene size-up and first impression',
       source: 'guided-scenario-entry',
-      classification: skipped ? 'Skipped' : 'Complete',
+      classification: 'Complete',
       learnerFinding: value,
       expectedFinding: 'PPE, scene safety, patient count, NOI/MOI, resources, spinal precautions, general impression, AVPU, and transport priority addressed',
-      answers: skipped ? [] : answers,
+      answers,
       score,
-      maxScore: questions.length,
-      accurate: !skipped && score === questions.length,
-      correct: !skipped && score === questions.length,
-      skipped,
+      maxScore: sceneQuestions.length,
+      accurate: score === sceneQuestions.length,
+      correct: score === sceneQuestions.length,
+      skipped: false,
       reviewAtDebrief: true
     };
     if (session?.saveFinding) session.saveFinding('scene_size_up', value, meta);
     else api?.setFinding?.('scene_size_up', value, meta);
     markScenarioStep();
     completedFinding = api?.getFinding?.('scene_size_up', api?.active?.()) || { value, ...meta };
+    window.dispatchEvent(new CustomEvent('emscodesim:patient-record-updated'));
+    startPrimary(false);
+  }
+
+  function savePrimaryGuide() {
+    answers.forEach(answer => {
+      if (!answer) return;
+      const classification = answer.normality === 'normal' ? 'Normal' : answer.normality === 'not-normal' ? 'Not Normal' : 'Uncertain';
+      const value = answer.findingValue || answer.selected;
+      const meta = {
+        label: answer.key === 'perfusion' ? 'Circulation' : answer.key.charAt(0).toUpperCase() + answer.key.slice(1),
+        source: 'guided-primary-assessment',
+        classification,
+        finding: value,
+        normality: answer.normality,
+        status: answer.normality === 'normal' ? 'normal' : answer.normality === 'not-normal' ? 'abnormal' : 'uncertain',
+        learnerFinding: answer.selected,
+        selected: answer.selected,
+        expectedFinding: answer.expected,
+        expectedNormality: answer.expectedNormality,
+        accurate: answer.correct,
+        correct: answer.correct,
+        uncertain: answer.uncertain,
+        rationale: answer.rationale,
+        reviewAtDebrief: true,
+        rapidAssessment: true
+      };
+      if (session?.saveFinding) session.saveFinding(answer.key, value, meta);
+      else api?.setFinding?.(answer.key, value, meta);
+    });
     showComplete();
   }
 
@@ -257,7 +470,7 @@
     $('sceneGuide').hidden = true;
     if ($('sceneGuideComplete')) $('sceneGuideComplete').hidden = true;
     setLocked(false);
-    clearApproachObservation();
+    clearGuideObservation();
     if ($('reviewSceneGuide')) $('reviewSceneGuide').textContent = 'Review scene size-up';
     window.dispatchEvent(new CustomEvent('emscodesim:patient-record-updated'));
   }
@@ -266,10 +479,11 @@
     reviewMode = false;
     $('sceneGuide').hidden = true;
     setLocked(false);
-    clearApproachObservation();
+    clearGuideObservation();
   }
 
   function startGuide(review = false) {
+    activeGuide = 'scene';
     reviewMode = Boolean(review && completedFinding);
     index = 0;
     answers = reviewMode && Array.isArray(completedFinding?.answers)
@@ -280,8 +494,28 @@
     $('sceneGuideSkip').hidden = !reviewMode && assessmentMode();
     const note = document.querySelector('.guide-note');
     if (note) note.textContent = reviewMode
-      ? 'Review shows your recorded choices without revealing the expected answers. Full feedback remains in the final debrief.'
+      ? 'Review shows your recorded choices without revealing expected answers. Full feedback remains in the final debrief.'
       : 'Use the photo, dispatch, and approach observations. “Not enough information at this time” is always available. Answers are reviewed during the final debrief.';
+    $('sceneGuide').hidden = false;
+    setLocked(!reviewMode);
+    render();
+    document.querySelector('.patient-stage')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function startPrimary(review = false) {
+    activeGuide = 'primary';
+    const complete = primaryComplete();
+    reviewMode = Boolean(review && complete);
+    answers = reviewMode ? recordedPrimaryAnswers() : recordedPrimaryAnswers();
+    index = reviewMode ? 0 : Math.max(0, answers.findIndex(answer => !answer));
+    if (index < 0) index = 0;
+    if ($('sceneGuideComplete')) $('sceneGuideComplete').hidden = true;
+    $('sceneGuideSkip').textContent = reviewMode ? 'Close review' : 'Close for now';
+    $('sceneGuideSkip').hidden = !reviewMode && assessmentMode();
+    const note = document.querySelector('.guide-note');
+    if (note) note.textContent = reviewMode
+      ? 'Review shows your recorded ABC decisions without revealing the expected findings. Full feedback remains in the final debrief.'
+      : 'Use the patient image and the neutral findings in the information window. Record an initial Airway, Breathing, and Circulation decision; “Not enough information at this time” remains available.';
     $('sceneGuide').hidden = false;
     setLocked(!reviewMode);
     render();
@@ -298,7 +532,7 @@
     $('sceneGuide').hidden = true;
     if ($('sceneGuideComplete')) $('sceneGuideComplete').hidden = true;
     setLocked(false);
-    clearApproachObservation();
+    clearGuideObservation();
     if ($('reviewSceneGuide')) $('reviewSceneGuide').textContent = completedFinding ? 'Review scene size-up' : 'Scene size-up';
   }
 
@@ -306,6 +540,7 @@
     if (initialized || !$('sceneGuide')) return;
     initialized = true;
     $('sceneGuideNext').addEventListener('click', () => {
+      const questions = guideQuestions();
       if (reviewMode) {
         if (index < questions.length - 1) {
           index += 1;
@@ -319,16 +554,19 @@
       if (index < questions.length - 1) {
         index += 1;
         render();
+      } else if (activeGuide === 'scene') {
+        saveSceneGuide();
       } else {
-        saveGuide(false);
+        savePrimaryGuide();
       }
     });
     $('sceneGuideSkip').addEventListener('click', pauseGuide);
     $('reviewSceneGuide')?.addEventListener('click', () => startGuide(Boolean(completedFinding)));
-    $('beginPrimaryAssessment')?.addEventListener('click', openAssessment);
+    $('beginPrimaryAssessment')?.addEventListener('click', () => startPrimary(primaryComplete()));
     $('reviewCompletedSceneGuide')?.addEventListener('click', () => startGuide(true));
-    if (completedFinding) showReady();
-    else startGuide(false);
+    if (!completedFinding) startGuide(false);
+    else if (!primaryComplete()) startPrimary(false);
+    else showReady();
   }
 
   window.EMSCodeSimSceneGuide = {
@@ -338,8 +576,17 @@
       startGuide(Boolean(review && completedFinding));
       return true;
     },
+    startPrimary(review = false) {
+      init();
+      if (!$('sceneGuide')) return null;
+      startPrimary(Boolean(review && primaryComplete()));
+      return true;
+    },
     isComplete() {
       return Boolean(completedFinding);
+    },
+    isPrimaryComplete() {
+      return primaryComplete();
     }
   };
 
