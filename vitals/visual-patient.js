@@ -46,6 +46,8 @@
 
   const scenario = CASES[requestedId] || CASES.asthma;
   const id = CASES[requestedId] ? requestedId : 'asthma';
+  const interviewEngine = window.EMSCodeSimScenarioInterviews;
+  const interview = interviewEngine?.get?.(id) || { responder:'Patient', communication:'Patient interview available.', opening:'Select a question to begin.', fallback:'The patient cannot provide that information.', categories:[], questions:[], sampleRequired:[], opqrstRequired:[] };
   const $ = value => document.getElementById(value);
   const MEASURABLE_TOOL_KEYS = new Set(['blood_pressure','pulse','respirations','spo2','blood_glucose','temperature']);
   const PRIMARY_KEYS = new Set(['scene_size_up','airway','breathing','perfusion']);
@@ -74,7 +76,8 @@
   let infoManuallyCollapsed = false;
   let lastInfoItemId = '';
   let assessmentComplaintFocus = '';
-  const renderSignatures = { vitals:'', assessments:'', treatments:'', findings:'', progress:'' };
+  let lastHistoryResponse = null;
+  const renderSignatures = { vitals:'', assessments:'', history:'', treatments:'', findings:'', progress:'' };
 
   function dataSignature(value) {
     try { return JSON.stringify(value); } catch { return String(Date.now()); }
@@ -576,7 +579,7 @@
     more.dataset.assessmentSection = 'more';
     more.open = priorOpen.has('more') || abnormalCount > 0;
     more.innerHTML = `
-      <summary><span><strong>More assessments</strong><small>Open focused exams and history when clinically appropriate</small></span><em>${abnormalCount ? `${abnormalCount} abnormal` : `${tools.length} tools`}</em></summary>
+      <summary><span><strong>More assessments</strong><small>Open focused examinations when clinically appropriate</small></span><em>${abnormalCount ? `${abnormalCount} abnormal` : `${tools.length} tools`}</em></summary>
       <div class="assessment-more-body">
         <label class="assessment-focus-control"><span>Focus list</span><select aria-label="Focus assessment list">${Object.entries(COMPLAINT_SORTS).map(([key,item]) => `<option value="${key}">${escapeHtml(item.label)}</option>`).join('')}</select></label>
         <p class="assessment-focus-summary">Showing <strong data-assessment-focus-label>All assessments</strong>. This changes organization only.</p>
@@ -695,12 +698,182 @@
 
     const unique = new Map();
     (registry?.assessmentTools || []).forEach(tool => {
-      if (PRIMARY_KEYS.has(tool.key) || tool.key === 'scene_size_up') return;
+      if (PRIMARY_KEYS.has(tool.key) || tool.key === 'scene_size_up' || ['sample','pain'].includes(tool.key)) return;
       if (!MEASURABLE_TOOL_KEYS.has(tool.key) && !unique.has(tool.key)) unique.set(tool.key, tool);
     });
     const tools = [...unique.values()];
     buildRecommendedAssessments(box, tools);
     buildMoreAssessments(box, tools, new Set([...openCategories, ...openSections]));
+  }
+
+  function interviewHistoryKey(questionId) {
+    return `interview_${String(questionId || 'question').replace(/[^a-z0-9_]+/gi, '_').toLowerCase()}`;
+  }
+
+  function askedInterviewQuestions(current = record() || {}) {
+    const history = current.history || {};
+    return interview.questions.filter(question => Object.prototype.hasOwnProperty.call(history, interviewHistoryKey(question.id)));
+  }
+
+  function cleanPatientQuote(value) {
+    return String(value || '').replace(/^([“"])/, '').replace(/([”"])$/, '');
+  }
+
+  function repeatPatientResponse(question) {
+    const prefix = interview.repeatPrefix || `${interview.responder || 'Patient'} repeats, “`;
+    return `${prefix}${cleanPatientQuote(question.response)}”`;
+  }
+
+  function renderHistoryResponse() {
+    if (!$('historyResponseText')) return;
+    const current = record() || {};
+    const latestLog = [...(api?.listCareLog?.(current, 'history') || [])]
+      .reverse()
+      .find(event => event.source === 'patient-interview');
+    const item = lastHistoryResponse || (latestLog ? {
+      source: interview.responder,
+      question: latestLog.details || latestLog.label,
+      response: latestLog.value,
+      repeated: false
+    } : null);
+    $('historyResponseSource').textContent = String(item?.source || interview.responder || 'Patient').toUpperCase();
+    $('historyResponseText').textContent = item?.response || interview.opening || 'Select a question to begin the interview.';
+    $('historyResponseQuestion').textContent = item?.question || interview.communication || 'Use focused questions based on the patient presentation.';
+    $('historyResponseCard').classList.toggle('is-repeat', Boolean(item?.repeated));
+  }
+
+  function saveInterviewMilestones(askedIds) {
+    const profile = window.EMSCodeSimScenarioDefinitions?.PROFILES?.[id];
+    const asked = new Set(askedIds || []);
+    const sampleComplete = interview.sampleRequired?.length && interview.sampleRequired.every(key => asked.has(key));
+    if (sampleComplete && !existing('sample') && profile?.sample) {
+      session?.saveFinding?.('sample', profile.sample.finding || 'SAMPLE history obtained', {
+        label:'SAMPLE history',
+        details:profile.sample.detail || '',
+        source:'patient-interview',
+        normality:profile.sample.normality || 'not-normal',
+        status:profile.sample.normality === 'normal' ? 'normal' : 'abnormal'
+      }, id);
+      toast('Complete SAMPLE history recorded');
+    }
+    const opqrstComplete = interview.opqrstRequired?.length && interview.opqrstRequired.every(key => asked.has(key));
+    if (opqrstComplete && !existing('pain') && interview.opqrstSummary) {
+      session?.saveFinding?.('pain', 'OPQRST symptom assessment obtained', {
+        label:'Pain / OPQRST',
+        details:interview.opqrstSummary,
+        source:'patient-interview',
+        normality:'not-normal',
+        status:'abnormal'
+      }, id);
+      toast('Complete OPQRST history recorded');
+    }
+  }
+
+  function askInterviewQuestion(question, askedText = '') {
+    if (!question) return;
+    const current = record() || {};
+    const key = interviewHistoryKey(question.id);
+    const repeated = Object.prototype.hasOwnProperty.call(current.history || {}, key);
+    const response = repeated ? repeatPatientResponse(question) : question.response;
+    const spokenQuestion = String(askedText || question.prompt || question.label || '').trim();
+    lastHistoryResponse = {
+      source: interview.responder || 'Patient',
+      question: `You asked: ${spokenQuestion}`,
+      response,
+      repeated
+    };
+    api?.setHistory?.(key, response, {
+      label: question.label || 'Patient interview',
+      details: `Asked: ${spokenQuestion}`,
+      source:'patient-interview',
+      questionId:question.id,
+      repeated
+    });
+    const askedIds = new Set(askedInterviewQuestions(api?.active?.() || current).map(item => item.id));
+    askedIds.add(question.id);
+    saveInterviewMilestones(askedIds);
+    renderSignatures.history = '';
+    refreshFromRecord({ force:true });
+    renderHistoryResponse();
+  }
+
+  function askCustomInterviewQuestion() {
+    const input = $('historyCustomInput');
+    const text = String(input?.value || '').trim();
+    if (!text) { toast('Enter a question for the patient first.'); return; }
+    const match = interviewEngine?.findQuestion?.(id, text);
+    if (match) {
+      askInterviewQuestion(match, text);
+    } else {
+      const custom = {
+        id:`custom_${Date.now()}`,
+        category:'custom',
+        label:text.length > 62 ? `${text.slice(0, 59)}…` : text,
+        prompt:text,
+        response:interview.fallback || 'The patient cannot provide that information.'
+      };
+      askInterviewQuestion(custom, text);
+    }
+    input.value = '';
+  }
+
+  function renderKnownHistory() {
+    const host = $('knownHistoryList');
+    if (!host) return;
+    const current = record() || {};
+    const asked = askedInterviewQuestions(current);
+    $('knownHistoryCount').textContent = `${asked.length} item${asked.length === 1 ? '' : 's'}`;
+    host.innerHTML = '';
+    if (!asked.length) {
+      host.innerHTML = '<p class="empty">No history has been obtained. Ask the patient or available historian a focused question.</p>';
+      return;
+    }
+    asked.forEach(question => {
+      const card = document.createElement('article');
+      card.className = 'known-history-item';
+      card.innerHTML = `<span>${escapeHtml(question.label)}</span><p>${escapeHtml(current.history?.[interviewHistoryKey(question.id)] || question.response)}</p>`;
+      host.appendChild(card);
+    });
+  }
+
+  function buildHistory() {
+    const host = $('historyCategoryList');
+    if (!host) return;
+    const current = record() || {};
+    const asked = new Set(askedInterviewQuestions(current).map(question => question.id));
+    $('historyResponderLabel').textContent = String(interview.responder || 'Patient').toUpperCase();
+    $('historyCommunicationStatus').textContent = interview.communication || 'Patient interview available.';
+    $('historyAskedCount').textContent = `${asked.size} asked`;
+    host.innerHTML = '';
+    (interview.categories || []).forEach((category, categoryIndex) => {
+      const questions = interview.questions.filter(question => question.category === category.id);
+      if (!questions.length) return;
+      const complete = questions.filter(question => asked.has(question.id)).length;
+      const details = document.createElement('details');
+      details.className = `history-question-category history-question-${category.id}`;
+      details.open = categoryIndex === 0 && !asked.size;
+      details.innerHTML = `
+        <summary>
+          <span class="history-category-icon" aria-hidden="true">${escapeHtml(category.icon || '•')}</span>
+          <span><strong>${escapeHtml(category.label)}</strong><small>${escapeHtml(category.description || '')}</small></span>
+          <em>${complete}/${questions.length}</em>
+        </summary>
+        <div class="history-question-list"></div>`;
+      const list = details.querySelector('.history-question-list');
+      questions.forEach(question => {
+        const button = document.createElement('button');
+        const alreadyAsked = asked.has(question.id);
+        button.type = 'button';
+        button.className = `history-question-button${alreadyAsked ? ' asked' : ''}`;
+        button.innerHTML = `<span>${escapeHtml(question.label)}</span><em>${alreadyAsked ? 'Ask again' : 'Ask'}</em>`;
+        button.addEventListener('click', () => askInterviewQuestion(question));
+        list.appendChild(button);
+      });
+      host.appendChild(details);
+    });
+    enforceSingleOpen('#historyCategoryList', '.history-question-category');
+    renderHistoryResponse();
+    renderKnownHistory();
   }
 
   const TREATMENT_CATEGORY_META = {
@@ -1330,6 +1503,11 @@
       $('findingBadge').hidden = !log.length;
       $('findingBadge').textContent = String(log.length);
     }
+    const askedCount = askedInterviewQuestions(current).length;
+    if ($('historyBadge')) {
+      $('historyBadge').hidden = !askedCount;
+      $('historyBadge').textContent = String(askedCount);
+    }
   }
 
   function renderSceneClues() {
@@ -1561,11 +1739,12 @@
     refreshFromRecord();
     document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
-    $('sheetTitle').textContent = { vitalsPanel: 'Vitals', assessmentPanel: 'Assessment', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
+    $('sheetTitle').textContent = { vitalsPanel: 'Vitals', assessmentPanel: 'Assessment', historyPanel: 'Patient history', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
     $('actionSheet').hidden = false;
     $('sheetBackdrop').hidden = false;
     document.body.style.overflow = 'hidden';
     if (panelId === 'findingsPanel') renderFindings();
+    if (panelId === 'historyPanel') buildHistory();
     if (panelId === 'treatmentPanel' && treatmentCategoryFocus) {
       const target = document.querySelector(`#treatmentTools [data-treatment-category="${CSS.escape(treatmentCategoryFocus)}"]`);
       if (target) {
@@ -1601,6 +1780,7 @@
     return {
       vitals: dataSignature({ findings:select(vitalKeys), tasks:selectedTasks(vitalKeys), treatments:current.treatments || [], reassessments:current.reassessments || [] }),
       assessments: dataSignature({ mode:trainingMode(), findings:select(assessmentKeys), tasks:selectedTasks(assessmentKeys), treatments:current.treatments || [], reassessments:current.reassessments || [] }),
+      history: dataSignature({ history:current.history || {}, sample:findings.sample || null, pain:findings.pain || null }),
       treatments: dataSignature({ treatments:current.treatments || [], transport:current.transport || current.documentation?.transport || null, handoff:current.documentation?.handoff || null }),
       findings: dataSignature(careLog),
       progress: dataSignature({ findings, treatments:current.treatments || [], reassessments:current.reassessments || [], transport:current.transport || null, documentation:current.documentation || {} })
@@ -1624,6 +1804,10 @@
     if (force || signatures.assessments !== renderSignatures.assessments) {
       buildAssessments();
       renderSignatures.assessments = signatures.assessments;
+    }
+    if (force || signatures.history !== renderSignatures.history) {
+      buildHistory();
+      renderSignatures.history = signatures.history;
     }
     if (force || signatures.treatments !== renderSignatures.treatments) {
       buildTreatments();
@@ -1661,6 +1845,8 @@
   $('saveHandoff').addEventListener('click', saveHandoff);
   $('recordTreatmentLink').href = toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general');
   $('fullPatientRecordLink').href = `/vitals/patient-record.html?mode=scenario&resume=1&case=${encodeURIComponent(id)}&return=${encodeURIComponent(`/vitals/visual-patient.html?case=${id}`)}`;
+  $('guidedSampleLink').href = toolUrl('/vitals/sample-history.html', 'Patient', 'sample');
+  $('guidedOpqrstLink').href = toolUrl('/vitals/pain-opqrst.html', 'Patient', 'pain');
   refreshFromRecord();
 
   document.querySelectorAll('[data-log-filter]').forEach(button => button.addEventListener('click', () => {
@@ -1713,6 +1899,10 @@
     if (chevron) chevron.textContent = expanded ? '⌄' : '⌃';
   });
   $('treatmentSearch')?.addEventListener('input', event => filterTreatmentMenu(event.target.value));
+  $('askHistoryCustom')?.addEventListener('click', askCustomInterviewQuestion);
+  $('historyCustomInput')?.addEventListener('keydown', event => {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') askCustomInterviewQuestion();
+  });
   $('recordFocus').addEventListener('click', finishFocus);
   $('cancelFocus').addEventListener('click', () => { $('assessmentFocus').hidden = true; activeFocus = null; });
   $('completeScenarioFromPatient').addEventListener('click', checkScenarioCompletion);

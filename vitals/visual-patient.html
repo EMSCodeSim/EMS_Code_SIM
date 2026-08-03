@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=23">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=24">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=6">
 </head>
 <body>
@@ -94,6 +94,7 @@
   <nav class="bottom-nav" aria-label="Scenario controls">
     <button data-panel="assessmentPanel" type="button"><span>◎</span>Assessment</button>
     <button data-panel="vitalsPanel" type="button"><span>♥</span>Vitals</button>
+    <button data-panel="historyPanel" type="button"><span>◉</span>History <em id="historyBadge" hidden>0</em></button>
     <button data-panel="treatmentPanel" type="button"><span>✚</span>Treatment</button>
     <button data-panel="findingsPanel" type="button"><span>☷</span>Log <em id="findingBadge" hidden>0</em></button>
   </nav>
@@ -119,6 +120,37 @@
     <section id="assessmentPanel" class="vp-panel" hidden>
       <p class="sub">Start with immediate threats, use recommendations in Learning Mode, then open More assessments as needed. Vital signs are located in the separate Vitals tab.</p>
       <div id="assessmentTools" class="assessment-list assessment-three-level"></div>
+    </section>
+
+    <section id="historyPanel" class="vp-panel history-panel" hidden>
+      <p class="sub">Interview the patient, caregiver, family, or witness. Information is only revealed when you ask for it, and every exchange is added to the patient-care log.</p>
+      <section class="history-patient-banner" aria-label="Patient communication status">
+        <div><small id="historyResponderLabel">PATIENT</small><strong id="historyCommunicationStatus">Ready to answer questions</strong></div>
+        <span id="historyAskedCount">0 asked</span>
+      </section>
+      <section id="historyResponseCard" class="history-response-card" aria-live="polite">
+        <p id="historyResponseSource">PATIENT RESPONSE</p>
+        <blockquote id="historyResponseText">Select a question to begin the interview.</blockquote>
+        <small id="historyResponseQuestion">Use focused questions based on the patient presentation.</small>
+      </section>
+      <div id="historyCategoryList" class="history-category-list"></div>
+      <details class="history-custom-question">
+        <summary><span><strong>Ask your own question</strong><small>Type a natural patient-interview question</small></span><em>Open</em></summary>
+        <div class="history-custom-body">
+          <label for="historyCustomInput">Question for the patient or available historian</label>
+          <textarea id="historyCustomInput" rows="3" maxlength="240" placeholder="Example: Do you take any blood thinners?"></textarea>
+          <button id="askHistoryCustom" type="button" class="primary-action">Ask question</button>
+        </div>
+      </details>
+      <section class="known-history-section" aria-labelledby="knownHistoryTitle">
+        <div class="known-history-head"><div><p>KNOWN PATIENT INFORMATION</p><h3 id="knownHistoryTitle">History gathered so far</h3></div><span id="knownHistoryCount">0 items</span></div>
+        <div id="knownHistoryList" class="known-history-list"><p class="empty">No history has been obtained.</p></div>
+      </section>
+      <div class="history-guided-tools">
+        <div><strong>Need a structured interview?</strong><span>Use the full learning tools for guided SAMPLE or OPQRST practice.</span></div>
+        <a id="guidedSampleLink" href="/vitals/sample-history.html">SAMPLE</a>
+        <a id="guidedOpqrstLink" href="/vitals/pain-opqrst.html">OPQRST</a>
+      </div>
     </section>
 
     <section id="treatmentPanel" class="vp-panel" hidden>
@@ -214,11 +246,13 @@
 
   <div id="toast" class="toast" hidden aria-live="polite"></div>
   <script src="/vitals/patient-record.js"></script>
-  <script src="/vitals/scenario-definitions.js?v=1"></script><script src="/vitals/scenario-session.js?v=6"></script>
+  <script src="/vitals/scenario-definitions.js?v=1"></script>
+  <script src="/vitals/scenario-interviews.js?v=1"></script>
+  <script src="/vitals/scenario-session.js?v=6"></script>
   <script src="/vitals/scenario-runtime.js?v=2"></script>
   <script src="/vitals/scenario-tool-registry.js?v=3"></script>
   <script src="/vitals/scenario-phase-model.js?v=1"></script>
-  <script src="/vitals/visual-patient.js?v=29"></script>
+  <script src="/vitals/visual-patient.js?v=30"></script>
   <script src="/vitals/scenario-guided-start.js?v=7"></script>
 </body>
 </html>
