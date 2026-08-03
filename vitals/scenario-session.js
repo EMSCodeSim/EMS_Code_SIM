@@ -6,12 +6,76 @@
 
   const STATE_PREFIX = 'emscodesim_scenario_';
   const PARTNER_PREFIX = 'emscodesim_partner_tasks_';
+  const BACKUP_SUFFIX = '_backup';
+  const SHADOW_SUFFIX = '_shadow';
+  const RECOVERY_KEY = 'emscodesim_scenario_recovery_v1';
   const params = new URLSearchParams(location.search);
   let syncing = false;
   const synchronizedCases = new Set();
   const partnerTimers = new Map();
+  const resolvingPartnerCases = new Set();
 
   const SCENARIO_CATALOG = window.EMSCodeSimScenarioDefinitions?.CATALOG || Object.freeze({});
+
+
+  function parseJSON(raw) {
+    if (!raw) return null;
+    try {
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === 'object' ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function updatedTime(value) {
+    const time = new Date(value?.updatedAt || value?.completedAt || value?.assignedAt || 0).getTime();
+    return Number.isFinite(time) ? time : 0;
+  }
+
+  function readProtectedJSON(key, fallback = {}) {
+    const primary = parseJSON(localStorage.getItem(key));
+    const shadow = parseJSON(localStorage.getItem(`${key}${SHADOW_SUFFIX}`));
+    const backup = parseJSON(localStorage.getItem(`${key}${BACKUP_SUFFIX}`));
+    const candidates = [
+      primary && { source: 'primary', value: primary },
+      shadow && { source: 'shadow', value: shadow },
+      backup && { source: 'backup', value: backup }
+    ].filter(Boolean).sort((a, b) => updatedTime(b.value) - updatedTime(a.value));
+    const chosen = candidates[0];
+    if (!chosen) return { ...fallback };
+    if (chosen.source !== 'primary') {
+      const serialized = JSON.stringify(chosen.value);
+      localStorage.setItem(key, serialized);
+      localStorage.setItem(`${key}${SHADOW_SUFFIX}`, serialized);
+      const detail = { key, source: chosen.source, recoveredAt: new Date().toISOString() };
+      localStorage.setItem(RECOVERY_KEY, JSON.stringify(detail));
+      window.dispatchEvent(new CustomEvent('emscodesim:scenario-storage-recovered', { detail }));
+    }
+    return chosen.value;
+  }
+
+  function writeProtectedJSON(key, value) {
+    const next = { ...(value || {}), updatedAt: value?.updatedAt || new Date().toISOString() };
+    const serialized = JSON.stringify(next);
+    const current = localStorage.getItem(key);
+    if (parseJSON(current)) localStorage.setItem(`${key}${BACKUP_SUFFIX}`, current);
+    localStorage.setItem(`${key}${SHADOW_SUFFIX}`, serialized);
+    localStorage.setItem(key, serialized);
+    return next;
+  }
+
+  function recoveryStatus() {
+    const patient = api.recoveryStatus?.() || null;
+    let scenario = null;
+    try { scenario = JSON.parse(localStorage.getItem(RECOVERY_KEY) || 'null'); } catch {}
+    return { patient, scenario };
+  }
+
+  function clearRecoveryStatus() {
+    api.clearRecoveryStatus?.();
+    localStorage.removeItem(RECOVERY_KEY);
+  }
 
   function requestedCaseId() {
     return params.get('case') || api.active()?.scenarioId || api.active()?.id || '';
@@ -24,27 +88,21 @@
   function readState(caseId = requestedCaseId()) {
     const fallback = { done: [], complete: false, findings: {}, treatments: [], reassessments: [], careLog: [] };
     if (!caseId) return fallback;
-    try {
-      const parsed = JSON.parse(localStorage.getItem(stateKey(caseId)) || '{}');
-      return {
-        ...fallback,
-        ...parsed,
-        done: Array.isArray(parsed.done) ? parsed.done : [],
-        findings: parsed.findings && typeof parsed.findings === 'object' ? parsed.findings : {},
-        treatments: Array.isArray(parsed.treatments) ? parsed.treatments : [],
-        reassessments: Array.isArray(parsed.reassessments) ? parsed.reassessments : [],
-        careLog: Array.isArray(parsed.careLog) ? parsed.careLog : []
-      };
-    } catch {
-      return fallback;
-    }
+    const parsed = readProtectedJSON(stateKey(caseId), fallback);
+    return {
+      ...fallback,
+      ...parsed,
+      done: Array.isArray(parsed.done) ? parsed.done : [],
+      findings: parsed.findings && typeof parsed.findings === 'object' ? parsed.findings : {},
+      treatments: Array.isArray(parsed.treatments) ? parsed.treatments : [],
+      reassessments: Array.isArray(parsed.reassessments) ? parsed.reassessments : [],
+      careLog: Array.isArray(parsed.careLog) ? parsed.careLog : []
+    };
   }
 
   function writeState(caseId, state) {
     if (!caseId) return state;
-    const next = { ...state, updatedAt: new Date().toISOString() };
-    localStorage.setItem(stateKey(caseId), JSON.stringify(next));
-    return next;
+    return writeProtectedJSON(stateKey(caseId), { ...state, updatedAt: new Date().toISOString() });
   }
 
   function ensureRecord(caseId = requestedCaseId()) {
@@ -205,18 +263,17 @@
 
   function readPartnerTasks(caseId = requestedCaseId()) {
     if (!caseId) return {};
-    try {
-      const parsed = JSON.parse(localStorage.getItem(partnerTaskKey(caseId)) || '{}');
-      return parsed && typeof parsed === 'object' ? parsed : {};
-    } catch {
-      return {};
-    }
+    const stored = readProtectedJSON(partnerTaskKey(caseId), {});
+    const tasks = { ...stored };
+    delete tasks.updatedAt;
+    return tasks;
   }
 
   function writePartnerTasks(caseId, tasks) {
     if (!caseId) return tasks || {};
-    localStorage.setItem(partnerTaskKey(caseId), JSON.stringify(tasks || {}));
-    return tasks || {};
+    const saved = writeProtectedJSON(partnerTaskKey(caseId), { ...(tasks || {}), updatedAt: new Date().toISOString() });
+    delete saved.updatedAt;
+    return saved;
   }
 
   // Partner queue states include status: 'pending' for the one active skill and 'queued' for later skills.
@@ -227,7 +284,7 @@
 
   function normalizePartnerQueue(tasks = {}) {
     const ordered = Object.values(tasks)
-      .filter(task => task && ['pending','queued'].includes(task.status))
+      .filter(task => task && ['pending','queued','completing'].includes(task.status))
       .sort((a,b) => taskTime(a.assignedAt) - taskTime(b.assignedAt));
     let cursor = Date.now();
     ordered.forEach((task, index) => {
@@ -333,7 +390,9 @@
   function resolvePartnerTasks(caseId = requestedCaseId()) {
     const record = active(caseId);
     const resolvedCase = caseId || record?.scenarioId || record?.id;
-    if (!resolvedCase) return [];
+    if (!resolvedCase || resolvingPartnerCases.has(resolvedCase)) return [];
+    resolvingPartnerCases.add(resolvedCase);
+    try {
     const original = readPartnerTasks(resolvedCase);
     const tasks = normalizePartnerQueue(original);
     const completed = recoverCompletedPartnerFindings(resolvedCase, tasks);
@@ -370,8 +429,11 @@
     if (beforeNormalize !== JSON.stringify(tasks)) changed = true;
     if (changed) writePartnerTasks(resolvedCase, tasks);
     completed.forEach(task => window.dispatchEvent(new CustomEvent('emscodesim:partner-task-completed', { detail: { caseId: resolvedCase, task } })));
-    schedulePartnerTasks(resolvedCase);
     return completed;
+    } finally {
+      resolvingPartnerCases.delete(resolvedCase);
+      schedulePartnerTasks(resolvedCase);
+    }
   }
 
   function scenarioHome(caseId = requestedCaseId()) {
@@ -397,7 +459,9 @@
     schedulePartnerTasks,
     resolvePartnerTasks,
     scenarioHome,
-    SCENARIO_CATALOG
+    SCENARIO_CATALOG,
+    recoveryStatus,
+    clearRecoveryStatus
   };
 
   setTimeout(() => {

@@ -14,3 +14,5 @@
 .active-patient-banner{border-color:#5daed9;background:#eef8ff}.case-choice-body small{display:block;margin-top:5px;color:#4d6675;font-size:.75rem;line-height:1.3}.case-choice.is-selected{outline:3px solid #0878a8;outline-offset:2px}.compact-controls{margin-top:1rem}.compact-controls select{min-width:220px}
 
 .mode-picker{border:1px solid var(--line);border-radius:16px;padding:14px;margin:0 0 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}.mode-picker legend{font-weight:900;padding:0 6px;color:var(--ink)}.mode-choice{display:flex;gap:10px;align-items:flex-start;border:2px solid var(--line);border-radius:13px;padding:12px;cursor:pointer;background:#fff}.mode-choice:has(input:checked){border-color:var(--blue);background:var(--soft)}.mode-choice input{margin-top:4px}.mode-choice strong,.mode-choice small{display:block}.mode-choice small{margin-top:3px;color:var(--muted);line-height:1.35}@media(max-width:620px){.mode-picker{grid-template-columns:1fr}}
+
+.active-patient-banner.is-recovered{border-color:#36a36f;background:#effcf5}.active-patient-banner.is-recovered .eyebrow{color:#087148}

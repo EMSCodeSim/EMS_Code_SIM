@@ -3,6 +3,9 @@
 
   const ACTIVE_KEY='emscodesim_active_patient_record';
   const RECORD_PREFIX='emscodesim_patient_record_';
+  const BACKUP_SUFFIX='_backup';
+  const SHADOW_SUFFIX='_shadow';
+  const RECOVERY_KEY='emscodesim_patient_record_recovery_v1';
   const CURRENT_VERSION=3;
 
   const FIELD_DEFINITIONS={
@@ -46,6 +49,8 @@
   });
 
   const key=id=>`${RECORD_PREFIX}${id}`;
+  const backupKey=id=>`${key(id)}${BACKUP_SUFFIX}`;
+  const shadowKey=id=>`${key(id)}${SHADOW_SUFFIX}`;
   const clone=value=>{
     if(typeof structuredClone==='function')return structuredClone(value);
     return JSON.parse(JSON.stringify(value));
@@ -263,32 +268,75 @@
     documentation:{narrative:'',handoff:''}
   });
 
+
+  function parseStoredRecord(raw){
+    if(!raw)return null;
+    try{
+      const parsed=JSON.parse(raw);
+      const normalized=normalizeRecord(parsed);
+      if(!normalized?.id)return null;
+      return {parsed,normalized,raw};
+    }catch{return null}
+  }
+
+  function recoveryStamp(record,source,reason=''){
+    const detail={recordId:record?.id||'',scenarioId:record?.scenarioId||'',source,reason,recoveredAt:now()};
+    try{localStorage.setItem(RECOVERY_KEY,JSON.stringify(detail))}catch{}
+    try{window.dispatchEvent(new CustomEvent('emscodesim:patient-record-recovered',{detail}))}catch{}
+    return detail;
+  }
+
+  function recoveryStatus(){
+    try{return JSON.parse(localStorage.getItem(RECOVERY_KEY)||'null')}catch{return null}
+  }
+
+  function clearRecoveryStatus(){
+    try{localStorage.removeItem(RECOVERY_KEY)}catch{}
+  }
+
+  function newestCandidate(candidates=[]){
+    return candidates.filter(Boolean).sort((a,b)=>{
+      const at=new Date(a.normalized?.updatedAt||a.normalized?.startedAt||0).getTime()||0;
+      const bt=new Date(b.normalized?.updatedAt||b.normalized?.startedAt||0).getTime()||0;
+      return bt-at;
+    })[0]||null;
+  }
+
   function activeId(){return localStorage.getItem(ACTIVE_KEY)||''}
 
   function load(id){
     const recordId=id||activeId();
     if(!recordId)return null;
-    try{
-      const raw=localStorage.getItem(key(recordId));
-      if(!raw)return null;
-      const parsed=JSON.parse(raw);
-      const normalized=normalizeRecord(parsed);
-      if(!normalized)return null;
-      const changed=parsed.version!==CURRENT_VERSION||!Array.isArray(parsed.careLog)||JSON.stringify(parsed.findings||{})!==JSON.stringify(normalized.findings||{})||JSON.stringify(parsed.careLog||[])!==JSON.stringify(normalized.careLog||[]);
-      if(changed){
-        normalized.migratedAt=now();
-        normalized.updatedAt=normalized.updatedAt||normalized.migratedAt;
-        localStorage.setItem(key(normalized.id),JSON.stringify(normalized));
-      }
-      return normalized;
-    }catch{return null}
+    const primary=parseStoredRecord(localStorage.getItem(key(recordId)));
+    const shadow=parseStoredRecord(localStorage.getItem(shadowKey(recordId)));
+    const backup=parseStoredRecord(localStorage.getItem(backupKey(recordId)));
+    const chosen=newestCandidate([primary,shadow,backup]);
+    if(!chosen)return null;
+
+    const normalized=chosen.normalized;
+    const changed=chosen.parsed.version!==CURRENT_VERSION||!Array.isArray(chosen.parsed.careLog)||JSON.stringify(chosen.parsed.findings||{})!==JSON.stringify(normalized.findings||{})||JSON.stringify(chosen.parsed.careLog||[])!==JSON.stringify(normalized.careLog||[]);
+    const source=chosen===primary?'primary':chosen===shadow?'shadow':'backup';
+    if(source!=='primary'||changed){
+      normalized.migratedAt=changed?now():(normalized.migratedAt||'');
+      normalized.updatedAt=normalized.updatedAt||normalized.migratedAt||now();
+      const serialized=JSON.stringify(normalized);
+      localStorage.setItem(key(normalized.id),serialized);
+      localStorage.setItem(shadowKey(normalized.id),serialized);
+      recoveryStamp(normalized,source,source==='primary'?'record-normalized':'primary-invalid-or-stale');
+    }
+    localStorage.setItem(ACTIVE_KEY,normalized.id);
+    return normalized;
   }
 
   function save(record){
     const normalized=normalizeRecord(record);
     if(!normalized?.id)throw new Error('Patient record requires an id.');
     normalized.updatedAt=now();
-    localStorage.setItem(key(normalized.id),JSON.stringify(normalized));
+    const serialized=JSON.stringify(normalized);
+    const current=localStorage.getItem(key(normalized.id));
+    if(parseStoredRecord(current))localStorage.setItem(backupKey(normalized.id),current);
+    localStorage.setItem(shadowKey(normalized.id),serialized);
+    localStorage.setItem(key(normalized.id),serialized);
     localStorage.setItem(ACTIVE_KEY,normalized.id);
     window.dispatchEvent(new CustomEvent('emscodesim:patient-record-updated',{detail:normalized}));
     return normalized;
@@ -417,13 +465,13 @@
     });
   }
 
-  function clear(){const id=activeId();if(id)localStorage.removeItem(key(id));localStorage.removeItem(ACTIVE_KEY)}
+  function clear(){const id=activeId();if(id){localStorage.removeItem(key(id));localStorage.removeItem(backupKey(id));localStorage.removeItem(shadowKey(id))}localStorage.removeItem(ACTIVE_KEY);clearRecoveryStatus()}
   function exportJson(){const record=active();return record?JSON.stringify(record,null,2):''}
 
   window.EMSCodeSimPatientRecord={
     CURRENT_VERSION,FIELD_DEFINITIONS,VITAL_KEYS,normalizeKey,labelFor,normalizeFinding,normalizeRecord,
     create,ensure,active,activeId,load,save,update,setFinding,getFinding,hasFinding,listFindings,
     setHistory,addTreatment,addReassessment,setImpressions,setDocumentation,mergeCareLog,listCareLog,
-    clear,exportJson
+    clear,exportJson,recoveryStatus,clearRecoveryStatus,RECOVERY_KEY
   };
 })();

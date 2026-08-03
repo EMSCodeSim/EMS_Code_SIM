@@ -60,7 +60,12 @@
     const banner = $('activePatientBanner');
     banner.hidden = false;
     $('activePatientTitle').textContent = `Resume ${current.title || 'active patient'}`;
-    $('activePatientText').textContent = `${current.patient || 'Patient'} • Findings, partner tasks, and scene time remain saved.`;
+    const recovery = session?.recoveryStatus?.() || {};
+    const recovered = Boolean(recovery.patient || recovery.scenario);
+    $('activePatientText').textContent = recovered
+      ? `${current.patient || 'Patient'} • An interrupted or damaged save was recovered from the last valid copy. Findings, treatments, partner tasks, and scene time were preserved.`
+      : `${current.patient || 'Patient'} • Findings, partner tasks, and scene time remain saved.`;
+    banner.classList.toggle('is-recovered', recovered);
     const savedMode = current.documentation?.trainingMode || 'learning';
     const modeInput = document.querySelector(`input[name="trainingMode"][value="${savedMode}"]`);
     if (modeInput) modeInput.checked = true;
