@@ -1,0 +1,359 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-08-03",
+  "packages": [
+    {
+      "id": "emscodesim-demo",
+      "name": "EMSCodeSim Demonstration Protocol Pack",
+      "state": "All states",
+      "area": "Training demonstration",
+      "edition": "Demo 1.0",
+      "verified": false,
+      "sourceLabel": "Demonstration content — compare every item with your current agency protocol",
+      "sourceUrl": "",
+      "levels": ["EMT", "AEMT", "Paramedic"]
+    }
+  ],
+  "drills": [
+    {
+      "id": "demo-adult-respiratory-distress",
+      "packId": "emscodesim-demo",
+      "type": "Protocol",
+      "category": "Respiratory",
+      "levels": ["EMT", "AEMT", "Paramedic"],
+      "title": "Adult respiratory distress",
+      "protocolNumber": "DEMO MED-01",
+      "estimatedMinutes": 6,
+      "objectives": [
+        "Recognize signs of inadequate ventilation and rapid deterioration.",
+        "Match interventions to patient presentation and local scope.",
+        "Identify the reassessment findings that should change the plan."
+      ],
+      "review": {
+        "appliesWhen": "An adult has increased work of breathing, abnormal respiratory rate or effort, hypoxia, abnormal breath sounds, or inability to speak normally.",
+        "keyAssessment": [
+          "Airway patency, respiratory rate, depth, effort, speech, chest movement, and mental status",
+          "Pulse oximetry and capnography when available and authorized",
+          "Breath sounds before and after treatment",
+          "History of asthma, COPD, heart failure, allergies, medications, and recent illness"
+        ],
+        "actions": [
+          "Position the patient, support the airway, and provide oxygen or ventilation based on clinical need.",
+          "Use the treatment pathway and medications authorized by the selected local protocol.",
+          "Reassess work of breathing, mental status, vital signs, and response after every intervention."
+        ],
+        "stopPoints": [
+          "Do not delay assisted ventilation in a tiring or poorly ventilating patient.",
+          "Confirm local contraindications before CPAP or medication administration."
+        ],
+        "medicalControl": [
+          "Contact medical control when required by protocol, when the patient falls outside standing orders, or when response is poor."
+        ],
+        "transport": [
+          "Choose destination and urgency based on severity, response, airway risk, and local transport policy."
+        ]
+      },
+      "scenario": {
+        "dispatch": "Difficulty breathing at a private residence.",
+        "patient": "A 68-year-old is seated upright, speaking in two- to three-word sentences, and becoming tired. Breath sounds are diminished with diffuse wheezing.",
+        "prompt": "Which action best reflects the immediate protocol priority?",
+        "choices": [
+          {"id": "a", "text": "Complete a detailed history before providing respiratory support", "correct": false, "feedback": "A detailed history matters, but respiratory support and rapid assessment should not be delayed in a tiring patient."},
+          {"id": "b", "text": "Support airway and ventilation, begin indicated treatment, and reassess continuously", "correct": true, "feedback": "This keeps immediate threats, treatment, and reassessment connected."},
+          {"id": "c", "text": "Wait for a complete set of vital signs before deciding whether the patient is severe", "correct": false, "feedback": "The visible work of breathing and fatigue already require immediate action."}
+        ]
+      },
+      "questions": [
+        {"question": "Which finding most strongly suggests impending respiratory failure?", "options": ["Mild anxiety with full sentences", "Increasing fatigue and reduced air movement", "A history of seasonal allergies", "A cough lasting one day"], "answer": 1, "rationale": "Fatigue and reduced air movement can indicate that the patient is no longer maintaining effective ventilation."},
+        {"question": "What should happen after each respiratory intervention?", "options": ["Restart the entire assessment", "Wait until hospital arrival", "Reassess breathing, mental status, vital signs, and treatment response", "Document only if the treatment failed"], "answer": 2, "rationale": "Reassessment determines whether the patient is improving, unchanged, or deteriorating."},
+        {"question": "Which source controls the exact medication, CPAP, and medical-control requirements?", "options": ["A national study guide", "The current local protocol and medical direction", "The last partner you worked with", "The monitor manufacturer"], "answer": 1, "rationale": "Local protocol, scope, and medical direction control the exact treatment pathway."}
+      ],
+      "summary": {
+        "actions": ["Identify ventilation failure early.", "Treat within local scope without delaying basic support.", "Reassess after every intervention."],
+        "mistake": "Focusing on a diagnosis while missing worsening ventilation.",
+        "control": "Use medical control whenever the local protocol requires it or the patient is outside standing orders.",
+        "documentation": "Record baseline severity, treatment, response, repeat findings, and transport decision."
+      }
+    },
+    {
+      "id": "demo-suspected-acs",
+      "packId": "emscodesim-demo",
+      "type": "Protocol",
+      "category": "Cardiac",
+      "levels": ["EMT", "AEMT", "Paramedic"],
+      "title": "Suspected acute coronary syndrome",
+      "protocolNumber": "DEMO MED-02",
+      "estimatedMinutes": 6,
+      "objectives": ["Identify high-risk chest-discomfort presentations.", "Review medication contraindication checks.", "Connect early assessment with destination and transport urgency."],
+      "review": {
+        "appliesWhen": "An adult has chest pressure, discomfort, anginal equivalent symptoms, unexplained dyspnea, diaphoresis, nausea, syncope, or other findings concerning for cardiac ischemia.",
+        "keyAssessment": ["OPQRST and SAMPLE history", "Blood pressure, perfusion, lung sounds, and oxygenation", "Medication history and contraindications", "12-lead acquisition and transmission when authorized"],
+        "actions": ["Treat immediate threats and minimize exertion.", "Follow local medication and ECG pathways.", "Select destination and notification based on local STEMI and cardiac destination policy."],
+        "stopPoints": ["Do not administer medication until the required contraindications and vital-sign limits are checked.", "Do not let a normal-looking patient or atypical symptom pattern remove cardiac concern."],
+        "medicalControl": ["Contact medical control when required for medication, borderline findings, destination questions, or deviation from standing orders."],
+        "transport": ["Avoid unnecessary delay when time-sensitive cardiac disease is possible."]
+      },
+      "scenario": {
+        "dispatch": "Chest discomfort at a workplace.",
+        "patient": "A 59-year-old reports pressure with nausea and sweating. The patient appears pale and has not yet provided a complete medication history.",
+        "prompt": "What should happen before a protocol-directed medication is given?",
+        "choices": [
+          {"id": "a", "text": "Confirm the required indication, contraindications, medication history, and vital-sign limits", "correct": true, "feedback": "Medication safety requires the checks specified by the current local protocol."},
+          {"id": "b", "text": "Give the medication immediately because the complaint is chest pain", "correct": false, "feedback": "The complaint alone does not replace contraindication and vital-sign checks."},
+          {"id": "c", "text": "Delay all care until a complete written history is available", "correct": false, "feedback": "Immediate assessment and supportive care can proceed while the history is gathered."}
+        ]
+      },
+      "questions": [
+        {"question": "Which symptom can be an anginal equivalent?", "options": ["Unexplained dyspnea with diaphoresis", "Isolated ankle pain", "A small superficial cut", "Chronic unchanged rash"], "answer": 0, "rationale": "Cardiac ischemia may present without classic chest pain."},
+        {"question": "What determines exact medication eligibility?", "options": ["Patient age alone", "Local protocol indications, contraindications, and vital-sign limits", "Whether transport is available", "Whether pain is severe"], "answer": 1, "rationale": "The local medication protocol defines required safety checks."},
+        {"question": "Why is early destination planning important?", "options": ["It replaces reassessment", "It can reduce delay to time-sensitive cardiac care", "It guarantees a diagnosis", "It eliminates the need for a handoff"], "answer": 1, "rationale": "Destination decisions can affect time to definitive cardiac care."}
+      ],
+      "summary": {
+        "actions": ["Recognize atypical as well as classic presentations.", "Check every medication requirement.", "Plan time-sensitive transport early."],
+        "mistake": "Treating the complaint label instead of the patient and contraindications.",
+        "control": "Clarify medication or destination uncertainty through the required medical-control pathway.",
+        "documentation": "Document symptoms, required checks, serial findings, treatment response, and notifications."
+      }
+    },
+    {
+      "id": "demo-stroke-destination",
+      "packId": "emscodesim-demo",
+      "type": "Protocol",
+      "category": "Neurologic",
+      "levels": ["EMT", "AEMT", "Paramedic"],
+      "title": "Suspected stroke and destination decision",
+      "protocolNumber": "DEMO MED-03",
+      "estimatedMinutes": 5,
+      "objectives": ["Establish last known well accurately.", "Use the locally required stroke screen and severity tool.", "Apply destination and notification rules."],
+      "review": {
+        "appliesWhen": "A patient has new facial weakness, arm drift, speech change, vision change, severe imbalance, focal deficit, or unexplained altered mental status.",
+        "keyAssessment": ["Exact last known well and symptom discovery time", "Blood glucose and stroke mimic assessment", "Local stroke screen and severity score", "Airway, oxygenation, blood pressure, anticoagulant history, and baseline function"],
+        "actions": ["Correct immediate threats and check blood glucose.", "Complete the required local stroke assessment without creating scene delay.", "Follow local destination, bypass, prenotification, and consultation rules."],
+        "stopPoints": ["Do not substitute symptom discovery time for last known well.", "Do not allow an incomplete history to delay transport after immediate threats are addressed."],
+        "medicalControl": ["Use medical control for destination uncertainty or circumstances specified by protocol."],
+        "transport": ["Time, severity, geography, and local stroke-center policy guide destination."]
+      },
+      "scenario": {
+        "dispatch": "Possible stroke at an assisted-living facility.",
+        "patient": "Staff found the patient with new speech difficulty at 0715. The patient was last observed normal during a 0600 medication pass.",
+        "prompt": "Which time should be documented as last known well?",
+        "choices": [
+          {"id": "a", "text": "0715, when symptoms were discovered", "correct": false, "feedback": "Discovery time and last known well are different when no one observed symptom onset."},
+          {"id": "b", "text": "0600, when the patient was last observed normal", "correct": true, "feedback": "Last known well is the last time the patient was known to be at neurologic baseline."},
+          {"id": "c", "text": "The time EMS arrived", "correct": false, "feedback": "EMS arrival time does not establish last known well."}
+        ]
+      },
+      "questions": [
+        {"question": "Which bedside test is commonly required to evaluate an important stroke mimic?", "options": ["Visual acuity only", "Blood glucose", "Peak flow", "Orthostatic vital signs"], "answer": 1, "rationale": "Abnormal blood glucose can mimic or complicate a stroke presentation."},
+        {"question": "What should control bypass and destination decisions?", "options": ["The closest hospital in every case", "Current local stroke destination policy", "The patient's preferred pharmacy", "A national flashcard"], "answer": 1, "rationale": "Stroke systems and bypass criteria vary by region."},
+        {"question": "Which is the best definition of last known well?", "options": ["When EMS arrived", "When the patient first called", "The last time the patient was known to be at neurologic baseline", "When the deficit became severe"], "answer": 2, "rationale": "Last known well is based on the last confirmed normal neurologic state."}
+      ],
+      "summary": {
+        "actions": ["Get an exact last known well.", "Check glucose and complete the local stroke tool.", "Use the regional destination and prenotification pathway."],
+        "mistake": "Recording symptom discovery as last known well without clarifying the timeline.",
+        "control": "Use the required consultation pathway when destination criteria are uncertain.",
+        "documentation": "Record baseline, last known well, discovery time, stroke findings, glucose, destination rationale, and notification."
+      }
+    },
+    {
+      "id": "demo-refusal-high-risk",
+      "packId": "emscodesim-demo",
+      "type": "Protocol",
+      "category": "Operations",
+      "levels": ["EMT", "AEMT", "Paramedic"],
+      "title": "Patient refusal and high-risk non-transport",
+      "protocolNumber": "DEMO OPS-01",
+      "estimatedMinutes": 6,
+      "objectives": ["Separate decision-making capacity from simple orientation.", "Identify high-risk refusal triggers.", "Review documentation and consultation requirements."],
+      "review": {
+        "appliesWhen": "A patient declines assessment, treatment, transport, or a recommended destination.",
+        "keyAssessment": ["Immediate threats and decision-making capacity", "Understanding, appreciation, reasoning, and ability to communicate a choice", "Influence of intoxication, hypoxia, head injury, metabolic problem, or mental-health emergency", "High-risk findings defined by local policy"],
+        "actions": ["Explain findings, recommended care, material risks, and alternatives in understandable language.", "Attempt reasonable problem-solving and involve appropriate supports.", "Follow local medical-control, law-enforcement, supervisor, and documentation policy."],
+        "stopPoints": ["Orientation alone does not prove capacity.", "A signature does not replace assessment, disclosure, consultation, or documentation."],
+        "medicalControl": ["Many systems require consultation for high-risk refusals, questionable capacity, minors, or specific clinical presentations."],
+        "transport": ["Offer transport again when new information or deterioration changes the risk discussion."]
+      },
+      "scenario": {
+        "dispatch": "Fall with possible head injury.",
+        "patient": "The patient is oriented but repeatedly forgets what happened, cannot explain the risks of refusing, and wants to leave.",
+        "prompt": "What is the most important next step?",
+        "choices": [
+          {"id": "a", "text": "Accept the refusal because the patient knows name, place, and date", "correct": false, "feedback": "Orientation is only one part of capacity and does not resolve the memory and reasoning concerns."},
+          {"id": "b", "text": "Assess capacity more fully and follow the high-risk consultation pathway", "correct": true, "feedback": "The patient may not be able to understand, appreciate, or reason through the decision."},
+          {"id": "c", "text": "Ask for a signature and leave immediately", "correct": false, "feedback": "A signature does not substitute for capacity assessment and required consultation."}
+        ]
+      },
+      "questions": [
+        {"question": "Which statement about decision-making capacity is most accurate?", "options": ["Orientation automatically proves capacity", "Capacity includes understanding, appreciation, reasoning, and communicating a choice", "Any adult always has capacity", "A refusal form establishes capacity"], "answer": 1, "rationale": "Capacity is decision-specific and requires more than orientation."},
+        {"question": "What should be documented in a refusal?", "options": ["Only the signature", "Assessment, capacity, risks explained, alternatives, consultation, and return instructions", "Only the dispatch complaint", "Only the patient's age"], "answer": 1, "rationale": "A complete record supports patient safety and continuity."},
+        {"question": "What determines when medical control is mandatory?", "options": ["Provider preference", "Current local refusal policy", "The time of day", "Whether the patient is insured"], "answer": 1, "rationale": "Consultation requirements vary by system and risk category."}
+      ],
+      "summary": {
+        "actions": ["Assess capacity, not just orientation.", "Explain risks and alternatives clearly.", "Follow local high-risk consultation and documentation rules."],
+        "mistake": "Using a signed form as a substitute for a clinical and capacity assessment.",
+        "control": "Know which refusal categories require medical control or supervisor involvement.",
+        "documentation": "Record findings, capacity elements, recommendations, risks, alternatives, witnesses, consultation, and instructions."
+      }
+    },
+    {
+      "id": "demo-cpap-procedure",
+      "packId": "emscodesim-demo",
+      "type": "Procedure",
+      "category": "Airway",
+      "levels": ["EMT", "AEMT", "Paramedic"],
+      "title": "CPAP application and monitoring",
+      "protocolNumber": "DEMO PROC-01",
+      "estimatedMinutes": 5,
+      "objectives": ["Confirm local indications and contraindications.", "Apply the device while coaching the patient.", "Recognize failure and the need to escalate ventilation support."],
+      "review": {
+        "appliesWhen": "A patient has significant respiratory distress and meets the local indication criteria for noninvasive positive-pressure support.",
+        "keyAssessment": ["Mental status and ability to protect the airway", "Blood pressure and perfusion", "Respiratory effort, oxygenation, and breath sounds", "Vomiting risk, facial trauma, pneumothorax concern, and local contraindications"],
+        "actions": ["Prepare equipment and explain the procedure.", "Apply the mask, begin at the locally approved setting, coach the patient, and secure the seal.", "Continuously monitor tolerance, airway, blood pressure, ventilation, and response."],
+        "stopPoints": ["Stop or escalate when the patient cannot protect the airway, becomes intolerant, deteriorates, or meets a local discontinuation criterion.", "Be ready to provide assisted ventilation."],
+        "medicalControl": ["Follow local requirements for authorization, medication adjuncts, pressure changes, or failure."],
+        "transport": ["Do not let device setup create avoidable transport delay in a critically ill patient."]
+      },
+      "scenario": {
+        "dispatch": "Severe shortness of breath.",
+        "patient": "The patient is alert and cooperative but has increasing work of breathing. You are preparing CPAP.",
+        "prompt": "Which preparation is most important before the mask is applied?",
+        "choices": [
+          {"id": "a", "text": "Confirm indications, contraindications, airway status, and ability to tolerate the device", "correct": true, "feedback": "CPAP requires an appropriate patient and readiness to manage deterioration."},
+          {"id": "b", "text": "Apply the mask before assessing mental status", "correct": false, "feedback": "Mental status and airway protection are essential safety checks."},
+          {"id": "c", "text": "Delay all monitoring until the patient adjusts to the mask", "correct": false, "feedback": "Monitoring should continue during application and throughout use."}
+        ]
+      },
+      "questions": [
+        {"question": "Which finding may indicate CPAP failure?", "options": ["Improved speech and lower work of breathing", "Worsening mental status and fatigue", "Better mask tolerance", "Improved oxygenation"], "answer": 1, "rationale": "Worsening mental status and fatigue can indicate failure and a need for assisted ventilation."},
+        {"question": "What should be monitored continuously?", "options": ["Only oxygen saturation", "Airway, mental status, blood pressure, ventilation, tolerance, and response", "Only mask pressure", "Only respiratory rate"], "answer": 1, "rationale": "CPAP can affect several systems and may fail despite one improving number."},
+        {"question": "Where are the exact pressure settings and contraindications found?", "options": ["The device advertisement", "The current local protocol and device guidance", "A generic social-media post", "A previous patient's chart"], "answer": 1, "rationale": "Settings and safety criteria must match local protocol and approved equipment guidance."}
+      ],
+      "summary": {
+        "actions": ["Confirm the patient is appropriate.", "Coach and monitor during application.", "Recognize failure early and be ready to ventilate."],
+        "mistake": "Watching oxygen saturation while missing declining mental status or ventilation.",
+        "control": "Know local authorization, pressure-change, adjunct-medication, and failure requirements.",
+        "documentation": "Record pre-application findings, settings, tolerance, serial findings, and response."
+      }
+    },
+    {
+      "id": "demo-bvm-procedure",
+      "packId": "emscodesim-demo",
+      "type": "Procedure",
+      "category": "Airway",
+      "levels": ["EMT", "AEMT", "Paramedic"],
+      "title": "Bag-mask ventilation quality",
+      "protocolNumber": "DEMO PROC-02",
+      "estimatedMinutes": 5,
+      "objectives": ["Identify inadequate ventilation.", "Prioritize airway positioning and mask seal.", "Use visible chest rise and physiologic response to guide quality."],
+      "review": {
+        "appliesWhen": "A patient is apneic or breathing inadequately and requires positive-pressure ventilation.",
+        "keyAssessment": ["Airway patency and need for suction", "Respiratory rate, depth, effort, chest movement, and mental status", "Mask fit and facial anatomy", "Oxygenation and capnography when available"],
+        "actions": ["Open and clear the airway and insert an appropriate adjunct when indicated.", "Use a two-person technique when resources allow.", "Ventilate at the locally recommended rate and volume, using visible chest rise and avoiding excessive pressure."],
+        "stopPoints": ["Correct poor chest rise before simply squeezing harder.", "Avoid excessive rate and volume."],
+        "medicalControl": ["Follow local escalation pathways when ventilation remains ineffective."],
+        "transport": ["Continue airway management and reassessment during movement and transport."]
+      },
+      "scenario": {
+        "dispatch": "Unresponsive person with slow, shallow breathing.",
+        "patient": "Initial bag-mask ventilations produce little chest movement and significant resistance.",
+        "prompt": "What should you do first?",
+        "choices": [
+          {"id": "a", "text": "Squeeze the bag harder and faster", "correct": false, "feedback": "Excessive pressure and rate can worsen ventilation and increase complications."},
+          {"id": "b", "text": "Reposition and clear the airway, improve the seal, and use a two-person technique", "correct": true, "feedback": "Airway position, patency, and mask seal should be corrected before increasing pressure."},
+          {"id": "c", "text": "Stop ventilating until a monitor is attached", "correct": false, "feedback": "An inadequately breathing patient needs immediate ventilation support while monitoring is added."}
+        ]
+      },
+      "questions": [
+        {"question": "What is the best immediate visual indicator of an effective breath?", "options": ["The bag fully collapses", "Visible chest rise", "The oxygen cylinder feels cold", "The mask makes a loud sound"], "answer": 1, "rationale": "Visible chest rise helps guide appropriate breath delivery."},
+        {"question": "Which technique generally improves mask seal and airway control?", "options": ["One-handed seal whenever staffing permits", "Two-person bag-mask ventilation", "Faster bagging", "Removing all airway adjuncts"], "answer": 1, "rationale": "A two-person technique often improves seal and airway positioning."},
+        {"question": "What should happen when chest rise is poor?", "options": ["Increase rate immediately", "Correct position, patency, adjunct, seal, and technique", "Stop all care", "Ignore it if oxygen is connected"], "answer": 1, "rationale": "Poor chest rise requires troubleshooting the airway and technique."}
+      ],
+      "summary": {
+        "actions": ["Open and clear the airway.", "Use the best seal and two-person technique available.", "Ventilate to chest rise and reassess continuously."],
+        "mistake": "Compensating for a poor seal or obstructed airway by squeezing harder and faster.",
+        "control": "Follow local escalation and advanced-airway pathways when basic ventilation is ineffective.",
+        "documentation": "Record initial ventilation status, airway actions, technique, response, and monitoring."
+      }
+    },
+    {
+      "id": "demo-paramedic-tachycardia",
+      "packId": "emscodesim-demo",
+      "type": "Protocol",
+      "category": "Cardiac",
+      "levels": ["Paramedic"],
+      "title": "Adult tachycardia with a pulse",
+      "protocolNumber": "DEMO ALS-01",
+      "estimatedMinutes": 7,
+      "objectives": ["Identify instability based on the whole patient.", "Separate immediate stabilization from rhythm classification.", "Use the local synchronized-cardioversion and medication pathway."],
+      "review": {
+        "appliesWhen": "An adult has a persistent tachyarrhythmia with a pulse and clinical symptoms or instability.",
+        "keyAssessment": ["Airway, breathing, perfusion, mental status, chest discomfort, heart failure, and shock", "Monitor rhythm and 12-lead when feasible without delaying urgent care", "Potential causes and medication history", "Whether the patient meets local instability criteria"],
+        "actions": ["Treat immediate threats and determine stable versus unstable using local definitions.", "Follow the local synchronized-cardioversion, sedation, and medication pathway.", "Reassess rhythm and perfusion after every intervention."],
+        "stopPoints": ["Do not allow prolonged rhythm analysis to delay treatment of an unstable patient.", "Confirm synchronization and local energy guidance before cardioversion."],
+        "medicalControl": ["Use medical control as required for medications, repeated therapy, unusual rhythms, or protocol variance."],
+        "transport": ["Coordinate urgent transport and destination based on response and local cardiac system policy."]
+      },
+      "scenario": {
+        "dispatch": "Palpitations and weakness.",
+        "patient": "A patient has a rapid rhythm, altered mental status, cool skin, and weak pulses. The monitor is being attached.",
+        "prompt": "Which principle should guide the next decision?",
+        "choices": [
+          {"id": "a", "text": "Treat the patient as unstable and follow the immediate local tachycardia pathway", "correct": true, "feedback": "Clinical instability should drive urgent treatment while rhythm information is obtained."},
+          {"id": "b", "text": "Delay treatment until a perfect 12-lead is printed", "correct": false, "feedback": "A 12-lead is useful but should not delay urgent care in an unstable patient."},
+          {"id": "c", "text": "Assume every rapid rhythm receives the same medication", "correct": false, "feedback": "Treatment depends on stability, rhythm characteristics, patient factors, and local protocol."}
+        ]
+      },
+      "questions": [
+        {"question": "Which finding supports instability?", "options": ["Normal perfusion and no symptoms", "Altered mental status with weak pulses", "A rapid number alone", "A history of caffeine use"], "answer": 1, "rationale": "Instability is determined by patient effects such as poor perfusion, altered mental status, ischemia, or heart failure."},
+        {"question": "What must be confirmed before synchronized cardioversion?", "options": ["That all vital signs are normal", "Synchronization and the current local energy/sedation pathway", "That transport has arrived", "That the patient has no medical history"], "answer": 1, "rationale": "Synchronization and local procedural guidance are critical safety elements."},
+        {"question": "What follows every intervention?", "options": ["A new dispatch", "Rhythm and perfusion reassessment", "Automatic protocol completion", "No further monitoring"], "answer": 1, "rationale": "The rhythm and the patient's clinical response must both be reassessed."}
+      ],
+      "summary": {
+        "actions": ["Define stability from the patient, not rate alone.", "Do not delay urgent treatment for perfect diagnostics.", "Reassess rhythm and perfusion after each action."],
+        "mistake": "Focusing on the monitor while missing worsening perfusion.",
+        "control": "Know the local cardioversion, sedation, medication, repeat-treatment, and consultation requirements.",
+        "documentation": "Record instability findings, rhythm interpretation, synchronized settings, medications, response, and consultation."
+      }
+    },
+    {
+      "id": "demo-paramedic-pediatric-anaphylaxis",
+      "packId": "emscodesim-demo",
+      "type": "Protocol",
+      "category": "Pediatrics",
+      "levels": ["Paramedic"],
+      "title": "Pediatric anaphylaxis",
+      "protocolNumber": "DEMO ALS-02",
+      "estimatedMinutes": 7,
+      "objectives": ["Recognize multisystem allergic emergencies.", "Use weight-based medication safeguards.", "Anticipate airway and perfusion deterioration."],
+      "review": {
+        "appliesWhen": "A child has a likely allergic exposure with airway, breathing, circulatory, or multisystem findings consistent with anaphylaxis.",
+        "keyAssessment": ["Airway swelling, voice change, stridor, wheezing, work of breathing, and oxygenation", "Perfusion, mental status, skin findings, vomiting, and abdominal symptoms", "Estimated or measured weight and medication concentration", "Exposure, onset, prior reactions, and pre-arrival treatment"],
+        "actions": ["Treat immediate airway, breathing, and perfusion threats.", "Use the exact weight-based medication, concentration, route, and maximum in the current local protocol.", "Prepare for rapid deterioration and reassess after each intervention."],
+        "stopPoints": ["Do not rely on skin findings alone to determine severity.", "Complete an independent dose and concentration cross-check before administration whenever circumstances allow."],
+        "medicalControl": ["Follow local requirements for repeat medication, infusion therapy, refractory shock, or protocol variance."],
+        "transport": ["Use urgent transport and early destination notification for severe or refractory reactions."]
+      },
+      "scenario": {
+        "dispatch": "Child with allergic reaction after food exposure.",
+        "patient": "The child has wheezing, facial swelling, vomiting, and poor perfusion. A caregiver reports a weight, but the medication concentration has not been confirmed.",
+        "prompt": "What medication-safety step is essential?",
+        "choices": [
+          {"id": "a", "text": "Use the adult amount because the child appears critically ill", "correct": false, "feedback": "Severity does not remove pediatric weight and concentration safeguards."},
+          {"id": "b", "text": "Confirm weight, indication, concentration, route, calculated dose, and local maximum", "correct": true, "feedback": "This structured cross-check reduces pediatric medication error."},
+          {"id": "c", "text": "Wait for skin findings to worsen before treating", "correct": false, "feedback": "The child already has respiratory, gastrointestinal, and perfusion involvement."}
+        ]
+      },
+      "questions": [
+        {"question": "Why can anaphylaxis be present without dramatic hives?", "options": ["Skin findings are required in every case", "Airway, breathing, circulatory, or multisystem findings may predominate", "Children cannot develop hives", "Vomiting excludes anaphylaxis"], "answer": 1, "rationale": "Severe anaphylaxis may be recognized through airway, breathing, circulation, and multisystem findings even when skin findings are limited."},
+        {"question": "Which pediatric medication check is most complete?", "options": ["Drug name only", "Weight, indication, concentration, route, calculated dose, maximum, and independent check", "Color of the package", "Caregiver preference"], "answer": 1, "rationale": "A complete cross-check reduces concentration and calculation errors."},
+        {"question": "What should happen after medication is given?", "options": ["Stop monitoring", "Reassess airway, breathing, perfusion, mental status, and need for repeat therapy", "Wait for hospital staff", "Document only the drug name"], "answer": 1, "rationale": "Anaphylaxis can recur or progress and requires close reassessment."}
+      ],
+      "summary": {
+        "actions": ["Recognize multisystem disease early.", "Use a complete pediatric dose/concentration check.", "Prepare for airway and shock deterioration."],
+        "mistake": "Waiting for dramatic skin findings or skipping the concentration check in a critical child.",
+        "control": "Know local repeat-dose, infusion, refractory-shock, and consultation requirements.",
+        "documentation": "Record exposure, weight source, concentration, calculation, dose, route, time, serial response, and consultation."
+      }
+    }
+  ]
+}

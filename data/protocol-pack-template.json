@@ -1,0 +1,55 @@
+{
+  "package": {
+    "id": "replace-with-unique-agency-id",
+    "name": "Example County EMS Protocol Pack",
+    "state": "Colorado",
+    "area": "Example County EMS",
+    "edition": "2026.1",
+    "verified": true,
+    "verifiedBy": "Name or review committee",
+    "lastVerified": "2026-08-03",
+    "sourceLabel": "Official Example County EMS protocols",
+    "sourceUrl": "https://example.gov/official-protocols",
+    "levels": ["EMT", "AEMT", "Paramedic"]
+  },
+  "drills": [
+    {
+      "id": "example-unique-protocol-id",
+      "type": "Protocol",
+      "category": "Respiratory",
+      "levels": ["EMT", "Paramedic"],
+      "title": "Replace with protocol title",
+      "protocolNumber": "MED-00",
+      "estimatedMinutes": 5,
+      "objectives": ["Objective one", "Objective two"],
+      "review": {
+        "appliesWhen": "Paste a verified short indication summary.",
+        "keyAssessment": ["Assessment item"],
+        "actions": ["Verified protocol action"],
+        "stopPoints": ["Contraindication or critical caution"],
+        "medicalControl": ["Medical-control requirement"],
+        "transport": ["Destination or transport rule"]
+      },
+      "scenario": {
+        "dispatch": "Short dispatch information.",
+        "patient": "Short patient presentation.",
+        "prompt": "What should the clinician do next?",
+        "choices": [
+          {"id": "a", "text": "Correct choice", "correct": true, "feedback": "Why it matches the verified protocol."},
+          {"id": "b", "text": "Incorrect choice", "correct": false, "feedback": "Why it does not match the verified protocol."}
+        ]
+      },
+      "questions": [
+        {"question": "Question one", "options": ["Choice A", "Choice B", "Choice C"], "answer": 0, "rationale": "Verified rationale."},
+        {"question": "Question two", "options": ["Choice A", "Choice B", "Choice C"], "answer": 1, "rationale": "Verified rationale."},
+        {"question": "Question three", "options": ["Choice A", "Choice B", "Choice C"], "answer": 2, "rationale": "Verified rationale."}
+      ],
+      "summary": {
+        "actions": ["Field action one", "Field action two", "Field action three"],
+        "mistake": "Common error.",
+        "control": "When medical control is needed.",
+        "documentation": "What must be documented."
+      }
+    }
+  ]
+}
