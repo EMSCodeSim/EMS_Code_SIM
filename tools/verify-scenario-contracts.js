@@ -62,16 +62,16 @@ assert(!visualPatient.includes('id="reviewSceneGuide"'), 'Scene size-up must be 
 const visualPatientJs = read('vitals/visual-patient.js');
 includesAll(visualPatientJs, [
   'buildSceneSizeUpCard(box)', 'buildPrimaryAssessmentCard(box)', 'Primary Assessment', 'primary-assessment-row',
-  'Immediate threats', 'Relevant assessment and history', 'More assessments', 'required', 'appropriate', 'not-indicated',
+  'buildRecommendedAssessments', 'buildAssessmentFilters', 'Focused Assessment', 'Vitals & Diagnostic Tools', 'History',
   'current?.startedAt', 'assignPartnerTask', 'resolvePartnerTasks', 'isInformationUpdate', 'infoUpdateCollapse',
   'checkScenarioCompletion', 'essentialComplete'
 ], 'Patient-picture scenario home');
 assert(!visualPatientJs.includes('buildRapidABCCard'), 'Rapid ABC must be combined into the unified Primary Assessment card.');
 assert(!visualPatientJs.includes('openRapidABC'), 'The patient home must not retain a separate Rapid ABC modal.');
-assert(!visualPatientJs.includes('updateNextAction'), 'The patient home must not calculate or display a next-action card.');
+assert(!visualPatientJs.includes('updateNextAction'), 'The patient home must not calculate or display a patient-screen next-action card.');
 assert(visualPatientJs.indexOf('buildSceneSizeUpCard(box)') < visualPatientJs.indexOf('buildPrimaryAssessmentCard(box)'), 'Scene size-up must appear before the unified Primary Assessment.');
-assert(visualPatientJs.indexOf('buildPrimaryAssessmentCard(box)') < visualPatientJs.indexOf('Relevant assessment and history'), 'Primary Assessment must appear before focused assessments.');
-assert(visualPatientJs.indexOf('Relevant assessment and history') < visualPatientJs.indexOf('More assessments'), 'Patient-relevant assessments must appear before optional/not-indicated assessments.');
+assert(visualPatientJs.lastIndexOf('buildPrimaryAssessmentCard(box)') < visualPatientJs.lastIndexOf('buildRecommendedAssessments(box, tools)'), 'Primary Assessment must appear before recommended assessment tools.');
+assert(visualPatientJs.lastIndexOf('buildRecommendedAssessments(box, tools)') < visualPatientJs.lastIndexOf("buildAssessmentCategory(box, 'focused'"), 'Recommended next actions must appear before the categorized tool lists.');
 assert(!visualPatientJs.includes('What you can say now'), 'Primary assessment must not reveal picture-based conclusions to the learner.');
 
 const launcher = read('vitals/scenario-launcher.js');
