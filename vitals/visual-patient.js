@@ -53,6 +53,7 @@
   let findingFilter = 'all';
   let infoUpdates = [];
   let infoUpdateIndex = 0;
+  let sceneObservationUpdate = null;
   let lastInfoSignature = '';
   let timerInterval = 0;
   let conditionInterval = 0;
@@ -1133,6 +1134,7 @@
     ];
     const log = api?.listCareLog?.(current, 'all') || [];
     log.filter(isInformationUpdate).forEach(event => updates.push(updateFromCareEvent(event)));
+    if (sceneObservationUpdate) updates.push(sceneObservationUpdate);
     return updates;
   }
   function setInfoCollapsed(collapsed, options = {}) {
@@ -1155,6 +1157,11 @@
   function scheduleInfoCollapse(item, isNew) {
     clearTimeout(infoAutoCollapseTimer);
     if (!item || !isNew) return;
+    if (item.sticky) {
+      infoManuallyCollapsed = false;
+      setInfoCollapsed(false);
+      return;
+    }
     if (item.kind === 'alert') {
       infoManuallyCollapsed = false;
       setInfoCollapsed(false);
@@ -1198,6 +1205,32 @@
     scheduleInfoCollapse(item, isNew);
     lastInfoItemId = item.id || `${item.type}:${item.recordedAt}`;
   }
+
+  window.EMSCodeSimPatientInfo = {
+    showSceneObservation(input = {}) {
+      const current = record() || {};
+      sceneObservationUpdate = {
+        id: input.id || `scene-observation-${Date.now()}`,
+        type: input.type || 'APPROACH OBSERVATION',
+        title: input.title || 'What you notice as you approach',
+        text: input.text || 'Continue observing the scene and patient.',
+        kind: input.kind || 'observation',
+        sticky: input.sticky !== false,
+        recordedAt: input.recordedAt || new Date().toISOString()
+      };
+      infoManuallyCollapsed = false;
+      lastInfoSignature = '';
+      renderInfoUpdate(true);
+      return sceneObservationUpdate;
+    },
+    clearSceneObservation() {
+      if (!sceneObservationUpdate) return;
+      sceneObservationUpdate = null;
+      lastInfoSignature = '';
+      infoManuallyCollapsed = false;
+      renderInfoUpdate(true);
+    }
+  };
 
   function discoveredSummary(current = record() || {}) {
     const events = api?.listCareLog?.(current, 'all') || [];
