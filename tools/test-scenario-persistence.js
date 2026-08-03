@@ -51,6 +51,7 @@ function createRuntime(storageMap, search = '?case=stroke&mode=scenario&resume=1
     { filename: relative }
   );
   load('vitals/patient-record.js');
+  load('vitals/scenario-definitions.js');
   load('vitals/scenario-session.js');
   return { context, window, storage };
 }

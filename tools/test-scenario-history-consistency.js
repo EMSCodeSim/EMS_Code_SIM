@@ -4,6 +4,7 @@ const fs = require('fs');
 const vm = require('vm');
 const path = require('path');
 
+const definitionsSource = fs.readFileSync(path.join(__dirname, '..', 'vitals', 'scenario-definitions.js'), 'utf8');
 const source = fs.readFileSync(path.join(__dirname, '..', 'vitals', 'scenario-runtime.js'), 'utf8');
 const sandbox = {
   window: {},
@@ -13,6 +14,7 @@ const sandbox = {
 };
 sandbox.window.addEventListener = () => {};
 vm.createContext(sandbox);
+vm.runInContext(definitionsSource, sandbox);
 vm.runInContext(source, sandbox);
 
 const profiles = sandbox.window.EMSCodeSimScenarioRuntime.PROFILES;

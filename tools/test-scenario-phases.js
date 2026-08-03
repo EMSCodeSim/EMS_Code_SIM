@@ -6,11 +6,9 @@ const path = require('path');
 const vm = require('vm');
 
 const window = {};
-vm.runInNewContext(
-  fs.readFileSync(path.join(process.cwd(), 'vitals/scenario-phase-model.js'), 'utf8'),
-  { window, Date, Object, Array, String, Boolean, Number, Math },
-  { filename: 'vitals/scenario-phase-model.js' }
-);
+const context = { window, Date, Object, Array, String, Boolean, Number, Math };
+vm.runInNewContext(fs.readFileSync(path.join(process.cwd(), 'vitals/scenario-definitions.js'), 'utf8'), context, { filename: 'vitals/scenario-definitions.js' });
+vm.runInNewContext(fs.readFileSync(path.join(process.cwd(), 'vitals/scenario-phase-model.js'), 'utf8'), context, { filename: 'vitals/scenario-phase-model.js' });
 
 const phases = window.EMSCodeSimScenarioPhases;
 assert(phases, 'Scenario phase model should be available.');

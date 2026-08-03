@@ -41,7 +41,7 @@ const context = vm.createContext({
   clearTimeout: () => {}
 });
 
-for (const relative of ['vitals/patient-record.js', 'vitals/scenario-session.js']) {
+for (const relative of ['vitals/patient-record.js', 'vitals/scenario-definitions.js', 'vitals/scenario-session.js']) {
   vm.runInContext(fs.readFileSync(path.join(process.cwd(), relative), 'utf8'), context, { filename: relative });
 }
 
