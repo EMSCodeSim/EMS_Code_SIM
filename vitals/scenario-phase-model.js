@@ -22,14 +22,59 @@
     const time = new Date(value || 0).getTime();
     return Number.isFinite(time) ? time : 0;
   }
-  function hasReassessmentAfterTreatment(record) {
-    const treatments = Array.isArray(record?.treatments) ? record.treatments : [];
-    const reassessments = Array.isArray(record?.reassessments) ? record.reassessments : [];
-    if (!treatments.length || !reassessments.length) return false;
-    const lastTreatment = Math.max(...treatments.map(item => timestamp(item.recordedAt || item.time)));
-    const lastReassessment = Math.max(...reassessments.map(item => timestamp(item.recordedAt || item.time)));
-    return lastReassessment >= lastTreatment;
+  function treatmentTargets(item = {}) {
+    if (Array.isArray(item.targetKeys) && item.targetKeys.length) return [...new Set(item.targetKeys.filter(Boolean))];
+    if (item.assessment) return [item.assessment];
+    if (item.context && item.context !== 'general') return [item.context];
+    return [];
   }
+  function reassessmentTargets(item = {}) {
+    if (Array.isArray(item.targetKeys) && item.targetKeys.length) return [...new Set(item.targetKeys.filter(Boolean))];
+    if (item.assessment) return [item.assessment];
+    if (item.context && item.context !== 'general') return [item.context];
+    return [];
+  }
+  function targetedReassessmentStatus(record) {
+    const treatments = (Array.isArray(record?.treatments) ? record.treatments : [])
+      .filter(item => item?.reassessmentRequired !== false && !['contraindicated','premature','unnecessary'].includes(item?.classification));
+    const reassessments = Array.isArray(record?.reassessments) ? record.reassessments : [];
+    const required = [];
+    treatments.forEach((treatment, treatmentIndex) => {
+      const treatedAt = timestamp(treatment.recordedAt || treatment.time);
+      const targets = treatmentTargets(treatment);
+      if (!targets.length) {
+        required.push({ key: `general_${treatmentIndex}`, label: 'General patient reassessment', treatedAt, treatment });
+        return;
+      }
+      targets.forEach(key => required.push({ key, label: labelFor(key), treatedAt, treatment }));
+    });
+    const deduped = new Map();
+    required.forEach(item => {
+      const existing = deduped.get(item.key);
+      if (!existing || item.treatedAt > existing.treatedAt) deduped.set(item.key, item);
+    });
+    const requirements = [...deduped.values()].map(requirement => {
+      const matched = reassessments
+        .filter(item => {
+          const reassessedAt = timestamp(item.recordedAt || item.time);
+          if (reassessedAt < requirement.treatedAt) return false;
+          const targets = reassessmentTargets(item);
+          if (requirement.key.startsWith('general_')) return true;
+          return targets.includes(requirement.key);
+        })
+        .sort((a, b) => timestamp(b.recordedAt || b.time) - timestamp(a.recordedAt || a.time))[0] || null;
+      return { ...requirement, complete: Boolean(matched), reassessment: matched };
+    });
+    const missing = requirements.filter(item => !item.complete);
+    return {
+      complete: treatments.length > 0 && requirements.length > 0 && missing.length === 0,
+      requirements,
+      missing,
+      completed: requirements.length - missing.length,
+      total: requirements.length
+    };
+  }
+  function hasReassessmentAfterTreatment(record) { return targetedReassessmentStatus(record).complete; }
   function classification(caseId, key) {
     const plan = planFor(caseId);
     if (plan.requiredFindings.includes(key)) return 'required';
@@ -57,6 +102,7 @@
     const vitals = progressFor(requiredVitals, record);
     const treatments = Array.isArray(record?.treatments) ? record.treatments : [];
     const reassessments = Array.isArray(record?.reassessments) ? record.reassessments : [];
+    const reassessmentStatus = targetedReassessmentStatus(record);
     const impressionComplete = Boolean(record?.impressions?.primary);
     const transportDocumented = Boolean(record?.impressions?.action || record?.documentation?.transportPriority || record?.documentation?.destination);
     const handoffComplete = Boolean(record?.documentation?.handoff || record?.documentation?.narrative);
@@ -68,7 +114,7 @@
       { id: 'focused', label: 'History & focused assessment', requirement: requiredFocused.length ? 'Required + clinically appropriate' : 'Clinically appropriate', complete: focused.complete, started: [...requiredFocused, ...appropriateFocused].some(key => has(record, key)), detail: requiredFocused.length ? `${focused.completed} of ${focused.total} required` : 'Use when indicated' },
       { id: 'vitals', label: 'Initial vitals', requirement: 'Required + clinically appropriate', complete: vitals.complete, started: [...requiredVitals, ...appropriateVitals].some(key => has(record, key)), detail: `${vitals.completed} of ${vitals.total} required` },
       { id: 'treatment', label: 'Immediate treatment', requirement: 'Required when indicated', complete: treatments.length > 0, started: treatments.length > 0, detail: treatments.length ? `${treatments.length} recorded` : 'Not yet recorded' },
-      { id: 'reassessment', label: 'Reassessment', requirement: 'Required after treatment', complete: hasReassessmentAfterTreatment(record), started: reassessments.length > 0, detail: reassessments.length ? `${reassessments.length} recorded` : 'Not yet recorded' },
+      { id: 'reassessment', label: 'Targeted reassessment', requirement: 'Required after treatment', complete: reassessmentStatus.complete, started: reassessments.length > 0, detail: reassessmentStatus.total ? `${reassessmentStatus.completed} of ${reassessmentStatus.total} treatment targets reassessed` : 'No reassessment targets recorded' },
       { id: 'impression', label: 'Impression & transport', requirement: 'Required', complete: impressionComplete && transportDocumented, started: impressionComplete || transportDocumented, detail: impressionComplete && !transportDocumented ? 'Transport decision still needed' : '' },
       { id: 'handoff', label: 'Handoff', requirement: 'Required', complete: handoffComplete, started: handoffComplete },
       { id: 'debrief', label: 'Debrief', requirement: 'Optional unless assigned', complete: debriefComplete, started: debriefComplete }
@@ -80,7 +126,8 @@
     requiredFocused.filter(key => !has(record, key)).forEach(key => missing.push(labelFor(key)));
     requiredVitals.filter(key => !has(record, key)).forEach(key => missing.push(labelFor(key)));
     if (!treatments.length) missing.push('Immediate treatment decision');
-    if (!hasReassessmentAfterTreatment(record)) missing.push('Reassessment after treatment');
+    reassessmentStatus.missing.forEach(item => missing.push(`Reassess ${item.label}`));
+    if (treatments.length && !reassessmentStatus.total) missing.push('Reassessment after treatment');
     if (!impressionComplete) missing.push('Working impression');
     if (!transportDocumented) missing.push('Transport priority or destination');
     if (!handoffComplete) missing.push('PCR or verbal handoff');
@@ -96,5 +143,5 @@
     };
   }
 
-  window.EMSCodeSimScenarioPhases = { PLANS, planFor, classification, labelFor, evaluate, hasReassessmentAfterTreatment };
+  window.EMSCodeSimScenarioPhases = { PLANS, planFor, classification, labelFor, evaluate, treatmentTargets, reassessmentTargets, targetedReassessmentStatus, hasReassessmentAfterTreatment };
 })();

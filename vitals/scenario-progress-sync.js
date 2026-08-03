@@ -39,10 +39,15 @@
 
   const treatments = Array.isArray(record.treatments) ? record.treatments : (Array.isArray(state.treatments) ? state.treatments : []);
   const reassessments = Array.isArray(record.reassessments) ? record.reassessments : (Array.isArray(state.reassessments) ? state.reassessments : []);
-  const lastTreatment = treatments.length ? Math.max(...treatments.map(timeOf)) : 0;
-  const lastReassessment = reassessments.length ? Math.max(...reassessments.map(timeOf)) : 0;
   const treatmentComplete = treatments.length > 0;
-  const reassessmentComplete = treatmentComplete && reassessments.length > 0 && lastReassessment >= lastTreatment;
+  const phaseModel = window.EMSCodeSimScenarioPhases;
+  const reassessmentComplete = phaseModel?.targetedReassessmentStatus
+    ? phaseModel.targetedReassessmentStatus({ ...record, treatments, reassessments }).complete
+    : (() => {
+        const lastTreatment = treatments.length ? Math.max(...treatments.map(timeOf)) : 0;
+        const lastReassessment = reassessments.length ? Math.max(...reassessments.map(timeOf)) : 0;
+        return treatmentComplete && reassessments.length > 0 && lastReassessment >= lastTreatment;
+      })();
 
   state.phaseProgress = {
     ...(state.phaseProgress || {}),
