@@ -1,0 +1,8 @@
+vitals/visual-patient.html
+vitals/visual-patient.js
+vitals/visual-patient.css
+vitals/scenario-interviews.js
+tools/test-patient-interview.js
+package.json
+PATIENT_HISTORY_INTERVIEW_UPDATE.md
+CHANGED_FILES_PATIENT_HISTORY_INTERVIEW.txt
