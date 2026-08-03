@@ -1,0 +1,8 @@
+Updated production files included:
+
+netlify.toml
+vitals/visual-patient.html
+vitals/visual-patient.css
+vitals/visual-patient.js
+
+See DELETE_THESE_RETIRED_FILES.txt for files retired by this update.

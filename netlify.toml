@@ -4,3 +4,13 @@
 
 [functions]
   directory = "netlify-functions-dist"
+
+[[redirects]]
+  from = "/vitals/assessment-workspace.html"
+  to = "/vitals/visual-patient.html"
+  status = 301
+
+[[redirects]]
+  from = "/styles/assessment-workspace.html"
+  to = "/vitals/visual-patient.html"
+  status = 301
