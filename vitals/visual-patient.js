@@ -346,64 +346,144 @@
     return tool.description || 'Not yet assessed.';
   }
 
-  function renderAssessmentRow(tool) {
+  function assessmentActionLabel(state) {
+    if (state.code === 'reassessment-due') return 'Reassess';
+    if (state.code !== 'not-assessed') return 'Review';
+    return 'Open';
+  }
+
+  function assessmentStatusLine(tool, state) {
+    const task = partnerTaskFor(tool.key);
+    if (task?.status === 'active' || task?.status === 'pending') {
+      return `Partner obtaining · ${secondsRemaining(task)} sec remaining`;
+    }
+    if (task?.status === 'queued') return 'Queued for partner';
+    if (state.code === 'reassessment-due') return 'Abnormal finding documented · Reassessment due';
+    if (state.code === 'abnormal') return 'Abnormal finding documented';
+    if (['improved','unchanged','worsened'].includes(state.code)) return `${state.label} on reassessment`;
+    if (state.code === 'normal') return 'Completed · Normal';
+    return 'Not started';
+  }
+
+  function renderCompactAssessmentRow(tool) {
     const state = assessmentState(tool.key);
-    const kind = classificationClass(tool.key);
-    const complete = state.code !== 'not-assessed';
-    const actionLabel = state.code === 'reassessment-due' ? 'Reassess' : complete ? 'Review' : 'Assess';
+    const task = partnerTaskFor(tool.key);
     const row = document.createElement('div');
-    row.className = `primary-assessment-row assessment-tool-row ${kind} state-${state.code}`;
+    row.className = `assessment-compact-row state-${state.code}${task?.status ? ` partner-${task.status}` : ''}`;
+    row.dataset.assessmentState = state.code;
+    row.dataset.assessmentKey = tool.key;
+    const abnormal = state.code === 'abnormal' || state.code === 'reassessment-due' || state.code === 'worsened';
+    const icon = state.code === 'reassessment-due' ? '↻' : abnormal ? '!' : state.code === 'not-assessed' ? '○' : '✓';
     row.innerHTML = `
-      <div>
-        <span>${escapeHtml(tool.label)} <em class="clinical-state ${state.code}">${escapeHtml(state.label)}</em></span>
-        <strong>${escapeHtml(assessmentStatusText(tool, state))}</strong>
-        ${assessmentMode() ? '' : `<small class="assessment-row-requirement ${kind}">${escapeHtml(classificationLabel(tool.key))}</small>`}
+      <span class="assessment-status-icon" aria-hidden="true">${icon}</span>
+      <div class="assessment-compact-copy">
+        <strong>${escapeHtml(tool.label)}</strong>
+        <small>${escapeHtml(assessmentStatusLine(tool, state))}</small>
       </div>
-      <a href="${assessmentHref(tool, tool.key)}">${escapeHtml(actionLabel)}</a>`;
+      <a class="assessment-row-action" href="${assessmentHref(tool, tool.key)}">${assessmentActionLabel(state)}</a>`;
     return row;
   }
 
-  function buildAssessmentGroup(title, copy, tools, options = {}) {
-    const article = document.createElement('article');
-    const completed = tools.filter(tool => assessmentState(tool.key).code !== 'not-assessed').length;
-    article.className = `assessment-card unified-primary-card unified-assessment-group${completed === tools.length && tools.length ? ' complete' : ''}`;
-    article.innerHTML = `
-      <div class="primary-card-heading">
-        <div>${modeTag(options.tag || 'Patient relevant', options.tagClass || 'appropriate')}<h3>${escapeHtml(title)}</h3></div>
-        <span class="status-chip ${completed === tools.length && tools.length ? 'done' : ''}">${completed} of ${tools.length} assessed</span>
-      </div>
-      <p class="primary-assessment-copy">${escapeHtml(copy)}</p>
-      <div class="primary-assessment-table" role="table" aria-label="${escapeHtml(title)} status and actions">
-        <div class="primary-assessment-header" role="row"><span>Area</span><span>Current status</span><span>Action</span></div>
-      </div>`;
-    const table = article.querySelector('.primary-assessment-table');
-    tools.forEach(tool => table.appendChild(renderAssessmentRow(tool)));
-    return article;
+  function clinicalCategory(tool) {
+    if (['sample','pain'].includes(tool.key)) return 'history';
+    if ((registry?.vitalTools || []).some(item => item.key === tool.key)) return 'vitals';
+    return 'focused';
+  }
+
+  function recommendationScore(tool) {
+    const state = assessmentState(tool.key);
+    if (state.code === 'reassessment-due') return 100;
+    if (state.code === 'worsened' || state.code === 'abnormal') return 90;
+    if (state.code !== 'not-assessed') return -10;
+    const kind = classificationClass(tool.key);
+    if (!assessmentMode() && kind === 'required') return 80;
+    if (!assessmentMode() && kind === 'appropriate') return 70;
+    const order = ['mental_status','breathing','perfusion','respirations','spo2','pulse','blood_pressure','breath_sounds','blood_glucose','skin','pupils','sample','pain'];
+    const index = order.indexOf(tool.key);
+    return index < 0 ? 20 : 55 - index;
+  }
+
+  function buildRecommendedAssessments(box, tools) {
+    const recommendations = [...tools]
+      .filter(tool => assessmentState(tool.key).code === 'not-assessed' || ['reassessment-due','abnormal','worsened'].includes(assessmentState(tool.key).code))
+      .sort((a,b) => recommendationScore(b) - recommendationScore(a))
+      .slice(0,3);
+    if (!recommendations.length) return;
+    const section = document.createElement('section');
+    section.className = 'assessment-recommended';
+    section.innerHTML = `<div class="assessment-section-title"><div><span>Recommended next</span><small>${assessmentMode() ? 'Based on your documented findings and normal assessment order' : 'Based on this patient and your completed findings'}</small></div></div><div class="assessment-recommended-list"></div>`;
+    const list = section.querySelector('.assessment-recommended-list');
+    recommendations.forEach(tool => list.appendChild(renderCompactAssessmentRow(tool)));
+    box.appendChild(section);
+  }
+
+  function buildAssessmentFilters(box) {
+    const nav = document.createElement('div');
+    nav.className = 'assessment-filter-bar';
+    nav.setAttribute('role','group');
+    nav.setAttribute('aria-label','Filter assessments');
+    nav.innerHTML = `
+      <button type="button" data-assessment-filter="next" class="active">Next</button>
+      <button type="button" data-assessment-filter="incomplete">Incomplete</button>
+      <button type="button" data-assessment-filter="abnormal">Abnormal</button>
+      <button type="button" data-assessment-filter="all">All</button>`;
+    box.appendChild(nav);
+    nav.querySelectorAll('button').forEach(button => button.addEventListener('click', () => {
+      nav.querySelectorAll('button').forEach(item => item.classList.toggle('active', item === button));
+      const filter = button.dataset.assessmentFilter;
+      box.querySelectorAll('.assessment-category').forEach(category => {
+        let visible = 0;
+        category.querySelectorAll('.assessment-compact-row').forEach(row => {
+          const state = row.dataset.assessmentState;
+          const show = filter === 'all'
+            || (filter === 'incomplete' && (state === 'not-assessed' || state === 'reassessment-due'))
+            || (filter === 'abnormal' && ['abnormal','reassessment-due','worsened'].includes(state))
+            || (filter === 'next' && (state === 'not-assessed' || state === 'reassessment-due'));
+          row.hidden = !show;
+          if (show) visible += 1;
+        });
+        category.hidden = visible === 0;
+      });
+    }));
+  }
+
+  function buildAssessmentCategory(box, id, title, subtitle, tools, open = false) {
+    if (!tools.length) return;
+    const completedNormal = tools.filter(tool => assessmentState(tool.key).code === 'normal').length;
+    const abnormal = tools.filter(tool => ['abnormal','reassessment-due','worsened'].includes(assessmentState(tool.key).code)).length;
+    const details = document.createElement('details');
+    details.className = `assessment-category assessment-category-${id}`;
+    details.open = open || abnormal > 0;
+    details.innerHTML = `
+      <summary>
+        <span class="assessment-category-icon" aria-hidden="true">${id === 'vitals' ? '▥' : id === 'history' ? '▤' : '◉'}</span>
+        <span><strong>${escapeHtml(title)}</strong><small>${escapeHtml(subtitle)}</small></span>
+        <em>${abnormal ? `${abnormal} abnormal` : `${completedNormal}/${tools.length} complete`}</em>
+      </summary>
+      <div class="assessment-category-list"></div>`;
+    const list = details.querySelector('.assessment-category-list');
+    tools.forEach(tool => list.appendChild(renderCompactAssessmentRow(tool)));
+    if (completedNormal) {
+      const normal = document.createElement('div');
+      normal.className = 'assessment-normal-summary';
+      normal.textContent = `${completedNormal} normal assessment${completedNormal === 1 ? '' : 's'} completed`;
+      list.appendChild(normal);
+    }
+    box.appendChild(details);
   }
 
   function buildSceneSizeUpCard(box) {
     const complete = existing('scene_size_up');
     const article = document.createElement('article');
-    article.className = `assessment-card sequence-card scene-size-card${complete ? ' complete' : ''}`;
-    article.innerHTML = `
-      <span class="sequence-number">1</span>
-      <div class="sequence-card-body">
-        ${modeTag('Required', 'required')}
-        <h3>Scene size-up and first impression</h3>
-        <p>Use the dispatch and first patient picture to establish safety, patient count, NOI/MOI, resources, general impression, responsiveness, and priority.</p>
-        <div class="tool-actions"><button class="primary-action scene-guide-card-button" type="button">${complete ? 'Review scene size-up' : 'Begin scene size-up'}</button>
-        <span class="status-chip ${complete ? 'done' : ''}">${complete ? 'Recorded' : 'Not started'}</span></div>
-      </div>`;
+    article.className = `assessment-scene-row${complete ? ' complete' : ''}`;
+    article.innerHTML = `<div><strong>Scene size-up</strong><small>${complete ? 'Recorded' : 'Complete safety, NOI/MOI, resources, and first impression'}</small></div><button class="scene-guide-card-button" type="button">${complete ? 'Review' : 'Begin'}</button>`;
     article.querySelector('button').addEventListener('click', () => {
       closeSheet();
       window.requestAnimationFrame(() => {
         const opened = window.EMSCodeSimSceneGuide?.start?.(complete);
         if (opened === false || !window.EMSCodeSimSceneGuide?.start) {
           const guide = document.getElementById('sceneGuide');
-          if (guide) {
-            guide.hidden = false;
-            guide.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+          if (guide) { guide.hidden = false; guide.scrollIntoView({ behavior:'smooth', block:'start' }); }
           showToast('Scene size-up opened. Refresh the page if the questions do not appear.');
         }
       });
@@ -446,120 +526,72 @@
     const expectedNormality = EXPECTED_RAPID_PRIMARY[id]?.[key] || '';
     const accurate = !expectedNormality || choice.normality === expectedNormality;
     saveFinding(key, choice.value, 'rapid-primary-assessment', {
-      label: labelFor(key),
-      finding: choice.value,
-      normality: choice.normality,
-      status: choice.normality === 'normal' ? 'normal' : 'abnormal',
-      learnerFinding: choice.value,
-      expectedNormality,
-      accurate,
-      correct: accurate,
-      reviewAtDebrief: true,
-      rapidAssessment: true
+      label: labelFor(key), finding: choice.value, normality: choice.normality,
+      status: choice.normality === 'normal' ? 'normal' : 'abnormal', learnerFinding: choice.value,
+      expectedNormality, accurate, correct: accurate, reviewAtDebrief: true, rapidAssessment: true
     });
-    if (!assessmentMode()) {
-      toast(accurate ? `${labelFor(key)} rapid decision recorded` : `${labelFor(key)} recorded — confirm with the detailed assessment`);
-    }
+    if (!assessmentMode()) toast(accurate ? `${labelFor(key)} rapid decision recorded` : `${labelFor(key)} recorded — confirm with the detailed assessment`);
   }
 
   function primaryToolLink(key) {
     const tool = registryTool(key);
     const config = scenario.primary[key] || {};
     const state = assessmentState(key);
-    return {
-      href: assessmentHref(tool, key),
-      label: state.code === 'reassessment-due' ? 'Reassess' : state.code !== 'not-assessed' ? 'Review' : (config.action || 'Assess'),
-      urgent: Boolean(config.urgent) || state.code === 'reassessment-due',
-      state
-    };
+    return { href: assessmentHref(tool, key), label: assessmentActionLabel(state), urgent:Boolean(config.urgent) || state.code === 'reassessment-due', state };
   }
 
   function buildPrimaryAssessmentCard(box) {
     const primaryKeys = ['airway','breathing','perfusion'];
     const completed = primaryKeys.filter(existing).length;
-    const treatments = record()?.treatments || [];
-    const article = document.createElement('article');
-    article.className = `assessment-card sequence-card unified-primary-card${completed === 3 ? ' complete' : ''}`;
-    const rows = primaryKeys.map(key => {
+    const article = document.createElement('details');
+    article.className = `assessment-primary-summary${completed === 3 ? ' complete' : ''}`;
+    article.open = completed < 3;
+    const summaryText = completed === 3
+      ? primaryKeys.map(key => `${key === 'perfusion' ? 'Circulation' : labelFor(key)} ${assessmentState(key).code === 'normal' ? 'adequate' : 'abnormal'}`).join(' · ')
+      : `${completed} of 3 classified`;
+    article.innerHTML = `<summary><span class="assessment-primary-check">${completed === 3 ? '✓' : completed}</span><span><strong>${completed === 3 ? 'Primary Assessment Complete' : 'Rapid Primary Assessment'}</strong><small>${escapeHtml(summaryText)}</small></span><em>${completed === 3 ? 'Review' : 'Complete'}</em></summary><div class="rapid-primary-list"></div>`;
+    const list = article.querySelector('.rapid-primary-list');
+    primaryKeys.forEach(key => {
       const label = key === 'perfusion' ? 'Circulation' : labelFor(key);
       const action = primaryToolLink(key);
+      const row = document.createElement('div');
+      row.className = `primary-assessment-row rapid-primary-clean-row state-${action.state.code}`;
       const choices = RAPID_PRIMARY_CHOICES[key] || [];
-      const quickChoices = action.state.code === 'not-assessed'
-        ? `<div class="rapid-primary-choices" role="group" aria-label="Rapid ${escapeHtml(label)} decision">${choices.map((choice, index) => `<button type="button" data-primary-key="${key}" data-primary-choice="${index}" class="${choice.normality === 'normal' ? 'rapid-normal' : 'rapid-abnormal'}">${escapeHtml(choice.label)}</button>`).join('')}</div>`
-        : `<a href="${action.href}">${escapeHtml(action.label)}</a>`;
-      return `<div class="primary-assessment-row rapid-primary-row ${action.urgent && action.state.code === 'not-assessed' ? 'urgent' : ''} state-${action.state.code}">
-        <div><span>${escapeHtml(label)} <em class="clinical-state ${action.state.code}">${escapeHtml(action.state.label)}</em></span><strong>${escapeHtml(primaryStatus(key))}</strong></div>
-        ${quickChoices}
-      </div>`;
-    }).join('');
-    const threatStatus = treatments.length ? `${treatments.length} treatment${treatments.length === 1 ? '' : 's'} recorded` : 'Not yet addressed';
-    article.innerHTML = `
-      <span class="sequence-number">2</span>
-      <div class="sequence-card-body">
-        <div class="primary-card-heading"><div>${modeTag('Required', 'required')}<h3>Rapid Primary Assessment</h3></div><span class="status-chip ${completed === 3 ? 'done' : ''}">${completed} of 3 assessed</span></div>
-        <p>Classify airway, breathing, and circulation here. Normal findings save immediately. Select the abnormal choice when a threat is present, then open the detailed assessment or treatment that appears.</p>
-        <div class="primary-assessment-table" role="table" aria-label="Primary assessment status and actions">
-          <div class="primary-assessment-header" role="row"><span>Area</span><span>Current status</span><span>Rapid decision</span></div>
-          ${rows}
-          <div class="primary-assessment-row immediate-threats">
-            <div><span>Immediate threats</span><strong>${escapeHtml(threatStatus)}</strong></div>
-            <a href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general')}">${treatments.length ? 'Review care' : 'Treat'}</a>
-          </div>
-        </div>
-      </div>`;
-    article.querySelectorAll('[data-primary-key][data-primary-choice]').forEach(button => {
-      button.addEventListener('click', () => {
-        const key = button.dataset.primaryKey;
-        const choice = RAPID_PRIMARY_CHOICES[key]?.[Number(button.dataset.primaryChoice)];
-        if (!choice) return;
-        recordRapidPrimary(key, choice);
-      });
+      row.innerHTML = `<div><strong>${escapeHtml(label)}</strong><small>${escapeHtml(primaryStatus(key))}</small></div>${action.state.code === 'not-assessed' ? `<div class="rapid-primary-choices">${choices.map((choice,index)=>`<button type="button" data-primary-key="${key}" data-primary-choice="${index}" class="${choice.normality === 'normal' ? 'rapid-normal' : 'rapid-abnormal'}">${escapeHtml(choice.label)}</button>`).join('')}</div>` : `<a href="${action.href}">${escapeHtml(action.label)}</a>`}`;
+      list.appendChild(row);
     });
+    article.querySelectorAll('[data-primary-key][data-primary-choice]').forEach(button => button.addEventListener('click', event => {
+      event.preventDefault();
+      const key = button.dataset.primaryKey;
+      const choice = RAPID_PRIMARY_CHOICES[key]?.[Number(button.dataset.primaryChoice)];
+      if (choice) recordRapidPrimary(key, choice);
+    }));
     box.appendChild(article);
   }
 
   function buildAssessments() {
     const box = $('assessmentTools');
     box.innerHTML = '';
+    box.classList.add('assessment-workflow-clean');
     buildSceneSizeUpCard(box);
     buildPrimaryAssessmentCard(box);
 
-    const focused = (registry?.assessmentTools || []).filter(tool => !PRIMARY_KEYS.has(tool.key));
-    if (assessmentMode()) {
-      box.appendChild(buildAssessmentGroup(
-        'Assessment and history options',
-        'Select assessments from your clinical judgment. Relevance and missed opportunities are reviewed during debrief.',
-        focused,
-        { tag: '', tagClass: 'optional' }
-      ));
-      return;
-    }
-    const relevant = focused.filter(tool => ['required','appropriate'].includes(classificationClass(tool.key)));
-    const more = focused.filter(tool => !relevant.includes(tool));
+    const unique = new Map();
+    [...(registry?.assessmentTools || []), ...(registry?.vitalTools || [])].forEach(tool => {
+      if (PRIMARY_KEYS.has(tool.key) || tool.key === 'scene_size_up') return;
+      if (!unique.has(tool.key) || (registry?.vitalTools || []).includes(tool)) unique.set(tool.key, tool);
+    });
+    const tools = [...unique.values()];
+    buildRecommendedAssessments(box, tools);
+    buildAssessmentFilters(box);
 
-    if (relevant.length) {
-      box.appendChild(buildAssessmentGroup(
-        'Relevant assessment and history',
-        'These assessments fit the current presentation. Each row uses the same status-and-action design as Primary Assessment.',
-        relevant,
-        { tag: 'Patient relevant', tagClass: 'appropriate' }
-      ));
-    }
+    const focused = tools.filter(tool => clinicalCategory(tool) === 'focused');
+    const vitals = tools.filter(tool => clinicalCategory(tool) === 'vitals');
+    const history = tools.filter(tool => clinicalCategory(tool) === 'history');
 
-    if (more.length) {
-      const details = document.createElement('details');
-      details.className = 'more-assessments';
-      details.innerHTML = '<summary>More assessments <span>Optional or not indicated by the current presentation</span></summary><div class="more-assessment-list"></div>';
-      const list = details.querySelector('.more-assessment-list');
-      more.sort((a, b) => classificationClass(a.key).localeCompare(classificationClass(b.key)) || a.label.localeCompare(b.label));
-      list.appendChild(buildAssessmentGroup(
-        'Additional Assessment Tools',
-        'Use these only when the patient presentation, mechanism, history, or new findings make them clinically useful.',
-        more,
-        { tag: 'Additional tools', tagClass: 'optional' }
-      ));
-      box.appendChild(details);
-    }
+    buildAssessmentCategory(box, 'focused', 'Focused Assessment', 'Respiratory, neurological, trauma, abdominal, pediatric', focused, true);
+    buildAssessmentCategory(box, 'vitals', 'Vitals & Diagnostic Tools', 'Blood pressure, pulse, RR, SpO₂, glucose, temperature', vitals, true);
+    buildAssessmentCategory(box, 'history', 'History', 'SAMPLE and OPQRST', history, false);
   }
 
   function treatmentEvidence(plan, current = record()) {
