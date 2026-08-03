@@ -73,7 +73,6 @@
     <button data-panel="assessmentPanel" type="button"><span>◎</span>Assessment</button>
     <button data-panel="vitalsPanel" type="button"><span>♥</span>Vitals</button>
     <button data-panel="treatmentPanel" type="button"><span>✚</span>Treatment</button>
-    <button data-panel="transportPanel" type="button"><span>➜</span>Transport</button>
     <button data-panel="findingsPanel" type="button"><span>☷</span>Log <em id="findingBadge" hidden>0</em></button>
   </nav>
 
@@ -96,30 +95,28 @@
     </section>
 
     <section id="treatmentPanel" class="vp-panel" hidden>
-      <p class="sub">Choose treatment by clinical category. The menu does not identify which option is correct.</p>
+      <p class="sub">Select an intervention, enter the required dose, route, device, or procedure details, and record the action. Transport is included as a treatment decision.</p>
       <div id="treatmentTools" class="treatment-list"></div>
-    </section>
-
-
-    <section id="transportPanel" class="vp-panel transport-panel" hidden>
-      <p class="sub">Choose transport priority and destination from the patient information you have obtained. Review readiness before giving handoff.</p>
-      <div id="transportDecisionCard" class="transport-card"></div>
-      <div id="destinationCard" class="transport-card"></div>
-      <div class="transport-card">
-        <div class="transport-card-head"><div><span class="requirement-tag required">Required</span><h3>Handoff readiness</h3></div><span id="transportReadinessStatus" class="status-chip">Review</span></div>
-        <div id="transportReadinessList" class="transport-readiness-list"></div>
-      </div>
-      <div class="transport-card">
-        <div class="transport-card-head"><div><span class="requirement-tag required">Required</span><h3>Patient handoff</h3></div><span id="handoffStatusChip" class="status-chip">Not saved</span></div>
-        <p class="transport-help">Generate a concise report from the patient record, edit it as needed, then save it before ending the scenario.</p>
-        <textarea id="handoffDraft" rows="8" aria-label="Patient handoff report" placeholder="Generate or enter a handoff report"></textarea>
+      <div class="transport-card handoff-treatment-card">
+        <div class="transport-card-head"><div><h3>Patient handoff</h3></div><span id="handoffStatusChip" class="status-chip">Not saved</span></div>
+        <p class="transport-help">After transport is selected, generate or enter a concise handoff report.</p>
+        <textarea id="handoffDraft" rows="7" aria-label="Patient handoff report" placeholder="Generate or enter a handoff report"></textarea>
         <div class="transport-actions"><button id="generateHandoff" type="button" class="secondary">Generate from record</button><button id="saveHandoff" type="button" class="primary-action">Save handoff</button></div>
         <a id="openFullHandoff" class="transport-full-link" href="/vitals/pcr-handoff.html">Open full PCR and verbal handoff tool</a>
       </div>
     </section>
 
     <section id="findingsPanel" class="vp-panel" hidden>
-      <p class="sub">Every obtained finding, history item, vital sign, treatment, and reassessment is recorded in the order it occurred.</p>
+      <section id="clinicalWorkspace" class="clinical-workspace" aria-labelledby="clinicalWorkspaceTitle">
+        <div class="clinical-workspace-head"><div><p>CLINICAL WORKSPACE</p><h3 id="clinicalWorkspaceTitle">Current patient picture</h3></div><span id="workspaceElapsed">00:00</span></div>
+        <div class="clinical-workspace-grid">
+          <div><small>Patient status</small><strong id="workspaceStatus">Assessment in progress</strong></div>
+          <div><small>Latest abnormal findings</small><span id="workspaceAbnormal">None documented</span></div>
+          <div><small>Care performed</small><span id="workspaceTreatments">None documented</span></div>
+          <div><small>Reassessment due</small><span id="workspaceReassessment">None currently due</span></div>
+        </div>
+      </section>
+      <p class="sub">The decision timeline records what was discovered, decided, performed, and reassessed in the order it occurred.</p>
       <div class="finding-toolbar">
         <div class="finding-filters" role="group" aria-label="Filter patient care log">
           <button class="active" type="button" data-log-filter="all" data-label="All log">All log</button>
@@ -163,6 +160,7 @@
       <button id="clinicalNextTreatment" type="button">Treat finding</button>
       <button id="clinicalNextVitals" type="button">Obtain vitals</button>
       <button id="clinicalNextPatient" type="button">Return to patient</button>
+      <button id="clinicalNextUncertain" class="uncertain-action" type="button">Need more information</button>
     </div>
   </section>
 
@@ -172,7 +170,7 @@
   <script src="/vitals/scenario-runtime.js?v=2"></script>
   <script src="/vitals/scenario-tool-registry.js?v=3"></script>
   <script src="/vitals/scenario-phase-model.js?v=1"></script>
-  <script src="/vitals/visual-patient.js?v=22"></script>
+  <script src="/vitals/visual-patient.js?v=24"></script>
   <script src="/vitals/scenario-guided-start.js?v=4"></script>
 </body>
 </html>

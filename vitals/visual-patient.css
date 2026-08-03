@@ -91,3 +91,32 @@
 
 /* Neutral category-based treatment workflow and cross-tab next actions */
 .treatment-neutral-intro{display:grid;gap:4px;padding:12px 14px;border:1px solid #31566d;border-radius:14px;background:#0a2233;margin-bottom:4px}.treatment-neutral-intro strong{color:#f7fbff}.treatment-neutral-intro span{font-size:.82rem;color:var(--muted);line-height:1.4}.treatment-category-menu{gap:10px}.treatment-category{border:1px solid #31566d;border-radius:15px;background:#091d2b;overflow:hidden}.treatment-category>summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;list-style:none}.treatment-category>summary::-webkit-details-marker{display:none}.treatment-category>summary span{display:grid;gap:3px}.treatment-category>summary strong{font-size:.95rem}.treatment-category>summary small{font-size:.75rem;color:var(--muted);font-weight:500;line-height:1.35}.treatment-category>summary em{font-style:normal;font-size:.7rem;color:#9ed8ff;white-space:nowrap}.treatment-category[open]>summary{border-bottom:1px solid #294e65;background:#10283a}.treatment-category-list{display:grid;gap:9px;padding:10px}.treatment-neutral-card{padding:12px;background:#10283a}.treatment-neutral-card .treatment-card-heading h3{margin:0}.treatment-neutral-card p{line-height:1.4}.treatment-neutral-card.complete{border-color:#2eb67d}.clinical-next-actions{position:fixed;z-index:75;left:50%;bottom:88px;transform:translateX(-50%);width:min(720px,calc(100% - 18px));padding:14px 15px;border-radius:18px;background:#eef7ff;color:#092238;border:2px solid #4b9bd0;box-shadow:0 18px 50px rgba(0,0,0,.48)}.clinical-next-actions[hidden]{display:none}.clinical-next-actions>p{margin:0 28px 3px 0;color:#a34016;font-size:.68rem;font-weight:900;letter-spacing:.05em}.clinical-next-actions h2{margin:0 28px 3px 0;font-size:1rem}.clinical-next-actions>span{display:block;color:#314d60;font-size:.82rem;line-height:1.35}.clinical-next-close{position:absolute;right:9px;top:8px;width:30px;height:30px;border:0;border-radius:50%;background:#dcebf5;color:#17384d;font-size:1.15rem}.clinical-next-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}.clinical-next-buttons button{border:0;border-radius:11px;padding:10px 7px;font-weight:850;background:#0b78b6;color:white}.clinical-next-buttons button:nth-child(2){background:#4c357d}.clinical-next-buttons button:nth-child(3){background:#d9e7ef;color:#17384d}@media(max-width:430px){.clinical-next-buttons{grid-template-columns:1fr}.clinical-next-actions{bottom:82px}.treatment-category>summary{align-items:flex-start}.treatment-category>summary em{padding-top:2px}}
+
+/* Treatment decision and transport-in-treatment upgrade */
+.bottom-nav{grid-template-columns:repeat(4,minmax(0,1fr))}
+.bottom-nav button:nth-child(1).active{background:#164c78}
+.bottom-nav button:nth-child(2).active{background:#216344}
+.bottom-nav button:nth-child(3).active{background:#583b83}
+.bottom-nav button:nth-child(4).active{background:#76570f}
+.treatment-entry-form,.transport-treatment-form{display:grid;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid #31566d}
+.treatment-entry-form[hidden]{display:none}
+.treatment-entry-form label,.transport-treatment-form label{display:grid;gap:5px;color:#dcecf5;font-size:.75rem;font-weight:750}
+.treatment-entry-form input,.treatment-entry-form select,.treatment-entry-form textarea,.transport-treatment-form select,.transport-treatment-form textarea{width:100%;border:1px solid #45657a;border-radius:10px;background:#071827;color:#fff;padding:10px;font:inherit}
+.treatment-entry-form small{color:var(--muted);font-size:.66rem;font-weight:500}
+.treatment-form-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.treatment-form-actions button{margin:0}
+.treatment-entry-error,.transport-entry-error{margin:0!important;padding:9px 10px;border:1px solid #c45e5e;border-radius:9px;background:#3b1717;color:#ffd0d0!important;font-size:.72rem!important}
+.treatment-entry-error[hidden],.transport-entry-error[hidden]{display:none}
+.transport-treatment-card{margin:0;background:#10283a}
+.handoff-treatment-card{margin-top:12px}
+@media(max-width:430px){.bottom-nav{grid-template-columns:repeat(4,minmax(0,1fr))}.treatment-form-actions{grid-template-columns:1fr}}
+
+
+/* Clinical workspace, progressive treatment disclosure, and decision timeline */
+.clinical-workspace{display:grid;gap:10px;margin:0 0 13px;padding:13px;border:1px solid #4b7894;border-radius:16px;background:linear-gradient(145deg,#0d2b3d,#102438)}
+.clinical-workspace-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.clinical-workspace-head p{margin:0;color:#8ccfff;font-size:.64rem;font-weight:900;letter-spacing:.06em}.clinical-workspace-head h3{margin:3px 0 0;font-size:1rem}.clinical-workspace-head>span{padding:5px 8px;border-radius:99px;background:#071827;color:#bfe6ff;font-size:.72rem;font-weight:900}
+.clinical-workspace-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.clinical-workspace-grid>div{display:grid;gap:3px;min-height:66px;padding:9px;border-radius:11px;background:#091d2b;border:1px solid #294d64}.clinical-workspace-grid small{color:#8ccfff;font-size:.65rem;font-weight:850;text-transform:uppercase}.clinical-workspace-grid strong,.clinical-workspace-grid span{font-size:.76rem;line-height:1.38;color:#eef8fd}
+.treatment-entry-form{animation:treatmentReveal .18s ease-out}@keyframes treatmentReveal{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.clinical-next-buttons .uncertain-action{grid-column:1/-1;background:#6a5520;color:#fff4ce}
+.care-log-item.uncertainty{border-left:4px solid #d7a928}.care-log-item.uncertainty .care-log-type{background:#5d4717;color:#ffe9a5!important}.care-log-item.patient_response{border-left:4px solid #4b9bd0}
+@media(max-width:430px){.clinical-workspace-grid{grid-template-columns:1fr}.clinical-workspace-grid>div{min-height:auto}}

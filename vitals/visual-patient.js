@@ -86,6 +86,8 @@
     if (event.category === 'history') return 'History';
     if (event.type === 'impression') return 'Impression';
     if (event.type === 'documentation') return 'Report';
+    if (event.type === 'uncertainty') return 'Uncertainty';
+    if (event.type === 'patient_response') return 'Patient response';
     return 'Assessment';
   }
 
@@ -626,7 +628,7 @@
     Object.values(TREATMENT_PLANS).flat().forEach(plan => {
       if (!unique.has(plan.id)) unique.set(plan.id, plan);
     });
-    return [...unique.values()];
+    return [...unique.values()].filter(plan => treatmentCategory(plan) !== 'transport');
   }
 
   function nextTreatmentCategoryForFinding(key) {
@@ -702,7 +704,94 @@
     return (record()?.treatments || []).some(item => item.actionId === plan.id);
   }
 
-  function recordTreatment(plan) {
+  function treatmentDocumentation(plan) {
+    return Array.isArray(plan.documentation) ? plan.documentation : [];
+  }
+
+  function treatmentInputValue(form, field) {
+    const input = form.elements.namedItem(field.name);
+    return String(input?.value || '').trim();
+  }
+
+  function validateTreatmentDocumentation(plan, form) {
+    const values = {};
+    for (const field of treatmentDocumentation(plan)) {
+      const value = treatmentInputValue(form, field);
+      if (field.required && !value) return { ok:false, message:`Enter ${field.label.toLowerCase()} before recording this treatment.` };
+      if (value && field.acceptedPattern) {
+        const pattern = new RegExp(field.acceptedPattern, 'i');
+        if (!pattern.test(value)) return { ok:false, message:field.error || `${field.label} is not accepted for this scenario. Review the dose or setting and try again.` };
+      }
+      values[field.name] = value;
+    }
+    return { ok:true, values };
+  }
+
+  function treatmentDocumentationText(plan, values = {}) {
+    return treatmentDocumentation(plan)
+      .map(field => values[field.name] ? `${field.label}: ${values[field.name]}` : '')
+      .filter(Boolean).join(' • ');
+  }
+
+  function treatmentResponseDelay(plan) {
+    if (/transport|rapid_transport/i.test(plan.id || '')) return 1200;
+    if (/oxygen|position|caregiver/i.test(plan.id || '')) return 2200;
+    if (/bronchodilator|oral_glucose|bvm|airway|hemorrhage/i.test(plan.id || '')) return 3600;
+    return 2800;
+  }
+
+  function applyDynamicTreatmentResponse(plan, classification, response) {
+    const now = new Date().toISOString();
+    if (classification === 'appropriate-effective') {
+      const updates = {};
+      if (/bronchodilator/i.test(plan.id || '')) {
+        updates.breathing = 'Work of breathing is improving, though respiratory distress remains.';
+        updates.breath_sounds = 'Wheezing is still present but air movement is improved.';
+        updates.spo2 = id === 'asthma' ? '93%' : valueFor('spo2');
+      } else if (/oral_glucose/i.test(plan.id || '')) {
+        updates.mental_status = 'The patient is more alert and follows commands more consistently.';
+        updates.blood_glucose = '72 mg/dL';
+      } else if (/oxygen/i.test(plan.id || '')) {
+        updates.spo2 = id === 'pediatric' ? '94%' : '94%';
+        updates.breathing = 'Oxygenation is improving; respiratory effort still requires reassessment.';
+      } else if (/bvm|airway_support|airway_position/i.test(plan.id || '')) {
+        updates.airway = 'Airway patency is improved with the intervention in place.';
+        updates.breathing = 'Visible chest rise is present with assisted support.';
+      } else if (/hemorrhage_shock/i.test(plan.id || '')) {
+        updates.perfusion = 'Bleeding is controlled, but signs of poor perfusion remain.';
+      }
+      Object.entries(updates).forEach(([key, value]) => api?.setFinding?.(key, value, { source:'dynamic-treatment-response', status:'abnormal', normality:'not-normal', isReassessment:true, recordedAt:now }));
+    }
+    api?.mergeCareLog?.([{
+      type:'patient_response', category:'treatment', key:plan.targets?.[0] || 'treatment',
+      label:'Patient response observed', value:response,
+      details:'Response became apparent over time. Reassess the affected findings to judge effectiveness.',
+      source:'dynamic-treatment-response', recordedAt:now
+    }]);
+    refreshFromRecord();
+    renderInfoUpdate(true);
+  }
+
+  function scheduleTreatmentResponse(plan, classification, response) {
+    window.setTimeout(() => applyDynamicTreatmentResponse(plan, classification, response), treatmentResponseDelay(plan));
+  }
+
+  function recordUncertainty(context = {}) {
+    const current = record() || {};
+    const label = context.label || labelFor(context.key || '') || 'Clinical finding';
+    const value = context.value || context.finding || 'Additional information is needed before making a decision.';
+    api?.mergeCareLog?.([{
+      type:'uncertainty', category:'assessment', key:context.key || 'clinical_uncertainty',
+      label:'Need more information', value:`${label}: ${value}`,
+      details:'The learner deferred a decision and chose to gather more information.',
+      source:'clinical-workspace', recordedAt:new Date().toISOString()
+    }]);
+    hideClinicalNextActions();
+    refreshFromRecord();
+    toast('Uncertainty recorded — continue gathering information');
+  }
+
+  function recordTreatment(plan, documentation = {}) {
     const current = record();
     const decision = treatmentDecision(plan, current);
     const startedAt = new Date(current?.startedAt || Date.now()).getTime();
@@ -719,16 +808,21 @@
       classification = 'unnecessary';
       response = 'The intervention does not address a current abnormal finding and produces no meaningful improvement.';
     }
+    const documentationText = treatmentDocumentationText(plan, documentation);
     const treatment = {
       actionId: plan.id,
       treatment: plan.label,
       name: plan.label,
-      description: plan.label,
+      description: documentationText ? `${plan.label} — ${documentationText}` : plan.label,
       label: 'Treatment performed',
       source: 'scenario-aware-treatment',
       classification,
       indicationStatus: decision.code,
       indication: decision.detail,
+      documentation,
+      dose: documentation.dose || '',
+      route: documentation.route || '',
+      device: documentation.device || '',
       targetKeys: plan.targets || [],
       reassessmentRequired: classification === 'appropriate-effective',
       patientResponse: response,
@@ -738,30 +832,59 @@
     if (session?.addTreatment) session.addTreatment(treatment);
     else api?.addTreatment?.(treatment);
     api?.mergeCareLog?.([{
-      type:'patient_response', category:'treatment', key:plan.targets?.[0] || 'treatment',
-      label: classification === 'appropriate-effective' ? 'Patient response' : 'Treatment consequence',
-      value: response,
-      details: classification === 'appropriate-effective' ? `Targeted reassessment is due: ${(plan.targets || []).map(labelFor).join(', ')}.` : decision.detail,
+      type:'documentation', category:'treatment', key:plan.id,
+      label:'Treatment decision committed', value:treatment.description,
+      details:'Patient response is not immediately revealed. Observe and reassess the patient.',
       source:'scenario-aware-treatment', recordedAt:new Date(Date.now() + 1).toISOString()
     }]);
     refreshFromRecord();
-    toast(classification === 'appropriate-effective' ? `${plan.label} recorded — reassessment due` : `${plan.label} recorded — ${classification.replace('-', ' ')}`);
+    scheduleTreatmentResponse(plan, classification, response);
+    toast(`${plan.label} recorded — observe and reassess the patient`);
+  }
+
+  function treatmentFieldMarkup(field) {
+    const required = field.required ? 'required' : '';
+    const hint = field.hint ? `<small>${escapeHtml(field.hint)}</small>` : '';
+    if (field.type === 'select') {
+      return `<label>${escapeHtml(field.label)}<select name="${escapeHtml(field.name)}" ${required}><option value="">Choose</option>${(field.options || []).map(option => `<option value="${escapeHtml(option)}">${escapeHtml(option)}</option>`).join('')}</select>${hint}</label>`;
+    }
+    return `<label>${escapeHtml(field.label)}<input name="${escapeHtml(field.name)}" type="${field.type || 'text'}" inputmode="${field.inputmode || 'text'}" placeholder="${escapeHtml(field.placeholder || '')}" ${required}>${hint}</label>`;
   }
 
   function renderTreatmentCard(plan) {
     const recorded = treatmentAlreadyRecorded(plan);
     const article = document.createElement('article');
     article.className = `treatment-card treatment-neutral-card${recorded ? ' complete' : ''}`;
+    const fields = treatmentDocumentation(plan);
     article.innerHTML = `
       <div class="treatment-card-heading">
         <div><h3>${escapeHtml(plan.label)}</h3></div>
         <span class="status-chip ${recorded ? 'done' : ''}">${recorded ? 'Recorded' : 'Available'}</span>
       </div>
       <p>${escapeHtml(plan.summary)}</p>
-      <button class="primary-action treatment-apply" type="button" ${recorded ? 'disabled' : ''}>${recorded ? 'Treatment recorded' : 'Perform treatment'}</button>`;
-    article.querySelector('.treatment-apply')?.addEventListener('click', () => {
-      if (!window.confirm(`Perform ${plan.label}? This action will be timed, logged, and reviewed during debrief.`)) return;
-      recordTreatment(plan);
+      <button class="primary-action treatment-select" type="button" ${recorded ? 'disabled' : ''}>${recorded ? 'Treatment recorded' : 'Select treatment'}</button>
+      <form class="treatment-entry-form" hidden>
+        ${fields.map(treatmentFieldMarkup).join('')}
+        <label>Decision confidence<select name="certainty"><option value="confident">Confident</option><option value="uncertain">Uncertain — proceeding while monitoring</option><option value="need-more-information">Need more information before committing</option></select></label>
+        <label>Clinical note<textarea name="note" rows="2" placeholder="Optional treatment details"></textarea></label>
+        <div class="treatment-form-actions"><button class="secondary treatment-cancel" type="button">Cancel</button><button class="primary-action treatment-confirm" type="submit">Perform and record</button></div>
+        <p class="treatment-entry-error" hidden></p>
+      </form>`;
+    const selectButton = article.querySelector('.treatment-select');
+    const form = article.querySelector('.treatment-entry-form');
+    selectButton?.addEventListener('click', () => { form.hidden = false; selectButton.hidden = true; form.querySelector('input,select,textarea')?.focus(); });
+    article.querySelector('.treatment-cancel')?.addEventListener('click', () => { form.hidden = true; selectButton.hidden = false; });
+    form?.addEventListener('submit', event => {
+      event.preventDefault();
+      const validation = validateTreatmentDocumentation(plan, form);
+      const error = form.querySelector('.treatment-entry-error');
+      if (!validation.ok) { error.textContent = validation.message; error.hidden = false; return; }
+      error.hidden = true;
+      validation.values.note = String(form.elements.namedItem('note')?.value || '').trim();
+      const certainty = String(form.elements.namedItem('certainty')?.value || 'confident');
+      if (certainty === 'need-more-information') { recordUncertainty({ key:plan.id, label:plan.label, value:'Treatment decision deferred pending more information.' }); form.hidden = true; selectButton.hidden = false; return; }
+      validation.values.certainty = certainty;
+      recordTreatment(plan, validation.values);
     });
     return article;
   }
@@ -796,6 +919,8 @@
       plans.forEach(plan => list.appendChild(renderTreatmentCard(plan)));
       box.appendChild(details);
     });
+
+    box.appendChild(buildTransportTreatmentCard());
 
     const full = document.createElement('article');
     full.className = 'treatment-card full-treatment-menu';
@@ -861,7 +986,24 @@
     $('infoUpdateNext').disabled = infoUpdateIndex >= infoUpdates.length - 1;
   }
 
+  function renderClinicalWorkspace() {
+    const current = record() || {};
+    const events = api?.listCareLog?.(current, 'all') || [];
+    const abnormal = [...events].reverse().filter(event => abnormalEvent(event)).slice(0, 3);
+    const treatments = (current.treatments || []).slice(-3);
+    const evaluation = phases?.evaluate?.(current);
+    const due = evaluation?.reassessment?.missingTargets || evaluation?.missingReassessmentTargets || [];
+    const condition = conditionState(current);
+    const elapsed = elapsedLabel(new Date().toISOString(), current.startedAt);
+    if ($('workspaceElapsed')) $('workspaceElapsed').textContent = elapsed;
+    if ($('workspaceStatus')) $('workspaceStatus').textContent = condition?.title || (abnormal.length >= 3 ? 'Unstable — multiple abnormal findings' : abnormal.length ? 'Concerning findings present' : 'Assessment in progress');
+    if ($('workspaceAbnormal')) $('workspaceAbnormal').textContent = abnormal.length ? abnormal.map(event => `${event.label || labelFor(event.key)}: ${event.value || event.finding || 'Abnormal'}`).join(' • ') : 'None documented';
+    if ($('workspaceTreatments')) $('workspaceTreatments').textContent = treatments.length ? treatments.map(item => item.name || item.treatment || item.label).join(' • ') : 'None documented';
+    if ($('workspaceReassessment')) $('workspaceReassessment').textContent = due.length ? due.map(labelFor).join(' • ') : ((current.treatments || []).some(item => item.reassessmentRequired) ? 'Review treatment targets in the timeline' : 'None currently due');
+  }
+
   function renderFindings() {
+    renderClinicalWorkspace();
     const list = $('findingList');
     const current = record() || {};
     const filterMap = { vitals: 'vital', treatments: 'treatment', assessments: 'assessment', history: 'history', reassessments: 'reassessment' };
@@ -911,22 +1053,58 @@
   function selectOptions(values, selected, placeholder) {
     return `<option value="">${escapeHtml(placeholder)}</option>${values.map(value => `<option value="${escapeHtml(value)}" ${value === selected ? 'selected' : ''}>${escapeHtml(value)}</option>`).join('')}`;
   }
-  function saveTransportDecision() {
-    const impression = $('transportImpression')?.value || '';
-    const priority = $('transportPriority')?.value || '';
-    const destination = $('transportDestination')?.value || '';
-    const rationale = ($('transportRationale')?.value || '').trim();
-    if (!impression || !priority || !destination) { toast('Choose an impression, transport priority, and destination'); return; }
-    api?.setImpressions?.({ primary: impression, action: priority, source: 'transport-decision', updatedAt: new Date().toISOString() });
-    api?.setDocumentation?.({ transportPriority: priority, destination, transportRationale: rationale, transportDecisionAt: new Date().toISOString() });
-    api?.setFinding?.('transport_decision', `${priority} to ${destination}`, { label: 'Transport decision', source: 'transport-decision', details: rationale || `Working impression: ${impression}` });
+
+  function transportPriorityOptions() { return ['Non-emergent transport','Emergent transport']; }
+  function transportDestinationOptions() {
+    return ['Closest appropriate emergency department','Trauma center','Stroke center','Cardiac catheterization center','Pediatric-capable emergency department','Burn center','Specialty respiratory center'];
+  }
+
+  function saveTransportDecision(form) {
+    const current = record() || {};
+    const impression = String(form.elements.namedItem('impression')?.value || '');
+    const priority = String(form.elements.namedItem('priority')?.value || '');
+    const destination = String(form.elements.namedItem('destination')?.value || '');
+    const notification = String(form.elements.namedItem('notification')?.value || '');
+    const rationale = String(form.elements.namedItem('rationale')?.value || '').trim();
+    const error = form.querySelector('.transport-entry-error');
+    if (!impression || !priority || !destination) {
+      error.textContent = 'Choose a working impression, transport priority, and destination.';
+      error.hidden = false;
+      return;
+    }
+    error.hidden = true;
+    api?.setImpressions?.({ primary: impression, action: priority, source:'transport-treatment', updatedAt:new Date().toISOString() });
+    api?.setDocumentation?.({ transportPriority:priority, destination, transportNotification:notification, transportRationale:rationale, transportDecisionAt:new Date().toISOString() });
+    api?.setFinding?.('transport_decision', `${priority} to ${destination}`, { label:'Transport decision', source:'transport-treatment', details:rationale || `Working impression: ${impression}` });
     const plan = transportPlan();
-    const feedback = priority === plan.bestPriority && destination === plan.bestDestination
-      ? 'Transport plan matches this patient’s current presentation.'
-      : 'Transport plan recorded. The final debrief will compare it with the patient’s presentation and timing.';
-    toast('Transport decision saved');
-    const box = $('transportDecisionFeedback'); if (box) { box.hidden = assessmentMode(); box.textContent = assessmentMode() ? '' : feedback; }
-    renderTransport(); renderProgress(); renderInfoUpdate(true);
+    const expectedPriority = /Emergent|Prompt/i.test(plan.bestPriority || '') ? 'Emergent transport' : 'Non-emergent transport';
+    const destinationMatch = destination === plan.bestDestination || (plan.bestDestination === 'Stroke-capable center' && destination === 'Stroke center');
+    const classification = priority === expectedPriority && destinationMatch ? 'appropriate-effective' : 'transport-choice-review';
+    const treatment = {
+      actionId:'transport_decision', treatment:'Initiate transport', name:'Initiate transport', label:'Transport initiated',
+      description:`${priority} to ${destination}${notification ? ` • ${notification}` : ''}`,
+      source:'transport-treatment', classification, indicationStatus:classification,
+      targetKeys:[], reassessmentRequired:false,
+      documentation:{ impression, priority, destination, notification, rationale },
+      patientResponse:'The patient is prepared for movement and transport while care and reassessment continue.'
+    };
+    if (session?.addTreatment) session.addTreatment(treatment); else api?.addTreatment?.(treatment);
+    api?.mergeCareLog?.([{ type:'documentation', category:'transport', key:'transport_decision', label:'Transport initiated', value:treatment.description, details:rationale, source:'transport-treatment', recordedAt:new Date(Date.now()+1).toISOString() }]);
+    refreshFromRecord();
+    toast('Transport decision recorded');
+  }
+
+  function buildTransportTreatmentCard() {
+    const current = record() || {};
+    const plan = transportPlan();
+    const recorded = Boolean(current.documentation?.transportDecisionAt);
+    const details = document.createElement('details');
+    details.className = 'treatment-category treatment-category-transport';
+    details.dataset.treatmentCategory = 'transport';
+    details.open = treatmentCategoryFocus === 'transport';
+    details.innerHTML = `<summary><span><strong>Transport</strong><small>Select urgency, destination, and specialty notification.</small></span><em>${recorded ? 'Recorded' : 'Decision required'}</em></summary><div class="treatment-category-list"><article class="treatment-card transport-treatment-card"><div class="treatment-card-heading"><div><h3>Initiate transport</h3></div><span class="status-chip ${recorded ? 'done' : ''}">${recorded ? 'Recorded' : 'Available'}</span></div><p>Make the transport decision from the findings you obtained. Correctness is reviewed during debrief.</p><form class="transport-treatment-form"><label>Working impression<select name="impression">${selectOptions(plan.impressions, current.impressions?.primary || '', 'Choose working impression')}</select></label><label>Transport urgency<select name="priority">${selectOptions(transportPriorityOptions(), current.documentation?.transportPriority || '', 'Choose emergent or non-emergent')}</select></label><label>Destination<select name="destination">${selectOptions(transportDestinationOptions(), current.documentation?.destination || '', 'Choose receiving destination')}</select></label><label>Specialty notification<select name="notification">${selectOptions(['No specialty activation','Trauma activation','Stroke alert','STEMI / cath-lab activation','Pediatric alert','Burn-center notification'], current.documentation?.transportNotification || '', 'Choose notification')}</select></label><label>Reason for decision<textarea name="rationale" rows="3" placeholder="Use findings, time sensitivity, and specialty needs">${escapeHtml(current.documentation?.transportRationale || '')}</textarea></label><button class="primary-action" type="submit">${recorded ? 'Update transport decision' : 'Initiate and record transport'}</button><p class="transport-entry-error" hidden></p></form></article></div>`;
+    details.querySelector('form')?.addEventListener('submit', event => { event.preventDefault(); saveTransportDecision(event.currentTarget); });
+    return details;
   }
   function handoffText(current = record() || {}) {
     const findings = current.findings || {};
@@ -947,27 +1125,7 @@
     api?.setDocumentation?.({ handoff: text, handoffSavedAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
     toast('Handoff saved'); renderTransport(); renderProgress();
   }
-  function renderTransport() {
-    const current = record() || {};
-    const plan = transportPlan();
-    const impression = current.impressions?.primary || '';
-    const priority = current.documentation?.transportPriority || current.impressions?.action || '';
-    const destination = current.documentation?.destination || '';
-    $('transportDecisionCard').innerHTML = `<div class="transport-card-head"><div><span class="requirement-tag required">Required</span><h3>Impression and transport priority</h3></div><span class="status-chip ${impression && priority ? 'done' : ''}">${impression && priority ? 'Recorded' : 'Not recorded'}</span></div><label>Working impression<select id="transportImpression">${selectOptions(plan.impressions, impression, 'Choose the best impression')}</select></label><label>Transport priority<select id="transportPriority">${selectOptions(plan.priorities, priority, 'Choose transport priority')}</select></label>`;
-    $('destinationCard').innerHTML = `<div class="transport-card-head"><div><span class="requirement-tag required">Required</span><h3>Destination</h3></div><span class="status-chip ${destination ? 'done' : ''}">${destination ? 'Selected' : 'Not selected'}</span></div><label>Receiving facility<select id="transportDestination">${selectOptions(plan.destinations, destination, 'Choose destination')}</select></label><label>Reason for this choice<textarea id="transportRationale" rows="3" placeholder="Use findings, time sensitivity, and specialty needs">${escapeHtml(current.documentation?.transportRationale || '')}</textarea></label><button id="saveTransportDecision" class="primary-action" type="button">Save transport decision</button><p id="transportDecisionFeedback" class="transport-feedback" hidden></p>`;
-    $('saveTransportDecision')?.addEventListener('click', saveTransportDecision);
-    const evaluation = phases?.evaluate?.(current);
-    const relevant = (evaluation?.phases || []).filter(phase => ['scene','primary','focused','vitals','treatment','reassessment','impression','handoff'].includes(phase.id));
-    $('transportReadinessList').innerHTML = relevant.map(phase => `<div class="transport-ready-row ${phase.complete ? 'complete' : phase.started ? 'in-progress' : 'missing'}"><span>${phase.complete ? '✓' : phase.started ? '•' : '!'}</span><div><strong>${escapeHtml(phase.label)}</strong><small>${escapeHtml(phase.complete ? 'Complete' : phase.detail || phase.requirement)}</small></div></div>`).join('');
-    const careReady = relevant.filter(phase => !['handoff'].includes(phase.id)).every(phase => phase.complete);
-    $('transportReadinessStatus').textContent = careReady ? 'Ready for handoff' : 'Items remain';
-    $('transportReadinessStatus').classList.toggle('done', careReady);
-    const savedHandoff = current.documentation?.handoff || '';
-    if (!$('handoffDraft').value || $('handoffDraft').dataset.loaded !== current.id) { $('handoffDraft').value = savedHandoff; $('handoffDraft').dataset.loaded = current.id || id; }
-    $('handoffStatusChip').textContent = savedHandoff ? 'Saved' : 'Not saved';
-    $('handoffStatusChip').classList.toggle('done', Boolean(savedHandoff));
-    $('openFullHandoff').href = toolUrl('/vitals/pcr-handoff.html', 'Patient');
-  }
+  function renderTransport() { /* Transport is rendered inside the Treatment tab. */ }
 
   function renderProgress() {
     const current = record();
@@ -982,7 +1140,7 @@
     const completed = evaluation.phases.filter(phase => phase.complete).length;
     $('scenarioProgressSummary').textContent = `${completed} of ${evaluation.phases.length} phases addressed`;
     $('handoffFromProgress').href = '#';
-    $('handoffFromProgress').onclick = event => { event.preventDefault(); openSheet('transportPanel'); };
+    $('handoffFromProgress').onclick = event => { event.preventDefault(); treatmentCategoryFocus = 'transport'; openSheet('treatmentPanel'); };
     const button = $('completeScenarioFromPatient');
     button.textContent = evaluation.essentialComplete ? 'Open debrief' : 'Check completion';
     button.dataset.ready = evaluation.essentialComplete ? 'true' : 'false';
@@ -1077,10 +1235,10 @@
   }
 
   function openSheet(panelId) {
-    evaluatePatientCondition(panelId === 'transportPanel' ? 'transport-review' : 'patient-tool-open');
+    evaluatePatientCondition(panelId === 'treatmentPanel' ? 'treatment-review' : 'patient-tool-open');
     document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
-    $('sheetTitle').textContent = { vitalsPanel: 'Vitals', assessmentPanel: 'Assessment', treatmentPanel: 'Treatment', transportPanel: 'Transport and handoff', findingsPanel: 'Patient care log' }[panelId];
+    $('sheetTitle').textContent = { vitalsPanel: 'Vitals', assessmentPanel: 'Assessment', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
     $('actionSheet').hidden = false;
     $('sheetBackdrop').hidden = false;
     document.body.style.overflow = 'hidden';
@@ -1160,6 +1318,7 @@
   });
   $('clinicalNextVitals')?.addEventListener('click', () => { hideClinicalNextActions(); openSheet('vitalsPanel'); });
   $('clinicalNextPatient')?.addEventListener('click', () => { hideClinicalNextActions(); closeSheet(); });
+  $('clinicalNextUncertain')?.addEventListener('click', () => recordUncertainty(nextActionFinding || {}));
   $('clinicalNextClose')?.addEventListener('click', hideClinicalNextActions);
   $('closeSheet').addEventListener('click', closeSheet);
   $('sheetBackdrop').addEventListener('click', closeSheet);
