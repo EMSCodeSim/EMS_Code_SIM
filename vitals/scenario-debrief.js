@@ -26,6 +26,35 @@
   function newestTime(items){ return items.length ? Math.max(...items.map(x=>ts(x.recordedAt||x.time))) : 0; }
   function firstTime(items){ return items.length ? Math.min(...items.map(x=>ts(x.recordedAt||x.time))) : 0; }
 
+  function accuracyIssue(record, key){
+    const finding=record?.findings?.[key];
+    if(!finding) return null;
+    if(finding.accurate===false || finding.correct===false){
+      return {key,label:label(key),learner:text(finding.learnerFinding||finding.value||finding.selected),expected:text(finding.expectedFinding||finding.expected||finding.expectedNormality),critical:['airway','breathing','perfusion','mental_status'].includes(key)};
+    }
+    return null;
+  }
+  function criticalErrors(record, expected){
+    const issues=[];
+    expected.critical.forEach(key=>{const issue=accuracyIssue(record,key);if(issue)issues.push(`${issue.label}: learner recorded “${issue.learner||'incorrect finding'}”${issue.expected?`; expected “${issue.expected}”`:''}.`)});
+    arr(record.treatments).forEach(item=>{
+      const cls=text(item.classification).toLowerCase();
+      if(['contraindicated','unsafe'].includes(cls)) issues.push(`${text(item.name||item.treatment||'Treatment')} was recorded as ${cls}.`);
+      if(cls==='premature') issues.push(`${text(item.name||item.treatment||'Treatment')} was performed before the required assessment was complete.`);
+    });
+    const rapid=['airway','breathing','perfusion'].map(key=>accuracyIssue(record,key)).filter(Boolean);
+    rapid.forEach(issue=>{if(!issues.some(x=>x.startsWith(`${issue.label}:`)))issues.push(`${issue.label} was classified incorrectly during the rapid primary assessment.`)});
+    return [...new Set(issues)];
+  }
+  function coachingPriorities(evaluation, critical, opportunities){
+    const priorities=[];
+    critical.slice(0,2).forEach(x=>priorities.push({level:'critical',title:'Correct a critical decision',detail:x}));
+    evaluation.missing.slice(0,3-priorities.length).forEach(x=>priorities.push({level:'priority',title:`Complete ${x}`,detail:'This item was required before ending the patient-care cycle.'}));
+    opportunities.filter(x=>!priorities.some(p=>p.detail===x)).slice(0,3-priorities.length).forEach(x=>priorities.push({level:'coach',title:'Improve clinical sequencing',detail:x}));
+    if(!priorities.length) priorities.push({level:'success',title:'Repeat with less guidance',detail:'All essential phases were completed without a documented critical error.'});
+    return priorities.slice(0,3);
+  }
+  function categoryScore(ratings,id){return ratings.find(x=>x.id===id)?.score||0;}
   function grade(record){
     const evaluation=phaseApi.evaluate(record); const scenarioId=evaluation.caseId; const expected=SCENARIO_EXPECTATIONS[scenarioId]||SCENARIO_EXPECTATIONS.asthma;
     const strengths=[], opportunities=[], selection=[], handoff=[]; const ratings=[];
@@ -58,8 +87,15 @@
       missing.length?handoff.push(`Handoff may be missing: ${missing.join(', ')}.`):handoff.push('Handoff includes the major clinical story elements.');
     } else handoff.push('No verbal handoff was saved.');
     evaluation.missing.forEach(item=>opportunities.push(`Missing before scenario end: ${item}.`));
-    const avg=Math.round(ratings.reduce((n,r)=>n+r.score,0)/Math.max(1,ratings.length));
-    return {evaluation,ratings,strengths:[...new Set(strengths)],opportunities:[...new Set(opportunities)],selection:[...new Set(selection)],handoff:[...new Set(handoff)],score:avg,label:statusRating(avg)};
+    const critical=criticalErrors(record,expected);
+    const clinical=Math.round((categoryScore(ratings,'primary')+categoryScore(ratings,'focused')+categoryScore(ratings,'vitals'))/3);
+    const treatment=Math.round((categoryScore(ratings,'treatment')+categoryScore(ratings,'reassessment'))/2);
+    const communication=Math.round((categoryScore(ratings,'impression')+categoryScore(ratings,'handoff'))/2);
+    let avg=Math.round(clinical*.45+treatment*.35+communication*.20);
+    avg=Math.max(0,avg-critical.length*8);
+    const uniqueOpportunities=[...new Set(opportunities)];
+    const priorities=coachingPriorities(evaluation,critical,uniqueOpportunities);
+    return {evaluation,ratings,strengths:[...new Set(strengths)],opportunities:uniqueOpportunities,selection:[...new Set(selection)],handoff:[...new Set(handoff)],critical,priorities,categoryScores:{clinical,treatment,communication},score:avg,label:statusRating(avg)};
   }
 
   function renderList(id,items,type){ $(id).innerHTML=items.length?items.map(x=>`<div class="feedback-item ${type}">${esc(x)}</div>`).join(''):`<div class="feedback-item neutral">No items recorded.</div>`; }
@@ -68,9 +104,20 @@
     const end=Math.max(Date.now(),newestTime(events)); $('timelineDuration').textContent=`Call time ${fmt(elapsed(record,end))}`;
     $('careTimeline').innerHTML=events.length?events.map(e=>`<article class="timeline-item ${esc(e.type||'event')}"><time>${fmt(elapsed(record,e.recordedAt))}</time><div><h3>${esc(e.label||label(e.key||e.type))}</h3><p>${esc(e.value||e.details||'Recorded')}</p>${e.details&&e.details!==e.value?`<small>${esc(e.details)}</small>`:''}</div></article>`).join(''):'<p>No care events were recorded.</p>';
   }
+  function renderCritical(items){
+    const section=$('criticalSection');
+    section.hidden=!items.length;
+    $('criticalList').innerHTML=items.map(x=>`<div class="critical-item"><strong>Critical review</strong><p>${esc(x)}</p></div>`).join('');
+  }
+  function renderPriorities(items){
+    $('priorityList').innerHTML=items.map((x,i)=>`<article class="priority-card ${esc(x.level)}"><span>${i+1}</span><div><h3>${esc(x.title)}</h3><p>${esc(x.detail)}</p></div></article>`).join('');
+  }
+  function renderCategoryScores(scores){
+    $('categoryScores').innerHTML=[['Clinical assessment',scores.clinical],['Treatment & reassessment',scores.treatment],['Transport & communication',scores.communication]].map(([name,score])=>`<article><span>${esc(name)}</span><strong>${score}%</strong><div class="score-bar"><i style="width:${Math.max(0,Math.min(100,score))}%"></i></div></article>`).join('');
+  }
   function render(record){
     const g=grade(record); $('patientTitle').textContent=record.title||'Patient scenario'; $('patientSummary').textContent=[record.patient,record.dispatch,record.scene].filter(Boolean).join(' • ');
-    $('overallScore').textContent=`${g.score}%`; $('overallLabel').textContent=g.label; $('overallSummary').textContent=g.opportunities.length?`The call contained ${g.strengths.length} documented strengths and ${g.opportunities.length} coaching points.`:'All essential phases were addressed.';
+    $('overallScore').textContent=`${g.score}%`; $('overallLabel').textContent=g.label; renderCategoryScores(g.categoryScores); renderCritical(g.critical); renderPriorities(g.priorities); $('overallSummary').textContent=g.opportunities.length?`The call contained ${g.strengths.length} documented strengths and ${g.opportunities.length} coaching points.`:'All essential phases were addressed.';
     $('phaseRatings').innerHTML=g.ratings.map(r=>`<article class="phase-rating"><div><strong>${esc(r.label)}</strong><small>${esc(r.detail)}</small></div><span class="rating ${r.rating.toLowerCase().replace(/\s+/g,'-')}">${esc(r.rating)}</span></article>`).join('');
     renderTimeline(record); renderList('strengthList',g.strengths,'good'); renderList('opportunityList',g.opportunities,'review'); renderList('selectionReview',g.selection,'neutral'); renderList('handoffReview',g.handoff,'neutral');
     return g;
@@ -80,5 +127,6 @@
   function saveReflection(r,g){ const savedAt=new Date().toISOString(); const reflection={finding:$('reflectionFinding').value.trim(),change:$('reflectionChange').value.trim(),reassess:$('reflectionReassess').value.trim(),savedAt}; localStorage.setItem(reflectionKey(r),JSON.stringify(reflection)); api.update(x=>{x.debrief={...(x.debrief||{}),reflection,score:g.score,label:g.label};x.documentation={...(x.documentation||{}),debrief:{savedAt,score:g.score,label:g.label,reflection}};return x}); const stateKey=`emscodesim_scenario_${r.scenarioId||r.id}`; let state={};try{state=JSON.parse(localStorage.getItem(stateKey)||'{}')}catch{} state.complete=true;state.completedAt=savedAt;localStorage.setItem(stateKey,JSON.stringify(state));$('reflectionStatus').textContent='Reflection saved. Scenario marked complete.'; }
   function download(r,g){ const blob=new Blob([JSON.stringify({generatedAt:new Date().toISOString(),grade:g,record:r},null,2)],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`EMSCodeSim-${r.id}-full-call-debrief.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500); }
   function init(){ const r=record(); $('emptyState').hidden=!!r; $('reportContent').hidden=!r; if(!r)return; const g=render(r);loadReflection(r);$('returnToPatient').onclick=()=>location.href=`/vitals/visual-patient.html?case=${encodeURIComponent(r.scenarioId||r.id)}`;$('printReport').onclick=()=>print();$('downloadReport').onclick=()=>download(r,g);$('saveReflection').onclick=()=>saveReflection(r,g); }
+  window.EMSCodeSimDebriefEngine={grade};
   document.addEventListener('DOMContentLoaded',init);
 })();
