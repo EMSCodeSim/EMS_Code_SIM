@@ -195,3 +195,65 @@
   .scene-guide-question{gap:5px}
   .scene-guide-actions{margin-top:7px}
 }
+
+/* Compact photo-overlay guided assessment — UI 1.11 */
+.scene-guide-photo{
+  left:8px;
+  right:8px;
+  bottom:8px;
+  max-height:min(30vh,245px);
+  padding:9px 10px;
+  border:1px solid rgba(140,207,255,.58);
+  border-radius:14px;
+  background:linear-gradient(180deg,rgba(7,24,39,.88),rgba(7,24,39,.97));
+  overflow:auto;
+  overscroll-behavior:contain;
+}
+.scene-guide-head{align-items:center}
+.scene-guide-head-actions{display:flex;align-items:center;gap:6px}
+.scene-guide-head-actions button{
+  width:32px;height:30px;border:1px solid #45657a;border-radius:9px;
+  background:#10283a;color:#fff;font-size:1rem;font-weight:900;cursor:pointer;
+}
+.scene-guide-progress{margin:6px 0 6px}
+.scene-guide-question{gap:4px}
+.scene-guide-question h3{font-size:.88rem}
+.scene-guide-question>p{display:none}
+.scene-guide-select{grid-template-columns:auto minmax(0,1fr);align-items:center;gap:7px}
+.scene-guide-select>span{font-size:.58rem;white-space:nowrap}
+.scene-guide-select select{min-height:38px;padding-top:6px;padding-bottom:6px;font-size:.75rem}
+.scene-guide-actions{grid-template-columns:auto minmax(120px,1fr);margin-top:6px}
+.scene-guide-actions button{min-height:36px;padding:6px 9px;font-size:.69rem}
+.guide-note{display:none}
+.scene-guide-photo.is-collapsed{
+  left:auto;
+  width:min(270px,calc(100% - 16px));
+  max-height:none;
+  overflow:hidden;
+  padding:7px 9px;
+  border-radius:12px;
+}
+.scene-guide-photo.is-collapsed .scene-guide-head>div:first-child,
+.scene-guide-photo.is-collapsed .scene-guide-head-actions a,
+.scene-guide-photo.is-collapsed .scene-guide-progress,
+.scene-guide-photo.is-collapsed .scene-guide-question,
+.scene-guide-photo.is-collapsed .scene-guide-feedback,
+.scene-guide-photo.is-collapsed .scene-guide-actions,
+.scene-guide-photo.is-collapsed .guide-note{display:none}
+.scene-guide-photo.is-collapsed .scene-guide-head:before{
+  content:attr(data-collapsed-label);
+  min-width:0;color:#fff;font-size:.72rem;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.scene-guide-photo.is-collapsed .scene-guide-head-actions button{transform:rotate(180deg)}
+@media(max-width:430px){
+  .scene-guide-photo{left:6px;right:6px;bottom:6px;max-height:min(28vh,210px);padding:8px}
+  .scene-guide-head h2{font-size:.76rem}
+  .scene-guide-head p{font-size:.55rem}
+  .scene-guide-head-actions a{display:none}
+  .scene-guide-progress span{font-size:.6rem}
+  .scene-guide-question h3{font-size:.82rem}
+  .scene-guide-select{grid-template-columns:1fr;gap:3px}
+  .scene-guide-select select{min-height:36px;font-size:.72rem}
+  .scene-guide-actions{grid-template-columns:84px 1fr;gap:6px}
+  .scene-guide-actions button{min-height:34px;font-size:.65rem}
+}

@@ -268,6 +268,7 @@
   let completedFinding = api?.getFinding?.('scene_size_up', api?.active?.());
   let reviewMode = false;
   let initialized = false;
+  let autoAdvanceTimer = null;
 
   function guideQuestions() {
     return activeGuide === 'primary' ? primaryQuestions : sceneQuestions;
@@ -361,6 +362,7 @@
     const savedAnswer = answers[index] || null;
     if ($('sceneGuideEyebrow')) $('sceneGuideEyebrow').textContent = guideEyebrow();
     $('sceneGuideTitle').textContent = guideTitle();
+    $('sceneGuide')?.setAttribute('data-collapsed-label', `${guideLabel()} · ${index + 1} of ${questions.length}`);
     $('sceneGuideProgress').textContent = `${guideLabel()} ${index + 1} of ${questions.length}`;
     $('sceneGuideBar').style.width = `${((index + 1) / questions.length) * 100}%`;
     $('sceneGuideQuestion').innerHTML = `
@@ -385,7 +387,12 @@
           : 'Record and continue');
     $('sceneGuideNext').disabled = reviewMode ? false : !savedAnswer;
     $('sceneGuideAnswer')?.addEventListener('change', event => {
-      $('sceneGuideNext').disabled = event.target.value === '';
+      const hasAnswer = event.target.value !== '';
+      $('sceneGuideNext').disabled = !hasAnswer;
+      if (!reviewMode && hasAnswer) {
+        window.clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = window.setTimeout(() => $('sceneGuideNext')?.click(), 450);
+      }
     });
     showGuideObservation(question);
   }
@@ -500,6 +507,7 @@
   }
 
   function pauseGuide() {
+    window.clearTimeout(autoAdvanceTimer);
     reviewMode = false;
     $('sceneGuide').hidden = true;
     setPhaseControlsVisible(true);
@@ -523,6 +531,8 @@
       ? 'Review shows your recorded choices without revealing expected answers. Full feedback remains in the final debrief.'
       : 'Use the photo, dispatch, and approach observations. “Not enough information at this time” is always available. Answers are reviewed during the final debrief.';
     setPhaseControlsVisible(false);
+    $('sceneGuide').classList.remove('is-collapsed');
+    $('sceneGuideCollapse')?.setAttribute('aria-expanded', 'true');
     $('sceneGuide').hidden = false;
     setLocked(!reviewMode);
     render();
@@ -548,6 +558,8 @@
       ? 'Review shows your recorded ABC decisions without revealing the expected findings. Full feedback remains in the final debrief.'
       : 'Use the patient image and the neutral findings in the information window. Record an initial Airway, Breathing, and Circulation decision; “Not enough information at this time” remains available.';
     setPhaseControlsVisible(false);
+    $('sceneGuide').classList.remove('is-collapsed');
+    $('sceneGuideCollapse')?.setAttribute('aria-expanded', 'true');
     $('sceneGuide').hidden = false;
     setLocked(!reviewMode);
     render();
@@ -595,6 +607,13 @@
       }
     });
     $('sceneGuideSkip').addEventListener('click', pauseGuide);
+    $('sceneGuideCollapse')?.addEventListener('click', () => {
+      const guide = $('sceneGuide');
+      if (!guide) return;
+      const collapsed = guide.classList.toggle('is-collapsed');
+      $('sceneGuideCollapse').setAttribute('aria-expanded', String(!collapsed));
+      $('sceneGuideCollapse').setAttribute('aria-label', collapsed ? 'Expand guided assessment' : 'Minimize guided assessment');
+    });
     $('reviewSceneGuide')?.addEventListener('click', () => startGuide(Boolean(completedFinding)));
     $('beginPrimaryAssessment')?.addEventListener('click', () => startPrimary(primaryComplete()));
     $('reviewCompletedSceneGuide')?.addEventListener('click', () => startGuide(true));

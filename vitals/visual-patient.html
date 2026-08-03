@@ -6,8 +6,8 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=1100">
-  <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=1100">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=1110">
+  <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=1110">
 </head>
 <body>
   <main class="vp-shell">
@@ -18,7 +18,7 @@
         <h1 id="caseTitle">Visual Patient</h1>
         <p id="scene"></p>
       </div>
-      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">UI 1.10</small></div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">UI 1.11</small></div>
     </header>
 
     <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
@@ -60,7 +60,7 @@
             <p id="sceneGuideEyebrow">SCENE SIZE-UP</p>
             <h2 id="sceneGuideTitle">Look at the patient and make a decision</h2>
           </div>
-          <a href="/nremt-skill-sheets.html" target="_blank" rel="noopener" aria-label="Open the NREMT skill-sheet library">Skill sheet</a>
+          <div class="scene-guide-head-actions"><a href="/nremt-skill-sheets.html" target="_blank" rel="noopener" aria-label="Open the NREMT skill-sheet library">Skill sheet</a><button id="sceneGuideCollapse" type="button" aria-expanded="true" aria-label="Minimize guided assessment">⌄</button></div>
         </div>
         <div class="scene-guide-progress"><span id="sceneGuideProgress">Scene size-up 1 of 9</span><div aria-hidden="true"><i id="sceneGuideBar"></i></div></div>
         <div id="sceneGuideQuestion" class="scene-guide-question"></div>
@@ -254,6 +254,6 @@
   <script src="/vitals/scenario-tool-registry.js?v=1100"></script>
   <script src="/vitals/scenario-phase-model.js?v=1100"></script>
   <script src="/vitals/visual-patient.js?v=1100"></script>
-  <script src="/vitals/scenario-guided-start.js?v=1100"></script>
+  <script src="/vitals/scenario-guided-start.js?v=1110"></script>
 </body>
 </html>
