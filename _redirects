@@ -1,3 +1,8 @@
+# Canonical patient scenario page
+/visual-patient.html                /vitals/visual-patient.html              301!
+/visual-patient                     /vitals/visual-patient.html              301!
+/assessment-workspace.html          /vitals/visual-patient.html              301!
+
 # Clean, human-readable tool URLs
 /blood-pressure-simulator        /vitals/bp.html                            301
 /breath-sound-simulator          /vitals/breath-sound-simulator.html        301

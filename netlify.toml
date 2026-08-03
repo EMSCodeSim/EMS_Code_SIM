@@ -14,3 +14,15 @@
   from = "/styles/assessment-workspace.html"
   to = "/vitals/visual-patient.html"
   status = 301
+[[redirects]]
+  from = "/visual-patient.html"
+  to = "/vitals/visual-patient.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/visual-patient"
+  to = "/vitals/visual-patient.html"
+  status = 301
+  force = true
+
