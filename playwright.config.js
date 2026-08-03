@@ -8,7 +8,7 @@ const launchOptions = executablePath
   : undefined;
 
 module.exports = defineConfig({
-  testDir: './tests/interaction',
+  testDir: './test/interaction',
   timeout: 45_000,
   expect: { timeout: 7_500 },
   fullyParallel: false,
