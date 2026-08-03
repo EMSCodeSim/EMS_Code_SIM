@@ -1,0 +1,18 @@
+EMSCodeSim Daily Protocol & Procedure Drill Update
+
+Recommended installation:
+1. Replace the project with the full updated project ZIP.
+2. Deploy through the existing Netlify build command: npm run build.
+
+Updated-files-only installation:
+1. Copy the files from the updated-files ZIP into the matching project paths.
+2. Delete these retired duplicate files if they still exist:
+   - styles/assessment-workspace.css
+   - styles/assessment-workspace.html
+   - styles/assessment-workspace.js
+   - vitals/assessment-workspace.css
+   - vitals/assessment-workspace.html
+   - vitals/assessment-workspace.js
+3. Run npm run build.
+
+The built-in protocol cases are demonstration content. Add verified local protocol packages with the template at data/protocol-pack-template.json.
