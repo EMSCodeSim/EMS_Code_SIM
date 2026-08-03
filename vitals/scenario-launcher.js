@@ -1,10 +1,6 @@
 (() => {
   'use strict';
 
-  const ASSIGN_KEY = 'emscodesim_student_assignment_v1';
-  const ASSIGNMENTS_KEY = 'emscodesim_instructor_assignments_v1';
-  const readJSON = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); } catch { return fallback; } };
-  const assignmentSession = readJSON(ASSIGN_KEY, null);
   const api = window.EMSCodeSimPatientRecord;
   const session = window.EMSCodeSimScenarioSession;
   const $ = id => document.getElementById(id);
@@ -17,88 +13,177 @@
     { id:'pediatric', image:'/vitals/assets/scenario-patient-pediatric-v3.png', title:'Sick Pediatric Patient', patient:'3-year-old child', scene:'Home • caregiver present', clue:'Poor interaction and increased work of breathing', dispatch:'You are dispatched for a 3-year-old with fever, poor interaction, and increased work of breathing.', goal:'Use the pediatric first look, identify respiratory or perfusion compromise, and reassess' }
   ];
 
-  const select = $('caseSelect');
-  const gallery = $('caseGallery');
-  cases.forEach(item => {
-    const option = document.createElement('option');
-    option.value = item.id;
-    option.textContent = item.title;
-    select.appendChild(option);
-  });
+  let selectedCase = null;
+  let activeRecord = api?.active?.() || null;
 
-  function selectedMode() { return document.querySelector('input[name="trainingMode"]:checked')?.value || 'learning'; }
-  function patientHome(caseId, mode = selectedMode()) { return `/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}&training=${encodeURIComponent(mode)}`; }
+  function trainingMode(mode) {
+    return mode === 'assessment' ? 'assessment' : 'learning';
+  }
+
+  function patientHome(caseId, mode = 'learning') {
+    return `/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}&training=${encodeURIComponent(trainingMode(mode))}`;
+  }
+
+  function savedMode(record = activeRecord) {
+    return trainingMode(record?.documentation?.trainingMode || 'learning');
+  }
+
+  function elapsedLabel(startedAt) {
+    const started = new Date(startedAt || 0).getTime();
+    if (!Number.isFinite(started) || started <= 0) return 'Progress is saved.';
+    const totalMinutes = Math.max(1, Math.floor((Date.now() - started) / 60000));
+    if (totalMinutes < 60) return `${totalMinutes} minute${totalMinutes === 1 ? '' : 's'} elapsed`;
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${hours} hr${hours === 1 ? '' : 's'}${minutes ? ` ${minutes} min` : ''} elapsed`;
+  }
+
+  function progressSummary(record) {
+    const careEvents = Array.isArray(record?.careLog) ? record.careLog.length : 0;
+    const findings = record?.findings && typeof record.findings === 'object' ? Object.keys(record.findings).length : 0;
+    const treatments = Array.isArray(record?.treatments) ? record.treatments.length : 0;
+    const details = [`${elapsedLabel(record?.startedAt)}`, `${careEvents || findings} recorded event${(careEvents || findings) === 1 ? '' : 's'}`];
+    if (treatments) details.push(`${treatments} treatment${treatments === 1 ? '' : 's'}`);
+    return details.join(' • ');
+  }
 
   function renderGallery() {
+    const gallery = $('caseGallery');
     gallery.innerHTML = '';
+    activeRecord = api?.active?.() || null;
+
     cases.forEach(item => {
+      const inProgress = activeRecord?.scenarioId === item.id;
       const button = document.createElement('button');
       button.type = 'button';
-      button.className = `case-choice${select.value === item.id ? ' is-selected' : ''}`;
+      button.className = `case-choice${inProgress ? ' has-progress' : ''}`;
       button.dataset.case = item.id;
-      button.innerHTML = `<img src="${item.image}" alt="${item.title} patient scenario"><span class="case-choice-body"><strong>${item.title}</strong><span>${item.patient} • ${item.scene}</span><small>${item.clue}</small></span>`;
-      button.addEventListener('click', () => {
-        select.value = item.id;
-        gallery.querySelectorAll('.case-choice').forEach(choice => choice.classList.toggle('is-selected', choice === button));
-      });
+      button.setAttribute('aria-label', `${item.title}. ${inProgress ? 'Scenario in progress. Continue or reset.' : 'Choose practice mode.'}`);
+      button.innerHTML = `
+        <span class="case-image-wrap">
+          <img src="${item.image}" alt="${item.title} patient scenario">
+          ${inProgress ? '<span class="progress-badge">In progress</span>' : ''}
+        </span>
+        <span class="case-choice-body">
+          <strong>${item.title}</strong>
+          <span>${item.patient}</span>
+          <small>${inProgress ? 'Tap to continue or reset' : 'Tap to choose a mode'}</small>
+        </span>`;
+      button.addEventListener('click', () => openCaseDialog(item));
       gallery.appendChild(button);
     });
   }
 
-  function start(caseId) {
-    const selected = cases.find(item => item.id === caseId) || cases[0];
-    const current = api?.active?.();
-    if (!current || current.scenarioId !== selected.id) api?.create?.(selected);
-    session?.sync?.(selected.id);
-    api?.setDocumentation?.({ trainingMode: selectedMode(), trainingModeSetAt: new Date().toISOString() });
-    location.href = patientHome(selected.id, selectedMode());
+  function openCaseDialog(item) {
+    selectedCase = item;
+    activeRecord = api?.active?.() || null;
+    $('caseDialogImage').src = item.image;
+    $('caseDialogImage').alt = `${item.title} patient scenario`;
+    $('caseDialogTitle').textContent = item.title;
+    $('caseDialogMeta').textContent = `${item.patient} • ${item.scene}`;
+    $('caseDialogClue').textContent = item.clue;
+
+    const savedPanel = $('savedScenarioPanel');
+    const modePanel = $('modeSelectionPanel');
+    if (activeRecord?.scenarioId) {
+      const samePatient = activeRecord.scenarioId === item.id;
+      savedPanel.hidden = false;
+      modePanel.hidden = true;
+      $('savedScenarioTitle').textContent = samePatient
+        ? `Continue ${activeRecord.title || item.title}?`
+        : `${activeRecord.title || 'Another patient'} is still in progress`;
+      $('savedScenarioSummary').textContent = `${progressSummary(activeRecord)}. ${samePatient ? 'Continue where you stopped or reset this patient and choose a new mode.' : `Continue that patient or reset it before starting ${item.title}.`}`;
+      $('continueSavedScenario').textContent = samePatient ? 'Continue progress' : `Continue ${activeRecord.title || 'current patient'}`;
+    } else {
+      savedPanel.hidden = true;
+      modePanel.hidden = false;
+    }
+
+    $('caseDialog').hidden = false;
+    $('caseDialogBackdrop').hidden = false;
+    document.body.classList.add('dialog-open');
+    window.setTimeout(() => {
+      const first = activeRecord?.scenarioId ? $('continueSavedScenario') : document.querySelector('[data-start-mode="learning"]');
+      first?.focus();
+    }, 0);
   }
 
-  function showActivePatient() {
-    const current = api?.active?.();
-    if (!current?.scenarioId) return;
-    const banner = $('activePatientBanner');
-    banner.hidden = false;
-    $('activePatientTitle').textContent = `Resume ${current.title || 'active patient'}`;
-    const recovery = session?.recoveryStatus?.() || {};
-    const recovered = Boolean(recovery.patient || recovery.scenario);
-    $('activePatientText').textContent = recovered
-      ? `${current.patient || 'Patient'} • An interrupted or damaged save was recovered from the last valid copy. Findings, treatments, partner tasks, and scene time were preserved.`
-      : `${current.patient || 'Patient'} • Findings, partner tasks, and scene time remain saved.`;
-    banner.classList.toggle('is-recovered', recovered);
-    const savedMode = current.documentation?.trainingMode || 'learning';
-    const modeInput = document.querySelector(`input[name="trainingMode"][value="${savedMode}"]`);
-    if (modeInput) modeInput.checked = true;
-    $('resumeActivePatient').href = patientHome(current.scenarioId, savedMode);
+  function closeCaseDialog() {
+    $('caseDialog').hidden = true;
+    $('caseDialogBackdrop').hidden = true;
+    document.body.classList.remove('dialog-open');
+    selectedCase = null;
   }
 
-  function showAssignment() {
-    const params = new URLSearchParams(location.search);
-    const assignmentCode = params.get('assignment');
-    if (!assignmentCode && !assignmentSession) return;
-    const assignments = readJSON(ASSIGNMENTS_KEY, []);
-    const requestedCode = assignmentCode || assignmentSession?.assignmentCode || '';
-    const match = assignments.find(item => String(item.code).toUpperCase() === String(requestedCode).toUpperCase());
-    const learner = params.get('learner') || assignmentSession?.learnerName || '';
-    $('assignmentBanner').hidden = false;
-    $('assignmentBannerTitle').textContent = match?.name || 'Instructor-assigned scenario';
-    $('assignmentBannerText').textContent = `${learner ? `Learner: ${learner}. ` : ''}${match?.due ? `Due ${match.due}. ` : ''}${match?.requireDebrief ? 'A completed debrief is required.' : 'Complete the assigned patient-care phases.'}`;
-    const assignedCase = match?.scenario || assignmentSession?.scenario;
-    if (assignedCase && cases.some(item => item.id === assignedCase)) select.value = assignedCase;
+  function clearActiveProgress() {
+    const current = api?.active?.() || activeRecord;
+    const caseId = current?.scenarioId;
+    api?.clear?.();
+    if (caseId) {
+      const partnerKey = session?.partnerTaskKey?.(caseId);
+      [
+        partnerKey,
+        partnerKey && `${partnerKey}_backup`,
+        partnerKey && `${partnerKey}_shadow`,
+        `emscodesim_scenario_${caseId}`,
+        `emscodesim_scenario_${caseId}_backup`,
+        `emscodesim_scenario_${caseId}_shadow`
+      ].filter(Boolean).forEach(key => localStorage.removeItem(key));
+    }
+    activeRecord = null;
   }
+
+  function startFresh(item, mode) {
+    if (!item) return;
+    if (api?.active?.()?.scenarioId) clearActiveProgress();
+    api?.create?.(item);
+    session?.sync?.(item.id);
+    api?.setDocumentation?.({ trainingMode: trainingMode(mode), trainingModeSetAt: new Date().toISOString() });
+    location.href = patientHome(item.id, mode);
+  }
+
+  $('continueSavedScenario').addEventListener('click', () => {
+    const current = api?.active?.() || activeRecord;
+    if (!current?.scenarioId) {
+      $('savedScenarioPanel').hidden = true;
+      $('modeSelectionPanel').hidden = false;
+      return;
+    }
+    location.href = patientHome(current.scenarioId, savedMode(current));
+  });
+
+  $('resetSavedScenario').addEventListener('click', () => {
+    const current = api?.active?.() || activeRecord;
+    const name = current?.title || 'current scenario';
+    if (!window.confirm(`Reset ${name}? All findings, vitals, history, treatments, partner tasks, and log entries for this patient will be erased.`)) return;
+    clearActiveProgress();
+    renderGallery();
+    $('savedScenarioPanel').hidden = true;
+    $('modeSelectionPanel').hidden = false;
+    $('modeSelectionPanel').querySelector('h3').textContent = 'Choose a mode to restart';
+    document.querySelector('[data-start-mode="learning"]')?.focus();
+  });
+
+  document.querySelectorAll('[data-start-mode]').forEach(button => {
+    button.addEventListener('click', () => startFresh(selectedCase, button.value));
+  });
+
+  $('randomCase').addEventListener('click', () => {
+    const item = cases[Math.floor(Math.random() * cases.length)];
+    openCaseDialog(item);
+  });
+  $('closeCaseDialog').addEventListener('click', closeCaseDialog);
+  $('caseDialogBackdrop').addEventListener('click', closeCaseDialog);
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !$('caseDialog').hidden) closeCaseDialog();
+  });
+  window.addEventListener('pageshow', renderGallery);
+
+  renderGallery();
 
   const params = new URLSearchParams(location.search);
-  const selected = params.get('select') || params.get('case') || assignmentSession?.scenario;
-  if (selected && cases.some(item => item.id === selected)) select.value = selected;
-  showAssignment();
-  renderGallery();
-  showActivePatient();
-
-  select.addEventListener('change', renderGallery);
-  $('startCase').addEventListener('click', () => start(select.value));
-  $('randomCase').addEventListener('click', () => {
-    const selectedCase = cases[Math.floor(Math.random() * cases.length)];
-    select.value = selectedCase.id;
-    renderGallery();
-  });
+  const requested = params.get('select') || params.get('case');
+  if (requested && cases.some(item => item.id === requested) && (params.get('open') === '1' || params.get('ended') === '1')) {
+    openCaseDialog(cases.find(item => item.id === requested));
+  }
 })();
