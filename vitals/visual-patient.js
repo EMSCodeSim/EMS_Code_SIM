@@ -1363,10 +1363,22 @@
     }
   }
 
+  function openScenarioControls() {
+    $('scenarioControlDialog').hidden = false;
+    $('scenarioControlBackdrop').hidden = false;
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => $('saveAndExitScenario')?.focus(), 0);
+  }
+
+  function closeScenarioControls() {
+    $('scenarioControlDialog').hidden = true;
+    $('scenarioControlBackdrop').hidden = true;
+    document.body.style.overflow = '';
+  }
+
   function resetScenario() {
-    const confirmed = window.confirm('Reset this scenario? This permanently clears findings, vitals, treatments, partner tasks, transport decisions, and the care log for this patient.');
-    if (!confirmed) return;
     try {
+      closeScenarioControls();
       api?.clear?.();
       const partnerKey = session?.partnerTaskKey?.(id);
       [partnerKey, partnerKey && `${partnerKey}_backup`, partnerKey && `${partnerKey}_shadow`, `emscodesim_scenario_${id}`, `emscodesim_scenario_${id}_backup`, `emscodesim_scenario_${id}_shadow`].filter(Boolean).forEach(key => localStorage.removeItem(key));
@@ -1378,9 +1390,8 @@
   }
 
   function endScenario() {
-    if (confirm('End this scenario and return to scenario selection? Your current progress will remain saved.')) {
-      location.href = `/vitals/scenario-launcher.html?select=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}`;
-    }
+    closeScenarioControls();
+    location.href = `/vitals/scenario-launcher.html?select=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&ended=1`;
   }
 
   function openSheet(panelId) {
@@ -1472,6 +1483,7 @@
   $('clinicalNextClose')?.addEventListener('click', hideClinicalNextActions);
   $('closeSheet').addEventListener('click', closeSheet);
   $('sheetBackdrop').addEventListener('click', closeSheet);
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && !$('scenarioControlDialog').hidden) closeScenarioControls(); });
   $('clinicalBarToggle')?.addEventListener('click', () => {
     const drawer = $('clinicalTaskDrawer');
     const expanded = drawer?.hidden !== false;
@@ -1484,9 +1496,14 @@
   $('recordFocus').addEventListener('click', finishFocus);
   $('cancelFocus').addEventListener('click', () => { $('assessmentFocus').hidden = true; activeFocus = null; });
   $('completeScenarioFromPatient').addEventListener('click', checkScenarioCompletion);
-  $('endScenario').addEventListener('click', endScenario);
-  $('endScenarioFromProgress')?.addEventListener('click', endScenario);
-  $('resetScenarioFromProgress')?.addEventListener('click', resetScenario);
+  $('scenarioMenuButton')?.addEventListener('click', openScenarioControls);
+  $('closeScenarioControls')?.addEventListener('click', closeScenarioControls);
+  $('continueScenario')?.addEventListener('click', closeScenarioControls);
+  $('scenarioControlBackdrop')?.addEventListener('click', closeScenarioControls);
+  $('saveAndExitScenario')?.addEventListener('click', endScenario);
+  $('resetAndRestartScenario')?.addEventListener('click', resetScenario);
+  $('endScenarioFromProgress')?.addEventListener('click', openScenarioControls);
+  $('resetScenarioFromProgress')?.addEventListener('click', openScenarioControls);
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
     if (!$('assessmentFocus').hidden) { $('assessmentFocus').hidden = true; activeFocus = null; }
