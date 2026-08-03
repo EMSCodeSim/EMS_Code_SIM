@@ -1,38 +1,7 @@
 (() => {
   'use strict';
 
-  const PLANS = Object.freeze({
-    asthma: {
-      requiredFindings: ['scene_size_up','airway','breathing','perfusion','respirations','breath_sounds','spo2'],
-      appropriateFindings: ['pulse','blood_pressure','skin','sample'],
-      optionalFindings: ['mental_status','pupils','temperature','blood_glucose','pain'],
-      notIndicatedFindings: ['motor_sensory','chest_assessment','abdominal_assessment','trauma_assessment','pediatric_assessment_triangle','rule_of_nines']
-    },
-    stroke: {
-      requiredFindings: ['scene_size_up','airway','breathing','perfusion','mental_status','motor_sensory','blood_glucose','blood_pressure','pulse','respirations','spo2','sample'],
-      appropriateFindings: ['pupils','skin','breath_sounds'],
-      optionalFindings: ['temperature','pain'],
-      notIndicatedFindings: ['chest_assessment','abdominal_assessment','trauma_assessment','pediatric_assessment_triangle','rule_of_nines']
-    },
-    hypoglycemia: {
-      requiredFindings: ['scene_size_up','airway','breathing','perfusion','mental_status','blood_glucose','pulse','blood_pressure','respirations','spo2'],
-      appropriateFindings: ['skin','pupils','motor_sensory','sample'],
-      optionalFindings: ['temperature','breath_sounds','pain'],
-      notIndicatedFindings: ['chest_assessment','abdominal_assessment','trauma_assessment','pediatric_assessment_triangle','rule_of_nines']
-    },
-    trauma: {
-      requiredFindings: ['scene_size_up','airway','breathing','perfusion','respirations','breath_sounds','spo2','pulse','blood_pressure','skin','chest_assessment','trauma_assessment','abdominal_assessment'],
-      appropriateFindings: ['mental_status','pupils','pain','sample'],
-      optionalFindings: ['blood_glucose','temperature','motor_sensory'],
-      notIndicatedFindings: ['pediatric_assessment_triangle','rule_of_nines']
-    },
-    pediatric: {
-      requiredFindings: ['scene_size_up','pediatric_assessment_triangle','airway','breathing','perfusion','respirations','breath_sounds','spo2','pulse','skin'],
-      appropriateFindings: ['temperature','blood_pressure','mental_status','sample'],
-      optionalFindings: ['pupils','blood_glucose','pain'],
-      notIndicatedFindings: ['motor_sensory','chest_assessment','abdominal_assessment','trauma_assessment','rule_of_nines']
-    }
-  });
+  const PLANS = window.EMSCodeSimScenarioDefinitions?.PHASE_PLANS || Object.freeze({});
 
   const LABELS = {
     scene_size_up: 'Scene size-up', airway: 'Airway assessment', breathing: 'Breathing assessment', perfusion: 'Circulation and perfusion',

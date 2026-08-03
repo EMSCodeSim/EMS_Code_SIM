@@ -11,33 +11,7 @@
   const synchronizedCases = new Set();
   const partnerTimers = new Map();
 
-  const SCENARIO_CATALOG = Object.freeze({
-    asthma: {
-      id: 'asthma', title: 'Respiratory Distress', patient: '24-year-old adult',
-      dispatch: 'Worsening shortness of breath and wheezing.', scene: 'Apartment; rescue inhaler nearby',
-      goal: 'Assess respiratory adequacy, treat, reassess, and report.'
-    },
-    stroke: {
-      id: 'stroke', title: 'Possible Acute Stroke', patient: '68-year-old adult',
-      dispatch: 'Sudden speech difficulty and right-sided weakness.', scene: 'Private residence; family present',
-      goal: 'Identify time-sensitive neurologic findings and prepare rapid stroke-center transport.'
-    },
-    hypoglycemia: {
-      id: 'hypoglycemia', title: 'Altered Mental Status', patient: '57-year-old adult',
-      dispatch: 'Confused, sweaty, and behaving abnormally.', scene: 'Workplace break room',
-      goal: 'Find a reversible cause, protect the airway, treat, and reassess.'
-    },
-    trauma: {
-      id: 'trauma', title: 'Blunt Trauma', patient: '36-year-old adult',
-      dispatch: 'Two-vehicle collision with chest and abdominal pain.', scene: 'Roadway collision; moderate vehicle damage',
-      goal: 'Find immediate threats, support ABCs, and expedite trauma transport.'
-    },
-    pediatric: {
-      id: 'pediatric', title: 'Sick Pediatric Patient', patient: '3-year-old child',
-      dispatch: 'Fever, poor interaction, and increased work of breathing.', scene: 'Home; caregiver present',
-      goal: 'Use the pediatric first look, support ABCs, and reassess response.'
-    }
-  });
+  const SCENARIO_CATALOG = window.EMSCodeSimScenarioDefinitions?.CATALOG || Object.freeze({});
 
   function requestedCaseId() {
     return params.get('case') || api.active()?.scenarioId || api.active()?.id || '';
