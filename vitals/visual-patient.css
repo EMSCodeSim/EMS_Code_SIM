@@ -14,7 +14,7 @@ body{margin:0;background:#07131f;color:var(--text);font-family:Inter,system-ui,-
 .patient-stage{position:relative;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#0b1d2c;height:calc(100vh - 230px);min-height:390px;max-height:650px}
 .patient-stage img{width:100%;height:100%;display:block;object-fit:cover;object-position:center}
 .patient-stage:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.02) 55%,rgba(3,12,20,.86));pointer-events:none}
-.bottom-nav{position:fixed;z-index:30;left:50%;bottom:0;transform:translateX(-50%);width:min(760px,100%);display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));background:rgba(5,18,29,.98);border-top:1px solid #31566d;backdrop-filter:blur(14px)}
+.bottom-nav{position:fixed;z-index:30;left:50%;bottom:0;transform:translateX(-50%);width:min(760px,100%);display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));background:rgba(5,18,29,.98);border-top:1px solid #31566d;backdrop-filter:blur(14px)}
 .bottom-nav button{position:relative;border:1px solid #31566d;background:#10283a;color:white;border-radius:14px;padding:8px 2px 7px;font-size:.67rem;font-weight:750;min-height:60px}
 .bottom-nav button>span{display:block;font-size:1.25rem;margin-bottom:2px}
 .bottom-nav button:nth-child(1).active{background:#164c78}
@@ -682,3 +682,7 @@ body.scene-guide-active .patient-phase-controls{display:none}
   .bottom-nav em{right:3px;top:4px;width:17px;height:17px;font-size:.6rem}
   .history-guided-tools{grid-template-columns:1fr 1fr}.history-guided-tools>div{grid-column:1/-1}
 }
+
+/* Consolidated patient workspace build marker */
+.scenario-build-stamp-dark{display:block;margin-top:2px;color:#82c6eb;font-size:.52rem;font-weight:950;letter-spacing:.06em;text-transform:uppercase}
+@media(max-width:390px){.bottom-nav{gap:4px;padding-left:5px;padding-right:5px}.bottom-nav button{font-size:.59rem;min-width:0}.bottom-nav button>span{font-size:1.08rem}}
