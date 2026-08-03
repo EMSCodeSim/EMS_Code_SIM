@@ -46,13 +46,15 @@ includesAll(guidedStart, [
   'What is the initial AVPU level?', 'What is the initial patient priority?', "saveFinding('scene_size_up'",
   'reviewAtDebrief: true', 'answers', 'score', 'maxScore'
 ], 'Guided scene size-up');
-assert(!guidedStart.includes('return false') || guidedStart.includes('missed choice'), 'Guided scene-size-up decisions must not block progress for an incorrect answer.');
+assert(guidedStart.includes('Not enough information at this time'), 'Scene size-up must allow uncertainty as a valid learner choice.');
+assert(guidedStart.includes('APPROACH OBSERVATION') && guidedStart.includes('showSceneObservation'), 'Scene size-up must send neutral approach observations to the patient information window.');
+assert(!guidedStart.includes('Best choice:') && !guidedStart.includes('Good decision.'), 'Scene size-up must not reveal correctness before the final debrief.');
 assert(guidedStart.includes("if ($('sceneGuideComplete')) $('sceneGuideComplete').hidden = true;"), 'Completed scene size-up must collapse instead of remaining on the patient screen.');
-assert(guidedStart.includes('else showReady();') && !guidedStart.includes('else startGuide(false);'), 'Scene size-up must not autoplay when a scenario opens.');
+assert(guidedStart.includes('else startGuide(false);'), 'Incomplete scene size-up should open over the patient photo when a scenario begins.');
 
 const visualPatient = read('vitals/visual-patient.html');
 includesAll(visualPatient, [
-  '/vitals/scenario-guided-start.css', '/vitals/scenario-guided-start.js', 'sceneGuideQuestion', 'Skip guided start',
+  '/vitals/scenario-guided-start.css', '/vitals/scenario-guided-start.js', 'sceneGuideQuestion', 'Close for now',
   'scenarioProgress', 'infoUpdateCollapse', 'sceneClueLayer', '/vitals/scenario-phase-model.js'
 ], 'Visual patient home');
 assert(!visualPatient.includes('id="nextActionCard"'), 'The patient home must not display a next-action card.');
@@ -62,7 +64,7 @@ assert(!visualPatient.includes('id="reviewSceneGuide"'), 'Scene size-up must be 
 const visualPatientJs = read('vitals/visual-patient.js');
 includesAll(visualPatientJs, [
   'buildSceneSizeUpCard(box)', 'buildPrimaryAssessmentCard(box)', 'Primary Assessment', 'primary-assessment-row',
-  'buildRecommendedAssessments', 'buildAssessmentFilters', 'Focused Assessment', 'History', 'buildVitals',
+  'buildRecommendedAssessments', 'buildMoreAssessments', 'Immediate assessment', 'More assessments', 'buildVitals',
   'current?.startedAt', 'assignPartnerTask', 'resolvePartnerTasks', 'isInformationUpdate', 'infoUpdateCollapse',
   'checkScenarioCompletion', 'essentialComplete'
 ], 'Patient-picture scenario home');
@@ -71,7 +73,7 @@ assert(!visualPatientJs.includes('openRapidABC'), 'The patient home must not ret
 assert(!visualPatientJs.includes('updateNextAction'), 'The patient home must not calculate or display a patient-screen next-action card.');
 assert(visualPatientJs.indexOf('buildSceneSizeUpCard(box)') < visualPatientJs.indexOf('buildPrimaryAssessmentCard(box)'), 'Scene size-up must appear before the unified Primary Assessment.');
 assert(visualPatientJs.lastIndexOf('buildPrimaryAssessmentCard(box)') < visualPatientJs.lastIndexOf('buildRecommendedAssessments(box, tools)'), 'Primary Assessment must appear before recommended assessment tools.');
-assert(visualPatientJs.lastIndexOf('buildRecommendedAssessments(box, tools)') < visualPatientJs.lastIndexOf("buildAssessmentCategory(box, 'focused'"), 'Recommended next actions must appear before the categorized tool lists.');
+assert(visualPatientJs.lastIndexOf('buildRecommendedAssessments(box, tools)') < visualPatientJs.lastIndexOf('buildMoreAssessments(box, tools'), 'Recommended next actions must appear before More assessments.');
 assert(!visualPatientJs.includes('What you can say now'), 'Primary assessment must not reveal picture-based conclusions to the learner.');
 assert(!visualPatientJs.includes("buildAssessmentCategory(box, 'vitals'"), 'Measurable vital signs must remain in the separate Vitals tab.');
 
@@ -79,8 +81,9 @@ const launcher = read('vitals/scenario-launcher.js');
 includesAll(launcher, ['/vitals/visual-patient.html', '`Resume ${', 'function start(caseId)'], 'Scenario launcher');
 assert(!launcher.includes('openAssessmentWorkspace'), 'The launcher must not route into a competing guided-assessment home.');
 
-const workspace = read('vitals/assessment-workspace.js');
-assert(workspace.includes("if (routeRecord || routeParams.get('mode')"), 'The legacy assessment workspace must redirect active scenarios to the patient-picture home.');
+const netlifyConfig = read('netlify.toml');
+includesAll(netlifyConfig, ['from = "/vitals/assessment-workspace.html"', 'to = "/vitals/visual-patient.html"', 'status = 301'], 'Retired assessment workspace redirect');
+assert(!fs.existsSync(path.join(process.cwd(), 'vitals/assessment-workspace.html')), 'The competing assessment workspace page must remain retired.');
 
 const phaseModel = read('vitals/scenario-phase-model.js');
 includesAll(phaseModel, [

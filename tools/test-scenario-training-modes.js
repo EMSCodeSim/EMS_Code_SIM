@@ -8,6 +8,6 @@ const guide = read('vitals/scenario-guided-start.js');
 assert(launcher.includes('value="learning"') && launcher.includes('value="assessment"'), 'Launcher must offer both modes');
 assert(launcherJs.includes('trainingMode') && launcherJs.includes('patientHome'), 'Launcher must persist and pass mode');
 assert(patient.includes("trainingMode() === 'assessment'"), 'Patient runtime must detect assessment mode');
-assert(patient.includes('feedback remain hidden until the final debrief'), 'Treatment feedback must be hidden in assessment mode');
-assert(guide.includes('Assessment Mode: correctness and rationales remain hidden until debrief.'), 'Scene guide must suppress coaching');
+assert(patient.includes('Treatment feedback remains hidden until the final debrief'), 'Treatment feedback must remain deferred to debrief');
+assert(guide.includes('Full feedback remains in the final debrief.') && !guide.includes('Best choice:'), 'Scene guide must suppress answer-revealing coaching');
 console.log('Scenario learning/assessment mode checks passed.');
