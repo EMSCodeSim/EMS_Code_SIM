@@ -29,7 +29,8 @@
     "test:crash-recovery": "node tools/test-scenario-crash-recovery.js",
     "test:vitals-tab": "node tools/test-vitals-tab-separation.js",
     "test:treatment-workflow": "node tools/test-treatment-workflow.js",
-    "test:treatment-decision": "node tools/test-treatment-decision-workflow.js"
+    "test:treatment-decision": "node tools/test-treatment-decision-workflow.js",
+    "test:repeatable-workflow": "node tools/test-repeatable-clinical-workflow.js"
   },
   "engines": {
     "node": ">=18 <23"
