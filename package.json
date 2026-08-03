@@ -11,7 +11,7 @@
     "build:public": "node tools/build-public.js",
     "build:functions": "node tools/prepare-functions.js",
     "verify:dist": "node tools/validate-site.js --root dist --deployment",
-    "build": "npm run validate && npm run verify:scenario-contracts && npm run test:scenario-definitions && npm run test:scenario-modes && npm run test:rapid-primary && npm run test:persistence && npm run test:care-log && npm run test:scenario-phases && npm run test:scenario-history && npm run test:condition-engine && npm run build:public && npm run build:functions && npm run verify:dist",
+    "build": "npm run validate && npm run verify:scenario-contracts && npm run test:scenario-definitions && npm run test:scenario-modes && npm run test:rapid-primary && npm run test:targeted-reassessment && npm run test:persistence && npm run test:care-log && npm run test:scenario-phases && npm run test:scenario-history && npm run test:condition-engine && npm run build:public && npm run build:functions && npm run verify:dist",
     "serve:dist": "node tools/serve-dist.js",
     "test:interaction": "npm run build && playwright test",
     "test:interaction:headed": "npm run build && playwright test --headed",
@@ -23,7 +23,8 @@
     "test:condition-engine": "node tools/test-dynamic-condition-engine.js",
     "test:scenario-definitions": "node tools/test-scenario-definitions.js",
     "test:scenario-modes": "node tools/test-scenario-training-modes.js",
-    "test:rapid-primary": "node tools/test-rapid-primary-assessment.js"
+    "test:rapid-primary": "node tools/test-rapid-primary-assessment.js",
+    "test:targeted-reassessment": "node tools/test-targeted-reassessment.js"
   },
   "engines": {
     "node": ">=18 <23"
