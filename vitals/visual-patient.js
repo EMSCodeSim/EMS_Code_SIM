@@ -154,6 +154,8 @@
   let infoUpdateIndex = 0;
   let lastInfoSignature = '';
   let timerInterval = 0;
+  let conditionInterval = 0;
+  let scenarioStartMs = 0;
   const TRANSPORT_PLANS = {
     asthma: { impressions:['Acute asthma exacerbation','Respiratory distress with hypoxia','Impending respiratory failure'], priorities:['Routine transport','Prompt transport','Emergent transport / ALS intercept'], destinations:['Closest appropriate emergency department','Respiratory-capable emergency department'], bestPriority:'Prompt transport', bestDestination:'Closest appropriate emergency department' },
     stroke: { impressions:['Acute stroke syndrome','Hypoglycemia mimicking stroke','Nonspecific weakness'], priorities:['Routine transport','Emergent stroke transport','Remain on scene for complete exam'], destinations:['Stroke-capable center','Closest emergency department','Trauma center'], bestPriority:'Emergent stroke transport', bestDestination:'Stroke-capable center' },
@@ -180,7 +182,7 @@
     });
   }
 
-  function record() { return session?.sync?.(id) || api?.active?.(); }
+  function record() { return session?.active?.(id) || api?.active?.(); }
   function existing(key) { return Boolean(api?.hasFinding?.(key, record())); }
   function labelFor(key) { return api?.labelFor?.(key) || phases?.labelFor?.(key) || String(key).replace(/_/g, ' '); }
   function valueFor(key) { return runtime?.formatVital?.(key) || 'Obtained'; }
@@ -984,15 +986,15 @@ Record this decision and its consequence?`;
   }
 
   function updateTimer() {
-    const current = record();
-    const start = new Date(current?.startedAt || Date.now()).getTime();
-    const elapsed = Math.max(0, Math.floor((Date.now() - start) / 1000));
+    if (!scenarioStartMs) {
+      const startedAt = record()?.startedAt;
+      scenarioStartMs = new Date(startedAt || Date.now()).getTime();
+    }
+    const elapsed = Math.max(0, Math.floor((Date.now() - scenarioStartMs) / 1000));
     $('timer').textContent = `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`;
   }
 
   function updatePartnerTasks() {
-    const completed = session?.resolvePartnerTasks?.(id) || [];
-    if (completed.length) { refreshFromRecord(); renderInfoUpdate(true); return; }
     const tasks = session?.readPartnerTasks?.(id) || {};
     document.querySelectorAll('[data-tool-key]').forEach(article => {
       const task = tasks[article.dataset.toolKey];
@@ -1002,6 +1004,14 @@ Record this decision and its consequence?`;
         ? `Partner gathering ${String(task.label || '').toLowerCase()}… ${secondsRemaining(task)}s`
         : 'Queued — partner will start after the current skill.';
     });
+  }
+
+  function runConditionClock() {
+    const changed = evaluatePatientCondition('timed-condition-check');
+    if (changed) {
+      refreshFromRecord();
+      renderInfoUpdate(true);
+    }
   }
 
   function openSheet(panelId) {
@@ -1049,7 +1059,8 @@ Record this decision and its consequence?`;
     updateTimer();
   }
 
-  ensureRecord();
+  const initialRecord = ensureRecord();
+  scenarioStartMs = new Date(initialRecord?.startedAt || Date.now()).getTime();
   $('caseTitle').textContent = scenario.title;
   setPatientImage($('patientImage'), scenario.image);
   setPatientImage($('focusImage'), scenario.image);
@@ -1090,9 +1101,23 @@ Record this decision and its consequence?`;
   });
   window.addEventListener('emscodesim:patient-record-updated', refreshFromRecord);
   window.addEventListener('emscodesim:scenario-finding-saved', refreshFromRecord);
-  window.addEventListener('emscodesim:partner-task-completed', () => { refreshFromRecord(); renderInfoUpdate(true); });
-  window.addEventListener('pageshow', () => { session?.resolvePartnerTasks?.(id); refreshFromRecord(); });
+  window.addEventListener('emscodesim:partner-task-updated', updatePartnerTasks);
+  window.addEventListener('emscodesim:partner-task-completed', () => { refreshFromRecord(); renderInfoUpdate(true); updatePartnerTasks(); });
+  window.addEventListener('pageshow', () => {
+    session?.sync?.(id, { force: true });
+    session?.resolvePartnerTasks?.(id);
+    const current = record();
+    scenarioStartMs = new Date(current?.startedAt || Date.now()).getTime();
+    refreshFromRecord();
+  });
   timerInterval = window.setInterval(updateTimer, 1000);
   partnerInterval = window.setInterval(updatePartnerTasks, 1000);
-  window.addEventListener('pagehide', () => { clearInterval(timerInterval); clearInterval(partnerInterval); }, { once: true });
+  conditionInterval = window.setInterval(runConditionClock, 5000);
+  session?.schedulePartnerTasks?.(id);
+  runConditionClock();
+  window.addEventListener('pagehide', () => {
+    clearInterval(timerInterval);
+    clearInterval(partnerInterval);
+    clearInterval(conditionInterval);
+  }, { once: true });
 })();

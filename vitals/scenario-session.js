@@ -8,6 +8,8 @@
   const PARTNER_PREFIX = 'emscodesim_partner_tasks_';
   const params = new URLSearchParams(location.search);
   let syncing = false;
+  const synchronizedCases = new Set();
+  const partnerTimers = new Map();
 
   const SCENARIO_CATALOG = Object.freeze({
     asthma: {
@@ -150,24 +152,34 @@
     return changed ? api.active?.() || record : record;
   }
 
-  function sync(caseId = requestedCaseId()) {
+  function sync(caseId = requestedCaseId(), options = {}) {
     if (syncing) return api.active?.() || null;
+    let record = ensureRecord(caseId);
+    if (!record) return null;
+    const resolvedCase = record.scenarioId || record.id;
+    const force = options === true || options?.force === true;
+    if (!force && synchronizedCases.has(resolvedCase)) return record;
+
     syncing = true;
     try {
-      let record = ensureRecord(caseId);
-      if (!record) return null;
-      const resolvedCase = record.scenarioId || record.id;
       let state = readState(resolvedCase);
       record = restoreStateToRecord(record, state);
-      state = mirrorRecordToState(record, state);
-      return record;
+      mirrorRecordToState(record, state);
+      synchronizedCases.add(resolvedCase);
+      return api.active?.() || record;
     } finally {
       syncing = false;
     }
   }
 
+  function active(caseId = requestedCaseId()) {
+    const current = api.active?.() || null;
+    if (current && (!caseId || current.scenarioId === caseId || current.id === caseId)) return current;
+    return sync(caseId);
+  }
+
   function saveFinding(category, value, meta = {}, caseId = requestedCaseId()) {
-    const record = sync(caseId);
+    const record = active(caseId);
     if (!record) throw new Error('No active scenario patient record.');
     const canonical = api.normalizeKey?.(category) || category;
     api.setFinding(canonical, value, meta);
@@ -188,7 +200,7 @@
   }
 
   function addTreatment(treatment = {}) {
-    const record = sync();
+    const record = active();
     if (!record) throw new Error('No active scenario patient record.');
     api.addTreatment(treatment);
     const updated = api.active?.() || record;
@@ -201,7 +213,7 @@
   }
 
   function addReassessment(entry = {}) {
-    const record = sync();
+    const record = active();
     if (!record) throw new Error('No active scenario patient record.');
     api.addReassessment(entry);
     const updated = api.active?.() || record;
@@ -263,7 +275,7 @@
   }
 
   function assignPartnerTask(task = {}, caseId = requestedCaseId()) {
-    const record = sync(caseId);
+    const record = active(caseId);
     const resolvedCase = caseId || record?.scenarioId || record?.id;
     if (!resolvedCase || !task.key) throw new Error('A scenario and partner task key are required.');
     const assignedAt = new Date().toISOString();
@@ -283,6 +295,7 @@
     normalizePartnerQueue(tasks);
     writePartnerTasks(resolvedCase, tasks);
     window.dispatchEvent(new CustomEvent('emscodesim:partner-task-updated', { detail: { caseId: resolvedCase, task: tasks[task.key] } }));
+    schedulePartnerTasks(resolvedCase);
     return tasks[task.key];
   }
 
@@ -315,42 +328,75 @@
     return recovered;
   }
 
+  function clearPartnerTimer(caseId) {
+    const timer = partnerTimers.get(caseId);
+    if (timer) clearTimeout(timer);
+    partnerTimers.delete(caseId);
+  }
+
+  function schedulePartnerTasks(caseId = requestedCaseId()) {
+    const record = active(caseId);
+    const resolvedCase = caseId || record?.scenarioId || record?.id;
+    if (!resolvedCase) return null;
+    clearPartnerTimer(resolvedCase);
+    const tasks = readPartnerTasks(resolvedCase);
+    normalizePartnerQueue(tasks);
+    const pending = Object.values(tasks).find(task => task && task.status === 'pending');
+    if (!pending) return null;
+    const wait = Math.max(0, taskTime(pending.dueAt) - Date.now());
+    const dueAt = taskTime(pending.dueAt);
+    const timer = setTimeout(() => {
+      partnerTimers.delete(resolvedCase);
+      // Some test harnesses execute timers synchronously. Never recurse when the
+      // scheduled completion time has not actually arrived.
+      if (Date.now() < dueAt) return;
+      resolvePartnerTasks(resolvedCase);
+    }, Math.min(wait, 2_147_483_647));
+    partnerTimers.set(resolvedCase, timer);
+    return pending;
+  }
+
   function resolvePartnerTasks(caseId = requestedCaseId()) {
-    const record = sync(caseId);
+    const record = active(caseId);
     const resolvedCase = caseId || record?.scenarioId || record?.id;
     if (!resolvedCase) return [];
-    const tasks = normalizePartnerQueue(readPartnerTasks(resolvedCase));
+    const original = readPartnerTasks(resolvedCase);
+    const tasks = normalizePartnerQueue(original);
     const completed = recoverCompletedPartnerFindings(resolvedCase, tasks);
-    const active = Object.values(tasks).find(task => task && task.status === 'pending');
-    if (active && taskTime(active.dueAt) <= Date.now()) {
-      // Mark the task as completing before saving the finding. Saving dispatches a
-      // synchronous patient-record event; without this guard, a screen refresh can
-      // call resolvePartnerTasks again while the same task is still pending and
-      // create an infinite completion loop at 0-1 seconds.
-      active.status = 'completing';
-      active.completingAt = new Date().toISOString();
+    const activeTask = Object.values(tasks).find(task => task && task.status === 'pending');
+    let changed = completed.length > 0;
+
+    if (activeTask && taskTime(activeTask.dueAt) <= Date.now()) {
+      activeTask.status = 'completing';
+      activeTask.completingAt = new Date().toISOString();
       writePartnerTasks(resolvedCase, tasks);
       try {
         const completedAt = new Date().toISOString();
-        const saved = saveFinding(active.key, active.value, partnerFindingMeta(active, completedAt), resolvedCase);
-        const verified = saved || api.getFinding?.(active.key, api.active?.());
-        if (!verified) throw new Error(`Partner vital was not verified after save: ${active.key}`);
-        active.status = 'complete';
-        active.completedAt = completedAt;
-        active.lastError = '';
-        completed.push(active);
+        const saved = saveFinding(activeTask.key, activeTask.value, partnerFindingMeta(activeTask, completedAt), resolvedCase);
+        const verified = saved || api.getFinding?.(activeTask.key, api.active?.());
+        if (!verified) throw new Error(`Partner vital was not verified after save: ${activeTask.key}`);
+        activeTask.status = 'complete';
+        activeTask.completedAt = completedAt;
+        activeTask.lastError = '';
+        completed.push(activeTask);
+        changed = true;
       } catch (error) {
-        active.status = 'pending';
-        active.dueAt = new Date(Date.now() + 1000).toISOString();
-        active.lastError = String(error?.message || error);
+        activeTask.status = 'pending';
+        activeTask.dueAt = new Date(Date.now() + 1000).toISOString();
+        activeTask.lastError = String(error?.message || error);
+        changed = true;
         console.error('Partner task could not be completed', error);
       } finally {
-        delete active.completingAt;
+        delete activeTask.completingAt;
       }
     }
+
+    const beforeNormalize = JSON.stringify(tasks);
     normalizePartnerQueue(tasks);
-    writePartnerTasks(resolvedCase, tasks);
+    if (beforeNormalize !== JSON.stringify(tasks)) changed = true;
+    if (changed) writePartnerTasks(resolvedCase, tasks);
     completed.forEach(task => window.dispatchEvent(new CustomEvent('emscodesim:partner-task-completed', { detail: { caseId: resolvedCase, task } })));
+    schedulePartnerTasks(resolvedCase);
     return completed;
   }
 
@@ -365,6 +411,7 @@
     readState,
     writeState,
     ensureRecord,
+    active,
     sync,
     saveFinding,
     addTreatment,
@@ -373,6 +420,7 @@
     readPartnerTasks,
     writePartnerTasks,
     assignPartnerTask,
+    schedulePartnerTasks,
     resolvePartnerTasks,
     scenarioHome,
     SCENARIO_CATALOG
@@ -382,6 +430,6 @@
     try { sync(); resolvePartnerTasks(); } catch (error) { console.error('Scenario session sync failed', error); }
   }, 0);
   window.addEventListener('pageshow', () => {
-    try { sync(); resolvePartnerTasks(); } catch (error) { console.error('Scenario session restore failed', error); }
+    try { sync(undefined, { force: true }); resolvePartnerTasks(); } catch (error) { console.error('Scenario session restore failed', error); }
   });
 })();
