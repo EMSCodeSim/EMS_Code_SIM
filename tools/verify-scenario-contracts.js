@@ -62,7 +62,7 @@ assert(!visualPatient.includes('id="reviewSceneGuide"'), 'Scene size-up must be 
 const visualPatientJs = read('vitals/visual-patient.js');
 includesAll(visualPatientJs, [
   'buildSceneSizeUpCard(box)', 'buildPrimaryAssessmentCard(box)', 'Primary Assessment', 'primary-assessment-row',
-  'buildRecommendedAssessments', 'buildAssessmentFilters', 'Focused Assessment', 'Vitals & Diagnostic Tools', 'History',
+  'buildRecommendedAssessments', 'buildAssessmentFilters', 'Focused Assessment', 'History', 'buildVitals',
   'current?.startedAt', 'assignPartnerTask', 'resolvePartnerTasks', 'isInformationUpdate', 'infoUpdateCollapse',
   'checkScenarioCompletion', 'essentialComplete'
 ], 'Patient-picture scenario home');
@@ -73,6 +73,7 @@ assert(visualPatientJs.indexOf('buildSceneSizeUpCard(box)') < visualPatientJs.in
 assert(visualPatientJs.lastIndexOf('buildPrimaryAssessmentCard(box)') < visualPatientJs.lastIndexOf('buildRecommendedAssessments(box, tools)'), 'Primary Assessment must appear before recommended assessment tools.');
 assert(visualPatientJs.lastIndexOf('buildRecommendedAssessments(box, tools)') < visualPatientJs.lastIndexOf("buildAssessmentCategory(box, 'focused'"), 'Recommended next actions must appear before the categorized tool lists.');
 assert(!visualPatientJs.includes('What you can say now'), 'Primary assessment must not reveal picture-based conclusions to the learner.');
+assert(!visualPatientJs.includes("buildAssessmentCategory(box, 'vitals'"), 'Measurable vital signs must remain in the separate Vitals tab.');
 
 const launcher = read('vitals/scenario-launcher.js');
 includesAll(launcher, ['/vitals/visual-patient.html', '`Resume ${', 'function start(caseId)'], 'Scenario launcher');
