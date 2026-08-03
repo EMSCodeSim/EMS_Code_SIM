@@ -69,6 +69,20 @@
 
   </main>
 
+  <section id="persistentClinicalBar" class="persistent-clinical-bar" aria-label="Current patient summary">
+    <button id="clinicalBarToggle" type="button" aria-expanded="false">
+      <span class="clinical-bar-status"><small>PATIENT</small><strong id="clinicalBarStatus">Assessment in progress</strong></span>
+      <span class="clinical-bar-finding"><small>LATEST</small><span id="clinicalBarFinding">No findings documented</span></span>
+      <span id="clinicalBarBadge" class="clinical-bar-badge" hidden>0</span>
+      <span class="clinical-bar-chevron" aria-hidden="true">⌃</span>
+    </button>
+    <div id="clinicalTaskDrawer" class="clinical-task-drawer" hidden>
+      <div><small>Current tasks</small><span id="clinicalBarTasks">No unfinished actions</span></div>
+      <div><small>Reassessment due</small><span id="clinicalBarDue">None</span></div>
+      <div><small>Partner</small><span id="clinicalBarPartner">No active assignment</span></div>
+    </div>
+  </section>
+
   <nav class="bottom-nav" aria-label="Scenario controls">
     <button data-panel="assessmentPanel" type="button"><span>◎</span>Assessment</button>
     <button data-panel="vitalsPanel" type="button"><span>♥</span>Vitals</button>
@@ -81,8 +95,13 @@
     <div class="sheet-handle"></div>
     <header class="sheet-header">
       <div><p id="sheetEyebrow">PATIENT ACTION</p><h2 id="sheetTitle">Vitals</h2></div>
-      <button id="closeSheet" class="close-btn" type="button" aria-label="Close panel">×</button>
+      <button id="closeSheet" class="close-btn return-patient-btn" type="button" aria-label="Return to patient"><span>Patient</span> ×</button>
     </header>
+    <div class="sheet-patient-context" aria-label="Discovered patient findings">
+      <span><small>Status</small><strong id="sheetContextStatus">Assessment in progress</strong></span>
+      <span><small>Latest finding</small><strong id="sheetContextFinding">None documented</strong></span>
+      <span><small>Due</small><strong id="sheetContextDue">None</strong></span>
+    </div>
 
     <section id="vitalsPanel" class="vp-panel" hidden>
       <p class="sub">Obtain measurable vital signs here. Perform the simulator yourself or assign one vital at a time to your partner.</p>
@@ -96,6 +115,7 @@
 
     <section id="treatmentPanel" class="vp-panel" hidden>
       <p class="sub">Select an intervention, enter the required dose, route, device, or procedure details, and record the action. Transport is included as a treatment decision.</p>
+      <label class="panel-search"><span>Search treatment or medication</span><input id="treatmentSearch" type="search" autocomplete="off" placeholder="Airway, oxygen, aspirin, transport…"></label>
       <div id="treatmentTools" class="treatment-list"></div>
       <div class="transport-card handoff-treatment-card">
         <div class="transport-card-head"><div><h3>Patient handoff</h3></div><span id="handoffStatusChip" class="status-chip">Not saved</span></div>

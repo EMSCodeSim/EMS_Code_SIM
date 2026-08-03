@@ -659,6 +659,7 @@
 
     buildAssessmentCategory(box, 'focused', 'Focused Assessment', 'Respiratory, neurological, trauma, abdominal, and pediatric exams', focused, true);
     buildAssessmentCategory(box, 'history', 'History', 'SAMPLE and OPQRST', history, false);
+    enforceSingleOpen('#assessmentTools', '.assessment-category, .assessment-primary-summary');
   }
 
   const TREATMENT_CATEGORY_META = {
@@ -996,6 +997,8 @@
     full.className = 'treatment-card full-treatment-menu';
     full.innerHTML = `<h3>Protocol-specific treatment</h3><p>Use the complete treatment tool for an intervention that is not listed here or requires additional documentation.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general')}">Open complete treatment tool</a>`;
     box.appendChild(full);
+    enforceSingleOpen('#treatmentTools', '.treatment-category');
+    filterTreatmentMenu($('treatmentSearch')?.value || '');
     treatmentCategoryFocus = '';
   }
 
@@ -1054,6 +1057,62 @@
     $('infoUpdateCount').textContent = `${infoUpdateIndex + 1} of ${infoUpdates.length}`;
     $('infoUpdatePrevious').disabled = infoUpdateIndex <= 0;
     $('infoUpdateNext').disabled = infoUpdateIndex >= infoUpdates.length - 1;
+  }
+
+  function discoveredSummary(current = record() || {}) {
+    const events = api?.listCareLog?.(current, 'all') || [];
+    const abnormal = [...events].reverse().filter(event => abnormalEvent(event));
+    const evaluation = phases?.evaluate?.(current);
+    const due = evaluation?.reassessment?.missingTargets || evaluation?.missingReassessmentTargets || [];
+    const condition = conditionState(current);
+    const partnerTasks = Object.values(session?.readPartnerTasks?.(id) || {});
+    const activePartner = partnerTasks.find(task => ['active','pending'].includes(task.status)) || partnerTasks.find(task => task.status === 'queued');
+    const unfinished = [];
+    if (activePartner) unfinished.push(`${activePartner.label || labelFor(activePartner.key)} ${activePartner.status === 'queued' ? 'queued' : `${secondsRemaining(activePartner)} sec`}`);
+    if (due.length) unfinished.push(`${due.length} reassessment${due.length === 1 ? '' : 's'} due`);
+    const status = condition?.title || (abnormal.length >= 3 ? 'Unstable' : abnormal.length ? 'Concerning' : 'Assessment in progress');
+    const latest = abnormal[0] ? `${abnormal[0].label || labelFor(abnormal[0].key)}: ${abnormal[0].value || abnormal[0].finding || 'Abnormal'}` : 'No abnormal findings documented';
+    return { status, latest, due, activePartner, unfinished };
+  }
+
+  function renderUnifiedClinicalBar() {
+    const summary = discoveredSummary();
+    if ($('clinicalBarStatus')) $('clinicalBarStatus').textContent = summary.status;
+    if ($('clinicalBarFinding')) $('clinicalBarFinding').textContent = summary.latest;
+    if ($('sheetContextStatus')) $('sheetContextStatus').textContent = summary.status;
+    if ($('sheetContextFinding')) $('sheetContextFinding').textContent = summary.latest;
+    const dueText = summary.due.length ? summary.due.map(labelFor).join(' • ') : 'None';
+    if ($('clinicalBarDue')) $('clinicalBarDue').textContent = dueText;
+    if ($('sheetContextDue')) $('sheetContextDue').textContent = dueText;
+    if ($('clinicalBarTasks')) $('clinicalBarTasks').textContent = summary.unfinished.length ? summary.unfinished.join(' • ') : 'No unfinished actions';
+    if ($('clinicalBarPartner')) $('clinicalBarPartner').textContent = summary.activePartner ? `${summary.activePartner.label || labelFor(summary.activePartner.key)} · ${summary.activePartner.status === 'queued' ? 'queued' : `${secondsRemaining(summary.activePartner)} sec remaining`}` : 'No active assignment';
+    const badge = $('clinicalBarBadge');
+    if (badge) { const count = summary.unfinished.length; badge.hidden = !count; badge.textContent = String(count); }
+  }
+
+  function enforceSingleOpen(containerSelector, detailsSelector) {
+    const container = document.querySelector(containerSelector);
+    if (!container || container.dataset.singleOpenBound === 'true') return;
+    container.dataset.singleOpenBound = 'true';
+    container.addEventListener('toggle', event => {
+      const opened = event.target;
+      if (!(opened instanceof HTMLDetailsElement) || !opened.open || !opened.matches(detailsSelector)) return;
+      container.querySelectorAll(detailsSelector).forEach(item => { if (item !== opened) item.open = false; });
+    }, true);
+  }
+
+  function filterTreatmentMenu(query = '') {
+    const term = String(query).trim().toLowerCase();
+    document.querySelectorAll('#treatmentTools .treatment-category').forEach(category => {
+      let visible = 0;
+      category.querySelectorAll('.treatment-card').forEach(card => {
+        const matches = !term || card.textContent.toLowerCase().includes(term);
+        card.hidden = !matches;
+        if (matches) visible += 1;
+      });
+      category.hidden = term ? visible === 0 : false;
+      if (term && visible) category.open = true;
+    });
   }
 
   function renderClinicalWorkspace() {
@@ -1362,6 +1421,7 @@
     buildTreatments();
     renderTransport();
     renderFindings();
+    renderUnifiedClinicalBar();
     updateCounts();
     renderProgress();
     $('dispatch').textContent = current?.dispatch || scenario.title;
@@ -1412,6 +1472,15 @@
   $('clinicalNextClose')?.addEventListener('click', hideClinicalNextActions);
   $('closeSheet').addEventListener('click', closeSheet);
   $('sheetBackdrop').addEventListener('click', closeSheet);
+  $('clinicalBarToggle')?.addEventListener('click', () => {
+    const drawer = $('clinicalTaskDrawer');
+    const expanded = drawer?.hidden !== false;
+    if (drawer) drawer.hidden = !expanded;
+    $('clinicalBarToggle')?.setAttribute('aria-expanded', String(expanded));
+    const chevron = $('clinicalBarToggle')?.querySelector('.clinical-bar-chevron');
+    if (chevron) chevron.textContent = expanded ? '⌄' : '⌃';
+  });
+  $('treatmentSearch')?.addEventListener('input', event => filterTreatmentMenu(event.target.value));
   $('recordFocus').addEventListener('click', finishFocus);
   $('cancelFocus').addEventListener('click', () => { $('assessmentFocus').hidden = true; activeFocus = null; });
   $('completeScenarioFromPatient').addEventListener('click', checkScenarioCompletion);
