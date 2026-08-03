@@ -80,7 +80,7 @@ assert(!visualPatientJs.includes('What you can say now'), 'Primary assessment mu
 assert(!visualPatientJs.includes("buildAssessmentCategory(box, 'vitals'"), 'Measurable vital signs must remain in the separate Vitals tab.');
 
 const launcher = read('vitals/scenario-launcher.js');
-includesAll(launcher, ['/vitals/visual-patient.html', '`Resume ${', 'function start(caseId)'], 'Scenario launcher');
+includesAll(launcher, ['/vitals/visual-patient.html', '`Continue ${', 'function startFresh(item, mode)', 'function openCaseDialog(item)', 'function clearActiveProgress()'], 'Scenario launcher');
 assert(!launcher.includes('openAssessmentWorkspace'), 'The launcher must not route into a competing guided-assessment home.');
 
 const netlifyConfig = read('netlify.toml');

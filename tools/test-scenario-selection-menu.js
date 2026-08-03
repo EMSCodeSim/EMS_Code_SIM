@@ -1,0 +1,11 @@
+const fs = require('fs');
+const assert = require('assert');
+const html = fs.readFileSync('vitals/scenario-launcher.html', 'utf8');
+const js = fs.readFileSync('vitals/scenario-launcher.js', 'utf8');
+assert(html.includes('id="caseGallery"'), 'Scenario launcher must show the patient-picture gallery');
+assert(html.includes('data-start-mode="learning"') && html.includes('data-start-mode="assessment"'), 'Mode choices must appear after selecting a scenario');
+assert(html.includes('id="continueSavedScenario"') && html.includes('id="resetSavedScenario"'), 'Saved scenarios must offer continue and reset controls');
+assert(!html.includes('id="assignmentBanner"') && !html.includes('Assigned scenario'), 'Assigned Scenario must be hidden from the launcher');
+assert(js.includes('openCaseDialog(item)') && js.includes('progress-badge'), 'Clicking a patient picture must open the scenario menu and mark active progress');
+assert(js.includes('clearActiveProgress') && js.includes('continueSavedScenario'), 'Launcher must support reset and resume behavior');
+console.log('Scenario selection picture, mode, continue, and reset checks passed.');
