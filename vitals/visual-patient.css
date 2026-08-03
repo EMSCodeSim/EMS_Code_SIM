@@ -531,3 +531,96 @@ body{margin:0;background:#07131f;color:var(--text);font-family:Inter,system-ui,-
 /* Scene size-up approach observations */
 .info-update-window.info-observation{border-left-color:#f1b64a;background:rgba(20,34,45,.96)}
 .scene-guide-active .info-update-window{z-index:8}
+
+/* Scenario controls and patient-photo phase launchers */
+.scenario-quick-controls{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:0 0 8px;
+}
+.scenario-quick-controls button{
+  min-height:38px;
+  border-radius:11px;
+  font-weight:850;
+  cursor:pointer;
+}
+.scenario-quick-end{
+  border:1px solid #39789e;
+  background:#173f5a;
+  color:#fff;
+}
+.scenario-quick-reset{
+  border:1px solid #a34b54;
+  background:#4b2024;
+  color:#fff;
+}
+.patient-phase-controls[hidden]{display:none}
+.patient-phase-controls{
+  position:absolute;
+  z-index:6;
+  left:10px;
+  right:10px;
+  bottom:10px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.patient-phase-controls button{
+  min-width:0;
+  min-height:58px;
+  border:1px solid rgba(140,207,255,.62);
+  border-radius:13px;
+  padding:8px 9px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  text-align:left;
+  background:rgba(7,24,39,.94);
+  color:#fff;
+  box-shadow:0 10px 24px rgba(0,0,0,.34);
+  backdrop-filter:blur(10px);
+  cursor:pointer;
+}
+.patient-phase-controls button:disabled{
+  opacity:.68;
+  cursor:not-allowed;
+}
+.patient-phase-controls button.complete{
+  border-color:rgba(96,213,157,.8);
+  background:rgba(9,55,42,.94);
+}
+.patient-phase-controls span{min-width:0}
+.patient-phase-controls small{
+  display:block;
+  color:#8ccfff;
+  font-size:.55rem;
+  font-weight:900;
+  letter-spacing:.07em;
+}
+.patient-phase-controls strong{
+  display:block;
+  margin-top:2px;
+  font-size:.8rem;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.patient-phase-controls em{
+  flex:0 0 auto;
+  color:#d7e7f0;
+  font-size:.6rem;
+  font-style:normal;
+  font-weight:850;
+  text-align:right;
+}
+body.scene-guide-active .patient-phase-controls{display:none}
+@media(max-width:430px){
+  .scenario-quick-controls{gap:6px;margin-bottom:6px}
+  .scenario-quick-controls button{min-height:36px;font-size:.72rem}
+  .patient-phase-controls{left:7px;right:7px;bottom:7px;gap:6px}
+  .patient-phase-controls button{min-height:54px;padding:7px}
+  .patient-phase-controls strong{font-size:.72rem}
+  .patient-phase-controls em{font-size:.55rem;max-width:68px}
+}

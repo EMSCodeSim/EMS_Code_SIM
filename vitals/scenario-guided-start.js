@@ -291,6 +291,27 @@
     return ['airway', 'breathing', 'perfusion'].every(key => Boolean(api?.getFinding?.(key, api?.active?.())));
   }
 
+  function updatePhaseControls() {
+    const sceneDone = Boolean(completedFinding);
+    const abcDone = primaryComplete();
+    const sceneButton = $('startSceneSizeupPhoto');
+    const abcButton = $('startInitialABCPhoto');
+    const sceneStatus = $('sceneSizeupPhotoStatus');
+    const abcStatus = $('initialABCPhotoStatus');
+    if (sceneButton) sceneButton.classList.toggle('complete', sceneDone);
+    if (abcButton) {
+      abcButton.disabled = !sceneDone;
+      abcButton.classList.toggle('complete', abcDone);
+    }
+    if (sceneStatus) sceneStatus.textContent = sceneDone ? 'Review' : 'Begin';
+    if (abcStatus) abcStatus.textContent = !sceneDone ? 'Complete scene first' : abcDone ? 'Review' : 'Begin';
+  }
+
+  function setPhaseControlsVisible(visible) {
+    const controls = $('patientPhaseControls');
+    if (controls) controls.hidden = !visible;
+  }
+
   function recordedPrimaryAnswers() {
     return primaryQuestions.map(question => {
       const finding = api?.getFinding?.(question.key, api?.active?.());
@@ -432,6 +453,7 @@
     else api?.setFinding?.('scene_size_up', value, meta);
     markScenarioStep();
     completedFinding = api?.getFinding?.('scene_size_up', api?.active?.()) || { value, ...meta };
+    updatePhaseControls();
     window.dispatchEvent(new CustomEvent('emscodesim:patient-record-updated'));
     startPrimary(false);
   }
@@ -468,6 +490,8 @@
   function showComplete() {
     reviewMode = false;
     $('sceneGuide').hidden = true;
+    setPhaseControlsVisible(true);
+    updatePhaseControls();
     if ($('sceneGuideComplete')) $('sceneGuideComplete').hidden = true;
     setLocked(false);
     clearGuideObservation();
@@ -478,6 +502,8 @@
   function pauseGuide() {
     reviewMode = false;
     $('sceneGuide').hidden = true;
+    setPhaseControlsVisible(true);
+    updatePhaseControls();
     setLocked(false);
     clearGuideObservation();
   }
@@ -496,6 +522,7 @@
     if (note) note.textContent = reviewMode
       ? 'Review shows your recorded choices without revealing expected answers. Full feedback remains in the final debrief.'
       : 'Use the photo, dispatch, and approach observations. “Not enough information at this time” is always available. Answers are reviewed during the final debrief.';
+    setPhaseControlsVisible(false);
     $('sceneGuide').hidden = false;
     setLocked(!reviewMode);
     render();
@@ -503,6 +530,10 @@
   }
 
   function startPrimary(review = false) {
+    if (!completedFinding) {
+      startGuide(false);
+      return;
+    }
     activeGuide = 'primary';
     const complete = primaryComplete();
     reviewMode = Boolean(review && complete);
@@ -516,6 +547,7 @@
     if (note) note.textContent = reviewMode
       ? 'Review shows your recorded ABC decisions without revealing the expected findings. Full feedback remains in the final debrief.'
       : 'Use the patient image and the neutral findings in the information window. Record an initial Airway, Breathing, and Circulation decision; “Not enough information at this time” remains available.';
+    setPhaseControlsVisible(false);
     $('sceneGuide').hidden = false;
     setLocked(!reviewMode);
     render();
@@ -530,6 +562,8 @@
   function showReady() {
     reviewMode = false;
     $('sceneGuide').hidden = true;
+    setPhaseControlsVisible(true);
+    updatePhaseControls();
     if ($('sceneGuideComplete')) $('sceneGuideComplete').hidden = true;
     setLocked(false);
     clearGuideObservation();
@@ -564,6 +598,9 @@
     $('reviewSceneGuide')?.addEventListener('click', () => startGuide(Boolean(completedFinding)));
     $('beginPrimaryAssessment')?.addEventListener('click', () => startPrimary(primaryComplete()));
     $('reviewCompletedSceneGuide')?.addEventListener('click', () => startGuide(true));
+    $('startSceneSizeupPhoto')?.addEventListener('click', () => startGuide(Boolean(completedFinding)));
+    $('startInitialABCPhoto')?.addEventListener('click', () => startPrimary(primaryComplete()));
+    updatePhaseControls();
     if (!completedFinding) startGuide(false);
     else if (!primaryComplete()) startPrimary(false);
     else showReady();

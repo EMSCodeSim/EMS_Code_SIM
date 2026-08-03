@@ -1722,6 +1722,12 @@
   $('scenarioControlBackdrop')?.addEventListener('click', closeScenarioControls);
   $('saveAndExitScenario')?.addEventListener('click', endScenario);
   $('resetAndRestartScenario')?.addEventListener('click', resetScenario);
+  $('endScenarioQuick')?.addEventListener('click', () => {
+    if (window.confirm('End this scenario and return to patient selection? Your current progress will remain saved.')) endScenario();
+  });
+  $('resetScenarioQuick')?.addEventListener('click', () => {
+    if (window.confirm('Reset this scenario? All findings, vitals, treatments, partner tasks, and log entries for this patient will be erased.')) resetScenario();
+  });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
     if (!$('assessmentFocus').hidden) { $('assessmentFocus').hidden = true; activeFocus = null; }

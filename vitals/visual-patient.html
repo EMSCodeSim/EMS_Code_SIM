@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=22">
-  <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=5">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=23">
+  <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=6">
 </head>
 <body>
   <main class="vp-shell">
@@ -19,6 +19,11 @@
       </div>
       <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong></div>
     </header>
+
+    <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
+      <button id="endScenarioQuick" class="scenario-quick-end" type="button">End scenario</button>
+      <button id="resetScenarioQuick" class="scenario-quick-reset" type="button">Reset scenario</button>
+    </div>
 
     <section class="patient-stage" aria-label="Patient view">
       <img id="patientImage" src="/vitals/assets/scenario-patient-adult-v3.png" alt="Patient awaiting assessment">
@@ -36,6 +41,17 @@
         </div>
       </aside>
       <div id="sceneClueLayer" class="scene-clue-layer" aria-hidden="true"></div>
+
+      <div id="patientPhaseControls" class="patient-phase-controls" aria-label="Initial patient assessment phases">
+        <button id="startSceneSizeupPhoto" type="button">
+          <span><small>STEP 1</small><strong>Scene size-up</strong></span>
+          <em id="sceneSizeupPhotoStatus">Begin</em>
+        </button>
+        <button id="startInitialABCPhoto" type="button" disabled>
+          <span><small>STEP 2</small><strong>Initial ABC</strong></span>
+          <em id="initialABCPhotoStatus">Complete scene first</em>
+        </button>
+      </div>
 
       <section id="sceneGuide" class="scene-guide scene-guide-photo" hidden aria-labelledby="sceneGuideTitle">
         <div class="scene-guide-head">
@@ -188,7 +204,7 @@
       <div class="scenario-progress-actions"><a id="handoffFromProgress" href="/vitals/pcr-handoff.html">PCR and handoff</a><button id="completeScenarioFromPatient" type="button">Check completion</button></div>
     </details>
     <button id="saveAndExitScenario" class="scenario-control-option end" type="button">
-      <strong>End and save</strong><span>Stop the call and return to scenario selection. Current progress remains available to resume.</span>
+      <strong>End scenario</strong><span>Stop the call and return to scenario selection. Current progress remains available to resume.</span>
     </button>
     <button id="resetAndRestartScenario" class="scenario-control-option reset" type="button">
       <strong>Reset and restart</strong><span>Erase findings, vitals, treatments, transport decisions, partner tasks, and the care log for this patient.</span>
@@ -202,7 +218,7 @@
   <script src="/vitals/scenario-runtime.js?v=2"></script>
   <script src="/vitals/scenario-tool-registry.js?v=3"></script>
   <script src="/vitals/scenario-phase-model.js?v=1"></script>
-  <script src="/vitals/visual-patient.js?v=28"></script>
-  <script src="/vitals/scenario-guided-start.js?v=6"></script>
+  <script src="/vitals/visual-patient.js?v=29"></script>
+  <script src="/vitals/scenario-guided-start.js?v=7"></script>
 </body>
 </html>
