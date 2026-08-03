@@ -4,15 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>Opening current patient scenario…</title>
+  <title>Opening EMSCodeSim Scenario Launcher…</title>
   <meta name="robots" content="noindex">
 </head>
 <body>
-  <p>Opening the current patient scenario… <a id="continueLink" href="/vitals/visual-patient.html">Continue</a></p>
+  <p>Opening the current scenario launcher… <a id="continueLink" href="/vitals/scenario-launcher.html?ui=1100">Continue</a></p>
   <script>
     (function(){
       var query = window.location.search ? window.location.search + '&ui=1100' : '?ui=1100';
-      var target = '/vitals/visual-patient.html' + query + window.location.hash;
+      var target = '/vitals/scenario-launcher.html' + query + window.location.hash;
       document.getElementById('continueLink').href = target;
       window.location.replace(target);
     }());

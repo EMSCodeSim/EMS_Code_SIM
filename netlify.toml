@@ -26,3 +26,15 @@
   status = 301
   force = true
 
+
+[[redirects]]
+  from = "/scenario-launcher.html"
+  to = "/vitals/scenario-launcher.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/scenario-launcher"
+  to = "/vitals/scenario-launcher.html"
+  status = 301
+  force = true

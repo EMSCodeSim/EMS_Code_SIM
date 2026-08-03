@@ -20,3 +20,26 @@
 
 /*.css
   Cache-Control: public, max-age=604800
+
+# Scenario UI changes should be visible immediately after deploy
+
+/vitals/scenario-launcher.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/vitals/scenario-launcher.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/vitals/scenario-launcher.css
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/vitals/visual-patient.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/vitals/visual-patient.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/vitals/visual-patient.css
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/vitals/scenario-interviews.js
+  Cache-Control: no-cache, no-store, must-revalidate

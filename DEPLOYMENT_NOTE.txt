@@ -1,0 +1,19 @@
+EMSCodeSim Scenario UI 1.10 Corrective Update
+
+Use ONE of these methods:
+
+1. Existing source project:
+   Extract EMSCodeSim-Scenario-UI-1.10-Flat-Patch.zip directly into the project root and allow every file to overwrite the existing file. The zip is intentionally flat and does not contain an enclosing project folder.
+
+2. Manual Netlify/site upload:
+   Upload EMSCodeSim-Scenario-UI-1.10-Ready-to-Deploy.zip as the deployment. It contains the already-built public site at the zip root; do not upload the source patch for a manual deployment.
+
+3. Replace the complete source project:
+   Extract EMSCodeSim-Scenario-UI-1.10-Full-Source.zip into a new empty folder, then deploy it with the normal npm build process.
+
+Confirm the correct update:
+- The launcher header displays "Scenario UI 1.10".
+- Tapping a scenario picture opens Learning Mode / Assessment Mode.
+- An active scenario offers Continue Progress or Reset Scenario.
+- The patient bottom bar reads Assessment | Vitals | History | Treatment | Log.
+- There is no Transport bottom button; Transport remains inside Treatment.
