@@ -1,0 +1,13 @@
+const fs = require('fs');
+const assert = require('assert');
+const read = file => fs.readFileSync(file, 'utf8');
+const launcher = read('vitals/scenario-launcher.html');
+const launcherJs = read('vitals/scenario-launcher.js');
+const patient = read('vitals/visual-patient.js');
+const guide = read('vitals/scenario-guided-start.js');
+assert(launcher.includes('value="learning"') && launcher.includes('value="assessment"'), 'Launcher must offer both modes');
+assert(launcherJs.includes('trainingMode') && launcherJs.includes('patientHome'), 'Launcher must persist and pass mode');
+assert(patient.includes("trainingMode() === 'assessment'"), 'Patient runtime must detect assessment mode');
+assert(patient.includes('feedback remain hidden until the final debrief'), 'Treatment feedback must be hidden in assessment mode');
+assert(guide.includes('Assessment Mode: correctness and rationales remain hidden until debrief.'), 'Scene guide must suppress coaching');
+console.log('Scenario learning/assessment mode checks passed.');
