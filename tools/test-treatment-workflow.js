@@ -1,0 +1,13 @@
+'use strict';
+const fs = require('fs');
+const assert = require('assert');
+const js = fs.readFileSync('vitals/visual-patient.js','utf8');
+const html = fs.readFileSync('vitals/visual-patient.html','utf8');
+assert(js.includes('TREATMENT_CATEGORY_META'), 'Treatment categories are missing.');
+['airway','breathing','circulation','medications','trauma'].forEach(key => assert(js.includes(`${key}: { label:`), `Missing ${key} treatment category.`));
+assert(js.includes('allTreatmentPlans()'), 'Treatment menu must expose a neutral cross-scenario option set.');
+assert(!js.includes('Options supported by abnormal findings appear first'), 'Treatment menu still guides by indication.');
+assert(!js.includes('<strong>Clinical check:</strong>'), 'Treatment cards still reveal clinical decisions.');
+assert(html.includes('clinicalNextTreatment') && html.includes('clinicalNextVitals') && html.includes('clinicalNextPatient'), 'Cross-tab next-action controls are missing.');
+assert(js.includes("openSheet('treatmentPanel')") && js.includes("openSheet('vitalsPanel')"), 'Cross-tab actions do not open the requested tabs.');
+console.log('Treatment workflow test passed.');
