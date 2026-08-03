@@ -411,12 +411,55 @@
     box.appendChild(article);
   }
 
+  const RAPID_PRIMARY_CHOICES = {
+    airway: [
+      { value:'Patent', label:'Patent', normality:'normal' },
+      { value:'Threatened or obstructed', label:'Threatened', normality:'not-normal' }
+    ],
+    breathing: [
+      { value:'Breathing adequate', label:'Adequate', normality:'normal' },
+      { value:'Breathing inadequate', label:'Inadequate', normality:'not-normal' }
+    ],
+    perfusion: [
+      { value:'Perfusion adequate; no major bleeding', label:'Adequate', normality:'normal' },
+      { value:'Poor perfusion or major bleeding', label:'Poor / bleeding', normality:'not-normal' }
+    ]
+  };
+
+  const EXPECTED_RAPID_PRIMARY = {
+    asthma: { airway:'normal', breathing:'not-normal', perfusion:'normal' },
+    stroke: { airway:'normal', breathing:'normal', perfusion:'normal' },
+    hypoglycemia: { airway:'normal', breathing:'normal', perfusion:'not-normal' },
+    trauma: { airway:'normal', breathing:'not-normal', perfusion:'not-normal' },
+    pediatric: { airway:'normal', breathing:'not-normal', perfusion:'normal' }
+  };
+
   function primaryStatus(key) {
     const state = assessmentState(key);
     if (state.code === 'reassessment-due') return `Treatment performed — ${state.label}`;
     if (['improved','unchanged','worsened'].includes(state.code)) return `${state.label}: ${state.finding?.value || state.finding?.finding || 'Reassessment recorded'}`;
     if (state.finding) return state.finding.value || state.finding.finding || 'Assessment recorded';
-    return assessmentMode() ? 'Not assessed' : (scenario.primary[key]?.initial || 'Unknown');
+    return 'Choose the rapid finding';
+  }
+
+  function recordRapidPrimary(key, choice) {
+    const expectedNormality = EXPECTED_RAPID_PRIMARY[id]?.[key] || '';
+    const accurate = !expectedNormality || choice.normality === expectedNormality;
+    saveFinding(key, choice.value, 'rapid-primary-assessment', {
+      label: labelFor(key),
+      finding: choice.value,
+      normality: choice.normality,
+      status: choice.normality === 'normal' ? 'normal' : 'abnormal',
+      learnerFinding: choice.value,
+      expectedNormality,
+      accurate,
+      correct: accurate,
+      reviewAtDebrief: true,
+      rapidAssessment: true
+    });
+    if (!assessmentMode()) {
+      toast(accurate ? `${labelFor(key)} rapid decision recorded` : `${labelFor(key)} recorded — confirm with the detailed assessment`);
+    }
   }
 
   function primaryToolLink(key) {
@@ -432,29 +475,31 @@
   }
 
   function buildPrimaryAssessmentCard(box) {
-    const completed = ['airway','breathing','perfusion'].filter(existing).length;
+    const primaryKeys = ['airway','breathing','perfusion'];
+    const completed = primaryKeys.filter(existing).length;
     const treatments = record()?.treatments || [];
     const article = document.createElement('article');
     article.className = `assessment-card sequence-card unified-primary-card${completed === 3 ? ' complete' : ''}`;
-    const rows = [
-      ['airway','Airway'],
-      ['breathing','Breathing'],
-      ['perfusion','Circulation']
-    ].map(([key, label]) => {
+    const rows = primaryKeys.map(key => {
+      const label = key === 'perfusion' ? 'Circulation' : labelFor(key);
       const action = primaryToolLink(key);
-      return `<div class="primary-assessment-row ${action.urgent && action.state.code === 'not-assessed' ? 'urgent' : ''} state-${action.state.code}">
-        <div><span>${label} <em class="clinical-state ${action.state.code}">${escapeHtml(action.state.label)}</em></span><strong>${escapeHtml(primaryStatus(key))}</strong></div>
-        <a href="${action.href}">${escapeHtml(action.label)}</a>
+      const choices = RAPID_PRIMARY_CHOICES[key] || [];
+      const quickChoices = action.state.code === 'not-assessed'
+        ? `<div class="rapid-primary-choices" role="group" aria-label="Rapid ${escapeHtml(label)} decision">${choices.map((choice, index) => `<button type="button" data-primary-key="${key}" data-primary-choice="${index}" class="${choice.normality === 'normal' ? 'rapid-normal' : 'rapid-abnormal'}">${escapeHtml(choice.label)}</button>`).join('')}</div>`
+        : `<a href="${action.href}">${escapeHtml(action.label)}</a>`;
+      return `<div class="primary-assessment-row rapid-primary-row ${action.urgent && action.state.code === 'not-assessed' ? 'urgent' : ''} state-${action.state.code}">
+        <div><span>${escapeHtml(label)} <em class="clinical-state ${action.state.code}">${escapeHtml(action.state.label)}</em></span><strong>${escapeHtml(primaryStatus(key))}</strong></div>
+        ${quickChoices}
       </div>`;
     }).join('');
     const threatStatus = treatments.length ? `${treatments.length} treatment${treatments.length === 1 ? '' : 's'} recorded` : 'Not yet addressed';
     article.innerHTML = `
       <span class="sequence-number">2</span>
       <div class="sequence-card-body">
-        <div class="primary-card-heading"><div>${modeTag('Required', 'required')}<h3>Primary Assessment</h3></div><span class="status-chip ${completed === 3 ? 'done' : ''}">${completed} of 3 assessed</span></div>
-        <p>Make the rapid life-threat decision here, then open only the area that needs closer assessment. There is no separate Rapid ABC step.</p>
+        <div class="primary-card-heading"><div>${modeTag('Required', 'required')}<h3>Rapid Primary Assessment</h3></div><span class="status-chip ${completed === 3 ? 'done' : ''}">${completed} of 3 assessed</span></div>
+        <p>Classify airway, breathing, and circulation here. Normal findings save immediately. Select the abnormal choice when a threat is present, then open the detailed assessment or treatment that appears.</p>
         <div class="primary-assessment-table" role="table" aria-label="Primary assessment status and actions">
-          <div class="primary-assessment-header" role="row"><span>Area</span><span>Current status</span><span>Action</span></div>
+          <div class="primary-assessment-header" role="row"><span>Area</span><span>Current status</span><span>Rapid decision</span></div>
           ${rows}
           <div class="primary-assessment-row immediate-threats">
             <div><span>Immediate threats</span><strong>${escapeHtml(threatStatus)}</strong></div>
@@ -462,6 +507,14 @@
           </div>
         </div>
       </div>`;
+    article.querySelectorAll('[data-primary-key][data-primary-choice]').forEach(button => {
+      button.addEventListener('click', () => {
+        const key = button.dataset.primaryKey;
+        const choice = RAPID_PRIMARY_CHOICES[key]?.[Number(button.dataset.primaryChoice)];
+        if (!choice) return;
+        recordRapidPrimary(key, choice);
+      });
+    });
     box.appendChild(article);
   }
 

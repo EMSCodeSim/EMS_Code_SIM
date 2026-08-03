@@ -66,3 +66,12 @@
 /* Dynamic patient condition states */
 .patient-image[data-condition-mode$="-worse"],.patient-image[data-condition-mode="critical"]{filter:saturate(.82) contrast(1.08)}
 .patient-image[data-condition-mode="critical"]{filter:saturate(.65) contrast(1.13) brightness(.88)}
+
+/* Inline rapid ABC decisions */
+.rapid-primary-row{grid-template-columns:minmax(0,1fr) minmax(180px,auto)}
+.rapid-primary-choices{display:grid;grid-template-columns:repeat(2,minmax(82px,1fr));gap:7px;min-width:190px}
+.rapid-primary-choices button{border:1px solid #39789e;border-radius:9px;padding:9px 7px;background:#173f5a;color:#fff;font-size:.68rem;font-weight:900;cursor:pointer}
+.rapid-primary-choices button.rapid-normal{border-color:#2e946d;background:#0d4938}
+.rapid-primary-choices button.rapid-abnormal{border-color:#c96b62;background:#74312d}
+.rapid-primary-choices button:focus-visible{outline:3px solid #9ed8ff;outline-offset:2px}
+@media(max-width:620px){.rapid-primary-row{grid-template-columns:1fr}.rapid-primary-choices{min-width:0;width:100%;margin-top:5px}.rapid-primary-choices button{min-height:42px}}
