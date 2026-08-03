@@ -1,0 +1,16 @@
+const fs = require('fs');
+const assert = require('assert');
+const html = fs.readFileSync('vitals/visual-patient.html','utf8');
+const js = fs.readFileSync('vitals/visual-patient.js','utf8');
+const definitions = fs.readFileSync('vitals/scenario-definitions.js','utf8');
+assert(!html.includes('data-panel="transportPanel"'), 'Transport bottom tab must be removed');
+assert(!html.includes('id="transportPanel"'), 'Standalone transport panel must be removed');
+assert(html.includes('id="treatmentPanel"'), 'Treatment panel missing');
+assert(js.includes('buildTransportTreatmentCard'), 'Transport treatment workflow missing');
+assert(js.includes('transportPriorityOptions'), 'Emergent/non-emergent transport choices missing');
+assert(js.includes('validateTreatmentDocumentation'), 'Treatment detail validation missing');
+assert(js.includes('treatment-entry-form'), 'Treatment entry form missing');
+assert(definitions.includes("name:'dose'"), 'Dose-required medication metadata missing');
+assert(definitions.includes("name:'route'"), 'Medication route metadata missing');
+assert(definitions.includes("name:'device'"), 'Treatment device metadata missing');
+console.log('Treatment decision workflow test passed: treatment details are required and transport is integrated into Treatment.');
