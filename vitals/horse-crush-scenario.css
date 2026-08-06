@@ -1,0 +1,51 @@
+.horse-arrival-card{margin:14px 16px 92px;padding:16px;border:1px solid #cbd5e1;border-radius:18px;background:#fff;box-shadow:0 10px 30px rgba(15,23,42,.08)}
+.horse-arrival-card.complete{border-color:#86efac;background:#f0fdf4}
+.horse-arrival-head,.horse-arrival-complete-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+.horse-arrival-head span,.horse-arrival-complete-head span{display:block;color:#0f766e;font-size:.74rem;font-weight:800;letter-spacing:.08em}
+.horse-arrival-head h2{margin:3px 0 0;font-size:1.22rem}
+.horse-arrival-head em{font-style:normal;font-size:.78rem;font-weight:700;color:#166534;background:#dcfce7;border-radius:999px;padding:6px 9px;white-space:nowrap}
+.horse-parking-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.horse-parking-options button{display:flex;flex-direction:column;gap:5px;text-align:left;padding:13px;border:1px solid #cbd5e1;border-radius:14px;background:#f8fafc;color:#0f172a}
+.horse-parking-options button:hover,.horse-parking-options button:focus-visible{border-color:#0f766e;background:#ecfeff}
+.horse-parking-options small{color:#64748b}
+.horse-parking-feedback{margin-top:12px;padding:11px;border-radius:12px;background:#eff6ff;color:#1e3a8a;font-weight:650}
+.horse-arrival-card blockquote{margin:10px 0;padding:12px 14px;border-left:4px solid #0f766e;background:#fff;border-radius:0 12px 12px 0;color:#0f172a}
+.horse-arrival-next,.horse-parking-summary{margin:8px 0 0}
+.patient-stage.horse-arrival-map #patientImage{object-fit:cover}
+
+.horse-assessment-section{margin-top:14px}
+.horse-assessment-section .assessment-section-title em{font-style:normal;font-weight:800;color:#0f766e}
+.horse-exam-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.horse-exam-button{display:flex;align-items:center;gap:10px;text-align:left;padding:12px;border:1px solid #cbd5e1;border-radius:14px;background:#fff}
+.horse-exam-button>span{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#e2e8f0;font-weight:900}
+.horse-exam-button.complete{border-color:#86efac;background:#f0fdf4}
+.horse-exam-button.complete>span{background:#16a34a;color:#fff}
+.horse-exam-button small{display:block;margin-top:3px;color:#64748b}
+.horse-exam-reveal{margin-top:12px;overflow:hidden;border:1px solid #cbd5e1;border-radius:16px;background:#fff}
+.horse-exam-reveal img{display:block;width:100%;max-height:330px;object-fit:cover}
+.horse-exam-content{padding:14px}
+.horse-exam-content>p{margin:0;color:#0f766e;font-size:.74rem;font-weight:900;letter-spacing:.08em}
+.horse-exam-content h3{margin:5px 0 7px;font-size:1.05rem}
+.horse-exam-content>span{display:block;color:#475569;line-height:1.5}
+.horse-exam-actions{display:flex;gap:9px;margin-top:12px}
+.horse-exam-actions button{flex:1;padding:10px;border-radius:12px;border:1px solid #cbd5e1;background:#fff;font-weight:800}
+.horse-exam-actions .horse-record-exam{border-color:#0f766e;background:#0f766e;color:#fff}
+
+.horse-movement-section{border-color:#0f766e!important}
+.horse-movement-body{padding:12px}
+.horse-movement-image{display:block;width:100%;max-height:330px;object-fit:cover;border-radius:14px;margin-bottom:14px}
+.horse-movement-form{display:grid;gap:13px}
+.horse-movement-form fieldset{display:grid;gap:8px;margin:0;padding:12px;border:1px solid #cbd5e1;border-radius:14px}
+.horse-movement-form legend{padding:0 6px;font-weight:900}
+.horse-movement-form fieldset label{display:flex;align-items:flex-start;gap:8px;padding:8px;border-radius:10px;background:#f8fafc}
+.horse-movement-form fieldset input{margin-top:3px}
+.horse-movement-note{display:grid;gap:6px;font-weight:800}
+.horse-movement-note textarea{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:10px;font:inherit}
+.horse-movement-feedback{margin:0;padding:11px;border-radius:12px;background:#eff6ff;color:#1e3a8a;font-weight:700}
+
+@media(max-width:640px){
+  .horse-arrival-card{margin:10px 10px 92px;padding:13px}
+  .horse-parking-options,.horse-exam-grid{grid-template-columns:1fr}
+  .horse-arrival-head{flex-direction:column}
+  .horse-exam-actions{flex-direction:column}
+}

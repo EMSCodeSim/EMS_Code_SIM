@@ -9,12 +9,14 @@
     blood_glucose: 'Blood glucose', temperature: 'Temperature', skin: 'Skin signs', mental_status: 'Mental status', pupils: 'Pupils',
     motor_sensory: 'Motor and sensory', sample: 'SAMPLE history', pain: 'Pain / OPQRST', chest_assessment: 'Chest assessment',
     trauma_assessment: 'Rapid trauma assessment', abdominal_assessment: 'Abdominal assessment', pediatric_assessment_triangle: 'Pediatric Assessment Triangle',
-    rule_of_nines: 'Rule of Nines'
+    rule_of_nines: 'Rule of Nines', arrival_parking: 'Ambulance parking decision', bls_handoff: 'BLS engine handoff',
+    neck_back: 'Neck and back exam', pelvis_hip: 'Pelvis and hip exam', left_leg: 'Left-leg exam', distal_csm: 'Distal circulation, sensation, and movement',
+    movement_method: 'Movement method', leg_stabilization: 'Leg stabilization plan', movement_plan: 'Movement and packaging plan'
   };
 
   const PRIMARY_KEYS = ['airway','breathing','perfusion'];
   const VITAL_KEYS = ['respirations','breath_sounds','spo2','pulse','blood_pressure','blood_glucose','temperature','skin','mental_status','pupils'];
-  const FOCUSED_KEYS = ['pediatric_assessment_triangle','motor_sensory','sample','pain','chest_assessment','trauma_assessment','abdominal_assessment','rule_of_nines'];
+  const FOCUSED_KEYS = ['pediatric_assessment_triangle','motor_sensory','sample','pain','chest_assessment','trauma_assessment','abdominal_assessment','rule_of_nines','neck_back','pelvis_hip','left_leg','distal_csm'];
 
   function planFor(caseId) { return PLANS[caseId] || PLANS.asthma; }
   function has(record, key) { return Boolean(record?.findings?.[key]); }

@@ -119,6 +119,34 @@
       rationales: {
         ppe: 'Standard precautions are chosen before contact, with respiratory protection based on symptoms and exposure risk.', safe: 'The scene must be checked for hazards while preserving a calm approach to the child and caregiver.', patients: 'One pediatric patient is described; verify that no sibling, caregiver, or other person also needs assessment.', noi: 'Poor interaction, increased work of breathing, and fever point to a pediatric respiratory or infectious illness.', resources: 'Children can compensate and then deteriorate rapidly. Early ALS and transport planning are appropriate.', spine: 'No trauma mechanism or spinal complaint is present in the initial information.', impression: 'The first look should recognize a sick child before upsetting the child with hands-on assessment.', avpu: 'Poor interaction with response to the caregiver or crew is represented as Verbal in this guided case.', priority: 'A sick child with increased work of breathing is high priority and needs efficient assessment and transport.'
       }
+    },
+    horse_crush: {
+      ppe: 'medical', safe: 'medical', patients: 0, noi: 2, resources: 0, spine: 0, impression: 0, avpu: 0, priority: 1,
+      noiOptions: ['Medical illness without trauma', 'Acute neurologic emergency', 'Significant blunt trauma from large-animal compression and a fall', 'Minor isolated ankle injury'],
+      resourceOptions: ['Use the BLS engine crew for assessment, leg support, and a coordinated low-movement transfer; request more help if access or lifting requires it', 'Dismiss the engine before examining the patient', 'Move the patient immediately before planning', 'Wait until arrival at the hospital to decide how to move the patient'],
+      impressionOptions: ['Alert trauma patient with severe isolated left-hip pain and a potentially significant occult injury', 'Unresponsive patient in respiratory arrest', 'Stable patient who can safely walk to the ambulance', 'Patient with only a superficial abrasion'],
+      observations: {
+        ppe: 'The patient is outside the south barn on packed dirt. The horses have been secured and the BLS engine crew reports no remaining animal hazard.',
+        safe: 'The engine crew confirms the horses are secured, the patient area is clear, and the ambulance can approach without entering an animal enclosure.',
+        patients: 'One patient is visible on the ground outside the south barn. The BLS crew reports no other injuries.',
+        noi: 'The BLS handoff reports that the patient was compressed between two horses and knocked to the ground from standing.',
+        resources: 'A staffed BLS engine is already present. The patient is on dirt and cannot lower the left leg without severe pain.',
+        spine: 'The patient denies head strike, loss of consciousness, neck pain, and back pain, but the significant mechanism still requires a careful spinal and neurologic assessment before movement.',
+        impression: 'The patient is alert, speaks clearly, and guards the left hip with the knee flexed. No major bleeding or respiratory distress is obvious.',
+        avpu: 'The patient watches you approach, answers questions clearly, and is oriented to person, place, time, and event.',
+        priority: 'The patient is currently hemodynamically stable, but the large-animal compression mechanism, age, severe pain, and inability to move the leg make the call time-sensitive.'
+      },
+      rationales: {
+        ppe: 'Standard precautions remain appropriate. Scene control must also include confirmation that all large animals are secured.',
+        safe: 'The scene is considered safe only after the horses are secured, access is controlled, and the ambulance is parked without blocking other resources or entering an unsafe enclosure.',
+        patients: 'The handoff and scene scan identify one patient, while the crew continues to confirm that no handler or bystander was also injured.',
+        noi: 'Compression between two horses followed by a fall is a significant blunt mechanism, not merely a routine ground-level fall.',
+        resources: 'The existing engine crew is valuable for maintaining leg support, separating and placing a scoop, and coordinating the lift.',
+        spine: 'A careful exam is needed before movement. Automatic long-board use is not required when the patient is reliable and the exam is reassuring, but unnecessary motion should still be minimized.',
+        impression: 'The first impression should recognize a stable-appearing patient who may still have a significant pelvic, acetabular, proximal femur, or hip injury.',
+        avpu: 'The patient is alert and oriented, supporting an AVPU classification of Alert.',
+        priority: 'Stable vital signs do not remove the need for efficient assessment, analgesia planning, careful packaging, and transport.'
+      }
     }
   };
 
@@ -186,6 +214,19 @@
         airway: 'Vocalization and the absence of obstruction signs support a patent airway during the initial check.',
         breathing: 'Retractions, nasal flaring, and fatigue indicate inadequate breathing despite continued chest rise.',
         perfusion: 'Warm skin, appropriate color, a strong central pulse, and no major bleeding support adequate initial circulation.'
+      }
+    },
+    horse_crush: {
+      expected: { airway: 'normal', breathing: 'normal', perfusion: 'normal' },
+      observations: {
+        airway: 'The patient answers in full sentences. No snoring, gurgling, stridor, blood, vomit, or visible obstruction is present.',
+        breathing: 'Chest rise is symmetric with normal effort. The patient denies shortness of breath and can speak without pausing.',
+        perfusion: 'No major bleeding is visible. Skin is warm and dry, and a regular radial pulse is readily palpable.'
+      },
+      rationales: {
+        airway: 'Clear speech and the absence of obstruction signs support a patent airway.',
+        breathing: 'Symmetric chest rise, normal effort, and full sentences support adequate breathing during the rapid check.',
+        perfusion: 'Warm dry skin, a palpable regular pulse, and no major bleeding support adequate initial circulation, while internal injury still requires consideration.'
       }
     }
   };

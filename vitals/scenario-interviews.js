@@ -125,6 +125,33 @@
         {id:'urine_output',category:'events',label:'Has the child been urinating normally?',prompt:'Has the child had normal wet diapers or urination?',response:'“Fewer wet diapers today.”',keywords:['urine','urinating','wet diaper','pee']},
         {id:'sick_contacts',category:'events',label:'Any sick contacts?',prompt:'Has anyone around the child been sick?',response:'“A sibling had a cold last week.”',keywords:['sick contact','anyone sick','sibling','daycare']}
       ]
+    },
+    horse_crush: {
+      responder:'Patient and BLS engine crew',
+      communication:'The patient is alert and oriented, answers clearly, and avoids moving the left leg. The BLS crew can confirm the mechanism and that no movement has occurred.',
+      opening:'The BLS lead gives a brief handoff: “She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented times four and complains of left-hip pain. We have not moved her.”',
+      fallback:'The patient says, “I’m not sure. Please do not move my left leg.”',
+      repeatPrefix:'The patient says, “Like I said—',
+      sampleRequired:['symptoms','allergies','medications','medical_history','last_intake','events'],
+      opqrstRequired:['onset','provocation','quality','radiation','severity','time'],
+      opqrstSummary:'OPQRST obtained: severe left-hip pain began immediately when the patient was compressed between two horses and fell, becomes much worse with any attempt to lower or straighten the leg, feels deep and sharp, radiates down the left leg, is rated 8/10, and has remained constant since the event.',
+      questions:[
+        {id:'chief_complaint',category:'current',label:'What hurts the most?',prompt:'What hurts the most right now?',response:'“My left hip. Please do not make me lower this leg.”',keywords:['hurt','chief complaint','pain','where']},
+        {id:'symptoms',category:'current',label:'What symptoms are you having?',prompt:'What symptoms are you having?',response:'“Severe left-hip pain that runs down my leg. I do not have chest pain, shortness of breath, stomach pain, neck pain, or back pain.”',keywords:['symptom','chest pain','shortness','abdomen','neck','back']},
+        {id:'onset',category:'opqrst',label:'When did the pain begin?',prompt:'When did the pain begin?',response:'“Immediately when the horse hit me and I fell.”',keywords:['when','start','begin','onset']},
+        {id:'provocation',category:'opqrst',label:'What makes the pain worse or better?',prompt:'What makes the pain worse or better?',response:'“Trying to straighten or lower the leg makes it much worse. Keeping the knee bent and still is the only thing that helps.”',keywords:['better','worse','provocation','movement','straighten','lower']},
+        {id:'quality',category:'opqrst',label:'What does the pain feel like?',prompt:'What does the pain feel like?',response:'“Deep and sharp inside my hip.”',keywords:['describe','quality','feel like','sharp','deep']},
+        {id:'radiation',category:'opqrst',label:'Does the pain travel?',prompt:'Does the pain move or travel anywhere?',response:'“It runs from my left hip down the leg.”',keywords:['radiate','radiation','travel','down leg']},
+        {id:'severity',category:'opqrst',label:'How severe is the pain?',prompt:'How severe is the pain from 0 to 10?',response:'“An eight while I stay still. It is worse if the leg moves.”',keywords:['severe','severity','scale','0 to 10','pain number']},
+        {id:'time',category:'opqrst',label:'Has the pain changed?',prompt:'Has the pain changed since the injury?',response:'“It has stayed constant. It settles a little when nobody moves the leg.”',keywords:['time','changed','constant','intermittent']},
+        {id:'allergies',category:'background',label:'Do you have medication allergies?',prompt:'Do you have any medication allergies?',response:'“No medication allergies that I know of.”',keywords:['allergy','allergies','allergic']},
+        {id:'medications',category:'background',label:'What medications do you take?',prompt:'What medications do you take?',response:'“Wellbutrin.”',keywords:['medication','medicine','meds','wellbutrin','blood thinner','anticoagulant']},
+        {id:'medical_history',category:'background',label:'What medical problems do you have?',prompt:'What medical problems do you have?',response:'“Nothing that should affect this. I do not take a blood thinner.”',keywords:['history','medical problem','diagnosed','past medical','blood thinner']},
+        {id:'last_intake',category:'events',label:'When did you last eat or drink?',prompt:'When did you last eat or drink?',response:'“I ate earlier today.”',keywords:['eat','drink','last oral','intake','meal']},
+        {id:'events',category:'events',label:'Tell me exactly what happened.',prompt:'Tell me exactly what happened.',response:'“One horse got spooked and ran into me. I was crushed between the two horses and knocked down from standing. Neither horse stepped on me.”',keywords:['happened','event','horse','crushed','mechanism','fell']},
+        {id:'loss_consciousness',category:'events',label:'Did you hit your head or lose consciousness?',prompt:'Did you hit your head or lose consciousness?',response:'“No. I remember everything, and I did not hit my head.”',keywords:['loss consciousness','black out','passed out','head strike','remember']},
+        {id:'position',category:'events',label:'Can you move or straighten the leg?',prompt:'Can you move or straighten the left leg?',response:'“I can move my foot, but I cannot straighten or lower the leg because the hip pain becomes severe.”',keywords:['move leg','straighten','lower','foot movement','position']}
+      ]
     }
   };
 

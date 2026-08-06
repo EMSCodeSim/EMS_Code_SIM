@@ -29,6 +29,12 @@
       id: 'pediatric', title: 'Sick Pediatric Patient', patient: '3-year-old child',
       dispatch: 'Fever, poor interaction, and increased work of breathing.', scene: 'Home; caregiver present',
       goal: 'Use the pediatric first look, support ABCs, and reassess response.'
+    },
+    horse_crush: {
+      id: 'horse_crush', title: 'Horse-Crush Hip Injury', patient: '64-year-old adult',
+      dispatch: 'Reported fall at a horse facility; a BLS engine crew is already on scene.',
+      scene: 'Outside the south barn; scene reported safe; patient remains on the ground',
+      goal: 'Perform a deliberate trauma assessment, protect the injured leg, plan movement, treat pain, and reassess.'
     }
   });
 
@@ -142,6 +148,28 @@
         example: 'SAMPLE obtained from caregiver: child has had cough and fever for 2 days with decreased activity and intake; breathing worsened overnight and interaction declined this morning. NKDA. Acetaminophen was given approximately 4 hours ago; no daily medications. Born at term, immunizations current, and no chronic cardiopulmonary history. Last intake was a small amount of juice about 3 hours ago. Airway, breathing, hydration, temperature, and perfusion assessed with supportive care and prompt transport.'
       },
       caseIndex: { airway: 3, breathing: 3, sample: 0, chest: 0, perfusion: 5, trauma: 0, abdominal: 5, motor_sensory: 2, pat: 2 }
+    },
+    horse_crush: {
+      patient: '64-year-old adult',
+      dispatch: 'Reported fall at a horse facility; a BLS engine crew is already on scene.',
+      scene: 'Outside the south barn; scene reported safe; patient remains on the ground',
+      vitals: {
+        blood_pressure: '130/90', systolic: 130, diastolic: 90, pulse: 75, respirations: 16, spo2: 98,
+        blood_glucose: 104, temperature: '98.6°F', avpu: 'A', mental_status: 'A&O x4',
+        skin: 'Warm, pink, and dry',
+        pupils: 'Pupils equal, round, and reactive to light at 3 mm bilaterally; gaze midline; tracking smooth',
+        pupil_equal: true, pupil_left_reactive: true, pupil_right_reactive: true, pupil_gaze: 'midline', pupil_tracking: 'smooth',
+        breath_sounds: 'Clear and equal bilaterally', breath_sound_type: 'normal'
+      },
+      sample: {
+        title: 'Horse-Crush Hip Injury',
+        description: 'A 64-year-old was compressed between two horses, fell from standing, and remains on the dirt outside the south barn with severe left-hip pain.',
+        finding: 'Significant blunt mechanism with isolated severe left-hip pain and inability to lower the leg',
+        detail: 'S: Left-hip pain rated 8/10, radiating down the left leg, and sharply worse with movement; unable to straighten or lower the left leg. Denies head strike, loss of consciousness, neck pain, back pain, chest pain, shortness of breath, or abdominal pain. A: No medication allergy is reported during the scenario interview. M: Wellbutrin. P: No additional significant history is initially reported. L: Ate earlier today. E: A second horse became spooked and compressed the patient between two horses, knocking her to the ground; she denies being stepped on.',
+        normality: 'not-normal', priority: 'events', action: 'supportive',
+        example: 'SAMPLE obtained: patient reports severe left-hip pain after being compressed between two horses and falling from standing. Denies head strike, loss of consciousness, neck or back pain, chest pain, dyspnea, and abdominal pain. Wellbutrin is the only reported medication. The affected leg remains in a flexed position of comfort. A coordinated low-movement transfer plan, pain management, and serial distal neurovascular checks are indicated.'
+      },
+      caseIndex: { airway: 0, breathing: 0, sample: 0, chest: 0, perfusion: 0, trauma: 5, abdominal: 0, motor_sensory: 5, pat: 0 }
     }
   };
 
@@ -175,6 +203,12 @@
       appropriateFindings: ['temperature','blood_pressure','mental_status','sample'],
       optionalFindings: ['pupils','blood_glucose','pain'],
       notIndicatedFindings: ['motor_sensory','chest_assessment','abdominal_assessment','trauma_assessment','rule_of_nines']
+    },
+    horse_crush: {
+      requiredFindings: ['arrival_parking','scene_size_up','airway','breathing','perfusion','mental_status','blood_pressure','pulse','respirations','spo2','neck_back','chest_assessment','abdominal_assessment','pelvis_hip','left_leg','distal_csm','pain'],
+      appropriateFindings: ['pupils','skin','sample','trauma_assessment'],
+      optionalFindings: ['blood_glucose','temperature','breath_sounds'],
+      notIndicatedFindings: ['pediatric_assessment_triangle','rule_of_nines']
     }
   });
 
@@ -248,6 +282,20 @@
         perfusion: { initial: 'Circulation present; status unknown', action: 'Assess', urgent: false }
       },
       treatments: ['Position with caregiver when possible','Oxygen or ventilation support based on adequacy','Supportive fever and perfusion care']
+    },
+    horse_crush: {
+      title: 'Horse-Crush Hip Injury',
+      visible: 'Alert patient supine on dirt outside the south barn with the left knee flexed',
+      image: '/vitals/assets/horse-crush/patient-initial.webp',
+      imageMode: 'horse-crush',
+      sceneClues: ['BLS engine crew already on scene', 'Patient remains on the ground', 'Left leg held in a flexed position of comfort'],
+      recommended: ['airway','breathing','perfusion','mental_status','neck_back','chest_assessment','abdominal_assessment','pelvis_hip','left_leg','distal_csm','blood_pressure','pulse','respirations','spo2','pain','sample'],
+      primary: {
+        airway: { initial: 'Patient is speaking; patency still must be confirmed', action: 'Assess', urgent: false },
+        breathing: { initial: 'Breathing is visible; adequacy still must be confirmed', action: 'Assess', urgent: false },
+        perfusion: { initial: 'No major bleeding is visible', action: 'Assess', urgent: false }
+      },
+      treatments: ['Manual support of the injured leg','Protocol-directed pain management','Coordinated scoop transfer in position of comfort','Padding and serial distal CSM reassessment']
     }
   };
 
@@ -271,7 +319,8 @@
     pediatric: [
       { id:'fatigue', after:180, title:'Pediatric respiratory fatigue', text:'Retractions continue, interaction is poorer, and the child is becoming less active.', targets:['pediatric_assessment_triangle','breathing','respirations','spo2'], blockedBy:['oxygen','caregiver_position'], imageMode:'pediatric-worse' },
       { id:'failure', after:360, title:'Respiratory effort is failing', text:'The child is now minimally responsive with weak respiratory effort and poor air movement.', targets:['airway','breathing','mental_status','respirations','spo2'], blockedBy:['bvm','oxygen'], imageMode:'critical' }
-    ]
+    ],
+    horse_crush: []
   };
 
   const TREATMENT_PLANS = {
@@ -307,6 +356,14 @@
       { id:'oxygen', label:'Provide tolerated oxygen', summary:'Choose the least upsetting method that still supports oxygenation.', evidence:['breathing','spo2'], targets:['breathing','respirations','spo2'], response:'Oxygen is introduced with caregiver assistance. The child tolerates the device and oxygenation begins to improve.', effective:'appropriate-effective' },
       { id:'bvm', label:'Begin assisted ventilation', summary:'Use when respiratory effort or air movement becomes inadequate.', evidence:['breathing'], targets:['airway','breathing','respirations','spo2'], response:'Assisted ventilation produces visible chest rise and improved air movement.', requireText:/inadequate|poor air movement|fatigue|apne|absent/i },
       { id:'supportive_fever', label:'Provide supportive fever care', summary:'Avoid aggressive cooling; prevent heat loss and continue perfusion assessment.', evidence:['temperature','skin','perfusion'], targets:['temperature','skin','perfusion'], response:'Supportive care is provided while the child is reassessed for respiratory and perfusion changes.', effective:'appropriate-effective' }
+    ],
+    horse_crush: [
+      { id:'manual_leg_support', label:'Assign manual support to the injured leg', summary:'Keep one rescuer focused on supporting the affected leg and minimizing movement during assessment and transfer.', category:'trauma', evidence:['left_leg','pelvis_hip'], targets:['left_leg','pain','distal_csm'], response:'The patient reports less movement-related pain while the leg is continuously supported.', effective:'appropriate-effective' },
+      { id:'pain_control', label:'Provide protocol-directed pain management', summary:'Use nonpharmacologic measures and, when authorized, titrated analgesia with monitoring and reassessment.', category:'medications', evidence:['pain','left_leg'], targets:['pain','mental_status','respirations','blood_pressure'], response:'The patient reports partial improvement at rest, but movement still causes significant pain.', effective:'appropriate-effective', documentation:[{name:'method',label:'Pain-control method',type:'select',required:true,options:['Positioning and support only','Protocol-authorized analgesic','Medical-control-directed analgesia']},{name:'medication',label:'Medication, if used',placeholder:'Medication or nonpharmacologic only'},{name:'dose',label:'Dose, if used',placeholder:'Dose and units'},{name:'route',label:'Route, if used',placeholder:'IV, IN, IM, or other'}] },
+      { id:'scoop_position_comfort', label:'Use a scoop stretcher in position of comfort', summary:'Separate and place the scoop with the least possible patient movement while maintaining the flexed leg position.', category:'trauma', evidence:['neck_back','pelvis_hip','left_leg','distal_csm'], targets:['left_leg','pain','distal_csm'], response:'The patient is transferred onto the scoop with the affected leg maintained in the position of comfort.', effective:'appropriate-effective' },
+      { id:'blanket_support', label:'Pad and secure the leg with blankets', summary:'Use folded blankets and gentle stabilization to prevent the leg from dropping or rotating during transport.', category:'trauma', evidence:['left_leg','distal_csm'], targets:['left_leg','pain','distal_csm'], response:'The leg remains supported. Pain is controlled while the extremity stays still.', effective:'appropriate-effective' },
+      { id:'reassess_distal_csm', label:'Reassess distal circulation, sensation, and movement', summary:'Repeat distal neurovascular checks after every movement, packaging step, and splinting decision.', category:'trauma', evidence:['distal_csm'], targets:['distal_csm'], response:'Distal pulse, sensation, and foot movement remain intact after packaging.', effective:'appropriate-effective' },
+      { id:'trauma_transport', label:'Initiate transport after safe packaging', summary:'Select destination and transport priority from the mechanism, exam, vitals, age, pain, and local trauma criteria.', category:'transport', evidence:['blood_pressure','pulse','respirations','pelvis_hip','left_leg'], targets:['pain','distal_csm'], response:'The patient is moved to the ambulance with the leg supported and serial reassessment planned.', effective:'appropriate-effective' }
     ]
   };
 

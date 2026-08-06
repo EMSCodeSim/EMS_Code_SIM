@@ -65,7 +65,8 @@
     stroke: { impressions:['Acute stroke syndrome','Hypoglycemia mimicking stroke','Nonspecific weakness'], priorities:['Routine transport','Emergent stroke transport','Remain on scene for complete exam'], destinations:['Stroke-capable center','Closest emergency department','Trauma center'], bestPriority:'Emergent stroke transport', bestDestination:'Stroke-capable center' },
     hypoglycemia: { impressions:['Symptomatic hypoglycemia','Acute stroke','Medication overdose'], priorities:['Routine transport after improvement','Prompt transport / ALS intercept','No transport needed'], destinations:['Closest appropriate emergency department','Stroke-capable center','Trauma center'], bestPriority:'Prompt transport / ALS intercept', bestDestination:'Closest appropriate emergency department' },
     trauma: { impressions:['Blunt multisystem trauma with shock','Isolated chest-wall pain','Minor collision without injury'], priorities:['Routine transport','Emergent trauma transport','Remain on scene for complete history'], destinations:['Trauma center','Closest emergency department','Stroke-capable center'], bestPriority:'Emergent trauma transport', bestDestination:'Trauma center' },
-    pediatric: { impressions:['Pediatric respiratory distress','Simple febrile illness','Foreign-body airway obstruction'], priorities:['Routine transport','Prompt pediatric transport','Emergent transport / ALS intercept'], destinations:['Pediatric-capable emergency department','Closest appropriate emergency department'], bestPriority:'Prompt pediatric transport', bestDestination:'Pediatric-capable emergency department' }
+    pediatric: { impressions:['Pediatric respiratory distress','Simple febrile illness','Foreign-body airway obstruction'], priorities:['Routine transport','Prompt pediatric transport','Emergent transport / ALS intercept'], destinations:['Pediatric-capable emergency department','Closest appropriate emergency department'], bestPriority:'Prompt pediatric transport', bestDestination:'Pediatric-capable emergency department' },
+    horse_crush: { impressions:['Significant blunt hip/pelvic-region injury','Isolated soft-tissue hip injury','Occult proximal femur or acetabular injury'], priorities:['Non-emergent transport','Prompt trauma transport','Emergent trauma transport'], destinations:['Closest appropriate emergency department','Trauma center'], bestPriority:'Prompt trauma transport', bestDestination:'Closest appropriate emergency department' }
   };
 
   let partnerInterval = 0;
@@ -695,6 +696,7 @@
     const immediateList = immediate.querySelector('.assessment-immediate-list');
     buildSceneSizeUpCard(immediateList);
     buildPrimaryAssessmentCard(immediateList);
+    window.EMSCodeSimHorseCrush?.renderAssessmentSection?.(box);
 
     const unique = new Map();
     (registry?.assessmentTools || []).forEach(tool => {
@@ -918,7 +920,7 @@
     if (['breathing','breath_sounds','respirations','spo2','pediatric_assessment_triangle'].includes(key)) return 'breathing';
     if (['perfusion','pulse','blood_pressure','skin'].includes(key)) return 'circulation';
     if (['blood_glucose','mental_status'].includes(key)) return 'medications';
-    if (['trauma_assessment','chest_assessment','abdominal_assessment','motor_sensory'].includes(key)) return 'trauma';
+    if (['trauma_assessment','chest_assessment','abdominal_assessment','motor_sensory','neck_back','pelvis_hip','left_leg','distal_csm','movement_plan'].includes(key)) return 'trauma';
     return 'support';
   }
 
@@ -1225,6 +1227,7 @@
     intro.className = 'treatment-neutral-intro';
     intro.innerHTML = `<strong>Select care by category.</strong><span>All common EMT-level choices remain available. Local scope, protocol, medication authorization, and medical direction control what may actually be performed. Treatment feedback remains hidden until the final debrief.</span>`;
     box.appendChild(intro);
+    window.EMSCodeSimHorseCrush?.renderMovementSection?.(box);
 
     const categories = new Map();
     allTreatmentPlans().forEach(plan => {
@@ -1771,7 +1774,8 @@
 
   function renderDataSignatures(current = record() || {}) {
     const findings = current.findings || {};
-    const assessmentKeys = (registry?.assessmentTools || []).map(tool => tool.key);
+    const customAssessmentKeys = id === 'horse_crush' ? ['arrival_parking','bls_handoff','neck_back','pelvis_hip','left_leg','distal_csm','movement_plan'] : [];
+    const assessmentKeys = [...new Set([...(registry?.assessmentTools || []).map(tool => tool.key), ...customAssessmentKeys])];
     const vitalKeys = (registry?.vitalTools || []).filter(tool => MEASURABLE_TOOL_KEYS.has(tool.key)).map(tool => tool.key);
     const partnerTasks = session?.readPartnerTasks?.(id) || {};
     const select = keys => Object.fromEntries(keys.map(key => [key, findings[key] || null]));
@@ -1848,6 +1852,7 @@
   $('guidedSampleLink').href = toolUrl('/vitals/sample-history.html', 'Patient', 'sample');
   $('guidedOpqrstLink').href = toolUrl('/vitals/pain-opqrst.html', 'Patient', 'pain');
   refreshFromRecord();
+  window.EMSCodeSimHorseCrush?.init?.();
 
   document.querySelectorAll('[data-log-filter]').forEach(button => button.addEventListener('click', () => {
     findingFilter = button.dataset.logFilter || 'all';
