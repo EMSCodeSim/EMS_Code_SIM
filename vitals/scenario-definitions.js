@@ -216,7 +216,7 @@
     asthma: {
       title: 'Respiratory Distress',
       visible: 'Sitting upright, anxious, speaking in short sentences',
-      image: '/vitals/assets/scenario-patient-adult-v3.png',
+      image: '/vitals/assets/scenario-patient-adult-v3.webp',
       imageMode: 'respiratory',
       sceneClues: ['Upright position', 'Short sentences', 'Rescue inhaler nearby'],
       recommended: ['airway','breathing','perfusion','respirations','breath_sounds','spo2','skin','pulse','blood_pressure','sample'],
@@ -230,7 +230,7 @@
     stroke: {
       title: 'Possible Acute Stroke',
       visible: 'Awake with abnormal speech and right-sided weakness',
-      image: '/vitals/assets/scenario-patient-adult-v3.png',
+      image: '/vitals/assets/scenario-patient-adult-v3.webp',
       imageMode: 'stroke',
       sceneClues: ['Abnormal speech', 'Right arm weakness', 'Family reports sudden onset'],
       recommended: ['airway','breathing','perfusion','mental_status','pupils','motor_sensory','blood_glucose','blood_pressure','pulse','respirations','spo2','sample'],
@@ -244,7 +244,7 @@
     hypoglycemia: {
       title: 'Altered Mental Status',
       visible: 'Confused, sweaty, and slow to follow commands',
-      image: '/vitals/assets/scenario-patient-adult-v3.png',
+      image: '/vitals/assets/scenario-patient-adult-v3.webp',
       imageMode: 'hypoglycemia',
       sceneClues: ['Diaphoretic', 'Confused behavior', 'Diabetic supplies nearby'],
       recommended: ['airway','breathing','perfusion','mental_status','pupils','motor_sensory','blood_glucose','skin','pulse','blood_pressure','respirations','spo2','sample'],
@@ -258,7 +258,7 @@
     trauma: {
       title: 'Blunt Trauma',
       visible: 'Pale patient with guarded breathing after a collision',
-      image: '/vitals/assets/scenario-patient-adult-v3.png',
+      image: '/vitals/assets/scenario-patient-adult-v3.webp',
       imageMode: 'trauma',
       sceneClues: ['Collision mechanism', 'Guarded chest', 'Pale appearance'],
       recommended: ['airway','breathing','perfusion','respirations','breath_sounds','spo2','chest_assessment','trauma_assessment','abdominal_assessment','skin','blood_pressure','pulse'],
@@ -272,7 +272,7 @@
     pediatric: {
       title: 'Sick Pediatric Patient',
       visible: 'Poor interaction with increased work of breathing',
-      image: '/vitals/assets/scenario-patient-pediatric-v3.png',
+      image: '/vitals/assets/scenario-patient-pediatric-v3.webp',
       imageMode: 'pediatric',
       sceneClues: ['Poor interaction', 'Visible retractions', 'Caregiver present'],
       recommended: ['pediatric_assessment_triangle','airway','breathing','perfusion','respirations','breath_sounds','spo2','skin','temperature','pulse'],
