@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>Full EMT Scenario Launcher | EMSCodeSim</title>
+  <meta name="description" content="Choose an EMT patient picture, then select Learning Mode or Assessment Mode and complete the entire call from the visual patient screen.">
+  <link rel="canonical" href="https://emscodesim.com/vitals/scenario-launcher.html">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/styles/career-hub.css">
+  <link rel="stylesheet" href="/styles/responsive.css">
+  <link rel="stylesheet" href="/vitals/scenario-launcher.css?v=1201">
+  <link rel="stylesheet" href="/vitals/scenario-status.css">
+</head>
+<body>
+  <header class="scenario-hero"><div><span class="scenario-build-stamp">Scenario UI 1.10</span><p><a href="/">Home</a> / <a href="/vitals/">Vital Learning Center</a> / Scenario Launcher</p><h1>Choose a patient</h1><p>Tap a patient picture, choose Learning Mode or Assessment Mode, and begin on the visual patient screen. Saved calls can be continued or reset from the same menu.</p></div></header>
+  <main class="scenario-shell">
+    <section class="control-card picture-first">
+      <div class="case-intro-row">
+        <div class="case-intro"><p class="eyebrow">Patient selection</p><h2>Select a scenario picture</h2><p>Open a patient to choose the way you want to practice. A scenario already in progress will be marked below.</p></div>
+        <button id="randomCase" class="secondary random-case" type="button">Choose a random patient</button>
+      </div>
+      <div id="caseGallery" class="case-gallery" aria-label="Available patient scenarios"></div>
+    </section>
+
+    <section class="how-card"><h2>Patient-care flow</h2><div class="how-grid"><article><strong>1</strong><h3>Scene and primary</h3><p>Complete scene size-up, then use the combined Airway, Breathing, Circulation card.</p></article><article><strong>2</strong><h3>Relevant information</h3><p>Gather vitals, assessments, and patient history based on what the call requires.</p></article><article><strong>3</strong><h3>Treat and reassess</h3><p>Record treatment, patient response, transport decisions, and targeted reassessment.</p></article><article><strong>4</strong><h3>Handoff and debrief</h3><p>Finish the call, review decisions, and compare performance with scenario objectives.</p></article></div></section>
+  </main>
+
+  <div id="caseDialogBackdrop" class="case-dialog-backdrop" hidden></div>
+  <section id="caseDialog" class="case-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="caseDialogTitle">
+    <button id="closeCaseDialog" class="case-dialog-close" type="button" aria-label="Close scenario menu">×</button>
+    <img id="caseDialogImage" class="case-dialog-image" src="" alt="">
+    <div class="case-dialog-content">
+      <p class="eyebrow">Selected patient</p>
+      <h2 id="caseDialogTitle">Patient scenario</h2>
+      <p id="caseDialogMeta" class="case-dialog-meta"></p>
+      <p id="caseDialogClue" class="case-dialog-clue"></p>
+
+      <section id="savedScenarioPanel" class="saved-scenario-panel" hidden>
+        <span class="saved-scenario-badge">Scenario in progress</span>
+        <h3 id="savedScenarioTitle">Continue saved patient?</h3>
+        <p id="savedScenarioSummary"></p>
+        <div class="saved-scenario-actions">
+          <button id="continueSavedScenario" class="primary" type="button">Continue progress</button>
+          <button id="resetSavedScenario" class="danger" type="button">Reset scenario</button>
+        </div>
+      </section>
+
+      <section id="modeSelectionPanel" class="mode-selection-panel">
+        <h3>Choose your mode</h3>
+        <p>Learning Mode provides coaching while Assessment Mode holds feedback until the debrief.</p>
+        <div class="mode-action-grid">
+          <button class="mode-action learning" data-start-mode="learning" value="learning" type="button">
+            <span class="mode-icon" aria-hidden="true">Learn</span>
+            <strong>Learning Mode</strong>
+            <small>Clinical prompts, labels, and immediate decision feedback.</small>
+          </button>
+          <button class="mode-action assessment" data-start-mode="assessment" value="assessment" type="button">
+            <span class="mode-icon" aria-hidden="true">Test</span>
+            <strong>Assessment Mode</strong>
+            <small>Make independent decisions and receive feedback at debrief.</small>
+          </button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <script src="/vitals/patient-record.js"></script>
+  <script src="/vitals/scenario-definitions.js?v=1201"></script><script src="/vitals/scenario-session.js?v=1201"></script>
+  <script src="/vitals/scenario-launcher.js?v=1201"></script>
+  <script src="/vitals/scenario-status.js?v=1201"></script>
+</body>
+</html>
