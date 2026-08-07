@@ -405,12 +405,6 @@
 
   function init() {
     if (!isActive()) return;
-    // Defer until the visual-patient DOM is fully available. This also makes
-    // direct links and cached page restores reliable.
-    if (!document.querySelector('.patient-stage') || !document.getElementById('patientImage')) {
-      window.setTimeout(init, 50);
-      return;
-    }
     renderArrivalCard();
     window.addEventListener('emscodesim:scenario-finding-saved', event => {
       if (event.detail?.caseId === CASE_ID && ['arrival_parking','bls_handoff'].includes(event.detail?.category)) window.setTimeout(renderArrivalCard, 20);
