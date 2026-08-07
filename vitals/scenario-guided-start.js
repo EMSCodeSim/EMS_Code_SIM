@@ -416,9 +416,12 @@
   }
 
   function setLocked(locked) {
+    // Horse Crush is a free-flow current-EMT scenario. Never freeze the rest of
+    // the clinical workspace while the rapid ABC panel is open.
+    const effectiveLock = SKIP_SCENE_GUIDE ? false : Boolean(locked);
     const nav = document.querySelector('.bottom-nav');
-    nav?.classList.toggle('guide-locked', locked);
-    document.body.classList.toggle('scene-guide-active', locked);
+    nav?.classList.toggle('guide-locked', effectiveLock);
+    document.body.classList.toggle('scene-guide-active', effectiveLock);
   }
 
   function render() {
@@ -454,7 +457,9 @@
     $('sceneGuideAnswer')?.addEventListener('change', event => {
       const hasAnswer = event.target.value !== '';
       $('sceneGuideNext').disabled = !hasAnswer;
-      if (!reviewMode && hasAnswer) {
+      // Do not auto-advance the Horse Crush ABC. Manual progression is more
+      // reliable for the presentation and lets the EMT review each decision.
+      if (!SKIP_SCENE_GUIDE && !reviewMode && hasAnswer) {
         window.clearTimeout(autoAdvanceTimer);
         autoAdvanceTimer = window.setTimeout(() => $('sceneGuideNext')?.click(), 450);
       }
@@ -628,7 +633,7 @@
     $('sceneGuide').hidden = false;
     setLocked(!reviewMode);
     render();
-    document.querySelector('.patient-stage')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (!SKIP_SCENE_GUIDE) document.querySelector('.patient-stage')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   function openAssessment() {
@@ -650,25 +655,35 @@
   function init() {
     if (initialized || !$('sceneGuide')) return;
     initialized = true;
+    let advancing = false;
     $('sceneGuideNext').addEventListener('click', () => {
+      if (advancing) return;
       const questions = guideQuestions();
-      if (reviewMode) {
+      if (!questions.length || !questions[index]) return;
+      advancing = true;
+      try {
+        if (reviewMode) {
+          if (index < questions.length - 1) {
+            index += 1;
+            render();
+          } else {
+            pauseGuide();
+          }
+          return;
+        }
+        if (!recordAnswer()) return;
         if (index < questions.length - 1) {
           index += 1;
           render();
+        } else if (activeGuide === 'scene') {
+          saveSceneGuide();
         } else {
-          pauseGuide();
+          savePrimaryGuide();
         }
-        return;
-      }
-      if (!recordAnswer()) return;
-      if (index < questions.length - 1) {
-        index += 1;
-        render();
-      } else if (activeGuide === 'scene') {
-        saveSceneGuide();
-      } else {
-        savePrimaryGuide();
+      } finally {
+        // Release on the next tick so a double-click cannot advance two steps,
+        // but the newly rendered controls become immediately usable.
+        window.setTimeout(() => { advancing = false; }, 0);
       }
     });
     $('sceneGuideSkip').addEventListener('click', pauseGuide);
