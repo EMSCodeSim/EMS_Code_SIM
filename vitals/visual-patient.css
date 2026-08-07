@@ -1161,3 +1161,21 @@ body.scene-guide-active .patient-phase-controls{display:none}
 .embedded-sim-workspace iframe{display:block;flex:1 1 auto;width:100%;min-height:0;border:0;background:#fff}
 body.sim-workspace-open .patient-stage:after,body.sim-workspace-open .scene-clue-layer{display:none!important}
 @media(max-width:979px){.embedded-sim-workspace{display:none!important}}
+
+
+/* Horse Crush presentation mode — current EMT, complete-call free flow */
+.horse-current-emt-call .patient-entry-workflow{display:none!important}
+.horse-current-emt-call #sceneGuide,.horse-current-emt-call #patientPhaseControls{display:none!important}
+.horse-current-emt-call .assessment-recommended{display:none!important}
+.horse-current-emt-call .history-guided-tools{display:none!important}
+.horse-current-emt-call .assessment-more>summary span strong::after{content:" — choose as needed";font-weight:600;color:var(--muted)}
+.horse-current-emt-call .treatment-neutral-intro{border-color:#3b6f8e;background:#0d2638}
+@media(min-width:980px){
+  body.horse-current-emt-call.desktop-scenario-layout .patient-control-column{grid-template-areas:"info" "workspace" "nav";grid-template-rows:auto minmax(0,1fr) auto}
+  body.horse-current-emt-call.desktop-scenario-layout .patient-entry-workflow{display:none!important}
+  body.horse-current-emt-call.desktop-scenario-layout .action-sheet{min-height:0}
+  body.horse-current-emt-call.desktop-scenario-layout .vp-panel{min-height:0}
+  body.horse-current-emt-call.desktop-scenario-layout #assessmentTools,
+  body.horse-current-emt-call.desktop-scenario-layout #vitalTools,
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools{padding-bottom:4px}
+}

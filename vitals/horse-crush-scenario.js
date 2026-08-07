@@ -233,7 +233,7 @@
     const section = document.createElement('section');
     section.className = 'horse-assessment-section assessment-level';
     section.innerHTML = `
-      <div class="assessment-section-title"><div><span>Pre-movement trauma exam</span><small>Choose what to examine and in what order. Findings appear only after you perform each exam.</small></div><em>${completed} of ${EXAMS.length}</em></div>
+      <div class="assessment-section-title"><div><span>Focused physical exam</span><small>Select any exam you want, in any order. The picture changes to show the exam and the finding is revealed only when you perform it.</small></div><em>${completed} performed</em></div>
       <div class="horse-exam-grid"></div>
       <article class="horse-exam-reveal" hidden aria-live="polite"></article>`;
     const grid = section.querySelector('.horse-exam-grid');
@@ -252,7 +252,7 @@
           <div class="horse-exam-content"><p>${escapeHtml(item.label).toUpperCase()}</p><h3>${escapeHtml(item.finding)}</h3><span>${escapeHtml(item.details)}</span>
           <div class="horse-exam-actions"><button type="button" class="horse-record-exam">${saved ? 'Keep recorded finding' : 'Record finding'}</button><button type="button" class="horse-close-exam">Choose another exam</button></div></div>`;
         reveal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        reveal.querySelector('.horse-close-exam')?.addEventListener('click', () => { reveal.hidden = true; });
+        reveal.querySelector('.horse-close-exam')?.addEventListener('click', () => { reveal.hidden = true; setMainPatientImage(`${ASSET}patient-initial.webp`, 'Alert patient lying on dirt outside the south barn with the left knee flexed'); });
         reveal.querySelector('.horse-record-exam')?.addEventListener('click', () => {
           if (!has(item.key)) {
             saveFinding(item.key, item.finding, {

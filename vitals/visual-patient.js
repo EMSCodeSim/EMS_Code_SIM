@@ -270,6 +270,10 @@
     const box = $('vitalTools');
     box.innerHTML = '';
     const tools = (registry?.vitalTools || []).filter(tool => MEASURABLE_TOOL_KEYS.has(tool.key));
+    if (id === 'horse_crush') {
+      appendToolGroup(box, 'Vital and bedside tools', 'Choose the measurements that fit the call. Nothing here is required simply because it appears in the menu.', tools, 'horse-free-flow');
+      return;
+    }
     if (assessmentMode()) {
       appendToolGroup(box, 'Patient tools', 'Choose the measurements you believe are appropriate. Results and decisions are reviewed during debrief.', tools, 'assessment-mode');
       return;
@@ -526,7 +530,7 @@
 
   function defaultAssessmentFocus() {
     if (assessmentMode()) return 'all';
-    return { asthma:'breathing', stroke:'neuro', hypoglycemia:'neuro', trauma:'trauma', pediatric:'pediatric' }[id] || 'all';
+    return { asthma:'breathing', stroke:'neuro', hypoglycemia:'neuro', trauma:'trauma', pediatric:'pediatric', horse_crush:'all' }[id] || 'all';
   }
 
   function assessmentCategoryId(tool) {
@@ -694,7 +698,7 @@
 
     const immediate = document.createElement('section');
     immediate.className = 'assessment-immediate assessment-level';
-    immediate.innerHTML = `<div class="assessment-section-title"><div><span>Immediate assessment</span><small>${id === 'horse_crush' ? 'Arrival handoff and rapid Airway, Breathing, Circulation' : 'Scene safety and rapid Airway, Breathing, Circulation'}</small></div></div><div class="assessment-immediate-list"></div>`;
+    immediate.innerHTML = `<div class="assessment-section-title"><div><span>${id === 'horse_crush' ? 'Patient assessment' : 'Immediate assessment'}</span><small>${id === 'horse_crush' ? 'Choose the examinations that fit your clinical approach. You control the order.' : 'Scene safety and rapid Airway, Breathing, Circulation'}</small></div></div><div class="assessment-immediate-list"></div>`;
     box.appendChild(immediate);
     const immediateList = immediate.querySelector('.assessment-immediate-list');
     buildSceneSizeUpCard(immediateList);
@@ -707,7 +711,7 @@
       if (!MEASURABLE_TOOL_KEYS.has(tool.key) && !unique.has(tool.key)) unique.set(tool.key, tool);
     });
     const tools = [...unique.values()];
-    buildRecommendedAssessments(box, tools);
+    if (id !== 'horse_crush') buildRecommendedAssessments(box, tools);
     buildMoreAssessments(box, tools, new Set([...openCategories, ...openSections]));
   }
 
@@ -1085,15 +1089,15 @@
     const decision = treatmentDecision(plan, current);
     const startedAt = new Date(current?.startedAt || Date.now()).getTime();
     const elapsedSeconds = Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
-    let classification = 'appropriate-effective';
+    let classification = plan.outcomeClass || 'appropriate-effective';
     let response = plan.response;
-    if (decision.code === 'contraindicated') {
+    if (!plan.outcomeClass && decision.code === 'contraindicated') {
       classification = 'contraindicated';
       response = 'The intervention is unsafe for the current patient condition and does not improve the patient.';
-    } else if (decision.code === 'assessment-needed') {
+    } else if (!plan.outcomeClass && decision.code === 'assessment-needed') {
       classification = 'premature';
       response = 'The intervention was selected before the indication was established. Obtain the missing assessment and reevaluate.';
-    } else if (decision.code === 'not-indicated') {
+    } else if (!plan.outcomeClass && decision.code === 'not-indicated') {
       classification = 'unnecessary';
       response = 'The intervention does not address a current abnormal finding and produces no meaningful improvement.';
     }
@@ -1113,7 +1117,7 @@
       route: documentation.route || '',
       device: documentation.device || '',
       targetKeys: plan.targets || [],
-      reassessmentRequired: classification === 'appropriate-effective',
+      reassessmentRequired: typeof plan.reassessmentRequired === 'boolean' ? plan.reassessmentRequired : classification === 'appropriate-effective',
       patientResponse: response,
       elapsedSeconds,
       elapsedLabel: `${String(Math.floor(elapsedSeconds / 60)).padStart(2,'0')}:${String(elapsedSeconds % 60).padStart(2,'0')}`
@@ -1228,7 +1232,9 @@
     box.classList.add('treatment-category-menu');
     const intro = document.createElement('div');
     intro.className = 'treatment-neutral-intro';
-    intro.innerHTML = `<strong>Select care by category.</strong><span>All common EMT-level choices remain available. Local scope, protocol, medication authorization, and medical direction control what may actually be performed. Treatment feedback remains hidden until the final debrief.</span>`;
+    intro.innerHTML = id === 'horse_crush'
+      ? `<strong>Run the call your way.</strong><span>Choose treatment and movement decisions in any order. The simulator records the decision and patient response; it does not require an NREMT sequence.</span>`
+      : `<strong>Select care by category.</strong><span>All common EMT-level choices remain available. Local scope, protocol, medication authorization, and medical direction control what may actually be performed. Treatment feedback remains hidden until the final debrief.</span>`;
     box.appendChild(intro);
     window.EMSCodeSimHorseCrush?.renderMovementSection?.(box);
 
@@ -1258,10 +1264,12 @@
     if (uiState.openCategories.has('transport')) transportCard.open = true;
     box.appendChild(transportCard);
 
-    const full = document.createElement('article');
-    full.className = 'treatment-card full-treatment-menu';
-    full.innerHTML = `<h3>Protocol-specific treatment</h3><p>Use the complete treatment tool for an intervention that is not listed here or requires additional documentation.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general')}">Open complete treatment tool</a>`;
-    box.appendChild(full);
+    if (id !== 'horse_crush') {
+      const full = document.createElement('article');
+      full.className = 'treatment-card full-treatment-menu';
+      full.innerHTML = `<h3>Protocol-specific treatment</h3><p>Use the complete treatment tool for an intervention that is not listed here or requires additional documentation.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general')}">Open complete treatment tool</a>`;
+      box.appendChild(full);
+    }
     restoreTreatmentUi(uiState);
     enforceSingleOpen('#treatmentTools', '.treatment-category');
     filterTreatmentMenu($('treatmentSearch')?.value || '');
@@ -1971,6 +1979,25 @@
   const requestedTrainingMode = params.get('training');
   if (requestedTrainingMode === 'learning' || requestedTrainingMode === 'assessment') api?.setDocumentation?.({ trainingMode: requestedTrainingMode });
   document.body.dataset.trainingMode = trainingMode();
+  if (id === 'horse_crush') {
+    document.body.classList.add('horse-current-emt-call');
+    const phaseControls = $('patientPhaseControls');
+    if (phaseControls) phaseControls.hidden = true;
+    const guide = $('sceneGuide');
+    if (guide) guide.hidden = true;
+    const skillLink = document.querySelector('.scene-guide-head-actions a[href*="nremt-skill-sheets"]');
+    if (skillLink) skillLink.hidden = true;
+    const assessmentSub = document.querySelector('#assessmentPanel > .sub');
+    if (assessmentSub) assessmentSub.textContent = 'Run the assessment in the order you choose. Use the patient picture, focused exams, and available tools to build your clinical picture.';
+    const vitalsSub = document.querySelector('#vitalsPanel > .sub');
+    if (vitalsSub) vitalsSub.textContent = 'Choose the vital signs and bedside tools you want. On a computer, simulators open over the patient-picture area and return to the patient when closed.';
+    const historySub = document.querySelector('#historyPanel > .sub');
+    if (historySub) historySub.textContent = 'Interview the patient or engine crew naturally. Ask only what you think matters to this call.';
+    const guidedHistory = document.querySelector('.history-guided-tools');
+    if (guidedHistory) guidedHistory.hidden = true;
+    const treatmentSub = document.querySelector('#treatmentPanel > .sub');
+    if (treatmentSub) treatmentSub.textContent = 'Choose care, movement, packaging, transport, and reassessment decisions as you would on a real call. No fixed skill-sheet sequence is required.';
+  }
   if ($('modeBadge')) $('modeBadge').textContent = assessmentMode() ? 'Assessment Mode' : 'Learning Mode';
   scenarioStartMs = new Date(initialRecord?.startedAt || Date.now()).getTime();
   $('caseTitle').textContent = scenario.title;

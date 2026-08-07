@@ -339,6 +339,13 @@
   }
 
   function updatePhaseControls() {
+    if (SKIP_SCENE_GUIDE) {
+      const controls = $('patientPhaseControls');
+      if (controls) controls.hidden = true;
+      const skillLink = document.querySelector('.scene-guide-head-actions a[href*="nremt-skill-sheets"]');
+      if (skillLink) skillLink.hidden = true;
+      return;
+    }
     const sceneDone = sceneGuideComplete();
     const abcDone = primaryComplete();
     const sceneButton = $('startSceneSizeupPhoto');
@@ -679,8 +686,8 @@
     $('startInitialABCPhoto')?.addEventListener('click', () => startPrimary(primaryComplete()));
     updatePhaseControls();
     if (SKIP_SCENE_GUIDE) {
-      if (!primaryComplete()) startPrimary(false);
-      else showReady();
+      showReady();
+      setPhaseControlsVisible(false);
       return;
     }
     if (!completedFinding) startGuide(false);
