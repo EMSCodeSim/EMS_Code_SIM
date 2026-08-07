@@ -1,1 +1,190 @@
-(()=>{"use strict";const ASSIGN_KEY="emscodesim_student_assignment_v1",ASSIGNMENTS_KEY="emscodesim_instructor_assignments_v1";const readJSON=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(f))}catch{return f}};const assignmentSession=readJSON(ASSIGN_KEY,null);const cases=[{id:"asthma",image:"/vitals/assets/scenario-patient-adult-v3.png",title:"Respiratory Distress",dispatch:"You are dispatched for a 24-year-old with worsening shortness of breath and wheezing.",patient:"24-year-old adult",scene:"Apartment; inhaler visible nearby",goal:"Recognize breathing difficulty, treat, reassess, and report",steps:[["Airway assessment","Confirm airway patency and identify abnormal sounds.","/vitals/airway-assessment.html"],["Breathing quality","Assess rate, effort, speech, chest movement, and adequacy.","/vitals/breathing-assessment.html"],["Respiratory rate","Measure the locked patient respiratory rate.","/vitals/respiratory-rate.html"],["Breath sounds","Auscultate the locked patient lung sounds.","/vitals/breath-sound-simulator.html"],["Pulse","Measure the locked patient pulse.","/vitals/pulse.html"],["Blood pressure","Measure the locked patient blood pressure.","/vitals/bp.html"],["SpO₂","Measure the locked patient oxygen saturation.","/vitals/pulse-ox.html"],["SAMPLE history","Identify triggers, medications, and relevant history.","/vitals/sample-history.html"],["Clinical impression","Build an EMT-level working impression and alternatives.","/vitals/clinical-impression.html"],["Treatment and reassessment","Choose care and compare repeat findings.","/vitals/treatment-reassessment.html"],["PCR and handoff","Document the call and deliver a concise report.","/vitals/pcr-handoff.html"]]},{id:"stroke",image:"/vitals/assets/scenario-patient-adult-v3.png",title:"Possible Acute Stroke",dispatch:"You are dispatched for a 68-year-old with sudden speech difficulty and right-sided weakness.",patient:"68-year-old adult",scene:"Private residence; family present",goal:"Identify focal neurologic findings, establish timing, and prioritize transport",steps:[["Airway assessment","Confirm airway patency and aspiration risk.","/vitals/airway-assessment.html"],["Pulse","Measure the locked patient pulse.","/vitals/pulse.html"],["Blood pressure","Measure the locked patient blood pressure.","/vitals/bp.html"],["Respiratory rate","Measure the locked patient respiratory rate.","/vitals/respiratory-rate.html"],["SpO₂","Measure the locked patient oxygen saturation.","/vitals/pulse-ox.html"],["Breath sounds","Auscultate the locked patient lung sounds.","/vitals/breath-sound-simulator.html"],["Motor and sensory","Compare facial movement, speech, strength, drift, and sensation.","/vitals/motor-sensory-assessment.html"],["Blood glucose","Rule out a common stroke mimic.","/vitals/bgl.html"],["SAMPLE history","Establish last known well, medications, and history.","/vitals/sample-history.html"],["Clinical impression","Select the working impression and alternatives.","/vitals/clinical-impression.html"],["PCR and handoff","Document timing, deficits, findings, and transport priority.","/vitals/pcr-handoff.html"]]},{id:"hypoglycemia",image:"/vitals/assets/scenario-patient-adult-v3.png",title:"Altered Mental Status",dispatch:"You are dispatched for a 57-year-old who is confused, sweaty, and behaving abnormally.",patient:"57-year-old adult",scene:"Workplace break room",goal:"Identify a reversible cause, treat appropriately, and reassess mental status",steps:[["Airway assessment","Confirm the patient can protect the airway.","/vitals/airway-assessment.html"],["AVPU and orientation","Establish the neurologic baseline.","/vitals/avpu.html"],["Pulse","Measure the locked patient pulse.","/vitals/pulse.html"],["Blood pressure","Measure the locked patient blood pressure.","/vitals/bp.html"],["Respiratory rate","Measure the locked patient respiratory rate.","/vitals/respiratory-rate.html"],["SpO₂","Measure the locked patient oxygen saturation.","/vitals/pulse-ox.html"],["Blood glucose","Obtain and classify the glucose finding.","/vitals/bgl.html"],["SAMPLE history","Identify diabetes, medications, food intake, and events.","/vitals/sample-history.html"],["Clinical impression","Choose the likely cause and alternatives.","/vitals/clinical-impression.html"],["Treatment and reassessment","Treat and compare repeat mental status and glucose findings.","/vitals/treatment-reassessment.html"],["PCR and handoff","Document response and transfer of care.","/vitals/pcr-handoff.html"]]},{id:"trauma",image:"/vitals/assets/scenario-patient-adult-v3.png",title:"Blunt Trauma",dispatch:"You are dispatched to a two-vehicle collision for a driver with chest and abdominal pain.",patient:"36-year-old adult",scene:"Roadway collision; moderate vehicle damage",goal:"Identify immediate threats, perfusion problems, and transport priority",steps:[["Airway assessment","Confirm airway patency and cervical-spine precautions.","/vitals/airway-assessment.html"],["Breathing quality","Assess ventilation and respiratory effort.","/vitals/breathing-assessment.html"],["Respiratory rate","Measure the locked respiratory rate.","/vitals/respiratory-rate.html"],["Breath sounds","Auscultate the locked patient lung sounds.","/vitals/breath-sound-simulator.html"],["Pulse","Measure the locked patient pulse.","/vitals/pulse.html"],["Blood pressure","Measure the locked patient blood pressure.","/vitals/bp.html"],["SpO₂","Measure the locked patient oxygen saturation.","/vitals/pulse-ox.html"],["Chest assessment","Look for chest-wall injury and unequal movement.","/vitals/chest-assessment.html"],["Trauma head-to-toe","Perform a rapid systematic trauma examination.","/vitals/trauma-assessment.html"],["Abdominal assessment","Assess for tenderness, guarding, rigidity, or distention.","/vitals/abdominal-assessment.html"],["Perfusion assessment","Recognize compensated or decompensated shock.","/vitals/perfusion-assessment.html"],["PCR and handoff","Report mechanism, findings, treatment, and transport priority.","/vitals/pcr-handoff.html"]]},{id:"pediatric",image:"/vitals/assets/scenario-patient-pediatric-v3.png",title:"Sick Pediatric Patient",dispatch:"You are dispatched for a 3-year-old with fever, poor interaction, and increased work of breathing.",patient:"3-year-old child",scene:"Home; caregiver present",goal:"Use the pediatric first look, identify respiratory or perfusion compromise, and reassess",steps:[["Pediatric Assessment Triangle","Assess appearance, breathing, and circulation to skin.","/vitals/pediatric-assessment-triangle.html"],["Airway assessment","Identify patency, positioning needs, and abnormal sounds.","/vitals/airway-assessment.html"],["Breathing quality","Assess effort, rate, chest movement, and adequacy.","/vitals/breathing-assessment.html"],["Respiratory rate","Measure the locked respiratory rate.","/vitals/respiratory-rate.html"],["Breath sounds","Auscultate the locked patient lung sounds.","/vitals/breath-sound-simulator.html"],["Pulse","Measure the locked patient pulse.","/vitals/pulse.html"],["Blood pressure","Measure the locked patient blood pressure.","/vitals/bp.html"],["SpO₂","Measure the locked patient oxygen saturation.","/vitals/pulse-ox.html"],["Perfusion assessment","Evaluate pulse, skin, capillary refill, and mental status.","/vitals/perfusion-assessment.html"],["SAMPLE history","Gather caregiver history and events.","/vitals/sample-history.html"],["Treatment and reassessment","Select initial care and compare repeat findings.","/vitals/treatment-reassessment.html"],["PCR and handoff","Document the pediatric assessment and response.","/vitals/pcr-handoff.html"]]}];const $=id=>document.getElementById(id);const select=$("caseSelect"),patientCard=$("patientCard"),workflow=$("workflow"),stepsEl=$("steps"),completion=$("completionMessage");let active=null;cases.forEach(c=>{const o=document.createElement("option");o.value=c.id;o.textContent=c.title;select.appendChild(o)});function storageKey(){return active?`emscodesim_scenario_${active.id}`:""}function state(){try{return JSON.parse(localStorage.getItem(storageKey()))||{done:[],complete:false}}catch{return{done:[],complete:false}}}function save(s){localStorage.setItem(storageKey(),JSON.stringify(s))}function render(){if(!active)return;const s=state();const patientImage=$("scenarioPatientImage");if(patientImage){patientImage.onerror=()=>{patientImage.onerror=null;patientImage.src="/vitals/assets/scenario-patient-adult-v3.png";patientImage.classList.add("image-fallback")};patientImage.src=active.image||"/vitals/assets/scenario-patient-adult-v3.png";patientImage.hidden=false;}$("caseTitle").textContent=active.title;$("dispatchText").textContent=active.dispatch;$("patientText").textContent=active.patient;$("sceneText").textContent=active.scene;$("goalText").textContent=active.goal;stepsEl.innerHTML="";active.steps.forEach((step,i)=>{const done=s.done.includes(i);const card=document.createElement("article");card.className=`step${done?" done":""}`;card.innerHTML=`<div class="step-number">${done?"✓":i+1}</div><div><h3>${step[0]}</h3><p>${step[1]}</p></div><div class="step-actions"><a href="${step[2]}?mode=scenario&resume=1&case=${encodeURIComponent(active.id)}">${done?"Review":"Open"}</a><span class="step-status ${done?"is-complete":""}">${done?"Recorded":"Complete in simulator"}</span></div>`;stepsEl.appendChild(card)});stepsEl.querySelectorAll("button[data-step]").forEach(b=>b.addEventListener("click",()=>{const i=Number(b.dataset.step),x=state();x.done=x.done.includes(i)?x.done.filter(v=>v!==i):[...x.done,i];x.complete=false;save(x);render()}));const count=s.done.length,total=active.steps.length,pct=Math.round(count/total*100);$("progressLabel").textContent=`${count} of ${total} complete`;$("progressBar").style.width=`${pct}%`;completion.hidden=!s.complete;completion.textContent=s.complete?"Scenario complete. Review any missed step, then launch another case or continue to the progress dashboard.":"";patientCard.hidden=false;workflow.hidden=false;const workspace=$("openAssessmentWorkspace");if(workspace)workspace.href=`/vitals/assessment-workspace.html?mode=scenario&resume=1&case=${encodeURIComponent(active.id)}`}function start(id){active=cases.find(c=>c.id===id)||cases[0];select.value=active.id;if(window.EMSCodeSimPatientRecord){const current=window.EMSCodeSimPatientRecord.active();if(!current||current.scenarioId!==active.id)window.EMSCodeSimPatientRecord.create(active)}render();if(!new URLSearchParams(location.search).get('resume')){location.href=`/vitals/visual-patient.html?case=${active.id}`;return;}patientCard.scrollIntoView({behavior:"smooth",block:"start"})}$("startCase").addEventListener("click",()=>start(select.value));$("randomCase").addEventListener("click",()=>{const c=cases[Math.floor(Math.random()*cases.length)];start(c.id)});$("resetScenario").addEventListener("click",()=>{if(!active)return;localStorage.removeItem(storageKey());render()});$("completeScenario").addEventListener("click",()=>{if(!active)return;const s=state();if(s.done.length!==active.steps.length){completion.hidden=false;completion.textContent="Complete each required step before marking the scenario complete.";completion.style.borderColor="#f0c48a";completion.style.background="#fff7eb";completion.style.color="#8a4b00";return}s.complete=true;save(s);localStorage.setItem(`emscodesim_mastered_scenario_${active.id}`,"true");if(assignmentSession||assignmentCode){const session=assignmentSession||{assignmentCode,learnerName:learner,scenario:active.id};session.completedAt=new Date().toISOString();session.scenarioComplete=true;localStorage.setItem(ASSIGN_KEY,JSON.stringify(session));localStorage.setItem("emscodesim_assignment_completion_v1",JSON.stringify({assignmentCode:session.assignmentCode,assignmentId:session.assignmentId||null,learnerName:session.learnerName||learner||"",scenario:active.id,scenarioTitle:active.title,completedAt:session.completedAt,requireDebrief:!!session.requireDebrief}));}completion.style.borderColor="";completion.style.background="";completion.style.color="";render()});const params=new URLSearchParams(location.search),requested=params.get("case"),assignmentCode=params.get("assignment"),learner=params.get("learner")||assignmentSession?.learnerName;function showAssignment(){if(!assignmentCode&&!assignmentSession)return;const assignments=readJSON(ASSIGNMENTS_KEY,[]),match=assignments.find(a=>String(a.code).toUpperCase()===String(assignmentCode||assignmentSession?.assignmentCode||"").toUpperCase());const banner=$("assignmentBanner");banner.hidden=false;$("assignmentBannerTitle").textContent=match?.name||"Instructor-assigned scenario";$("assignmentBannerText").textContent=`${learner?`Learner: ${learner}. `:""}${match?.due?`Due ${match.due}. `:""}${match?.requireDebrief?"A completed debrief is required.":"Complete all assigned steps."}`;if(learner){$("learnerField").hidden=false;$("learnerText").textContent=learner}}showAssignment();if(requested&&cases.some(c=>c.id===requested)){start(requested);if(params.get('resume')){const msg=document.createElement('div');msg.className='resume-notice';msg.textContent='Current scenario resumed. Your patient, findings, and completed steps were preserved.';workflow.prepend(msg);}}})();
+(() => {
+  'use strict';
+
+  const api = window.EMSCodeSimPatientRecord;
+  const session = window.EMSCodeSimScenarioSession;
+  const $ = id => document.getElementById(id);
+
+  const cases = [
+    { id:'asthma', image:'/vitals/assets/scenario-patient-adult-v3.png', title:'Respiratory Distress', patient:'24-year-old adult', scene:'Apartment • inhaler nearby', clue:'Upright, anxious, short sentences', dispatch:'You are dispatched for a 24-year-old with worsening shortness of breath and wheezing.', goal:'Recognize breathing difficulty, treat, reassess, and report' },
+    { id:'stroke', image:'/vitals/assets/scenario-patient-adult-v3.png', title:'Possible Acute Stroke', patient:'68-year-old adult', scene:'Private residence • family present', clue:'Abnormal speech and right-sided weakness', dispatch:'You are dispatched for a 68-year-old with sudden speech difficulty and right-sided weakness.', goal:'Identify focal neurologic findings, establish timing, and prioritize transport' },
+    { id:'hypoglycemia', image:'/vitals/assets/scenario-patient-adult-v3.png', title:'Altered Mental Status', patient:'57-year-old adult', scene:'Workplace break room', clue:'Confused, diaphoretic, slow to follow commands', dispatch:'You are dispatched for a 57-year-old who is confused, sweaty, and behaving abnormally.', goal:'Identify a reversible cause, treat appropriately, and reassess mental status' },
+    { id:'trauma', image:'/vitals/assets/scenario-patient-adult-v3.png', title:'Blunt Trauma', patient:'36-year-old adult', scene:'Roadway collision', clue:'Pale with guarded breathing', dispatch:'You are dispatched to a two-vehicle collision for a patient with chest and abdominal pain.', goal:'Find immediate threats, support ABCs, and expedite trauma transport' },
+    { id:'pediatric', image:'/vitals/assets/scenario-patient-pediatric-v3.png', title:'Sick Pediatric Patient', patient:'3-year-old child', scene:'Home • caregiver present', clue:'Poor interaction and increased work of breathing', dispatch:'You are dispatched for a 3-year-old with fever, poor interaction, and increased work of breathing.', goal:'Use the pediatric first look, identify respiratory or perfusion compromise, and reassess' },
+    { id:'horse_crush', image:'/vitals/assets/horse-crush/patient-initial.png', title:'Horse-Crush Hip Injury', patient:'64-year-old adult', scene:'Horse facility • south barn', clue:'Alert on the ground with severe left-hip pain', dispatch:'You are dispatched for a reported fall at a horse facility. A BLS engine crew is already on scene.', goal:'Assess before moving, protect the leg, plan packaging, control pain, and reassess' }
+  ];
+
+  let selectedCase = null;
+  let activeRecord = api?.active?.() || null;
+
+  function trainingMode(mode) {
+    return mode === 'assessment' ? 'assessment' : 'learning';
+  }
+
+  function patientHome(caseId, mode = 'learning') {
+    return `/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}&training=${encodeURIComponent(trainingMode(mode))}`;
+  }
+
+  function savedMode(record = activeRecord) {
+    return trainingMode(record?.documentation?.trainingMode || 'learning');
+  }
+
+  function elapsedLabel(startedAt) {
+    const started = new Date(startedAt || 0).getTime();
+    if (!Number.isFinite(started) || started <= 0) return 'Progress is saved.';
+    const totalMinutes = Math.max(1, Math.floor((Date.now() - started) / 60000));
+    if (totalMinutes < 60) return `${totalMinutes} minute${totalMinutes === 1 ? '' : 's'} elapsed`;
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${hours} hr${hours === 1 ? '' : 's'}${minutes ? ` ${minutes} min` : ''} elapsed`;
+  }
+
+  function progressSummary(record) {
+    const careEvents = Array.isArray(record?.careLog) ? record.careLog.length : 0;
+    const findings = record?.findings && typeof record.findings === 'object' ? Object.keys(record.findings).length : 0;
+    const treatments = Array.isArray(record?.treatments) ? record.treatments.length : 0;
+    const details = [`${elapsedLabel(record?.startedAt)}`, `${careEvents || findings} recorded event${(careEvents || findings) === 1 ? '' : 's'}`];
+    if (treatments) details.push(`${treatments} treatment${treatments === 1 ? '' : 's'}`);
+    return details.join(' • ');
+  }
+
+  function renderGallery() {
+    const gallery = $('caseGallery');
+    gallery.innerHTML = '';
+    activeRecord = api?.active?.() || null;
+
+    cases.forEach(item => {
+      const inProgress = activeRecord?.scenarioId === item.id;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `case-choice${inProgress ? ' has-progress' : ''}`;
+      button.dataset.case = item.id;
+      button.setAttribute('aria-label', `${item.title}. ${inProgress ? 'Scenario in progress. Continue or reset.' : 'Choose practice mode.'}`);
+      button.innerHTML = `
+        <span class="case-image-wrap">
+          <img src="${item.image}" alt="${item.title} patient scenario">
+          ${inProgress ? '<span class="progress-badge">In progress</span>' : ''}
+        </span>
+        <span class="case-choice-body">
+          <strong>${item.title}</strong>
+          <span>${item.patient}</span>
+          <small>${inProgress ? 'Tap to continue or reset' : 'Tap to choose a mode'}</small>
+        </span>`;
+      button.addEventListener('click', () => openCaseDialog(item));
+      gallery.appendChild(button);
+    });
+  }
+
+  function openCaseDialog(item) {
+    selectedCase = item;
+    activeRecord = api?.active?.() || null;
+    $('caseDialogImage').src = item.image;
+    $('caseDialogImage').alt = `${item.title} patient scenario`;
+    $('caseDialogTitle').textContent = item.title;
+    $('caseDialogMeta').textContent = `${item.patient} • ${item.scene}`;
+    $('caseDialogClue').textContent = item.clue;
+
+    const savedPanel = $('savedScenarioPanel');
+    const modePanel = $('modeSelectionPanel');
+    if (activeRecord?.scenarioId) {
+      const samePatient = activeRecord.scenarioId === item.id;
+      savedPanel.hidden = false;
+      modePanel.hidden = true;
+      $('savedScenarioTitle').textContent = samePatient
+        ? `Continue ${activeRecord.title || item.title}?`
+        : `${activeRecord.title || 'Another patient'} is still in progress`;
+      $('savedScenarioSummary').textContent = `${progressSummary(activeRecord)}. ${samePatient ? 'Continue where you stopped or reset this patient and choose a new mode.' : `Continue that patient or reset it before starting ${item.title}.`}`;
+      $('continueSavedScenario').textContent = samePatient ? 'Continue progress' : `Continue ${activeRecord.title || 'current patient'}`;
+    } else {
+      savedPanel.hidden = true;
+      modePanel.hidden = false;
+    }
+
+    $('caseDialog').hidden = false;
+    $('caseDialogBackdrop').hidden = false;
+    document.body.classList.add('dialog-open');
+    window.setTimeout(() => {
+      const first = activeRecord?.scenarioId ? $('continueSavedScenario') : document.querySelector('[data-start-mode="learning"]');
+      first?.focus();
+    }, 0);
+  }
+
+  function closeCaseDialog() {
+    $('caseDialog').hidden = true;
+    $('caseDialogBackdrop').hidden = true;
+    document.body.classList.remove('dialog-open');
+    selectedCase = null;
+  }
+
+  function clearActiveProgress() {
+    const current = api?.active?.() || activeRecord;
+    const caseId = current?.scenarioId;
+    api?.clear?.();
+    if (caseId) {
+      const partnerKey = session?.partnerTaskKey?.(caseId);
+      [
+        partnerKey,
+        partnerKey && `${partnerKey}_backup`,
+        partnerKey && `${partnerKey}_shadow`,
+        `emscodesim_scenario_${caseId}`,
+        `emscodesim_scenario_${caseId}_backup`,
+        `emscodesim_scenario_${caseId}_shadow`
+      ].filter(Boolean).forEach(key => localStorage.removeItem(key));
+    }
+    activeRecord = null;
+  }
+
+  function startFresh(item, mode) {
+    if (!item) return;
+    if (api?.active?.()?.scenarioId) clearActiveProgress();
+    api?.create?.(item);
+    session?.sync?.(item.id);
+    api?.setDocumentation?.({ trainingMode: trainingMode(mode), trainingModeSetAt: new Date().toISOString() });
+    location.href = patientHome(item.id, mode);
+  }
+
+  $('continueSavedScenario').addEventListener('click', () => {
+    const current = api?.active?.() || activeRecord;
+    if (!current?.scenarioId) {
+      $('savedScenarioPanel').hidden = true;
+      $('modeSelectionPanel').hidden = false;
+      return;
+    }
+    location.href = patientHome(current.scenarioId, savedMode(current));
+  });
+
+  $('resetSavedScenario').addEventListener('click', () => {
+    const current = api?.active?.() || activeRecord;
+    const name = current?.title || 'current scenario';
+    if (!window.confirm(`Reset ${name}? All findings, vitals, history, treatments, partner tasks, and log entries for this patient will be erased.`)) return;
+    clearActiveProgress();
+    renderGallery();
+    $('savedScenarioPanel').hidden = true;
+    $('modeSelectionPanel').hidden = false;
+    $('modeSelectionPanel').querySelector('h3').textContent = 'Choose a mode to restart';
+    document.querySelector('[data-start-mode="learning"]')?.focus();
+  });
+
+  document.querySelectorAll('[data-start-mode]').forEach(button => {
+    button.addEventListener('click', () => startFresh(selectedCase, button.value));
+  });
+
+  $('randomCase').addEventListener('click', () => {
+    const item = cases[Math.floor(Math.random() * cases.length)];
+    openCaseDialog(item);
+  });
+  $('closeCaseDialog').addEventListener('click', closeCaseDialog);
+  $('caseDialogBackdrop').addEventListener('click', closeCaseDialog);
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !$('caseDialog').hidden) closeCaseDialog();
+  });
+  window.addEventListener('pageshow', renderGallery);
+
+  renderGallery();
+
+  const params = new URLSearchParams(location.search);
+  const requested = params.get('select') || params.get('case');
+  if (requested && cases.some(item => item.id === requested) && (params.get('open') === '1' || params.get('ended') === '1')) {
+    openCaseDialog(cases.find(item => item.id === requested));
+  }
+})();
