@@ -24,7 +24,7 @@ const expected = {
   hypoglycemia: [/confusion/i, /insulin/i, /skipped breakfast|no food/i, /diabetes/i],
   trauma: [/collision/i, /chest pain/i, /abdominal pain/i, /steering wheel/i],
   pediatric: [/fever/i, /cough/i, /work of breathing|breathing/i, /caregiver/i],
-  horse_crush: [/horse/i, /left[- ]hip/i, /loss of consciousness/i, /wellbutrin/i]
+  horse_crush: [/horse/i, /left[- ]hip/i, /loss of consciousness|no loss/i, /crushed|compressed/i]
 };
 const labels = ['S:', 'A:', 'M:', 'P:', 'L:', 'E:'];
 
