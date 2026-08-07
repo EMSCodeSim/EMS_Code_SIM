@@ -19,7 +19,7 @@
         <h1 id="caseTitle">Visual Patient</h1>
         <p id="scene"></p>
       </div>
-      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">HORSE GRADING 2.221</small></div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">HORSE TTS 2.222</small></div>
     </header>
 
     <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
@@ -107,7 +107,13 @@
         <aside id="infoUpdateWindow" class="info-update-window info-dispatch" aria-live="polite" aria-label="Scenario information updates">
           <div class="info-update-head">
             <span id="infoUpdateType">DISPATCH</span>
-            <div class="info-update-head-actions"><span id="infoUpdateUnread" class="info-update-unread" hidden>New</span><time id="infoUpdateTime">00:00</time><button id="infoUpdateCollapse" type="button" aria-expanded="true" aria-label="Collapse patient update">⌃</button></div>
+            <div class="info-update-head-actions">
+              <div class="info-update-voice-controls" role="group" aria-label="Patient update voice controls">
+                <button id="infoUpdateVoiceToggle" class="info-update-voice-button is-on" type="button" aria-pressed="true" aria-label="Turn automatic patient update voice off" title="Turn Auto Voice off"><span aria-hidden="true">🔊</span><span class="info-voice-label">Auto</span></button>
+                <button id="infoUpdateReplay" class="info-update-voice-button" type="button" aria-label="Read the current patient update aloud" title="Replay current update"><span aria-hidden="true">▶</span><span class="info-voice-label">Replay</span></button>
+              </div>
+              <span id="infoUpdateUnread" class="info-update-unread" hidden>New</span><time id="infoUpdateTime">00:00</time><button id="infoUpdateCollapse" type="button" aria-expanded="true" aria-label="Collapse patient update">⌃</button>
+            </div>
           </div>
           <strong id="infoUpdateTitle">Dispatch information</strong>
           <p id="infoUpdateText">Review the dispatch and patient picture before beginning care.</p>

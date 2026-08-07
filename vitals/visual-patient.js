@@ -79,6 +79,11 @@
   let infoAutoCollapseTimer = 0;
   let infoManuallyCollapsed = false;
   let lastInfoItemId = '';
+  const INFO_VOICE_STORAGE_KEY = 'emscodesim_patient_update_auto_voice';
+  const infoVoiceSupported = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+  let infoVoiceAuto = infoVoiceSupported && localStorage.getItem(INFO_VOICE_STORAGE_KEY) !== 'off';
+  let infoLastSpokenSignature = '';
+  let infoVoiceUtterance = null;
   let assessmentComplaintFocus = '';
   let lastHistoryResponse = null;
   let horseWorkspaceContext = null;
@@ -2057,6 +2062,104 @@
     filterTreatmentMenu($('treatmentSearch')?.value || '');
   }
 
+  function cleanInfoSpeechText(value) {
+    return String(value || '')
+      .replace(/\s+/g, ' ')
+      .replace(/\bSpO₂\b/gi, 'oxygen saturation')
+      .replace(/\bCSM\b/g, 'circulation, sensation, and movement')
+      .replace(/\bA&O\s*[x×]\s*4\b/gi, 'alert and oriented times four')
+      .trim();
+  }
+
+  function preferredInfoVoice() {
+    if (!infoVoiceSupported) return null;
+    const voices = window.speechSynthesis.getVoices?.() || [];
+    return voices.find(voice => /^en-US$/i.test(voice.lang))
+      || voices.find(voice => /^en(-|$)/i.test(voice.lang))
+      || null;
+  }
+
+  function updateInfoVoiceControls() {
+    const toggle = $('infoUpdateVoiceToggle');
+    const replay = $('infoUpdateReplay');
+    if (!toggle || !replay) return;
+    if (!infoVoiceSupported) {
+      toggle.disabled = true;
+      replay.disabled = true;
+      toggle.classList.remove('is-on');
+      toggle.setAttribute('aria-pressed', 'false');
+      toggle.setAttribute('aria-label', 'Automatic patient update voice is not supported in this browser');
+      toggle.title = 'Text-to-speech is not available in this browser';
+      const label = toggle.querySelector('.info-voice-label');
+      if (label) label.textContent = 'Voice unavailable';
+      return;
+    }
+    toggle.disabled = false;
+    replay.disabled = false;
+    toggle.classList.toggle('is-on', infoVoiceAuto);
+    toggle.setAttribute('aria-pressed', String(infoVoiceAuto));
+    toggle.setAttribute('aria-label', infoVoiceAuto ? 'Turn automatic patient update voice off' : 'Turn automatic patient update voice on');
+    toggle.title = infoVoiceAuto ? 'Turn Auto Voice off' : 'Turn Auto Voice on';
+    const label = toggle.querySelector('.info-voice-label');
+    if (label) label.textContent = infoVoiceAuto ? 'Auto ON' : 'Auto OFF';
+  }
+
+  function stopInfoSpeech() {
+    if (!infoVoiceSupported) return;
+    try { window.speechSynthesis.cancel(); } catch (_) {}
+    infoVoiceUtterance = null;
+    $('infoUpdateWindow')?.classList.remove('is-speaking');
+    $('infoUpdateReplay')?.classList.remove('is-speaking');
+  }
+
+  function speakInfoUpdate(item, options = {}) {
+    if (!infoVoiceSupported || !item) return false;
+    const replay = options.replay === true;
+    if (!replay && !infoVoiceAuto) return false;
+    const text = cleanInfoSpeechText(item.text);
+    if (!text) return false;
+    const signature = `${item.id || item.type || 'update'}:${text}`;
+    if (!replay && signature === infoLastSpokenSignature) return false;
+
+    stopInfoSpeech();
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voice = preferredInfoVoice();
+    if (voice) utterance.voice = voice;
+    utterance.lang = voice?.lang || 'en-US';
+    utterance.rate = 0.96;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    utterance.onstart = () => {
+      $('infoUpdateWindow')?.classList.add('is-speaking');
+      $('infoUpdateReplay')?.classList.add('is-speaking');
+    };
+    const finish = () => {
+      if (infoVoiceUtterance === utterance) infoVoiceUtterance = null;
+      $('infoUpdateWindow')?.classList.remove('is-speaking');
+      $('infoUpdateReplay')?.classList.remove('is-speaking');
+    };
+    utterance.onend = finish;
+    utterance.onerror = finish;
+    infoVoiceUtterance = utterance;
+    if (!replay) infoLastSpokenSignature = signature;
+    try {
+      window.speechSynthesis.speak(utterance);
+      return true;
+    } catch (error) {
+      console.warn('Patient update voice could not start.', error);
+      finish();
+      return false;
+    }
+  }
+
+  function setInfoVoiceAuto(enabled) {
+    infoVoiceAuto = Boolean(enabled && infoVoiceSupported);
+    try { localStorage.setItem(INFO_VOICE_STORAGE_KEY, infoVoiceAuto ? 'on' : 'off'); } catch (_) {}
+    if (!infoVoiceAuto) stopInfoSpeech();
+    updateInfoVoiceControls();
+    toast(infoVoiceAuto ? 'Auto Voice on — new patient updates will be read aloud.' : 'Auto Voice off. Use Replay whenever you want to hear an update.');
+  }
+
   function infoElapsed(value, startedAt) { return elapsedLabel(value, startedAt); }
   function abnormalEvent(event) {
     return event.status === 'abnormal' || event.normality === 'not-normal' || /critical|severe|inadequate|absent|low|high|hypox|shock|unresponsive|weak|labored|wheeze|slurred|drift|diaphoretic|pale/i.test(`${event.value || ''} ${event.details || ''}`);
@@ -2200,6 +2303,12 @@
         window.clearTimeout(updateWindow._newInfoTimer);
         updateWindow._newInfoTimer = window.setTimeout(() => updateWindow.classList.remove('new-info-pulse'), 2400);
       }
+    }
+
+    // Speak only genuinely new Patient Update content. Navigating backward/forward
+    // through prior updates remains silent unless the learner presses Replay.
+    if (id === 'horse_crush' && !firstRender && changed && infoUpdateIndex === infoUpdates.length - 1) {
+      speakInfoUpdate(item);
     }
 
     lastInfoItemId = item.id || `${item.type}:${item.recordedAt}`;
@@ -3094,6 +3203,7 @@
 
   function resetScenario() {
     try {
+      stopInfoSpeech();
       closeScenarioControls();
       api?.clear?.();
       const partnerKey = session?.partnerTaskKey?.(id);
@@ -3106,6 +3216,7 @@
   }
 
   function endScenario() {
+    stopInfoSpeech();
     closeScenarioControls();
     location.href = `/vitals/scenario-launcher.html?select=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&ended=1`;
   }
@@ -3446,6 +3557,19 @@
     findingView = button.dataset.logView === 'category' ? 'category' : 'time';
     renderFindings();
   }));
+  updateInfoVoiceControls();
+  $('infoUpdateVoiceToggle')?.addEventListener('click', event => {
+    event.stopPropagation();
+    setInfoVoiceAuto(!infoVoiceAuto);
+  });
+  $('infoUpdateReplay')?.addEventListener('click', event => {
+    event.stopPropagation();
+    const item = infoUpdates[infoUpdateIndex];
+    if (!item) return;
+    if (!speakInfoUpdate(item, { replay:true })) toast('This browser could not read the current update aloud.');
+  });
+  window.addEventListener('pagehide', stopInfoSpeech);
+
   $('infoUpdatePrevious').addEventListener('click', () => {
     infoUpdateIndex = Math.max(0, infoUpdateIndex - 1);
     infoManuallyCollapsed = false;

@@ -1885,3 +1885,55 @@ body.horse-grade-open .hospital-handoff-workspace{display:none!important}
 @media(max-width:979px){
   .horse-grade-workspace{display:none!important}
 }
+
+
+/* Horse Patient Update TTS 2.222 — compact browser text-to-speech controls. */
+.info-update-head-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.info-update-voice-controls{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.info-update-voice-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  min-height:28px;
+  padding:4px 8px;
+  border:1px solid rgba(148,196,226,.38);
+  border-radius:9px;
+  background:rgba(7,25,38,.54);
+  color:#dceefa;
+  font:inherit;
+  font-size:.72rem;
+  font-weight:750;
+  line-height:1;
+  cursor:pointer;
+}
+.info-update-voice-button:hover{background:rgba(31,78,105,.58);border-color:rgba(126,203,247,.72)}
+.info-update-voice-button:focus-visible{outline:3px solid rgba(79,179,255,.38);outline-offset:2px}
+.info-update-voice-button.is-on{
+  border-color:#4fb3ff;
+  background:rgba(21,91,132,.54);
+  color:#fff;
+}
+.info-update-voice-button.is-speaking{
+  border-color:#7bd7a9;
+  background:rgba(27,106,72,.48);
+}
+.info-update-voice-button:disabled{opacity:.5;cursor:not-allowed}
+.info-update-window.is-speaking{
+  border-left-color:#7bd7a9 !important;
+  box-shadow:inset 0 0 0 1px rgba(123,215,169,.18) !important;
+}
+@media(max-width:560px){
+  .info-update-voice-button{padding:4px 6px}
+  .info-update-voice-button .info-voice-label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+}
