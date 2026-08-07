@@ -1892,6 +1892,81 @@
     restoreSheetScroll(sheetScrollTop);
   }
 
+  const embeddedSimPaths = new Set([
+    ...(registry?.vitalTools || []).map(tool => tool.url),
+    ...(registry?.assessmentTools || []).map(tool => tool.url)
+  ].filter(Boolean));
+
+  function desktopScenarioMode() {
+    return window.matchMedia?.('(min-width: 980px)')?.matches === true;
+  }
+
+  function embeddedToolTitle(anchor, url) {
+    const matching = [...(registry?.vitalTools || []), ...(registry?.assessmentTools || [])]
+      .find(tool => tool.url === url.pathname);
+    return matching?.label || anchor?.textContent?.trim() || 'Assessment simulator';
+  }
+
+  function closeEmbeddedSimulator(options = {}) {
+    const workspace = $('embeddedSimWorkspace');
+    const frame = $('embeddedSimFrame');
+    if (!workspace || workspace.hidden) return;
+    workspace.hidden = true;
+    document.body.classList.remove('sim-workspace-open');
+    if (frame) frame.src = 'about:blank';
+    if (options.refresh !== false) {
+      window.setTimeout(() => refreshFromRecord({ force:true }), 40);
+    }
+  }
+
+  function openEmbeddedSimulator(href, title = 'Assessment simulator') {
+    if (!desktopScenarioMode()) return false;
+    const workspace = $('embeddedSimWorkspace');
+    const frame = $('embeddedSimFrame');
+    if (!workspace || !frame) return false;
+    let url;
+    try { url = new URL(href, location.href); } catch { return false; }
+    if (url.origin !== location.origin || !embeddedSimPaths.has(url.pathname)) return false;
+    url.searchParams.set('embedded', '1');
+    url.searchParams.set('return', `/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&embeddedReturn=1`);
+    const titleNode = $('embeddedSimTitle');
+    if (titleNode) titleNode.textContent = title;
+    workspace.hidden = false;
+    document.body.classList.add('sim-workspace-open');
+    frame.src = url.toString();
+    return true;
+  }
+
+  document.addEventListener('click', event => {
+    if (!desktopScenarioMode()) return;
+    const anchor = event.target.closest?.('a[href]');
+    if (!anchor) return;
+    if (!anchor.closest('#actionSheet') && !anchor.closest('.patient-control-column')) return;
+    let url;
+    try { url = new URL(anchor.href, location.href); } catch { return; }
+    if (!embeddedSimPaths.has(url.pathname)) return;
+    if (openEmbeddedSimulator(url.toString(), embeddedToolTitle(anchor, url))) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }, true);
+
+  $('closeEmbeddedSim')?.addEventListener('click', () => closeEmbeddedSimulator());
+  $('embeddedSimFrame')?.addEventListener('load', () => {
+    const frame = $('embeddedSimFrame');
+    if (!frame || frame.src === 'about:blank') return;
+    try {
+      const current = frame.contentWindow?.location;
+      if (current?.pathname === '/vitals/visual-patient.html') closeEmbeddedSimulator();
+    } catch (_) {
+      // All embedded tools are same-origin; ignore transient navigation access errors.
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (!desktopScenarioMode()) closeEmbeddedSimulator({ refresh:false });
+  });
+
   const initialRecord = ensureRecord();
   const requestedTrainingMode = params.get('training');
   if (requestedTrainingMode === 'learning' || requestedTrainingMode === 'assessment') api?.setDocumentation?.({ trainingMode: requestedTrainingMode });

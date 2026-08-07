@@ -1148,3 +1148,16 @@ body.scene-guide-active .patient-phase-controls{display:none}
     display:none!important;
   }
 }
+
+
+/* Embedded scenario tools in patient pane — desktop UI 2.01 */
+.embedded-sim-workspace[hidden]{display:none}
+.embedded-sim-workspace{position:absolute;inset:0;z-index:12;background:#07131f;display:flex;flex-direction:column}
+.embedded-sim-header{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 11px;border-bottom:1px solid #31566d;background:#0d2232}
+.embedded-sim-header>div{min-width:0;display:grid;gap:1px}
+.embedded-sim-header small{color:#8ccfff;font-size:.58rem;font-weight:900;letter-spacing:.08em}
+.embedded-sim-header strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.82rem}
+.embedded-sim-header button{flex:0 0 auto;min-height:34px;border:1px solid #39789e;border-radius:9px;padding:6px 10px;background:#173f5a;color:#fff;font-size:.7rem;font-weight:900;cursor:pointer}
+.embedded-sim-workspace iframe{display:block;flex:1 1 auto;width:100%;min-height:0;border:0;background:#fff}
+body.sim-workspace-open .patient-stage:after,body.sim-workspace-open .scene-clue-layer{display:none!important}
+@media(max-width:979px){.embedded-sim-workspace{display:none!important}}
