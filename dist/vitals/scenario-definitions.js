@@ -205,7 +205,7 @@
       notIndicatedFindings: ['motor_sensory','chest_assessment','abdominal_assessment','trauma_assessment','rule_of_nines']
     },
     horse_crush: {
-      requiredFindings: ['arrival_parking','scene_size_up','airway','breathing','perfusion','mental_status','blood_pressure','pulse','respirations','spo2','neck_back','chest_assessment','abdominal_assessment','pelvis_hip','left_leg','distal_csm','pain'],
+      requiredFindings: ['arrival_parking','airway','breathing','perfusion','mental_status','blood_pressure','pulse','respirations','spo2','neck_back','chest_assessment','abdominal_assessment','pelvis_hip','left_leg','distal_csm','pain'],
       appropriateFindings: ['pupils','skin','sample','trauma_assessment'],
       optionalFindings: ['blood_glucose','temperature','breath_sounds'],
       notIndicatedFindings: ['pediatric_assessment_triangle','rule_of_nines']

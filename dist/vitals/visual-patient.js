@@ -601,6 +601,7 @@
   }
 
   function buildSceneSizeUpCard(box) {
+    if (id === 'horse_crush') return;
     const complete = existing('scene_size_up');
     const article = document.createElement('article');
     article.className = `assessment-scene-row${complete ? ' complete' : ''}`;
@@ -693,7 +694,7 @@
 
     const immediate = document.createElement('section');
     immediate.className = 'assessment-immediate assessment-level';
-    immediate.innerHTML = '<div class="assessment-section-title"><div><span>Immediate assessment</span><small>Scene safety and rapid Airway, Breathing, Circulation</small></div></div><div class="assessment-immediate-list"></div>';
+    immediate.innerHTML = `<div class="assessment-section-title"><div><span>Immediate assessment</span><small>${id === 'horse_crush' ? 'Arrival handoff and rapid Airway, Breathing, Circulation' : 'Scene safety and rapid Airway, Breathing, Circulation'}</small></div></div><div class="assessment-immediate-list"></div>`;
     box.appendChild(immediate);
     const immediateList = immediate.querySelector('.assessment-immediate-list');
     buildSceneSizeUpCard(immediateList);

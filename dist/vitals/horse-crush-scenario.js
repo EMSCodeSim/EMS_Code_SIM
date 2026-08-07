@@ -3,7 +3,6 @@
 
   const CASE_ID = 'horse_crush';
   const ASSET = '/vitals/assets/horse-crush/';
-  let sceneSizeUpStartedAfterArrival = false;
   const EXAMS = [
     {
       key: 'neck_back',
@@ -113,6 +112,19 @@
       || window.EMSCodeSimPatientRecord?.setFinding?.(key, value, payload);
   }
 
+  function setMainPatientImage(src, alt) {
+    const image = document.getElementById('patientImage');
+    if (image && src) {
+      image.src = src;
+      if (alt) image.alt = alt;
+    }
+    const focus = document.getElementById('focusImage');
+    if (focus && src) {
+      focus.src = src;
+      if (alt) focus.alt = alt;
+    }
+  }
+
   function showHandoff() {
     const type = document.getElementById('infoUpdateType');
     const title = document.getElementById('infoUpdateTitle');
@@ -125,11 +137,7 @@
   }
 
   function revealPatientImage() {
-    const image = document.getElementById('patientImage');
-    if (image) {
-      image.src = `${ASSET}patient-initial.webp`;
-      image.alt = 'Alert patient lying on dirt outside the south barn with the left knee flexed';
-    }
+    setMainPatientImage(`${ASSET}patient-initial.webp`, 'Alert patient lying on dirt outside the south barn with the left knee flexed');
     const controls = document.getElementById('patientPhaseControls');
     if (controls) controls.hidden = false;
     const layer = document.getElementById('sceneClueLayer');
@@ -162,25 +170,12 @@
         <div class="horse-arrival-complete-head"><span>ARRIVAL COMPLETE</span><strong>BLS engine handoff received</strong></div>
         <p class="horse-parking-summary"><b>Ambulance position:</b> ${escapeHtml(saved.value || option.label)}</p>
         <blockquote>“She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented ×4 and complains of left-hip pain. We have not moved her.”</blockquote>
-        <p class="horse-arrival-next">The patient remains on the dirt. Complete scene size-up and the initial ABC assessment before choosing focused exams or movement.</p>`;
+        <p class="horse-arrival-next">The patient remains on the dirt. Begin the initial ABC assessment, then choose focused exams and movement planning.</p>`;
       revealPatientImage();
-
-      // Arrival is the first learner decision in this scenario. Once it is
-      // complete, begin scene size-up unless it was already completed or opened.
-      if (!has('scene_size_up') && !sceneSizeUpStartedAfterArrival) {
-        sceneSizeUpStartedAfterArrival = true;
-        window.setTimeout(() => {
-          window.EMSCodeSimSceneGuide?.start?.(false);
-        }, 180);
-      }
       return;
     }
 
-    const image = document.getElementById('patientImage');
-    if (image) {
-      image.src = `${ASSET}map-arrival.webp`;
-      image.alt = 'Satellite view of the horse facility showing the south barn and patient location';
-    }
+    setMainPatientImage(`${ASSET}map-arrival.webp`, 'Satellite view of the horse facility showing the south barn and patient location');
     const controls = document.getElementById('patientPhaseControls');
     if (controls) controls.hidden = true;
     const layer = document.getElementById('sceneClueLayer');
@@ -252,8 +247,8 @@
       button.innerHTML = `<span>${saved ? '✓' : '○'}</span><div><strong>${escapeHtml(item.label)}</strong><small>${saved ? 'Finding recorded — review again' : 'Perform exam'}</small></div>`;
       button.addEventListener('click', () => {
         reveal.hidden = false;
+        setMainPatientImage(item.image, `${item.label} on the same patient outside the south barn`);
         reveal.innerHTML = `
-          <img src="${item.image}" alt="${escapeHtml(item.label)} on the same patient outside the south barn">
           <div class="horse-exam-content"><p>${escapeHtml(item.label).toUpperCase()}</p><h3>${escapeHtml(item.finding)}</h3><span>${escapeHtml(item.details)}</span>
           <div class="horse-exam-actions"><button type="button" class="horse-record-exam">${saved ? 'Keep recorded finding' : 'Record finding'}</button><button type="button" class="horse-close-exam">Choose another exam</button></div></div>`;
         reveal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });

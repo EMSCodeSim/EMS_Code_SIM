@@ -301,6 +301,7 @@
 
   const config = CASES[caseId] || CASES.asthma;
   const primaryConfig = PRIMARY_CASES[caseId] || PRIMARY_CASES.asthma;
+  const SKIP_SCENE_GUIDE = caseId === 'horse_crush';
   const sceneQuestions = questionsFor(config);
   const primaryQuestions = primaryQuestionsFor(primaryConfig);
   let activeGuide = 'scene';
@@ -333,20 +334,36 @@
     return ['airway', 'breathing', 'perfusion'].every(key => Boolean(api?.getFinding?.(key, api?.active?.())));
   }
 
+  function sceneGuideComplete() {
+    return SKIP_SCENE_GUIDE ? Boolean(api?.getFinding?.('arrival_parking', api?.active?.()) || record()?.findings?.arrival_parking) : Boolean(completedFinding);
+  }
+
   function updatePhaseControls() {
-    const sceneDone = Boolean(completedFinding);
+    const sceneDone = sceneGuideComplete();
     const abcDone = primaryComplete();
     const sceneButton = $('startSceneSizeupPhoto');
     const abcButton = $('startInitialABCPhoto');
     const sceneStatus = $('sceneSizeupPhotoStatus');
     const abcStatus = $('initialABCPhotoStatus');
-    if (sceneButton) sceneButton.classList.toggle('complete', sceneDone);
+    if (sceneButton) {
+      sceneButton.classList.toggle('complete', sceneDone);
+      if (SKIP_SCENE_GUIDE) {
+        sceneButton.hidden = true;
+        const wrap = sceneButton.closest('.patient-phase-button-wrap');
+        if (wrap) wrap.hidden = true;
+      }
+    }
     if (abcButton) {
       abcButton.disabled = !sceneDone;
       abcButton.classList.toggle('complete', abcDone);
+      if (SKIP_SCENE_GUIDE) {
+        const labelSmall = abcButton.querySelector('small');
+        if (labelSmall) labelSmall.textContent = 'STEP 1';
+      }
     }
     if (sceneStatus) sceneStatus.textContent = sceneDone ? 'Review' : 'Begin';
     if (abcStatus) abcStatus.textContent = !sceneDone ? 'Complete scene first' : abcDone ? 'Review' : 'Begin';
+    if (SKIP_SCENE_GUIDE && abcStatus) abcStatus.textContent = abcDone ? 'Review' : 'Begin';
   }
 
   function setPhaseControlsVisible(visible) {
@@ -581,7 +598,7 @@
   }
 
   function startPrimary(review = false) {
-    if (!completedFinding) {
+    if (!completedFinding && !SKIP_SCENE_GUIDE) {
       startGuide(false);
       return;
     }
@@ -661,16 +678,12 @@
     $('startSceneSizeupPhoto')?.addEventListener('click', () => startGuide(Boolean(completedFinding)));
     $('startInitialABCPhoto')?.addEventListener('click', () => startPrimary(primaryComplete()));
     updatePhaseControls();
-    const activeScenarioId = new URLSearchParams(location.search).get('case')
-      || window.EMSCodeSimPatientRecord?.active?.()?.scenarioId
-      || '';
-    const arrivalDecisionPending = activeScenarioId === 'horse_crush'
-      && !window.EMSCodeSimPatientRecord?.active?.()?.findings?.arrival_parking;
-
-    // The horse-crush case begins with apparatus positioning. Do not open
-    // scene size-up until the learner has completed the arrival decision.
-    if (arrivalDecisionPending) showReady();
-    else if (!completedFinding) startGuide(false);
+    if (SKIP_SCENE_GUIDE) {
+      if (!primaryComplete()) startPrimary(false);
+      else showReady();
+      return;
+    }
+    if (!completedFinding) startGuide(false);
     else if (!primaryComplete()) startPrimary(false);
     else showReady();
   }
@@ -689,7 +702,7 @@
       return true;
     },
     isComplete() {
-      return Boolean(completedFinding);
+      return sceneGuideComplete();
     },
     isPrimaryComplete() {
       return primaryComplete();
