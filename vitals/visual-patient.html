@@ -28,53 +28,58 @@
     </div>
 
     <div class="patient-desktop-workspace">
-    <section class="patient-stage" aria-label="Patient view">
-      <img id="patientImage" src="/vitals/assets/scenario-patient-adult-v3.png" alt="Patient awaiting assessment">
-      <aside id="infoUpdateWindow" class="info-update-window info-dispatch" aria-live="polite" aria-label="Scenario information updates">
-        <div class="info-update-head">
-          <span id="infoUpdateType">DISPATCH</span>
-          <div class="info-update-head-actions"><span id="infoUpdateUnread" class="info-update-unread" hidden>New</span><time id="infoUpdateTime">00:00</time><button id="infoUpdateCollapse" type="button" aria-expanded="true" aria-label="Collapse patient update">⌃</button></div>
-        </div>
-        <strong id="infoUpdateTitle">Dispatch information</strong>
-        <p id="infoUpdateText">Review the dispatch and patient picture before beginning care.</p>
-        <div class="info-update-controls">
-          <button id="infoUpdatePrevious" type="button" aria-label="Previous information update">‹</button>
-          <span id="infoUpdateCount">1 of 1</span>
-          <button id="infoUpdateNext" type="button" aria-label="Next information update">›</button>
-        </div>
-      </aside>
-      <div id="sceneClueLayer" class="scene-clue-layer" aria-hidden="true"></div>
-    </section>
-
-    <section class="patient-entry-workflow" aria-label="Initial scenario questions">
-      <div id="patientPhaseControls" class="patient-phase-controls" aria-label="Initial patient assessment phases">
-        <button id="startSceneSizeupPhoto" type="button">
-          <span><small>STEP 1</small><strong>Scene size-up</strong></span>
-          <em id="sceneSizeupPhotoStatus">Begin</em>
-        </button>
-        <button id="startInitialABCPhoto" type="button" disabled>
-          <span><small>STEP 2</small><strong>Initial ABC</strong></span>
-          <em id="initialABCPhotoStatus">Complete scene first</em>
-        </button>
-      </div>
-
-      <section id="sceneGuide" class="scene-guide scene-guide-photo" hidden aria-labelledby="sceneGuideTitle">
-        <div class="scene-guide-head">
-          <div>
-            <p id="sceneGuideEyebrow">SCENE SIZE-UP</p>
-            <h2 id="sceneGuideTitle">Look at the patient and make a decision</h2>
-          </div>
-          <div class="scene-guide-head-actions"><a href="/nremt-skill-sheets.html" target="_blank" rel="noopener" aria-label="Open the NREMT skill-sheet library">Skill sheet</a><button id="sceneGuideCollapse" type="button" aria-expanded="true" aria-label="Minimize guided assessment">⌄</button></div>
-        </div>
-        <div class="scene-guide-progress"><span id="sceneGuideProgress">Scene size-up 1 of 9</span><div aria-hidden="true"><i id="sceneGuideBar"></i></div></div>
-        <div id="sceneGuideQuestion" class="scene-guide-question"></div>
-        <div id="sceneGuideFeedback" class="scene-guide-feedback" hidden aria-live="polite"></div>
-        <div class="scene-guide-actions">
-          <button id="sceneGuideSkip" class="secondary" type="button">Close for now</button>
-          <button id="sceneGuideNext" class="primary" type="button" disabled>Record and continue</button>
-        </div>
-        <p class="guide-note">Use the photo, dispatch, and approach observations. “Not enough information at this time” is always available. Answers are reviewed during the final debrief.</p>
+    <section class="scenario-hero-layout" aria-label="Scenario patient view and control area">
+      <section class="patient-stage" aria-label="Patient view">
+        <img id="patientImage" src="/vitals/assets/scenario-patient-adult-v3.png" alt="Patient awaiting assessment">
+        <div id="sceneClueLayer" class="scene-clue-layer" aria-hidden="true"></div>
       </section>
+
+      <aside class="patient-control-column" aria-label="Scenario information and controls">
+        <aside id="infoUpdateWindow" class="info-update-window info-dispatch" aria-live="polite" aria-label="Scenario information updates">
+          <div class="info-update-head">
+            <span id="infoUpdateType">DISPATCH</span>
+            <div class="info-update-head-actions"><span id="infoUpdateUnread" class="info-update-unread" hidden>New</span><time id="infoUpdateTime">00:00</time><button id="infoUpdateCollapse" type="button" aria-expanded="true" aria-label="Collapse patient update">⌃</button></div>
+          </div>
+          <strong id="infoUpdateTitle">Dispatch information</strong>
+          <p id="infoUpdateText">Review the dispatch and patient picture before beginning care.</p>
+          <div class="info-update-controls">
+            <button id="infoUpdatePrevious" type="button" aria-label="Previous information update">‹</button>
+            <span id="infoUpdateCount">1 of 1</span>
+            <button id="infoUpdateNext" type="button" aria-label="Next information update">›</button>
+          </div>
+        </aside>
+
+        <section class="patient-entry-workflow" aria-label="Initial scenario questions">
+          <div id="patientPhaseControls" class="patient-phase-controls" aria-label="Initial patient assessment phases">
+            <button id="startSceneSizeupPhoto" type="button">
+              <span><small>STEP 1</small><strong>Scene size-up</strong></span>
+              <em id="sceneSizeupPhotoStatus">Begin</em>
+            </button>
+            <button id="startInitialABCPhoto" type="button" disabled>
+              <span><small>STEP 2</small><strong>Initial ABC</strong></span>
+              <em id="initialABCPhotoStatus">Complete scene first</em>
+            </button>
+          </div>
+
+          <section id="sceneGuide" class="scene-guide scene-guide-photo" hidden aria-labelledby="sceneGuideTitle">
+            <div class="scene-guide-head">
+              <div>
+                <p id="sceneGuideEyebrow">SCENE SIZE-UP</p>
+                <h2 id="sceneGuideTitle">Look at the patient and make a decision</h2>
+              </div>
+              <div class="scene-guide-head-actions"><a href="/nremt-skill-sheets.html" target="_blank" rel="noopener" aria-label="Open the NREMT skill-sheet library">Skill sheet</a><button id="sceneGuideCollapse" type="button" aria-expanded="true" aria-label="Minimize guided assessment">⌄</button></div>
+            </div>
+            <div class="scene-guide-progress"><span id="sceneGuideProgress">Scene size-up 1 of 9</span><div aria-hidden="true"><i id="sceneGuideBar"></i></div></div>
+            <div id="sceneGuideQuestion" class="scene-guide-question"></div>
+            <div id="sceneGuideFeedback" class="scene-guide-feedback" hidden aria-live="polite"></div>
+            <div class="scene-guide-actions">
+              <button id="sceneGuideSkip" class="secondary" type="button">Close for now</button>
+              <button id="sceneGuideNext" class="primary" type="button" disabled>Record and continue</button>
+            </div>
+            <p class="guide-note">Use the photo, dispatch, and approach observations. “Not enough information at this time” is always available. Answers are reviewed during the final debrief.</p>
+          </section>
+        </section>
+      </aside>
     </section>
     </div>
 
