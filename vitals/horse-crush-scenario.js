@@ -5,6 +5,14 @@
   const ASSET = '/vitals/assets/horse-crush/';
   const EXAMS = [
     {
+      key: 'head_exam',
+      label: 'Head exam',
+      image: `${ASSET}patient-initial.webp`,
+      finding: 'No visible head trauma, bleeding, swelling, or facial injury is identified. The patient denies head pain and remembers the entire event.',
+      details: 'No loss of consciousness is reported. Continue neurologic observation and reassess if mental status, headache, nausea, or other symptoms change.',
+      normality: 'normal'
+    },
+    {
       key: 'neck_back',
       label: 'Neck and back exam',
       image: `${ASSET}exam-neck-back.webp`,
@@ -37,11 +45,19 @@
       normality: 'not-normal'
     },
     {
+      key: 'upper_extremities',
+      label: 'Upper-extremity exam',
+      image: `${ASSET}patient-initial.webp`,
+      finding: 'Both upper extremities are without tenderness, deformity, swelling, or visible injury. The patient moves both arms normally.',
+      details: 'Radial pulses are present bilaterally with intact sensation and movement. No upper-extremity injury is identified on this exam.',
+      normality: 'normal'
+    },
+    {
       key: 'left_leg',
-      label: 'Left-leg exam',
+      label: 'Lower-extremity exam',
       image: `${ASSET}exam-leg.webp`,
-      finding: 'The left knee remains flexed in a position of comfort. The patient cannot lower or straighten the leg because movement causes severe left-hip pain.',
-      details: 'No obvious deformity, dislocation, shortening, rotation, open injury, or significant swelling is seen. Pain radiates from the hip down the leg.',
+      finding: 'The right lower extremity is unremarkable. The left knee remains flexed in a position of comfort, and the patient cannot lower or straighten the left leg because movement causes severe left-hip pain.',
+      details: 'No obvious deformity, dislocation, shortening, rotation, open injury, or significant swelling is seen. Pain radiates from the left hip down the leg.',
       normality: 'not-normal'
     },
     {
@@ -167,6 +183,7 @@
 
     const saved = record()?.findings?.arrival_parking;
     if (saved) {
+      document.body.classList.remove('horse-arrival-pending');
       // The arrival decision is complete. Remove the temporary arrival card so the
       // right-side desktop workspace stays clear; the BLS handoff is shown in the
       // persistent information window instead.
@@ -175,6 +192,7 @@
       return;
     }
 
+    document.body.classList.add('horse-arrival-pending');
     setMainPatientImage(`${ASSET}map-arrival.webp`, 'Satellite view of the horse facility showing the south barn and patient location');
     const controls = document.getElementById('patientPhaseControls');
     if (controls) controls.hidden = true;
@@ -223,52 +241,76 @@
     saveFinding('trauma_assessment', 'Systematic pre-movement trauma examination completed', {
       label: 'Rapid trauma assessment',
       normality: 'not-normal',
-      details: 'No head, spinal, chest, or abdominal injury was identified. The pelvis is stable with focal left-hip tenderness. The leg has no obvious deformity, shortening, or rotation. Distal circulation, sensation, and movement are intact.'
+      details: 'No head, spinal, chest, or abdominal injury was identified. The pelvis is stable with focal left-hip tenderness. The leg has no obvious deformity, shortening, or rotation. Distal circulation, sensation, and movement are intact.',
+      suppressInfoUpdate: true
     });
+  }
+
+  function performExam(key) {
+    if (!isActive()) return null;
+    const item = EXAMS.find(exam => exam.key === key);
+    if (!item) return null;
+    setMainPatientImage(item.image, `${item.label} on the same patient outside the south barn`);
+    const saved = record()?.findings?.[item.key];
+    if (!saved) {
+      saveFinding(item.key, item.finding, {
+        label: item.label,
+        normality: item.normality,
+        details: item.details,
+        image: item.image,
+        source: 'horse-crush-focused-exam'
+      });
+      maybeSaveCompleteTraumaExam();
+    } else {
+      window.EMSCodeSimPatientInfo?.showSceneObservation?.({
+        id: `horse-exam-review-${item.key}-${Date.now()}`,
+        type: 'ASSESSMENT REVIEW',
+        title: item.label,
+        text: item.finding,
+        kind: item.normality === 'not-normal' ? 'alert' : 'assessment',
+        sticky: true
+      });
+    }
+    return item;
   }
 
   function renderAssessmentSection(container) {
     if (!isActive() || !container) return;
-    const completed = EXAMS.filter(item => has(item.key)).length;
+    const desktop = window.matchMedia?.('(min-width: 980px)')?.matches === true;
     const section = document.createElement('section');
     section.className = 'horse-assessment-section assessment-level';
-    section.innerHTML = `
-      <div class="assessment-section-title"><div><span>Focused physical exam</span><small>Select any exam you want, in any order. The picture changes to show the exam and the finding is revealed only when you perform it.</small></div><em>${completed} performed</em></div>
-      <div class="horse-exam-grid"></div>
-      <article class="horse-exam-reveal" hidden aria-live="polite"></article>`;
-    const grid = section.querySelector('.horse-exam-grid');
-    const reveal = section.querySelector('.horse-exam-reveal');
 
-    EXAMS.forEach(item => {
-      const saved = record()?.findings?.[item.key];
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = `horse-exam-button${saved ? ' complete' : ''}`;
-      button.innerHTML = `<span>${saved ? '✓' : '○'}</span><div><strong>${escapeHtml(item.label)}</strong><small>${saved ? 'Finding recorded — review again' : 'Perform exam'}</small></div>`;
-      button.addEventListener('click', () => {
-        reveal.hidden = false;
-        setMainPatientImage(item.image, `${item.label} on the same patient outside the south barn`);
-        reveal.innerHTML = `
-          <div class="horse-exam-content"><p>${escapeHtml(item.label).toUpperCase()}</p><h3>${escapeHtml(item.finding)}</h3><span>${escapeHtml(item.details)}</span>
-          <div class="horse-exam-actions"><button type="button" class="horse-record-exam">${saved ? 'Keep recorded finding' : 'Record finding'}</button><button type="button" class="horse-close-exam">Choose another exam</button></div></div>`;
-        reveal.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        reveal.querySelector('.horse-close-exam')?.addEventListener('click', () => { reveal.hidden = true; setMainPatientImage(`${ASSET}patient-initial.webp`, 'Alert patient lying on dirt outside the south barn with the left knee flexed'); });
-        reveal.querySelector('.horse-record-exam')?.addEventListener('click', () => {
-          if (!has(item.key)) {
-            saveFinding(item.key, item.finding, {
-              label: item.label,
-              normality: item.normality,
-              details: item.details,
-              image: item.image,
-              source: 'horse-crush-focused-exam'
-            });
-            maybeSaveCompleteTraumaExam();
-          }
-          reveal.hidden = true;
+    if (!desktop) {
+      const completed = EXAMS.filter(item => has(item.key)).length;
+      section.innerHTML = `
+        <div class="assessment-section-title"><div><span>Focused physical exam</span><small>Select the body area you want to examine. The finding appears in the patient update window.</small></div><em>${completed} performed</em></div>
+        <div class="horse-exam-grid"></div>`;
+      const grid = section.querySelector('.horse-exam-grid');
+      EXAMS.forEach(item => {
+        const saved = record()?.findings?.[item.key];
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `horse-exam-button${saved ? ' complete' : ''}`;
+        button.innerHTML = `<span>${saved ? '✓' : '○'}</span><div><strong>${escapeHtml(item.label)}</strong><small>${saved ? 'Recorded — review again' : 'Perform exam'}</small></div>`;
+        button.addEventListener('click', () => performExam(item.key));
+        grid.appendChild(button);
+      });
+    } else {
+      section.classList.add('horse-assessment-selector');
+      section.innerHTML = `
+        <div class="assessment-section-title"><div><span>Choose current assessment</span><small>Select the exam you want in the fixed Current Assessment workspace. Only one exam block is open at a time.</small></div></div>
+        <div class="horse-assessment-selector-grid">
+          <button type="button" data-horse-assessment="abc"><strong>ABC assessment</strong><small>Airway · Breathing · Circulation</small></button>
+          <button type="button" data-horse-assessment="head_to_toe"><strong>Head-to-toe exam</strong><small>Head · Neck/back · Chest · Abdomen · Pelvis · Extremities</small></button>
+          <button type="button" data-horse-assessment="focused_leg"><strong>Focused hip / leg exam</strong><small>Pelvis/hip · Lower extremities · Distal CSM</small></button>
+        </div>`;
+      section.querySelectorAll('[data-horse-assessment]').forEach(button => {
+        button.addEventListener('click', () => {
+          window.EMSCodeSimHorseWorkspace?.selectAssessment?.(button.dataset.horseAssessment);
         });
       });
-      grid.appendChild(button);
-    });
+    }
+
     const immediate = container.querySelector('.assessment-immediate');
     if (immediate) immediate.insertAdjacentElement('afterend', section);
     else container.prepend(section);
@@ -422,6 +464,7 @@
     init,
     renderArrivalCard,
     renderAssessmentSection,
-    renderMovementSection
+    renderMovementSection,
+    performExam
   });
 })();

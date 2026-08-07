@@ -80,6 +80,9 @@
   let lastInfoItemId = '';
   let assessmentComplaintFocus = '';
   let lastHistoryResponse = null;
+  let horseWorkspaceContext = null;
+  let horseCurrentAssessment = 'abc';
+  let horseAssessmentCollapsed = false;
   const renderSignatures = { vitals:'', assessments:'', history:'', treatments:'', findings:'', progress:'' };
 
   function dataSignature(value) {
@@ -687,10 +690,11 @@
     function resetQuestionBox() {
       if (!questionBox) return;
       questionBox.classList.remove('active');
+      const activeLabel = horseCurrentAssessment === 'abc' ? 'Select Airway, Breathing, or Circulation.' : 'Perform an exam segment. Any follow-up question will appear here.';
       questionBox.innerHTML = `
         <div class="horse-question-placeholder">
-          <small>CLINICAL DECISION</small>
-          <strong>Select Airway, Breathing, or Circulation to begin.</strong>
+          <small>FOLLOW-UP QUESTION</small>
+          <strong>${escapeHtml(activeLabel)}</strong>
         </div>`;
     }
     function openFollowup(key) {
@@ -774,7 +778,98 @@
       });
       list.appendChild(row);
     });
+    configureHorseCurrentAssessmentWorkspace({ openFollowup, observations, labels, resetQuestionBox });
   }
+
+  function configureHorseCurrentAssessmentWorkspace(context = horseWorkspaceContext) {
+    if (id !== 'horse_crush') return;
+    const workspace = $('horseCurrentAssessment');
+    const body = $('horseCurrentAssessmentBody');
+    const title = $('horseCurrentAssessmentTitle');
+    const collapse = $('horseCollapseAssessment');
+    const choose = $('horseChooseAssessment');
+    if (!workspace || !body || !title || !context) return;
+    horseWorkspaceContext = context;
+    workspace.dataset.activeAssessment = horseCurrentAssessment;
+    workspace.classList.toggle('is-collapsed', horseAssessmentCollapsed);
+    body.hidden = horseAssessmentCollapsed;
+    if (collapse) {
+      collapse.textContent = horseAssessmentCollapsed ? '⌄' : '⌃';
+      collapse.setAttribute('aria-expanded', String(!horseAssessmentCollapsed));
+      collapse.onclick = () => {
+        horseAssessmentCollapsed = !horseAssessmentCollapsed;
+        configureHorseCurrentAssessmentWorkspace();
+      };
+    }
+    if (choose) choose.onclick = () => openSheet('assessmentPanel');
+
+    const groups = {
+      abc: {
+        title: 'ABC Assessment',
+        subtitle: 'Rapidly confirm immediate life threats.',
+        keys: ['airway','breathing','perfusion']
+      },
+      head_to_toe: {
+        title: 'Head-to-Toe Exam',
+        subtitle: 'Work systematically. Opening this block closes the prior assessment block.',
+        keys: ['head_exam','neck_back','chest_assessment','abdominal_assessment','pelvis_hip','upper_extremities','left_leg','distal_csm']
+      },
+      focused_leg: {
+        title: 'Focused Hip / Leg Exam',
+        subtitle: 'Target the painful region before movement and packaging.',
+        keys: ['pelvis_hip','left_leg','distal_csm']
+      }
+    };
+    const group = groups[horseCurrentAssessment] || groups.abc;
+    title.textContent = group.title;
+    if (horseAssessmentCollapsed) return;
+
+    const examMap = new Map((window.EMSCodeSimHorseCrush?.EXAMS || []).map(item => [item.key, item]));
+    const abcLabels = context.labels || { airway:'Airway', breathing:'Breathing', perfusion:'Circulation / perfusion' };
+    body.innerHTML = `<p class="horse-current-assessment-help">${escapeHtml(group.subtitle)}</p><div class="horse-current-exam-grid"></div>`;
+    const grid = body.querySelector('.horse-current-exam-grid');
+    group.keys.forEach(key => {
+      const isAbc = ['airway','breathing','perfusion'].includes(key);
+      const exam = examMap.get(key);
+      const finding = api?.getFinding?.(key, record());
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `horse-current-exam-button${finding ? ' complete' : ''}${finding?.normality === 'not-normal' || finding?.status === 'abnormal' ? ' abnormal' : ''}`;
+      const label = isAbc ? abcLabels[key] : (exam?.label || labelFor(key));
+      button.innerHTML = `<span>${finding ? '✓' : '○'}</span><div><strong>${escapeHtml(label)}</strong><small>${finding ? 'Recorded — click to reassess/review' : 'Perform exam'}</small></div>`;
+      button.addEventListener('click', () => {
+        if (isAbc) {
+          sceneObservationUpdate = {
+            id:`horse-abc-active`,
+            type:'NEW ASSESSMENT INFORMATION',
+            title:`${abcLabels[key]} assessment`,
+            text:context.observations[key],
+            kind:'assessment',
+            sticky:true,
+            recordedAt:new Date().toISOString()
+          };
+          infoManuallyCollapsed = false;
+          lastInfoSignature = '';
+          renderInfoUpdate(true);
+          context.openFollowup(key);
+          return;
+        }
+        const result = window.EMSCodeSimHorseCrush?.performExam?.(key);
+        if (!result) toast('That exam is not available yet.');
+      });
+      grid.appendChild(button);
+    });
+  }
+
+  function selectHorseCurrentAssessment(type) {
+    const allowed = new Set(['abc','head_to_toe','focused_leg']);
+    horseCurrentAssessment = allowed.has(type) ? type : 'abc';
+    horseAssessmentCollapsed = false;
+    configureHorseCurrentAssessmentWorkspace();
+    horseWorkspaceContext?.resetQuestionBox?.();
+    if (desktopWorkspace()) closeSheet();
+  }
+
   function buildPrimaryAssessmentCard(box) {
     const primaryKeys = ['airway','breathing','perfusion'];
     const completed = primaryKeys.filter(existing).length;
@@ -1915,6 +2010,7 @@
     if (desktopWorkspace()) {
       $('sheetBackdrop').hidden = true;
       document.body.style.overflow = '';
+      if (id === 'horse_crush') document.body.classList.add('horse-tool-sheet-open');
     } else {
       $('sheetBackdrop').hidden = false;
       document.body.style.overflow = 'hidden';
@@ -1933,6 +2029,15 @@
 
   function closeSheet() {
     if (desktopWorkspace()) {
+      if (id === 'horse_crush') {
+        $('actionSheet').hidden = true;
+        $('sheetBackdrop').hidden = true;
+        document.body.classList.remove('horse-tool-sheet-open');
+        document.body.style.overflow = '';
+        document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
+        configureHorseCurrentAssessmentWorkspace();
+        return;
+      }
       openSheet('assessmentPanel');
       return;
     }
@@ -1965,21 +2070,31 @@
       if (id === 'horse_crush') {
         const infoWindow = $('infoUpdateWindow');
         const questionBox = $('horseClinicalQuestionBox');
+        const currentAssessment = $('horseCurrentAssessment');
         if (infoWindow && questionBox) infoWindow.insertAdjacentElement('afterend', questionBox);
+        if (questionBox && currentAssessment) questionBox.insertAdjacentElement('afterend', currentAssessment);
       }
       controlColumn.appendChild(sheet);
       controlColumn.appendChild(nav);
-      sheet.hidden = false;
       backdrop.hidden = true;
       document.body.style.overflow = '';
       desktopWorkspaceReady = true;
-      const activePanel = [...document.querySelectorAll('.vp-panel')].find(panel => !panel.hidden)?.id || 'assessmentPanel';
-      openSheet(activePanel);
+      if (id === 'horse_crush') {
+        sheet.hidden = true;
+        document.body.classList.remove('horse-tool-sheet-open');
+        document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
+        configureHorseCurrentAssessmentWorkspace();
+      } else {
+        sheet.hidden = false;
+        const activePanel = [...document.querySelectorAll('.vp-panel')].find(panel => !panel.hidden)?.id || 'assessmentPanel';
+        openSheet(activePanel);
+      }
     } else if (desktopWorkspaceReady) {
       mobileNavAnchor.parentNode?.insertBefore(nav, mobileNavAnchor.nextSibling);
       mobileSheetAnchor.parentNode?.insertBefore(sheet, mobileSheetAnchor.nextSibling);
       sheet.hidden = true;
       backdrop.hidden = true;
+      document.body.classList.remove('horse-tool-sheet-open');
       document.body.style.overflow = '';
       document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
       desktopWorkspaceReady = false;
@@ -2153,6 +2268,12 @@
     if (guidedHistory) guidedHistory.hidden = true;
     const treatmentSub = document.querySelector('#treatmentPanel > .sub');
     if (treatmentSub) treatmentSub.textContent = 'Choose care, movement, packaging, transport, and reassessment decisions as you would on a real call. No fixed skill-sheet sequence is required.';
+    const returnButtonLabel = document.querySelector('#closeSheet span');
+    if (returnButtonLabel) returnButtonLabel.textContent = 'Current assessment';
+    window.EMSCodeSimHorseWorkspace = Object.freeze({
+      selectAssessment: selectHorseCurrentAssessment,
+      showCurrent: closeSheet
+    });
   }
   if ($('modeBadge')) $('modeBadge').textContent = assessmentMode() ? 'Assessment Mode' : 'Learning Mode';
   scenarioStartMs = new Date(initialRecord?.startedAt || Date.now()).getTime();

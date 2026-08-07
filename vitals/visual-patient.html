@@ -6,9 +6,9 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2210">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2211">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2200">
-  <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2200">
+  <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2211">
 </head>
 <body>
   <main class="vp-shell">
@@ -19,7 +19,7 @@
         <h1 id="caseTitle">Visual Patient</h1>
         <p id="scene"></p>
       </div>
-      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">HORSE DEMO 2.204</small></div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">HORSE DESKTOP 2.211</small></div>
     </header>
 
     <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
@@ -57,9 +57,23 @@
         </aside>
         <section id="horseClinicalQuestionBox" class="horse-clinical-question-box" aria-live="polite" aria-label="Current clinical follow-up question">
           <div class="horse-question-placeholder">
-            <small>CLINICAL DECISION</small>
-            <strong>Select Airway, Breathing, or Circulation to begin.</strong>
+            <small>FOLLOW-UP QUESTION</small>
+            <strong>No follow-up question is active.</strong>
           </div>
+        </section>
+
+        <section id="horseCurrentAssessment" class="horse-current-assessment" aria-label="Current assessment workspace">
+          <header class="horse-current-assessment-head">
+            <div>
+              <small>CURRENT ASSESSMENT</small>
+              <strong id="horseCurrentAssessmentTitle">ABC Assessment</strong>
+            </div>
+            <div class="horse-current-assessment-actions">
+              <button id="horseChooseAssessment" type="button">+ Assessment</button>
+              <button id="horseCollapseAssessment" type="button" aria-expanded="true" aria-label="Collapse current assessment">⌃</button>
+            </div>
+          </header>
+          <div id="horseCurrentAssessmentBody" class="horse-current-assessment-body"></div>
         </section>
 
         <section class="patient-entry-workflow" aria-label="Initial scenario questions">
@@ -276,8 +290,8 @@
   <script src="/vitals/scenario-tool-registry.js?v=2200"></script>
   <script src="/vitals/scenario-phase-model.js?v=2200"></script>
   <script src="/vitals/horse-crush-bootstrap.js?v=2200"></script>
-  <script src="/vitals/horse-crush-scenario.js?v=2200"></script>
-  <script src="/vitals/visual-patient.js?v=2210"></script>
+  <script src="/vitals/horse-crush-scenario.js?v=2211"></script>
+  <script src="/vitals/visual-patient.js?v=2211"></script>
   <script src="/vitals/scenario-guided-start.js?v=2202"></script>
 </body>
 </html>
