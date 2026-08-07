@@ -775,6 +775,648 @@
       list.appendChild(row);
     });
   }
+  function buildPrimaryAssessmentCard(box) {
+    const primaryKeys = ['airway','breathing','perfusion'];
+    const completed = primaryKeys.filter(existing).length;
+    const article = document.createElement('details');
+    article.className = `assessment-primary-summary${completed === 3 ? ' complete' : ''}`;
+    article.open = completed < 3;
+    const summaryText = completed === 3
+      ? primaryKeys.map(key => {
+          const state = assessmentState(key);
+          const label = key === 'perfusion' ? 'Circulation' : labelFor(key);
+          return `${label} ${state.code === 'uncertain' ? 'undetermined' : state.code === 'normal' ? 'adequate' : 'abnormal'}`;
+        }).join(' · ')
+      : `${completed} of 3 decisions recorded`;
+    article.innerHTML = `<summary><span class="assessment-primary-check">${completed === 3 ? '✓' : completed}</span><span><strong>${completed === 3 ? 'Initial ABC Recorded' : 'Initial ABC Assessment'}</strong><small>${escapeHtml(summaryText)}</small></span><em>${completed === 3 ? 'Review' : 'Begin'}</em></summary><div class="rapid-primary-list"></div>`;
+    const list = article.querySelector('.rapid-primary-list');
+    primaryKeys.forEach(key => {
+      const label = key === 'perfusion' ? 'Circulation' : labelFor(key);
+      const action = primaryToolLink(key);
+      const row = document.createElement('div');
+      row.className = `primary-assessment-row rapid-primary-clean-row state-${action.state.code}`;
+      row.innerHTML = `<div><strong>${escapeHtml(label)}</strong><small>${escapeHtml(primaryStatus(key))}</small></div>${action.state.code === 'not-assessed' ? '<span class="primary-photo-pending">Photo assessment</span>' : `<a href="${action.href}">${escapeHtml(action.label)}</a>`}`;
+      list.appendChild(row);
+    });
+    const launch = document.createElement('button');
+    launch.type = 'button';
+    launch.className = 'primary-photo-launch';
+    launch.textContent = completed === 3 ? 'Review initial ABC over patient photo' : completed > 0 ? 'Continue initial ABC over patient photo' : 'Begin initial ABC over patient photo';
+    launch.addEventListener('click', event => {
+      event.preventDefault();
+      launchPrimaryPhotoGuide(completed === 3);
+    });
+    list.appendChild(launch);
+    box.appendChild(article);
+  }
+
+  function buildAssessments() {
+    const box = $('assessmentTools');
+    const openCategories = detailsState(box, 'data-assessment-category');
+    const openSections = detailsState(box, 'data-assessment-section');
+    const existingFocus = box?.querySelector('.assessment-focus-control select')?.value;
+    if (existingFocus && COMPLAINT_SORTS[existingFocus]) assessmentComplaintFocus = existingFocus;
+    box.innerHTML = '';
+    box.classList.add('assessment-workflow-clean');
+
+    const immediate = document.createElement('section');
+    immediate.className = 'assessment-immediate assessment-level';
+    immediate.innerHTML = `<div class="assessment-section-title"><div><span>${id === 'horse_crush' ? 'Patient assessment' : 'Immediate assessment'}</span><small>${id === 'horse_crush' ? 'Choose the examinations that fit your clinical approach. You control the order.' : 'Scene safety and rapid Airway, Breathing, Circulation'}</small></div></div><div class="assessment-immediate-list"></div>`;
+    box.appendChild(immediate);
+    const immediateList = immediate.querySelector('.assessment-immediate-list');
+    buildSceneSizeUpCard(immediateList);
+    if (id === 'horse_crush') buildHorsePrimaryAssessmentCard(immediateList);
+    else buildPrimaryAssessmentCard(immediateList);
+    window.EMSCodeSimHorseCrush?.renderAssessmentSection?.(box);
+
+    const unique = new Map();
+    (registry?.assessmentTools || []).forEach(tool => {
+      if (PRIMARY_KEYS.has(tool.key) || tool.key === 'scene_size_up' || ['sample','pain'].includes(tool.key)) return;
+      if (!MEASURABLE_TOOL_KEYS.has(tool.key) && !unique.has(tool.key)) unique.set(tool.key, tool);
+    });
+    const tools = [...unique.values()];
+    if (id !== 'horse_crush') buildRecommendedAssessments(box, tools);
+    buildMoreAssessments(box, tools, new Set([...openCategories, ...openSections]));
+  }
+
+  function interviewHistoryKey(questionId) {
+    return `interview_${String(questionId || 'question').replace(/[^a-z0-9_]+/gi, '_').toLowerCase()}`;
+  }
+
+  function askedInterviewQuestions(current = record() || {}) {
+    const history = current.history || {};
+    return interview.questions.filter(question => Object.prototype.hasOwnProperty.call(history, interviewHistoryKey(question.id)));
+  }
+
+  function cleanPatientQuote(value) {
+    return String(value || '').replace(/^([“"])/, '').replace(/([”"])$/, '');
+  }
+
+  function repeatPatientResponse(question) {
+    const prefix = interview.repeatPrefix || `${interview.responder || 'Patient'} repeats, “`;
+    return `${prefix}${cleanPatientQuote(question.response)}”`;
+  }
+
+  function renderHistoryResponse() {
+    if (!$('historyResponseText')) return;
+    const current = record() || {};
+    const latestLog = [...(api?.listCareLog?.(current, 'history') || [])]
+      .reverse()
+      .find(event => event.source === 'patient-interview');
+    const item = lastHistoryResponse || (latestLog ? {
+      source: interview.responder,
+      question: latestLog.details || latestLog.label,
+      response: latestLog.value,
+      repeated: false
+    } : null);
+    $('historyResponseSource').textContent = String(item?.source || interview.responder || 'Patient').toUpperCase();
+    $('historyResponseText').textContent = item?.response || interview.opening || 'Select a question to begin the interview.';
+    $('historyResponseQuestion').textContent = item?.question || interview.communication || 'Use focused questions based on the patient presentation.';
+    $('historyResponseCard').classList.toggle('is-repeat', Boolean(item?.repeated));
+  }
+
+  function saveInterviewMilestones(askedIds) {
+    const profile = window.EMSCodeSimScenarioDefinitions?.PROFILES?.[id];
+    const asked = new Set(askedIds || []);
+    const sampleComplete = interview.sampleRequired?.length && interview.sampleRequired.every(key => asked.has(key));
+    if (sampleComplete && !existing('sample') && profile?.sample) {
+      session?.saveFinding?.('sample', profile.sample.finding || 'SAMPLE history obtained', {
+        label:'SAMPLE history',
+        details:profile.sample.detail || '',
+        source:'patient-interview',
+        normality:profile.sample.normality || 'not-normal',
+        status:profile.sample.normality === 'normal' ? 'normal' : 'abnormal'
+      }, id);
+      toast('Complete SAMPLE history recorded');
+    }
+    const opqrstComplete = interview.opqrstRequired?.length && interview.opqrstRequired.every(key => asked.has(key));
+    if (opqrstComplete && !existing('pain') && interview.opqrstSummary) {
+      session?.saveFinding?.('pain', 'OPQRST symptom assessment obtained', {
+        label:'Pain / OPQRST',
+        details:interview.opqrstSummary,
+        source:'patient-interview',
+        normality:'not-normal',
+        status:'abnormal'
+      }, id);
+      toast('Complete OPQRST history recorded');
+    }
+  }
+
+  function askInterviewQuestion(question, askedText = '') {
+    if (!question) return;
+    const current = record() || {};
+    const key = interviewHistoryKey(question.id);
+    const repeated = Object.prototype.hasOwnProperty.call(current.history || {}, key);
+    const response = repeated ? repeatPatientResponse(question) : question.response;
+    const spokenQuestion = String(askedText || question.prompt || question.label || '').trim();
+    lastHistoryResponse = {
+      source: interview.responder || 'Patient',
+      question: `You asked: ${spokenQuestion}`,
+      response,
+      repeated
+    };
+    api?.setHistory?.(key, response, {
+      label: question.label || 'Patient interview',
+      details: `Asked: ${spokenQuestion}`,
+      source:'patient-interview',
+      questionId:question.id,
+      repeated
+    });
+    const askedIds = new Set(askedInterviewQuestions(api?.active?.() || current).map(item => item.id));
+    askedIds.add(question.id);
+    saveInterviewMilestones(askedIds);
+    renderSignatures.history = '';
+    refreshFromRecord({ force:true });
+    renderHistoryResponse();
+  }
+
+  function askCustomInterviewQuestion() {
+    const input = $('historyCustomInput');
+    const text = String(input?.value || '').trim();
+    if (!text) { toast('Enter a question for the patient first.'); return; }
+    const match = interviewEngine?.findQuestion?.(id, text);
+    if (match) {
+      askInterviewQuestion(match, text);
+    } else {
+      const custom = {
+        id:`custom_${Date.now()}`,
+        category:'custom',
+        label:text.length > 62 ? `${text.slice(0, 59)}…` : text,
+        prompt:text,
+        response:interview.fallback || 'The patient cannot provide that information.'
+      };
+      askInterviewQuestion(custom, text);
+    }
+    input.value = '';
+  }
+
+  function renderKnownHistory() {
+    const host = $('knownHistoryList');
+    if (!host) return;
+    const current = record() || {};
+    const asked = askedInterviewQuestions(current);
+    $('knownHistoryCount').textContent = `${asked.length} item${asked.length === 1 ? '' : 's'}`;
+    host.innerHTML = '';
+    if (!asked.length) {
+      host.innerHTML = '<p class="empty">No history has been obtained. Ask the patient or available historian a focused question.</p>';
+      return;
+    }
+    asked.forEach(question => {
+      const card = document.createElement('article');
+      card.className = 'known-history-item';
+      card.innerHTML = `<span>${escapeHtml(question.label)}</span><p>${escapeHtml(current.history?.[interviewHistoryKey(question.id)] || question.response)}</p>`;
+      host.appendChild(card);
+    });
+  }
+
+  function buildHistory() {
+    const host = $('historyCategoryList');
+    if (!host) return;
+    const current = record() || {};
+    const asked = new Set(askedInterviewQuestions(current).map(question => question.id));
+    $('historyResponderLabel').textContent = String(interview.responder || 'Patient').toUpperCase();
+    $('historyCommunicationStatus').textContent = interview.communication || 'Patient interview available.';
+    $('historyAskedCount').textContent = `${asked.size} asked`;
+    host.innerHTML = '';
+    (interview.categories || []).forEach((category, categoryIndex) => {
+      const questions = interview.questions.filter(question => question.category === category.id);
+      if (!questions.length) return;
+      const complete = questions.filter(question => asked.has(question.id)).length;
+      const details = document.createElement('details');
+      details.className = `history-question-category history-question-${category.id}`;
+      details.open = categoryIndex === 0 && !asked.size;
+      details.innerHTML = `
+        <summary>
+          <span class="history-category-icon" aria-hidden="true">${escapeHtml(category.icon || '•')}</span>
+          <span><strong>${escapeHtml(category.label)}</strong><small>${escapeHtml(category.description || '')}</small></span>
+          <em>${complete}/${questions.length}</em>
+        </summary>
+        <div class="history-question-list"></div>`;
+      const list = details.querySelector('.history-question-list');
+      questions.forEach(question => {
+        const button = document.createElement('button');
+        const alreadyAsked = asked.has(question.id);
+        button.type = 'button';
+        button.className = `history-question-button${alreadyAsked ? ' asked' : ''}`;
+        button.innerHTML = `<span>${escapeHtml(question.label)}</span><em>${alreadyAsked ? 'Ask again' : 'Ask'}</em>`;
+        button.addEventListener('click', () => askInterviewQuestion(question));
+        list.appendChild(button);
+      });
+      host.appendChild(details);
+    });
+    enforceSingleOpen('#historyCategoryList', '.history-question-category');
+    renderHistoryResponse();
+    renderKnownHistory();
+  }
+
+  const TREATMENT_CATEGORY_META = {
+    airway: { label:'Airway', description:'Positioning, suction, airway protection, and airway support.' },
+    breathing: { label:'Breathing', description:'Oxygenation, ventilation, positioning, and respiratory support.' },
+    circulation: { label:'Circulation', description:'Bleeding control, shock care, perfusion support, and temperature protection.' },
+    medications: { label:'Medications', description:'Medication assistance and protocol-authorized medication care.' },
+    trauma: { label:'Trauma', description:'Trauma-specific stabilization and movement precautions.' },
+    transport: { label:'Transport actions', description:'Time-sensitive movement and destination-related treatment actions.' },
+    support: { label:'Other care', description:'Supportive care and protocol-dependent options.' }
+  };
+
+  function treatmentCategory(plan) {
+    if (plan?.category && TREATMENT_CATEGORY_META[plan.category]) return plan.category;
+    const idValue = String(plan?.id || '').toLowerCase();
+    const labelValue = String(plan?.label || '').toLowerCase();
+    if (/airway_position|airway_support|suction|airway/.test(idValue) || /protect airway|airway support|suction/.test(labelValue)) return 'airway';
+    if (/bronchodilator|oral_glucose|medication|naloxone|epinephrine|aspirin|nitro/.test(idValue) || /inhaler|bronchodilator|oral glucose|medication|naloxone|epinephrine|aspirin|nitro/.test(labelValue)) return 'medications';
+    if (/oxygen|bvm|ventilation|position_comfort|caregiver_position/.test(idValue) || /oxygen|ventilat|position of comfort|caregiver/.test(labelValue)) return 'breathing';
+    if (/hemorrhage|shock|perfusion|warming/.test(idValue) || /hemorrhage|shock|bleeding|keep.*warm/.test(labelValue)) return 'circulation';
+    if (/spinal|trauma/.test(idValue) || /spinal|trauma/.test(labelValue)) return 'trauma';
+    if (/rapid_transport|transport/.test(idValue) || /transport/.test(labelValue)) return 'transport';
+    return 'support';
+  }
+
+  function allTreatmentPlans() {
+    const unique = new Map();
+    const currentPlans = TREATMENT_PLANS[id] || [];
+    currentPlans.forEach(plan => unique.set(plan.id, plan));
+    Object.values(TREATMENT_PLANS).flat().forEach(plan => {
+      if (!unique.has(plan.id)) unique.set(plan.id, plan);
+    });
+    EMT_TREATMENT_LIBRARY.forEach(plan => {
+      const normalized = { ...plan, category: plan.category || treatmentCategory(plan) };
+      if (!unique.has(normalized.id)) unique.set(normalized.id, normalized);
+    });
+    return [...unique.values()].filter(plan => treatmentCategory(plan) !== 'transport');
+  }
+
+  function nextTreatmentCategoryForFinding(key) {
+    if (key === 'airway') return 'airway';
+    if (['breathing','breath_sounds','respirations','spo2','pediatric_assessment_triangle'].includes(key)) return 'breathing';
+    if (['perfusion','pulse','blood_pressure','skin'].includes(key)) return 'circulation';
+    if (['blood_glucose','mental_status'].includes(key)) return 'medications';
+    if (['trauma_assessment','chest_assessment','abdominal_assessment','motor_sensory','neck_back','pelvis_hip','left_leg','distal_csm','movement_plan'].includes(key)) return 'trauma';
+    return 'support';
+  }
+
+  function showClinicalNextActions(finding) {
+    const panel = $('clinicalNextActions');
+    if (!panel || !finding) return;
+    nextActionFinding = finding;
+    const key = finding.key || finding.assessment || finding.context || '';
+    const label = finding.label || labelFor(key) || 'Abnormal finding';
+    const value = finding.value || finding.finding || 'An abnormal finding was recorded.';
+    $('clinicalNextTitle').textContent = label;
+    $('clinicalNextText').textContent = value;
+    panel.hidden = false;
+  }
+
+  function hideClinicalNextActions() {
+    const panel = $('clinicalNextActions');
+    if (panel) panel.hidden = true;
+    nextActionFinding = null;
+  }
+
+  function maybeOfferLatestFinding(force = false) {
+    const current = record();
+    const events = api?.orderedEvents?.(current) || current?.careLog || [];
+    const candidate = [...events].reverse().find(event => {
+      const isAssessment = event.type === 'finding' || event.type === 'assessment' || event.category === 'assessment';
+      return isAssessment && abnormalEvent(event);
+    });
+    if (!candidate) return;
+    const eventId = candidate.id || candidate.eventId || `${candidate.key || ''}:${candidate.recordedAt || ''}:${candidate.value || ''}`;
+    const storageKey = `emscodesim_next_action_${id}`;
+    if (!force && sessionStorage.getItem(storageKey) === eventId) return;
+    const eventTimeMs = new Date(candidate.recordedAt || 0).getTime();
+    if (!force && Number.isFinite(eventTimeMs) && Date.now() - eventTimeMs > 45000) return;
+    sessionStorage.setItem(storageKey, eventId);
+    showClinicalNextActions(candidate);
+  }
+
+  function treatmentEvidence(plan, current = record()) {
+    const findings = current?.findings || {};
+    const present = (plan.evidence || []).filter(key => findings[key]);
+    const abnormal = present.filter(key => {
+      const finding = findings[key] || {};
+      return finding.status === 'abnormal' || finding.normality === 'not-normal';
+    });
+    const text = present.map(key => `${findings[key]?.value || ''} ${findings[key]?.finding || ''}`).join(' ');
+    return { present, abnormal, text };
+  }
+
+  function treatmentDecision(plan, current = record()) {
+    const evidence = treatmentEvidence(plan, current);
+    if (typeof plan.contraindication === 'function' && plan.contraindication(current)) {
+      return { code:'contraindicated', label:'Contraindicated', detail:'Current findings make this treatment unsafe.' };
+    }
+    if (plan.requireText && !plan.requireText.test(evidence.text)) {
+      if (!evidence.present.length) return { code:'assessment-needed', label:'Assessment needed', detail:'Obtain the supporting assessment before choosing this intervention.' };
+      return { code:'not-indicated', label:'Not indicated', detail:'The current finding does not support this intervention.' };
+    }
+    if (evidence.abnormal.length) return { code:'indicated', label:'Indicated', detail:`Supported by ${evidence.abnormal.map(labelFor).join(', ')}.` };
+    if (!evidence.present.length) return { code:'assessment-needed', label:'Assessment needed', detail:'Obtain the supporting assessment before choosing this intervention.' };
+    return { code:'not-indicated', label:'Not indicated', detail:'Available findings are normal or do not support this treatment.' };
+  }
+
+  function treatmentCount(plan) {
+    return (record()?.treatments || []).filter(item => item.actionId === plan.id).length;
+  }
+
+  function treatmentAlreadyRecorded(plan) { return treatmentCount(plan) > 0; }
+
+  function treatmentDocumentation(plan) {
+    return Array.isArray(plan.documentation) ? plan.documentation : [];
+  }
+
+  function treatmentInputValue(form, field) {
+    const input = form.elements.namedItem(field.name);
+    return String(input?.value || '').trim();
+  }
+
+  function validateTreatmentDocumentation(plan, form) {
+    const values = {};
+    for (const field of treatmentDocumentation(plan)) {
+      const value = treatmentInputValue(form, field);
+      if (field.required && !value) return { ok:false, message:`Enter ${field.label.toLowerCase()} before recording this treatment.` };
+      if (value && field.acceptedPattern) {
+        const pattern = new RegExp(field.acceptedPattern, 'i');
+        if (!pattern.test(value)) return { ok:false, message:field.error || `${field.label} is not accepted for this scenario. Review the dose or setting and try again.` };
+      }
+      values[field.name] = value;
+    }
+    return { ok:true, values };
+  }
+
+  function treatmentDocumentationText(plan, values = {}) {
+    return treatmentDocumentation(plan)
+      .map(field => values[field.name] ? `${field.label}: ${values[field.name]}` : '')
+      .filter(Boolean).join(' • ');
+  }
+
+  function treatmentResponseDelay(plan) {
+    if (/transport|rapid_transport/i.test(plan.id || '')) return 1200;
+    if (/oxygen|position|caregiver/i.test(plan.id || '')) return 2200;
+    if (/bronchodilator|oral_glucose|bvm|airway|hemorrhage/i.test(plan.id || '')) return 3600;
+    return 2800;
+  }
+
+  function applyDynamicTreatmentResponse(plan, classification, response) {
+    const now = new Date().toISOString();
+    if (classification === 'appropriate-effective') {
+      const updates = {};
+      if (/bronchodilator/i.test(plan.id || '')) {
+        updates.breathing = 'Work of breathing is improving, though respiratory distress remains.';
+        updates.breath_sounds = 'Wheezing is still present but air movement is improved.';
+        updates.spo2 = id === 'asthma' ? '93%' : valueFor('spo2');
+      } else if (/oral_glucose/i.test(plan.id || '')) {
+        updates.mental_status = 'The patient is more alert and follows commands more consistently.';
+        updates.blood_glucose = '72 mg/dL';
+      } else if (/oxygen/i.test(plan.id || '')) {
+        updates.spo2 = id === 'pediatric' ? '94%' : '94%';
+        updates.breathing = 'Oxygenation is improving; respiratory effort still requires reassessment.';
+      } else if (/bvm|airway_support|airway_position/i.test(plan.id || '')) {
+        updates.airway = 'Airway patency is improved with the intervention in place.';
+        updates.breathing = 'Visible chest rise is present with assisted support.';
+      } else if (/hemorrhage_shock/i.test(plan.id || '')) {
+        updates.perfusion = 'Bleeding is controlled, but signs of poor perfusion remain.';
+      }
+      Object.entries(updates).forEach(([key, value]) => api?.setFinding?.(key, value, { source:'dynamic-treatment-response', status:'abnormal', normality:'not-normal', isReassessment:true, recordedAt:now }));
+    }
+    api?.mergeCareLog?.([{
+      type:'patient_response', category:'treatment', key:plan.targets?.[0] || 'treatment',
+      label:'Patient response observed', value:response,
+      details:'Response became apparent over time. Reassess the affected findings to judge effectiveness.',
+      source:'dynamic-treatment-response', recordedAt:now
+    }]);
+    refreshFromRecord();
+    renderInfoUpdate(true);
+  }
+
+  function scheduleTreatmentResponse(plan, classification, response) {
+    window.setTimeout(() => applyDynamicTreatmentResponse(plan, classification, response), treatmentResponseDelay(plan));
+  }
+
+  function recordUncertainty(context = {}) {
+    const current = record() || {};
+    const label = context.label || labelFor(context.key || '') || 'Clinical finding';
+    const value = context.value || context.finding || 'Additional information is needed before making a decision.';
+    api?.mergeCareLog?.([{
+      type:'uncertainty', category:'assessment', key:context.key || 'clinical_uncertainty',
+      label:'Need more information', value:`${label}: ${value}`,
+      details:'The learner deferred a decision and chose to gather more information.',
+      source:'clinical-workspace', recordedAt:new Date().toISOString()
+    }]);
+    hideClinicalNextActions();
+    refreshFromRecord();
+    toast('Uncertainty recorded — continue gathering information');
+  }
+
+  function recordTreatment(plan, documentation = {}) {
+    const current = record();
+    const decision = treatmentDecision(plan, current);
+    const startedAt = new Date(current?.startedAt || Date.now()).getTime();
+    const elapsedSeconds = Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
+    let classification = plan.outcomeClass || 'appropriate-effective';
+    let response = plan.response;
+    if (!plan.outcomeClass && decision.code === 'contraindicated') {
+      classification = 'contraindicated';
+      response = 'The intervention is unsafe for the current patient condition and does not improve the patient.';
+    } else if (!plan.outcomeClass && decision.code === 'assessment-needed') {
+      classification = 'premature';
+      response = 'The intervention was selected before the indication was established. Obtain the missing assessment and reevaluate.';
+    } else if (!plan.outcomeClass && decision.code === 'not-indicated') {
+      classification = 'unnecessary';
+      response = 'The intervention does not address a current abnormal finding and produces no meaningful improvement.';
+    }
+    const documentationText = treatmentDocumentationText(plan, documentation);
+    const treatment = {
+      actionId: plan.id,
+      treatment: plan.label,
+      name: plan.label,
+      description: documentationText ? `${plan.label} — ${documentationText}` : plan.label,
+      label: 'Treatment performed',
+      source: 'scenario-aware-treatment',
+      classification,
+      indicationStatus: decision.code,
+      indication: decision.detail,
+      documentation,
+      dose: documentation.dose || '',
+      route: documentation.route || '',
+      device: documentation.device || '',
+      targetKeys: plan.targets || [],
+      reassessmentRequired: typeof plan.reassessmentRequired === 'boolean' ? plan.reassessmentRequired : classification === 'appropriate-effective',
+      patientResponse: response,
+      elapsedSeconds,
+      elapsedLabel: `${String(Math.floor(elapsedSeconds / 60)).padStart(2,'0')}:${String(elapsedSeconds % 60).padStart(2,'0')}`
+    };
+    if (session?.addTreatment) session.addTreatment(treatment);
+    else api?.addTreatment?.(treatment);
+    api?.mergeCareLog?.([{
+      type:'documentation', category:'treatment', key:plan.id,
+      label:'Treatment decision committed', value:treatment.description,
+      details:'Patient response is not immediately revealed. Observe and reassess the patient.',
+      source:'scenario-aware-treatment', recordedAt:new Date(Date.now() + 1).toISOString()
+    }]);
+    refreshFromRecord();
+    scheduleTreatmentResponse(plan, classification, response);
+    toast(`${plan.label} recorded — observe and reassess the patient`);
+  }
+
+  function captureTreatmentUi() {
+    const box = $('treatmentTools');
+    const drafts = {};
+    box?.querySelectorAll('[data-treatment-id]').forEach(card => {
+      const form = card.querySelector('.treatment-entry-form');
+      if (!form) return;
+      const values = {};
+      [...form.elements].forEach(field => {
+        if (!field.name) return;
+        values[field.name] = field.type === 'checkbox' ? Boolean(field.checked) : field.value;
+      });
+      drafts[card.dataset.treatmentId] = { open: !form.hidden, values };
+    });
+    return {
+      openCategories: detailsState(box, 'data-treatment-category'),
+      drafts,
+      search: $('treatmentSearch')?.value || ''
+    };
+  }
+
+  function restoreTreatmentUi(state = {}) {
+    Object.entries(state.drafts || {}).forEach(([planId, draft]) => {
+      const card = [...document.querySelectorAll('#treatmentTools [data-treatment-id]')]
+        .find(item => item.dataset.treatmentId === planId);
+      const form = card?.querySelector('.treatment-entry-form');
+      const selectButton = card?.querySelector('.treatment-select');
+      if (!form) return;
+      Object.entries(draft.values || {}).forEach(([name, value]) => {
+        const field = form.elements.namedItem(name);
+        if (!field) return;
+        if (field.type === 'checkbox') field.checked = Boolean(value);
+        else field.value = value;
+      });
+      form.hidden = !draft.open;
+      if (selectButton) selectButton.hidden = Boolean(draft.open);
+    });
+    if ($('treatmentSearch')) $('treatmentSearch').value = state.search || '';
+  }
+
+  function treatmentFieldMarkup(field) {
+    const required = field.required ? 'required' : '';
+    const hint = field.hint ? `<small>${escapeHtml(field.hint)}</small>` : '';
+    if (field.type === 'select') {
+      return `<label>${escapeHtml(field.label)}<select name="${escapeHtml(field.name)}" ${required}><option value="">Choose</option>${(field.options || []).map(option => `<option value="${escapeHtml(option)}">${escapeHtml(option)}</option>`).join('')}</select>${hint}</label>`;
+    }
+    return `<label>${escapeHtml(field.label)}<input name="${escapeHtml(field.name)}" type="${field.type || 'text'}" inputmode="${field.inputmode || 'text'}" placeholder="${escapeHtml(field.placeholder || '')}" ${required}>${hint}</label>`;
+  }
+
+  function renderTreatmentCard(plan) {
+    const recordedCount = treatmentCount(plan);
+    const recorded = recordedCount > 0;
+    const article = document.createElement('article');
+    article.className = `treatment-card treatment-neutral-card${recorded ? ' complete' : ''}`;
+    article.dataset.treatmentId = plan.id;
+    const fields = treatmentDocumentation(plan);
+    article.innerHTML = `
+      <div class="treatment-card-heading">
+        <div><h3>${escapeHtml(plan.label)}</h3></div>
+        <span class="status-chip ${recorded ? 'done' : ''}">${recorded ? `${recordedCount} recorded` : 'Available'}</span>
+      </div>
+      <p>${escapeHtml(plan.summary)}</p>
+      <button class="primary-action treatment-select" type="button">${recorded ? (/medication|aspirin|nitro|epinephrine|naloxone|glucose|bronchodilator/i.test(`${plan.id} ${plan.label}`) ? 'Give another dose' : 'Perform again') : 'Select treatment'}</button>
+      <form class="treatment-entry-form" hidden>
+        ${fields.map(treatmentFieldMarkup).join('')}
+        <label>Decision confidence<select name="certainty"><option value="confident">Confident</option><option value="uncertain">Uncertain — proceeding while monitoring</option><option value="need-more-information">Need more information before committing</option></select></label>
+        <label>Clinical note<textarea name="note" rows="2" placeholder="Optional treatment details"></textarea></label>
+        <div class="treatment-form-actions"><button class="secondary treatment-cancel" type="button">Cancel</button><button class="primary-action treatment-confirm" type="submit">Perform and record</button></div>
+        <p class="treatment-entry-error" hidden></p>
+      </form>`;
+    const selectButton = article.querySelector('.treatment-select');
+    const form = article.querySelector('.treatment-entry-form');
+    selectButton?.addEventListener('click', () => { form.hidden = false; selectButton.hidden = true; form.querySelector('input,select,textarea')?.focus(); });
+    article.querySelector('.treatment-cancel')?.addEventListener('click', () => { form.hidden = true; selectButton.hidden = false; });
+    form?.addEventListener('submit', event => {
+      event.preventDefault();
+      const validation = validateTreatmentDocumentation(plan, form);
+      const error = form.querySelector('.treatment-entry-error');
+      if (!validation.ok) { error.textContent = validation.message; error.hidden = false; return; }
+      error.hidden = true;
+      validation.values.note = String(form.elements.namedItem('note')?.value || '').trim();
+      const certainty = String(form.elements.namedItem('certainty')?.value || 'confident');
+      if (certainty === 'need-more-information') { recordUncertainty({ key:plan.id, label:plan.label, value:'Treatment decision deferred pending more information.' }); form.hidden = true; selectButton.hidden = false; return; }
+      validation.values.certainty = certainty;
+      form.hidden = true;
+      selectButton.hidden = false;
+      recordTreatment(plan, validation.values);
+    });
+    return article;
+  }
+
+  function buildTreatments() {
+    const box = $('treatmentTools');
+    const uiState = captureTreatmentUi();
+    box.innerHTML = '';
+    box.classList.add('treatment-category-menu');
+    const intro = document.createElement('div');
+    intro.className = 'treatment-neutral-intro';
+    intro.innerHTML = id === 'horse_crush'
+      ? `<strong>Run the call your way.</strong><span>Choose treatment and movement decisions in any order. The simulator records the decision and patient response; it does not require an NREMT sequence.</span>`
+      : `<strong>Select care by category.</strong><span>All common EMT-level choices remain available. Local scope, protocol, medication authorization, and medical direction control what may actually be performed. Treatment feedback remains hidden until the final debrief.</span>`;
+    box.appendChild(intro);
+    window.EMSCodeSimHorseCrush?.renderMovementSection?.(box);
+
+    const categories = new Map();
+    allTreatmentPlans().forEach(plan => {
+      const category = treatmentCategory(plan);
+      if (!categories.has(category)) categories.set(category, []);
+      categories.get(category).push(plan);
+    });
+
+    Object.keys(TREATMENT_CATEGORY_META).forEach(category => {
+      const plans = categories.get(category) || [];
+      if (!plans.length) return;
+      const meta = TREATMENT_CATEGORY_META[category];
+      const details = document.createElement('details');
+      details.className = `treatment-category treatment-category-${category}`;
+      details.dataset.treatmentCategory = category;
+      details.open = treatmentCategoryFocus === category || uiState.openCategories.has(category);
+      const recordedCount = plans.filter(treatmentAlreadyRecorded).length;
+      details.innerHTML = `<summary><span><strong>${escapeHtml(meta.label)}</strong><small>${escapeHtml(meta.description)}</small></span><em>${recordedCount ? `${recordedCount} recorded` : `${plans.length} options`}</em></summary><div class="treatment-category-list"></div>`;
+      const list = details.querySelector('.treatment-category-list');
+      plans.forEach(plan => list.appendChild(renderTreatmentCard(plan)));
+      box.appendChild(details);
+    });
+
+    const transportCard = buildTransportTreatmentCard();
+    if (uiState.openCategories.has('transport')) transportCard.open = true;
+    box.appendChild(transportCard);
+
+    if (id !== 'horse_crush') {
+      const full = document.createElement('article');
+      full.className = 'treatment-card full-treatment-menu';
+      full.innerHTML = `<h3>Protocol-specific treatment</h3><p>Use the complete treatment tool for an intervention that is not listed here or requires additional documentation.</p><a class="primary-action" href="${toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general')}">Open complete treatment tool</a>`;
+      box.appendChild(full);
+    }
+    restoreTreatmentUi(uiState);
+    enforceSingleOpen('#treatmentTools', '.treatment-category');
+    filterTreatmentMenu($('treatmentSearch')?.value || '');
+  }
+
+  function infoElapsed(value, startedAt) { return elapsedLabel(value, startedAt); }
+  function abnormalEvent(event) {
+    return event.status === 'abnormal' || event.normality === 'not-normal' || /critical|severe|inadequate|absent|low|high|hypox|shock|unresponsive|weak|labored|wheeze|slurred|drift|diaphoretic|pale/i.test(`${event.value || ''} ${event.details || ''}`);
+  }
+  function significantHistory(event) {
+    return /last known well|anticoagul|allerg|anaphyl|insulin|diabet|overdose|naloxone|seizure|mechanism|blood thinner|pregnan|medication/i.test(`${event.value || ''} ${event.details || ''}`);
+  }
+  function isInformationUpdate(event) {
+    // During the Horse Crush presentation, every newly obtained piece of patient
+    // information should be visible in the live update window.
+    if (id === 'horse_crush') return true;
+    if (event.source === 'partner-assignment') return true;
+    if (event.type === 'treatment' || event.type === 'reassessment' || event.type === 'patient_response' || event.type === 'condition_change') return true;
+    if (event.type === 'impression' || event.type === 'documentation') return true;
+    if (abnormalEvent(event)) return true;
+    if (event.category === 'history' && significantHistory(event)) return true;
+    return false;
+  }
   function updateFromCareEvent(event) {
     const isAbnormal = abnormalEvent(event);
     if (event.source === 'partner-assignment') return { id: event.id || event.eventId, type: 'PARTNER UPDATE', title: `${event.label || labelFor(event.key)} obtained`, text: event.value || 'Partner task complete.', kind: 'partner', recordedAt: event.recordedAt };
@@ -1320,8 +1962,6 @@
     document.body.classList.toggle('desktop-scenario-layout', desktop);
 
     if (desktop) {
-      // Horse presentation workspace: keep the clinical question physically
-      // attached to the information window, then the active workspace, then nav.
       if (id === 'horse_crush') {
         const infoWindow = $('infoUpdateWindow');
         const questionBox = $('horseClinicalQuestionBox');
