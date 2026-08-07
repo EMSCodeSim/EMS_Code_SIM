@@ -1,0 +1,163 @@
+/* VITALS DESKTOP 2.218
+   Single-screen desktop layouts for remaining core vital simulators.
+   Mobile behavior remains owned by each simulator's original styles. */
+@media (min-width:760px){
+  body[data-vital-topic="spo2"],
+  body[data-vital-topic="bgl"],
+  body[data-vital-topic="skin"],
+  body[data-vital-topic="pupils"],
+  body[data-vital-topic="avpu"],
+  body[data-vital-topic="aao"],
+  body[data-vital-topic="gcs"],
+  body[data-vital-topic="temperature"]{height:100dvh;min-height:0;overflow:hidden}
+
+  /* The full learning center is intentionally not part of the desktop simulator viewport. */
+  body[data-vital-topic] > .avl-pre-sim-launcher,
+  body[data-vital-topic] > .app-vitals-learning-shell{display:none!important}
+
+  /* SpO2 */
+  body[data-vital-topic="spo2"] header{position:relative;padding:8px 14px}
+  body[data-vital-topic="spo2"] header h1{font-size:1.05rem}
+  body[data-vital-topic="spo2"] .wrap{width:min(1180px,100%);height:calc(100dvh - 48px);margin:0 auto;padding:8px 14px;display:block;overflow:hidden}
+  body[data-vital-topic="spo2"] .grid{height:100%;grid-template-columns:minmax(300px,.82fr) minmax(470px,1.18fr);gap:10px;align-items:stretch}
+  body[data-vital-topic="spo2"] .card{min-height:0;padding:12px;border-radius:14px;overflow:hidden}
+  body[data-vital-topic="spo2"] .grid>.card:first-child{display:flex;flex-direction:column}
+  body[data-vital-topic="spo2"] .grid>.card:first-child h2{font-size:1rem;margin-bottom:5px}
+  body[data-vital-topic="spo2"] .scenario{font-size:.9rem;line-height:1.35}
+  body[data-vital-topic="spo2"] .tiny{font-size:.75rem;line-height:1.28;margin:.35rem 0 0}
+  body[data-vital-topic="spo2"] .device{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;gap:7px}
+  body[data-vital-topic="spo2"] .screen{padding:9px 11px;min-height:0}
+  body[data-vital-topic="spo2"] .status-strip{margin-bottom:4px}
+  body[data-vital-topic="spo2"] .reading{min-height:58px;padding:7px 10px}
+  body[data-vital-topic="spo2"] .reading .value{font-size:2rem}
+  body[data-vital-topic="spo2"] canvas#pleth{height:min(16dvh,100px)}
+  body[data-vital-topic="spo2"] .choices{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:4px;align-content:start}
+  body[data-vital-topic="spo2"] button.choice{font-size:.84rem;padding:8px 9px;line-height:1.2}
+  body[data-vital-topic="spo2"] .explain{margin-top:5px;padding:8px;font-size:.8rem;line-height:1.25;max-height:92px;overflow:hidden}
+  body[data-vital-topic="spo2"] .next{margin-top:5px;padding:8px 11px}
+  body[data-vital-topic="spo2"] .footer-note{display:none}
+
+  /* BGL */
+  body[data-vital-topic="bgl"] header{padding:8px 14px;font-size:.95rem}
+  body[data-vital-topic="bgl"] main{width:min(1080px,100%);height:calc(100dvh - 42px);padding:8px 14px;display:block;overflow:hidden}
+  body[data-vital-topic="bgl"] .card{height:100%;padding:10px;overflow:hidden}
+  body[data-vital-topic="bgl"] .stage{height:100%;min-height:0;padding:10px 14px;grid-template-columns:minmax(250px,.85fr) minmax(390px,1.15fr);grid-template-rows:auto auto;gap:14px 22px;align-items:center;justify-items:stretch}
+  body[data-vital-topic="bgl"] .meter-wrap{grid-column:1;grid-row:1/3;width:auto;height:min(76dvh,590px);max-height:100%;max-width:100%;justify-self:center}
+  body[data-vital-topic="bgl"] .controls{grid-column:2;grid-row:1;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0;align-self:end}
+  body[data-vital-topic="bgl"] .btn{padding:10px 11px;font-size:.88rem;min-height:44px}
+  body[data-vital-topic="bgl"] .status{grid-column:2;grid-row:2;margin:0;align-self:start;min-height:68px;display:flex;align-items:center;font-size:.9rem}
+
+  /* Skin signs */
+  body[data-vital-topic="skin"] .topbar{position:relative;padding:6px 14px}
+  body[data-vital-topic="skin"] .iconbtn{height:34px}
+  body[data-vital-topic="skin"] main{width:min(1120px,100%);height:calc(100dvh - 48px);padding:8px 14px;display:block;overflow:hidden}
+  body[data-vital-topic="skin"] .card.stage{height:100%;min-height:0;padding:10px 14px;display:grid;grid-template-columns:minmax(310px,.9fr) minmax(420px,1.1fr);gap:20px;align-items:center;justify-items:center}
+  body[data-vital-topic="skin"]{--skin-size:min(57dvh,430px,38vw)}
+  body[data-vital-topic="skin"] .skin{grid-column:1}
+  body[data-vital-topic="skin"] .under-skin{grid-column:2;max-width:none;align-content:center;gap:12px}
+  body[data-vital-topic="skin"] .row{gap:7px}
+  body[data-vital-topic="skin"] .tbtn,body[data-vital-topic="skin"] .btn,body[data-vital-topic="skin"] .seg button{padding:8px 10px;font-size:.87rem}
+  body[data-vital-topic="skin"] .moisture-track,body[data-vital-topic="skin"] .moisture-labels{width:min(250px,28vw)}
+  body[data-vital-topic="skin"] #tonePicker{height:36px!important}
+
+  /* Pupils */
+  body[data-vital-topic="pupils"] header{position:relative;padding:7px 14px}
+  body[data-vital-topic="pupils"] .headerbar{max-width:1180px}
+  body[data-vital-topic="pupils"] h1{font-size:.98rem}
+  body[data-vital-topic="pupils"] .iconbtn{padding:6px 9px}
+  body[data-vital-topic="pupils"] .wrap{max-width:1180px;height:calc(100dvh - 50px);padding:8px 12px;display:grid;grid-template-columns:.55fr 1.45fr;gap:10px;overflow:hidden;align-items:start}
+  body[data-vital-topic="pupils"] .card{min-height:0;overflow:hidden;border-radius:13px}
+  body[data-vital-topic="pupils"] .card h2{padding:8px 10px;font-size:.9rem}
+  body[data-vital-topic="pupils"] .card .body{padding:8px}
+  body[data-vital-topic="pupils"] .wrap>.card:first-child .chart{gap:5px;align-items:center}
+  body[data-vital-topic="pupils"] .wrap>.card:first-child .tick{gap:2px;font-size:.7rem}
+  body[data-vital-topic="pupils"] .wrap>.card:first-child .line{padding:6px 7px;margin:5px 0;font-size:.72rem;line-height:1.2}
+  body[data-vital-topic="pupils"] .panel{gap:8px}
+  body[data-vital-topic="pupils"] .eyeBox{padding:6px}
+  body[data-vital-topic="pupils"] .labelAbove{margin-bottom:3px;font-size:.8rem}
+  body[data-vital-topic="pupils"] .svgwrap{max-height:min(23dvh,180px)}
+  body[data-vital-topic="pupils"] .btn{padding:7px 9px;font-size:.78rem}
+  body[data-vital-topic="pupils"] .line{padding:6px 8px;margin:5px 0;font-size:.78rem}
+  body[data-vital-topic="pupils"] select{padding:6px 7px;font-size:.78rem}
+  body[data-vital-topic="pupils"] .card:nth-child(2) .panel:last-of-type{grid-template-columns:1fr 1fr;gap:8px}
+  body[data-vital-topic="pupils"] .card:nth-child(2) .panel:last-of-type>div{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;align-items:center}
+  body[data-vital-topic="pupils"] .card:nth-child(2) .panel:last-of-type>div label{font-size:.72rem}
+  body[data-vital-topic="pupils"] .card:nth-child(2) .panel:last-of-type>div select{min-width:0}
+  body[data-vital-topic="pupils"] .btnrow{gap:6px}
+
+  /* AVPU */
+  body[data-vital-topic="avpu"] .topbar{position:relative;padding:8px 14px}
+  body[data-vital-topic="avpu"] .wrap{max-width:1040px;height:calc(100dvh - 50px);margin:0 auto;padding:8px 14px;overflow:hidden}
+  body[data-vital-topic="avpu"] .card{height:100%;padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto auto auto;gap:8px 14px;align-content:center;overflow:hidden}
+  body[data-vital-topic="avpu"] .lead{grid-column:1;margin:0;font-size:.9rem;line-height:1.35}
+  body[data-vital-topic="avpu"] .scenario{grid-column:1;margin:0;padding:11px}
+  body[data-vital-topic="avpu"] .scenario h2{font-size:1rem}
+  body[data-vital-topic="avpu"] .scenario p{margin:.25rem 0;line-height:1.35;font-size:.88rem}
+  body[data-vital-topic="avpu"] .stimulus{grid-column:1;grid-template-columns:1fr 1fr;margin:0;gap:7px}
+  body[data-vital-topic="avpu"] .stimulus button,body[data-vital-topic="avpu"] .choices button,body[data-vital-topic="avpu"] .actions button{padding:9px 10px;font-size:.82rem}
+  body[data-vital-topic="avpu"] .response{grid-column:2;grid-row:1/3;min-height:110px;display:flex;align-items:center;padding:12px}
+  body[data-vital-topic="avpu"] .card>h2{grid-column:2;grid-row:3;margin:0;font-size:1rem;align-self:end}
+  body[data-vital-topic="avpu"] .choices{grid-column:2;grid-row:4;margin:0;gap:6px}
+  body[data-vital-topic="avpu"] .actions{grid-column:2;grid-row:5;gap:7px}
+  body[data-vital-topic="avpu"] .result{grid-column:1;grid-row:4/6;margin:0;min-height:72px;align-self:stretch;display:flex;align-items:center;padding:10px;font-size:.86rem}
+  body[data-vital-topic="avpu"] .tip{display:none}
+
+  /* A&O x4 */
+  body[data-vital-topic="aao"] .top{position:relative}
+  body[data-vital-topic="aao"] .topnav{padding:7px 14px}
+  body[data-vital-topic="aao"] .brand{font-size:1rem}
+  body[data-vital-topic="aao"] .wrap{max-width:1180px;height:calc(100dvh - 44px);padding:8px 14px;overflow:hidden}
+  body[data-vital-topic="aao"] .grid{height:100%;grid-template-columns:1.45fr .55fr;grid-template-rows:auto minmax(0,1fr);gap:8px}
+  body[data-vital-topic="aao"] .grid>.card:first-child{grid-column:1/-1}
+  body[data-vital-topic="aao"] .grid>.cols{grid-column:1;grid-row:2;min-height:0;grid-template-columns:1.3fr .7fr;gap:8px}
+  body[data-vital-topic="aao"] .grid>.card:last-child{grid-column:2;grid-row:2;min-height:0}
+  body[data-vital-topic="aao"] .card .inner{padding:10px}
+  body[data-vital-topic="aao"] h2,body[data-vital-topic="aao"] h3{font-size:.95rem}
+  body[data-vital-topic="aao"] small{font-size:.75rem;line-height:1.2}
+  body[data-vital-topic="aao"] .row{gap:6px}
+  body[data-vital-topic="aao"] .btn{padding:8px 10px;font-size:.8rem}
+  body[data-vital-topic="aao"] select,body[data-vital-topic="aao"] input[type="text"]{padding:8px 9px;font-size:.8rem}
+  body[data-vital-topic="aao"] .qa{gap:6px;margin-top:6px!important}
+  body[data-vital-topic="aao"] .log{margin-top:6px;padding-top:6px;font-size:.76rem;line-height:1.25;max-height:16dvh;overflow:hidden}
+  body[data-vital-topic="aao"] .field{gap:3px;font-size:.75rem}
+  body[data-vital-topic="aao"] .box{padding:7px;font-size:.8rem}
+  body[data-vital-topic="aao"] #transcript{height:100%;min-height:0;overflow:hidden;font-size:.82rem;line-height:1.3}
+
+  /* GCS */
+  body[data-vital-topic="gcs"] header{position:relative;padding:8px 14px;font-size:.95rem}
+  body[data-vital-topic="gcs"] main{max-width:1160px;height:calc(100dvh - 43px);padding:8px 12px;display:grid;grid-template-columns:1.02fr .98fr;grid-template-rows:auto minmax(0,1fr);gap:8px;overflow:hidden}
+  body[data-vital-topic="gcs"] .card{margin:0;min-height:0;padding:10px;border-radius:13px;overflow:hidden}
+  body[data-vital-topic="gcs"] main>.card:first-child{grid-column:1/-1;grid-row:1;padding:8px 10px}
+  body[data-vital-topic="gcs"] main>.card:nth-child(2){grid-column:1;grid-row:2}
+  body[data-vital-topic="gcs"] main>.card:nth-child(3){grid-column:2;grid-row:2}
+  body[data-vital-topic="gcs"] h2{margin:0 0 6px;font-size:1rem}
+  body[data-vital-topic="gcs"] main>.card:first-child p{font-size:.76rem;margin:.3rem 0 0!important;line-height:1.25}
+  body[data-vital-topic="gcs"] .grid2{grid-template-columns:1fr;gap:6px}
+  body[data-vital-topic="gcs"] .q{padding:8px}
+  body[data-vital-topic="gcs"] .q h3{font-size:.9rem}
+  body[data-vital-topic="gcs"] .btn{padding:.48rem .66rem;font-size:.78rem}
+  body[data-vital-topic="gcs"] .resp{margin:.3rem 0 0;padding:.45rem .55rem;font-size:.78rem;line-height:1.25}
+  body[data-vital-topic="gcs"] .scorebox{grid-template-columns:1fr;gap:6px}
+  body[data-vital-topic="gcs"] select{padding:.45rem .55rem;font-size:.76rem}
+  body[data-vital-topic="gcs"] .results-list{font-size:.74rem;line-height:1.2}
+  body[data-vital-topic="gcs"] #results{max-height:25dvh;overflow:hidden}
+
+  /* Temperature */
+  body[data-vital-topic="temperature"] header{position:relative;padding:7px 12px}
+  body[data-vital-topic="temperature"] .wrap{max-width:1040px;height:calc(100dvh - 47px);margin:0 auto;padding:8px 14px;overflow:hidden}
+  body[data-vital-topic="temperature"] .card{height:100%;padding:12px 16px;display:grid;grid-template-columns:.8fr 1.2fr;grid-template-rows:auto auto auto auto auto;gap:8px 16px;align-content:center;overflow:hidden}
+  body[data-vital-topic="temperature"] .lead{grid-column:1/-1;margin:0;font-size:.86rem;line-height:1.25}
+  body[data-vital-topic="temperature"] .case{grid-column:1;grid-row:2/4;padding:12px;align-self:start}
+  body[data-vital-topic="temperature"] .case h2{font-size:1rem}
+  body[data-vital-topic="temperature"] .case p{font-size:.84rem;line-height:1.3}
+  body[data-vital-topic="temperature"] .thermometer{grid-column:1;grid-row:4/6;width:min(24dvh,170px);height:min(24dvh,170px);margin:0 auto;border-width:8px}
+  body[data-vital-topic="temperature"] .reading{font-size:1.55rem}
+  body[data-vital-topic="temperature"] .grid{grid-column:2;grid-row:2;margin:0;gap:8px}
+  body[data-vital-topic="temperature"] .field{font-size:.82rem}
+  body[data-vital-topic="temperature"] .field select{padding:8px 9px;font-size:.8rem}
+  body[data-vital-topic="temperature"] #checkBtn{grid-column:2;grid-row:3;margin:0}
+  body[data-vital-topic="temperature"] #nextBtn{grid-column:2;grid-row:4;margin:0}
+  body[data-vital-topic="temperature"] .btn{padding:9px 12px;font-size:.85rem}
+  body[data-vital-topic="temperature"] .result{grid-column:2;grid-row:5;margin:0;min-height:58px;padding:9px;font-size:.82rem;line-height:1.28}
+  body[data-vital-topic="temperature"] .notes{display:none}
+}

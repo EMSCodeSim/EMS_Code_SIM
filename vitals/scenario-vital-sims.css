@@ -88,3 +88,94 @@ button,input,select{font:inherit}.sv-topbar{position:sticky;top:0;z-index:20;pad
  body[data-scenario-vital="respirations"] .sv-answer>p{margin-bottom:7px;font-size:.8rem}
 }
 @media(max-width:759px){.sv-resp-stage{grid-template-columns:1fr}.sv-resp-patient{height:235px}.sv-resp-watch{width:155px}}
+
+/* ALL OTHER CORE VITALS DESKTOP 2.218 */
+@media(min-width:760px){
+  body[data-scenario-vital="spo2"],
+  body[data-scenario-vital="bgl"],
+  body[data-scenario-vital="temperature"],
+  body[data-scenario-vital="pupils"],
+  body[data-scenario-vital="skin"],
+  body[data-scenario-vital="mental-status"]{height:100dvh;overflow:hidden}
+
+  body[data-scenario-vital="spo2"] .sv-topbar,
+  body[data-scenario-vital="bgl"] .sv-topbar,
+  body[data-scenario-vital="temperature"] .sv-topbar,
+  body[data-scenario-vital="pupils"] .sv-topbar,
+  body[data-scenario-vital="skin"] .sv-topbar,
+  body[data-scenario-vital="mental-status"] .sv-topbar{position:relative;padding-top:7px;padding-bottom:7px}
+
+  body[data-scenario-vital="spo2"] .sv-main,
+  body[data-scenario-vital="bgl"] .sv-main,
+  body[data-scenario-vital="temperature"] .sv-main,
+  body[data-scenario-vital="pupils"] .sv-main,
+  body[data-scenario-vital="skin"] .sv-main,
+  body[data-scenario-vital="mental-status"] .sv-main{
+    width:min(100%,1040px);height:calc(100dvh - 58px);min-height:0;padding:8px 14px;
+    display:grid;grid-template-columns:1.12fr .88fr;grid-template-rows:auto auto minmax(0,1fr);gap:8px;overflow:hidden
+  }
+  body[data-scenario-vital="spo2"] .sv-context-nav,body[data-scenario-vital="spo2"] .sv-patient,
+  body[data-scenario-vital="bgl"] .sv-context-nav,body[data-scenario-vital="bgl"] .sv-patient,
+  body[data-scenario-vital="temperature"] .sv-context-nav,body[data-scenario-vital="temperature"] .sv-patient,
+  body[data-scenario-vital="pupils"] .sv-context-nav,body[data-scenario-vital="pupils"] .sv-patient,
+  body[data-scenario-vital="skin"] .sv-context-nav,body[data-scenario-vital="skin"] .sv-patient,
+  body[data-scenario-vital="mental-status"] .sv-context-nav,body[data-scenario-vital="mental-status"] .sv-patient{grid-column:1/-1}
+
+  body[data-scenario-vital="spo2"] .sv-patient,body[data-scenario-vital="bgl"] .sv-patient,
+  body[data-scenario-vital="temperature"] .sv-patient,body[data-scenario-vital="pupils"] .sv-patient,
+  body[data-scenario-vital="skin"] .sv-patient,body[data-scenario-vital="mental-status"] .sv-patient{padding:8px 12px}
+
+  body[data-scenario-vital="spo2"] #simCard,body[data-scenario-vital="bgl"] #simCard,
+  body[data-scenario-vital="temperature"] #simCard,body[data-scenario-vital="pupils"] #simCard,
+  body[data-scenario-vital="skin"] #simCard,body[data-scenario-vital="mental-status"] #simCard{
+    grid-column:1;grid-row:3;min-height:0;padding:10px 12px;display:grid;
+    grid-template-rows:auto minmax(0,1fr) auto auto;gap:6px;overflow:hidden
+  }
+  body[data-scenario-vital="spo2"] #answerCard,body[data-scenario-vital="bgl"] #answerCard,
+  body[data-scenario-vital="temperature"] #answerCard,body[data-scenario-vital="pupils"] #answerCard,
+  body[data-scenario-vital="skin"] #answerCard,body[data-scenario-vital="mental-status"] #answerCard{
+    grid-column:2;grid-row:3;min-height:0;padding:11px 12px;align-self:stretch;overflow:hidden
+  }
+  body[data-scenario-vital="spo2"] .sv-stage,body[data-scenario-vital="bgl"] .sv-stage,
+  body[data-scenario-vital="temperature"] .sv-stage,body[data-scenario-vital="pupils"] .sv-stage,
+  body[data-scenario-vital="skin"] .sv-stage,body[data-scenario-vital="mental-status"] .sv-stage{min-height:0;padding:8px}
+  body[data-scenario-vital="spo2"] .sv-instruction,body[data-scenario-vital="bgl"] .sv-instruction,
+  body[data-scenario-vital="temperature"] .sv-instruction,body[data-scenario-vital="pupils"] .sv-instruction,
+  body[data-scenario-vital="skin"] .sv-instruction,body[data-scenario-vital="mental-status"] .sv-instruction{margin-bottom:2px;font-size:.84rem;line-height:1.22}
+  body[data-scenario-vital="spo2"] .sv-actions,body[data-scenario-vital="bgl"] .sv-actions,
+  body[data-scenario-vital="temperature"] .sv-actions,body[data-scenario-vital="pupils"] .sv-actions,
+  body[data-scenario-vital="skin"] .sv-actions,body[data-scenario-vital="mental-status"] .sv-actions{margin-top:2px;gap:6px}
+  body[data-scenario-vital="spo2"] .sv-btn,body[data-scenario-vital="bgl"] .sv-btn,
+  body[data-scenario-vital="temperature"] .sv-btn,body[data-scenario-vital="pupils"] .sv-btn,
+  body[data-scenario-vital="skin"] .sv-btn,body[data-scenario-vital="mental-status"] .sv-btn{min-height:40px;padding:7px 9px;font-size:.8rem}
+  body[data-scenario-vital="spo2"] .sv-state,body[data-scenario-vital="bgl"] .sv-state,
+  body[data-scenario-vital="temperature"] .sv-state,body[data-scenario-vital="pupils"] .sv-state,
+  body[data-scenario-vital="skin"] .sv-state,body[data-scenario-vital="mental-status"] .sv-state{margin-top:2px;min-height:18px;font-size:.78rem}
+  body[data-scenario-vital="spo2"] .sv-answer>h2,body[data-scenario-vital="bgl"] .sv-answer>h2,
+  body[data-scenario-vital="temperature"] .sv-answer>h2,body[data-scenario-vital="pupils"] .sv-answer>h2,
+  body[data-scenario-vital="skin"] .sv-answer>h2,body[data-scenario-vital="mental-status"] .sv-answer>h2{font-size:1rem;margin-bottom:4px}
+  body[data-scenario-vital="spo2"] .sv-answer>p,body[data-scenario-vital="bgl"] .sv-answer>p,
+  body[data-scenario-vital="temperature"] .sv-answer>p,body[data-scenario-vital="pupils"] .sv-answer>p,
+  body[data-scenario-vital="skin"] .sv-answer>p,body[data-scenario-vital="mental-status"] .sv-answer>p{margin-bottom:6px;font-size:.76rem;line-height:1.2}
+  body[data-scenario-vital="spo2"] .sv-field input,body[data-scenario-vital="spo2"] .sv-field select,
+  body[data-scenario-vital="bgl"] .sv-field input,body[data-scenario-vital="bgl"] .sv-field select,
+  body[data-scenario-vital="temperature"] .sv-field input,body[data-scenario-vital="temperature"] .sv-field select,
+  body[data-scenario-vital="pupils"] .sv-field input,body[data-scenario-vital="pupils"] .sv-field select,
+  body[data-scenario-vital="skin"] .sv-field input,body[data-scenario-vital="skin"] .sv-field select,
+  body[data-scenario-vital="mental-status"] .sv-field input,body[data-scenario-vital="mental-status"] .sv-field select{padding:7px 8px;font-size:.8rem}
+  body[data-scenario-vital="pupils"] .sv-grid-2{gap:6px}
+  body[data-scenario-vital="pupils"] .sv-pupil-assessment{gap:8px}
+  body[data-scenario-vital="pupils"] .sv-eye{width:min(18dvh,130px);height:min(10.5dvh,82px)}
+  body[data-scenario-vital="pupils"] .sv-gaze-track{height:34px}
+  body[data-scenario-vital="skin"] .sv-skin-compare{gap:10px}
+  body[data-scenario-vital="skin"] .sv-skin-swatch{width:min(20dvh,150px);height:min(16dvh,120px)}
+  body[data-scenario-vital="skin"] .sv-observation{font-size:.76rem;line-height:1.2;max-height:16dvh;overflow:hidden}
+  body[data-scenario-vital="bgl"] .sv-meter{gap:8px}
+  body[data-scenario-vital="bgl"] .sv-device{width:min(100%,280px)}
+  body[data-scenario-vital="bgl"] .sv-step{padding:7px 8px;font-size:.76rem}
+  body[data-scenario-vital="spo2"] .sv-monitor{width:min(100%,360px);padding:16px}
+  body[data-scenario-vital="spo2"] .sv-monitor-value{font-size:3.3rem}
+  body[data-scenario-vital="temperature"] .sv-device{width:min(100%,300px)!important}
+  body[data-scenario-vital="mental-status"] .sv-patient-response{min-height:130px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1rem}
+  body[data-scenario-vital="mental-status"] .sv-choice-grid{grid-template-columns:repeat(4,1fr)}
+}

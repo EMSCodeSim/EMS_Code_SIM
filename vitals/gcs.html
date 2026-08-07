@@ -51,8 +51,9 @@
 <script defer="" src="/privacy-controls.js"></script>
 <script defer="" src="/scripts/engagement-loop.js"></script>
 <meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="GCS Trainer | EMSCodeSim" property="og:title"/><meta content="Practice Glasgow Coma Scale scoring for EMS assessment with eye, verbal, and motor response prompts." property="og:description"/><meta content="https://emscodesim.com/vitals/gcs.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
+<link rel="stylesheet" href="/vitals/vitals-desktop-fit.css?v=2.218">
 </head>
-<body>
+<body data-vital-topic="gcs" data-desktop-build="2.218">
 <header><h1>Glasgow Coma Scale (GCS) Simulator</h1></header>
 <main>
 <!-- Scenario snapshot (so instructors can verify internal consistency) -->
@@ -357,7 +358,7 @@
     domainNotes.innerHTML = "<p><strong>Domain interpretation:</strong></p><ul>" + notes.map(n=>`<li>${n}</li>`).join("") + "</ul>";
 
     resultsWrap.hidden = false;
-    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    if(window.innerWidth<760) window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }
 
   function newScenario(){

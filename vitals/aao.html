@@ -52,8 +52,9 @@
 <script defer="" src="/scripts/engagement-loop.js"></script>
 <meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="AAOx4 Orientation Simulator | EMSCodeSim" property="og:title"/><meta content="Practice level of consciousness and orientation questions for EMS patient assessment: person, place, time, and event." property="og:description"/><meta content="https://emscodesim.com/vitals/aao.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 <link href="/vitals/app-vitals-learning.css" rel="stylesheet"/><link rel="stylesheet" href="/vitals/scenario-status.css">  <link rel="stylesheet" href="/vitals/scenario-runtime.css">
-<link rel="stylesheet" href="/vitals/scenario-flow.css"></head>
-<body data-vital-topic="aao">
+<link rel="stylesheet" href="/vitals/scenario-flow.css"><link rel="stylesheet" href="/vitals/vitals-desktop-fit.css?v=2.218">
+</head>
+<body data-desktop-build="2.218" data-vital-topic="aao">
 <div class="top">
 <div class="topnav">
 <h1 class="brand tool-h1">A&amp;O×4 Orientation Simulator</h1>
@@ -298,7 +299,7 @@
   nextBtn.addEventListener('click', ()=>{
     window.speechSynthesis.cancel();
     newScenario(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if(window.innerWidth<760) window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
   // init
