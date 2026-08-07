@@ -1226,3 +1226,39 @@ body.sim-workspace-open .patient-stage:after,body.sim-workspace-open .scene-clue
 @media(min-width:980px){
   .horse-abc-followup-panel{flex:0 0 auto}
 }
+
+
+/* Horse demo 2.204 — one fixed information location with follow-up directly below */
+body.horse-current-emt-call .info-update-window{
+  margin:0!important;
+}
+body.horse-current-emt-call .horse-abc-followup-panel{
+  margin:-4px 0 0!important;
+  border-top-left-radius:8px;
+  border-top-right-radius:8px;
+  box-shadow:none;
+}
+body.horse-current-emt-call .horse-abc-followup-head small::after{
+  content:" · answer below the new information";
+  color:var(--muted);
+  font-weight:700;
+  letter-spacing:0;
+  text-transform:none;
+}
+@media(min-width:980px){
+  body.horse-current-emt-call.desktop-scenario-layout .patient-control-column{
+    overflow:hidden!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .info-update-window{
+    flex:0 0 auto;
+    position:relative!important;
+    top:auto!important;
+    right:auto!important;
+    left:auto!important;
+    width:100%!important;
+    max-width:none!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-abc-followup-panel{
+    flex:0 0 auto;
+  }
+}

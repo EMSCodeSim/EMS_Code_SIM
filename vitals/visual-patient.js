@@ -723,8 +723,9 @@
           reviewAtDebrief:true
         });
         closeFollowup();
-        window.EMSCodeSimPatientInfo?.clearSceneObservation?.();
-        window.dispatchEvent(new CustomEvent('emscodesim:patient-record-updated'));
+        // Keep the observed ABC information in the single information window.
+        // The recorded classification is stored in the chart/log but is intentionally
+        // suppressed from the information feed to avoid showing the same assessment twice.
       });
       window.requestAnimationFrame(() => select?.focus());
     }
@@ -742,7 +743,7 @@
       row.className = `horse-abc-row${finding ? ' complete' : ''}`;
       row.innerHTML = `
         <div class="horse-abc-row-head">
-          <div><strong>${labels[key]}</strong><small>${finding ? escapeHtml(finding.value || finding.finding || 'Recorded') : 'Not assessed'}</small></div>
+          <div><strong>${labels[key]}</strong><small>${finding ? 'Recorded' : 'Not assessed'}</small></div>
           <button type="button" class="horse-abc-assess">${finding ? 'Reassess' : 'Assess'}</button>
         </div>`;
       row.querySelector('.horse-abc-assess')?.addEventListener('click', () => {
@@ -777,8 +778,12 @@
       { id: 'visible', type: 'VISIBLE CONDITION', title: 'First patient view', text: scenario.visible, kind: 'visible', recordedAt: new Date(new Date(startedAt).getTime() + 1).toISOString() }
     ];
     const log = api?.listCareLog?.(current, 'all') || [];
-    log.filter(isInformationUpdate).forEach(event => updates.push(updateFromCareEvent(event)));
+    log.filter(event => isInformationUpdate(event) && !(id === 'horse_crush' && event.source === 'horse-rapid-abc'))
+      .forEach(event => updates.push(updateFromCareEvent(event)));
     if (sceneObservationUpdate) updates.push(sceneObservationUpdate);
+    if (id === 'horse_crush') {
+      updates.sort((a, b) => new Date(a.recordedAt || 0).getTime() - new Date(b.recordedAt || 0).getTime());
+    }
     return updates;
   }
   function setInfoCollapsed(collapsed, options = {}) {
