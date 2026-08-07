@@ -19,7 +19,7 @@
         <h1 id="caseTitle">Visual Patient</h1>
         <p id="scene"></p>
       </div>
-      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">HORSE DESKTOP 2.213</small></div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">HORSE DESKTOP 2.214</small></div>
     </header>
 
     <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
@@ -203,30 +203,29 @@
       </div>
     </section>
 
-    <section id="findingsPanel" class="vp-panel" hidden>
-      <section id="clinicalWorkspace" class="clinical-workspace clinical-snapshot" aria-labelledby="clinicalWorkspaceTitle">
-        <div class="clinical-workspace-head"><div><p>CURRENT PATIENT</p><h3 id="clinicalWorkspaceTitle">Patient snapshot</h3></div><span id="workspaceElapsed">00:00</span></div>
-        <strong id="workspaceStatus" class="snapshot-status">Assessment in progress</strong>
-        <p id="workspaceAbnormal" class="snapshot-abnormal">No abnormal findings documented</p>
-        <div class="snapshot-meta"><span><small>Care</small><b id="workspaceTreatments">None documented</b></span><span><small>Due</small><b id="workspaceReassessment">None currently due</b></span></div>
-      </section>
-      <p class="sub">The decision timeline records what was discovered, decided, performed, and reassessed in the order it occurred.</p>
-      <div class="finding-toolbar">
-        <div class="finding-filters" role="group" aria-label="Filter patient care log">
-          <button class="active" type="button" data-log-filter="all" data-label="All log">All log</button>
-          <button type="button" data-log-filter="vitals" data-label="Vitals">Vitals</button>
-          <button type="button" data-log-filter="treatments" data-label="Treatments">Treatments</button>
-          <button type="button" data-log-filter="assessments" data-label="Assessments">Assessments</button>
-          <button type="button" data-log-filter="history" data-label="History">History</button>
-          <button type="button" data-log-filter="reassessments" data-label="Reassessments">Reassessments</button>
+    <section id="findingsPanel" class="vp-panel horse-log-panel" hidden>
+      <div class="horse-log-header">
+        <div>
+          <p>PATIENT CARE LOG</p>
+          <h3>Review the call</h3>
+          <small>Only clinically useful assessment, vital, history, and treatment entries are shown.</small>
         </div>
-        <div class="finding-quick-actions">
-          <a id="recordTreatmentLink" href="/vitals/treatment-reassessment.html">Record treatment</a>
-          <a id="fullPatientRecordLink" class="secondary" href="/vitals/patient-record.html?mode=scenario&resume=1">Full record</a>
+        <div class="horse-log-view-toggle" role="group" aria-label="Sort patient care log">
+          <button class="active" type="button" data-log-view="time">By time</button>
+          <button type="button" data-log-view="category">By category</button>
         </div>
       </div>
-      <p id="findingFilterSummary" class="finding-filter-summary" aria-live="polite"></p>
-      <ul id="findingList" class="finding-list care-log-list"></ul>
+      <div class="finding-toolbar horse-log-toolbar">
+        <div class="finding-filters horse-log-filters" role="group" aria-label="Filter patient care log">
+          <button class="active" type="button" data-log-filter="all" data-label="All">All</button>
+          <button type="button" data-log-filter="assessments" data-label="Assessment">Assessment</button>
+          <button type="button" data-log-filter="vitals" data-label="Vitals">Vitals</button>
+          <button type="button" data-log-filter="history" data-label="History">History</button>
+          <button type="button" data-log-filter="treatments" data-label="Treatment">Treatment</button>
+        </div>
+      </div>
+      <p id="findingFilterSummary" class="finding-filter-summary horse-log-summary" aria-live="polite"></p>
+      <ul id="findingList" class="finding-list care-log-list horse-log-list"></ul>
     </section>
   </section>
 

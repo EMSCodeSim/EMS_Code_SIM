@@ -55,6 +55,7 @@
   const PRIMARY_KEYS = new Set(['scene_size_up','airway','breathing','perfusion']);
   let activeFocus = null;
   let findingFilter = 'all';
+  let findingView = 'time';
   let infoUpdates = [];
   let infoUpdateIndex = 0;
   let sceneObservationUpdate = null;
@@ -2138,35 +2139,94 @@
     if ($('workspaceReassessment')) $('workspaceReassessment').textContent = due.length ? due.map(labelFor).join(' • ') : ((current.treatments || []).some(item => item.reassessmentRequired) ? 'Review treatment targets in the timeline' : 'None currently due');
   }
 
+  function logDisplayCategory(event = {}) {
+    if (event.category === 'vital') return 'vitals';
+    if (event.category === 'history') return 'history';
+    if (event.category === 'treatment' || event.category === 'transport' || event.type === 'treatment' || event.type === 'patient_response') return 'treatments';
+    return 'assessments';
+  }
+
+  function usefulLogEvent(event = {}) {
+    if (!event || !event.recordedAt) return false;
+    if (event.suppressCareLog === true) return false;
+    const label = String(event.label || '').trim().toLowerCase();
+    const value = String(event.value || '').trim().toLowerCase();
+    if (!label && !value) return false;
+    if (['scenario started','information update','current patient','assessment in progress'].includes(label)) return false;
+    if (event.type === 'documentation' && !['treatment','transport'].includes(event.category)) return false;
+    return true;
+  }
+
+  function conciseLogDetails(event = {}) {
+    const details = String(event.details || '').trim();
+    if (!details) return '';
+    const noisy = [
+      'response became apparent over time',
+      'observe and reassess the patient',
+      'the learner deferred a decision',
+      'triggered at '
+    ];
+    if (noisy.some(text => details.toLowerCase().includes(text))) return '';
+    const value = String(event.value || '').trim();
+    if (value && details === value) return '';
+    return details;
+  }
+
+  function logCategoryLabel(category) {
+    return ({ assessments:'Assessment', vitals:'Vitals', history:'History', treatments:'Treatment' })[category] || 'Assessment';
+  }
+
+  function appendLogEntry(list, event, index, current, showCategory = true) {
+    const category = logDisplayCategory(event);
+    const item = document.createElement('li');
+    item.className = `care-log-item ${category} ${event.type || 'finding'}`;
+    const details = conciseLogDetails(event);
+    item.innerHTML = `
+      <div class="care-log-order"><b>${index + 1}</b><span>${escapeHtml(elapsedLabel(event.recordedAt, current.startedAt))}</span></div>
+      <div class="care-log-content">
+        <div class="care-log-heading">${showCategory ? `<span class="care-log-type">${escapeHtml(logCategoryLabel(category))}</span>` : ''}<time datetime="${escapeHtml(event.recordedAt)}">${escapeHtml(formatClock(event.recordedAt))}</time></div>
+        <strong>${escapeHtml(event.label || labelFor(event.key))}</strong>
+        <p>${escapeHtml(event.value || 'Recorded')}</p>
+        ${details ? `<small>${escapeHtml(details)}</small>` : ''}
+      </div>`;
+    list.appendChild(item);
+  }
+
   function renderFindings() {
-    renderClinicalWorkspace();
     const list = $('findingList');
     const current = record() || {};
-    const filterMap = { vitals: 'vital', treatments: 'treatment', assessments: 'assessment', history: 'history', reassessments: 'reassessment' };
-    let events = api?.listCareLog?.(current, 'all') || [];
-    if (findingFilter === 'reassessments') events = events.filter(event => event.type === 'reassessment');
-    else if (findingFilter !== 'all') events = events.filter(event => event.category === filterMap[findingFilter]);
+    let events = (api?.listCareLog?.(current, 'all') || []).filter(usefulLogEvent);
+    events.sort((a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime());
+    if (findingFilter !== 'all') events = events.filter(event => logDisplayCategory(event) === findingFilter);
+
     document.querySelectorAll('[data-log-filter]').forEach(button => button.classList.toggle('active', button.dataset.logFilter === findingFilter));
-    const activeFilter = document.querySelector(`[data-log-filter="${findingFilter}"]`)?.dataset.label || 'All log';
-    $('findingFilterSummary').textContent = `${events.length} ${activeFilter.toLowerCase()} entr${events.length === 1 ? 'y' : 'ies'} shown.`;
+    document.querySelectorAll('[data-log-view]').forEach(button => button.classList.toggle('active', button.dataset.logView === findingView));
+    const activeFilter = document.querySelector(`[data-log-filter="${findingFilter}"]`)?.dataset.label || 'All';
+    const viewText = findingView === 'category' ? 'grouped by category' : 'in time order';
+    $('findingFilterSummary').textContent = `${events.length} useful ${activeFilter.toLowerCase()} entr${events.length === 1 ? 'y' : 'ies'} · ${viewText}.`;
     list.innerHTML = '';
+    list.classList.toggle('category-view', findingView === 'category');
     if (!events.length) {
-      list.innerHTML = '<li class="empty">No matching patient-care events have been recorded.</li>';
+      list.innerHTML = '<li class="empty">No matching patient-care entries have been recorded yet.</li>';
       return;
     }
-    events.forEach((event, index) => {
-      const item = document.createElement('li');
-      item.className = `care-log-item ${event.category || 'assessment'} ${event.type || 'finding'}`;
-      item.innerHTML = `
-        <div class="care-log-order"><b>${index + 1}</b><span>${escapeHtml(elapsedLabel(event.recordedAt, current.startedAt))}</span></div>
-        <div class="care-log-content">
-          <div class="care-log-heading"><span class="care-log-type">${eventTypeLabel(event)}</span><time datetime="${escapeHtml(event.recordedAt)}">${escapeHtml(formatClock(event.recordedAt))}</time></div>
-          <strong>${escapeHtml(event.label || labelFor(event.key))}</strong>
-          <p>${escapeHtml(event.value || 'Recorded')}</p>
-          ${event.details ? `<small>${escapeHtml(event.details)}</small>` : ''}
-        </div>`;
-      list.appendChild(item);
-    });
+
+    if (findingView === 'category' && findingFilter === 'all') {
+      const categories = ['assessments','vitals','history','treatments'];
+      let runningIndex = 0;
+      categories.forEach(category => {
+        const grouped = events.filter(event => logDisplayCategory(event) === category);
+        if (!grouped.length) return;
+        const heading = document.createElement('li');
+        heading.className = `care-log-category-heading ${category}`;
+        heading.innerHTML = `<strong>${logCategoryLabel(category)}</strong><span>${grouped.length}</span>`;
+        list.appendChild(heading);
+        grouped.forEach(event => appendLogEntry(list, event, runningIndex++, current, false));
+      });
+      return;
+    }
+
+    events.forEach((event, index) => appendLogEntry(list, event, index, current, findingFilter === 'all'));
   }
 
   function updateCounts() {
@@ -2724,8 +2784,8 @@
   renderSceneClues();
   $('generateHandoff').addEventListener('click', generateHandoff);
   $('saveHandoff').addEventListener('click', saveHandoff);
-  $('recordTreatmentLink').href = toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general');
-  $('fullPatientRecordLink').href = `/vitals/patient-record.html?mode=scenario&resume=1&case=${encodeURIComponent(id)}&return=${encodeURIComponent(`/vitals/visual-patient.html?case=${id}`)}`;
+  if ($('recordTreatmentLink')) $('recordTreatmentLink').href = toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general');
+  if ($('fullPatientRecordLink')) $('fullPatientRecordLink').href = `/vitals/patient-record.html?mode=scenario&resume=1&case=${encodeURIComponent(id)}&return=${encodeURIComponent(`/vitals/visual-patient.html?case=${id}`)}`;
   $('guidedSampleLink').href = toolUrl('/vitals/sample-history.html', 'Patient', 'sample');
   $('guidedOpqrstLink').href = toolUrl('/vitals/pain-opqrst.html', 'Patient', 'pain');
   refreshFromRecord();
@@ -2733,6 +2793,10 @@
 
   document.querySelectorAll('[data-log-filter]').forEach(button => button.addEventListener('click', () => {
     findingFilter = button.dataset.logFilter || 'all';
+    renderFindings();
+  }));
+  document.querySelectorAll('[data-log-view]').forEach(button => button.addEventListener('click', () => {
+    findingView = button.dataset.logView === 'category' ? 'category' : 'time';
     renderFindings();
   }));
   $('infoUpdatePrevious').addEventListener('click', () => {
