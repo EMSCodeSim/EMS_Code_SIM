@@ -1,0 +1,29 @@
+Phone-friendly scenario interface update (UI 1.12)
+
+Updated source files:
+- vitals/visual-patient.css
+- vitals/visual-patient.html
+- vitals/horse-crush-scenario.css
+- tools/test-scenario-history-consistency.js
+
+Updated deployment copies:
+- dist/vitals/visual-patient.css
+- dist/vitals/visual-patient.html
+- dist/vitals/horse-crush-scenario.css
+
+Main changes:
+- More compact phone header and timer
+- End/reset buttons removed from the main phone screen; still available in Scenario menu
+- Larger usable patient image area
+- Smaller information overlay
+- More compact clinical summary bar
+- Cleaner five-button bottom navigation
+- Near-full-height action sheets with less repeated context
+- Larger touch targets and reduced card padding
+- Horse-crush parking, exam, and movement screens optimized for narrow phones
+- Build validation updated for the horse-crush history profile
+
+Build result:
+- Scenario history consistency passed for 6 profiles
+- Built dist with 422 files
+- Deployment validation passed
