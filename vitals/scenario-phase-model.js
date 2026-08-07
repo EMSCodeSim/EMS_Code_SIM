@@ -110,8 +110,11 @@
     const handoffComplete = Boolean(record?.documentation?.handoff || record?.documentation?.narrative);
     const debriefComplete = Boolean(record?.documentation?.debrief?.savedAt || record?.documentation?.debrief?.score != null || record?.debrief?.reflection?.savedAt);
 
+    const sceneRequired = caseId !== 'horse_crush';
+    const sceneComplete = sceneRequired ? has(record, 'scene_size_up') : has(record, 'arrival_parking');
+
     const phases = [
-      { id: 'scene', label: 'Scene size-up', requirement: 'Required', complete: has(record, 'scene_size_up'), started: has(record, 'scene_size_up') },
+      { id: 'scene', label: sceneRequired ? 'Scene size-up' : 'Arrival decision', requirement: sceneRequired ? 'Required' : 'Scenario-specific', complete: sceneComplete, started: sceneComplete },
       { id: 'primary', label: 'Primary assessment', requirement: 'Required', complete: primary.complete, started: primary.completed > 0, detail: `${primary.completed} of ${primary.total}` },
       { id: 'focused', label: 'History & focused assessment', requirement: requiredFocused.length ? 'Required + clinically appropriate' : 'Clinically appropriate', complete: focused.complete, started: [...requiredFocused, ...appropriateFocused].some(key => has(record, key)), detail: requiredFocused.length ? `${focused.completed} of ${focused.total} required` : 'Use when indicated' },
       { id: 'vitals', label: 'Initial vitals', requirement: 'Required + clinically appropriate', complete: vitals.complete, started: [...requiredVitals, ...appropriateVitals].some(key => has(record, key)), detail: `${vitals.completed} of ${vitals.total} required` },
@@ -123,7 +126,7 @@
     ].map(phase => ({ ...phase, status: phaseState(phase.complete, phase.started) }));
 
     const missing = [];
-    if (!has(record, 'scene_size_up')) missing.push('Scene size-up');
+    if (sceneRequired && !has(record, 'scene_size_up')) missing.push('Scene size-up');
     requiredPrimary.filter(key => !has(record, key)).forEach(key => missing.push(labelFor(key)));
     requiredFocused.filter(key => !has(record, key)).forEach(key => missing.push(labelFor(key)));
     requiredVitals.filter(key => !has(record, key)).forEach(key => missing.push(labelFor(key)));
