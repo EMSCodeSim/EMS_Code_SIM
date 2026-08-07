@@ -687,135 +687,131 @@ body.scene-guide-active .patient-phase-controls{display:none}
 .scenario-build-stamp-dark{display:block;margin-top:2px;color:#82c6eb;font-size:.52rem;font-weight:950;letter-spacing:.06em;text-transform:uppercase}
 @media(max-width:390px){.bottom-nav{gap:4px;padding-left:5px;padding-right:5px}.bottom-nav button{font-size:.59rem;min-width:0}.bottom-nav button>span{font-size:1.08rem}}
 
-/* Mobile workspace cleanup — UI 1.12 */
+/* =========================================================
+   PHONE-FIRST SCENARIO WORKSPACE 1.20
+   Keeps the patient image central and turns secondary UI into
+   compact, thumb-friendly overlays/sheets on narrow screens.
+   ========================================================= */
 @media (max-width: 600px){
-  .vp-shell{
-    width:100%;
-    min-height:100dvh;
-    padding:6px 7px calc(138px + env(safe-area-inset-bottom));
-  }
-  .vp-top{
-    grid-template-columns:44px minmax(0,1fr) auto;
-    gap:7px;
-    padding:2px 0 6px;
-  }
-  .scenario-menu-button{min-width:44px;height:42px;border-radius:11px}
-  .vp-top h1{font-size:.96rem;line-height:1.15}
-  .vp-top #dispatch{font-size:.64rem}
-  .vp-top #scene{display:none}
-  .vp-timer{min-width:61px;padding:4px 6px;border-radius:10px}
-  .vp-timer span{font-size:.5rem;letter-spacing:.02em}
-  .vp-timer strong{font-size:.87rem}
+  body{overscroll-behavior-y:none}
+  .vp-shell{padding:5px 6px 118px}
+
+  /* Compact call header: scenario title + timer remain visible. */
+  .vp-top{grid-template-columns:38px minmax(0,1fr) auto;gap:7px;margin-bottom:5px}
+  .scenario-menu-button{min-height:38px;border-radius:11px;padding:3px 4px}
+  .scenario-menu-button>span{font-size:1.1rem;line-height:1}
+  .scenario-menu-button small{font-size:.52rem}
+  .title-wrap{min-width:0}
+  .title-wrap #dispatch,.title-wrap #scene{display:none}
+  .vp-top h1{margin:0;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .vp-timer{min-width:72px;padding:4px 6px;border-radius:10px}
+  .vp-timer span{font-size:.5rem}
+  .vp-timer strong{font-size:.9rem}
   .scenario-build-stamp-dark{display:none}
 
-  /* End/reset remain available in the Scenario menu without using screen space. */
+  /* End/reset are still available in Scenario menu; do not spend photo space on them. */
   .scenario-quick-controls{display:none}
 
-  .patient-stage{
-    height:clamp(340px,58dvh,540px);
-    min-height:340px;
-    max-height:none;
-    border-radius:15px;
-  }
-  .patient-stage img{object-position:center 38%}
-  .info-update-window{
-    top:7px;
-    left:7px;
-    width:calc(100% - 14px);
-    max-height:126px;
-    padding:8px 9px 7px;
-    border-radius:11px;
-  }
-  .info-update-window>strong{font-size:.8rem}
-  .info-update-window>p{
-    margin:3px 0 5px;
-    max-height:2.7em;
-    overflow:auto;
-    font-size:.7rem;
-    line-height:1.3;
-  }
+  /* Patient should dominate the phone screen. */
+  .patient-stage{height:calc(100dvh - 166px);min-height:430px;max-height:none;border-radius:14px;margin:0}
+  .patient-stage>img{object-position:center center}
+
+  /* Information update is a compact heads-up display rather than a large card. */
+  .info-update-window{top:7px;left:7px;width:calc(100% - 14px);padding:7px 8px 6px;border-radius:11px;border-left-width:4px}
   .info-update-head{margin-bottom:2px}
-  .info-update-controls button{width:26px;height:23px}
+  .info-update-head span,.info-update-head time{font-size:.55rem}
+  .info-update-head-actions{gap:5px}
+  .info-update-head-actions button{width:25px;height:22px}
+  .info-update-window>strong{font-size:.78rem}
+  .info-update-window>p{margin:2px 0 4px;font-size:.69rem;line-height:1.25;max-height:2.5em;overflow:hidden}
+  .info-update-controls{gap:5px}
+  .info-update-controls button{width:26px;height:22px}
+  .info-update-controls span{font-size:.56rem;min-width:38px}
+  .info-update-window.is-collapsed{min-width:172px;max-width:calc(100% - 14px);padding:6px 8px}
+  .info-update-window.is-collapsed .info-update-head:after{content:"Tap for update";font-size:.54rem}
+
+  /* Initial phases read as one clear next-action bar. */
   .patient-phase-controls{left:6px;right:6px;bottom:6px;gap:5px}
-  .patient-phase-controls button{min-height:50px;padding:6px 7px;border-radius:11px}
-  .patient-phase-controls strong{font-size:.69rem}
-  .patient-phase-controls em{font-size:.52rem;max-width:62px}
+  .patient-phase-controls button{min-height:48px;padding:6px 7px;border-radius:11px}
+  .patient-phase-controls small{font-size:.49rem}
+  .patient-phase-controls strong{font-size:.7rem}
+  .patient-phase-controls em{font-size:.5rem;max-width:60px}
 
-  .persistent-clinical-bar{
-    bottom:67px;
-    padding:0 5px 4px;
-  }
-  .persistent-clinical-bar>button{
-    min-height:42px;
-    grid-template-columns:minmax(0,1fr) auto auto;
-    gap:6px;
-    padding:6px 8px;
-    border-radius:11px;
-  }
-  .clinical-bar-finding{display:none}
-  .clinical-bar-status strong{font-size:.67rem}
-  .clinical-bar-status small{font-size:.5rem}
-  .clinical-task-drawer{grid-template-columns:1fr;max-height:160px;overflow:auto}
-
-  .bottom-nav{
-    gap:3px;
-    padding:5px 5px calc(5px + env(safe-area-inset-bottom));
-  }
-  .bottom-nav button{
-    min-height:58px;
-    border-radius:11px;
-    padding:6px 1px 5px;
-    font-size:.57rem;
-    line-height:1.05;
-  }
-  .bottom-nav button>span{font-size:1.05rem;margin-bottom:3px}
-
-  .action-sheet{
-    width:100%;
-    height:auto;
-    max-height:92dvh;
-    padding:6px 8px calc(78px + env(safe-area-inset-bottom));
-    border-radius:18px 18px 0 0;
-  }
-  .sheet-handle{margin-bottom:6px}
-  .sheet-header{top:-6px;padding:2px 0 7px}
-  .sheet-header h2{font-size:1.03rem}
-  .sheet-header p{font-size:.58rem}
-  .return-patient-btn{height:38px;min-width:74px;padding:0 8px}
-  .sheet-patient-context{
-    top:40px;
-    grid-template-columns:1fr 1.25fr;
-    gap:4px;
-    margin:0 0 7px;
-    padding:5px 6px;
-    border-radius:9px;
-  }
-  .sheet-patient-context>span:last-child{display:none}
-  .sheet-patient-context small{font-size:.49rem}
-  .sheet-patient-context strong{font-size:.59rem}
-  .vp-panel .sub{display:none}
-  .tool-grid,.assessment-list,.treatment-list{gap:6px}
-  .tool,.assessment-card,.treatment-card{border-radius:12px;padding:9px}
-  .tool-actions a,.tool-actions button,.assessment-row-action,.treatment-select{min-height:42px}
-  .panel-search input{min-height:42px}
-
-  .scene-guide{
-    left:6px!important;
-    right:6px!important;
-    bottom:6px!important;
-    max-height:calc(100% - 12px);
-    overflow:auto;
-    border-radius:13px!important;
-  }
+  /* Guided scene / ABC question becomes a bottom decision sheet over the photo. */
+  .scene-guide-photo{left:6px!important;right:6px!important;bottom:6px!important;max-height:62%;overflow:auto;border-radius:15px!important;padding:9px!important}
   .scene-guide-head h2{font-size:.94rem}
-  .scene-guide-actions{position:sticky;bottom:0;background:inherit;padding-top:7px}
+  .scene-guide-head p,.guide-note{font-size:.61rem}
+  .scene-guide-question{font-size:.76rem}
+  .scene-guide-actions{position:sticky;bottom:-1px;background:#0b1d2c;padding-top:6px}
+  .scene-guide-actions button{min-height:42px}
+
+  /* Current clinical state becomes a 36px status strip above nav. */
+  .persistent-clinical-bar{bottom:64px;padding:0 6px 4px}
+  .persistent-clinical-bar>button{min-height:34px;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:5px 8px;border-radius:10px}
+  .clinical-bar-status{min-width:0}
+  .clinical-bar-status small{display:none}
+  .clinical-bar-status strong{display:block;font-size:.62rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .clinical-bar-finding{display:none}
+  .clinical-bar-badge{font-size:.57rem}
+  .clinical-bar-chevron{font-size:.7rem}
+  .clinical-task-drawer{grid-template-columns:1fr;max-height:36vh;overflow:auto;padding:5px;border-radius:10px}
+  .clinical-task-drawer>div{padding:5px}
+
+  /* Five thumb targets stay fixed, but much shorter. */
+  .bottom-nav{height:auto;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;padding:5px 5px calc(5px + env(safe-area-inset-bottom));border-radius:14px 14px 0 0}
+  .bottom-nav button{min-height:53px;border-radius:10px;padding:5px 1px 4px;font-size:.55rem;line-height:1.05}
+  .bottom-nav button>span{font-size:1rem;margin-bottom:2px}
+  .bottom-nav em{right:2px;top:2px;width:16px;height:16px;font-size:.56rem}
+
+  /* Action panels behave like a native mobile bottom sheet. */
+  .action-sheet{max-height:calc(100dvh - 58px);padding:5px 8px calc(72px + env(safe-area-inset-bottom));border-radius:18px 18px 0 0}
+  .sheet-handle{margin:1px auto 5px}
+  .sheet-header{position:sticky;top:-5px;z-index:5;margin:0 -8px 5px;padding:6px 8px;background:#0b1d2c;border-bottom:1px solid #294e65}
+  .sheet-header h2{font-size:1rem}
+  .sheet-header p{font-size:.53rem}
+  .return-patient-btn{min-height:36px;padding:6px 9px}
+  .sheet-patient-context{position:static;grid-template-columns:1fr 1fr;margin:0 0 7px;padding:6px 7px;gap:5px;border-radius:10px}
+  .sheet-patient-context>span{padding:4px 5px}
+  .sheet-patient-context>span:nth-child(3){display:none}
+  .sheet-patient-context small{font-size:.5rem}
+  .sheet-patient-context strong{font-size:.6rem}
+  .vp-panel .sub{display:none}
+
+  /* More scan-friendly assessment and vital rows. */
+  .assessment-three-level,.history-category-list,.known-history-list{gap:6px}
+  .assessment-immediate,.assessment-recommended,.assessment-more-body{padding:6px}
+  .assessment-level,.assessment-category,.history-question-category,.history-custom-question{border-radius:11px}
+  .assessment-more>summary,.assessment-category>summary,.history-question-category>summary,.history-custom-question>summary{min-height:43px;padding:8px 9px}
+  .assessment-more>summary strong,.assessment-category>summary strong,.history-question-category>summary>span:nth-child(2) strong{font-size:.76rem}
+  .assessment-compact-row{border-radius:9px}
+  .compact-vital-row{padding:7px;gap:6px}
+  .vital-row-actions{gap:5px}
+  .vital-row-actions button,.tool-actions button,.tool-actions a,.history-question-button{min-height:42px}
+
+  /* History: response remains prominent; helper content is compressed. */
+  .history-patient-banner{padding:7px 8px;margin-bottom:6px;border-radius:10px}
+  .history-patient-banner strong{font-size:.72rem}
+  .history-patient-banner>span{padding:4px 6px;font-size:.6rem}
+  .history-response-card{padding:9px 10px;margin-bottom:6px;border-radius:11px}
+  .history-response-card blockquote{font-size:.83rem;line-height:1.35}
+  .history-response-card small{margin-top:4px;font-size:.62rem}
+  .known-history-section{padding:8px;margin-top:7px;border-radius:11px}
+  .history-guided-tools{display:none}
+
+  /* Clinical next prompt should not cover the main nav. */
+  .clinical-next-actions{bottom:65px;width:calc(100% - 12px);padding:9px 10px;border-radius:13px}
+  .clinical-next-actions h3{font-size:.86rem}
+  .clinical-next-actions p{font-size:.68rem}
+  .clinical-next-buttons{gap:5px}
+  .clinical-next-buttons button{min-height:41px}
+
+  .toast{bottom:66px;font-size:.72rem;padding:8px 10px}
 }
 
-@media (max-width: 380px){
-  .vp-shell{padding-left:5px;padding-right:5px}
-  .patient-stage{height:clamp(330px,56dvh,500px)}
-  .bottom-nav button{font-size:.53rem}
-  .bottom-nav button>span{font-size:1rem}
-  .patient-phase-controls em{display:none}
-  .patient-phase-controls button{justify-content:flex-start}
+@media (max-width: 370px){
+  .vp-shell{padding-left:4px;padding-right:4px}
+  .patient-stage{height:calc(100dvh - 160px);min-height:410px}
+  .bottom-nav button{font-size:.51rem}
+  .bottom-nav button>span{font-size:.94rem}
+  .vp-top h1{font-size:.88rem}
 }
