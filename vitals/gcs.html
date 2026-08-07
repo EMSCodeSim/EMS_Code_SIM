@@ -53,7 +53,7 @@
 <meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="GCS Trainer | EMSCodeSim" property="og:title"/><meta content="Practice Glasgow Coma Scale scoring for EMS assessment with eye, verbal, and motor response prompts." property="og:description"/><meta content="https://emscodesim.com/vitals/gcs.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 <link rel="stylesheet" href="/vitals/vitals-desktop-fit.css?v=2.218">
 </head>
-<body data-vital-topic="gcs" data-desktop-build="2.218">
+<body data-vital-topic="gcs" data-desktop-build="2.219">
 <header><h1>Glasgow Coma Scale (GCS) Simulator</h1></header>
 <main>
 <!-- Scenario snapshot (so instructors can verify internal consistency) -->
@@ -189,6 +189,12 @@
   // ----- Helpers
   const rand = (a)=>a[Math.floor(Math.random()*a.length)];
   const clamp = (n,min,max)=>Math.max(min,Math.min(max,n));
+  const scenarioParams = new URLSearchParams(location.search);
+  const scenarioHorse = scenarioParams.get('mode') === 'scenario' && scenarioParams.get('case') === 'horse_crush';
+  const scenarioReturn = (() => {
+    const raw = scenarioParams.get('return') || '/vitals/visual-patient.html?case=horse_crush';
+    return raw.startsWith('/') && !raw.startsWith('//') ? raw : '/vitals/visual-patient.html?case=horse_crush';
+  })();
 
   // Text banks
   const contexts = [
@@ -230,6 +236,10 @@
 
   // Build a realistic, internally consistent combination
   function buildScenario(){
+    if (scenarioHorse) {
+      truth = { E:4, V:5, M:6, context:'Horse-crush hip injury — patient remains alert, oriented, and able to answer questions clearly.', airway:'Patent' };
+      return;
+    }
     const severityPick = rand([
       'near-normal','near-normal','near-normal',  // weight toward normal/mild
       'moderate','moderate',
@@ -282,6 +292,16 @@
   }
 
   function showDomain(dom){
+    if (scenarioHorse) {
+      const horseText = {
+        E:'Eyes are open spontaneously; the patient tracks you normally.',
+        V:'The patient answers orientation questions appropriately, knows she is outside the barn, and clearly recalls being knocked down by the horses.',
+        M:'The patient obeys commands, squeezes both hands, and moves the feet/toes on request. Left hip movement is limited by pain rather than decreased consciousness.'
+      };
+      resp[dom].hidden = false;
+      line[dom].textContent = horseText[dom];
+      return;
+    }
     if(dom==='E'){
       resp.E.hidden = false;
       line.E.textContent = eyesText[truth.E];
@@ -379,6 +399,10 @@
     selE.value = "4";
     selV.value = "5";
     selM.value = "6";
+    if (scenarioHorse) {
+      nextBtn.textContent = 'Return to Patient';
+      nextBtn.classList.remove('warn');
+    }
   }
 
   // Bind
@@ -387,7 +411,10 @@
   btnMotor.addEventListener('click', ()=>{ showDomain('M'); said.M = true; });
 
   showBtn.addEventListener('click', showResults);
-  nextBtn.addEventListener('click', newScenario);
+  nextBtn.addEventListener('click', ()=>{
+    if (scenarioHorse) location.href = scenarioReturn;
+    else newScenario();
+  });
 
   // Go
   newScenario();

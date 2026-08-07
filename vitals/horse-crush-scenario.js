@@ -246,10 +246,41 @@
     });
   }
 
+  function examForCurrentState(item) {
+    const state = window.EMSCodeSimScenarioRuntime?.horseClinicalState?.(record());
+    if (!state || state.stage === 'baseline') return item;
+    if (item.key === 'left_leg') {
+      const finding = state.unsafeMovement
+        ? 'The patient guards the left hip more intensely after painful movement. Pain is now 10/10, and she will not allow the leg to be straightened.'
+        : `The left leg is supported in the flexed position of comfort. Pain is now ${state.painScore}/10 at rest; hip movement still increases pain.`;
+      return {
+        ...item,
+        finding,
+        details:'No new deformity, shortening, rotation, open injury, or significant swelling is seen. Continue to minimize movement and protect the position of comfort.'
+      };
+    }
+    if (item.key === 'distal_csm') {
+      return {
+        ...item,
+        finding:'Left pedal pulse remains present. The foot is warm, sensation remains intact, and the patient can move the ankle and toes after treatment / movement.',
+        details:'Distal neurovascular status remains unchanged from baseline. Continue to repeat this check after every significant movement or stabilization change.'
+      };
+    }
+    if (item.key === 'pelvis_hip' && !state.unsafeMovement) {
+      return {
+        ...item,
+        finding:`Pelvis remains stable on a single gentle assessment. Marked tenderness is still localized to the left hip; current pain is ${state.painScore}/10 at rest.`,
+        details:'Treatment has improved comfort but does not remove the underlying hip injury. Avoid repeated pelvic compression and continue protected movement.'
+      };
+    }
+    return item;
+  }
+
   function performExam(key) {
     if (!isActive()) return null;
-    const item = EXAMS.find(exam => exam.key === key);
-    if (!item) return null;
+    const baseItem = EXAMS.find(exam => exam.key === key);
+    if (!baseItem) return null;
+    const item = examForCurrentState(baseItem);
     setMainPatientImage(item.image, `${item.label} on the same patient outside the south barn`);
     const saved = record()?.findings?.[item.key];
     if (!saved) {
@@ -262,14 +293,26 @@
       });
       maybeSaveCompleteTraumaExam();
     } else {
-      window.EMSCodeSimPatientInfo?.showSceneObservation?.({
-        id: `horse-exam-review-${item.key}-${Date.now()}`,
-        type: 'ASSESSMENT REVIEW',
-        title: item.label,
-        text: item.finding,
-        kind: item.normality === 'not-normal' ? 'alert' : 'assessment',
-        sticky: true
-      });
+      const dynamicReassessment = ['left_leg','distal_csm','pelvis_hip'].includes(item.key) && item.finding !== baseItem.finding;
+      if (dynamicReassessment) {
+        saveFinding(item.key, item.finding, {
+          label: `${item.label} reassessment`,
+          normality: item.normality,
+          details: item.details,
+          image: item.image,
+          source: 'horse-crush-focused-exam',
+          isReassessment:true
+        });
+      } else {
+        window.EMSCodeSimPatientInfo?.showSceneObservation?.({
+          id: `horse-exam-review-${item.key}-${Date.now()}`,
+          type: 'ASSESSMENT REVIEW',
+          title: item.label,
+          text: item.finding,
+          kind: item.normality === 'not-normal' ? 'alert' : 'assessment',
+          sticky: true
+        });
+      }
     }
     return item;
   }

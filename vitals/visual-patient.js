@@ -950,9 +950,50 @@
     return String(value || '').replace(/^([“"])/, '').replace(/([”"])$/, '');
   }
 
-  function repeatPatientResponse(question) {
+  function repeatPatientResponse(question, baseResponse = question?.response) {
     const prefix = interview.repeatPrefix || `${interview.responder || 'Patient'} repeats, “`;
-    return `${prefix}${cleanPatientQuote(question.response)}”`;
+    return `${prefix}${cleanPatientQuote(baseResponse)}”`;
+  }
+
+  function horseInterviewResponse(question) {
+    if (id !== 'horse_crush' || !question) return question?.response || '';
+    const state = horseClinicalState();
+    if (!state) return question.response || '';
+    const pain = state.painScore ?? 8;
+    const improved = state.stage === 'supported' || state.stage === 'pain-improved' || state.stage === 'relieved';
+    const responses = {
+      chief_complaint: state.stage === 'relieved'
+        ? '“My left hip still hurts, but it feels much better now. Please keep the leg supported when you move me.”'
+        : state.stage === 'worse'
+          ? '“My left hip — it is much worse after that movement. Please stop moving it.”'
+          : `“My left hip. The pain is about ${pain} out of 10 right now. Please do not make me lower this leg.”`,
+      symptoms: `“The main problem is my left hip. The pain is about ${pain} out of 10 right now and runs down my leg. I do not have chest pain, shortness of breath, stomach pain, neck pain, or back pain.”`,
+      provocation: improved
+        ? '“Movement still makes it worse, but supporting the leg and the pain treatment have helped. Keeping the knee bent and still feels best.”'
+        : state.stage === 'worse'
+          ? '“Moving or trying to straighten the leg makes it dramatically worse. Please put it back where it was and keep it still.”'
+          : '“Trying to straighten or lower the leg makes it much worse. Keeping the knee bent and still is the only thing that helps.”',
+      severity: state.stage === 'relieved'
+        ? `“About a ${pain} now while I stay still. It was an eight before you supported it and treated the pain.”`
+        : state.stage === 'pain-improved'
+          ? `“About a ${pain} now. The pain treatment is helping, but moving the hip still hurts sharply.”`
+          : state.stage === 'supported'
+            ? `“About a ${pain} now while you keep the leg supported. It was about an eight before that.”`
+            : state.stage === 'worse'
+              ? '“A ten now after that movement.”'
+              : '“An eight while I stay still. It is worse if the leg moves.”',
+      time: state.stage === 'relieved'
+        ? '“It was constant and severe until you supported the leg and treated the pain. It is much better at rest now, but movement still hurts.”'
+        : improved
+          ? '“It was constant at first. It has eased some since you started supporting and treating it, but movement still makes it worse.”'
+          : state.stage === 'worse'
+            ? '“It was severe before, but it became much worse after the leg was moved.”'
+            : '“It has stayed constant. It settles a little when nobody moves the leg.”',
+      position: state.stage === 'relieved' || state.stage === 'supported'
+        ? '“I can move my foot. I still do not want the hip or knee forced straight, but the support you put under the leg helps a lot.”'
+        : question.response
+    };
+    return responses[question.id] || question.response || '';
   }
 
   function renderHistoryResponse() {
@@ -978,9 +1019,13 @@
     const asked = new Set(askedIds || []);
     const sampleComplete = interview.sampleRequired?.length && interview.sampleRequired.every(key => asked.has(key));
     if (sampleComplete && !existing('sample') && profile?.sample) {
+      const state = horseClinicalState();
+      const sampleDetails = id === 'horse_crush' && state
+        ? `S: Left-hip pain currently ${state.painScore}/10, radiating down the left leg and worse with movement; denies head strike/LOC, neck or back pain, chest pain, dyspnea, or abdominal pain. A: No medication allergy reported. M: Wellbutrin. P: No additional significant history reported and no blood thinner. L: Ate earlier today. E: Compressed between two horses and knocked to the ground from standing; not stepped on.`
+        : profile.sample.detail || '';
       session?.saveFinding?.('sample', profile.sample.finding || 'SAMPLE history obtained', {
         label:'SAMPLE history',
-        details:profile.sample.detail || '',
+        details:sampleDetails,
         source:'patient-interview',
         normality:profile.sample.normality || 'not-normal',
         status:profile.sample.normality === 'normal' ? 'normal' : 'abnormal'
@@ -989,9 +1034,13 @@
     }
     const opqrstComplete = interview.opqrstRequired?.length && interview.opqrstRequired.every(key => asked.has(key));
     if (opqrstComplete && !existing('pain') && interview.opqrstSummary) {
+      const state = horseClinicalState();
+      const opqrstDetails = id === 'horse_crush' && state
+        ? `OPQRST obtained: left-hip pain began immediately during the horse-crush event, becomes sharply worse with hip movement, feels deep and sharp, radiates down the left leg, and is currently ${state.painScore}/10${state.stage !== 'baseline' ? ' after care (initially 8/10)' : ''}. Keeping the leg supported and still improves the pain.`
+        : interview.opqrstSummary;
       session?.saveFinding?.('pain', 'OPQRST symptom assessment obtained', {
         label:'Pain / OPQRST',
-        details:interview.opqrstSummary,
+        details:opqrstDetails,
         source:'patient-interview',
         normality:'not-normal',
         status:'abnormal'
@@ -1005,7 +1054,8 @@
     const current = record() || {};
     const key = interviewHistoryKey(question.id);
     const repeated = Object.prototype.hasOwnProperty.call(current.history || {}, key);
-    const response = repeated ? repeatPatientResponse(question) : question.response;
+    const currentResponse = horseInterviewResponse(question);
+    const response = repeated ? repeatPatientResponse(question, currentResponse) : currentResponse;
     const spokenQuestion = String(askedText || question.prompt || question.label || '').trim();
     lastHistoryResponse = {
       source: interview.responder || 'Patient',
@@ -1417,7 +1467,53 @@
       .filter(Boolean).join(' • ');
   }
 
+  const HORSE_PAIN_TREATMENT_IDS = new Set([
+    'manual_leg_support','position_comfort','blanket_support','splint','pain_control',
+    'scoop_position_comfort','vacuum_mattress','board_transfer','traction_splint','stand_pivot','force_straight'
+  ]);
+
+  function horseClinicalState() {
+    return id === 'horse_crush' ? runtime?.horseClinicalState?.(record()) || null : null;
+  }
+
+  function horseTreatmentResponse(plan, classification, fallback) {
+    if (id !== 'horse_crush') return fallback;
+    const state = horseClinicalState();
+    if (HORSE_PAIN_TREATMENT_IDS.has(plan.id)) {
+      if (classification === 'appropriate-effective' && state?.patientText) return state.patientText;
+      if (classification === 'contraindicated' && state?.patientText) return state.patientText;
+    }
+    if (classification === 'unnecessary' && /oxygen|airway|bvm|cpap/i.test(plan.id || '')) {
+      return '“I’m breathing fine. It’s my hip that really hurts.” The intervention does not meaningfully change the current complaint.';
+    }
+    if (classification === 'premature') return 'The patient has no meaningful change. Gather the missing assessment information and reconsider the treatment.';
+    if (classification === 'unnecessary') return fallback || 'The treatment does not change the patient’s current condition.';
+    return fallback || state?.patientText || 'Reassess the patient after the intervention.';
+  }
+
+  function showHorsePainReminderIfNeeded() {
+    if (id !== 'horse_crush') return;
+    const current = record() || {};
+    const findings = current.findings || {};
+    const painKnown = Boolean(findings.pain || findings.pelvis_hip || findings.left_leg || findings.trauma_assessment);
+    const state = horseClinicalState();
+    if (!painKnown || !state || state.stage !== 'baseline') return;
+    sceneObservationUpdate = {
+      id:'horse-pain-reminder',
+      type:'PATIENT',
+      title:'Patient request',
+      text:state.patientText,
+      kind:'patient_response',
+      sticky:true,
+      recordedAt:new Date().toISOString()
+    };
+    infoManuallyCollapsed = false;
+    lastInfoSignature = '';
+    renderInfoUpdate(true);
+  }
+
   function treatmentResponseDelay(plan) {
+    if (id === 'horse_crush') return /pain_control/i.test(plan.id || '') ? 1400 : 700;
     if (/transport|rapid_transport/i.test(plan.id || '')) return 1200;
     if (/oxygen|position|caregiver/i.test(plan.id || '')) return 2200;
     if (/bronchodilator|oral_glucose|bvm|airway|hemorrhage/i.test(plan.id || '')) return 3600;
@@ -1426,6 +1522,33 @@
 
   function applyDynamicTreatmentResponse(plan, classification, response) {
     const now = new Date().toISOString();
+    if (id === 'horse_crush') {
+      const state = horseClinicalState();
+      const observedResponse = horseTreatmentResponse(plan, classification, response);
+      const vitalTrend = state?.vitals
+        ? `Current state will be reflected when vitals are reassessed: BP ${state.vitals.blood_pressure}, pulse ${state.vitals.pulse}/min, respirations ${state.vitals.respirations}/min, SpO₂ ${state.vitals.spo2}%.`
+        : 'Reassess the patient after treatment.';
+      api?.mergeCareLog?.([{
+        type:'patient_response', category:'treatment', key:plan.targets?.[0] || 'treatment',
+        label:'Patient response observed', value:observedResponse,
+        details:`${vitalTrend} Pain is ${state?.painScore ?? 8}/10 at this point in the scenario.`,
+        source:'dynamic-treatment-response', recordedAt:now
+      }]);
+      sceneObservationUpdate = {
+        id:`horse-treatment-response-${plan.id}-${Date.now()}`,
+        type:'PATIENT RESPONSE',
+        title:plan.label,
+        text:observedResponse,
+        kind:classification === 'contraindicated' ? 'alert' : 'patient_response',
+        sticky:true,
+        recordedAt:now
+      };
+      infoManuallyCollapsed = false;
+      lastInfoSignature = '';
+      refreshFromRecord();
+      renderInfoUpdate(true);
+      return;
+    }
     if (classification === 'appropriate-effective') {
       const updates = {};
       if (/bronchodilator/i.test(plan.id || '')) {
@@ -1946,6 +2069,21 @@
     const log = api?.listCareLog?.(current, 'all') || [];
     log.filter(event => isInformationUpdate(event) && !event.suppressInfoUpdate && !(id === 'horse_crush' && event.source === 'horse-rapid-abc'))
       .forEach(event => updates.push(updateFromCareEvent(event)));
+    if (id === 'horse_crush') {
+      const state = horseClinicalState();
+      const painKeys = new Set(['pain','pelvis_hip','left_leg','trauma_assessment']);
+      const painEvent = [...log]
+        .filter(event => painKeys.has(event.key))
+        .sort((a,b) => new Date(b.recordedAt || 0).getTime() - new Date(a.recordedAt || 0).getTime())[0];
+      if (painEvent && state?.stage === 'baseline') {
+        const t = new Date(painEvent.recordedAt || startedAt).getTime();
+        updates.push({
+          id:'horse-pain-request', type:'PATIENT', title:'Patient request', text:state.patientText,
+          kind:'patient_response', sticky:true,
+          recordedAt:new Date((Number.isFinite(t) ? t : new Date(startedAt).getTime()) + 2).toISOString()
+        });
+      }
+    }
     if (sceneObservationUpdate) updates.push(sceneObservationUpdate);
     if (id === 'horse_crush') {
       updates.sort((a, b) => new Date(a.recordedAt || 0).getTime() - new Date(b.recordedAt || 0).getTime());
@@ -2286,13 +2424,19 @@
     const priorityMatch = priority === expectedPriority;
     const destinationMatch = destination === plan.bestDestination || (plan.bestDestination === 'Stroke-capable center' && destination === 'Stroke center');
     const classification = priorityMatch && destinationMatch ? 'appropriate-effective' : 'transport-choice-review';
+    const transportHorseState = id === 'horse_crush' ? horseClinicalState() : null;
+    const transportPatientResponse = id === 'horse_crush'
+      ? (transportHorseState?.stage === 'baseline'
+          ? '“Can you do something for my pain before you move me?” The patient remains alert and continues guarding the left hip.'
+          : `${transportHorseState?.patientText || 'The patient tolerates the movement plan.'} The injured leg remains supported during transport.`)
+      : 'The patient is prepared for movement and transport while care and reassessment continue.';
     const treatment = {
       actionId:'transport_decision', treatment:'Initiate transport', name:'Initiate transport', label:'Transport initiated',
       description:`${priority} to ${destination}${notification ? ` • ${notification}` : ''}`,
       source:'transport-treatment', classification, indicationStatus:classification,
       targetKeys:[], reassessmentRequired:false,
       documentation:{ impression, priority, destination, notification, rationale },
-      patientResponse:'The patient is prepared for movement and transport while care and reassessment continue.'
+      patientResponse:transportPatientResponse
     };
     if (session?.addTreatment) session.addTreatment(treatment); else api?.addTreatment?.(treatment);
     api?.mergeCareLog?.([
@@ -2510,6 +2654,7 @@
       horseTreatmentActiveGroup = '';
       buildTreatments();
       renderHorseTreatmentSelectionBox();
+      showHorsePainReminderIfNeeded();
     } else if (id === 'horse_crush' && desktopWorkspace()) {
       horseHistoryActiveGroup = '';
       horseTreatmentActiveGroup = '';
