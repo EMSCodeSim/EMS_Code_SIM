@@ -84,6 +84,7 @@
   let horseCurrentAssessment = 'abc';
   let horseAssessmentCollapsed = false;
   let horseHistoryActiveGroup = '';
+  let horseTreatmentActiveGroup = '';
   const renderSignatures = { vitals:'', assessments:'', history:'', treatments:'', findings:'', progress:'' };
 
   function dataSignature(value) {
@@ -690,7 +691,7 @@
     const questionBox = $('horseClinicalQuestionBox');
     function resetQuestionBox() {
       if (!questionBox) return;
-      questionBox.classList.remove('active');
+      questionBox.classList.remove('active','history-active','treatment-active');
       const activeLabel = horseCurrentAssessment === 'abc' ? 'Select Airway, Breathing, or Circulation.' : 'Perform an exam segment. Any follow-up question will appear here.';
       questionBox.innerHTML = `
         <div class="horse-question-placeholder">
@@ -1112,7 +1113,7 @@
     if (!questionBox) return;
     const group = HORSE_HISTORY_GROUPS.find(item => item.id === groupId);
     if (!group) {
-      questionBox.classList.remove('active','history-active');
+      questionBox.classList.remove('active','history-active','treatment-active');
       questionBox.innerHTML = `
         <div class="horse-question-placeholder">
           <small>HISTORY QUESTION</small>
@@ -1517,7 +1518,7 @@
       type:'documentation', category:'treatment', key:plan.id,
       label:'Treatment decision committed', value:treatment.description,
       details:'Patient response is not immediately revealed. Observe and reassess the patient.',
-      source:'scenario-aware-treatment', recordedAt:new Date(Date.now() + 1).toISOString()
+      source:'scenario-aware-treatment', suppressInfoUpdate:id === 'horse_crush', recordedAt:new Date(Date.now() + 1).toISOString()
     }]);
     refreshFromRecord();
     scheduleTreatmentResponse(plan, classification, response);
@@ -1614,8 +1615,250 @@
     return article;
   }
 
+  const HORSE_TREATMENT_GROUPS = [
+    {
+      id:'splinting', label:'Splinting / stabilization', icon:'S',
+      description:'Support, pad, stabilize, or splint the injured hip / leg.',
+      instruction:'Choose how you want to stabilize or support the painful hip and leg. The treatment choice appears below; the patient response will replace this message.',
+      planIds:['manual_leg_support','position_comfort','blanket_support','splint','pelvic_binder','traction_splint']
+    },
+    {
+      id:'movement', label:'Moving / packaging', icon:'M',
+      description:'Crew coordination, lift method, transfer device, and positioning.',
+      instruction:'Choose a movement or packaging action. Consider the patient’s position of comfort and the findings you obtained before moving her.',
+      planIds:['request_help','scoop_position_comfort','vacuum_mattress','board_transfer','stand_pivot','force_straight']
+    },
+    {
+      id:'airway', label:'Airway', icon:'A',
+      description:'Positioning, suction, adjuncts, and airway protection.',
+      instruction:'Choose an airway intervention if you believe the patient needs one. The simulator will show the patient response in the Patient Update window.',
+      category:'airway'
+    },
+    {
+      id:'breathing', label:'Breathing', icon:'B',
+      description:'Oxygen and ventilation support.',
+      instruction:'Choose a breathing intervention based on your respiratory assessment and oxygenation findings.',
+      planIds:['oxygen','oxygen_general','bvm_general','cpap']
+    },
+    {
+      id:'circulation', label:'Circulation', icon:'C',
+      description:'Perfusion support, bleeding control, shock care, and heat conservation.',
+      instruction:'Choose a circulation intervention based on bleeding, perfusion, skin signs, and overall patient condition.',
+      planIds:['heat_conservation','control_bleeding','shock_care','cpr_aed']
+    },
+    {
+      id:'pain', label:'Pain / comfort', icon:'P',
+      description:'Positioning, support, and protocol-appropriate pain management.',
+      instruction:'Choose how you want to address pain and comfort before or during movement.',
+      planIds:['pain_control']
+    },
+    {
+      id:'transport', label:'Transport', icon:'T',
+      description:'Working impression, urgency, destination, and notification.',
+      instruction:'Make the transport decision from the information you have gathered. Select the transport option below to set urgency and destination.',
+      special:'transport'
+    },
+    {
+      id:'reassessment', label:'Reassessment', icon:'R',
+      description:'Repeat key checks after movement or treatment.',
+      instruction:'Choose the reassessment you want after treatment, stabilization, or movement.',
+      planIds:['reassess_distal_csm']
+    }
+  ];
+
+  function horseTreatmentPlanPool() {
+    const unique = new Map();
+    (TREATMENT_PLANS[id] || []).forEach(plan => unique.set(plan.id, plan));
+    EMT_TREATMENT_LIBRARY.forEach(plan => {
+      if (!unique.has(plan.id)) unique.set(plan.id, { ...plan, category:plan.category || treatmentCategory(plan) });
+    });
+    return [...unique.values()];
+  }
+
+  function horseTreatmentGroupPlans(group) {
+    if (!group) return [];
+    if (group.special === 'transport') return [{ id:'__horse_transport__', label:'Initiate transport', summary:'Choose working impression, transport urgency, destination, and specialty notification.' }];
+    const pool = horseTreatmentPlanPool();
+    if (group.planIds) {
+      const byId = new Map(pool.map(plan => [plan.id, plan]));
+      return group.planIds.map(planId => byId.get(planId)).filter(Boolean);
+    }
+    if (group.category) return pool.filter(plan => treatmentCategory(plan) === group.category);
+    return [];
+  }
+
+  function horseTreatmentRecordedCount(plan) {
+    if (plan?.id === '__horse_transport__') return record()?.documentation?.transportDecisionAt ? 1 : 0;
+    return plan ? treatmentCount(plan) : 0;
+  }
+
+  function horseTransportFormMarkup() {
+    const current = record() || {};
+    const plan = transportPlan();
+    return `
+      <form class="horse-treatment-action-form horse-transport-selection-form">
+        <div class="horse-treatment-detail-grid">
+          <label>Working impression<select name="impression">${selectOptions(plan.impressions, current.impressions?.primary || '', 'Choose working impression')}</select></label>
+          <label>Transport urgency<select name="priority">${selectOptions(transportPriorityOptions(), current.documentation?.transportPriority || '', 'Choose transport urgency')}</select></label>
+          <label>Destination<select name="destination">${selectOptions(transportDestinationOptions(), current.documentation?.destination || '', 'Choose destination')}</select></label>
+          <label>Notification<select name="notification">${selectOptions(['No specialty activation','Trauma activation','Stroke alert','STEMI / cath-lab activation','Pediatric alert','Burn-center notification'], current.documentation?.transportNotification || '', 'Choose notification')}</select></label>
+        </div>
+        <label class="horse-treatment-rationale">Reason for decision<textarea name="rationale" rows="2" placeholder="Optional clinical reasoning">${escapeHtml(current.documentation?.transportRationale || '')}</textarea></label>
+        <div class="horse-treatment-perform-row"><button class="horse-treatment-perform" type="submit">Initiate transport</button><p class="transport-entry-error" hidden></p></div>
+      </form>`;
+  }
+
+  function renderHorseTreatmentSelectionBox(groupId = horseTreatmentActiveGroup) {
+    if (id !== 'horse_crush' || !desktopWorkspace()) return;
+    const questionBox = $('horseClinicalQuestionBox');
+    if (!questionBox) return;
+    const group = HORSE_TREATMENT_GROUPS.find(item => item.id === groupId);
+    if (!group) {
+      questionBox.classList.remove('active','history-active','treatment-active');
+      questionBox.innerHTML = `
+        <div class="horse-question-placeholder">
+          <small>TREATMENT SELECTION</small>
+          <strong>Select a treatment group below.</strong>
+        </div>`;
+      return;
+    }
+
+    const plans = horseTreatmentGroupPlans(group);
+    const completed = plans.filter(plan => horseTreatmentRecordedCount(plan) > 0).length;
+    questionBox.classList.remove('history-active');
+    questionBox.classList.add('active','treatment-active');
+    questionBox.innerHTML = `
+      <div class="horse-question-head horse-treatment-question-head">
+        <div><small>TREATMENT SELECTION</small><strong>${escapeHtml(group.label)}</strong></div>
+        <span>${completed}/${plans.length} used</span>
+      </div>
+      <div class="horse-treatment-selection-row">
+        <label><span>Treatment / action</span>
+          <select id="horseTreatmentSelect" aria-label="${escapeHtml(group.label)} treatment choice">
+            <option value="">Choose a treatment</option>
+            ${plans.map(plan => `<option value="${escapeHtml(plan.id)}">${horseTreatmentRecordedCount(plan) ? '✓ ' : ''}${escapeHtml(plan.label)}</option>`).join('')}
+          </select>
+        </label>
+      </div>
+      <div id="horseTreatmentDetail" class="horse-treatment-detail"><small>Select an action to see any required treatment details.</small></div>`;
+
+    const select = questionBox.querySelector('#horseTreatmentSelect');
+    const detail = questionBox.querySelector('#horseTreatmentDetail');
+    const renderSelected = () => {
+      const plan = plans.find(item => item.id === select?.value);
+      if (!plan || !detail) {
+        if (detail) detail.innerHTML = '<small>Select an action to see any required treatment details.</small>';
+        return;
+      }
+      if (plan.id === '__horse_transport__') {
+        detail.innerHTML = `<p class="horse-treatment-summary">${escapeHtml(plan.summary)}</p>${horseTransportFormMarkup()}`;
+        detail.querySelector('form')?.addEventListener('submit', event => {
+          event.preventDefault();
+          saveTransportDecision(event.currentTarget);
+        });
+        return;
+      }
+      const fields = treatmentDocumentation(plan);
+      detail.innerHTML = `
+        <p class="horse-treatment-summary">${escapeHtml(plan.summary || 'Perform the selected treatment and observe the patient response.')}</p>
+        <form class="horse-treatment-action-form">
+          ${fields.length ? `<div class="horse-treatment-detail-grid">${fields.map(treatmentFieldMarkup).join('')}</div>` : ''}
+          <div class="horse-treatment-perform-row"><button class="horse-treatment-perform" type="submit">${horseTreatmentRecordedCount(plan) ? 'Perform again' : 'Perform treatment'}</button><p class="treatment-entry-error" hidden></p></div>
+        </form>`;
+      const form = detail.querySelector('form');
+      form?.addEventListener('submit', event => {
+        event.preventDefault();
+        const validation = validateTreatmentDocumentation(plan, form);
+        const error = form.querySelector('.treatment-entry-error');
+        if (!validation.ok) {
+          if (error) { error.textContent = validation.message; error.hidden = false; }
+          return;
+        }
+        if (error) error.hidden = true;
+        recordTreatment(plan, validation.values);
+      });
+    };
+    select?.addEventListener('change', renderSelected);
+  }
+
+  function selectHorseTreatmentGroup(groupId, options = {}) {
+    if (id !== 'horse_crush' || !desktopWorkspace()) return;
+    const group = HORSE_TREATMENT_GROUPS.find(item => item.id === groupId);
+    if (!group) return;
+    horseTreatmentActiveGroup = group.id;
+    if (options.updateInfo !== false) {
+      sceneObservationUpdate = {
+        id:`horse-treatment-group-${group.id}`,
+        type:'TREATMENT',
+        title:group.label,
+        text:group.instruction,
+        kind:'treatment',
+        sticky:true,
+        recordedAt:new Date().toISOString()
+      };
+      infoManuallyCollapsed = false;
+      lastInfoSignature = '';
+      renderInfoUpdate(true);
+    }
+    renderHorseTreatmentSelectionBox(group.id);
+    document.querySelectorAll('#treatmentTools .horse-treatment-group').forEach(details => {
+      const selected = details.dataset.horseTreatmentGroup === group.id;
+      details.classList.toggle('selected', selected);
+      if (selected && !details.open) details.open = true;
+    });
+  }
+
+  function buildHorseTreatmentsDesktop() {
+    const box = $('treatmentTools');
+    if (!box) return;
+    box.innerHTML = '';
+    box.className = 'treatment-list horse-treatment-groups';
+    const current = record() || {};
+
+    HORSE_TREATMENT_GROUPS.forEach(group => {
+      const plans = horseTreatmentGroupPlans(group);
+      if (!plans.length) return;
+      const completed = plans.filter(plan => horseTreatmentRecordedCount(plan) > 0).length;
+      const details = document.createElement('details');
+      details.className = `treatment-category horse-treatment-group${horseTreatmentActiveGroup === group.id ? ' selected' : ''}`;
+      details.dataset.horseTreatmentGroup = group.id;
+      details.open = horseTreatmentActiveGroup === group.id;
+      details.innerHTML = `
+        <summary>
+          <span class="horse-treatment-group-icon" aria-hidden="true">${escapeHtml(group.icon)}</span>
+          <span><strong>${escapeHtml(group.label)}</strong><small>${escapeHtml(group.description)}</small></span>
+          <em>${completed ? `${completed}/${plans.length}` : `${plans.length}`}</em>
+        </summary>
+        <div class="horse-treatment-group-preview">
+          ${plans.map(plan => `<span class="${horseTreatmentRecordedCount(plan) ? 'used' : ''}">${horseTreatmentRecordedCount(plan) ? '✓' : '○'} ${escapeHtml(plan.label)}</span>`).join('')}
+          <small>Selecting this group loads these actions into the fixed Treatment Selection box above.</small>
+        </div>`;
+      details.querySelector('summary')?.addEventListener('click', event => {
+        event.preventDefault();
+        const willOpen = !details.open;
+        document.querySelectorAll('#treatmentTools .horse-treatment-group').forEach(other => {
+          if (other !== details) other.open = false;
+        });
+        details.open = willOpen;
+        if (willOpen) selectHorseTreatmentGroup(group.id);
+        else if (horseTreatmentActiveGroup === group.id) {
+          horseTreatmentActiveGroup = '';
+          details.classList.remove('selected');
+          renderHorseTreatmentSelectionBox();
+        }
+      });
+      box.appendChild(details);
+    });
+
+    renderHorseTreatmentSelectionBox();
+  }
+
   function buildTreatments() {
     const box = $('treatmentTools');
+    if (id === 'horse_crush' && desktopWorkspace()) {
+      buildHorseTreatmentsDesktop();
+      return;
+    }
     const uiState = captureTreatmentUi();
     box.innerHTML = '';
     box.classList.add('treatment-category-menu');
@@ -1952,8 +2195,12 @@
     return `<option value="">${escapeHtml(placeholder)}</option>${values.map(value => `<option value="${escapeHtml(value)}" ${value === selected ? 'selected' : ''}>${escapeHtml(value)}</option>`).join('')}`;
   }
 
-  function transportPriorityOptions() { return ['Non-emergent transport','Emergent transport']; }
+  function transportPriorityOptions() {
+    if (id === 'horse_crush') return transportPlan().priorities || ['Non-emergent transport','Prompt trauma transport','Emergent trauma transport'];
+    return ['Non-emergent transport','Emergent transport'];
+  }
   function transportDestinationOptions() {
+    if (id === 'horse_crush') return transportPlan().destinations || ['Closest appropriate emergency department','Trauma center'];
     return ['Closest appropriate emergency department','Trauma center','Stroke center','Cardiac catheterization center','Pediatric-capable emergency department','Burn center','Specialty respiratory center'];
   }
 
@@ -1975,9 +2222,10 @@
     api?.setDocumentation?.({ transportPriority:priority, destination, transportNotification:notification, transportRationale:rationale, transportDecisionAt:new Date().toISOString() });
     api?.setFinding?.('transport_decision', `${priority} to ${destination}`, { label:'Transport decision', source:'transport-treatment', details:rationale || `Working impression: ${impression}` });
     const plan = transportPlan();
-    const expectedPriority = /Emergent|Prompt/i.test(plan.bestPriority || '') ? 'Emergent transport' : 'Non-emergent transport';
+    const expectedPriority = id === 'horse_crush' ? plan.bestPriority : (/Emergent|Prompt/i.test(plan.bestPriority || '') ? 'Emergent transport' : 'Non-emergent transport');
+    const priorityMatch = priority === expectedPriority;
     const destinationMatch = destination === plan.bestDestination || (plan.bestDestination === 'Stroke-capable center' && destination === 'Stroke center');
-    const classification = priority === expectedPriority && destinationMatch ? 'appropriate-effective' : 'transport-choice-review';
+    const classification = priorityMatch && destinationMatch ? 'appropriate-effective' : 'transport-choice-review';
     const treatment = {
       actionId:'transport_decision', treatment:'Initiate transport', name:'Initiate transport', label:'Transport initiated',
       description:`${priority} to ${destination}${notification ? ` • ${notification}` : ''}`,
@@ -1987,8 +2235,12 @@
       patientResponse:'The patient is prepared for movement and transport while care and reassessment continue.'
     };
     if (session?.addTreatment) session.addTreatment(treatment); else api?.addTreatment?.(treatment);
-    api?.mergeCareLog?.([{ type:'documentation', category:'transport', key:'transport_decision', label:'Transport initiated', value:treatment.description, details:rationale, source:'transport-treatment', recordedAt:new Date(Date.now()+1).toISOString() }]);
+    api?.mergeCareLog?.([
+      { type:'documentation', category:'transport', key:'transport_decision', label:'Transport initiated', value:treatment.description, details:rationale, source:'transport-treatment', suppressInfoUpdate:id === 'horse_crush', recordedAt:new Date(Date.now()+1).toISOString() },
+      ...(id === 'horse_crush' ? [{ type:'patient_response', category:'treatment', key:'transport_decision', label:'Patient response to transport', value:treatment.patientResponse, details:'Continue care and reassessment during transport.', source:'transport-treatment-response', recordedAt:new Date(Date.now()+2).toISOString() }] : [])
+    ]);
     refreshFromRecord();
+    if (id === 'horse_crush') renderInfoUpdate(true);
     toast('Transport decision recorded');
   }
 
@@ -2188,12 +2440,19 @@
     if (panelId === 'findingsPanel') renderFindings();
     if (panelId === 'historyPanel') {
       if (id === 'horse_crush' && desktopWorkspace()) {
+        horseTreatmentActiveGroup = '';
         horseHistoryActiveGroup = '';
         renderHorseHistoryQuestionBox();
       }
       buildHistory();
+    } else if (panelId === 'treatmentPanel' && id === 'horse_crush' && desktopWorkspace()) {
+      horseHistoryActiveGroup = '';
+      horseTreatmentActiveGroup = '';
+      buildTreatments();
+      renderHorseTreatmentSelectionBox();
     } else if (id === 'horse_crush' && desktopWorkspace()) {
       horseHistoryActiveGroup = '';
+      horseTreatmentActiveGroup = '';
       horseWorkspaceContext?.resetQuestionBox?.();
     }
     if (panelId === 'treatmentPanel' && treatmentCategoryFocus) {
@@ -2214,6 +2473,9 @@
         document.body.classList.remove('horse-tool-sheet-open');
         document.body.style.overflow = '';
         document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
+        horseHistoryActiveGroup = '';
+        horseTreatmentActiveGroup = '';
+        horseWorkspaceContext?.resetQuestionBox?.();
         configureHorseCurrentAssessmentWorkspace();
         return;
       }
