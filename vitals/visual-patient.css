@@ -818,3 +818,147 @@ body.scene-guide-active .patient-phase-controls{display:none}
 /* Static information panel for patient updates */
 .info-update-window{position:static;z-index:auto;width:100%;max-width:none;left:auto;top:auto;padding:11px 12px;border-radius:16px;box-shadow:none} .info-update-window.is-collapsed{max-width:none;width:100%}
 @media(min-width:980px){.info-update-window{margin:0}}
+
+
+/* Desktop clinical workspace — picture left, all controls right */
+@media(min-width:980px){
+  body.desktop-scenario-layout{overflow:auto;background:#07131f}
+  body.desktop-scenario-layout .vp-shell{max-width:1460px;padding:10px 14px 24px}
+  body.desktop-scenario-layout .scenario-quick-controls{display:none}
+  body.desktop-scenario-layout .scenario-hero-layout{
+    display:grid;
+    grid-template-columns:minmax(560px,1.35fr) minmax(390px,.85fr);
+    gap:16px;
+    align-items:start;
+  }
+  body.desktop-scenario-layout .patient-stage{
+    position:sticky;
+    top:10px;
+    height:calc(100vh - 104px);
+    min-height:620px;
+    max-height:920px;
+    border-radius:18px;
+    box-shadow:0 14px 38px rgba(0,0,0,.24);
+  }
+  body.desktop-scenario-layout .patient-stage:after{
+    background:linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,0) 75%,rgba(3,12,20,.15));
+  }
+  body.desktop-scenario-layout .patient-control-column{
+    position:static;
+    display:grid;
+    grid-template-rows:auto auto auto minmax(0,1fr);
+    gap:10px;
+    max-height:none;
+    overflow:visible;
+    padding:0;
+  }
+  body.desktop-scenario-layout .info-update-window{
+    position:static;
+    inset:auto;
+    width:100%;
+    max-width:none;
+    min-height:108px;
+    margin:0;
+    padding:12px 14px;
+    border:1px solid #31566d;
+    border-left:5px solid #4fb3ff;
+    border-radius:16px;
+    background:#0d2232;
+    box-shadow:none;
+    backdrop-filter:none;
+  }
+  body.desktop-scenario-layout .info-update-window.is-collapsed{width:100%;max-width:none}
+  body.desktop-scenario-layout .patient-entry-workflow{margin:0;gap:8px}
+  body.desktop-scenario-layout .patient-phase-controls{grid-template-columns:1fr 1fr;gap:8px}
+  body.desktop-scenario-layout .patient-phase-controls button{
+    min-height:54px;
+    background:#10283a;
+    border:1px solid #31566d;
+    box-shadow:none;
+  }
+  body.desktop-scenario-layout .scene-guide-photo{
+    position:static;
+    width:100%;
+    max-height:none;
+    overflow:visible;
+    margin:0;
+    padding:11px 12px;
+    border-radius:15px;
+    background:#0d2232;
+    border:1px solid #31566d;
+    box-shadow:none;
+  }
+  body.desktop-scenario-layout .bottom-nav{
+    position:static;
+    left:auto;
+    bottom:auto;
+    transform:none;
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:6px;
+    padding:0;
+    background:transparent;
+    border:0;
+    backdrop-filter:none;
+  }
+  body.desktop-scenario-layout .bottom-nav button{
+    min-height:48px;
+    padding:6px 3px;
+    border-radius:11px;
+    font-size:.65rem;
+  }
+  body.desktop-scenario-layout .bottom-nav button>span{font-size:1rem;margin-bottom:1px}
+  body.desktop-scenario-layout .action-sheet{
+    position:static;
+    left:auto;
+    bottom:auto;
+    transform:none;
+    width:100%;
+    max-height:none;
+    overflow:visible;
+    padding:0;
+    border:1px solid #31566d;
+    border-radius:16px;
+    background:#0b1d2c;
+    box-shadow:none;
+  }
+  body.desktop-scenario-layout .action-sheet[hidden]{display:none}
+  body.desktop-scenario-layout .sheet-handle{display:none}
+  body.desktop-scenario-layout .sheet-header{
+    position:static;
+    top:auto;
+    padding:10px 12px 8px;
+    border-bottom:1px solid #294d64;
+    background:#0b1d2c;
+    border-radius:16px 16px 0 0;
+  }
+  body.desktop-scenario-layout .sheet-header h2{font-size:1.02rem}
+  body.desktop-scenario-layout .sheet-header .return-patient-btn{display:none}
+  body.desktop-scenario-layout .sheet-patient-context{
+    margin:8px 10px 0;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:6px;
+  }
+  body.desktop-scenario-layout .vp-panel{padding:10px 10px 14px}
+  body.desktop-scenario-layout .vp-panel .sub{margin:0 0 8px;font-size:.75rem;line-height:1.35}
+  body.desktop-scenario-layout .assessment-immediate,
+  body.desktop-scenario-layout .assessment-recommended,
+  body.desktop-scenario-layout .assessment-more-body{padding:8px}
+  body.desktop-scenario-layout .tool-grid,
+  body.desktop-scenario-layout .assessment-list,
+  body.desktop-scenario-layout .treatment-list{gap:7px}
+  body.desktop-scenario-layout .compact-vital-row{padding:8px 9px}
+  body.desktop-scenario-layout .assessment-category>summary,
+  body.desktop-scenario-layout .assessment-more>summary,
+  body.desktop-scenario-layout .treatment-category>summary{padding:9px 10px}
+  body.desktop-scenario-layout .sheet-backdrop{display:none!important}
+  body.desktop-scenario-layout .persistent-clinical-bar{display:none}
+  body.desktop-scenario-layout .vp-shell{padding-bottom:24px}
+}
+
+@media(min-width:1280px){
+  body.desktop-scenario-layout .scenario-hero-layout{
+    grid-template-columns:minmax(650px,1.45fr) minmax(430px,.9fr);
+  }
+}

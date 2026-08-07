@@ -1740,6 +1740,12 @@
     location.href = `/vitals/scenario-launcher.html?select=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&ended=1`;
   }
 
+  const desktopWorkspaceQuery = window.matchMedia('(min-width: 980px)');
+  const desktopWorkspace = () => desktopWorkspaceQuery.matches;
+  let desktopWorkspaceReady = false;
+  let mobileNavAnchor = null;
+  let mobileSheetAnchor = null;
+
   function openSheet(panelId) {
     evaluatePatientCondition(panelId === 'treatmentPanel' ? 'treatment-review' : 'patient-tool-open');
     refreshFromRecord();
@@ -1747,8 +1753,13 @@
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
     $('sheetTitle').textContent = { vitalsPanel: 'Vitals', assessmentPanel: 'Assessment', historyPanel: 'Patient history', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
     $('actionSheet').hidden = false;
-    $('sheetBackdrop').hidden = false;
-    document.body.style.overflow = 'hidden';
+    if (desktopWorkspace()) {
+      $('sheetBackdrop').hidden = true;
+      document.body.style.overflow = '';
+    } else {
+      $('sheetBackdrop').hidden = false;
+      document.body.style.overflow = 'hidden';
+    }
     if (panelId === 'findingsPanel') renderFindings();
     if (panelId === 'historyPanel') buildHistory();
     if (panelId === 'treatmentPanel' && treatmentCategoryFocus) {
@@ -1762,10 +1773,53 @@
   }
 
   function closeSheet() {
+    if (desktopWorkspace()) {
+      openSheet('assessmentPanel');
+      return;
+    }
     $('actionSheet').hidden = true;
     $('sheetBackdrop').hidden = true;
     document.body.style.overflow = '';
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
+  }
+
+  function configureDesktopWorkspace() {
+    const nav = document.querySelector('.bottom-nav');
+    const sheet = $('actionSheet');
+    const controlColumn = document.querySelector('.patient-control-column');
+    const backdrop = $('sheetBackdrop');
+    if (!nav || !sheet || !controlColumn || !backdrop) return;
+
+    if (!mobileNavAnchor) {
+      mobileNavAnchor = document.createComment('mobile-nav-anchor');
+      nav.parentNode?.insertBefore(mobileNavAnchor, nav);
+    }
+    if (!mobileSheetAnchor) {
+      mobileSheetAnchor = document.createComment('mobile-sheet-anchor');
+      sheet.parentNode?.insertBefore(mobileSheetAnchor, sheet);
+    }
+
+    const desktop = desktopWorkspace();
+    document.body.classList.toggle('desktop-scenario-layout', desktop);
+
+    if (desktop) {
+      controlColumn.appendChild(nav);
+      controlColumn.appendChild(sheet);
+      sheet.hidden = false;
+      backdrop.hidden = true;
+      document.body.style.overflow = '';
+      desktopWorkspaceReady = true;
+      const activePanel = [...document.querySelectorAll('.vp-panel')].find(panel => !panel.hidden)?.id || 'assessmentPanel';
+      openSheet(activePanel);
+    } else if (desktopWorkspaceReady) {
+      mobileNavAnchor.parentNode?.insertBefore(nav, mobileNavAnchor.nextSibling);
+      mobileSheetAnchor.parentNode?.insertBefore(sheet, mobileSheetAnchor.nextSibling);
+      sheet.hidden = true;
+      backdrop.hidden = true;
+      document.body.style.overflow = '';
+      document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
+      desktopWorkspaceReady = false;
+    }
   }
 
   function finishFocus() {
@@ -1935,6 +1989,8 @@
   window.addEventListener('emscodesim:scenario-finding-saved', refreshFromRecord);
   window.addEventListener('emscodesim:partner-task-updated', () => { refreshFromRecord(); updatePartnerTasks(); });
   window.addEventListener('emscodesim:partner-task-completed', () => { refreshFromRecord(); renderInfoUpdate(true); updatePartnerTasks(); });
+  desktopWorkspaceQuery.addEventListener('change', configureDesktopWorkspace);
+  configureDesktopWorkspace();
   window.addEventListener('pageshow', () => {
     session?.sync?.(id, { force: true });
     session?.resolvePartnerTasks?.(id);
