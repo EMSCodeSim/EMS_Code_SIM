@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2200">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2206">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2200">
   <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2200">
 </head>
@@ -19,7 +19,7 @@
         <h1 id="caseTitle">Visual Patient</h1>
         <p id="scene"></p>
       </div>
-      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">HORSE DEMO 2.20</small></div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">HORSE DEMO 2.204</small></div>
     </header>
 
     <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
@@ -55,6 +55,12 @@
             <button id="infoUpdateNext" type="button" aria-label="Next information update">›</button>
           </div>
         </aside>
+        <section id="horseClinicalQuestionBox" class="horse-clinical-question-box" aria-live="polite" aria-label="Current clinical follow-up question">
+          <div class="horse-question-placeholder">
+            <small>CLINICAL DECISION</small>
+            <strong>Select Airway, Breathing, or Circulation to begin.</strong>
+          </div>
+        </section>
 
         <section class="patient-entry-workflow" aria-label="Initial scenario questions">
           <div id="patientPhaseControls" class="patient-phase-controls" aria-label="Initial patient assessment phases">
@@ -271,7 +277,7 @@
   <script src="/vitals/scenario-phase-model.js?v=2200"></script>
   <script src="/vitals/horse-crush-bootstrap.js?v=2200"></script>
   <script src="/vitals/horse-crush-scenario.js?v=2200"></script>
-  <script src="/vitals/visual-patient.js?v=2200"></script>
-  <script src="/vitals/scenario-guided-start.js?v=2201"></script>
+  <script src="/vitals/visual-patient.js?v=2206"></script>
+  <script src="/vitals/scenario-guided-start.js?v=2202"></script>
 </body>
 </html>
