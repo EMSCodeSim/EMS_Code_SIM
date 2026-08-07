@@ -685,3 +685,119 @@ body.scene-guide-active .patient-phase-controls{display:none}
 /* Consolidated patient workspace build marker */
 .scenario-build-stamp-dark{display:block;margin-top:2px;color:#82c6eb;font-size:.52rem;font-weight:950;letter-spacing:.06em;text-transform:uppercase}
 @media(max-width:390px){.bottom-nav{gap:4px;padding-left:5px;padding-right:5px}.bottom-nav button{font-size:.59rem;min-width:0}.bottom-nav button>span{font-size:1.08rem}}
+
+
+/* Desktop scenario workspace — responsive companion to phone-first UI */
+@media (min-width: 900px) {
+  .vp-shell {
+    max-width: 1320px;
+    padding: 14px 22px 118px;
+  }
+  .vp-top {
+    grid-template-columns: 46px minmax(0,1fr) auto;
+    gap: 14px;
+    padding: 8px 0 12px;
+  }
+  .vp-top h1 { font-size: 1.35rem; }
+  .vp-top p { font-size: .82rem; }
+  .scenario-quick-controls {
+    max-width: 430px;
+    margin-left: auto;
+    margin-bottom: 10px;
+  }
+  .patient-desktop-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(360px, .85fr);
+    gap: 18px;
+    align-items: start;
+  }
+  .patient-stage {
+    height: calc(100vh - 190px);
+    min-height: 560px;
+    max-height: 760px;
+    border-radius: 20px;
+  }
+  .patient-entry-workflow {
+    position: sticky;
+    top: 14px;
+    margin-top: 0;
+    align-self: start;
+    gap: 12px;
+  }
+  .patient-phase-controls {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .patient-phase-controls button {
+    min-height: 70px;
+    padding: 11px 13px;
+    border-radius: 14px;
+  }
+  .patient-phase-controls strong { font-size: .9rem; }
+  .patient-phase-controls small { font-size: .61rem; }
+  .patient-phase-controls em { font-size: .67rem; }
+  .info-update-window {
+    width: min(410px, 48%);
+    max-height: 230px;
+  }
+  .persistent-clinical-bar {
+    width: min(920px, calc(100% - 80px));
+    bottom: 86px;
+  }
+  .bottom-nav {
+    width: min(760px, calc(100% - 80px));
+    bottom: 14px;
+    border: 1px solid #31566d;
+    border-radius: 18px;
+    padding: 7px;
+    box-shadow: 0 14px 34px rgba(0,0,0,.34);
+  }
+  .bottom-nav button {
+    min-height: 54px;
+    border-radius: 12px;
+    font-size: .7rem;
+  }
+  .bottom-nav button > span { font-size: 1.15rem; }
+  .action-sheet {
+    left: auto;
+    right: 22px;
+    bottom: 88px;
+    transform: none;
+    width: min(590px, 44vw);
+    max-height: calc(100vh - 115px);
+    border: 1px solid #31566d;
+    border-radius: 20px;
+    padding: 10px 15px 18px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  }
+  .sheet-backdrop {
+    background: rgba(0,0,0,.38);
+  }
+  .sheet-header { top: -10px; }
+  .sheet-patient-context {
+    grid-template-columns: .9fr 1.4fr .8fr;
+  }
+  .vp-panel .sub { font-size: .8rem; }
+  .tool-grid.compact-tool-list,
+  .assessment-category-list,
+  .history-category-list,
+  .treatment-list {
+    gap: 10px;
+  }
+  .horse-exam-grid {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+  .horse-movement-body {
+    grid-template-columns: minmax(240px,.9fr) minmax(0,1.25fr);
+    align-items: start;
+  }
+}
+
+@media (min-width: 1200px) {
+  .patient-desktop-workspace {
+    grid-template-columns: minmax(0, 1.7fr) minmax(390px, .8fr);
+    gap: 22px;
+  }
+  .patient-stage { min-height: 620px; }
+  .action-sheet { width: 620px; }
+}
