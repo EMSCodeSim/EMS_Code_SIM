@@ -881,6 +881,66 @@
     if (desktopWorkspace()) closeSheet();
   }
 
+  function horseReassessmentTargets() {
+    if (id !== 'horse_crush') return [];
+    const candidates = ['distal_csm','pain','left_leg','pelvis_hip','blood_pressure','pulse','respirations','spo2'];
+    return candidates.filter(key => assessmentState(key).code === 'reassessment-due');
+  }
+
+  function openHorseReassessmentTarget(key) {
+    if (key === 'distal_csm' || key === 'left_leg' || key === 'pelvis_hip') {
+      selectHorseCurrentAssessment('focused_leg');
+      const button = [...document.querySelectorAll('#horseCurrentAssessmentBody .horse-current-exam-button')].find(item => item.textContent.toLowerCase().includes(key === 'distal_csm' ? 'distal' : key === 'left_leg' ? 'lower' : 'pelvis'));
+      button?.classList.add('reassessment-target');
+      return;
+    }
+    if (key === 'pain') {
+      openSheet('historyPanel');
+      window.setTimeout(() => selectHorseHistoryGroup('pain', { updateInfo:false }), 30);
+      return;
+    }
+    const tool = registryTool(key);
+    if (tool) {
+      const href = assessmentHref(tool, key);
+      if (!openEmbeddedSimulator(href, `${labelFor(key)} reassessment`)) location.href = href;
+    }
+  }
+
+  function renderHorseReassessmentCue() {
+    if (id !== 'horse_crush') return;
+    const panel = $('horseReassessmentCue');
+    const actions = $('horseReassessmentCueActions');
+    if (!panel || !actions) return;
+    const due = horseReassessmentTargets();
+    if (!due.length) {
+      panel.hidden = true;
+      panel.classList.remove('csm-priority');
+      actions.innerHTML = '';
+      return;
+    }
+    const csmDue = due.includes('distal_csm');
+    const csmPreviouslyObtained = Boolean(record()?.findings?.distal_csm);
+    panel.hidden = false;
+    panel.classList.toggle('csm-priority', csmDue);
+    $('horseReassessmentCueCount').textContent = String(due.length);
+    $('horseReassessmentCueTitle').textContent = csmDue ? (csmPreviouslyObtained ? 'Repeat distal CSM now' : 'Distal CSM is required now') : 'Confirm the patient response';
+    $('horseReassessmentCueText').textContent = csmDue
+      ? (csmPreviouslyObtained
+          ? 'Repeat distal circulation, sensation, and movement after stabilization or movement. Then reassess pain and any affected vital signs.'
+          : 'A baseline distal CSM was not documented before this stabilization/movement. Obtain circulation, sensation, and movement now, then continue serial checks after subsequent moves.')
+      : 'A treatment or condition change may have altered these findings. Reassess before moving on.';
+    actions.innerHTML = '';
+    const labels = { distal_csm:'Distal CSM', pain:'Pain', left_leg:'Injured leg', pelvis_hip:'Hip/pelvis', blood_pressure:'BP', pulse:'Pulse', respirations:'Respirations', spo2:'SpO₂' };
+    due.forEach(key => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = labels[key] || labelFor(key);
+      if (key === 'distal_csm') button.classList.add('csm-critical');
+      button.addEventListener('click', () => openHorseReassessmentTarget(key));
+      actions.appendChild(button);
+    });
+  }
+
   function buildPrimaryAssessmentCard(box) {
     const primaryKeys = ['airway','breathing','perfusion'];
     const completed = primaryKeys.filter(existing).length;
@@ -1078,6 +1138,15 @@
       questionId:question.id,
       repeated
     });
+    if (id === 'horse_crush' && current?.findings?.pain && ['severity','provocation','quality','region','time','chief_complaint','symptoms'].includes(question.id)) {
+      const state = horseClinicalState();
+      session?.saveFinding?.('pain', `Pain reassessed: ${state?.painScore ?? 8}/10`, {
+        label:'Pain reassessment',
+        details:`${response} Current modeled pain score ${state?.painScore ?? 8}/10.`,
+        source:'patient-interview',
+        normality:'not-normal', status:'abnormal', isReassessment:true
+      }, id);
+    }
     const askedIds = new Set(askedInterviewQuestions(api?.active?.() || current).map(item => item.id));
     askedIds.add(question.id);
     saveInterviewMilestones(askedIds);
@@ -1479,6 +1548,9 @@
     'manual_leg_support','position_comfort','blanket_support','splint','pain_control',
     'scoop_position_comfort','vacuum_mattress','board_transfer','traction_splint','stand_pivot','force_straight'
   ]);
+  const HORSE_CSM_BASELINE_REQUIRED_IDS = new Set([
+    'splint','scoop_position_comfort','vacuum_mattress','board_transfer'
+  ]);
 
   function horseClinicalState() {
     return id === 'horse_crush' ? runtime?.horseClinicalState?.(record()) || null : null;
@@ -1547,7 +1619,7 @@
         type:'PATIENT RESPONSE',
         title:plan.label,
         text:observedResponse,
-        kind:classification === 'contraindicated' ? 'alert' : 'patient_response',
+        kind:classification === 'contraindicated' ? 'alert' : 'patient_dialogue',
         sticky:true,
         recordedAt:now
       };
@@ -1608,6 +1680,7 @@
 
   function recordTreatment(plan, documentation = {}) {
     const current = record();
+    const csmBaselineMissing = id === 'horse_crush' && HORSE_CSM_BASELINE_REQUIRED_IDS.has(plan.id) && !current?.findings?.distal_csm;
     const decision = treatmentDecision(plan, current);
     const startedAt = new Date(current?.startedAt || Date.now()).getTime();
     const elapsedSeconds = Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
@@ -1641,6 +1714,7 @@
       targetKeys: plan.targets || [],
       reassessmentRequired: typeof plan.reassessmentRequired === 'boolean' ? plan.reassessmentRequired : classification === 'appropriate-effective',
       patientResponse: response,
+      csmBaselineMissing,
       elapsedSeconds,
       elapsedLabel: `${String(Math.floor(elapsedSeconds / 60)).padStart(2,'0')}:${String(elapsedSeconds % 60).padStart(2,'0')}`
     };
@@ -1651,7 +1725,13 @@
       label:'Treatment decision committed', value:treatment.description,
       details:'Patient response is not immediately revealed. Observe and reassess the patient.',
       source:'scenario-aware-treatment', suppressInfoUpdate:id === 'horse_crush', recordedAt:new Date(Date.now() + 1).toISOString()
-    }]);
+    }, ...(csmBaselineMissing ? [{
+      type:'condition_change', category:'assessment', key:'distal_csm',
+      label:'Baseline distal CSM was not documented',
+      value:'You stabilized or moved the injured extremity without documenting baseline distal circulation, sensation, and movement. Obtain distal CSM now and continue serial checks after each movement.',
+      details:'Without a baseline distal neurovascular exam, a later change cannot be confidently attributed to the injury or the intervention.',
+      status:'abnormal', normality:'not-normal', source:'horse-csm-safety', recordedAt:new Date(Date.now() + 2).toISOString()
+    }] : [])]);
     refreshFromRecord();
     scheduleTreatmentResponse(plan, classification, response);
     toast(`${plan.label} recorded — observe and reassess the patient`);
@@ -2071,12 +2151,26 @@
       .trim();
   }
 
-  function preferredInfoVoice() {
+  function infoVoiceRole(item = {}) {
+    const type = String(item.type || '').toUpperCase();
+    const kind = String(item.kind || '').toLowerCase();
+    const text = String(item.text || '').trim();
+    if (kind === 'patient_dialogue' || kind === 'patient_response' || /PATIENT RESPONSE|^PATIENT$|HISTORY ANSWER/.test(type) || /^[“"]/u.test(text)) return 'patient';
+    return 'narrator';
+  }
+
+  function preferredInfoVoice(role = 'narrator') {
     if (!infoVoiceSupported) return null;
     const voices = window.speechSynthesis.getVoices?.() || [];
-    return voices.find(voice => /^en-US$/i.test(voice.lang))
-      || voices.find(voice => /^en(-|$)/i.test(voice.lang))
-      || null;
+    const english = voices.filter(voice => /^en(-|$)/i.test(voice.lang));
+    if (!english.length) return voices[0] || null;
+    const patientPattern = /Samantha|Ava|Jenny|Zira|Aria|Joanna|Karen|Moira|Tessa|Female/i;
+    const narratorPattern = /Alex|Daniel|David|Tom|Guy|Male|Google US English/i;
+    const patientVoice = english.find(voice => patientPattern.test(voice.name)) || english.find(voice => /^en-US$/i.test(voice.lang)) || english[0];
+    if (role === 'patient') return patientVoice;
+    return english.find(voice => narratorPattern.test(voice.name) && voice.voiceURI !== patientVoice?.voiceURI)
+      || english.find(voice => voice.voiceURI !== patientVoice?.voiceURI)
+      || patientVoice;
   }
 
   function updateInfoVoiceControls() {
@@ -2116,18 +2210,23 @@
     if (!infoVoiceSupported || !item) return false;
     const replay = options.replay === true;
     if (!replay && !infoVoiceAuto) return false;
-    const text = cleanInfoSpeechText(item.text);
+    const role = infoVoiceRole(item);
+    let text = cleanInfoSpeechText(item.text);
+    if (role === 'patient') {
+      const quoted = String(item.text || '').match(/[“"]([^”"]+)[”"]/u);
+      if (quoted?.[1]) text = cleanInfoSpeechText(quoted[1]);
+    }
     if (!text) return false;
-    const signature = `${item.id || item.type || 'update'}:${text}`;
+    const signature = `${item.id || item.type || 'update'}:${role}:${text}`;
     if (!replay && signature === infoLastSpokenSignature) return false;
 
     stopInfoSpeech();
     const utterance = new SpeechSynthesisUtterance(text);
-    const voice = preferredInfoVoice();
+    const voice = preferredInfoVoice(role);
     if (voice) utterance.voice = voice;
     utterance.lang = voice?.lang || 'en-US';
-    utterance.rate = 0.96;
-    utterance.pitch = 1;
+    utterance.rate = role === 'patient' ? 0.98 : 0.92;
+    utterance.pitch = role === 'patient' ? 1.04 : 0.94;
     utterance.volume = 1;
     utterance.onstart = () => {
       $('infoUpdateWindow')?.classList.add('is-speaking');
@@ -2184,8 +2283,8 @@
     if (event.type === 'treatment') return { id: event.id || event.eventId, type: 'TREATMENT', title: event.label || 'Treatment performed', text: event.value || event.details || 'Treatment was recorded.', kind: 'treatment', recordedAt: event.recordedAt };
     if (event.type === 'reassessment') return { id: event.id || event.eventId, type: 'REASSESSMENT', title: event.label || 'Patient reassessed', text: event.value || event.details || 'The patient condition was reassessed.', kind: 'reassessment', recordedAt: event.recordedAt };
     if (event.type === 'condition_change') return { id: event.id || event.eventId, type: 'PATIENT CONDITION CHANGE', title: event.label || 'Patient condition changed', text: event.value || event.details || 'The patient condition changed.', kind: 'alert', recordedAt: event.recordedAt };
-    if (event.type === 'patient_response') return { id: event.id || event.eventId, type: 'PATIENT RESPONSE', title: event.label || 'Response to treatment', text: event.value || event.details || 'The patient responded to treatment.', kind: 'reassessment', recordedAt: event.recordedAt };
-    if (event.category === 'history') return { id: event.id || event.eventId, type: 'HISTORY ALERT', title: event.label || 'Important history', text: event.value || event.details || 'Relevant history was obtained.', kind: 'history', recordedAt: event.recordedAt };
+    if (event.type === 'patient_response') return { id: event.id || event.eventId, type: 'PATIENT RESPONSE', title: event.label || 'Response to treatment', text: event.value || event.details || 'The patient responded to treatment.', kind: 'patient_dialogue', recordedAt: event.recordedAt };
+    if (event.category === 'history') return { id: event.id || event.eventId, type: id === 'horse_crush' ? 'HISTORY ANSWER' : 'HISTORY ALERT', title: event.label || 'Important history', text: event.value || event.details || 'Relevant history was obtained.', kind: id === 'horse_crush' ? 'patient_dialogue' : 'history', recordedAt: event.recordedAt };
     if (event.type === 'impression' || event.type === 'documentation') return { id: event.id || event.eventId, type: 'TRANSPORT / REPORT', title: event.label || 'Care plan updated', text: event.value || event.details || 'The care plan was updated.', kind: 'transport', recordedAt: event.recordedAt };
     return { id: event.id || event.eventId, type: isAbnormal ? 'CONDITION ALERT' : 'PATIENT UPDATE', title: event.label || labelFor(event.key), text: event.value || event.details || 'New patient information was obtained.', kind: isAbnormal ? 'alert' : 'assessment', recordedAt: event.recordedAt };
   }
@@ -2208,7 +2307,7 @@
         const t = new Date(painEvent.recordedAt || startedAt).getTime();
         updates.push({
           id:'horse-pain-request', type:'PATIENT', title:'Patient request', text:state.patientText,
-          kind:'patient_response', sticky:true,
+          kind:'patient_dialogue', sticky:true,
           recordedAt:new Date((Number.isFinite(t) ? t : new Date(startedAt).getTime()) + 2).toISOString()
         });
       }
@@ -2276,7 +2375,8 @@
     if (!item || !$('infoUpdateWindow')) return;
     const isNew = forceLatest || changed || item.id !== lastInfoItemId;
     const collapsed = $('infoUpdateWindow').dataset.collapsed === 'true';
-    $('infoUpdateWindow').className = `info-update-window info-${item.kind || 'assessment'}${collapsed ? ' is-collapsed' : ''}`;
+    const voiceRole = infoVoiceRole(item);
+    $('infoUpdateWindow').className = `info-update-window info-${item.kind || 'assessment'} voice-${voiceRole}${collapsed ? ' is-collapsed' : ''}`;
     $('infoUpdateType').textContent = item.type;
     $('infoUpdateTitle').textContent = item.title;
     $('infoUpdateText').textContent = item.text;
@@ -2831,6 +2931,14 @@
     }).length;
   }
 
+  function horseGradeAssessmentEventCount(current, key) {
+    const log = horseGradeCareLog(current);
+    return log.filter(event => {
+      const eventKey = String(event?.key || event?.findingKey || '').toLowerCase();
+      return eventKey === key && /assessment|reassess|finding/i.test(String(event?.category || event?.type || event?.source || ''));
+    }).length;
+  }
+
   function horseGradeHandoffQuality(current) {
     const text = String(current?.documentation?.handoff || '').trim();
     if (!text) return { score:0, complete:false };
@@ -2913,7 +3021,10 @@
     const painDone = treatmentIds.has('pain_control');
     const safeMoveDone = safeMoveIds.some(action => treatmentIds.has(action));
     const teamDone = treatmentIds.has('request_help');
-    const csmRechecked = treatmentIds.has('reassess_distal_csm');
+    const csmEventCount = horseGradeAssessmentEventCount(current, 'distal_csm');
+    const csmRechecked = treatmentIds.has('reassess_distal_csm') || csmEventCount >= 2;
+    const csmGapEvents = horseGradeCareLog(current).filter(event => event?.source === 'horse-csm-safety').length;
+    const csmBaselineMisses = Math.max(treatments.filter(item => item?.csmBaselineMissing).length, csmGapEvents);
     if (supportDone) treatmentScore += 6;
     if (painDone) treatmentScore += 6;
     if (safeMoveDone) treatmentScore += 4;
@@ -2927,6 +3038,7 @@
     const unnecessary = treatments.filter(item => item?.classification === 'unnecessary');
     treatmentScore -= harmful.length * 6;
     treatmentScore -= unnecessary.length;
+    treatmentScore -= csmBaselineMisses * 3;
     treatmentScore = Math.max(0, Math.min(25, treatmentScore));
     categories.push({ id:'treatment', label:'Treatment & movement', score:treatmentScore, max:25 });
 
@@ -2936,8 +3048,9 @@
     else improvements.push('Address pain before a painful move when feasible; the untreated patient continues asking for pain relief.');
     if (safeMoveDone) strengths.push('Selected a low-movement packaging strategy appropriate for severe hip pain.');
     else improvements.push('Choose a coordinated low-movement transfer/packaging method that preserves the flexed position of comfort.');
-    if (csmRechecked) strengths.push('Repeated distal CSM after movement/stabilization.');
-    else improvements.push('Repeat distal CSM after every major movement or stabilization step.');
+    if (csmRechecked) strengths.push('Repeated distal CSM after movement/stabilization and confirmed that distal neurovascular status remained intact.');
+    else improvements.push('Repeat distal CSM after every major movement or stabilization step; this is a critical reassessment in this scenario.');
+    if (csmBaselineMisses) critical.push('A splinting/packaging step occurred before baseline distal CSM was documented. Obtain circulation, sensation, and movement before the move whenever feasible, then repeat it afterward so you can identify a treatment-related change.');
     harmful.forEach(item => critical.push(`${item.name || item.treatment || 'A treatment'} was contraindicated and increased the patient’s pain. Stop the maneuver, return to the tolerated position, and reassess.`));
     unnecessary.forEach(item => improvements.push(`${item.name || item.treatment || 'A treatment'} was not indicated by the findings and added care without meaningful benefit.`));
 
@@ -3166,6 +3279,20 @@
     }
     const elapsed = Math.max(0, Math.floor((Date.now() - scenarioStartMs) / 1000));
     $('timer').textContent = `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`;
+    if (id === 'horse_crush') {
+      const state = horseClinicalState();
+      const status = $('patientClockStatus');
+      const timerBox = document.querySelector('.vp-timer');
+      const preWatch = state?.stage === 'baseline' && elapsed >= 180;
+      const level = state?.clockLevel === 'alert' ? 'alert' : (state?.clockLevel === 'watch' || preWatch) ? 'watch' : 'stable';
+      if (status) {
+        status.textContent = `Patient clock • ${preWatch ? 'pain untreated — reassess care plan' : (state?.clockLabel || 'monitoring')}`;
+        status.classList.toggle('clock-watch', level === 'watch');
+        status.classList.toggle('clock-alert', level === 'alert');
+      }
+      timerBox?.classList.toggle('patient-clock-watch', level === 'watch');
+      timerBox?.classList.toggle('patient-clock-alert', level === 'alert');
+    }
   }
 
   function updatePartnerTasks() {
@@ -3406,6 +3533,7 @@
       renderSignatures.findings = signatures.findings;
     }
     renderUnifiedClinicalBar();
+    renderHorseReassessmentCue();
     updateCounts();
     if (force || signatures.progress !== renderSignatures.progress) {
       renderProgress();

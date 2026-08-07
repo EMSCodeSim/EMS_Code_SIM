@@ -56,7 +56,24 @@
     },
     treatments: ['Manual support of injured leg','Protocol-directed pain management','Coordinated scoop transfer in position of comfort','Padding and serial distal CSM reassessment']
   };
-  defs.CONDITION_STAGES[ID] ||= [];
+  if (!Array.isArray(defs.CONDITION_STAGES[ID]) || !defs.CONDITION_STAGES[ID].length) {
+    defs.CONDITION_STAGES[ID] = [
+      {
+        id:'pain_delay', after:240, title:'Pain increasing with delay',
+        text:'“This is really starting to hurt. Can you help me?” The patient is becoming more tense while the injured leg remains untreated. Reassess pain and vital signs and make a stabilization plan.',
+        targets:['pain','pulse','blood_pressure','respirations'],
+        blockedBy:['manual_leg_support','position_comfort','blanket_support','splint','pain_control'],
+        imageMode:'horse-crush-pain'
+      },
+      {
+        id:'prolonged_delay', after:480, title:'Prolonged untreated pain',
+        text:'“Can you please do something for this pain?” The patient is increasingly restless after a prolonged delay without meaningful stabilization or pain relief. Reassess the patient and move care forward.',
+        targets:['pain','pulse','blood_pressure','respirations'],
+        blockedBy:['manual_leg_support','position_comfort','blanket_support','splint','pain_control'],
+        imageMode:'horse-crush-pain-worse'
+      }
+    ];
+  }
   if (!Array.isArray(defs.TREATMENT_PLANS[ID]) || !defs.TREATMENT_PLANS[ID].length) {
     defs.TREATMENT_PLANS[ID] = [
       { id:'manual_leg_support', label:'Assign manual support to the injured leg', summary:'Support the injured leg in the position the patient tolerates.', category:'trauma', evidence:[], targets:['left_leg','pain','distal_csm'], response:'The patient says the sharp hip pain is easier to tolerate while the leg is kept still.', outcomeClass:'appropriate-effective', reassessmentRequired:true },

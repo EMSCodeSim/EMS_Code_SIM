@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2221">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2223">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2200">
   <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2212">
 </head>
@@ -19,7 +19,7 @@
         <h1 id="caseTitle">Visual Patient</h1>
         <p id="scene"></p>
       </div>
-      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">HORSE TTS 2.222</small></div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small id="patientClockStatus" class="patient-clock-status">Patient clock • severe pain</small><small class="scenario-build-stamp-dark">HORSE CLINICAL LOOP 2.223</small></div>
     </header>
 
     <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
@@ -128,6 +128,15 @@
             <small>FOLLOW-UP QUESTION</small>
             <strong>No follow-up question is active.</strong>
           </div>
+        </section>
+
+        <section id="horseReassessmentCue" class="horse-reassessment-cue" aria-live="polite" hidden>
+          <div class="horse-reassessment-cue-head">
+            <div><small>REASSESSMENT DUE</small><strong id="horseReassessmentCueTitle">Check the patient after treatment</strong></div>
+            <span id="horseReassessmentCueCount">0</span>
+          </div>
+          <p id="horseReassessmentCueText">Repeat the findings most likely to change after the intervention.</p>
+          <div id="horseReassessmentCueActions" class="horse-reassessment-cue-actions"></div>
         </section>
 
         <section id="horseCurrentAssessment" class="horse-current-assessment" aria-label="Current assessment workspace">
@@ -353,12 +362,12 @@
   <script src="/vitals/scenario-definitions.js?v=2219"></script>
   <script src="/vitals/scenario-interviews.js?v=2200"></script>
   <script src="/vitals/scenario-session.js?v=2200"></script>
-  <script src="/vitals/scenario-runtime.js?v=2219"></script>
+  <script src="/vitals/scenario-runtime.js?v=2223"></script>
   <script src="/vitals/scenario-tool-registry.js?v=2200"></script>
   <script src="/vitals/scenario-phase-model.js?v=2200"></script>
-  <script src="/vitals/horse-crush-bootstrap.js?v=2219"></script>
+  <script src="/vitals/horse-crush-bootstrap.js?v=2223"></script>
   <script src="/vitals/horse-crush-scenario.js?v=2219"></script>
-  <script src="/vitals/visual-patient.js?v=2221"></script>
+  <script src="/vitals/visual-patient.js?v=2223"></script>
   <script src="/vitals/scenario-guided-start.js?v=2202"></script>
 </body>
 </html>

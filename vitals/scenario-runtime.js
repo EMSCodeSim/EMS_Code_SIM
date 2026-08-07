@@ -56,6 +56,8 @@
     const lastReliefAt = Math.max(eventTime(stabilization?.recordedAt || stabilization?.time), eventTime(painControl?.recordedAt || painControl?.time));
     const lastUnsafeAt = eventTime(unsafe?.recordedAt || unsafe?.time);
 
+    const startedAt = eventTime(current?.startedAt);
+    const elapsedSeconds = startedAt ? Math.max(0, Math.floor((Date.now() - startedAt) / 1000)) : 0;
     let stage = 'baseline';
     let painScore = 8;
     let patientText = '“Can you do something for my pain?” The patient continues to guard the left hip and keeps the knee flexed.';
@@ -74,6 +76,16 @@
       painScore = 10;
       patientText = '“Please stop — that really hurts.” Movement has sharply increased the left-hip pain. Return the leg to the tolerated position and reassess.';
       dynamicVitals = { ...dynamicVitals, blood_pressure:'146/94', systolic:146, diastolic:94, pulse:92, respirations:22 };
+    } else if (!stabilization && !painControl && elapsedSeconds >= 480) {
+      stage = 'delayed-care';
+      painScore = 9;
+      patientText = '“Can you please do something for this pain?” The patient is increasingly tense and restless after a prolonged delay without meaningful stabilization or pain relief.';
+      dynamicVitals = { ...dynamicVitals, blood_pressure:'138/92', systolic:138, diastolic:92, pulse:84, respirations:18 };
+    } else if (!stabilization && !painControl && elapsedSeconds >= 240) {
+      stage = 'pain-escalating';
+      painScore = 9;
+      patientText = '“This is really starting to hurt. Can you help me?” The patient is more tense while the painful leg remains untreated.';
+      dynamicVitals = { ...dynamicVitals, blood_pressure:'134/90', systolic:134, diastolic:90, pulse:80, respirations:18 };
     } else if (stabilization && painControl) {
       stage = 'relieved';
       painScore = 3;
@@ -98,6 +110,15 @@
       stabilization: Boolean(stabilization),
       painControl: Boolean(painControl),
       unsafeMovement: lastUnsafeAt > lastReliefAt,
+      elapsedSeconds,
+      clockLevel: stage === 'worse' || stage === 'delayed-care' ? 'alert' : stage === 'pain-escalating' ? 'watch' : 'stable',
+      clockLabel: stage === 'relieved' ? `Improving • pain ${painScore}/10`
+        : stage === 'pain-improved' ? `Pain improving • ${painScore}/10`
+        : stage === 'supported' ? `Leg supported • pain ${painScore}/10`
+        : stage === 'worse' ? `Worsened after unsafe movement • pain ${painScore}/10`
+        : stage === 'delayed-care' ? `Prolonged delay • pain ${painScore}/10`
+        : stage === 'pain-escalating' ? `Pain increasing • ${painScore}/10`
+        : `Severe pain untreated • ${painScore}/10`,
       vitals: dynamicVitals
     };
   }
