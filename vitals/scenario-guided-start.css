@@ -257,3 +257,39 @@
   .scene-guide-actions{grid-template-columns:84px 1fr;gap:6px}
   .scene-guide-actions button{min-height:34px;font-size:.65rem}
 }
+
+
+/* Guided assessment moved below patient photo for easier phone use */
+.scene-guide-photo{
+  position:static;
+  z-index:auto;
+  left:auto;
+  right:auto;
+  bottom:auto;
+  width:100%;
+  max-height:none;
+  margin:0;
+  padding:12px;
+  border:1px solid #31566d;
+  border-radius:16px;
+  background:#0d2232;
+  box-shadow:none;
+  backdrop-filter:none;
+  overflow:visible;
+}
+.scene-guide-photo.is-collapsed{
+  width:100%;
+  left:auto;
+  max-height:none;
+  padding:9px 10px;
+}
+@media(max-width:430px){
+  .scene-guide-photo{
+    left:auto;
+    right:auto;
+    bottom:auto;
+    max-height:none;
+    padding:10px;
+    border-radius:14px;
+  }
+}
