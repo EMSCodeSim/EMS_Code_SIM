@@ -172,7 +172,109 @@
 <script defer="" src="/privacy-controls.js"></script>
 <script defer="" src="/scripts/engagement-loop.js"></script>
 <meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="Blood Pressure Simulator | EMSCodeSim" property="og:title"/><meta content="Practice manual blood pressure skills with an interactive EMS blood pressure simulator, Korotkoff sounds, cuff flow, and reading feedback." property="og:description"/><meta content="https://emscodesim.com/vitals/bp.html" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
-<link href="/vitals/app-vitals-learning.css" rel="stylesheet"/></head>
+<link href="/vitals/app-vitals-learning.css" rel="stylesheet"/>
+<style id="bp-desktop-single-screen">
+  /* BP DESKTOP 2.215 — keep the simulator in one computer viewport. */
+  .bp-dial-row, .bp-action-row, .bp-control-panel, .bp-answer-panel{min-width:0;}
+  .bp-review-close{margin-top:14px;width:100%;}
+
+  @media (min-width: 760px){
+    html, body{height:100%; overflow:hidden;}
+    .topbar{position:relative;padding:6px 14px 7px;}
+    .topbar-inner{max-width:1100px;}
+    .iconbtn{height:36px;}
+    .topbar-title{font-size:1.05rem;}
+
+    body[data-vital-topic="bp"] .app{
+      width:min(1120px, 100%);
+      max-width:1120px;
+      height:calc(100dvh - 50px);
+      min-height:0;
+      margin:0 auto;
+      padding:7px 18px 7px;
+      display:grid;
+      grid-template-rows:auto minmax(0,1fr) auto;
+      gap:7px;
+      overflow:hidden;
+      background:transparent;
+    }
+    .subtitle{margin:0;font-size:.86rem;line-height:1.15;}
+    .bp-simulator-card{
+      min-height:0;
+      padding:10px 16px 12px;
+      border-radius:15px;
+      display:grid;
+      grid-template-rows:minmax(0,1fr) auto;
+      gap:8px;
+      overflow:hidden;
+    }
+    .bp-dial-row{
+      min-height:0;
+      display:grid;
+      grid-template-rows:minmax(0,1fr) auto;
+      place-items:center;
+      align-content:center;
+    }
+    #gauge-container{
+      width:min(40dvh, 350px, 38vw);
+      max-width:100%;
+      max-height:100%;
+      margin:0 auto;
+    }
+    .readouts{
+      justify-content:center;
+      margin-top:2px;
+      font-size:.92rem;
+      line-height:1.05;
+    }
+    .readouts b{font-size:1.2rem;}
+    .bp-action-row{
+      display:grid;
+      grid-template-columns:minmax(360px, .92fr) minmax(440px, 1.08fr);
+      gap:16px;
+      align-items:start;
+      padding-top:9px;
+      border-top:1px solid rgba(15,23,42,.09);
+    }
+    .bp-control-panel{display:grid;gap:7px;}
+    .controls{margin-top:0;gap:8px;}
+    .btn{padding:10px 12px;border-radius:11px;font-size:.94rem;}
+    .slider-wrap{margin-top:0;}
+    .slider-label{margin-bottom:5px;font-size:.84rem;}
+    .slider-label b{font-size:.94rem;}
+    input[type="range"]{height:12px;}
+    input[type="range"]::-webkit-slider-thumb{width:26px;height:26px;margin-top:-7px;}
+    .bp-answer-panel{
+      padding:0 0 0 16px;
+      border-left:1px solid rgba(15,23,42,.09);
+    }
+    .bp-answer-panel .slider-label{gap:12px;}
+    .answer-wrap{grid-template-columns:1fr auto 1fr auto;gap:7px;}
+    .answer-wrap input{padding:10px;font-size:.96rem;border-radius:10px;}
+    .result{min-height:18px;margin-top:5px;font-size:.88rem;line-height:1.15;}
+    .footer{margin:0;padding:0;font-size:.72rem;line-height:1.1;}
+
+    /* Reinforcement stays on-screen instead of forcing the page to scroll. */
+    .post-review.show{
+      position:fixed;
+      z-index:58;
+      inset:64px 24px 18px;
+      width:min(720px, calc(100vw - 48px));
+      max-height:calc(100dvh - 82px);
+      margin:auto;
+      overflow:auto;
+      box-shadow:0 22px 70px rgba(15,23,42,.35);
+      border:1px solid rgba(15,23,42,.14);
+    }
+  }
+
+  @media (min-width:760px) and (max-height:700px){
+    #gauge-container{width:min(35dvh, 285px, 34vw);}
+    .bp-simulator-card{padding-top:7px;padding-bottom:8px;}
+    .bp-action-row{padding-top:7px;gap:12px;}
+    .btn{padding:8px 10px;}
+  }
+</style></head>
 <body data-vital-topic="bp" data-standalone-learning="true">
 <!-- Sticky Top Header -->
 <div class="topbar" role="banner">
@@ -194,7 +296,8 @@
 </div>
 <div class="app" role="main">
 <div class="subtitle">Inflate the cuff • Release slowly • First sound = systolic • Last sound = diastolic</div>
-<div class="card">
+<div class="card bp-simulator-card">
+<div class="bp-dial-row">
 <div id="gauge-container">
 <img alt="Gauge Dial" id="dial" src="bp_dial.png"/>
 <div id="needle"></div>
@@ -202,8 +305,10 @@
 </div>
 <div class="readouts">
 <div>Pressure: <b id="pressureDisplay">0</b> mmHg</div>
-<div> </div> <!-- no live BP reveal -->
 </div>
+</div>
+<div class="bp-action-row">
+<div class="bp-control-panel">
 <div class="controls">
 <button class="btn btn-primary" id="pumpBtn">Pump +10</button>
 <button class="btn btn-danger" id="releaseBtn">Release</button>
@@ -218,8 +323,8 @@
 </div>
 </div>
 <!-- Answer entry -->
-<div aria-labelledby="answerTitle" class="card">
-<div class="slider-label" id="answerTitle"><b>Enter the blood pressure you heard</b><span class="muted">Format: SYS / DIA (even numbers)</span></div>
+<div aria-labelledby="answerTitle" class="bp-answer-panel">
+<div class="slider-label" id="answerTitle"><b>Enter the blood pressure you heard</b><span class="muted">SYS / DIA</span></div>
 <div class="answer-wrap">
 <input aria-label="Systolic (SYS)" id="sysInput" inputmode="numeric" max="260" min="60" placeholder="Systolic" type="number"/>
 <div class="slash">/</div>
@@ -228,6 +333,8 @@
 </div>
 <div aria-live="polite" class="result" id="result" role="status"></div>
 </div>
+</div>
+</div>
 <div class="card post-review" id="postReview">
 <h2>Reinforce the reading</h2>
 <p id="readingSummary"></p>
@@ -235,8 +342,9 @@
 <div class="question"><strong>2. What should you do when the reading does not fit the patient?</strong><div class="choice-row" data-answer="Repeat"><button type="button">Accept it without question</button><button type="button">Repeat the measurement and reassess technique</button><button type="button">Change the number to a normal value</button></div></div>
 <div class="question"><strong>3. Classify this practice reading.</strong><div class="choice-row" id="classificationChoices"></div></div>
 <div class="learning-point" id="postLearningPoint">Answer the questions to reinforce the skill.</div>
+<button class="btn btn-primary bp-review-close" id="closeReviewBtn" type="button">Return to simulator</button>
 </div>
-<div class="footer">Practice mode • New hidden patient with every reset • ±4 mmHg answer tolerance</div>
+<div class="footer">Practice mode • New hidden patient with every reset • ±4 mmHg answer tolerance • BP DESKTOP 2.215</div>
 </div>
 <!-- Info Modal -->
 <div aria-hidden="true" aria-labelledby="bpInfoTitle" class="modal" id="infoModal" role="dialog">
@@ -499,7 +607,7 @@
       classificationChoices.dataset.answer = correct;
       classificationChoices.innerHTML = ['Normal','Elevated','Stage 1 range','Stage 2 range'].map(label => `<button type="button">${label}</button>`).join('');
       classificationChoices.querySelectorAll('button').forEach(bindChoice);
-      postReview.scrollIntoView({behavior:'smooth',block:'start'});
+      if (!window.matchMedia('(min-width: 760px)').matches) postReview.scrollIntoView({behavior:'smooth',block:'start'});
     }
     function bindChoice(button){
       button.addEventListener('click',()=>{
@@ -516,6 +624,9 @@
       });
     }
     document.querySelectorAll('.choice-row button').forEach(bindChoice);
+    const closeReviewBtn = $('closeReviewBtn');
+    if (closeReviewBtn) closeReviewBtn.addEventListener('click', () => postReview.classList.remove('show'));
+
 
     function submit(){
       if (!measurementComplete){

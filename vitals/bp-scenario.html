@@ -368,6 +368,73 @@
       .mode-chip { display: none; }
       .topbar-inner { grid-template-columns: 44px 1fr 44px; }
     }
+
+
+    /* BP DESKTOP 2.215 — compact scenario BP tool for a single computer screen. */
+    @media (min-width: 760px) {
+      html, body { height: 100%; overflow: hidden; }
+      .topbar { position: relative; padding: 6px 12px 7px; }
+      .topbar-inner { width: min(100%, 1080px); }
+      .back-button { min-width: 38px; min-height: 36px; }
+      main {
+        width: min(100%, 1080px);
+        height: calc(100dvh - 50px);
+        min-height: 0;
+        padding: 8px 14px 9px;
+        grid-template-columns: minmax(0, 1fr) minmax(360px, .75fr);
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 9px 12px;
+        align-items: stretch;
+        overflow: hidden;
+      }
+      .patient-strip, .error-card { grid-column: 1 / -1; }
+      .patient-strip { padding: 8px 12px; }
+      .bp-scenario-sim {
+        grid-column: 1;
+        grid-row: 2;
+        min-height: 0;
+        padding: 9px 14px 10px;
+        display:grid;
+        grid-template-rows:auto minmax(0,1fr) auto auto;
+        align-items:center;
+        overflow:hidden;
+      }
+      .brief-instruction { margin: 0 0 4px; font-size: .82rem; }
+      #gauge-container {
+        width: min(48dvh, 390px, 42vw);
+        height: min(48dvh, 390px, 42vw);
+        max-width: 100%;
+        max-height: 100%;
+      }
+      .pressure-row { margin-top: 2px; }
+      #pressureDisplay { font-size: 1.3rem; }
+      .controls { margin-top: 5px; gap: 7px; }
+      .button { min-height: 40px; padding: 8px 10px; }
+      .measurement-state { margin-top: 5px; min-height: 18px; font-size: .78rem; }
+      .bp-scenario-answer {
+        grid-column: 2;
+        grid-row: 2;
+        align-self: center;
+        padding: 14px;
+        max-height: 100%;
+        overflow:auto;
+      }
+      .answer-card h2 { margin-bottom: 4px; }
+      .answer-card > p { margin-bottom: 8px; font-size: .8rem; }
+      .answer-row input { padding: 10px 8px; }
+      #submitBtn, #returnBtn { margin-top: 8px; }
+      #result { min-height: 18px; margin-top: 6px; font-size: .84rem; }
+      .post-save-continue { margin-top: 6px; padding: 7px; }
+    }
+
+    @media (min-width: 760px) and (max-height: 700px) {
+      #gauge-container {
+        width: min(42dvh, 315px, 38vw);
+        height: min(42dvh, 315px, 38vw);
+      }
+      .patient-strip { padding-block: 6px; }
+      .bp-scenario-sim { padding-block: 7px; }
+    }
   </style>
 </head>
 <body data-vital-topic="bp" data-scenario-only="true">
@@ -375,7 +442,7 @@
     <div class="topbar-inner">
       <button class="back-button" id="backBtn" type="button" aria-label="Return to patient">‹</button>
       <h1>Obtain Blood Pressure</h1>
-      <span class="mode-chip">Scenario</span>
+      <span class="mode-chip" title="BP DESKTOP 2.215">Scenario</span>
     </div>
   </header>
 
@@ -394,7 +461,7 @@
       <button class="button primary" id="launcherBtn" type="button">Return to scenarios</button>
     </section>
 
-    <section class="card" id="simCard" hidden>
+    <section class="card bp-scenario-sim" id="simCard" hidden>
       <p class="brief-instruction">Inflate the cuff, release it slowly, and listen for the first and last sound.</p>
 
       <div id="gauge-container">
@@ -417,7 +484,7 @@
       <p class="measurement-state" id="measurementState" aria-live="polite">Inflate the cuff to begin.</p>
     </section>
 
-    <section class="card answer-card" id="answerCard" hidden>
+    <section class="card answer-card bp-scenario-answer" id="answerCard" hidden>
       <h2>Enter the blood pressure</h2>
       <p>Complete the cuff check before submitting your reading.</p>
 
