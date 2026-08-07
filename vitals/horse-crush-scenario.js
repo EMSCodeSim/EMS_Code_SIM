@@ -158,8 +158,15 @@
       section = document.createElement('section');
       section.id = 'horseArrivalDecision';
       section.className = 'horse-arrival-card';
-      const stage = document.querySelector('.patient-stage');
-      stage?.insertAdjacentElement('afterend', section);
+      const controlColumn = document.querySelector('.patient-control-column');
+      const entryWorkflow = controlColumn?.querySelector('.patient-entry-workflow');
+      if (controlColumn) {
+        if (entryWorkflow) controlColumn.insertBefore(section, entryWorkflow);
+        else controlColumn.appendChild(section);
+      } else {
+        const stage = document.querySelector('.patient-stage');
+        stage?.insertAdjacentElement('afterend', section);
+      }
     }
 
     const saved = record()?.findings?.arrival_parking;
