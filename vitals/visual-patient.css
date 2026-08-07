@@ -1262,3 +1262,61 @@ body.horse-current-emt-call .horse-abc-followup-head small::after{
     flex:0 0 auto;
   }
 }
+
+
+/* Horse demo 2.205 — fixed decision box directly below the info window */
+@media(min-width:980px){
+  body.horse-current-emt-call.desktop-scenario-layout .patient-control-column{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto auto minmax(0,1fr) auto!important;
+    grid-template-areas:
+      "info"
+      "followup"
+      "workspace"
+      "nav"!important;
+    gap:8px!important;
+    overflow:hidden!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .info-update-window{
+    grid-area:info!important;
+    align-self:start!important;
+    margin:0!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-abc-followup-panel{
+    grid-area:followup!important;
+    position:static!important;
+    align-self:start!important;
+    width:100%!important;
+    max-height:178px!important;
+    overflow:auto!important;
+    margin:0!important;
+    padding:10px 11px!important;
+    border-radius:12px!important;
+    border:1px solid #4b7895!important;
+    background:#10283a!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-abc-followup-panel[hidden]{
+    display:none!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-abc-followup-panel>p{
+    margin:0 0 2px!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-abc-followup-panel select{
+    min-height:38px!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-abc-save-followup{
+    min-height:36px!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .action-sheet{
+    grid-area:workspace!important;
+    min-height:0!important;
+    height:100%!important;
+    margin:0!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .bottom-nav{
+    grid-area:nav!important;
+    align-self:end!important;
+    margin:0!important;
+  }
+}
