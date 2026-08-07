@@ -7,7 +7,9 @@
   const registry = window.EMSCodeSimToolRegistry;
   const phases = window.EMSCodeSimScenarioPhases;
   const params = new URLSearchParams(location.search);
-  const requestedId = params.get('case') || session?.requestedCaseId?.() || api?.active?.()?.scenarioId || 'asthma';
+  const rawRequestedId = params.get('case') || session?.requestedCaseId?.() || api?.active?.()?.scenarioId || 'asthma';
+  const CASE_ALIASES = { respiratory: 'asthma', 'horse-crush': 'horse_crush', horsecrush: 'horse_crush' };
+  const requestedId = CASE_ALIASES[String(rawRequestedId).trim().toLowerCase()] || String(rawRequestedId).trim().toLowerCase();
 
   const CASES = window.EMSCodeSimScenarioDefinitions?.PATIENT_CASES || {};
 
