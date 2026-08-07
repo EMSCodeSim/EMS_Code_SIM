@@ -159,14 +159,10 @@
       section.id = 'horseArrivalDecision';
       section.className = 'horse-arrival-card';
       const controlColumn = document.querySelector('.patient-control-column');
-      const entryWorkflow = controlColumn?.querySelector('.patient-entry-workflow');
-      if (controlColumn) {
-        if (entryWorkflow) controlColumn.insertBefore(section, entryWorkflow);
-        else controlColumn.appendChild(section);
-      } else {
-        const stage = document.querySelector('.patient-stage');
-        stage?.insertAdjacentElement('afterend', section);
-      }
+      const entryWorkflow = document.querySelector('.patient-entry-workflow');
+      if (controlColumn && entryWorkflow) controlColumn.insertBefore(section, entryWorkflow);
+      else if (controlColumn) controlColumn.prepend(section);
+      else document.querySelector('.patient-stage')?.insertAdjacentElement('afterend', section);
     }
 
     const saved = record()?.findings?.arrival_parking;

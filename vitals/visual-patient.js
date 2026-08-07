@@ -1803,9 +1803,8 @@
     document.body.classList.toggle('desktop-scenario-layout', desktop);
 
     if (desktop) {
-      // Keep every clinical control in the right-side workspace so the patient image remains unobstructed.
-      if (nav.parentNode !== controlColumn) controlColumn.appendChild(nav);
-      if (sheet.parentNode !== controlColumn) controlColumn.appendChild(sheet);
+      controlColumn.appendChild(nav);
+      controlColumn.appendChild(sheet);
       sheet.hidden = false;
       backdrop.hidden = true;
       document.body.style.overflow = '';
