@@ -1179,3 +1179,27 @@ body.sim-workspace-open .patient-stage:after,body.sim-workspace-open .scene-clue
   body.horse-current-emt-call.desktop-scenario-layout #vitalTools,
   body.horse-current-emt-call.desktop-scenario-layout #treatmentTools{padding-bottom:4px}
 }
+
+
+/* Horse Crush presentation: direct current-EMT ABC and visible new-info alert */
+.horse-rapid-abc{display:grid;gap:8px}
+.horse-abc-list{display:grid;gap:8px}
+.horse-abc-row{border:1px solid #31566d;border-radius:12px;background:#0d2232;padding:9px 10px}
+.horse-abc-row.complete{border-color:#2e946d;background:#0d3027}
+.horse-abc-row-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.horse-abc-row-head>div{min-width:0;display:grid;gap:2px}
+.horse-abc-row-head strong{font-size:.82rem;color:#fff}
+.horse-abc-row-head small{font-size:.67rem;color:var(--muted);white-space:normal}
+.horse-abc-assess{flex:0 0 auto;min-height:34px;border:1px solid #39789e;border-radius:9px;padding:6px 10px;background:#173f5a;color:#fff;font-size:.7rem;font-weight:900;cursor:pointer}
+.horse-abc-decision{display:grid;gap:7px;margin-top:8px;padding-top:8px;border-top:1px solid #294d64}
+.horse-abc-decision[hidden]{display:none}
+.horse-abc-decision p{margin:0;color:#dcecf5;font-size:.72rem;line-height:1.4}
+.horse-abc-decision label{display:grid;gap:4px}
+.horse-abc-decision label>span{color:#8ccfff;font-size:.61rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+.horse-abc-decision select{width:100%;min-height:39px;border:1px solid #45657a;border-radius:9px;background:#0b1d2c;color:#fff;padding:7px 9px;font:inherit;font-size:.75rem}
+.info-update-window.new-info-pulse{animation:horseNewInfoPulse .58s ease-in-out 0s 4 alternate;border-color:#f1b64a!important}
+.info-update-window.new-info-pulse .info-update-head{animation:horseNewInfoHead .58s ease-in-out 0s 4 alternate}
+.info-update-unread:not([hidden]){display:inline-flex!important;align-items:center;border-radius:999px;padding:3px 7px;background:#f1b64a;color:#071827!important;font-size:.56rem!important;font-weight:950!important;letter-spacing:.05em}
+@keyframes horseNewInfoPulse{from{box-shadow:0 0 0 0 rgba(241,182,74,0)}to{box-shadow:0 0 0 4px rgba(241,182,74,.32),0 0 22px rgba(241,182,74,.34)}}
+@keyframes horseNewInfoHead{from{opacity:.72}to{opacity:1}}
+@media(max-width:430px){.horse-abc-row{padding:8px}.horse-abc-row-head strong{font-size:.78rem}.horse-abc-decision p{font-size:.69rem}}

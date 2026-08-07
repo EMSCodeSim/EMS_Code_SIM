@@ -652,6 +652,90 @@
     });
   }
 
+  function buildHorsePrimaryAssessmentCard(box) {
+    const choices = {
+      airway: [
+        ['Patent','Airway patent','normal'],
+        ['Threatened or obstructed','Airway threatened or obstructed','not-normal'],
+        ['Not enough information at this time','Not enough information at this time','uncertain']
+      ],
+      breathing: [
+        ['Breathing adequate','Breathing appears adequate','normal'],
+        ['Breathing inadequate','Breathing is present but inadequate','not-normal'],
+        ['Breathing absent','No effective breathing is present','not-normal'],
+        ['Not enough information at this time','Not enough information at this time','uncertain']
+      ],
+      perfusion: [
+        ['Perfusion adequate; no major bleeding','Perfusion appears adequate; no major bleeding','normal'],
+        ['Poor perfusion or major bleeding','Poor perfusion or major bleeding is present','not-normal'],
+        ['Not enough information at this time','Not enough information at this time','uncertain']
+      ]
+    };
+    const observations = {
+      airway: 'The patient answers in full sentences. No snoring, gurgling, stridor, blood, vomit, or visible obstruction is present.',
+      breathing: 'Chest rise is symmetric with normal effort. The patient denies shortness of breath and can speak without pausing.',
+      perfusion: 'No major external bleeding is visible. Skin is warm and dry, and a regular radial pulse is readily palpable.'
+    };
+    const labels = { airway:'Airway', breathing:'Breathing', perfusion:'Circulation / perfusion' };
+    const article = document.createElement('section');
+    article.className = 'horse-rapid-abc assessment-level';
+    article.innerHTML = `
+      <div class="assessment-section-title"><div><span>Initial ABC</span><small>Rapidly check for immediate threats. Assess each item in any order.</small></div><em>${['airway','breathing','perfusion'].filter(existing).length} of 3</em></div>
+      <div class="horse-abc-list"></div>`;
+    const list = article.querySelector('.horse-abc-list');
+
+    ['airway','breathing','perfusion'].forEach(key => {
+      const finding = api?.getFinding?.(key, record());
+      const row = document.createElement('article');
+      row.className = `horse-abc-row${finding ? ' complete' : ''}`;
+      row.innerHTML = `
+        <div class="horse-abc-row-head">
+          <div><strong>${labels[key]}</strong><small>${finding ? escapeHtml(finding.value || finding.finding || 'Recorded') : 'Not assessed'}</small></div>
+          <button type="button" class="horse-abc-assess">${finding ? 'Reassess' : 'Assess'}</button>
+        </div>
+        <div class="horse-abc-decision" hidden>
+          <p>${escapeHtml(observations[key])}</p>
+          <label><span>Your finding</span><select>
+            <option value="">Choose your finding</option>
+            ${choices[key].map(([value,label,normality]) => `<option value="${escapeHtml(value)}" data-normality="${normality}">${escapeHtml(label)}</option>`).join('')}
+          </select></label>
+        </div>`;
+      const decision = row.querySelector('.horse-abc-decision');
+      const assess = row.querySelector('.horse-abc-assess');
+      const select = row.querySelector('select');
+      assess.addEventListener('click', () => {
+        decision.hidden = !decision.hidden;
+        if (!decision.hidden) {
+          window.EMSCodeSimPatientInfo?.showSceneObservation?.({
+            id:`horse-abc-${key}-${Date.now()}`,
+            type:'NEW ASSESSMENT INFORMATION',
+            title:`${labels[key]} assessment`,
+            text:observations[key],
+            kind:'assessment',
+            sticky:true
+          });
+          select?.focus();
+        }
+      });
+      select.addEventListener('change', () => {
+        if (!select.value) return;
+        const option = select.selectedOptions[0];
+        const normality = option?.dataset?.normality || '';
+        saveFinding(key, select.value, 'horse-rapid-abc', {
+          label: labels[key],
+          finding: select.value,
+          normality,
+          status: normality === 'normal' ? 'normal' : normality === 'not-normal' ? 'abnormal' : 'uncertain',
+          rapidAssessment:true,
+          reviewAtDebrief:true
+        });
+        window.setTimeout(() => window.EMSCodeSimPatientInfo?.clearSceneObservation?.(), 120);
+      });
+      list.appendChild(row);
+    });
+    box.appendChild(article);
+  }
+
   function buildPrimaryAssessmentCard(box) {
     const primaryKeys = ['airway','breathing','perfusion'];
     const completed = primaryKeys.filter(existing).length;
@@ -702,7 +786,8 @@
     box.appendChild(immediate);
     const immediateList = immediate.querySelector('.assessment-immediate-list');
     buildSceneSizeUpCard(immediateList);
-    buildPrimaryAssessmentCard(immediateList);
+    if (id === 'horse_crush') buildHorsePrimaryAssessmentCard(immediateList);
+    else buildPrimaryAssessmentCard(immediateList);
     window.EMSCodeSimHorseCrush?.renderAssessmentSection?.(box);
 
     const unique = new Map();
@@ -1283,6 +1368,9 @@
     return /last known well|anticoagul|allerg|anaphyl|insulin|diabet|overdose|naloxone|seizure|mechanism|blood thinner|pregnan|medication/i.test(`${event.value || ''} ${event.details || ''}`);
   }
   function isInformationUpdate(event) {
+    // During the Horse Crush presentation, every newly obtained piece of patient
+    // information should be visible in the live update window.
+    if (id === 'horse_crush') return true;
     if (event.source === 'partner-assignment') return true;
     if (event.type === 'treatment' || event.type === 'reassessment' || event.type === 'patient_response' || event.type === 'condition_change') return true;
     if (event.type === 'impression' || event.type === 'documentation') return true;
@@ -1377,7 +1465,27 @@
     $('infoUpdateCount').textContent = `${infoUpdateIndex + 1} of ${infoUpdates.length}`;
     $('infoUpdatePrevious').disabled = infoUpdateIndex <= 0;
     $('infoUpdateNext').disabled = infoUpdateIndex >= infoUpdates.length - 1;
+
     scheduleInfoCollapse(item, isNew);
+
+    if (id === 'horse_crush' && isNew && !firstRender) {
+      const updateWindow = $('infoUpdateWindow');
+      const unread = $('infoUpdateUnread');
+      if (unread) {
+        unread.hidden = false;
+        unread.textContent = 'NEW INFO';
+        window.clearTimeout(unread._newInfoTimer);
+        unread._newInfoTimer = window.setTimeout(() => { unread.hidden = true; }, 2600);
+      }
+      if (updateWindow) {
+        updateWindow.classList.remove('new-info-pulse');
+        void updateWindow.offsetWidth;
+        updateWindow.classList.add('new-info-pulse');
+        window.clearTimeout(updateWindow._newInfoTimer);
+        updateWindow._newInfoTimer = window.setTimeout(() => updateWindow.classList.remove('new-info-pulse'), 2400);
+      }
+    }
+
     lastInfoItemId = item.id || `${item.type}:${item.recordedAt}`;
   }
 
