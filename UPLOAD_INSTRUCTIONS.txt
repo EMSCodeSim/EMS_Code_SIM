@@ -1,0 +1,10 @@
+Horse Crush player fix 1502
+
+Upload every file while preserving the folder structure.
+The critical new file is:
+  /vitals/horse-crush-bootstrap.js
+
+It prevents the player from falling back to Respiratory Distress when an older cached scenario-definitions.js is served.
+
+After upload test:
+https://emscodesim.com/vitals/visual-patient.html?case=horse_crush&training=learning&ui=1502
