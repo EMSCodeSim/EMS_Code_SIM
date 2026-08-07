@@ -1203,3 +1203,26 @@ body.sim-workspace-open .patient-stage:after,body.sim-workspace-open .scene-clue
 @keyframes horseNewInfoPulse{from{box-shadow:0 0 0 0 rgba(241,182,74,0)}to{box-shadow:0 0 0 4px rgba(241,182,74,.32),0 0 22px rgba(241,182,74,.34)}}
 @keyframes horseNewInfoHead{from{opacity:.72}to{opacity:1}}
 @media(max-width:430px){.horse-abc-row{padding:8px}.horse-abc-row-head strong{font-size:.78rem}.horse-abc-decision p{font-size:.69rem}}
+
+
+/* Horse Crush ABC 2203: findings appear only in info window; decision sits directly below */
+.horse-abc-followup-panel[hidden]{display:none!important}
+.horse-abc-followup-panel{
+  display:grid;gap:9px;padding:12px;border:1px solid #4b7895;border-radius:14px;
+  background:#10283a;box-shadow:0 8px 24px rgba(0,0,0,.2)
+}
+.horse-abc-followup-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.horse-abc-followup-head>div{display:grid;gap:2px}
+.horse-abc-followup-head small{color:#8ccfff;font-size:.58rem;font-weight:950;letter-spacing:.08em}
+.horse-abc-followup-head strong{font-size:.9rem;color:#fff}
+.horse-abc-followup-close{width:32px;height:32px;border:1px solid #45657a;border-radius:9px;background:#173147;color:#fff;font-size:1.1rem;cursor:pointer}
+.horse-abc-followup-panel>p{margin:0;color:#d7e7f0;font-size:.78rem;line-height:1.4}
+.horse-abc-followup-panel label{display:grid;gap:5px}
+.horse-abc-followup-panel label>span{color:#a8dbff;font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+.horse-abc-followup-panel select{width:100%;min-height:42px;border:1px solid #5b829a;border-radius:10px;background:#0d2638;color:#fff;padding:8px 10px;font:inherit}
+.horse-abc-save-followup{min-height:40px;border:0;border-radius:10px;background:#4fb3ff;color:#061523;font-weight:900;cursor:pointer}
+.horse-abc-save-followup:disabled{opacity:.45;cursor:not-allowed}
+.horse-abc-row .horse-abc-decision{display:none!important}
+@media(min-width:980px){
+  .horse-abc-followup-panel{flex:0 0 auto}
+}
