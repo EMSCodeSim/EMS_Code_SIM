@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2219">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2221">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2200">
   <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2212">
 </head>
@@ -19,7 +19,7 @@
         <h1 id="caseTitle">Visual Patient</h1>
         <p id="scene"></p>
       </div>
-      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">HORSE CLINICAL STATE 2.219</small></div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">HORSE GRADING 2.221</small></div>
     </header>
 
     <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
@@ -38,6 +38,68 @@
             <button id="closeEmbeddedSim" type="button">Return to patient</button>
           </header>
           <iframe id="embeddedSimFrame" title="EMSCodeSim assessment simulator" loading="eager"></iframe>
+        </section>
+        <section id="hospitalHandoffWorkspace" class="hospital-handoff-workspace" hidden aria-label="Hospital handoff workspace">
+          <header class="hospital-handoff-header">
+            <div><small>HOSPITAL ARRIVAL</small><strong>Patient handoff</strong><span>Field notes gathered during this call</span></div>
+            <button id="closeHospitalHandoff" type="button">Return to patient</button>
+          </header>
+          <div class="hospital-handoff-layout">
+            <section class="hospital-handoff-notes" aria-labelledby="handoffNotesTitle">
+              <div class="hospital-handoff-section-head"><div><small>YOUR FIELD NOTES</small><h2 id="handoffNotesTitle">What you documented</h2></div><span id="handoffNoteCompleteness">0 sections</span></div>
+              <div id="hospitalHandoffNotes" class="hospital-handoff-note-grid"></div>
+            </section>
+            <section class="hospital-handoff-report" aria-labelledby="hospitalHandoffReportTitle">
+              <div class="hospital-handoff-section-head"><div><small>VERBAL REPORT</small><h2 id="hospitalHandoffReportTitle">Give your handoff</h2></div><span id="hospitalHandoffStatus" class="status-chip">Not saved</span></div>
+              <label class="hospital-handoff-draft-label" for="hospitalHandoffDraft">Your report</label>
+              <textarea id="hospitalHandoffDraft" rows="9" placeholder="Example structure: age / reason for call → mechanism and key history → assessment findings → vitals → treatment and response → transport / destination"></textarea>
+              <div class="hospital-handoff-actions">
+                <button id="showSampleHospitalHandoff" type="button" class="secondary">Sample handoff</button>
+                <button id="saveHospitalHandoff" type="button" class="primary-action">Save handoff</button>
+                <button id="openHorseCallGrade" type="button" class="primary-action handoff-grade-button" hidden>Grade call</button>
+              </div>
+              <aside id="sampleHospitalHandoffPanel" class="sample-handoff-panel" hidden aria-live="polite">
+                <div><small>SAMPLE HANDOFF</small><button id="closeSampleHospitalHandoff" type="button" aria-label="Close sample handoff">×</button></div>
+                <p id="sampleHospitalHandoffText"></p>
+                <small>This example uses only findings you documented. Missing assessment information is not filled in for you.</small>
+              </aside>
+            </section>
+          </div>
+        </section>
+        <section id="horseGradeWorkspace" class="horse-grade-workspace" hidden aria-label="Scenario grading and call review">
+          <header class="horse-grade-header">
+            <div><small>CALL REVIEW</small><strong>Horse-crush scenario grade</strong><span>Overall review of assessment, decisions, treatment, reassessment, transport, and handoff</span></div>
+            <button id="closeHorseCallGrade" type="button">Return to patient</button>
+          </header>
+          <div class="horse-grade-layout">
+            <section class="horse-grade-summary" aria-labelledby="horseGradeTitle">
+              <div class="horse-grade-score-wrap">
+                <div id="horseGradeScore" class="horse-grade-score" aria-label="Overall scenario score"><strong>0</strong><span>/100</span></div>
+                <div><small>OVERALL PERFORMANCE</small><h2 id="horseGradeTitle">Call review</h2><p id="horseGradeLabel">Complete the call to receive a grade.</p></div>
+              </div>
+              <div id="horseGradeOutcome" class="horse-grade-outcome"></div>
+              <div id="horseGradeCategories" class="horse-grade-categories"></div>
+            </section>
+            <section class="horse-grade-feedback">
+              <div class="horse-grade-feedback-grid">
+                <article class="horse-grade-feedback-card strengths"><div><small>WHAT WENT WELL</small><strong>Strong decisions</strong></div><ul id="horseGradeStrengths"></ul></article>
+                <article class="horse-grade-feedback-card improve"><div><small>IMPROVE NEXT TIME</small><strong>Priority suggestions</strong></div><ul id="horseGradeImprovements"></ul></article>
+              </div>
+              <article class="horse-grade-treatment-review">
+                <div class="horse-grade-section-head"><div><small>TREATMENT REVIEW</small><strong>What your care did to the patient</strong></div><span id="horseGradeTreatmentStatus"></span></div>
+                <div id="horseGradeTreatmentList" class="horse-grade-treatment-list"></div>
+              </article>
+              <article class="horse-grade-next-call">
+                <small>NEXT-CALL FOCUS</small>
+                <strong id="horseGradeNextFocus">Finish the call to receive a focused recommendation.</strong>
+                <p id="horseGradeNarrative"></p>
+              </article>
+              <div class="horse-grade-actions">
+                <button id="horseGradeReturn" type="button" class="secondary">Return to scenario</button>
+                <button id="horseGradeEndScenario" type="button" class="primary-action">End scenario</button>
+              </div>
+            </section>
+          </div>
         </section>
       </section>
 
@@ -269,7 +331,7 @@
       <summary><span><b>Scenario progress</b><small id="scenarioProgressSummary">Review clinical phases</small></span><i aria-hidden="true">⌄</i></summary>
       <div id="scenarioPhaseList" class="scenario-phase-list"></div>
       <div id="scenarioCompletionMessage" class="scenario-completion-message" hidden></div>
-      <div class="scenario-progress-actions"><a id="handoffFromProgress" href="/vitals/pcr-handoff.html">PCR and handoff</a><button id="completeScenarioFromPatient" type="button">Check completion</button></div>
+      <div class="scenario-progress-actions"><a id="handoffFromProgress" href="/vitals/pcr-handoff.html">PCR and handoff</a><button id="gradeScenarioFromPatient" type="button" hidden>Grade call</button><button id="completeScenarioFromPatient" type="button">Check completion</button></div>
     </details>
     <button id="saveAndExitScenario" class="scenario-control-option end" type="button">
       <strong>End scenario</strong><span>Stop the call and return to scenario selection. Current progress remains available to resume.</span>
@@ -290,7 +352,7 @@
   <script src="/vitals/scenario-phase-model.js?v=2200"></script>
   <script src="/vitals/horse-crush-bootstrap.js?v=2219"></script>
   <script src="/vitals/horse-crush-scenario.js?v=2219"></script>
-  <script src="/vitals/visual-patient.js?v=2219"></script>
+  <script src="/vitals/visual-patient.js?v=2221"></script>
   <script src="/vitals/scenario-guided-start.js?v=2202"></script>
 </body>
 </html>

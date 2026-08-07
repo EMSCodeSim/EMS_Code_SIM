@@ -1735,3 +1735,153 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
   }
   body.horse-current-emt-call.desktop-scenario-layout .horse-log-list.category-view .care-log-item{margin-left:8px}
 }
+
+
+/* Horse hospital handoff 2.220 — bedside note board replaces the patient picture during report. */
+.hospital-handoff-workspace[hidden]{display:none!important}
+.hospital-handoff-workspace{
+  position:absolute;inset:0;z-index:14;display:flex;flex-direction:column;min-width:0;min-height:0;
+  background:#e8edf0;color:#102332
+}
+.hospital-handoff-header{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;
+  background:#0b1d2c;color:#fff;border-bottom:1px solid #31566d
+}
+.hospital-handoff-header>div{display:grid;gap:2px;min-width:0}
+.hospital-handoff-header small{color:#8ccfff;font-size:.64rem;font-weight:950;letter-spacing:.08em}
+.hospital-handoff-header strong{font-size:1.05rem}
+.hospital-handoff-header span{color:#abc2d0;font-size:.7rem}
+.hospital-handoff-header button{border:1px solid #557386;border-radius:9px;background:#142f42;color:#fff;padding:7px 10px;font-weight:850;cursor:pointer}
+.hospital-handoff-layout{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(300px,.72fr);gap:0;flex:1 1 auto;min-height:0;overflow:hidden}
+.hospital-handoff-notes,.hospital-handoff-report{min-height:0;padding:12px 13px;overflow:auto}
+.hospital-handoff-notes{
+  background-color:#f8f7f0;
+  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 27px,rgba(107,145,168,.16) 28px)
+}
+.hospital-handoff-report{background:#eef3f5;border-left:1px solid #b9c7cf}
+.hospital-handoff-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.hospital-handoff-section-head small{display:block;color:#47708a;font-size:.6rem;font-weight:950;letter-spacing:.07em}
+.hospital-handoff-section-head h2{margin:2px 0 0;font-size:.98rem;color:#112d3e}
+.hospital-handoff-section-head>span{border:1px solid #a9bdc9;border-radius:999px;background:#fff;padding:4px 7px;color:#486675;font-size:.6rem;font-weight:850;white-space:nowrap}
+.hospital-handoff-note-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;align-items:start}
+.handoff-note-card{border:1px solid #c4d0d6;border-radius:11px;background:rgba(255,255,255,.92);padding:9px 10px;box-shadow:0 2px 6px rgba(14,43,60,.06)}
+.handoff-note-card h3{margin:0 0 7px;padding-bottom:5px;border-bottom:1px solid #dbe4e8;color:#17384b;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
+.handoff-note-row{display:grid;grid-template-columns:82px minmax(0,1fr);gap:7px;padding:4px 0;border-bottom:1px dotted #cbd6dc}
+.handoff-note-row:last-child{border-bottom:0}
+.handoff-note-row span{color:#5f7480;font-size:.62rem;font-weight:800}
+.handoff-note-row strong{color:#172b37;font-size:.68rem;line-height:1.3;font-weight:700;overflow-wrap:anywhere}
+.handoff-note-empty{margin:4px 0;color:#8a969d;font-size:.66rem;font-style:italic}
+.handoff-note-priority{border-left:4px solid #4387ae}
+.handoff-note-vitals{border-left:4px solid #278a73}
+.handoff-note-treatment{border-left:4px solid #8a6f2b}
+.handoff-note-transport{border-left:4px solid #725aa3}
+.hospital-handoff-draft-label{display:block;margin:2px 0 5px;color:#385b6d;font-size:.67rem;font-weight:900}
+#hospitalHandoffDraft{width:100%;min-height:210px;resize:vertical;border:1px solid #93aab7;border-radius:10px;background:#fff;color:#112a38;padding:10px;font:inherit;font-size:.75rem;line-height:1.42;box-sizing:border-box}
+.hospital-handoff-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+.hospital-handoff-actions button{min-height:38px;border-radius:9px;font-weight:900;cursor:pointer}
+.sample-handoff-panel{margin-top:9px;padding:10px;border:1px solid #9bb6c5;border-radius:10px;background:#fff}
+.sample-handoff-panel>div{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sample-handoff-panel>div small{color:#315e77;font-size:.61rem;font-weight:950;letter-spacing:.06em}
+.sample-handoff-panel>div button{border:0;background:transparent;color:#456474;font-size:1.2rem;line-height:1;cursor:pointer}
+.sample-handoff-panel p{margin:8px 0;color:#172d39;font-size:.72rem;line-height:1.45}
+.sample-handoff-panel>small{color:#667c88;font-size:.61rem;line-height:1.35}
+body.hospital-handoff-open .patient-stage:after,body.hospital-handoff-open .scene-clue-layer{display:none!important}
+.horse-handoff-launch-card{display:grid;gap:8px;padding:8px;border:1px solid rgba(143,224,196,.2);border-radius:10px;background:#0a211b}
+.horse-handoff-launch-card>small{color:#b5cac2;font-size:.63rem;line-height:1.35}
+.horse-handoff-launch-card>div{display:flex;gap:7px;flex-wrap:wrap}
+.horse-handoff-launch-card .secondary{min-height:34px;border:1px solid #4b7064;border-radius:9px;background:#17372f;color:#e6fff6;padding:6px 10px;font-weight:900;cursor:pointer}
+
+@media(max-width:1150px) and (min-width:980px){
+  .hospital-handoff-layout{grid-template-columns:minmax(0,1fr) minmax(280px,.72fr)}
+  .hospital-handoff-note-grid{grid-template-columns:1fr}
+  .handoff-note-row{grid-template-columns:76px minmax(0,1fr)}
+  #hospitalHandoffDraft{min-height:170px}
+}
+@media(max-width:979px){
+  .hospital-handoff-workspace{display:none!important}
+}
+
+/* Horse scenario grading 2.221 — final call review inside the patient-picture workspace. */
+.horse-grade-workspace[hidden]{display:none!important}
+.horse-grade-workspace{
+  position:absolute;inset:0;z-index:16;display:flex;flex-direction:column;min-width:0;min-height:0;
+  background:#e9eef1;color:#102332
+}
+.horse-grade-header{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 14px;
+  background:#0b1d2c;color:#fff;border-bottom:1px solid #31566d
+}
+.horse-grade-header>div{display:grid;gap:2px;min-width:0}
+.horse-grade-header small{color:#8ccfff;font-size:.62rem;font-weight:950;letter-spacing:.08em}
+.horse-grade-header strong{font-size:1.02rem}
+.horse-grade-header span{color:#abc2d0;font-size:.68rem}
+.horse-grade-header button{border:1px solid #557386;border-radius:9px;background:#142f42;color:#fff;padding:7px 10px;font-weight:850;cursor:pointer}
+.horse-grade-layout{display:grid;grid-template-columns:minmax(245px,.82fr) minmax(0,1.18fr);gap:0;flex:1 1 auto;min-height:0;overflow:hidden}
+.horse-grade-summary,.horse-grade-feedback{min-width:0;min-height:0;overflow:auto;padding:12px 13px}
+.horse-grade-summary{background:#f8fafb;border-right:1px solid #c2d0d8}
+.horse-grade-feedback{background:#eef3f5}
+.horse-grade-score-wrap{display:grid;grid-template-columns:92px minmax(0,1fr);align-items:center;gap:12px;padding-bottom:11px;border-bottom:1px solid #d0dbe1}
+.horse-grade-score{width:88px;height:88px;border-radius:50%;display:grid;place-content:center;text-align:center;background:#102d3e;color:#fff;border:6px solid #73b8dc;box-sizing:border-box}
+.horse-grade-score strong{font-size:1.72rem;line-height:1}
+.horse-grade-score span{font-size:.62rem;color:#c8e7f7;font-weight:850}
+.horse-grade-score-wrap>div:last-child small{display:block;color:#557383;font-size:.58rem;font-weight:950;letter-spacing:.07em}
+.horse-grade-score-wrap h2{margin:2px 0 2px;font-size:1.03rem;color:#102d3e}
+.horse-grade-score-wrap p{margin:0;color:#4b6574;font-size:.7rem;font-weight:750}
+.horse-grade-outcome{margin:10px 0;padding:9px 10px;border:1px solid #a9c6b9;border-left:4px solid #318367;border-radius:9px;background:#f5fbf8}
+.horse-grade-outcome small{display:block;color:#537067;font-size:.56rem;font-weight:950;letter-spacing:.07em}
+.horse-grade-outcome strong{display:block;margin:2px 0;color:#154e3d;font-size:.8rem}
+.horse-grade-outcome p{margin:0;color:#3f5c53;font-size:.66rem;line-height:1.35}
+.horse-grade-categories{display:grid;gap:7px}
+.horse-grade-category{padding:7px 8px;border:1px solid #d1dde3;border-radius:8px;background:#fff}
+.horse-grade-category>div:first-child{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:5px}
+.horse-grade-category strong{color:#233f50;font-size:.67rem}
+.horse-grade-category span{color:#567180;font-size:.62rem;font-weight:900}
+.horse-grade-bar{height:7px;border-radius:99px;background:#dfe8ec;overflow:hidden}
+.horse-grade-bar i{display:block;height:100%;border-radius:inherit;background:#337fa6}
+.horse-grade-feedback-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
+.horse-grade-feedback-card{border:1px solid #c6d3d9;border-radius:10px;background:#fff;padding:9px 10px}
+.horse-grade-feedback-card.strengths{border-top:4px solid #318367}
+.horse-grade-feedback-card.improve{border-top:4px solid #b37b28}
+.horse-grade-feedback-card>div small{display:block;color:#657c88;font-size:.55rem;font-weight:950;letter-spacing:.07em}
+.horse-grade-feedback-card>div strong{font-size:.76rem;color:#1e3948}
+.horse-grade-feedback-card ul{margin:7px 0 0;padding-left:17px;display:grid;gap:5px}
+.horse-grade-feedback-card li{color:#405965;font-size:.64rem;line-height:1.32}
+.horse-grade-treatment-review{border:1px solid #c4d2d9;border-radius:10px;background:#fff;padding:9px 10px;margin-bottom:9px}
+.horse-grade-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:7px}
+.horse-grade-section-head small{display:block;color:#647b88;font-size:.55rem;font-weight:950;letter-spacing:.07em}
+.horse-grade-section-head strong{display:block;color:#203b4a;font-size:.76rem}
+.horse-grade-section-head>span{border:1px solid #ccd8de;border-radius:99px;background:#f6f9fa;padding:3px 7px;color:#58707c;font-size:.56rem;font-weight:850;white-space:nowrap}
+.horse-grade-treatment-list{display:grid;gap:6px}
+.horse-grade-treatment-item{border-left:4px solid #8195a0;border-radius:7px;background:#f5f8f9;padding:7px 8px}
+.horse-grade-treatment-item.helped{border-left-color:#318367;background:#f1f8f5}
+.horse-grade-treatment-item.harmful{border-left-color:#b33d3d;background:#fff3f2}
+.horse-grade-treatment-item.unnecessary{border-left-color:#b37b28;background:#fff9ef}
+.horse-grade-treatment-item.review{border-left-color:#587fb1;background:#f3f7fc}
+.horse-grade-treatment-item>div{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.horse-grade-treatment-item strong{font-size:.65rem;color:#263f4c}
+.horse-grade-treatment-item span{font-size:.54rem;font-weight:950;text-transform:uppercase;color:#5c7480;white-space:nowrap}
+.horse-grade-treatment-item p{margin:3px 0 0;color:#526973;font-size:.61rem;line-height:1.3}
+.horse-grade-empty{margin:0;color:#758791;font-size:.64rem;font-style:italic}
+.horse-grade-next-call{border:1px solid #9ebacc;border-left:4px solid #337fa6;border-radius:10px;background:#f7fbfd;padding:9px 10px}
+.horse-grade-next-call small{display:block;color:#517286;font-size:.55rem;font-weight:950;letter-spacing:.07em}
+.horse-grade-next-call strong{display:block;margin:2px 0;color:#173c51;font-size:.72rem;line-height:1.3}
+.horse-grade-next-call p{margin:4px 0 0;color:#536a76;font-size:.63rem;line-height:1.35}
+.horse-grade-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:9px}
+.horse-grade-actions button{min-height:36px;border-radius:8px;padding:6px 11px;font-weight:900;cursor:pointer}
+.handoff-grade-button[hidden]{display:none!important}
+body.horse-grade-open .patient-stage:after,body.horse-grade-open .scene-clue-layer{display:none!important}
+body.horse-grade-open .hospital-handoff-workspace{display:none!important}
+
+@media(min-width:980px){
+  .hospital-handoff-actions:has(.handoff-grade-button:not([hidden])){grid-template-columns:1fr 1fr 1fr}
+}
+@media(max-width:1150px) and (min-width:980px){
+  .horse-grade-layout{grid-template-columns:minmax(230px,.78fr) minmax(0,1.22fr)}
+  .horse-grade-feedback-grid{grid-template-columns:1fr}
+  .horse-grade-score-wrap{grid-template-columns:78px minmax(0,1fr)}
+  .horse-grade-score{width:74px;height:74px;border-width:5px}
+  .horse-grade-score strong{font-size:1.42rem}
+}
+@media(max-width:979px){
+  .horse-grade-workspace{display:none!important}
+}

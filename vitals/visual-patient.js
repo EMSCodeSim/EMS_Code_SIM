@@ -86,6 +86,9 @@
   let horseAssessmentCollapsed = false;
   let horseHistoryActiveGroup = '';
   let horseTreatmentActiveGroup = '';
+  let horseHandoffOpen = false;
+  let horseHandoffSampleOpen = false;
+  let horseGradeOpen = false;
   const renderSignatures = { vitals:'', assessments:'', history:'', treatments:'', findings:'', progress:'' };
 
   function dataSignature(value) {
@@ -1783,6 +1786,12 @@
       special:'transport'
     },
     {
+      id:'handoff', label:'Hospital handoff', icon:'H',
+      description:'Use the findings you actually gathered to give a concise bedside report.',
+      instruction:'You have arrived at the receiving hospital. Open the handoff workspace over the patient picture. Your documented findings will appear there like field notes.',
+      special:'handoff'
+    },
+    {
       id:'reassessment', label:'Reassessment', icon:'R',
       description:'Repeat key checks after movement or treatment.',
       instruction:'Choose the reassessment you want after treatment, stabilization, or movement.',
@@ -1802,6 +1811,7 @@
   function horseTreatmentGroupPlans(group) {
     if (!group) return [];
     if (group.special === 'transport') return [{ id:'__horse_transport__', label:'Initiate transport', summary:'Choose working impression, transport urgency, destination, and specialty notification.' }];
+    if (group.special === 'handoff') return [{ id:'__horse_handoff__', label:'Begin hospital handoff', summary:'Open the field-note handoff workspace in the patient-picture area and give report from what you documented.' }];
     const pool = horseTreatmentPlanPool();
     if (group.planIds) {
       const byId = new Map(pool.map(plan => [plan.id, plan]));
@@ -1813,6 +1823,7 @@
 
   function horseTreatmentRecordedCount(plan) {
     if (plan?.id === '__horse_transport__') return record()?.documentation?.transportDecisionAt ? 1 : 0;
+    if (plan?.id === '__horse_handoff__') return record()?.documentation?.handoffSavedAt ? 1 : 0;
     return plan ? treatmentCount(plan) : 0;
   }
 
@@ -1880,6 +1891,21 @@
           event.preventDefault();
           saveTransportDecision(event.currentTarget);
         });
+        return;
+      }
+      if (plan.id === '__horse_handoff__') {
+        const transported = Boolean(record()?.documentation?.transportDecisionAt);
+        detail.innerHTML = `
+          <p class="horse-treatment-summary">${escapeHtml(plan.summary)}</p>
+          <div class="horse-handoff-launch-card">
+            <small>${transported ? 'Transport decision is recorded. Use your documented assessment, history, vitals, treatments, and reassessments for report.' : 'Transport has not been recorded yet. You can review the handoff workspace, but transport information will remain blank.'}</small>
+            <div>
+              <button type="button" class="horse-treatment-perform horse-open-handoff">Begin hospital handoff</button>
+              <button type="button" class="secondary horse-open-sample-handoff">Sample handoff</button>
+            </div>
+          </div>`;
+        detail.querySelector('.horse-open-handoff')?.addEventListener('click', () => openHorseHospitalHandoff(false));
+        detail.querySelector('.horse-open-sample-handoff')?.addEventListener('click', () => openHorseHospitalHandoff(true));
         return;
       }
       const fields = treatmentDocumentation(plan);
@@ -2444,7 +2470,17 @@
       ...(id === 'horse_crush' ? [{ type:'patient_response', category:'treatment', key:'transport_decision', label:'Patient response to transport', value:treatment.patientResponse, details:'Continue care and reassessment during transport.', source:'transport-treatment-response', recordedAt:new Date(Date.now()+2).toISOString() }] : [])
     ]);
     refreshFromRecord();
-    if (id === 'horse_crush') renderInfoUpdate(true);
+    if (id === 'horse_crush') {
+      sceneObservationUpdate = {
+        id:`horse-transport-handoff-ready-${Date.now()}`,
+        type:'TRANSPORT',
+        title:'Transport underway',
+        text:`${treatment.patientResponse} When you arrive at the receiving hospital, use Treatment → Hospital handoff to give report.`,
+        kind:'transport', sticky:true, recordedAt:new Date().toISOString()
+      };
+      lastInfoSignature = '';
+      renderInfoUpdate(true);
+    }
     toast('Transport decision recorded');
   }
 
@@ -2460,6 +2496,445 @@
     details.querySelector('form')?.addEventListener('submit', event => { event.preventDefault(); saveTransportDecision(event.currentTarget); });
     return details;
   }
+  function recordedFindingValue(current, key) {
+    const item = current?.findings?.[key];
+    if (!item) return '';
+    return String(item.value ?? item.finding ?? item.result ?? '').trim();
+  }
+
+  function recordedFindingDetails(current, key) {
+    const item = current?.findings?.[key];
+    if (!item) return '';
+    return String(item.details ?? item.detail ?? '').trim();
+  }
+
+  function handoffHistoryValue(current, questionId) {
+    const value = current?.history?.[interviewHistoryKey(questionId)];
+    return value ? cleanPatientQuote(value) : '';
+  }
+
+  function handoffVitalValue(current, key) {
+    const raw = recordedFindingValue(current, key);
+    if (!raw) return '';
+    if (key === 'pulse' || key === 'respirations') return /\/min|bpm/i.test(raw) ? raw : `${raw}/min`;
+    if (key === 'spo2') return raw.includes('%') ? raw : `${raw}%`;
+    if (key === 'blood_glucose') return /mg\/dL/i.test(raw) ? raw : `${raw} mg/dL`;
+    if (key === 'blood_pressure') return /mmHg/i.test(raw) ? raw : `${raw} mmHg`;
+    return raw;
+  }
+
+  function handoffCompact(value, max = 220) {
+    const text = String(value || '').replace(/\s+/g, ' ').trim();
+    return text.length > max ? `${text.slice(0, max - 1).trim()}…` : text;
+  }
+
+  function handoffNoteCard(title, rows, tone = '') {
+    const useful = rows.filter(row => row?.value);
+    const body = useful.length
+      ? useful.map(row => `<div class="handoff-note-row"><span>${escapeHtml(row.label)}</span><strong>${escapeHtml(handoffCompact(row.value, row.max || 210))}</strong></div>`).join('')
+      : '<p class="handoff-note-empty">Not obtained / not documented.</p>';
+    return `<article class="handoff-note-card ${tone}"><h3>${escapeHtml(title)}</h3>${body}</article>`;
+  }
+
+  function horseHandoffNoteModel(current = record() || {}) {
+    const catalogPatient = window.EMSCodeSimScenarioDefinitions?.CATALOG?.[id]?.patient || current.patient || 'Adult patient';
+    const mechanism = handoffHistoryValue(current, 'events') || recordedFindingValue(current, 'bls_handoff');
+    const chief = handoffHistoryValue(current, 'chief_complaint') || handoffHistoryValue(current, 'symptoms') || recordedFindingValue(current, 'pain') || recordedFindingValue(current, 'left_leg');
+    const pain = handoffHistoryValue(current, 'severity') || recordedFindingDetails(current, 'pain');
+    const abc = [
+      { label:'Airway', value:recordedFindingValue(current, 'airway') },
+      { label:'Breathing', value:recordedFindingValue(current, 'breathing') },
+      { label:'Circulation', value:recordedFindingValue(current, 'perfusion') },
+      { label:'Mental status', value:recordedFindingValue(current, 'mental_status') || recordedFindingValue(current, 'avpu') || recordedFindingValue(current, 'gcs') }
+    ];
+    const focused = [
+      { label:'Neck / back', value:recordedFindingValue(current, 'neck_back') },
+      { label:'Chest', value:recordedFindingValue(current, 'chest_assessment') },
+      { label:'Abdomen', value:recordedFindingValue(current, 'abdominal_assessment') },
+      { label:'Pelvis / hip', value:recordedFindingValue(current, 'pelvis_hip') },
+      { label:'Left leg', value:recordedFindingValue(current, 'left_leg') },
+      { label:'Distal CSM', value:recordedFindingValue(current, 'distal_csm') }
+    ];
+    const vitals = [
+      { label:'BP', value:handoffVitalValue(current, 'blood_pressure') },
+      { label:'Pulse', value:handoffVitalValue(current, 'pulse') },
+      { label:'Respirations', value:handoffVitalValue(current, 'respirations') },
+      { label:'SpO₂', value:handoffVitalValue(current, 'spo2') },
+      { label:'BGL', value:handoffVitalValue(current, 'blood_glucose') },
+      { label:'Temperature', value:handoffVitalValue(current, 'temperature') }
+    ];
+    const historyRows = [
+      { label:'Allergies', value:handoffHistoryValue(current, 'allergies') },
+      { label:'Medications', value:handoffHistoryValue(current, 'medications') },
+      { label:'History', value:handoffHistoryValue(current, 'medical_history') },
+      { label:'Last intake', value:handoffHistoryValue(current, 'last_intake') },
+      { label:'Pain / OPQRST', value:pain },
+      { label:'Events', value:handoffHistoryValue(current, 'events') }
+    ];
+    const treatmentRows = (current.treatments || [])
+      .filter(item => item.actionId !== 'transport_decision')
+      .slice(-8)
+      .map(item => ({
+        label:item.label || item.name || item.treatment || 'Treatment',
+        value:[item.description, item.patientResponse].filter(Boolean).join(' — '),
+        max:260
+      }));
+    const reassessmentRows = (current.reassessments || []).slice(-5).map((item, index) => ({
+      label:item.label || `Reassessment ${index + 1}`,
+      value:item.description || item.response || item.value || ''
+    }));
+    const transportRows = [
+      { label:'Impression', value:current.impressions?.primary || '' },
+      { label:'Urgency', value:current.documentation?.transportPriority || current.impressions?.action || '' },
+      { label:'Destination', value:current.documentation?.destination || '' },
+      { label:'Notification', value:current.documentation?.transportNotification || '' }
+    ];
+    return {
+      patient:catalogPatient,
+      reasonRows:[{label:'Patient',value:catalogPatient},{label:'Reason / complaint',value:chief},{label:'Mechanism',value:mechanism}],
+      abc, focused, vitals, historyRows, treatmentRows, reassessmentRows, transportRows
+    };
+  }
+
+  function renderHorseHospitalHandoff() {
+    if (id !== 'horse_crush') return;
+    const workspace = $('hospitalHandoffWorkspace');
+    const notes = $('hospitalHandoffNotes');
+    if (!workspace || !notes) return;
+    const current = record() || {};
+    const model = horseHandoffNoteModel(current);
+    const sections = [
+      ['Patient / mechanism', model.reasonRows, 'handoff-note-priority'],
+      ['Primary assessment', model.abc, ''],
+      ['Focused trauma exam', model.focused, ''],
+      ['Vital signs', model.vitals, 'handoff-note-vitals'],
+      ['History', model.historyRows, ''],
+      ['Treatment / response', model.treatmentRows, 'handoff-note-treatment'],
+      ['Reassessment', model.reassessmentRows, ''],
+      ['Transport', model.transportRows, 'handoff-note-transport']
+    ];
+    notes.innerHTML = sections.map(([title, rows, tone]) => handoffNoteCard(title, rows, tone)).join('');
+    const completeSections = sections.filter(([, rows]) => rows.some(row => row?.value)).length;
+    if ($('handoffNoteCompleteness')) $('handoffNoteCompleteness').textContent = `${completeSections} of ${sections.length} sections documented`;
+    if ($('hospitalHandoffStatus')) {
+      const saved = Boolean(current.documentation?.handoffSavedAt && current.documentation?.handoff);
+      $('hospitalHandoffStatus').textContent = saved ? 'Saved' : 'Not saved';
+      $('hospitalHandoffStatus').classList.toggle('done', saved);
+      if ($('openHorseCallGrade')) $('openHorseCallGrade').hidden = !saved;
+    }
+    const draft = $('hospitalHandoffDraft');
+    if (draft && !draft.dataset.userEdited) draft.value = current.documentation?.handoff || '';
+    if ($('sampleHospitalHandoffText')) $('sampleHospitalHandoffText').textContent = horseSampleHandoffText(current);
+    const samplePanel = $('sampleHospitalHandoffPanel');
+    if (samplePanel) samplePanel.hidden = !horseHandoffSampleOpen;
+  }
+
+  function horseSampleHandoffText(current = record() || {}) {
+    const model = horseHandoffNoteModel(current);
+    const joinValues = (rows, separator = '; ') => rows.filter(row => row.value).map(row => `${row.label}: ${handoffCompact(row.value, 150)}`).join(separator);
+    const reason = joinValues(model.reasonRows.filter(row => row.label !== 'Patient'));
+    const abc = joinValues(model.abc);
+    const exam = joinValues(model.focused);
+    const vitals = joinValues(model.vitals, ', ');
+    const history = joinValues(model.historyRows);
+    const treatments = joinValues(model.treatmentRows);
+    const reassess = joinValues(model.reassessmentRows);
+    const transport = joinValues(model.transportRows);
+    return [
+      `This is EMS with a ${model.patient}.`,
+      reason ? `${reason}.` : 'The reason for the call / mechanism was not documented.',
+      abc ? `Primary assessment: ${abc}.` : 'Primary assessment findings were not documented.',
+      exam ? `Focused exam: ${exam}.` : '',
+      vitals ? `Vitals obtained: ${vitals}.` : 'Vital signs were not documented.',
+      history ? `Relevant history: ${history}.` : '',
+      treatments ? `Care provided: ${treatments}.` : 'No treatment was documented.',
+      reassess ? `Reassessment: ${reassess}.` : '',
+      transport ? `Transport: ${transport}.` : 'Transport details were not documented.'
+    ].filter(Boolean).join(' ');
+  }
+
+  function openHorseHospitalHandoff(showSample = false) {
+    if (id !== 'horse_crush') return;
+    closeEmbeddedSimulator({ refresh:false });
+    horseHandoffOpen = true;
+    horseHandoffSampleOpen = Boolean(showSample);
+    const workspace = $('hospitalHandoffWorkspace');
+    if (workspace) workspace.hidden = false;
+    document.body.classList.add('hospital-handoff-open');
+    renderHorseHospitalHandoff();
+    sceneObservationUpdate = {
+      id:`horse-hospital-handoff-${Date.now()}`,
+      type:'HOSPITAL HANDOFF',
+      title:'Give bedside report',
+      text:'Your patient-picture area now shows the information you documented during the call. Use those field notes to give a concise handoff. Missing information remains blank.',
+      kind:'transport', sticky:true, recordedAt:new Date().toISOString()
+    };
+    infoManuallyCollapsed = false;
+    lastInfoSignature = '';
+    renderInfoUpdate(true);
+  }
+
+  function closeHorseHospitalHandoff() {
+    horseHandoffOpen = false;
+    horseHandoffSampleOpen = false;
+    const workspace = $('hospitalHandoffWorkspace');
+    if (workspace) workspace.hidden = true;
+    const samplePanel = $('sampleHospitalHandoffPanel');
+    if (samplePanel) samplePanel.hidden = true;
+    document.body.classList.remove('hospital-handoff-open');
+  }
+
+  function saveHorseHospitalHandoff() {
+    const text = String($('hospitalHandoffDraft')?.value || '').trim();
+    if (!text) { toast('Enter your verbal handoff before saving.'); return; }
+    api?.setDocumentation?.({ handoff:text, handoffSavedAt:new Date().toISOString(), hospitalHandoffAt:new Date().toISOString(), updatedAt:new Date().toISOString() });
+    api?.mergeCareLog?.([{ type:'documentation', category:'transport', key:'hospital_handoff', label:'Hospital handoff', value:'Bedside verbal handoff completed', details:text, source:'hospital-handoff', suppressInfoUpdate:true, recordedAt:new Date().toISOString() }]);
+    if ($('hospitalHandoffDraft')) $('hospitalHandoffDraft').dataset.userEdited = '';
+    renderSignatures.treatments = '';
+    refreshFromRecord({ force:true });
+    renderHorseHospitalHandoff();
+    sceneObservationUpdate = { id:`horse-handoff-saved-${Date.now()}`, type:'HANDOFF COMPLETE', title:'Report given', text:'Hospital handoff saved. The receiving team has your report and care can transfer. Select Grade call to review the entire scenario.', kind:'transport', sticky:true, recordedAt:new Date().toISOString() };
+    lastInfoSignature = '';
+    renderInfoUpdate(true);
+    toast('Hospital handoff saved');
+  }
+
+  function horseGradeCareLog(current = record() || {}) {
+    try { return api?.listCareLog?.(current, 'all') || current?.careLog || []; }
+    catch { return current?.careLog || []; }
+  }
+
+  function horseGradeHasFinding(current, ...keys) {
+    return keys.some(key => Boolean(current?.findings?.[key]));
+  }
+
+  function horseGradeTreatmentIds(current) {
+    return new Set((current?.treatments || []).map(item => item?.actionId).filter(Boolean));
+  }
+
+  function horseGradeVitalEventCount(current, key) {
+    const aliases = key === 'blood_pressure' ? ['blood_pressure','bp'] : key === 'respirations' ? ['respirations','respiratory_rate','rr'] : [key];
+    const log = horseGradeCareLog(current);
+    return log.filter(event => {
+      const eventKey = String(event?.key || event?.findingKey || event?.vitalKey || '').toLowerCase();
+      const category = String(event?.category || event?.type || '').toLowerCase();
+      return aliases.includes(eventKey) && (/vital|reassess|assessment/.test(category) || !category);
+    }).length;
+  }
+
+  function horseGradeHandoffQuality(current) {
+    const text = String(current?.documentation?.handoff || '').trim();
+    if (!text) return { score:0, complete:false };
+    const checks = [
+      /horse|crush|compressed|mechanism|fall/i,
+      /hip|left leg|pelvis/i,
+      /bp|blood pressure|pulse|resp|spo2|vital/i,
+      /splint|support|pain|treat|care/i,
+      /transport|emergency department|trauma center|hospital/i
+    ];
+    const hits = checks.filter(regex => regex.test(text)).length;
+    return { score: text.length >= 110 && hits >= 4 ? 2 : text.length >= 60 && hits >= 3 ? 1 : 0, complete:hits >= 4 };
+  }
+
+  function buildHorseCallGrade(current = record() || {}) {
+    const findings = current.findings || {};
+    const treatmentIds = horseGradeTreatmentIds(current);
+    const treatments = current.treatments || [];
+    const state = horseClinicalState();
+    const categories = [];
+    const strengths = [];
+    const improvements = [];
+    const critical = [];
+
+    // 1. Scene and primary assessment — 15 points.
+    let primary = 0;
+    if (findings.scene_size_up) primary += 4;
+    if (findings.airway) primary += 4;
+    if (findings.breathing) primary += 4;
+    if (findings.perfusion) primary += 3;
+    categories.push({ id:'primary', label:'Scene & primary', score:primary, max:15 });
+    if (primary === 15) strengths.push('Completed scene size-up and the initial airway, breathing, and circulation assessment before moving deeper into the call.');
+    else improvements.push('Complete the full scene size-up and ABC assessment early so immediate threats and movement risk are established before focused care.');
+
+    // 2. Focused trauma assessment — 20 points.
+    let assessment = 0;
+    if (findings.pelvis_hip) assessment += 4;
+    if (findings.left_leg) assessment += 4;
+    if (findings.distal_csm) assessment += 4;
+    if (findings.pain) assessment += 3;
+    const supportingExam = ['head_exam','neck_back','chest_assessment','abdominal_assessment','upper_extremities'].filter(key => findings[key]).length;
+    assessment += Math.min(3, supportingExam);
+    if (horseGradeHasFinding(current, 'motor_sensory','trauma_assessment')) assessment += 2;
+    assessment = Math.min(20, assessment);
+    categories.push({ id:'assessment', label:'Assessment', score:assessment, max:20 });
+    if (findings.pelvis_hip && findings.left_leg && findings.distal_csm) strengths.push('Focused the trauma exam on the painful left hip/leg and documented distal neurovascular function.');
+    else improvements.push('For this injury, explicitly document the hip/pelvis, injured leg, and distal CSM before movement or splinting.');
+    if (!findings.distal_csm) critical.push('Distal circulation, sensation, and movement were not documented before treatment/movement.');
+
+    // 3. Vitals and reassessment — 15 points.
+    let vitals = 0;
+    const coreVitals = ['blood_pressure','pulse','respirations','spo2'];
+    coreVitals.forEach(key => { if (findings[key]) vitals += 2; });
+    if (horseGradeHasFinding(current, 'skin')) vitals += 1;
+    if (horseGradeHasFinding(current, 'mental_status','gcs','avpu')) vitals += 1;
+    const repeatedVitals = coreVitals.filter(key => horseGradeVitalEventCount(current, key) >= 2);
+    const explicitReassessment = (current.reassessments || []).length > 0;
+    if (repeatedVitals.length >= 2 || (explicitReassessment && repeatedVitals.length >= 1)) vitals += 5;
+    else if (repeatedVitals.length === 1 || explicitReassessment) vitals += 3;
+    vitals = Math.min(15, vitals);
+    categories.push({ id:'vitals', label:'Vitals & reassessment', score:vitals, max:15 });
+    if (coreVitals.every(key => findings[key])) strengths.push('Obtained the core trauma vital signs: blood pressure, pulse, respirations, and SpO₂.');
+    else improvements.push(`Obtain the full core vital set; missing: ${coreVitals.filter(key => !findings[key]).map(labelFor).join(', ') || 'none'}.`);
+    if (repeatedVitals.length || explicitReassessment) strengths.push('Reassessed the patient after care instead of treating the first vital set as the end of the assessment.');
+    else improvements.push('Repeat vital signs after stabilization/pain control so you can show whether the patient actually improved.');
+
+    // 4. History — 10 points.
+    let history = 0;
+    if (findings.sample) history += 5;
+    if (findings.pain) history += 5;
+    categories.push({ id:'history', label:'History', score:history, max:10 });
+    if (history === 10) strengths.push('Completed both SAMPLE and OPQRST/pain history and connected the history to the mechanism.');
+    else improvements.push(`${!findings.sample ? 'Complete SAMPLE history. ' : ''}${!findings.pain ? 'Complete OPQRST/pain assessment.' : ''}`.trim());
+
+    // 5. Treatment, movement, and patient response — 25 points.
+    let treatmentScore = 0;
+    const supportIds = ['manual_leg_support','position_comfort','blanket_support','splint'];
+    const safeMoveIds = ['scoop_position_comfort','vacuum_mattress','board_transfer'];
+    const supportDone = supportIds.some(action => treatmentIds.has(action));
+    const painDone = treatmentIds.has('pain_control');
+    const safeMoveDone = safeMoveIds.some(action => treatmentIds.has(action));
+    const teamDone = treatmentIds.has('request_help');
+    const csmRechecked = treatmentIds.has('reassess_distal_csm');
+    if (supportDone) treatmentScore += 6;
+    if (painDone) treatmentScore += 6;
+    if (safeMoveDone) treatmentScore += 4;
+    if (teamDone) treatmentScore += 2;
+    if (csmRechecked) treatmentScore += 3;
+    if (treatmentIds.has('heat_conservation')) treatmentScore += 1;
+    if (state?.stage === 'relieved') treatmentScore += 3;
+    else if (['supported','pain-improved'].includes(state?.stage)) treatmentScore += 1;
+
+    const harmful = treatments.filter(item => item?.classification === 'contraindicated');
+    const unnecessary = treatments.filter(item => item?.classification === 'unnecessary');
+    treatmentScore -= harmful.length * 6;
+    treatmentScore -= unnecessary.length;
+    treatmentScore = Math.max(0, Math.min(25, treatmentScore));
+    categories.push({ id:'treatment', label:'Treatment & movement', score:treatmentScore, max:25 });
+
+    if (supportDone) strengths.push('Supported/stabilized the painful leg without forcing it out of the patient’s position of comfort.');
+    else improvements.push('Support and stabilize the injured leg in the tolerated position before movement.');
+    if (painDone) strengths.push('Addressed pain before or during movement and allowed the patient’s response to guide care.');
+    else improvements.push('Address pain before a painful move when feasible; the untreated patient continues asking for pain relief.');
+    if (safeMoveDone) strengths.push('Selected a low-movement packaging strategy appropriate for severe hip pain.');
+    else improvements.push('Choose a coordinated low-movement transfer/packaging method that preserves the flexed position of comfort.');
+    if (csmRechecked) strengths.push('Repeated distal CSM after movement/stabilization.');
+    else improvements.push('Repeat distal CSM after every major movement or stabilization step.');
+    harmful.forEach(item => critical.push(`${item.name || item.treatment || 'A treatment'} was contraindicated and increased the patient’s pain. Stop the maneuver, return to the tolerated position, and reassess.`));
+    unnecessary.forEach(item => improvements.push(`${item.name || item.treatment || 'A treatment'} was not indicated by the findings and added care without meaningful benefit.`));
+
+    // 6. Transport and hospital handoff — 15 points.
+    let handoff = 0;
+    const transportRecorded = Boolean(current.documentation?.transportDecisionAt);
+    const priority = String(current.documentation?.transportPriority || '');
+    const destination = String(current.documentation?.destination || '');
+    if (transportRecorded) handoff += 4;
+    if (priority === 'Prompt trauma transport') handoff += 2;
+    if (destination) handoff += 1;
+    if (String(current.documentation?.transportRationale || '').trim()) handoff += 1;
+    const handoffSaved = Boolean(current.documentation?.handoffSavedAt && current.documentation?.handoff);
+    if (handoffSaved) handoff += 5;
+    const handoffQuality = horseGradeHandoffQuality(current);
+    handoff += handoffQuality.score;
+    handoff = Math.min(15, handoff);
+    categories.push({ id:'handoff', label:'Transport & handoff', score:handoff, max:15 });
+    if (transportRecorded && priority === 'Prompt trauma transport') strengths.push('Selected a prompt trauma transport priority for a significant painful hip injury with stable ABCs.');
+    else if (!transportRecorded) improvements.push('Make and document a transport priority and destination decision before ending the call.');
+    else improvements.push('Review transport urgency: this patient is stable but has a significant mechanism and severe hip injury, supporting prompt trauma transport.');
+    if (handoffSaved && handoffQuality.complete) strengths.push('Completed a structured hospital handoff that included the mechanism, injury, vitals, care, and transport information.');
+    else if (!handoffSaved) improvements.push('Give and save the hospital handoff before transferring care.');
+    else improvements.push('Make the handoff more complete: mechanism, focused findings, vital trend, treatment/response, and transport destination should all be easy to hear.');
+
+    const score = Math.max(0, Math.min(100, Math.round(categories.reduce((sum, item) => sum + item.score, 0))));
+    const label = score >= 90 ? 'Excellent call' : score >= 80 ? 'Strong call' : score >= 70 ? 'Developing' : score >= 60 ? 'Needs improvement' : 'Major care gaps';
+    const outcome = state?.stage === 'relieved'
+      ? { label:'Patient improved', text:`Pain decreased to ${state.painScore}/10 with stabilization and pain control. Current modeled vitals are BP ${state.vitals.blood_pressure}, pulse ${state.vitals.pulse}, respirations ${state.vitals.respirations}/min, SpO₂ ${state.vitals.spo2}%.` }
+      : state?.stage === 'pain-improved'
+        ? { label:'Partial improvement', text:`Pain improved to ${state.painScore}/10 after pain management, but the leg still needs effective support/stabilization.` }
+        : state?.stage === 'supported'
+          ? { label:'Partial improvement', text:`Pain improved to ${state.painScore}/10 with leg support, but additional pain management would improve comfort before movement.` }
+          : state?.stage === 'worse'
+            ? { label:'Patient worsened', text:`Pain increased to ${state.painScore}/10 after an unsafe movement/treatment choice. Correct the position, support the leg, control pain, and reassess before continuing.` }
+            : { label:'Condition largely unchanged', text:'The patient remains alert and hemodynamically stable, but severe hip pain has not been meaningfully relieved.' };
+
+    if (!strengths.length) strengths.push('You gathered enough information to begin building a clinical picture; use the review below to make the next attempt more systematic.');
+    if (!improvements.length && !critical.length) improvements.push('Maintain the same structure next time, but continue emphasizing reassessment after every meaningful treatment or movement.');
+    const combinedImprovements = [...critical, ...improvements].filter(Boolean).slice(0, 7);
+    const nextFocus = critical[0] || combinedImprovements[0] || 'Keep using assessment → treatment → reassessment as one continuous loop.';
+    const narrative = score >= 90
+      ? 'The call was organized, clinically coherent, and patient-centered. The strongest feature was linking findings to treatment and then confirming improvement.'
+      : score >= 75
+        ? 'The overall direction of care was reasonable. The next gain will come from closing the specific assessment/reassessment gaps listed above rather than adding more unrelated actions.'
+        : 'The next attempt should focus on a simpler sequence: identify the injury and distal CSM, obtain core vitals/history, support the leg and address pain, move with minimal motion, reassess, then transport and hand off.';
+
+    return { score, label, outcome, categories, strengths:strengths.slice(0,6), improvements:combinedImprovements, critical, nextFocus, narrative, treatments };
+  }
+
+  function horseGradeTreatmentMarkup(item) {
+    const map = {
+      'appropriate-effective':['Appropriate','helped'],
+      'defensible':['Reasonable with caution','review'],
+      'unnecessary':['Not indicated','unnecessary'],
+      'contraindicated':['Harmful choice','harmful'],
+      'premature':['Too early','review'],
+      'transport-choice-review':['Review transport choice','review']
+    };
+    const [label, tone] = map[item?.classification] || ['Recorded','neutral'];
+    const response = item?.patientResponse || item?.response || 'No patient response was recorded.';
+    return `<div class="horse-grade-treatment-item ${tone}"><div><strong>${escapeHtml(item?.name || item?.treatment || 'Treatment')}</strong><span>${escapeHtml(label)}</span></div><p>${escapeHtml(response)}</p></div>`;
+  }
+
+  function renderHorseCallGrade() {
+    if (id !== 'horse_crush') return;
+    const current = record() || {};
+    const grade = buildHorseCallGrade(current);
+    const scoreHost = $('horseGradeScore');
+    if (scoreHost) scoreHost.innerHTML = `<strong>${grade.score}</strong><span>/100</span>`;
+    if ($('horseGradeLabel')) $('horseGradeLabel').textContent = grade.label;
+    if ($('horseGradeOutcome')) $('horseGradeOutcome').innerHTML = `<small>PATIENT OUTCOME</small><strong>${escapeHtml(grade.outcome.label)}</strong><p>${escapeHtml(grade.outcome.text)}</p>`;
+    if ($('horseGradeCategories')) $('horseGradeCategories').innerHTML = grade.categories.map(category => {
+      const percent = Math.round((category.score / category.max) * 100);
+      return `<div class="horse-grade-category"><div><strong>${escapeHtml(category.label)}</strong><span>${category.score}/${category.max}</span></div><div class="horse-grade-bar"><i style="width:${Math.max(0, Math.min(100, percent))}%"></i></div></div>`;
+    }).join('');
+    const listMarkup = items => items.length ? items.map(item => `<li>${escapeHtml(item)}</li>`).join('') : '<li>No major item identified.</li>';
+    if ($('horseGradeStrengths')) $('horseGradeStrengths').innerHTML = listMarkup(grade.strengths);
+    if ($('horseGradeImprovements')) $('horseGradeImprovements').innerHTML = listMarkup(grade.improvements);
+    if ($('horseGradeTreatmentStatus')) $('horseGradeTreatmentStatus').textContent = grade.treatments.length ? `${grade.treatments.length} actions reviewed` : 'No treatments recorded';
+    if ($('horseGradeTreatmentList')) $('horseGradeTreatmentList').innerHTML = grade.treatments.length ? grade.treatments.map(horseGradeTreatmentMarkup).join('') : '<p class="horse-grade-empty">No treatment actions were documented.</p>';
+    if ($('horseGradeNextFocus')) $('horseGradeNextFocus').textContent = grade.nextFocus;
+    if ($('horseGradeNarrative')) $('horseGradeNarrative').textContent = grade.narrative;
+  }
+
+  function openHorseCallGrade() {
+    if (id !== 'horse_crush') return;
+    closeEmbeddedSimulator({ refresh:false });
+    closeHorseHospitalHandoff();
+    closeScenarioControls();
+    horseGradeOpen = true;
+    const workspace = $('horseGradeWorkspace');
+    if (workspace) workspace.hidden = false;
+    document.body.classList.add('horse-grade-open');
+    renderHorseCallGrade();
+    const grade = buildHorseCallGrade(record() || {});
+    api?.setDocumentation?.({ scenarioGrade:grade.score, scenarioGradeLabel:grade.label, gradeViewedAt:new Date().toISOString(), updatedAt:new Date().toISOString() });
+  }
+
+  function closeHorseCallGrade() {
+    horseGradeOpen = false;
+    const workspace = $('horseGradeWorkspace');
+    if (workspace) workspace.hidden = true;
+    document.body.classList.remove('horse-grade-open');
+  }
+
   function handoffText(current = record() || {}) {
     const findings = current.findings || {};
     const age = current.patient || (id === 'pediatric' ? '3-year-old child' : 'Adult patient');
@@ -2494,9 +2969,22 @@
     const completed = evaluation.phases.filter(phase => phase.complete).length;
     $('scenarioProgressSummary').textContent = `${completed} of ${evaluation.phases.length} phases addressed`;
     $('handoffFromProgress').href = '#';
-    $('handoffFromProgress').onclick = event => { event.preventDefault(); treatmentCategoryFocus = 'transport'; openSheet('treatmentPanel'); };
+    $('handoffFromProgress').onclick = event => {
+      event.preventDefault();
+      if (id === 'horse_crush' && record()?.documentation?.transportDecisionAt && desktopWorkspace()) {
+        openHorseHospitalHandoff(false);
+        return;
+      }
+      treatmentCategoryFocus = 'transport';
+      if (id === 'horse_crush') horseTreatmentActiveGroup = record()?.documentation?.transportDecisionAt ? 'handoff' : 'transport';
+      openSheet('treatmentPanel');
+      if (id === 'horse_crush' && horseTreatmentActiveGroup) selectHorseTreatmentGroup(horseTreatmentActiveGroup);
+    };
+    const handoffSaved = Boolean(current?.documentation?.handoffSavedAt && current?.documentation?.handoff);
+    const gradeButton = $('gradeScenarioFromPatient');
+    if (gradeButton) gradeButton.hidden = id !== 'horse_crush' || !handoffSaved;
     const button = $('completeScenarioFromPatient');
-    button.textContent = evaluation.essentialComplete ? 'Open debrief' : 'Check completion';
+    button.textContent = id === 'horse_crush' && handoffSaved ? 'Grade call' : (evaluation.essentialComplete ? 'Open debrief' : 'Check completion');
     button.dataset.ready = evaluation.essentialComplete ? 'true' : 'false';
   }
 
@@ -2528,6 +3016,7 @@
 
   function checkScenarioCompletion() {
     const current = record();
+    if (id === 'horse_crush' && current?.documentation?.handoffSavedAt) { openHorseCallGrade(); return; }
     const evaluation = phases?.evaluate?.(current);
     const message = $('scenarioCompletionMessage');
     if (!evaluation) return;
@@ -2556,7 +3045,8 @@
     if (!incomplete) localStorage.setItem(`emscodesim_mastered_scenario_${id}`, 'true');
     if (assignment && !assignment.requireDebrief && !incomplete) markAssignmentComplete(assignment);
     message.className = 'scenario-completion-message complete';
-    message.innerHTML = incomplete ? '<strong>Scenario ended with care items outstanding.</strong><span>The debrief will identify the missing and delayed actions.</span>' : '<strong>Essential patient care is complete.</strong><span>Open the debrief to review timing, missed choices, unnecessary assessments, and documentation.</span>';
+    message.innerHTML = incomplete ? '<strong>Scenario ended with care items outstanding.</strong><span>The call grade will identify the missing and delayed actions.</span>' : '<strong>Essential patient care is complete.</strong><span>Open the call grade to review assessment, treatment, patient response, reassessment, transport, and handoff.</span>';
+    if (id === 'horse_crush') { openHorseCallGrade(); return; }
     location.href = toolUrl('/vitals/scenario-debrief.html', 'Patient');
   }
 
@@ -2813,6 +3303,8 @@
     $('dispatch').textContent = current.dispatch || scenario.title;
     $('scene').textContent = current.scene || '';
     renderInfoUpdate();
+    if (horseHandoffOpen) renderHorseHospitalHandoff();
+    if (horseGradeOpen) renderHorseCallGrade();
     updateTimer();
     restoreSheetScroll(sheetScrollTop);
   }
@@ -2929,6 +3421,16 @@
   renderSceneClues();
   $('generateHandoff').addEventListener('click', generateHandoff);
   $('saveHandoff').addEventListener('click', saveHandoff);
+  $('closeHospitalHandoff')?.addEventListener('click', closeHorseHospitalHandoff);
+  $('showSampleHospitalHandoff')?.addEventListener('click', () => { horseHandoffSampleOpen = true; renderHorseHospitalHandoff(); });
+  $('closeSampleHospitalHandoff')?.addEventListener('click', () => { horseHandoffSampleOpen = false; renderHorseHospitalHandoff(); });
+  $('saveHospitalHandoff')?.addEventListener('click', saveHorseHospitalHandoff);
+  $('openHorseCallGrade')?.addEventListener('click', openHorseCallGrade);
+  $('closeHorseCallGrade')?.addEventListener('click', closeHorseCallGrade);
+  $('horseGradeReturn')?.addEventListener('click', closeHorseCallGrade);
+  $('horseGradeEndScenario')?.addEventListener('click', () => { if (window.confirm('End this scenario and return to scenario selection?')) endScenario(); });
+  $('gradeScenarioFromPatient')?.addEventListener('click', openHorseCallGrade);
+  $('hospitalHandoffDraft')?.addEventListener('input', event => { event.currentTarget.dataset.userEdited = 'true'; });
   if ($('recordTreatmentLink')) $('recordTreatmentLink').href = toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general');
   if ($('fullPatientRecordLink')) $('fullPatientRecordLink').href = `/vitals/patient-record.html?mode=scenario&resume=1&case=${encodeURIComponent(id)}&return=${encodeURIComponent(`/vitals/visual-patient.html?case=${id}`)}`;
   $('guidedSampleLink').href = toolUrl('/vitals/sample-history.html', 'Patient', 'sample');
