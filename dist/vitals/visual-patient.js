@@ -775,70 +775,6 @@
       list.appendChild(row);
     });
   }
-  function buildPrimaryAssessmentCard(box) {
-    const primaryKeys = ['airway','breathing','perfusion'];
-    const completed = primaryKeys.filter(existing).length;
-    const article = document.createElement('details');
-    article.className = `assessment-primary-summary${completed === 3 ? ' complete' : ''}`;
-    article.open = completed < 3;
-    const summaryText = completed === 3
-      ? primaryKeys.map(key => {
-          const state = assessmentState(key);
-          const label = key === 'perfusion' ? 'Circulation' : labelFor(key);
-          return `${label} ${state.code === 'uncertain' ? 'undetermined' : state.code === 'normal' ? 'adequate' : 'abnormal'}`;
-        }).join(' · ')
-      : `${completed} of 3 decisions recorded`;
-    article.innerHTML = `<summary><span class="assessment-primary-check">${completed === 3 ? '✓' : completed}</span><span><strong>${completed === 3 ? 'Initial ABC Recorded' : 'Initial ABC Assessment'}</strong><small>${escapeHtml(summaryText)}</small></span><em>${completed === 3 ? 'Review' : 'Begin'}</em></summary><div class="rapid-primary-list"></div>`;
-    const list = article.querySelector('.rapid-primary-list');
-    primaryKeys.forEach(key => {
-      const label = key === 'perfusion' ? 'Circulation' : labelFor(key);
-      const action = primaryToolLink(key);
-      const row = document.createElement('div');
-      row.className = `primary-assessment-row rapid-primary-clean-row state-${action.state.code}`;
-      row.innerHTML = `<div><strong>${escapeHtml(label)}</strong><small>${escapeHtml(primaryStatus(key))}</small></div>${action.state.code === 'not-assessed' ? '<span class="primary-photo-pending">Photo assessment</span>' : `<a href="${action.href}">${escapeHtml(action.label)}</a>`}`;
-      list.appendChild(row);
-    });
-    const launch = document.createElement('button');
-    launch.type = 'button';
-    launch.className = 'primary-photo-launch';
-    launch.textContent = completed === 3 ? 'Review initial ABC over patient photo' : completed > 0 ? 'Continue initial ABC over patient photo' : 'Begin initial ABC over patient photo';
-    launch.addEventListener('click', event => {
-      event.preventDefault();
-      launchPrimaryPhotoGuide(completed === 3);
-    });
-    list.appendChild(launch);
-    box.appendChild(article);
-  }
-
-  function buildAssessments() {
-    const box = $('assessmentTools');
-    const openCategories = detailsState(box, 'data-assessment-category');
-    const openSections = detailsState(box, 'data-assessment-section');
-    const existingFocus = box?.querySelector('.assessment-focus-control select')?.value;
-    if (existingFocus && COMPLAINT_SORTS[existingFocus]) assessmentComplaintFocus = existingFocus;
-    box.innerHTML = '';
-    box.classList.add('assessment-workflow-clean');
-
-    const immediate = document.createElement('section');
-    immediate.className = 'assessment-immediate assessment-level';
-    immediate.innerHTML = `<div class="assessment-section-title"><div><span>${id === 'horse_crush' ? 'Patient assessment' : 'Immediate assessment'}</span><small>${id === 'horse_crush' ? 'Choose the examinations that fit your clinical approach. You control the order.' : 'Scene safety and rapid Airway, Breathing, Circulation'}</small></div></div><div class="assessment-immediate-list"></div>`;
-    box.appendChild(immediate);
-    const immediateList = immediate.querySelector('.assessment-immediate-list');
-    buildSceneSizeUpCard(immediateList);
-    if (id === 'horse_crush') buildHorsePrimaryAssessmentCard(immediateList);
-    else buildPrimaryAssessmentCard(immediateList);
-    window.EMSCodeSimHorseCrush?.renderAssessmentSection?.(box);
-
-    const unique = new Map();
-    (registry?.assessmentTools || []).forEach(tool => {
-      if (PRIMARY_KEYS.has(tool.key) || tool.key === 'scene_size_up' || ['sample','pain'].includes(tool.key)) return;
-      if (!MEASURABLE_TOOL_KEYS.has(tool.key) && !unique.has(tool.key)) unique.set(tool.key, tool);
-    });
-    const tools = [...unique.values()];
-    if (id !== 'horse_crush') buildRecommendedAssessments(box, tools);
-    buildMoreAssessments(box, tools, new Set([...openCategories, ...openSections]));
-  }
-
   function updateFromCareEvent(event) {
     const isAbnormal = abnormalEvent(event);
     if (event.source === 'partner-assignment') return { id: event.id || event.eventId, type: 'PARTNER UPDATE', title: `${event.label || labelFor(event.key)} obtained`, text: event.value || 'Partner task complete.', kind: 'partner', recordedAt: event.recordedAt };
@@ -1384,9 +1320,13 @@
     document.body.classList.toggle('desktop-scenario-layout', desktop);
 
     if (desktop) {
-      const infoWindow = $('infoUpdateWindow');
-      const questionBox = $('horseClinicalQuestionBox');
-      if (infoWindow && questionBox) infoWindow.insertAdjacentElement('afterend', questionBox);
+      // Horse presentation workspace: keep the clinical question physically
+      // attached to the information window, then the active workspace, then nav.
+      if (id === 'horse_crush') {
+        const infoWindow = $('infoUpdateWindow');
+        const questionBox = $('horseClinicalQuestionBox');
+        if (infoWindow && questionBox) infoWindow.insertAdjacentElement('afterend', questionBox);
+      }
       controlColumn.appendChild(sheet);
       controlColumn.appendChild(nav);
       sheet.hidden = false;
