@@ -1320,3 +1320,54 @@ body.horse-current-emt-call .horse-abc-followup-head small::after{
     margin:0!important;
   }
 }
+
+
+/* Horse demo 2.206 — single fixed information + decision location */
+.horse-clinical-question-box{
+  display:block;
+  width:100%;
+  min-height:62px;
+  margin:0;
+  padding:10px 11px;
+  border:1px solid #31566d;
+  border-radius:12px;
+  background:#0d2232;
+  color:#fff;
+}
+.horse-question-placeholder{display:grid;gap:3px}
+.horse-question-placeholder small,.horse-question-head small{color:#8ccfff;font-size:.58rem;font-weight:950;letter-spacing:.08em}
+.horse-question-placeholder strong,.horse-question-head strong{font-size:.82rem;line-height:1.3}
+.horse-clinical-question-box.active{border-color:#4fb3ff;background:#10283a}
+.horse-question-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.horse-question-head>div{display:grid;gap:2px}
+.horse-clinical-question-box>p{margin:6px 0 8px;color:#d7e7f0;font-size:.76rem;line-height:1.35}
+.horse-question-answer-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
+.horse-question-answer-row label{display:grid;gap:4px}
+.horse-question-answer-row label>span{color:#a8dbff;font-size:.6rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+.horse-question-answer-row select{width:100%;min-height:40px;border:1px solid #5b829a;border-radius:9px;background:#071827;color:#fff;padding:7px 9px;font:inherit;font-size:.76rem}
+.horse-question-save{min-height:40px;border:0;border-radius:9px;padding:7px 14px;background:#4fb3ff;color:#061523;font-weight:900;cursor:pointer}
+.horse-question-save:disabled{opacity:.42;cursor:not-allowed}
+body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!important}
+@media(min-width:980px){
+  body.horse-current-emt-call.desktop-scenario-layout .patient-control-column{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto auto minmax(0,1fr) auto!important;
+    grid-template-areas:
+      "info"
+      "question"
+      "workspace"
+      "nav"!important;
+    gap:8px!important;
+    overflow:hidden!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .info-update-window{grid-area:info!important;margin:0!important;align-self:start!important}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-clinical-question-box{grid-area:question!important;margin:0!important;align-self:start!important}
+  body.horse-current-emt-call.desktop-scenario-layout .action-sheet{grid-area:workspace!important;min-height:0!important;height:100%!important;margin:0!important}
+  body.horse-current-emt-call.desktop-scenario-layout .bottom-nav{grid-area:nav!important;align-self:end!important;margin:0!important}
+}
+@media(max-width:979px){
+  .horse-clinical-question-box{margin:8px 0 0}
+  .horse-question-answer-row{grid-template-columns:1fr}
+  .horse-question-save{width:100%}
+}

@@ -683,30 +683,34 @@
       perfusion: 'Based on the new circulation information, how would you classify perfusion?'
     };
 
-    const followup = $('horseAbcFollowup');
-    function closeFollowup() {
-      if (!followup) return;
-      followup.hidden = true;
-      followup.innerHTML = '';
+    const questionBox = $('horseClinicalQuestionBox');
+    function resetQuestionBox() {
+      if (!questionBox) return;
+      questionBox.classList.remove('active');
+      questionBox.innerHTML = `
+        <div class="horse-question-placeholder">
+          <small>CLINICAL DECISION</small>
+          <strong>Select Airway, Breathing, or Circulation to begin.</strong>
+        </div>`;
     }
     function openFollowup(key) {
-      if (!followup) return;
+      if (!questionBox) return;
       const current = api?.getFinding?.(key, record());
-      followup.hidden = false;
-      followup.innerHTML = `
-        <div class="horse-abc-followup-head">
-          <div><small>FOLLOW-UP DECISION</small><strong>${escapeHtml(labels[key])}</strong></div>
-          <button type="button" class="horse-abc-followup-close" aria-label="Close follow-up question">×</button>
+      questionBox.classList.add('active');
+      questionBox.innerHTML = `
+        <div class="horse-question-head">
+          <div><small>FOLLOW-UP QUESTION</small><strong>${escapeHtml(labels[key])}</strong></div>
         </div>
         <p>${escapeHtml(prompts[key])}</p>
-        <label><span>Your finding</span><select aria-label="${escapeHtml(labels[key])} finding">
-          <option value="">Choose your finding</option>
-          ${choices[key].map(([value,label,normality]) => `<option value="${escapeHtml(value)}" data-normality="${normality}" ${current && (current.value === value || current.finding === value) ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}
-        </select></label>
-        <button type="button" class="horse-abc-save-followup" disabled>Record ${escapeHtml(labels[key])}</button>`;
-      const select = followup.querySelector('select');
-      const save = followup.querySelector('.horse-abc-save-followup');
-      followup.querySelector('.horse-abc-followup-close')?.addEventListener('click', closeFollowup);
+        <div class="horse-question-answer-row">
+          <label><span>Your finding</span><select aria-label="${escapeHtml(labels[key])} finding">
+            <option value="">Choose your finding</option>
+            ${choices[key].map(([value,label,normality]) => `<option value="${escapeHtml(value)}" data-normality="${normality}" ${current && (current.value === value || current.finding === value) ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}
+          </select></label>
+          <button type="button" class="horse-question-save" disabled>Record</button>
+        </div>`;
+      const select = questionBox.querySelector('select');
+      const save = questionBox.querySelector('.horse-question-save');
       const sync = () => { if (save) save.disabled = !select?.value; };
       select?.addEventListener('change', sync);
       sync();
@@ -714,18 +718,25 @@
         if (!select?.value) return;
         const option = select.selectedOptions[0];
         const normality = option?.dataset?.normality || '';
-        saveFinding(key, select.value, 'horse-rapid-abc', {
-          label: labels[key],
-          finding: select.value,
+        const payload = {
+          source:'horse-rapid-abc',
+          label:labels[key],
+          finding:select.value,
           normality,
-          status: normality === 'normal' ? 'normal' : normality === 'not-normal' ? 'abnormal' : 'uncertain',
+          status:normality === 'normal' ? 'normal' : normality === 'not-normal' ? 'abnormal' : 'uncertain',
           rapidAssessment:true,
-          reviewAtDebrief:true
-        });
-        closeFollowup();
-        // Keep the observed ABC information in the single information window.
-        // The recorded classification is stored in the chart/log but is intentionally
-        // suppressed from the information feed to avoid showing the same assessment twice.
+          reviewAtDebrief:true,
+          suppressInfoUpdate:true
+        };
+        try {
+          if (session?.saveFinding) session.saveFinding(key, select.value, payload);
+          else api?.setFinding?.(key, select.value, payload);
+          refreshFromRecord({ force:true });
+          resetQuestionBox();
+        } catch (error) {
+          console.error(error);
+          toast('Finding was not saved. Try again.');
+        }
       });
       window.requestAnimationFrame(() => select?.focus());
     }
@@ -747,14 +758,18 @@
           <button type="button" class="horse-abc-assess">${finding ? 'Reassess' : 'Assess'}</button>
         </div>`;
       row.querySelector('.horse-abc-assess')?.addEventListener('click', () => {
-        window.EMSCodeSimPatientInfo?.showSceneObservation?.({
-          id:`horse-abc-${key}-${Date.now()}`,
+        sceneObservationUpdate = {
+          id:`horse-abc-active`,
           type:'NEW ASSESSMENT INFORMATION',
           title:`${labels[key]} assessment`,
           text:observations[key],
           kind:'assessment',
-          sticky:true
-        });
+          sticky:true,
+          recordedAt:new Date().toISOString()
+        };
+        infoManuallyCollapsed = false;
+        lastInfoSignature = '';
+        renderInfoUpdate(true);
         openFollowup(key);
       });
       list.appendChild(row);
@@ -778,7 +793,7 @@
       { id: 'visible', type: 'VISIBLE CONDITION', title: 'First patient view', text: scenario.visible, kind: 'visible', recordedAt: new Date(new Date(startedAt).getTime() + 1).toISOString() }
     ];
     const log = api?.listCareLog?.(current, 'all') || [];
-    log.filter(event => isInformationUpdate(event) && !(id === 'horse_crush' && event.source === 'horse-rapid-abc'))
+    log.filter(event => isInformationUpdate(event) && !event.suppressInfoUpdate && !(id === 'horse_crush' && event.source === 'horse-rapid-abc'))
       .forEach(event => updates.push(updateFromCareEvent(event)));
     if (sceneObservationUpdate) updates.push(sceneObservationUpdate);
     if (id === 'horse_crush') {
