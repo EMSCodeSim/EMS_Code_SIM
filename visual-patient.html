@@ -2,20 +2,321 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>Opening current patient scenario…</title>
-  <meta name="robots" content="noindex">
+  <title>Visual Patient Scenario | EMSCodeSim</title>
+  <link rel="icon" href="/favicon.png">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2220">
+  <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2200">
+  <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2212">
 </head>
 <body>
-  <p>Opening the current patient scenario… <a id="continueLink" href="/vitals/visual-patient.html">Continue</a></p>
-  <script>
-    (function(){
-      var query = window.location.search ? window.location.search + '&ui=1502' : '?ui=1502';
-      var target = '/vitals/visual-patient.html' + query + window.location.hash;
-      document.getElementById('continueLink').href = target;
-      window.location.replace(target);
-    }());
-  </script>
+  <main class="vp-shell">
+    <header class="vp-top">
+      <button id="scenarioMenuButton" class="scenario-menu-button" type="button" aria-haspopup="dialog" aria-controls="scenarioControlDialog"><span aria-hidden="true">⋮</span><small>Scenario</small></button>
+      <div class="title-wrap">
+        <p id="dispatch">Active EMS scenario</p>
+        <h1 id="caseTitle">Visual Patient</h1>
+        <p id="scene"></p>
+      </div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">HORSE HANDOFF 2.220</small></div>
+    </header>
+
+    <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
+      <button id="endScenarioQuick" class="scenario-quick-end" type="button">End scenario</button>
+      <button id="resetScenarioQuick" class="scenario-quick-reset" type="button">Reset scenario</button>
+    </div>
+
+    <div class="patient-desktop-workspace">
+    <section class="scenario-hero-layout" aria-label="Scenario patient view and control area">
+      <section class="patient-stage" aria-label="Patient view">
+        <img id="patientImage" src="/vitals/assets/scenario-patient-adult-v3.png" alt="Patient awaiting assessment">
+        <div id="sceneClueLayer" class="scene-clue-layer" aria-hidden="true"></div>
+        <section id="embeddedSimWorkspace" class="embedded-sim-workspace" hidden aria-label="Embedded assessment simulator">
+          <header class="embedded-sim-header">
+            <div><small>ACTIVE TOOL</small><strong id="embeddedSimTitle">Assessment simulator</strong></div>
+            <button id="closeEmbeddedSim" type="button">Return to patient</button>
+          </header>
+          <iframe id="embeddedSimFrame" title="EMSCodeSim assessment simulator" loading="eager"></iframe>
+        </section>
+        <section id="hospitalHandoffWorkspace" class="hospital-handoff-workspace" hidden aria-label="Hospital handoff workspace">
+          <header class="hospital-handoff-header">
+            <div><small>HOSPITAL ARRIVAL</small><strong>Patient handoff</strong><span>Field notes gathered during this call</span></div>
+            <button id="closeHospitalHandoff" type="button">Return to patient</button>
+          </header>
+          <div class="hospital-handoff-layout">
+            <section class="hospital-handoff-notes" aria-labelledby="handoffNotesTitle">
+              <div class="hospital-handoff-section-head"><div><small>YOUR FIELD NOTES</small><h2 id="handoffNotesTitle">What you documented</h2></div><span id="handoffNoteCompleteness">0 sections</span></div>
+              <div id="hospitalHandoffNotes" class="hospital-handoff-note-grid"></div>
+            </section>
+            <section class="hospital-handoff-report" aria-labelledby="hospitalHandoffReportTitle">
+              <div class="hospital-handoff-section-head"><div><small>VERBAL REPORT</small><h2 id="hospitalHandoffReportTitle">Give your handoff</h2></div><span id="hospitalHandoffStatus" class="status-chip">Not saved</span></div>
+              <label class="hospital-handoff-draft-label" for="hospitalHandoffDraft">Your report</label>
+              <textarea id="hospitalHandoffDraft" rows="9" placeholder="Example structure: age / reason for call → mechanism and key history → assessment findings → vitals → treatment and response → transport / destination"></textarea>
+              <div class="hospital-handoff-actions">
+                <button id="showSampleHospitalHandoff" type="button" class="secondary">Sample handoff</button>
+                <button id="saveHospitalHandoff" type="button" class="primary-action">Save handoff</button>
+              </div>
+              <aside id="sampleHospitalHandoffPanel" class="sample-handoff-panel" hidden aria-live="polite">
+                <div><small>SAMPLE HANDOFF</small><button id="closeSampleHospitalHandoff" type="button" aria-label="Close sample handoff">×</button></div>
+                <p id="sampleHospitalHandoffText"></p>
+                <small>This example uses only findings you documented. Missing assessment information is not filled in for you.</small>
+              </aside>
+            </section>
+          </div>
+        </section>
+      </section>
+
+      <aside class="patient-control-column" aria-label="Scenario information and controls">
+        <aside id="infoUpdateWindow" class="info-update-window info-dispatch" aria-live="polite" aria-label="Scenario information updates">
+          <div class="info-update-head">
+            <span id="infoUpdateType">DISPATCH</span>
+            <div class="info-update-head-actions"><span id="infoUpdateUnread" class="info-update-unread" hidden>New</span><time id="infoUpdateTime">00:00</time><button id="infoUpdateCollapse" type="button" aria-expanded="true" aria-label="Collapse patient update">⌃</button></div>
+          </div>
+          <strong id="infoUpdateTitle">Dispatch information</strong>
+          <p id="infoUpdateText">Review the dispatch and patient picture before beginning care.</p>
+          <div class="info-update-controls">
+            <button id="infoUpdatePrevious" type="button" aria-label="Previous information update">‹</button>
+            <span id="infoUpdateCount">1 of 1</span>
+            <button id="infoUpdateNext" type="button" aria-label="Next information update">›</button>
+          </div>
+        </aside>
+        <section id="horseClinicalQuestionBox" class="horse-clinical-question-box" aria-live="polite" aria-label="Current clinical follow-up question">
+          <div class="horse-question-placeholder">
+            <small>FOLLOW-UP QUESTION</small>
+            <strong>No follow-up question is active.</strong>
+          </div>
+        </section>
+
+        <section id="horseCurrentAssessment" class="horse-current-assessment" aria-label="Current assessment workspace">
+          <header class="horse-current-assessment-head">
+            <div>
+              <small>CURRENT ASSESSMENT</small>
+              <strong id="horseCurrentAssessmentTitle">ABC Assessment</strong>
+            </div>
+            <div class="horse-current-assessment-actions">
+              <button id="horseChooseAssessment" type="button">+ Assessment</button>
+              <button id="horseCollapseAssessment" type="button" aria-expanded="true" aria-label="Collapse current assessment">⌃</button>
+            </div>
+          </header>
+          <div id="horseCurrentAssessmentBody" class="horse-current-assessment-body"></div>
+        </section>
+
+        <section class="patient-entry-workflow" aria-label="Initial scenario questions">
+          <div id="patientPhaseControls" class="patient-phase-controls" aria-label="Initial patient assessment phases">
+            <button id="startSceneSizeupPhoto" type="button">
+              <span><small>STEP 1</small><strong>Scene size-up</strong></span>
+              <em id="sceneSizeupPhotoStatus">Begin</em>
+            </button>
+            <button id="startInitialABCPhoto" type="button" disabled>
+              <span><small>STEP 2</small><strong>Initial ABC</strong></span>
+              <em id="initialABCPhotoStatus">Complete scene first</em>
+            </button>
+          </div>
+
+          <section id="sceneGuide" class="scene-guide scene-guide-photo" hidden aria-labelledby="sceneGuideTitle">
+            <div class="scene-guide-head">
+              <div>
+                <p id="sceneGuideEyebrow">SCENE SIZE-UP</p>
+                <h2 id="sceneGuideTitle">Look at the patient and make a decision</h2>
+              </div>
+              <div class="scene-guide-head-actions"><a href="/nremt-skill-sheets.html" target="_blank" rel="noopener" aria-label="Open the NREMT skill-sheet library">Skill sheet</a><button id="sceneGuideCollapse" type="button" aria-expanded="true" aria-label="Minimize guided assessment">⌄</button></div>
+            </div>
+            <div class="scene-guide-progress"><span id="sceneGuideProgress">Scene size-up 1 of 9</span><div aria-hidden="true"><i id="sceneGuideBar"></i></div></div>
+            <div id="sceneGuideQuestion" class="scene-guide-question"></div>
+            <div id="sceneGuideFeedback" class="scene-guide-feedback" hidden aria-live="polite"></div>
+            <div class="scene-guide-actions">
+              <button id="sceneGuideSkip" class="secondary" type="button">Close for now</button>
+              <button id="sceneGuideNext" class="primary" type="button" disabled>Record and continue</button>
+            </div>
+            <p class="guide-note">Use the photo, dispatch, and approach observations. “Not enough information at this time” is always available. Answers are reviewed during the final debrief.</p>
+          </section>
+        </section>
+      </aside>
+    </section>
+    </div>
+
+
+
+  </main>
+
+  <section id="persistentClinicalBar" class="persistent-clinical-bar" aria-label="Current patient summary">
+    <button id="clinicalBarToggle" type="button" aria-expanded="false">
+      <span class="clinical-bar-status"><small>PATIENT</small><strong id="clinicalBarStatus">Assessment in progress</strong></span>
+      <span class="clinical-bar-finding"><small>LATEST</small><span id="clinicalBarFinding">No findings documented</span></span>
+      <span id="clinicalBarBadge" class="clinical-bar-badge" hidden>0</span>
+      <span class="clinical-bar-chevron" aria-hidden="true">⌃</span>
+    </button>
+    <div id="clinicalTaskDrawer" class="clinical-task-drawer" hidden>
+      <div><small>Current tasks</small><span id="clinicalBarTasks">No unfinished actions</span></div>
+      <div><small>Reassessment due</small><span id="clinicalBarDue">None</span></div>
+      <div><small>Partner</small><span id="clinicalBarPartner">No active assignment</span></div>
+    </div>
+  </section>
+
+  <nav class="bottom-nav" aria-label="Scenario controls">
+    <button data-panel="assessmentPanel" type="button"><span>◎</span>Assessment</button>
+    <button data-panel="vitalsPanel" type="button"><span>♥</span>Vitals</button>
+    <button data-panel="historyPanel" type="button"><span>◉</span>History <em id="historyBadge" hidden>0</em></button>
+    <button data-panel="treatmentPanel" type="button"><span>✚</span>Treatment</button>
+    <button data-panel="findingsPanel" type="button"><span>☷</span>Log <em id="findingBadge" hidden>0</em></button>
+  </nav>
+
+  <div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
+  <section id="actionSheet" class="action-sheet" hidden aria-modal="true" role="dialog" aria-labelledby="sheetTitle">
+    <div class="sheet-handle"></div>
+    <header class="sheet-header">
+      <div><p id="sheetEyebrow">PATIENT ACTION</p><h2 id="sheetTitle">Vitals</h2></div>
+      <button id="closeSheet" class="close-btn return-patient-btn" type="button" aria-label="Return to patient"><span>Patient</span> ×</button>
+    </header>
+    <div class="sheet-patient-context" aria-label="Discovered patient findings">
+      <span><small>Status</small><strong id="sheetContextStatus">Assessment in progress</strong></span>
+      <span><small>Latest finding</small><strong id="sheetContextFinding">None documented</strong></span>
+      <span><small>Due</small><strong id="sheetContextDue">None</strong></span>
+    </div>
+
+    <section id="vitalsPanel" class="vp-panel" hidden>
+      <p class="sub">Obtain measurable vital signs here. Perform the simulator yourself or assign one vital at a time to your partner.</p>
+      <div id="vitalTools" class="tool-grid compact-tool-list"></div>
+    </section>
+
+    <section id="assessmentPanel" class="vp-panel" hidden>
+      <p class="sub">Start with immediate threats, use recommendations in Learning Mode, then open More assessments as needed. Vital signs are located in the separate Vitals tab.</p>
+      <div id="assessmentTools" class="assessment-list assessment-three-level"></div>
+    </section>
+
+    <section id="historyPanel" class="vp-panel history-panel" hidden>
+      <p class="sub">Interview the patient, caregiver, family, or witness. Information is only revealed when you ask for it, and every exchange is added to the patient-care log.</p>
+      <section class="history-patient-banner" aria-label="Patient communication status">
+        <div><small id="historyResponderLabel">PATIENT</small><strong id="historyCommunicationStatus">Ready to answer questions</strong></div>
+        <span id="historyAskedCount">0 asked</span>
+      </section>
+      <section id="historyResponseCard" class="history-response-card" aria-live="polite">
+        <p id="historyResponseSource">PATIENT RESPONSE</p>
+        <blockquote id="historyResponseText">Select a question to begin the interview.</blockquote>
+        <small id="historyResponseQuestion">Use focused questions based on the patient presentation.</small>
+      </section>
+      <div id="historyCategoryList" class="history-category-list"></div>
+      <details class="history-custom-question">
+        <summary><span><strong>Ask your own question</strong><small>Type a natural patient-interview question</small></span><em>Open</em></summary>
+        <div class="history-custom-body">
+          <label for="historyCustomInput">Question for the patient or available historian</label>
+          <textarea id="historyCustomInput" rows="3" maxlength="240" placeholder="Example: Do you take any blood thinners?"></textarea>
+          <button id="askHistoryCustom" type="button" class="primary-action">Ask question</button>
+        </div>
+      </details>
+      <section class="known-history-section" aria-labelledby="knownHistoryTitle">
+        <div class="known-history-head"><div><p>KNOWN PATIENT INFORMATION</p><h3 id="knownHistoryTitle">History gathered so far</h3></div><span id="knownHistoryCount">0 items</span></div>
+        <div id="knownHistoryList" class="known-history-list"><p class="empty">No history has been obtained.</p></div>
+      </section>
+      <div class="history-guided-tools">
+        <div><strong>Need a structured interview?</strong><span>Use the full learning tools for guided SAMPLE or OPQRST practice.</span></div>
+        <a id="guidedSampleLink" href="/vitals/sample-history.html">SAMPLE</a>
+        <a id="guidedOpqrstLink" href="/vitals/pain-opqrst.html">OPQRST</a>
+      </div>
+    </section>
+
+    <section id="treatmentPanel" class="vp-panel" hidden>
+      <p class="sub">Choose a treatment group. The fixed Treatment Selection box will show the available actions and any required details; the patient response appears in Patient Update.</p>
+      <label class="panel-search"><span>Search treatment or medication</span><input id="treatmentSearch" type="search" autocomplete="off" placeholder="Airway, oxygen, aspirin, transport…"></label>
+      <div id="treatmentTools" class="treatment-list"></div>
+      <div class="transport-card handoff-treatment-card">
+        <div class="transport-card-head"><div><h3>Patient handoff</h3></div><span id="handoffStatusChip" class="status-chip">Not saved</span></div>
+        <p class="transport-help">After transport is selected, generate or enter a concise handoff report.</p>
+        <textarea id="handoffDraft" rows="7" aria-label="Patient handoff report" placeholder="Generate or enter a handoff report"></textarea>
+        <div class="transport-actions"><button id="generateHandoff" type="button" class="secondary">Generate from record</button><button id="saveHandoff" type="button" class="primary-action">Save handoff</button></div>
+        <a id="openFullHandoff" class="transport-full-link" href="/vitals/pcr-handoff.html">Open full PCR and verbal handoff tool</a>
+      </div>
+    </section>
+
+    <section id="findingsPanel" class="vp-panel horse-log-panel" hidden>
+      <div class="horse-log-header">
+        <div>
+          <p>PATIENT CARE LOG</p>
+          <h3>Review the call</h3>
+          <small>Only clinically useful assessment, vital, history, and treatment entries are shown.</small>
+        </div>
+        <div class="horse-log-view-toggle" role="group" aria-label="Sort patient care log">
+          <button class="active" type="button" data-log-view="time">By time</button>
+          <button type="button" data-log-view="category">By category</button>
+        </div>
+      </div>
+      <div class="finding-toolbar horse-log-toolbar">
+        <div class="finding-filters horse-log-filters" role="group" aria-label="Filter patient care log">
+          <button class="active" type="button" data-log-filter="all" data-label="All">All</button>
+          <button type="button" data-log-filter="assessments" data-label="Assessment">Assessment</button>
+          <button type="button" data-log-filter="vitals" data-label="Vitals">Vitals</button>
+          <button type="button" data-log-filter="history" data-label="History">History</button>
+          <button type="button" data-log-filter="treatments" data-label="Treatment">Treatment</button>
+        </div>
+      </div>
+      <p id="findingFilterSummary" class="finding-filter-summary horse-log-summary" aria-live="polite"></p>
+      <ul id="findingList" class="finding-list care-log-list horse-log-list"></ul>
+    </section>
+  </section>
+
+  <div id="assessmentFocus" class="assessment-focus" hidden role="dialog" aria-modal="true" aria-labelledby="focusTitle">
+    <div class="focus-card">
+      <div class="focus-image-wrap"><img id="focusImage" alt="Focused patient assessment"></div>
+      <div class="focus-content">
+        <p>VISUAL / AUDIO ASSESSMENT</p>
+        <h2 id="focusTitle">Assessment</h2>
+        <p id="focusInstruction"></p>
+        <div id="focusTimer" class="focus-timer"></div>
+        <button id="recordFocus" type="button" disabled>Observe patient…</button>
+        <button id="cancelFocus" class="secondary" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+
+  <section id="clinicalNextActions" class="clinical-next-actions" hidden aria-live="polite" aria-labelledby="clinicalNextTitle">
+    <button id="clinicalNextClose" class="clinical-next-close" type="button" aria-label="Dismiss next-action choices">×</button>
+    <p>ABNORMAL FINDING RECORDED</p>
+    <h2 id="clinicalNextTitle">Assessment finding</h2>
+    <span id="clinicalNextText">Choose the next patient-care action.</span>
+    <div class="clinical-next-buttons">
+      <button id="clinicalNextTreatment" type="button">Treat finding</button>
+      <button id="clinicalNextVitals" type="button">Obtain vitals</button>
+      <button id="clinicalNextPatient" type="button">Return to patient</button>
+      <button id="clinicalNextUncertain" class="uncertain-action" type="button">Need more information</button>
+    </div>
+  </section>
+
+
+  <div id="scenarioControlBackdrop" class="scenario-control-backdrop" hidden></div>
+  <section id="scenarioControlDialog" class="scenario-control-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="scenarioControlTitle">
+    <div class="scenario-control-handle" aria-hidden="true"></div>
+    <div class="scenario-control-head">
+      <div><p>SCENARIO CONTROLS</p><h2 id="scenarioControlTitle">Progress and scenario options</h2></div>
+      <button id="closeScenarioControls" type="button" aria-label="Close scenario controls">×</button>
+    </div>
+    <details id="scenarioProgress" class="scenario-progress scenario-progress-menu" open>
+      <summary><span><b>Scenario progress</b><small id="scenarioProgressSummary">Review clinical phases</small></span><i aria-hidden="true">⌄</i></summary>
+      <div id="scenarioPhaseList" class="scenario-phase-list"></div>
+      <div id="scenarioCompletionMessage" class="scenario-completion-message" hidden></div>
+      <div class="scenario-progress-actions"><a id="handoffFromProgress" href="/vitals/pcr-handoff.html">PCR and handoff</a><button id="completeScenarioFromPatient" type="button">Check completion</button></div>
+    </details>
+    <button id="saveAndExitScenario" class="scenario-control-option end" type="button">
+      <strong>End scenario</strong><span>Stop the call and return to scenario selection. Current progress remains available to resume.</span>
+    </button>
+    <button id="resetAndRestartScenario" class="scenario-control-option reset" type="button">
+      <strong>Reset and restart</strong><span>Erase findings, vitals, treatments, transport decisions, partner tasks, and the care log for this patient.</span>
+    </button>
+    <button id="continueScenario" class="scenario-control-cancel" type="button">Continue scenario</button>
+  </section>
+
+  <div id="toast" class="toast" hidden aria-live="polite"></div>
+  <script src="/vitals/patient-record.js?v=2200"></script>
+  <script src="/vitals/scenario-definitions.js?v=2219"></script>
+  <script src="/vitals/scenario-interviews.js?v=2200"></script>
+  <script src="/vitals/scenario-session.js?v=2200"></script>
+  <script src="/vitals/scenario-runtime.js?v=2219"></script>
+  <script src="/vitals/scenario-tool-registry.js?v=2200"></script>
+  <script src="/vitals/scenario-phase-model.js?v=2200"></script>
+  <script src="/vitals/horse-crush-bootstrap.js?v=2219"></script>
+  <script src="/vitals/horse-crush-scenario.js?v=2219"></script>
+  <script src="/vitals/visual-patient.js?v=2220"></script>
+  <script src="/vitals/scenario-guided-start.js?v=2202"></script>
 </body>
 </html>
