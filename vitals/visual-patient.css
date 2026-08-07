@@ -1130,3 +1130,21 @@ body.scene-guide-active .patient-phase-controls{display:none}
 @media (min-width:1280px){
   body.desktop-scenario-layout .scenario-hero-layout{grid-template-columns:minmax(0,1.55fr) minmax(470px,.85fr)}
 }
+
+
+/* Horse arrival completion cleanup + lower desktop controls — UI 1.19 */
+@media (min-width:980px){
+  body.desktop-scenario-layout .patient-control-column{
+    grid-template-rows:auto minmax(0,1fr) auto auto;
+  }
+  body.desktop-scenario-layout .patient-phase-controls{
+    align-self:end;
+    margin-top:auto;
+  }
+  body.desktop-scenario-layout .bottom-nav{
+    align-self:end;
+  }
+  body.desktop-scenario-layout #horseArrivalDecision.complete{
+    display:none!important;
+  }
+}

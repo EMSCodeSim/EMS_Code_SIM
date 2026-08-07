@@ -167,13 +167,10 @@
 
     const saved = record()?.findings?.arrival_parking;
     if (saved) {
-      const option = PARKING_OPTIONS.find(item => item.value === saved.selected) || PARKING_OPTIONS[0];
-      section.classList.add('complete');
-      section.innerHTML = `
-        <div class="horse-arrival-complete-head"><span>ARRIVAL COMPLETE</span><strong>BLS engine handoff received</strong></div>
-        <p class="horse-parking-summary"><b>Ambulance position:</b> ${escapeHtml(saved.value || option.label)}</p>
-        <blockquote>“She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented ×4 and complains of left-hip pain. We have not moved her.”</blockquote>
-        <p class="horse-arrival-next">The patient remains on the dirt. Begin the initial ABC assessment, then choose focused exams and movement planning.</p>`;
+      // The arrival decision is complete. Remove the temporary arrival card so the
+      // right-side desktop workspace stays clear; the BLS handoff is shown in the
+      // persistent information window instead.
+      section.remove();
       revealPatientImage();
       return;
     }
