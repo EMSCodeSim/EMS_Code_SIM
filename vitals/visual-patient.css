@@ -1373,70 +1373,34 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
 }
 
 
-/* Horse demo 2.207 — fixed top-to-bottom desktop control rail.
-   DOM order is information -> clinical decision -> active workspace -> tool buttons. */
+/* Horse demo 2.208 — exact desktop stack: INFO > QUESTION > WORKSPACE > CONTROLS */
 @media(min-width:980px){
   body.horse-current-emt-call.desktop-scenario-layout .patient-control-column{
-    display:flex!important;
-    flex-direction:column!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto auto minmax(0,1fr) auto!important;
+    grid-template-areas:
+      "info"
+      "question"
+      "workspace"
+      "nav"!important;
     gap:8px!important;
-    height:100%!important;
-    min-height:0!important;
     overflow:hidden!important;
-    grid-template-rows:none!important;
-    grid-template-areas:none!important;
   }
+  body.horse-current-emt-call.desktop-scenario-layout .patient-entry-workflow{display:none!important}
   body.horse-current-emt-call.desktop-scenario-layout .info-update-window{
-    order:1!important;
-    flex:0 0 auto!important;
-    position:static!important;
-    width:100%!important;
-    max-width:none!important;
-    max-height:142px!important;
-    margin:0!important;
+    grid-area:info!important;position:static!important;width:100%!important;max-width:none!important;margin:0!important;
   }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-clinical-question-box{
-    order:2!important;
-    flex:0 0 auto!important;
-    position:static!important;
-    width:100%!important;
-    min-height:64px!important;
-    max-height:172px!important;
-    margin:0!important;
-    overflow:auto!important;
-    border:1px solid #4b7895!important;
-    background:#10283a!important;
+  body.horse-current-emt-call.desktop-scenario-layout #horseClinicalQuestionBox{
+    grid-area:question!important;position:static!important;width:100%!important;max-width:none!important;margin:0!important;
+    min-height:72px!important;max-height:190px!important;overflow:auto!important;
   }
-  body.horse-current-emt-call.desktop-scenario-layout .patient-entry-workflow{
-    display:none!important;
-  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-abc-followup-panel{display:none!important}
   body.horse-current-emt-call.desktop-scenario-layout .action-sheet{
-    order:3!important;
-    flex:1 1 auto!important;
-    min-height:0!important;
-    height:auto!important;
-    width:100%!important;
-    margin:0!important;
-    position:static!important;
-    transform:none!important;
+    grid-area:workspace!important;position:static!important;inset:auto!important;transform:none!important;width:100%!important;
+    height:100%!important;min-height:0!important;max-height:none!important;margin:0!important;overflow:auto!important;
   }
   body.horse-current-emt-call.desktop-scenario-layout .bottom-nav{
-    order:4!important;
-    flex:0 0 auto!important;
-    width:100%!important;
-    margin:0!important;
-    position:static!important;
-    transform:none!important;
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-question-answer-row{
-    grid-template-columns:minmax(0,1fr) 92px!important;
-    gap:8px!important;
-    align-items:end!important;
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-question-answer-row select{
-    min-height:38px!important;
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-question-save{
-    min-height:38px!important;
+    grid-area:nav!important;position:static!important;inset:auto!important;transform:none!important;width:100%!important;margin:0!important;
   }
 }
