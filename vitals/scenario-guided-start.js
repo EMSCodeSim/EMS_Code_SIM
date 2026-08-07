@@ -661,7 +661,16 @@
     $('startSceneSizeupPhoto')?.addEventListener('click', () => startGuide(Boolean(completedFinding)));
     $('startInitialABCPhoto')?.addEventListener('click', () => startPrimary(primaryComplete()));
     updatePhaseControls();
-    if (!completedFinding) startGuide(false);
+    const activeScenarioId = new URLSearchParams(location.search).get('case')
+      || window.EMSCodeSimPatientRecord?.active?.()?.scenarioId
+      || '';
+    const arrivalDecisionPending = activeScenarioId === 'horse_crush'
+      && !window.EMSCodeSimPatientRecord?.active?.()?.findings?.arrival_parking;
+
+    // The horse-crush case begins with apparatus positioning. Do not open
+    // scene size-up until the learner has completed the arrival decision.
+    if (arrivalDecisionPending) showReady();
+    else if (!completedFinding) startGuide(false);
     else if (!primaryComplete()) startPrimary(false);
     else showReady();
   }

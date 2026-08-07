@@ -3,6 +3,7 @@
 
   const CASE_ID = 'horse_crush';
   const ASSET = '/vitals/assets/horse-crush/';
+  let sceneSizeUpStartedAfterArrival = false;
   const EXAMS = [
     {
       key: 'neck_back',
@@ -163,6 +164,15 @@
         <blockquote>“She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented ×4 and complains of left-hip pain. We have not moved her.”</blockquote>
         <p class="horse-arrival-next">The patient remains on the dirt. Complete scene size-up and the initial ABC assessment before choosing focused exams or movement.</p>`;
       revealPatientImage();
+
+      // Arrival is the first learner decision in this scenario. Once it is
+      // complete, begin scene size-up unless it was already completed or opened.
+      if (!has('scene_size_up') && !sceneSizeUpStartedAfterArrival) {
+        sceneSizeUpStartedAfterArrival = true;
+        window.setTimeout(() => {
+          window.EMSCodeSimSceneGuide?.start?.(false);
+        }, 180);
+      }
       return;
     }
 
