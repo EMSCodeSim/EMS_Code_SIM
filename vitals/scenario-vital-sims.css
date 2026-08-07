@@ -21,3 +21,34 @@ button,input,select{font:inherit}.sv-topbar{position:sticky;top:0;z-index:20;pad
 .sv-pupil-assessment{width:100%;display:grid;gap:20px}.sv-gaze-track{position:relative;width:min(100%,380px);height:44px;margin:auto;border-radius:999px;background:#dceaf1;border:1px solid var(--sv-line);overflow:hidden}.sv-gaze-track span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:1.4rem;color:#0369a1}.sv-gaze-track span.tracks-smooth{animation:svTrackSmooth 2.4s ease-in-out 1}.sv-gaze-track span.tracks-impaired{animation:svTrackImpaired 2.4s ease-in-out 1}.sv-eyes.gaze-left .sv-iris{transform:translateX(-13px)}.sv-eyes.gaze-right .sv-iris{transform:translateX(13px)}.sv-eyes.gaze-disconjugate .sv-eye-wrap:first-child .sv-iris{transform:translateX(-12px)}.sv-eyes.gaze-disconjugate .sv-eye-wrap:last-child .sv-iris{transform:translateX(12px)}.sv-iris{transition:transform .25s}.sv-skin-compare{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}.sv-skin-compare figure{margin:0;display:grid;justify-items:center;gap:8px}.sv-skin-compare figcaption{display:grid;text-align:center;color:var(--sv-muted);font-size:.88rem}.sv-skin-compare figcaption strong{color:var(--sv-text)}.sv-skin-swatch.normal-reference{outline:4px solid #fff;box-shadow:inset 0 0 35px #fff5,0 0 0 1px #0f172a1f,0 12px 24px #0002}@keyframes svTrackSmooth{0%,100%{left:50%}25%{left:12%}50%{left:88%}75%{left:50%}}@keyframes svTrackImpaired{0%{left:50%}35%{left:25%}55%{left:38%}100%{left:38%}}@media(max-width:430px){.sv-skin-compare{grid-template-columns:1fr}.sv-skin-swatch{width:150px;height:120px}}
 
 .sv-post-save{display:grid;gap:7px;margin-top:9px;padding:10px;border:1px solid #31566d;border-radius:12px;background:#0b1d2c}.sv-post-save>span{font-size:.72rem;color:#b8cad7;font-weight:800}.sv-post-save>div{display:flex;gap:7px;flex-wrap:wrap}.sv-post-save a{flex:1;min-width:120px;padding:9px 10px;border:1px solid #39789e;border-radius:9px;background:#173f5a;color:#fff;text-decoration:none;text-align:center;font-size:.74rem;font-weight:850}
+
+
+/* PULSE DESKTOP 2.216 */
+.sv-pulse-stage{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:center;justify-items:center}
+.sv-stopwatch{position:relative;width:170px;aspect-ratio:1;border:7px solid #173b46;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 2px #d9e7ea,0 10px 22px #0002}
+.sv-stopwatch::before{content:"";position:absolute;left:50%;top:-20px;width:32px;height:18px;transform:translateX(-50%);border:5px solid #173b46;border-bottom:0;border-radius:8px 8px 0 0;background:#eef6f8}
+.sv-stopwatch-mark{position:absolute;left:50%;top:9%;transform:translateX(-50%);font-size:.72rem;font-weight:900;color:var(--sv-accent-dark)}
+.sv-stopwatch-hand{position:absolute;left:50%;top:12%;width:3px;height:38%;background:#c62828;transform-origin:50% 100%;transform:translateX(-50%) rotate(0deg);border-radius:3px}
+.sv-stopwatch-hub{position:absolute;left:50%;top:50%;width:14px;height:14px;border-radius:50%;background:#173b46;transform:translate(-50%,-50%);z-index:2}
+.sv-stopwatch-digital{position:absolute;left:50%;bottom:23%;transform:translateX(-50%);min-width:74px;padding:4px 7px;border-radius:8px;background:#eef6f8;color:#173b46;text-align:center;font-weight:900;font-variant-numeric:tabular-nums}
+.sv-pulse-note{margin:8px 0 0;color:var(--sv-muted);font-size:.8rem;line-height:1.35}
+@media(min-width:760px){
+  body[data-scenario-vital="pulse"]{height:100dvh;overflow:hidden}
+  body[data-scenario-vital="pulse"] .sv-topbar{position:relative;padding-top:7px;padding-bottom:7px}
+  body[data-scenario-vital="pulse"] .sv-main{width:min(100%,900px);height:calc(100dvh - 58px);min-height:0;padding:8px 14px;display:grid;grid-template-columns:1.15fr .85fr;grid-template-rows:auto auto minmax(0,1fr);gap:8px;overflow:hidden}
+  body[data-scenario-vital="pulse"] .sv-context-nav{grid-column:1/-1}
+  body[data-scenario-vital="pulse"] .sv-patient{grid-column:1/-1;padding:8px 12px}
+  body[data-scenario-vital="pulse"] #simCard{grid-column:1;grid-row:3;min-height:0;padding:10px 12px;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;gap:6px;overflow:hidden}
+  body[data-scenario-vital="pulse"] #answerCard{grid-column:2;grid-row:3;min-height:0;padding:12px;align-self:stretch;overflow:hidden}
+  body[data-scenario-vital="pulse"] .sv-stage{min-height:0;padding:10px}
+  body[data-scenario-vital="pulse"] .sv-instruction{margin-bottom:3px;font-size:.86rem;line-height:1.25}
+  body[data-scenario-vital="pulse"] .sv-actions{margin-top:2px}
+  body[data-scenario-vital="pulse"] .sv-state{margin-top:3px;min-height:18px;font-size:.82rem}
+  body[data-scenario-vital="pulse"] .sv-pulse-stage{gap:12px}
+  body[data-scenario-vital="pulse"] .sv-heart{width:110px;height:110px;font-size:3.5rem}
+  body[data-scenario-vital="pulse"] .sv-stopwatch{width:min(25dvh,170px)}
+  body[data-scenario-vital="pulse"] .sv-btn{min-height:42px;padding:8px 10px}
+  body[data-scenario-vital="pulse"] .sv-field input{padding:9px 10px}
+  body[data-scenario-vital="pulse"] .sv-answer>p{margin-bottom:7px;font-size:.8rem}
+}
+@media(max-width:759px){.sv-pulse-stage{grid-template-columns:1fr}.sv-stopwatch{width:160px}}
