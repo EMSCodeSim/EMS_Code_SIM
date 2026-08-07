@@ -49,3 +49,47 @@
   .horse-arrival-head{flex-direction:column}
   .horse-exam-actions{flex-direction:column}
 }
+
+/* Horse-crush mobile scenario cleanup — UI 1.12 */
+.horse-arrival-card{margin:10px 0 12px}
+@media(max-width:600px){
+  .horse-arrival-card{
+    margin:8px 0 10px;
+    padding:11px;
+    border-radius:14px;
+    box-shadow:none;
+  }
+  .horse-arrival-head,.horse-arrival-complete-head{gap:7px;margin-bottom:7px}
+  .horse-arrival-head h2{font-size:1.02rem;line-height:1.2}
+  .horse-arrival-head em{padding:4px 7px;font-size:.66rem}
+  .horse-arrival-card>p,.horse-arrival-card blockquote{font-size:.79rem;line-height:1.4}
+  .horse-arrival-card blockquote{margin:7px 0;padding:9px 10px}
+  .horse-parking-options{grid-template-columns:1fr;gap:7px;margin-top:9px}
+  .horse-parking-options button{min-height:52px;padding:9px 10px;border-radius:11px}
+  .horse-parking-options small{font-size:.66rem}
+  .horse-parking-feedback{margin-top:8px;padding:8px;font-size:.76rem}
+
+  .horse-assessment-section{margin-top:8px}
+  .horse-exam-grid{grid-template-columns:1fr;gap:6px}
+  .horse-exam-button{min-height:52px;padding:8px 9px;border-radius:11px}
+  .horse-exam-button>span{width:25px;height:25px}
+  .horse-exam-button strong{font-size:.82rem}
+  .horse-exam-button small{font-size:.67rem}
+  .horse-exam-reveal{margin-top:8px;border-radius:12px}
+  .horse-exam-reveal img{max-height:220px}
+  .horse-exam-content{padding:10px}
+  .horse-exam-content h3{font-size:.95rem}
+  .horse-exam-content>span{font-size:.78rem;line-height:1.4}
+  .horse-exam-actions{gap:6px;margin-top:9px;flex-direction:column}
+  .horse-exam-actions button{min-height:42px;padding:8px}
+
+  .horse-movement-body{padding:8px}
+  .horse-movement-image{max-height:210px;margin-bottom:9px;border-radius:11px}
+  .horse-movement-form{gap:8px}
+  .horse-movement-form fieldset{gap:5px;padding:8px;border-radius:11px}
+  .horse-movement-form legend{font-size:.82rem}
+  .horse-movement-form fieldset label{min-height:44px;padding:7px;font-size:.77rem;line-height:1.3}
+  .horse-movement-note{font-size:.78rem}
+  .horse-movement-note textarea{min-height:82px;padding:8px}
+  .horse-movement-feedback{padding:8px;font-size:.76rem}
+}
