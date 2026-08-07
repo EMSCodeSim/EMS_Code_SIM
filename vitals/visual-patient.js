@@ -83,6 +83,7 @@
   let horseWorkspaceContext = null;
   let horseCurrentAssessment = 'abc';
   let horseAssessmentCollapsed = false;
+  let horseHistoryActiveGroup = '';
   const renderSignatures = { vitals:'', assessments:'', history:'', treatments:'', findings:'', progress:'' };
 
   function dataSignature(value) {
@@ -1064,9 +1065,178 @@
     });
   }
 
+  const HORSE_HISTORY_GROUPS = [
+    {
+      id:'sample',
+      label:'SAMPLE',
+      icon:'S',
+      description:'Symptoms, allergies, medications, medical history, last intake, and events.',
+      instruction:'Select a SAMPLE question below. The patient answer will replace this message in the Patient Update window.',
+      questionIds:['symptoms','allergies','medications','medical_history','last_intake','events']
+    },
+    {
+      id:'opqrst',
+      label:'OPQRST',
+      icon:'O',
+      description:'Onset, provocation, quality, radiation, severity, and time.',
+      instruction:'Use OPQRST to define the patient’s pain and how it has behaved since the injury.',
+      questionIds:['onset','provocation','quality','radiation','severity','time']
+    },
+    {
+      id:'pain',
+      label:'Pain',
+      icon:'P',
+      description:'Focused questions about location, severity, movement, and radiation.',
+      instruction:'Ask focused pain questions. Pay attention to what changes the pain before deciding how to move the patient.',
+      questionIds:['chief_complaint','severity','quality','provocation','radiation','time']
+    },
+    {
+      id:'mechanism',
+      label:'Event / mechanism',
+      icon:'M',
+      description:'Clarify the horse-related mechanism, head strike, loss of consciousness, and movement since the event.',
+      instruction:'Clarify exactly what happened and whether the patient was struck, crushed, stepped on, or moved after the injury.',
+      questionIds:['events','loss_consciousness','position']
+    }
+  ];
+
+  function horseHistoryGroupQuestions(group) {
+    if (!group) return [];
+    const byId = new Map((interview.questions || []).map(question => [question.id, question]));
+    return (group.questionIds || []).map(questionId => byId.get(questionId)).filter(Boolean);
+  }
+
+  function renderHorseHistoryQuestionBox(groupId = horseHistoryActiveGroup) {
+    if (id !== 'horse_crush' || !desktopWorkspace()) return;
+    const questionBox = $('horseClinicalQuestionBox');
+    if (!questionBox) return;
+    const group = HORSE_HISTORY_GROUPS.find(item => item.id === groupId);
+    if (!group) {
+      questionBox.classList.remove('active','history-active');
+      questionBox.innerHTML = `
+        <div class="horse-question-placeholder">
+          <small>HISTORY QUESTION</small>
+          <strong>Select a history group below: SAMPLE, OPQRST, Pain, or Event / mechanism.</strong>
+        </div>`;
+      return;
+    }
+
+    const current = record() || {};
+    const asked = new Set(askedInterviewQuestions(current).map(question => question.id));
+    const questions = horseHistoryGroupQuestions(group);
+    questionBox.classList.add('active','history-active');
+    questionBox.innerHTML = `
+      <div class="horse-question-head horse-history-question-head">
+        <div><small>HISTORY QUESTION</small><strong>${escapeHtml(group.label)}</strong></div>
+        <span>${questions.filter(question => asked.has(question.id)).length}/${questions.length} asked</span>
+      </div>
+      <div class="horse-history-question-row">
+        <label>
+          <span>Question to ask</span>
+          <select id="horseHistoryQuestionSelect" aria-label="${escapeHtml(group.label)} history question">
+            <option value="">Choose a question</option>
+            ${questions.map(question => `<option value="${escapeHtml(question.id)}">${asked.has(question.id) ? '✓ ' : ''}${escapeHtml(question.prompt || question.label)}</option>`).join('')}
+          </select>
+        </label>
+        <button type="button" class="horse-history-ask" disabled>Ask</button>
+      </div>
+      <small class="horse-history-question-hint">The patient’s answer will appear in the Patient Update window above.</small>`;
+    const select = questionBox.querySelector('#horseHistoryQuestionSelect');
+    const ask = questionBox.querySelector('.horse-history-ask');
+    const sync = () => { if (ask) ask.disabled = !select?.value; };
+    select?.addEventListener('change', sync);
+    ask?.addEventListener('click', () => {
+      const question = questions.find(item => item.id === select?.value);
+      if (!question) return;
+      askInterviewQuestion(question);
+    });
+    sync();
+  }
+
+  function selectHorseHistoryGroup(groupId, options = {}) {
+    if (id !== 'horse_crush' || !desktopWorkspace()) return;
+    const group = HORSE_HISTORY_GROUPS.find(item => item.id === groupId);
+    if (!group) return;
+    horseHistoryActiveGroup = group.id;
+    if (options.updateInfo !== false) {
+      sceneObservationUpdate = {
+        id:`horse-history-group-${group.id}`,
+        type:'HISTORY',
+        title:`${group.label} questions`,
+        text:group.instruction,
+        kind:'history',
+        sticky:true,
+        recordedAt:new Date().toISOString()
+      };
+      infoManuallyCollapsed = false;
+      lastInfoSignature = '';
+      renderInfoUpdate(true);
+    }
+    renderHorseHistoryQuestionBox(group.id);
+    document.querySelectorAll('#historyCategoryList .horse-history-group').forEach(details => {
+      const selected = details.dataset.historyGroup === group.id;
+      details.classList.toggle('selected', selected);
+      if (selected && !details.open) details.open = true;
+    });
+  }
+
+  function buildHorseHistoryDesktop() {
+    const host = $('historyCategoryList');
+    if (!host) return;
+    const current = record() || {};
+    const asked = new Set(askedInterviewQuestions(current).map(question => question.id));
+    $('historyResponderLabel').textContent = String(interview.responder || 'Patient').toUpperCase();
+    $('historyCommunicationStatus').textContent = 'Choose a history group, then ask one question at a time.';
+    $('historyAskedCount').textContent = `${asked.size} asked`;
+    host.innerHTML = '';
+
+    HORSE_HISTORY_GROUPS.forEach(group => {
+      const questions = horseHistoryGroupQuestions(group);
+      const complete = questions.filter(question => asked.has(question.id)).length;
+      const details = document.createElement('details');
+      details.className = `history-question-category horse-history-group${horseHistoryActiveGroup === group.id ? ' selected' : ''}`;
+      details.dataset.historyGroup = group.id;
+      details.open = horseHistoryActiveGroup === group.id;
+      details.innerHTML = `
+        <summary>
+          <span class="history-category-icon" aria-hidden="true">${escapeHtml(group.icon)}</span>
+          <span><strong>${escapeHtml(group.label)}</strong><small>${escapeHtml(group.description)}</small></span>
+          <em>${complete}/${questions.length}</em>
+        </summary>
+        <div class="horse-history-group-preview">
+          ${questions.map(question => `<span class="${asked.has(question.id) ? 'asked' : ''}">${asked.has(question.id) ? '✓' : '○'} ${escapeHtml(question.label)}</span>`).join('')}
+          <small>Selecting this group loads these questions into the fixed question dropdown above.</small>
+        </div>`;
+      const summary = details.querySelector('summary');
+      summary?.addEventListener('click', event => {
+        event.preventDefault();
+        const willOpen = !details.open;
+        document.querySelectorAll('#historyCategoryList .horse-history-group').forEach(other => {
+          if (other !== details) other.open = false;
+        });
+        details.open = willOpen;
+        if (willOpen) {
+          selectHorseHistoryGroup(group.id);
+        } else if (horseHistoryActiveGroup === group.id) {
+          horseHistoryActiveGroup = '';
+          details.classList.remove('selected');
+          renderHorseHistoryQuestionBox();
+        }
+      });
+      host.appendChild(details);
+    });
+
+    renderKnownHistory();
+    renderHorseHistoryQuestionBox();
+  }
+
   function buildHistory() {
     const host = $('historyCategoryList');
     if (!host) return;
+    if (id === 'horse_crush' && desktopWorkspace()) {
+      buildHorseHistoryDesktop();
+      return;
+    }
     const current = record() || {};
     const asked = new Set(askedInterviewQuestions(current).map(question => question.id));
     $('historyResponderLabel').textContent = String(interview.responder || 'Patient').toUpperCase();
@@ -2016,7 +2186,16 @@
       document.body.style.overflow = 'hidden';
     }
     if (panelId === 'findingsPanel') renderFindings();
-    if (panelId === 'historyPanel') buildHistory();
+    if (panelId === 'historyPanel') {
+      if (id === 'horse_crush' && desktopWorkspace()) {
+        horseHistoryActiveGroup = '';
+        renderHorseHistoryQuestionBox();
+      }
+      buildHistory();
+    } else if (id === 'horse_crush' && desktopWorkspace()) {
+      horseHistoryActiveGroup = '';
+      horseWorkspaceContext?.resetQuestionBox?.();
+    }
     if (panelId === 'treatmentPanel' && treatmentCategoryFocus) {
       const target = document.querySelector(`#treatmentTools [data-treatment-category="${CSS.escape(treatmentCategoryFocus)}"]`);
       if (target) {
