@@ -2013,3 +2013,56 @@ body.horse-grade-open .hospital-handoff-workspace{display:none!important}
 
 /* Training privacy note */
 .training-deid-note{margin:6px 0 10px;padding:7px 9px;border:1px solid #36576d;border-radius:9px;background:#10283a;color:#bcd0dd;font-size:.68rem;line-height:1.35}
+
+
+/* Horse responsive treatment selector 2.226 — desktop quick actions, phone dropdowns. */
+@media(min-width:980px){
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu{
+    display:grid!important;grid-template-columns:1fr!important;gap:6px!important
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice{
+    width:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;
+    min-height:52px;padding:8px 9px;border:1px solid #31566d;border-radius:11px;background:#10283a;color:#fff;
+    text-align:left;cursor:pointer
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice>span:nth-child(2){display:grid;gap:2px;min-width:0}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice strong{font-size:.78rem}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice small{font-size:.61rem;color:#9eb3bf;line-height:1.25}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice em{font-style:normal;font-size:.61rem;color:#a9c9bc;font-weight:900}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice.selected{
+    border-color:#65c2a3;background:#11352c;box-shadow:0 0 0 1px rgba(101,194,163,.18) inset
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-quick-grid{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-quick{
+    min-height:42px;display:flex;align-items:center;gap:7px;padding:7px 8px;border:1px solid #365d50;border-radius:9px;
+    background:#0a1e19;color:#eefaf5;text-align:left;cursor:pointer
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-quick>span{color:#9fb5ab;font-weight:950}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-quick strong{font-size:.67rem;line-height:1.2}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-quick:hover,
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-quick.selected{border-color:#6dd0ad;background:#174435}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-quick.used{border-color:#3d8c70}
+  body.horse-current-emt-call.desktop-scenario-layout #horseClinicalQuestionBox.treatment-active{max-height:355px!important}
+}
+
+@media(max-width:979px){
+  .horse-treatment-mobile-menu{display:grid;gap:11px}
+  .horse-treatment-mobile-intro{display:grid;gap:3px;padding:10px 11px;border:1px solid #31566d;border-radius:12px;background:#0d2638}
+  .horse-treatment-mobile-intro strong{color:#fff}
+  .horse-treatment-mobile-intro span{font-size:.76rem;color:#a9bfcc;line-height:1.35}
+  .horse-treatment-mobile-select{display:grid;gap:5px;color:#dcecf5;font-size:.75rem;font-weight:850}
+  .horse-treatment-mobile-select select{width:100%;min-height:46px;border:1px solid #45657a;border-radius:11px;background:#071827;color:#fff;padding:9px 10px;font:inherit}
+  .horse-treatment-mobile-select select:disabled{opacity:.55}
+  .horse-treatment-mobile-detail{display:grid;gap:8px;padding:10px;border:1px solid #31566d;border-radius:12px;background:#10283a}
+  .horse-treatment-mobile-detail>small{color:#9eb3bf;font-size:.72rem}
+  .horse-treatment-mobile-detail .horse-treatment-detail-grid{display:grid;grid-template-columns:1fr;gap:8px}
+  .horse-treatment-mobile-detail .horse-treatment-detail-grid label,
+  .horse-treatment-mobile-detail .horse-treatment-rationale{display:grid;gap:5px;color:#dcecf5;font-size:.72rem;font-weight:800}
+  .horse-treatment-mobile-detail select,
+  .horse-treatment-mobile-detail input,
+  .horse-treatment-mobile-detail textarea{width:100%;border:1px solid #45657a;border-radius:10px;background:#071827;color:#fff;padding:10px;font:inherit}
+  .horse-treatment-mobile-detail .horse-treatment-perform-row{display:grid;gap:7px}
+  .horse-treatment-mobile-detail .horse-treatment-perform{min-height:46px;border:0;border-radius:10px;background:#17664f;color:#fff;font-weight:900}
+}

@@ -91,6 +91,7 @@
   let horseAssessmentCollapsed = false;
   let horseHistoryActiveGroup = '';
   let horseTreatmentActiveGroup = '';
+  let horseTreatmentActivePlan = '';
   let horseHandoffOpen = false;
   let horseHandoffSampleOpen = false;
   let horseGradeOpen = false;
@@ -1945,98 +1946,112 @@
       </form>`;
   }
 
+  function renderHorseTreatmentPlanDetail(plan, detail) {
+    if (!detail) return;
+    if (!plan) {
+      detail.innerHTML = '<small>Select an action above to review it before performing treatment.</small>';
+      return;
+    }
+    if (plan.id === '__horse_transport__') {
+      detail.innerHTML = `<p class="horse-treatment-summary">${escapeHtml(plan.summary)}</p>${horseTransportFormMarkup()}`;
+      detail.querySelector('form')?.addEventListener('submit', event => {
+        event.preventDefault();
+        saveTransportDecision(event.currentTarget);
+      });
+      return;
+    }
+    if (plan.id === '__horse_handoff__') {
+      const transported = Boolean(record()?.documentation?.transportDecisionAt);
+      detail.innerHTML = `
+        <p class="horse-treatment-summary">${escapeHtml(plan.summary)}</p>
+        <div class="horse-handoff-launch-card">
+          <small>${transported ? 'Transport decision is recorded. Use your documented assessment, history, vitals, treatments, and reassessments for report.' : 'Transport has not been recorded yet. You can review the handoff workspace, but transport information will remain blank.'}</small>
+          <div>
+            <button type="button" class="horse-treatment-perform horse-open-handoff">Begin hospital handoff</button>
+            <button type="button" class="secondary horse-open-sample-handoff">Sample handoff</button>
+          </div>
+        </div>`;
+      detail.querySelector('.horse-open-handoff')?.addEventListener('click', () => openHorseHospitalHandoff(false));
+      detail.querySelector('.horse-open-sample-handoff')?.addEventListener('click', () => openHorseHospitalHandoff(true));
+      return;
+    }
+    const fields = treatmentDocumentation(plan);
+    detail.innerHTML = `
+      <p class="horse-treatment-summary">${escapeHtml(plan.summary || 'Perform the selected treatment and observe the patient response.')}</p>
+      <form class="horse-treatment-action-form">
+        ${fields.length ? `<div class="horse-treatment-detail-grid">${fields.map(treatmentFieldMarkup).join('')}</div>` : ''}
+        <div class="horse-treatment-perform-row"><button class="horse-treatment-perform" type="submit">${horseTreatmentRecordedCount(plan) ? 'Perform again' : 'Perform treatment'}</button><p class="treatment-entry-error" hidden></p></div>
+      </form>`;
+    const form = detail.querySelector('form');
+    form?.addEventListener('submit', event => {
+      event.preventDefault();
+      const validation = validateTreatmentDocumentation(plan, form);
+      const error = form.querySelector('.treatment-entry-error');
+      if (!validation.ok) {
+        if (error) { error.textContent = validation.message; error.hidden = false; }
+        return;
+      }
+      if (error) error.hidden = true;
+      recordTreatment(plan, validation.values);
+    });
+  }
+
   function renderHorseTreatmentSelectionBox(groupId = horseTreatmentActiveGroup) {
     if (id !== 'horse_crush' || !desktopWorkspace()) return;
     const questionBox = $('horseClinicalQuestionBox');
     if (!questionBox) return;
     const group = HORSE_TREATMENT_GROUPS.find(item => item.id === groupId);
     if (!group) {
+      horseTreatmentActivePlan = '';
       questionBox.classList.remove('active','history-active','treatment-active');
       questionBox.innerHTML = `
         <div class="horse-question-placeholder">
-          <small>TREATMENT SELECTION</small>
-          <strong>Select a treatment group below.</strong>
+          <small>TREATMENT</small>
+          <strong>Select a treatment group to show quick actions.</strong>
         </div>`;
       return;
     }
 
     const plans = horseTreatmentGroupPlans(group);
     const completed = plans.filter(plan => horseTreatmentRecordedCount(plan) > 0).length;
+    if (!plans.some(plan => plan.id === horseTreatmentActivePlan)) horseTreatmentActivePlan = '';
     questionBox.classList.remove('history-active');
     questionBox.classList.add('active','treatment-active');
     questionBox.innerHTML = `
       <div class="horse-question-head horse-treatment-question-head">
-        <div><small>TREATMENT SELECTION</small><strong>${escapeHtml(group.label)}</strong></div>
+        <div><small>QUICK TREATMENT SELECTION</small><strong>${escapeHtml(group.label)}</strong></div>
         <span>${completed}/${plans.length} used</span>
       </div>
-      <div class="horse-treatment-selection-row">
-        <label><span>Treatment / action</span>
-          <select id="horseTreatmentSelect" aria-label="${escapeHtml(group.label)} treatment choice">
-            <option value="">Choose a treatment</option>
-            ${plans.map(plan => `<option value="${escapeHtml(plan.id)}">${horseTreatmentRecordedCount(plan) ? '✓ ' : ''}${escapeHtml(plan.label)}</option>`).join('')}
-          </select>
-        </label>
+      <div class="horse-treatment-quick-grid" role="group" aria-label="${escapeHtml(group.label)} treatment options">
+        ${plans.map(plan => {
+          const used = horseTreatmentRecordedCount(plan) > 0;
+          const selected = horseTreatmentActivePlan === plan.id;
+          return `<button type="button" class="horse-treatment-quick${used ? ' used' : ''}${selected ? ' selected' : ''}" data-horse-treatment-plan="${escapeHtml(plan.id)}"><span>${used ? '✓' : '○'}</span><strong>${escapeHtml(plan.label)}</strong></button>`;
+        }).join('')}
       </div>
-      <div id="horseTreatmentDetail" class="horse-treatment-detail"><small>Select an action to see any required treatment details.</small></div>`;
+      <div id="horseTreatmentDetail" class="horse-treatment-detail"><small>Select an action above to review it before performing treatment.</small></div>`;
 
-    const select = questionBox.querySelector('#horseTreatmentSelect');
     const detail = questionBox.querySelector('#horseTreatmentDetail');
-    const renderSelected = () => {
-      const plan = plans.find(item => item.id === select?.value);
-      if (!plan || !detail) {
-        if (detail) detail.innerHTML = '<small>Select an action to see any required treatment details.</small>';
-        return;
-      }
-      if (plan.id === '__horse_transport__') {
-        detail.innerHTML = `<p class="horse-treatment-summary">${escapeHtml(plan.summary)}</p>${horseTransportFormMarkup()}`;
-        detail.querySelector('form')?.addEventListener('submit', event => {
-          event.preventDefault();
-          saveTransportDecision(event.currentTarget);
-        });
-        return;
-      }
-      if (plan.id === '__horse_handoff__') {
-        const transported = Boolean(record()?.documentation?.transportDecisionAt);
-        detail.innerHTML = `
-          <p class="horse-treatment-summary">${escapeHtml(plan.summary)}</p>
-          <div class="horse-handoff-launch-card">
-            <small>${transported ? 'Transport decision is recorded. Use your documented assessment, history, vitals, treatments, and reassessments for report.' : 'Transport has not been recorded yet. You can review the handoff workspace, but transport information will remain blank.'}</small>
-            <div>
-              <button type="button" class="horse-treatment-perform horse-open-handoff">Begin hospital handoff</button>
-              <button type="button" class="secondary horse-open-sample-handoff">Sample handoff</button>
-            </div>
-          </div>`;
-        detail.querySelector('.horse-open-handoff')?.addEventListener('click', () => openHorseHospitalHandoff(false));
-        detail.querySelector('.horse-open-sample-handoff')?.addEventListener('click', () => openHorseHospitalHandoff(true));
-        return;
-      }
-      const fields = treatmentDocumentation(plan);
-      detail.innerHTML = `
-        <p class="horse-treatment-summary">${escapeHtml(plan.summary || 'Perform the selected treatment and observe the patient response.')}</p>
-        <form class="horse-treatment-action-form">
-          ${fields.length ? `<div class="horse-treatment-detail-grid">${fields.map(treatmentFieldMarkup).join('')}</div>` : ''}
-          <div class="horse-treatment-perform-row"><button class="horse-treatment-perform" type="submit">${horseTreatmentRecordedCount(plan) ? 'Perform again' : 'Perform treatment'}</button><p class="treatment-entry-error" hidden></p></div>
-        </form>`;
-      const form = detail.querySelector('form');
-      form?.addEventListener('submit', event => {
-        event.preventDefault();
-        const validation = validateTreatmentDocumentation(plan, form);
-        const error = form.querySelector('.treatment-entry-error');
-        if (!validation.ok) {
-          if (error) { error.textContent = validation.message; error.hidden = false; }
-          return;
-        }
-        if (error) error.hidden = true;
-        recordTreatment(plan, validation.values);
+    const selectPlan = planId => {
+      const plan = plans.find(item => item.id === planId);
+      if (!plan) return;
+      horseTreatmentActivePlan = plan.id;
+      questionBox.querySelectorAll('[data-horse-treatment-plan]').forEach(button => {
+        button.classList.toggle('selected', button.dataset.horseTreatmentPlan === plan.id);
       });
+      renderHorseTreatmentPlanDetail(plan, detail);
     };
-    select?.addEventListener('change', renderSelected);
+    questionBox.querySelectorAll('[data-horse-treatment-plan]').forEach(button => {
+      button.addEventListener('click', () => selectPlan(button.dataset.horseTreatmentPlan || ''));
+    });
+    if (horseTreatmentActivePlan) selectPlan(horseTreatmentActivePlan);
   }
 
   function selectHorseTreatmentGroup(groupId, options = {}) {
     if (id !== 'horse_crush' || !desktopWorkspace()) return;
     const group = HORSE_TREATMENT_GROUPS.find(item => item.id === groupId);
     if (!group) return;
+    if (horseTreatmentActiveGroup !== group.id) horseTreatmentActivePlan = '';
     horseTreatmentActiveGroup = group.id;
     if (options.updateInfo !== false) {
       sceneObservationUpdate = {
@@ -2053,10 +2068,10 @@
       renderInfoUpdate(true);
     }
     renderHorseTreatmentSelectionBox(group.id);
-    document.querySelectorAll('#treatmentTools .horse-treatment-group').forEach(details => {
-      const selected = details.dataset.horseTreatmentGroup === group.id;
-      details.classList.toggle('selected', selected);
-      if (selected && !details.open) details.open = true;
+    document.querySelectorAll('#treatmentTools [data-horse-treatment-group]').forEach(control => {
+      const selected = control.dataset.horseTreatmentGroup === group.id;
+      control.classList.toggle('selected', selected);
+      control.setAttribute('aria-pressed', String(selected));
     });
   }
 
@@ -2064,51 +2079,98 @@
     const box = $('treatmentTools');
     if (!box) return;
     box.innerHTML = '';
-    box.className = 'treatment-list horse-treatment-groups';
-    const current = record() || {};
+    box.className = 'treatment-list horse-treatment-groups horse-treatment-group-menu';
 
     HORSE_TREATMENT_GROUPS.forEach(group => {
       const plans = horseTreatmentGroupPlans(group);
       if (!plans.length) return;
       const completed = plans.filter(plan => horseTreatmentRecordedCount(plan) > 0).length;
-      const details = document.createElement('details');
-      details.className = `treatment-category horse-treatment-group${horseTreatmentActiveGroup === group.id ? ' selected' : ''}`;
-      details.dataset.horseTreatmentGroup = group.id;
-      details.open = horseTreatmentActiveGroup === group.id;
-      details.innerHTML = `
-        <summary>
-          <span class="horse-treatment-group-icon" aria-hidden="true">${escapeHtml(group.icon)}</span>
-          <span><strong>${escapeHtml(group.label)}</strong><small>${escapeHtml(group.description)}</small></span>
-          <em>${completed ? `${completed}/${plans.length}` : `${plans.length}`}</em>
-        </summary>
-        <div class="horse-treatment-group-preview">
-          ${plans.map(plan => `<span class="${horseTreatmentRecordedCount(plan) ? 'used' : ''}">${horseTreatmentRecordedCount(plan) ? '✓' : '○'} ${escapeHtml(plan.label)}</span>`).join('')}
-          <small>Selecting this group loads these actions into the fixed Treatment Selection box above.</small>
-        </div>`;
-      details.querySelector('summary')?.addEventListener('click', event => {
-        event.preventDefault();
-        const willOpen = !details.open;
-        document.querySelectorAll('#treatmentTools .horse-treatment-group').forEach(other => {
-          if (other !== details) other.open = false;
-        });
-        details.open = willOpen;
-        if (willOpen) selectHorseTreatmentGroup(group.id);
-        else if (horseTreatmentActiveGroup === group.id) {
-          horseTreatmentActiveGroup = '';
-          details.classList.remove('selected');
-          renderHorseTreatmentSelectionBox();
-        }
-      });
-      box.appendChild(details);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `horse-treatment-group-choice${horseTreatmentActiveGroup === group.id ? ' selected' : ''}`;
+      button.dataset.horseTreatmentGroup = group.id;
+      button.setAttribute('aria-pressed', String(horseTreatmentActiveGroup === group.id));
+      button.innerHTML = `
+        <span class="horse-treatment-group-icon" aria-hidden="true">${escapeHtml(group.icon)}</span>
+        <span><strong>${escapeHtml(group.label)}</strong><small>${escapeHtml(group.description)}</small></span>
+        <em>${completed ? `${completed}/${plans.length}` : `${plans.length}`}</em>`;
+      button.addEventListener('click', () => selectHorseTreatmentGroup(group.id));
+      box.appendChild(button);
     });
 
     renderHorseTreatmentSelectionBox();
   }
 
+  function buildHorseTreatmentsMobile() {
+    const box = $('treatmentTools');
+    if (!box) return;
+    const availableGroups = HORSE_TREATMENT_GROUPS
+      .map(group => ({ group, plans:horseTreatmentGroupPlans(group) }))
+      .filter(item => item.plans.length);
+    if (!availableGroups.some(item => item.group.id === horseTreatmentActiveGroup)) horseTreatmentActiveGroup = '';
+    if (!horseTreatmentActiveGroup) horseTreatmentActivePlan = '';
+
+    box.className = 'treatment-list horse-treatment-mobile-menu';
+    box.innerHTML = `
+      <div class="horse-treatment-mobile-intro"><strong>Choose treatment</strong><span>Use the dropdowns to keep the phone screen compact. Treatment results still appear in Patient Update.</span></div>
+      <label class="horse-treatment-mobile-select"><span>Treatment group</span>
+        <select id="horseMobileTreatmentGroup"><option value="">Choose a group</option>${availableGroups.map(({group,plans}) => `<option value="${escapeHtml(group.id)}" ${horseTreatmentActiveGroup === group.id ? 'selected' : ''}>${escapeHtml(group.label)} (${plans.length})</option>`).join('')}</select>
+      </label>
+      <label class="horse-treatment-mobile-select"><span>Treatment / action</span>
+        <select id="horseMobileTreatmentAction" ${horseTreatmentActiveGroup ? '' : 'disabled'}><option value="">Choose an action</option></select>
+      </label>
+      <div id="horseMobileTreatmentDetail" class="horse-treatment-mobile-detail"><small>Choose a treatment group, then select an action.</small></div>`;
+
+    const groupSelect = box.querySelector('#horseMobileTreatmentGroup');
+    const actionSelect = box.querySelector('#horseMobileTreatmentAction');
+    const detail = box.querySelector('#horseMobileTreatmentDetail');
+
+    const populateActions = () => {
+      const group = HORSE_TREATMENT_GROUPS.find(item => item.id === groupSelect?.value);
+      horseTreatmentActiveGroup = group?.id || '';
+      const plans = horseTreatmentGroupPlans(group);
+      if (!plans.some(plan => plan.id === horseTreatmentActivePlan)) horseTreatmentActivePlan = '';
+      if (!actionSelect) return;
+      actionSelect.disabled = !group;
+      actionSelect.innerHTML = `<option value="">Choose an action</option>${plans.map(plan => `<option value="${escapeHtml(plan.id)}" ${horseTreatmentActivePlan === plan.id ? 'selected' : ''}>${horseTreatmentRecordedCount(plan) ? '✓ ' : ''}${escapeHtml(plan.label)}</option>`).join('')}`;
+      if (!group) {
+        if (detail) detail.innerHTML = '<small>Choose a treatment group, then select an action.</small>';
+        return;
+      }
+      sceneObservationUpdate = {
+        id:`horse-treatment-group-${group.id}`,
+        type:'TREATMENT',
+        title:group.label,
+        text:group.instruction,
+        kind:'treatment',
+        sticky:true,
+        recordedAt:new Date().toISOString()
+      };
+      infoManuallyCollapsed = false;
+      lastInfoSignature = '';
+      renderInfoUpdate(true);
+      if (horseTreatmentActivePlan) renderHorseTreatmentPlanDetail(plans.find(plan => plan.id === horseTreatmentActivePlan), detail);
+      else if (detail) detail.innerHTML = '<small>Choose an action to review it before performing treatment.</small>';
+    };
+
+    groupSelect?.addEventListener('change', () => {
+      horseTreatmentActivePlan = '';
+      populateActions();
+    });
+    actionSelect?.addEventListener('change', () => {
+      const group = HORSE_TREATMENT_GROUPS.find(item => item.id === horseTreatmentActiveGroup);
+      const plans = horseTreatmentGroupPlans(group);
+      horseTreatmentActivePlan = actionSelect.value || '';
+      renderHorseTreatmentPlanDetail(plans.find(plan => plan.id === horseTreatmentActivePlan), detail);
+    });
+    if (horseTreatmentActiveGroup) populateActions();
+  }
+
   function buildTreatments() {
     const box = $('treatmentTools');
-    if (id === 'horse_crush' && desktopWorkspace()) {
-      buildHorseTreatmentsDesktop();
+    if (id === 'horse_crush') {
+      if (desktopWorkspace()) buildHorseTreatmentsDesktop();
+      else buildHorseTreatmentsMobile();
       return;
     }
     const uiState = captureTreatmentUi();
@@ -3404,13 +3466,17 @@
         if (!horseHistoryActiveGroup) horseHistoryActiveGroup = 'patient_info';
       }
       buildHistory();
-    } else if (panelId === 'treatmentPanel' && id === 'horse_crush' && desktopWorkspace()) {
-      horseTreatmentActiveGroup = '';
+    } else if (panelId === 'treatmentPanel' && id === 'horse_crush') {
+      if (desktopWorkspace()) {
+        horseTreatmentActiveGroup = '';
+        horseTreatmentActivePlan = '';
+      }
       buildTreatments();
-      renderHorseTreatmentSelectionBox();
+      if (desktopWorkspace()) renderHorseTreatmentSelectionBox();
       showHorsePainReminderIfNeeded();
     } else if (id === 'horse_crush' && desktopWorkspace()) {
       horseTreatmentActiveGroup = '';
+      horseTreatmentActivePlan = '';
       horseWorkspaceContext?.resetQuestionBox?.();
     }
     if (panelId === 'treatmentPanel' && treatmentCategoryFocus) {
