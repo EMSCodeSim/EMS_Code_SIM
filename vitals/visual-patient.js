@@ -1199,8 +1199,8 @@
       id:'patient_info',
       label:'Patient Information',
       icon:'ID',
-      description:'Basic identifying and contact information for the patient record.',
-      instruction:'Ask the patient for identifying information. Every available Patient Information question is now open in the question panel.',
+      description:'De-identified registration information appropriate for this training patient.',
+      instruction:'Practice registration questions using fictional, de-identified information. Do not enter real patient identifiers.',
       questionIds:['name','dob','age','address','emergency_contact']
     },
     {
@@ -2764,11 +2764,11 @@
 
   function horseHandoffNoteModel(current = record() || {}) {
     const patientNameAnswer = handoffHistoryValue(current, 'name');
-    const patientName = patientNameAnswer ? patientNameAnswer.split('.')[0].trim() : '';
-    const patientDob = handoffHistoryValue(current, 'dob');
+    const preferredName = patientNameAnswer ? 'Janet (fictional)' : '';
+    const birthYear = handoffHistoryValue(current, 'dob') ? '1962 (fictional)' : '';
     const patientAgeAnswer = handoffHistoryValue(current, 'age');
-    const patientAge = (patientAgeAnswer.match(/\b\d{1,3}\b/) || [])[0] || '';
-    const documentedPatient = patientName || (patientAge ? `${patientAge}-year-old adult` : 'Adult patient');
+    const approximateAge = patientAgeAnswer ? 'mid-60s' : '';
+    const documentedPatient = preferredName || (approximateAge ? `${approximateAge} adult` : 'Adult training patient');
     const mechanism = handoffHistoryValue(current, 'events') || recordedFindingValue(current, 'bls_handoff');
     const chief = handoffHistoryValue(current, 'chief_complaint') || handoffHistoryValue(current, 'symptoms') || recordedFindingValue(current, 'pain') || recordedFindingValue(current, 'left_leg');
     const pain = handoffHistoryValue(current, 'severity') || recordedFindingDetails(current, 'pain');
@@ -2823,9 +2823,9 @@
     return {
       patient:documentedPatient,
       reasonRows:[
-        {label:'Name',value:patientName},
-        {label:'DOB',value:patientDob},
-        {label:'Age',value:patientAge},
+        {label:'Preferred name',value:preferredName},
+        {label:'Birth year',value:birthYear},
+        {label:'Approx. age',value:approximateAge},
         {label:'Reason / complaint',value:chief},
         {label:'Mechanism',value:mechanism}
       ],

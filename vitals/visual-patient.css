@@ -1945,24 +1945,12 @@ body.horse-grade-open .hospital-handoff-workspace{display:none!important}
 .vp-timer.patient-clock-alert #timer{color:#ff9d9d}
 .patient-clock-status.clock-watch{color:#ffd58c}
 .patient-clock-status.clock-alert{color:#ffb0b0}
-.horse-reassessment-cue{border:1px solid #4e7892;border-left:4px solid #8ccfff;border-radius:12px;background:#10283a;padding:10px 12px}
-.horse-reassessment-cue.csm-priority{border-color:#f0b768;border-left-color:#ffc66d;background:#2b2419}
-.horse-reassessment-cue-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.horse-reassessment-cue-head small{display:block;color:#8ccfff;font-size:.61rem;font-weight:900;letter-spacing:.07em}
-.horse-reassessment-cue.csm-priority .horse-reassessment-cue-head small{color:#ffd28b}
-.horse-reassessment-cue-head strong{display:block;color:#fff;font-size:.86rem;margin-top:2px}
-.horse-reassessment-cue-head>span{display:grid;place-items:center;min-width:28px;height:28px;border-radius:99px;background:#173f5a;color:#fff;font-weight:900;font-size:.72rem}
-.horse-reassessment-cue>p{margin:6px 0 8px;color:#cbdbe5;font-size:.74rem;line-height:1.35}
-.horse-reassessment-cue-actions{display:flex;gap:7px;flex-wrap:wrap}
-.horse-reassessment-cue-actions button{border:1px solid #477089;border-radius:9px;background:#173f5a;color:#fff;padding:7px 10px;font-size:.71rem;font-weight:850;cursor:pointer}
-.horse-reassessment-cue-actions button.csm-critical{background:#5c3b12;border-color:#d69a44;color:#fff4df}
 .info-update-window.voice-patient.is-speaking{box-shadow:inset 0 0 0 2px rgba(155,214,255,.28)}
 .info-update-window.voice-narrator.is-speaking{box-shadow:inset 0 0 0 2px rgba(224,205,255,.24)}
 .info-update-window.voice-patient #infoUpdateVoiceToggle .info-voice-label:after{content:" · Patient";font-size:.58rem;opacity:.75}
 .info-update-window.voice-narrator #infoUpdateVoiceToggle .info-voice-label:after{content:" · Narrator";font-size:.58rem;opacity:.75}
-@media(max-width:979px){.patient-clock-status{max-width:none}.horse-reassessment-cue{margin-bottom:8px}}
 
-/* HORSE DESKTOP HISTORY 2.224 — persistent history group + all questions visible on right. */
+/* HORSE DE-ID 2.225 — persistent desktop history, compact workspace, fictional demographics. */
 @media(min-width:980px){
   body.horse-current-emt-call.desktop-scenario-layout #historyCategoryList{
     gap:6px!important
@@ -2022,3 +2010,6 @@ body.horse-grade-open .hospital-handoff-workspace{display:none!important}
     margin-top:6px!important;color:#aebac7!important;font-size:.58rem!important
   }
 }
+
+/* Training privacy note */
+.training-deid-note{margin:6px 0 10px;padding:7px 9px;border:1px solid #36576d;border-radius:9px;background:#10283a;color:#bcd0dd;font-size:.68rem;line-height:1.35}

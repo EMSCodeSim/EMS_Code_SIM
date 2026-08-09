@@ -19,7 +19,7 @@
         <h1 id="caseTitle">Visual Patient</h1>
         <p id="scene"></p>
       </div>
-      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small id="patientClockStatus" class="patient-clock-status">Patient clock • severe pain</small><small class="scenario-build-stamp-dark">HORSE HISTORY MENU 2.224</small></div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small id="patientClockStatus" class="patient-clock-status">Patient clock • severe pain</small><small class="scenario-build-stamp-dark">HORSE DE-ID 2.225</small></div>
     </header>
 
     <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
@@ -128,15 +128,6 @@
             <small>FOLLOW-UP QUESTION</small>
             <strong>No follow-up question is active.</strong>
           </div>
-        </section>
-
-        <section id="horseReassessmentCue" class="horse-reassessment-cue" aria-live="polite" hidden>
-          <div class="horse-reassessment-cue-head">
-            <div><small>REASSESSMENT DUE</small><strong id="horseReassessmentCueTitle">Check the patient after treatment</strong></div>
-            <span id="horseReassessmentCueCount">0</span>
-          </div>
-          <p id="horseReassessmentCueText">Repeat the findings most likely to change after the intervention.</p>
-          <div id="horseReassessmentCueActions" class="horse-reassessment-cue-actions"></div>
         </section>
 
         <section id="horseCurrentAssessment" class="horse-current-assessment" aria-label="Current assessment workspace">
@@ -258,6 +249,7 @@
       </details>
       <section class="known-history-section" aria-labelledby="knownHistoryTitle">
         <div class="known-history-head"><div><p>KNOWN PATIENT INFORMATION</p><h3 id="knownHistoryTitle">History gathered so far</h3></div><span id="knownHistoryCount">0 items</span></div>
+        <p class="training-deid-note">Training scenario: demographic details are fictional and intentionally de-identified. Do not enter real patient identifiers.</p>
         <div id="knownHistoryList" class="known-history-list"><p class="empty">No history has been obtained.</p></div>
       </section>
       <div class="history-guided-tools">
