@@ -1827,3 +1827,62 @@ body.horse-current-emt-call.desktop-scenario-layout .sheet-header{position:stati
 body.horse-current-emt-call.desktop-scenario-layout #vitalTools,body.horse-current-emt-call.desktop-scenario-layout #assessmentTools{grid-template-columns:repeat(2,minmax(0,1fr))!important}body.horse-current-emt-call.desktop-scenario-layout #historyCategoryList,body.horse-current-emt-call.desktop-scenario-layout #treatmentTools{gap:6px!important}
 }
 .info-update-window.new-info-pulse{animation:horseNewInfoPulse .48s ease-in-out 0s 3 alternate}.info-update-window.new-info-pulse .info-update-head{animation:horseNewInfoHead .48s ease-in-out 0s 3 alternate}
+
+
+/* Responsive mobile patient / controls workspace 2.230 */
+.mobile-workspace-toggle{display:none}
+@media(max-width:979px){
+  body{--mobile-workspace-bottom:calc(14px + env(safe-area-inset-bottom))}
+  .vp-shell{padding-bottom:92px}
+  .mobile-workspace-toggle{display:flex;position:fixed;z-index:34;left:50%;bottom:var(--mobile-workspace-bottom);transform:translateX(-50%);width:min(430px,calc(100% - 20px));min-height:58px;align-items:center;justify-content:center;gap:10px;border:1px solid #4c88ad;border-radius:17px;background:rgba(15,48,70,.98);color:#fff;padding:8px 14px;box-shadow:0 12px 30px rgba(0,0,0,.36);backdrop-filter:blur(12px);cursor:pointer}
+  .mobile-workspace-toggle-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#dff3ff;color:#0c3853;font-size:1.05rem;font-weight:950}
+  .mobile-workspace-toggle-copy{display:grid;text-align:left;line-height:1.08}
+  .mobile-workspace-toggle-copy small{color:#a9cddd;font-size:.57rem;letter-spacing:.08em;font-weight:900}
+  .mobile-workspace-toggle-copy strong{font-size:.86rem}
+  body.mobile-controls-view .mobile-workspace-toggle{top:calc(8px + env(safe-area-inset-top));bottom:auto;width:auto;left:10px;transform:none;min-height:42px;padding:5px 10px;border-radius:12px;z-index:52;background:#173f5a}
+  body.mobile-controls-view .mobile-workspace-toggle-icon{width:28px;height:28px;font-size:.85rem;background:#eef8fd}
+  body.mobile-controls-view .mobile-workspace-toggle-copy small{display:none}
+  body.mobile-controls-view .mobile-workspace-toggle-copy strong{font-size:.72rem}
+
+  /* Patient mode: patient and live update are the interface. */
+  body:not(.mobile-controls-view) .bottom-nav{display:none!important}
+  body:not(.mobile-controls-view) .action-sheet,body:not(.mobile-controls-view) .sheet-backdrop{display:none!important}
+  body:not(.mobile-controls-view) .persistent-clinical-bar{bottom:82px}
+  body:not(.mobile-controls-view) .scenario-quick-controls #endScenarioQuick,
+  body:not(.mobile-controls-view) .scenario-quick-controls #resetScenarioQuick{display:none}
+
+  /* Controls mode: replace the photo with one full-height clinical workspace. */
+  body.mobile-controls-view{overflow:hidden!important}
+  body.mobile-controls-view .vp-shell{padding:0;max-width:none;min-height:100dvh}
+  body.mobile-controls-view .vp-top,
+  body.mobile-controls-view .scenario-quick-controls,
+  body.mobile-controls-view .patient-desktop-workspace,
+  body.mobile-controls-view .persistent-clinical-bar{display:none!important}
+  body.mobile-controls-view .mobile-workspace-toggle{display:flex!important}
+  body.mobile-controls-view .sheet-backdrop{display:none!important}
+  body.mobile-controls-view .action-sheet{display:grid!important;grid-template-rows:auto auto minmax(0,1fr);position:fixed;inset:0 0 calc(70px + env(safe-area-inset-bottom)) 0;z-index:45;width:100%;height:auto;max-height:none;transform:none;overflow:hidden;border:0;border-radius:0;padding:calc(58px + env(safe-area-inset-top)) 8px 8px;background:#081a28;box-shadow:none}
+  body.mobile-controls-view .sheet-handle{display:none}
+  body.mobile-controls-view .sheet-header{position:static;top:auto;padding:4px 6px 7px;border-bottom:1px solid #294d64;background:#081a28}
+  body.mobile-controls-view .sheet-header>div{padding-left:4px}
+  body.mobile-controls-view .sheet-header .return-patient-btn{display:none}
+  body.mobile-controls-view .sheet-patient-context{margin:0 0 7px;padding:7px;grid-template-columns:1fr 1.4fr;gap:5px;border-radius:10px}
+  body.mobile-controls-view .sheet-patient-context>span:nth-child(3){display:none}
+  body.mobile-controls-view .vp-panel{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:7px 4px calc(14px + env(safe-area-inset-bottom));scrollbar-gutter:stable}
+  body.mobile-controls-view .vp-panel .sub{margin-bottom:8px;font-size:.72rem;line-height:1.35}
+  body.mobile-controls-view .bottom-nav{display:grid!important;z-index:50;left:0;right:0;bottom:0;transform:none;width:100%;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;padding:5px 5px calc(5px + env(safe-area-inset-bottom));border-top:1px solid #31566d;background:rgba(5,18,29,.99)}
+  body.mobile-controls-view .bottom-nav button{min-width:0;min-height:58px;padding:5px 1px;border-radius:10px;font-size:.58rem}
+  body.mobile-controls-view .bottom-nav button>span{font-size:1.05rem;margin-bottom:1px}
+  body.mobile-controls-view .bottom-nav em{right:2px;top:2px;width:17px;height:17px;font-size:.58rem}
+  body.mobile-controls-view .clinical-next-actions{bottom:76px}
+}
+@media(max-width:390px){
+  body.mobile-controls-view .sheet-patient-context{grid-template-columns:1fr}
+  body.mobile-controls-view .sheet-patient-context>span:nth-child(2){border-top:1px solid #294d64;padding-top:5px}
+}
+@media(max-width:979px){
+  body.horse-current-emt-call:not(.mobile-controls-view) #horseCurrentAssessment,
+  body.horse-current-emt-call:not(.mobile-controls-view) .patient-entry-workflow{display:none!important}
+  body.horse-current-emt-call:not(.mobile-controls-view) .patient-control-column{gap:7px}
+  body.horse-current-emt-call:not(.mobile-controls-view) #horseClinicalQuestionBox[hidden]{display:none!important}
+  body.horse-current-emt-call:not(.mobile-controls-view) #horseClinicalQuestionBox:not([hidden]){margin:0}
+}

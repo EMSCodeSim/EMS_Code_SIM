@@ -2889,8 +2889,35 @@
   let desktopWorkspaceReady = false;
   let mobileNavAnchor = null;
   let mobileSheetAnchor = null;
+  let mobileActivePanel = 'assessmentPanel';
 
-  function openSheet(panelId) {
+  function setMobileWorkspaceView(view = 'patient', panelId = mobileActivePanel) {
+    if (desktopWorkspace()) return;
+    const controls = view === 'controls';
+    const toggle = $('mobileWorkspaceToggle');
+    const label = $('mobileWorkspaceToggleLabel');
+    const eyebrow = $('mobileWorkspaceToggleEyebrow');
+    document.body.classList.toggle('mobile-controls-view', controls);
+    document.body.classList.toggle('mobile-patient-view', !controls);
+    toggle?.setAttribute('aria-pressed', String(controls));
+    if (label) label.textContent = controls ? 'Patient View' : 'Clinical Controls';
+    if (eyebrow) eyebrow.textContent = controls ? 'CLINICAL CONTROLS' : 'PATIENT VIEW';
+    const icon = toggle?.querySelector('.mobile-workspace-toggle-icon');
+    if (icon) icon.textContent = controls ? '▣' : '▦';
+    if (controls) {
+      mobileActivePanel = panelId || mobileActivePanel || 'assessmentPanel';
+      openSheet(mobileActivePanel, { mobileWorkspace:true });
+      document.body.style.overflow = 'hidden';
+    } else {
+      $('actionSheet').hidden = true;
+      $('sheetBackdrop').hidden = true;
+      document.body.style.overflow = '';
+      document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
+      window.scrollTo({ top:0, behavior:'smooth' });
+    }
+  }
+
+  function openSheet(panelId, options = {}) {
     evaluatePatientCondition(panelId === 'treatmentPanel' ? 'treatment-review' : 'patient-tool-open');
     refreshFromRecord();
     document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
@@ -2902,7 +2929,14 @@
       document.body.style.overflow = '';
       if (id === 'horse_crush') document.body.classList.add('horse-tool-sheet-open');
     } else {
-      $('sheetBackdrop').hidden = false;
+      mobileActivePanel = panelId || mobileActivePanel;
+      if (options.mobileWorkspace || document.body.classList.contains('mobile-controls-view')) {
+        document.body.classList.add('mobile-controls-view');
+        document.body.classList.remove('mobile-patient-view');
+        $('sheetBackdrop').hidden = true;
+      } else {
+        $('sheetBackdrop').hidden = false;
+      }
       document.body.style.overflow = 'hidden';
     }
     if (panelId === 'findingsPanel') renderFindings();
@@ -2955,6 +2989,14 @@
     $('sheetBackdrop').hidden = true;
     document.body.style.overflow = '';
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
+    document.body.classList.remove('mobile-controls-view');
+    document.body.classList.add('mobile-patient-view');
+    const mobileLabel = $('mobileWorkspaceToggleLabel');
+    const mobileEyebrow = $('mobileWorkspaceToggleEyebrow');
+    const mobileToggle = $('mobileWorkspaceToggle');
+    if (mobileLabel) mobileLabel.textContent = 'Clinical Controls';
+    if (mobileEyebrow) mobileEyebrow.textContent = 'PATIENT VIEW';
+    mobileToggle?.setAttribute('aria-pressed', 'false');
   }
 
   function configureDesktopWorkspace() {
@@ -3008,6 +3050,8 @@
       document.body.classList.remove('horse-tool-sheet-open');
       document.body.style.overflow = '';
       document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
+      document.body.classList.remove('mobile-controls-view');
+      document.body.classList.add('mobile-patient-view');
       desktopWorkspaceReady = false;
     }
   }
@@ -3206,6 +3250,7 @@
   $('guidedOpqrstLink').href = toolUrl('/vitals/pain-opqrst.html', 'Patient', 'pain');
   refreshFromRecord();
   window.EMSCodeSimHorseCrush?.init?.();
+  if (!desktopWorkspace()) setMobileWorkspaceView('patient');
 
   document.querySelectorAll('[data-log-filter]').forEach(button => button.addEventListener('click', () => {
     findingFilter = button.dataset.logFilter || 'all';
@@ -3242,8 +3287,18 @@
   document.querySelectorAll('.bottom-nav button').forEach(button => button.addEventListener('click', () => {
     hideClinicalNextActions();
     if (id === 'horse_crush' && desktopWorkspace() && button.dataset.panel === 'assessmentPanel') { closeSheet(); return; }
+    if (!desktopWorkspace()) {
+      mobileActivePanel = button.dataset.panel || mobileActivePanel;
+      setMobileWorkspaceView('controls', mobileActivePanel);
+      return;
+    }
     openSheet(button.dataset.panel);
   }));
+  $('mobileWorkspaceToggle')?.addEventListener('click', () => {
+    if (desktopWorkspace()) return;
+    const controlsOpen = document.body.classList.contains('mobile-controls-view');
+    setMobileWorkspaceView(controlsOpen ? 'patient' : 'controls', mobileActivePanel);
+  });
   $('clinicalNextTreatment')?.addEventListener('click', () => {
     treatmentCategoryFocus = nextTreatmentCategoryForFinding(nextActionFinding?.key || '');
     hideClinicalNextActions();

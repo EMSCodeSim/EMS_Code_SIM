@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2221">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2230">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2200">
   <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2212">
 </head>
@@ -19,10 +19,14 @@
         <h1 id="caseTitle">Visual Patient</h1>
         <p id="scene"></p>
       </div>
-      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">DESKTOP WORKSTATION 2.221</small></div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">RESPONSIVE WORKSTATION 2.230</small></div>
     </header>
 
     <div class="scenario-quick-controls" aria-label="Scenario quick controls">
+      <button id="mobileWorkspaceToggle" class="mobile-workspace-toggle" type="button" aria-pressed="false" aria-controls="actionSheet">
+        <span class="mobile-workspace-toggle-icon" aria-hidden="true">▦</span>
+        <span class="mobile-workspace-toggle-copy"><small id="mobileWorkspaceToggleEyebrow">PATIENT VIEW</small><strong id="mobileWorkspaceToggleLabel">Clinical Controls</strong></span>
+      </button>
       <button id="endScenarioQuick" class="scenario-quick-end" type="button">End scenario</button>
       <button id="resetScenarioQuick" class="scenario-quick-reset" type="button">Reset scenario</button>
       <button id="transportScenarioQuick" class="scenario-desktop-quick scenario-quick-transport" type="button">Transport</button>
