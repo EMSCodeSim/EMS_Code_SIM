@@ -1961,3 +1961,64 @@ body.horse-grade-open .hospital-handoff-workspace{display:none!important}
 .info-update-window.voice-patient #infoUpdateVoiceToggle .info-voice-label:after{content:" · Patient";font-size:.58rem;opacity:.75}
 .info-update-window.voice-narrator #infoUpdateVoiceToggle .info-voice-label:after{content:" · Narrator";font-size:.58rem;opacity:.75}
 @media(max-width:979px){.patient-clock-status{max-width:none}.horse-reassessment-cue{margin-bottom:8px}}
+
+/* HORSE DESKTOP HISTORY 2.224 — persistent history group + all questions visible on right. */
+@media(min-width:980px){
+  body.horse-current-emt-call.desktop-scenario-layout #historyCategoryList{
+    gap:6px!important
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-group>summary{
+    display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;
+    min-height:54px;padding:8px 10px;cursor:pointer
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-group>summary>span:nth-child(2){
+    display:grid;gap:2px;min-width:0
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-group>summary em{
+    color:#bda6df;font-size:.62rem;font-style:normal;font-weight:900
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-group-preview{
+    display:block!important;padding:0 10px 8px!important
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-group:not(.selected) .horse-history-group-preview{
+    display:none!important
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-group-preview>small{
+    display:block!important;padding:6px 8px!important;border:1px solid rgba(189,166,223,.2);border-radius:8px;
+    background:#111c2d;color:#b8c7d1!important;font-size:.61rem!important;line-height:1.3!important
+  }
+
+  body.horse-current-emt-call.desktop-scenario-layout #horseClinicalQuestionBox.history-active{
+    max-height:258px!important;overflow:hidden!important;border-color:#7455a7;background:#171c31
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-head{
+    margin-bottom:6px!important
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-grid{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-button{
+    display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:7px;
+    min-height:44px;border:1px solid #4a5472;border-radius:9px;background:#0d1628;color:#eef5ff;
+    padding:7px 8px;text-align:left;cursor:pointer
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-button:hover{
+    border-color:#a486d2;background:#151e34
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-button>span{
+    display:grid;place-items:center;min-width:27px;height:22px;border-radius:6px;background:#493267;color:#eadcff;
+    padding:0 5px;font-size:.55rem;font-weight:950;text-transform:uppercase
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-button>strong{
+    align-self:center;font-size:.66rem;line-height:1.22;font-weight:800
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-button.asked{
+    border-color:#2f8d6b;background:#0d2c26
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-button.asked>span{
+    background:#17644e;color:#e2fff5
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-hint{
+    margin-top:6px!important;color:#aebac7!important;font-size:.58rem!important
+  }
+}

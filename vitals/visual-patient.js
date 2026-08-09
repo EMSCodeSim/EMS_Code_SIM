@@ -1196,11 +1196,27 @@
 
   const HORSE_HISTORY_GROUPS = [
     {
+      id:'patient_info',
+      label:'Patient Information',
+      icon:'ID',
+      description:'Basic identifying and contact information for the patient record.',
+      instruction:'Ask the patient for identifying information. Every available Patient Information question is now open in the question panel.',
+      questionIds:['name','dob','age','address','emergency_contact']
+    },
+    {
+      id:'current_problem',
+      label:'Current Problem',
+      icon:'CC',
+      description:'Chief complaint, associated symptoms, other injuries, and neurologic symptoms.',
+      instruction:'Clarify what is bothering the patient now and look for symptoms that could change your priorities.',
+      questionIds:['chief_complaint','symptoms','other_injuries','numbness_tingling','nausea_dizziness']
+    },
+    {
       id:'sample',
       label:'SAMPLE',
       icon:'S',
       description:'Symptoms, allergies, medications, medical history, last intake, and events.',
-      instruction:'Select a SAMPLE question below. The patient answer will replace this message in the Patient Update window.',
+      instruction:'Work through SAMPLE. You can ask every question in this section without reopening the menu.',
       questionIds:['symptoms','allergies','medications','medical_history','last_intake','events']
     },
     {
@@ -1212,20 +1228,20 @@
       questionIds:['onset','provocation','quality','radiation','severity','time']
     },
     {
-      id:'pain',
-      label:'Pain',
-      icon:'P',
-      description:'Focused questions about location, severity, movement, and radiation.',
-      instruction:'Ask focused pain questions. Pay attention to what changes the pain before deciding how to move the patient.',
-      questionIds:['chief_complaint','severity','quality','provocation','radiation','time']
+      id:'mechanism',
+      label:'Mechanism / Trauma',
+      icon:'M',
+      description:'Exactly what happened, head impact, crush details, and movement after the injury.',
+      instruction:'Clarify the trauma mechanism before deciding how to package and move the patient.',
+      questionIds:['events','loss_consciousness','stepped_on','moved_since_injury','position']
     },
     {
-      id:'mechanism',
-      label:'Event / mechanism',
-      icon:'M',
-      description:'Clarify the horse-related mechanism, head strike, loss of consciousness, and movement since the event.',
-      instruction:'Clarify exactly what happened and whether the patient was struck, crushed, stepped on, or moved after the injury.',
-      questionIds:['events','loss_consciousness','position']
+      id:'risk_function',
+      label:'Risk / Baseline Function',
+      icon:'R',
+      description:'Blood thinners, prior hip or leg problems, baseline mobility, and distal symptoms.',
+      instruction:'Identify factors that could increase bleeding risk, change movement decisions, or affect interpretation of the leg exam.',
+      questionIds:['anticoagulants','prior_hip_leg','baseline_mobility','numbness_tingling','medical_history']
     }
   ];
 
@@ -1244,8 +1260,8 @@
       questionBox.classList.remove('active','history-active','treatment-active');
       questionBox.innerHTML = `
         <div class="horse-question-placeholder">
-          <small>HISTORY QUESTION</small>
-          <strong>Select a history group below: SAMPLE, OPQRST, Pain, or Event / mechanism.</strong>
+          <small>HISTORY QUESTIONS</small>
+          <strong>Select a history group on the left. All available questions for that group will stay open here.</strong>
         </div>`;
       return;
     }
@@ -1253,33 +1269,30 @@
     const current = record() || {};
     const asked = new Set(askedInterviewQuestions(current).map(question => question.id));
     const questions = horseHistoryGroupQuestions(group);
+    const askedCount = questions.filter(question => asked.has(question.id)).length;
+    questionBox.classList.remove('treatment-active');
     questionBox.classList.add('active','history-active');
     questionBox.innerHTML = `
       <div class="horse-question-head horse-history-question-head">
-        <div><small>HISTORY QUESTION</small><strong>${escapeHtml(group.label)}</strong></div>
-        <span>${questions.filter(question => asked.has(question.id)).length}/${questions.length} asked</span>
+        <div><small>ASK THE PATIENT</small><strong>${escapeHtml(group.label)}</strong></div>
+        <span>${askedCount}/${questions.length} asked</span>
       </div>
-      <div class="horse-history-question-row">
-        <label>
-          <span>Question to ask</span>
-          <select id="horseHistoryQuestionSelect" aria-label="${escapeHtml(group.label)} history question">
-            <option value="">Choose a question</option>
-            ${questions.map(question => `<option value="${escapeHtml(question.id)}">${asked.has(question.id) ? '✓ ' : ''}${escapeHtml(question.prompt || question.label)}</option>`).join('')}
-          </select>
-        </label>
-        <button type="button" class="horse-history-ask" disabled>Ask</button>
+      <div class="horse-history-question-grid" role="group" aria-label="${escapeHtml(group.label)} questions">
+        ${questions.map(question => `
+          <button type="button" class="horse-history-question-button${asked.has(question.id) ? ' asked' : ''}" data-history-question="${escapeHtml(question.id)}">
+            <span>${asked.has(question.id) ? '✓' : 'Ask'}</span>
+            <strong>${escapeHtml(question.prompt || question.label)}</strong>
+          </button>`).join('')}
       </div>
-      <small class="horse-history-question-hint">The patient’s answer will appear in the Patient Update window above.</small>`;
-    const select = questionBox.querySelector('#horseHistoryQuestionSelect');
-    const ask = questionBox.querySelector('.horse-history-ask');
-    const sync = () => { if (ask) ask.disabled = !select?.value; };
-    select?.addEventListener('change', sync);
-    ask?.addEventListener('click', () => {
-      const question = questions.find(item => item.id === select?.value);
-      if (!question) return;
-      askInterviewQuestion(question);
+      <small class="horse-history-question-hint">Click any question to ask it. This question set stays open until you select another history group.</small>`;
+
+    questionBox.querySelectorAll('[data-history-question]').forEach(button => {
+      button.addEventListener('click', () => {
+        const question = questions.find(item => item.id === button.dataset.historyQuestion);
+        if (!question) return;
+        askInterviewQuestion(question);
+      });
     });
-    sync();
   }
 
   function selectHorseHistoryGroup(groupId, options = {}) {
@@ -1305,7 +1318,11 @@
     document.querySelectorAll('#historyCategoryList .horse-history-group').forEach(details => {
       const selected = details.dataset.historyGroup === group.id;
       details.classList.toggle('selected', selected);
-      if (selected && !details.open) details.open = true;
+      details.open = selected;
+      const note = details.querySelector('.horse-history-group-preview small');
+      if (note) note.textContent = selected
+        ? 'Questions are open in the right-side Patient Question panel. Ask as many as you need; this section remains selected.'
+        : 'Select this section to load all of its questions into the right-side Patient Question panel.';
     });
   }
 
@@ -1314,8 +1331,11 @@
     if (!host) return;
     const current = record() || {};
     const asked = new Set(askedInterviewQuestions(current).map(question => question.id));
+    if (!HORSE_HISTORY_GROUPS.some(group => group.id === horseHistoryActiveGroup)) {
+      horseHistoryActiveGroup = 'patient_info';
+    }
     $('historyResponderLabel').textContent = String(interview.responder || 'Patient').toUpperCase();
-    $('historyCommunicationStatus').textContent = 'Choose a history group, then ask one question at a time.';
+    $('historyCommunicationStatus').textContent = 'Choose a history group. Every question in that group stays available on the right until you choose another group.';
     $('historyAskedCount').textContent = `${asked.size} asked`;
     host.innerHTML = '';
 
@@ -1333,30 +1353,27 @@
           <em>${complete}/${questions.length}</em>
         </summary>
         <div class="horse-history-group-preview">
-          ${questions.map(question => `<span class="${asked.has(question.id) ? 'asked' : ''}">${asked.has(question.id) ? '✓' : '○'} ${escapeHtml(question.label)}</span>`).join('')}
-          <small>Selecting this group loads these questions into the fixed question dropdown above.</small>
+          <small>${horseHistoryActiveGroup === group.id ? 'Questions are open in the right-side Patient Question panel. Ask as many as you need; this section remains selected.' : 'Select this section to load all of its questions into the right-side Patient Question panel.'}</small>
         </div>`;
       const summary = details.querySelector('summary');
       summary?.addEventListener('click', event => {
         event.preventDefault();
-        const willOpen = !details.open;
-        document.querySelectorAll('#historyCategoryList .horse-history-group').forEach(other => {
-          if (other !== details) other.open = false;
-        });
-        details.open = willOpen;
-        if (willOpen) {
-          selectHorseHistoryGroup(group.id);
-        } else if (horseHistoryActiveGroup === group.id) {
-          horseHistoryActiveGroup = '';
-          details.classList.remove('selected');
-          renderHorseHistoryQuestionBox();
+        if (horseHistoryActiveGroup === group.id) {
+          details.open = true;
+          return;
         }
+        selectHorseHistoryGroup(group.id);
       });
       host.appendChild(details);
     });
 
+    document.querySelectorAll('#historyCategoryList .horse-history-group').forEach(details => {
+      const selected = details.dataset.historyGroup === horseHistoryActiveGroup;
+      details.classList.toggle('selected', selected);
+      details.open = selected;
+    });
     renderKnownHistory();
-    renderHorseHistoryQuestionBox();
+    renderHorseHistoryQuestionBox(horseHistoryActiveGroup);
   }
 
   function buildHistory() {
@@ -2746,7 +2763,12 @@
   }
 
   function horseHandoffNoteModel(current = record() || {}) {
-    const catalogPatient = window.EMSCodeSimScenarioDefinitions?.CATALOG?.[id]?.patient || current.patient || 'Adult patient';
+    const patientNameAnswer = handoffHistoryValue(current, 'name');
+    const patientName = patientNameAnswer ? patientNameAnswer.split('.')[0].trim() : '';
+    const patientDob = handoffHistoryValue(current, 'dob');
+    const patientAgeAnswer = handoffHistoryValue(current, 'age');
+    const patientAge = (patientAgeAnswer.match(/\b\d{1,3}\b/) || [])[0] || '';
+    const documentedPatient = patientName || (patientAge ? `${patientAge}-year-old adult` : 'Adult patient');
     const mechanism = handoffHistoryValue(current, 'events') || recordedFindingValue(current, 'bls_handoff');
     const chief = handoffHistoryValue(current, 'chief_complaint') || handoffHistoryValue(current, 'symptoms') || recordedFindingValue(current, 'pain') || recordedFindingValue(current, 'left_leg');
     const pain = handoffHistoryValue(current, 'severity') || recordedFindingDetails(current, 'pain');
@@ -2799,8 +2821,14 @@
       { label:'Notification', value:current.documentation?.transportNotification || '' }
     ];
     return {
-      patient:catalogPatient,
-      reasonRows:[{label:'Patient',value:catalogPatient},{label:'Reason / complaint',value:chief},{label:'Mechanism',value:mechanism}],
+      patient:documentedPatient,
+      reasonRows:[
+        {label:'Name',value:patientName},
+        {label:'DOB',value:patientDob},
+        {label:'Age',value:patientAge},
+        {label:'Reason / complaint',value:chief},
+        {label:'Mechanism',value:mechanism}
+      ],
       abc, focused, vitals, historyRows, treatmentRows, reassessmentRows, transportRows
     };
   }
@@ -3373,18 +3401,15 @@
     if (panelId === 'historyPanel') {
       if (id === 'horse_crush' && desktopWorkspace()) {
         horseTreatmentActiveGroup = '';
-        horseHistoryActiveGroup = '';
-        renderHorseHistoryQuestionBox();
+        if (!horseHistoryActiveGroup) horseHistoryActiveGroup = 'patient_info';
       }
       buildHistory();
     } else if (panelId === 'treatmentPanel' && id === 'horse_crush' && desktopWorkspace()) {
-      horseHistoryActiveGroup = '';
       horseTreatmentActiveGroup = '';
       buildTreatments();
       renderHorseTreatmentSelectionBox();
       showHorsePainReminderIfNeeded();
     } else if (id === 'horse_crush' && desktopWorkspace()) {
-      horseHistoryActiveGroup = '';
       horseTreatmentActiveGroup = '';
       horseWorkspaceContext?.resetQuestionBox?.();
     }
