@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2220">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2221">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2200">
   <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2212">
 </head>
@@ -19,12 +19,15 @@
         <h1 id="caseTitle">Visual Patient</h1>
         <p id="scene"></p>
       </div>
-      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">HORSE HANDOFF 2.220</small></div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">DESKTOP WORKSTATION 2.221</small></div>
     </header>
 
-    <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
+    <div class="scenario-quick-controls" aria-label="Scenario quick controls">
       <button id="endScenarioQuick" class="scenario-quick-end" type="button">End scenario</button>
       <button id="resetScenarioQuick" class="scenario-quick-reset" type="button">Reset scenario</button>
+      <button id="transportScenarioQuick" class="scenario-desktop-quick scenario-quick-transport" type="button">Transport</button>
+      <button id="handoffScenarioQuick" class="scenario-desktop-quick scenario-quick-handoff" type="button">Handoff</button>
+      <button id="progressHelpScenarioQuick" class="scenario-desktop-quick scenario-quick-progress" type="button">Progress / Help</button>
     </div>
 
     <div class="patient-desktop-workspace">
@@ -81,7 +84,7 @@
             <button id="infoUpdateNext" type="button" aria-label="Next information update">›</button>
           </div>
         </aside>
-        <section id="horseClinicalQuestionBox" class="horse-clinical-question-box" aria-live="polite" aria-label="Current clinical follow-up question">
+        <section id="horseClinicalQuestionBox" class="horse-clinical-question-box" hidden aria-live="polite" aria-label="Current clinical follow-up question">
           <div class="horse-question-placeholder">
             <small>FOLLOW-UP QUESTION</small>
             <strong>No follow-up question is active.</strong>
@@ -288,12 +291,13 @@
   <section id="scenarioControlDialog" class="scenario-control-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="scenarioControlTitle">
     <div class="scenario-control-handle" aria-hidden="true"></div>
     <div class="scenario-control-head">
-      <div><p>SCENARIO CONTROLS</p><h2 id="scenarioControlTitle">Progress and scenario options</h2></div>
+      <div><p>SCENARIO CONTROLS</p><h2 id="scenarioControlTitle">Progress / Help</h2></div>
       <button id="closeScenarioControls" type="button" aria-label="Close scenario controls">×</button>
     </div>
     <details id="scenarioProgress" class="scenario-progress scenario-progress-menu" open>
       <summary><span><b>Scenario progress</b><small id="scenarioProgressSummary">Review clinical phases</small></span><i aria-hidden="true">⌄</i></summary>
       <div id="scenarioPhaseList" class="scenario-phase-list"></div>
+      <div id="scenarioHelpMessage" class="scenario-help-message" aria-live="polite"></div>
       <div id="scenarioCompletionMessage" class="scenario-completion-message" hidden></div>
       <div class="scenario-progress-actions"><a id="handoffFromProgress" href="/vitals/pcr-handoff.html">PCR and handoff</a><button id="completeScenarioFromPatient" type="button">Check completion</button></div>
     </details>
@@ -316,7 +320,7 @@
   <script src="/vitals/scenario-phase-model.js?v=2200"></script>
   <script src="/vitals/horse-crush-bootstrap.js?v=2219"></script>
   <script src="/vitals/horse-crush-scenario.js?v=2219"></script>
-  <script src="/vitals/visual-patient.js?v=2220"></script>
+  <script src="/vitals/visual-patient.js?v=2221"></script>
   <script src="/vitals/scenario-guided-start.js?v=2202"></script>
 </body>
 </html>

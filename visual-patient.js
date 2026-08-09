@@ -695,6 +695,7 @@
     function resetQuestionBox() {
       if (!questionBox) return;
       questionBox.classList.remove('active','history-active','treatment-active');
+      questionBox.hidden = true;
       const activeLabel = horseCurrentAssessment === 'abc' ? 'Select Airway, Breathing, or Circulation.' : 'Perform an exam segment. Any follow-up question will appear here.';
       questionBox.innerHTML = `
         <div class="horse-question-placeholder">
@@ -704,6 +705,7 @@
     }
     function openFollowup(key) {
       if (!questionBox) return;
+      questionBox.hidden = false;
       const current = api?.getFinding?.(key, record());
       questionBox.classList.add('active');
       questionBox.innerHTML = `
@@ -1167,6 +1169,7 @@
     const group = HORSE_HISTORY_GROUPS.find(item => item.id === groupId);
     if (!group) {
       questionBox.classList.remove('active','history-active','treatment-active');
+      questionBox.hidden = true;
       questionBox.innerHTML = `
         <div class="horse-question-placeholder">
           <small>HISTORY QUESTION</small>
@@ -1178,6 +1181,7 @@
     const current = record() || {};
     const asked = new Set(askedInterviewQuestions(current).map(question => question.id));
     const questions = horseHistoryGroupQuestions(group);
+    questionBox.hidden = false;
     questionBox.classList.add('active','history-active');
     questionBox.innerHTML = `
       <div class="horse-question-head horse-history-question-head">
@@ -1849,6 +1853,7 @@
     const group = HORSE_TREATMENT_GROUPS.find(item => item.id === groupId);
     if (!group) {
       questionBox.classList.remove('active','history-active','treatment-active');
+      questionBox.hidden = true;
       questionBox.innerHTML = `
         <div class="horse-question-placeholder">
           <small>TREATMENT SELECTION</small>
@@ -1859,6 +1864,7 @@
 
     const plans = horseTreatmentGroupPlans(group);
     const completed = plans.filter(plan => horseTreatmentRecordedCount(plan) > 0).length;
+    questionBox.hidden = false;
     questionBox.classList.remove('history-active');
     questionBox.classList.add('active','treatment-active');
     questionBox.innerHTML = `
@@ -2730,6 +2736,17 @@
       </div>`).join('');
     const completed = evaluation.phases.filter(phase => phase.complete).length;
     $('scenarioProgressSummary').textContent = `${completed} of ${evaluation.phases.length} phases addressed`;
+    const help = $('scenarioHelpMessage');
+    if (help) {
+      const nextStep = evaluation.missing?.[0] || '';
+      if (evaluation.essentialComplete) {
+        help.className = 'scenario-help-message ready';
+        help.innerHTML = '<strong>Patient care is ready for review.</strong><span>You can return to the scenario, complete the handoff, or end the call and open the debrief.</span>';
+      } else {
+        help.className = 'scenario-help-message';
+        help.innerHTML = `<strong>${completed} of ${evaluation.phases.length} clinical phases addressed</strong><span><b>Best next step:</b> ${escapeHtml(nextStep || 'Continue your focused patient assessment and address any immediate threats.')}</span>`;
+      }
+    }
     $('handoffFromProgress').href = '#';
     $('handoffFromProgress').onclick = event => {
       event.preventDefault();
@@ -2743,7 +2760,7 @@
       if (id === 'horse_crush' && horseTreatmentActiveGroup) selectHorseTreatmentGroup(horseTreatmentActiveGroup);
     };
     const button = $('completeScenarioFromPatient');
-    button.textContent = evaluation.essentialComplete ? 'Open debrief' : 'Check completion';
+    button.textContent = evaluation.essentialComplete ? 'End & grade' : 'Check completion';
     button.dataset.ready = evaluation.essentialComplete ? 'true' : 'false';
   }
 
@@ -2924,7 +2941,7 @@
         $('sheetBackdrop').hidden = true;
         document.body.classList.remove('horse-tool-sheet-open');
         document.body.style.overflow = '';
-        document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
+        document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === 'assessmentPanel'));
         horseHistoryActiveGroup = '';
         horseTreatmentActiveGroup = '';
         horseWorkspaceContext?.resetQuestionBox?.();
@@ -2975,7 +2992,8 @@
       if (id === 'horse_crush') {
         sheet.hidden = true;
         document.body.classList.remove('horse-tool-sheet-open');
-        document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
+        document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === 'assessmentPanel'));
+        horseWorkspaceContext?.resetQuestionBox?.();
         configureHorseCurrentAssessmentWorkspace();
       } else {
         sheet.hidden = false;
@@ -3221,7 +3239,11 @@
     infoManuallyCollapsed = false;
     setInfoCollapsed(false);
   });
-  document.querySelectorAll('.bottom-nav button').forEach(button => button.addEventListener('click', () => { hideClinicalNextActions(); openSheet(button.dataset.panel); }));
+  document.querySelectorAll('.bottom-nav button').forEach(button => button.addEventListener('click', () => {
+    hideClinicalNextActions();
+    if (id === 'horse_crush' && desktopWorkspace() && button.dataset.panel === 'assessmentPanel') { closeSheet(); return; }
+    openSheet(button.dataset.panel);
+  }));
   $('clinicalNextTreatment')?.addEventListener('click', () => {
     treatmentCategoryFocus = nextTreatmentCategoryForFinding(nextActionFinding?.key || '');
     hideClinicalNextActions();
@@ -3256,6 +3278,12 @@
   $('scenarioControlBackdrop')?.addEventListener('click', closeScenarioControls);
   $('saveAndExitScenario')?.addEventListener('click', endScenario);
   $('resetAndRestartScenario')?.addEventListener('click', resetScenario);
+  $('transportScenarioQuick')?.addEventListener('click', () => {
+    treatmentCategoryFocus = 'transport'; horseTreatmentActiveGroup = 'transport';
+    openSheet('treatmentPanel'); selectHorseTreatmentGroup('transport', { updateInfo:false });
+  });
+  $('handoffScenarioQuick')?.addEventListener('click', () => openHorseHospitalHandoff(false));
+  $('progressHelpScenarioQuick')?.addEventListener('click', () => { renderProgress(); openScenarioControls(); });
   $('endScenarioQuick')?.addEventListener('click', () => {
     if (window.confirm('End this scenario and return to patient selection? Your current progress will remain saved.')) endScenario();
   });
