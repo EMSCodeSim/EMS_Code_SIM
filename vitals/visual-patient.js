@@ -2081,7 +2081,9 @@
     box.innerHTML = '';
     box.className = 'treatment-list horse-treatment-groups horse-treatment-group-menu';
 
-    HORSE_TREATMENT_GROUPS.forEach(group => {
+    HORSE_TREATMENT_GROUPS
+      .filter(group => !['transport','handoff'].includes(group.id))
+      .forEach(group => {
       const plans = horseTreatmentGroupPlans(group);
       if (!plans.length) return;
       const completed = plans.filter(plan => horseTreatmentRecordedCount(plan) > 0).length;
@@ -2763,7 +2765,7 @@
         id:`horse-transport-handoff-ready-${Date.now()}`,
         type:'TRANSPORT',
         title:'Transport underway',
-        text:`${treatment.patientResponse} When you arrive at the receiving hospital, use Treatment → Hospital handoff to give report.`,
+        text:`${treatment.patientResponse} When you arrive at the receiving hospital, use the Handoff button above the patient picture to give report.`,
         kind:'transport', sticky:true, recordedAt:new Date().toISOString()
       };
       lastInfoSignature = '';
@@ -3043,8 +3045,43 @@
     return { score: text.length >= 110 && hits >= 4 ? 2 : text.length >= 60 && hits >= 3 ? 1 : 0, complete:hits >= 4 };
   }
 
+  function horseCallIsComplete(current = record() || {}) {
+    const evaluation = phases?.evaluate?.(current);
+    return Boolean(current?.documentation?.handoffSavedAt && current?.documentation?.handoff && evaluation?.essentialComplete);
+  }
+
+  function horseBestNextStep(current = record() || {}) {
+    const findings = current.findings || {};
+    const treatmentIds = horseGradeTreatmentIds(current);
+    const treatments = current.treatments || [];
+    const coreVitals = ['blood_pressure','pulse','respirations','spo2'];
+    const csmEventCount = horseGradeAssessmentEventCount(current, 'distal_csm');
+    const majorMoveOrSupport = treatments.some(item => ['manual_leg_support','blanket_support','splint','scoop_position_comfort','vacuum_mattress','board_transfer','force_straight','traction_splint'].includes(item?.actionId));
+
+    if (!findings.scene_size_up) return 'Complete the scene size-up and identify the mechanism, hazards, and need for additional resources.';
+    if (!findings.airway) return 'Check the airway before moving deeper into the focused trauma assessment.';
+    if (!findings.breathing) return 'Assess breathing and chest rise so immediate respiratory threats are ruled out.';
+    if (!findings.perfusion) return 'Assess circulation/perfusion before focusing on the isolated hip injury.';
+    if (!findings.pelvis_hip || !findings.left_leg) return 'Examine the painful left hip/pelvis and injured leg to define the injury before movement.';
+    if (!findings.distal_csm) return 'Check distal circulation, sensation, and movement before splinting or moving the injured leg.';
+    if (!findings.pain) return 'Complete a pain/OPQRST assessment and document the current pain score.';
+    const missingVitals = coreVitals.filter(key => !findings[key]);
+    if (missingVitals.length) return `Obtain the remaining core vital signs: ${missingVitals.map(labelFor).join(', ')}.`;
+    if (!findings.sample) return 'Complete SAMPLE history so medications, allergies, medical history, intake, and events are available for care and handoff.';
+    if (!['manual_leg_support','position_comfort','blanket_support','splint'].some(action => treatmentIds.has(action))) return 'Support/stabilize the painful leg in the patient’s tolerated position before moving her.';
+    if (!treatmentIds.has('pain_control')) return 'Address pain before packaging or transport when feasible, then reassess the patient’s response.';
+    if (majorMoveOrSupport && csmEventCount < 2 && !treatmentIds.has('reassess_distal_csm')) return 'Repeat distal CSM now that the leg has been stabilized or moved.';
+    const repeatedVitals = coreVitals.filter(key => horseGradeVitalEventCount(current, key) >= 2);
+    if (repeatedVitals.length < 2) return 'Repeat key vital signs after treatment so you can document whether the patient improved.';
+    if (!['scoop_position_comfort','vacuum_mattress','board_transfer'].some(action => treatmentIds.has(action))) return 'Choose a coordinated low-movement packaging/transfer method that preserves the position of comfort.';
+    if (!current.documentation?.transportDecisionAt) return 'Make the transport decision: working impression, urgency, destination, and any needed notification.';
+    if (!current.documentation?.handoffSavedAt) return 'Give the hospital handoff using the findings, vital trend, treatments, and patient response you documented.';
+    return 'The major call elements are complete. Review the final grade, then end the scenario when ready.';
+  }
+
   function buildHorseCallGrade(current = record() || {}) {
     const findings = current.findings || {};
+    const inProgress = !horseCallIsComplete(current);
     const treatmentIds = horseGradeTreatmentIds(current);
     const treatments = current.treatments || [];
     const state = horseClinicalState();
@@ -3181,14 +3218,16 @@
     if (!strengths.length) strengths.push('You gathered enough information to begin building a clinical picture; use the review below to make the next attempt more systematic.');
     if (!improvements.length && !critical.length) improvements.push('Maintain the same structure next time, but continue emphasizing reassessment after every meaningful treatment or movement.');
     const combinedImprovements = [...critical, ...improvements].filter(Boolean).slice(0, 7);
-    const nextFocus = critical[0] || combinedImprovements[0] || 'Keep using assessment → treatment → reassessment as one continuous loop.';
-    const narrative = score >= 90
-      ? 'The call was organized, clinically coherent, and patient-centered. The strongest feature was linking findings to treatment and then confirming improvement.'
-      : score >= 75
-        ? 'The overall direction of care was reasonable. The next gain will come from closing the specific assessment/reassessment gaps listed above rather than adding more unrelated actions.'
-        : 'The next attempt should focus on a simpler sequence: identify the injury and distal CSM, obtain core vitals/history, support the leg and address pain, move with minimal motion, reassess, then transport and hand off.';
+    const nextFocus = inProgress ? horseBestNextStep(current) : (critical[0] || combinedImprovements[0] || 'Keep using assessment → treatment → reassessment as one continuous loop.');
+    const narrative = inProgress
+      ? 'This is a progress review, not a final grade. Unfinished sections can still improve your score. Use the Best next step above, return to the patient, and continue the call—or end the scenario now if you want to debrief the choices made so far.'
+      : score >= 90
+        ? 'The call was organized, clinically coherent, and patient-centered. The strongest feature was linking findings to treatment and then confirming improvement.'
+        : score >= 75
+          ? 'The overall direction of care was reasonable. The next gain will come from closing the specific assessment/reassessment gaps listed above rather than adding more unrelated actions.'
+          : 'The next attempt should focus on a simpler sequence: identify the injury and distal CSM, obtain core vitals/history, support the leg and address pain, move with minimal motion, reassess, then transport and hand off.';
 
-    return { score, label, outcome, categories, strengths:strengths.slice(0,6), improvements:combinedImprovements, critical, nextFocus, narrative, treatments };
+    return { score, label, outcome, categories, strengths:strengths.slice(0,6), improvements:combinedImprovements, critical, nextFocus, narrative, treatments, inProgress };
   }
 
   function horseGradeTreatmentMarkup(item) {
@@ -3211,8 +3250,14 @@
     const grade = buildHorseCallGrade(current);
     const scoreHost = $('horseGradeScore');
     if (scoreHost) scoreHost.innerHTML = `<strong>${grade.score}</strong><span>/100</span>`;
-    if ($('horseGradeLabel')) $('horseGradeLabel').textContent = grade.label;
-    if ($('horseGradeOutcome')) $('horseGradeOutcome').innerHTML = `<small>PATIENT OUTCOME</small><strong>${escapeHtml(grade.outcome.label)}</strong><p>${escapeHtml(grade.outcome.text)}</p>`;
+    if ($('horseGradeModeLabel')) $('horseGradeModeLabel').textContent = grade.inProgress ? 'PROGRESS REVIEW' : 'FINAL CALL REVIEW';
+    if ($('horseGradeHeaderTitle')) $('horseGradeHeaderTitle').textContent = grade.inProgress ? 'Horse-crush scenario progress' : 'Horse-crush scenario grade';
+    if ($('horseGradeHeaderSubtitle')) $('horseGradeHeaderSubtitle').textContent = grade.inProgress ? 'Current performance based only on care documented so far. Return to the call at any time.' : 'Overall review of assessment, decisions, treatment, reassessment, transport, and handoff';
+    if ($('horseGradeLabel')) $('horseGradeLabel').textContent = grade.inProgress ? `${grade.score}/100 so far • Scenario still in progress` : grade.label;
+    if ($('horseGradeImproveLabel')) $('horseGradeImproveLabel').textContent = grade.inProgress ? 'WHAT TO WORK ON NOW' : 'IMPROVE NEXT TIME';
+    if ($('horseGradeImproveTitle')) $('horseGradeImproveTitle').textContent = grade.inProgress ? 'Priority suggestions' : 'Priority suggestions';
+    if ($('horseGradeNextLabel')) $('horseGradeNextLabel').textContent = grade.inProgress ? 'BEST NEXT STEP' : 'NEXT-CALL FOCUS';
+    if ($('horseGradeOutcome')) $('horseGradeOutcome').innerHTML = `<small>${grade.inProgress ? 'CURRENT PATIENT STATUS' : 'PATIENT OUTCOME'}</small><strong>${escapeHtml(grade.outcome.label)}</strong><p>${escapeHtml(grade.outcome.text)}</p>`;
     if ($('horseGradeCategories')) $('horseGradeCategories').innerHTML = grade.categories.map(category => {
       const percent = Math.round((category.score / category.max) * 100);
       return `<div class="horse-grade-category"><div><strong>${escapeHtml(category.label)}</strong><span>${category.score}/${category.max}</span></div><div class="horse-grade-bar"><i style="width:${Math.max(0, Math.min(100, percent))}%"></i></div></div>`;
@@ -3268,8 +3313,55 @@
   }
   function renderTransport() { /* Transport is rendered inside the Treatment tab. */ }
 
+  function renderHorseTopQuickActions() {
+    if (id !== 'horse_crush') return;
+    const current = record() || {};
+    const transport = $('transportScenarioQuick');
+    const handoff = $('handoffScenarioQuick');
+    const grade = $('gradeScenarioQuick');
+    const transportDone = Boolean(current.documentation?.transportDecisionAt);
+    const handoffDone = Boolean(current.documentation?.handoffSavedAt && current.documentation?.handoff);
+    if (transport) {
+      transport.classList.toggle('done', transportDone);
+      transport.innerHTML = `<span aria-hidden="true">${transportDone ? '✓' : '🚑'}</span> ${transportDone ? 'Transport set' : 'Transport'}`;
+    }
+    if (handoff) {
+      handoff.classList.toggle('done', handoffDone);
+      handoff.innerHTML = `<span aria-hidden="true">${handoffDone ? '✓' : '🏥'}</span> ${handoffDone ? 'Handoff done' : 'Handoff'}`;
+    }
+    if (grade) grade.innerHTML = `<span aria-hidden="true">✓</span> ${horseCallIsComplete(current) ? 'Final grade' : 'Grade / Help'}`;
+  }
+
+  function openHorseTransportQuick() {
+    if (id !== 'horse_crush') return;
+    if (!desktopWorkspace()) {
+      horseTreatmentActiveGroup = 'transport';
+      horseTreatmentActivePlan = '__horse_transport__';
+      openSheet('treatmentPanel');
+      return;
+    }
+    closeEmbeddedSimulator({ refresh:false });
+    closeHorseHospitalHandoff();
+    closeHorseCallGrade();
+    if ($('actionSheet')) $('actionSheet').hidden = true;
+    document.body.classList.remove('horse-tool-sheet-open');
+    document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
+    horseTreatmentActiveGroup = 'transport';
+    horseTreatmentActivePlan = '__horse_transport__';
+    const group = HORSE_TREATMENT_GROUPS.find(item => item.id === 'transport');
+    sceneObservationUpdate = {
+      id:`horse-top-transport-${Date.now()}`, type:'TRANSPORT', title:'Transport decision',
+      text:group?.instruction || 'Choose transport urgency and destination from the information you have gathered.',
+      kind:'transport', sticky:true, recordedAt:new Date().toISOString()
+    };
+    lastInfoSignature = '';
+    renderInfoUpdate(true);
+    renderHorseTreatmentSelectionBox('transport');
+  }
+
   function renderProgress() {
     const current = record();
+    renderHorseTopQuickActions();
     const evaluation = phases?.evaluate?.(current);
     if (!evaluation) return;
     const list = $('scenarioPhaseList');
@@ -3283,14 +3375,14 @@
     $('handoffFromProgress').href = '#';
     $('handoffFromProgress').onclick = event => {
       event.preventDefault();
-      if (id === 'horse_crush' && record()?.documentation?.transportDecisionAt && desktopWorkspace()) {
-        openHorseHospitalHandoff(false);
+      if (id === 'horse_crush' && desktopWorkspace()) {
+        if (record()?.documentation?.transportDecisionAt) openHorseHospitalHandoff(false);
+        else openHorseTransportQuick();
         return;
       }
       treatmentCategoryFocus = 'transport';
       if (id === 'horse_crush') horseTreatmentActiveGroup = record()?.documentation?.transportDecisionAt ? 'handoff' : 'transport';
       openSheet('treatmentPanel');
-      if (id === 'horse_crush' && horseTreatmentActiveGroup) selectHorseTreatmentGroup(horseTreatmentActiveGroup);
     };
     const handoffSaved = Boolean(current?.documentation?.handoffSavedAt && current?.documentation?.handoff);
     const gradeButton = $('gradeScenarioFromPatient');
@@ -3626,6 +3718,7 @@
     renderUnifiedClinicalBar();
     renderHorseReassessmentCue();
     updateCounts();
+    renderHorseTopQuickActions();
     if (force || signatures.progress !== renderSignatures.progress) {
       renderProgress();
       renderSignatures.progress = signatures.progress;
@@ -3735,7 +3828,7 @@
     const guidedHistory = document.querySelector('.history-guided-tools');
     if (guidedHistory) guidedHistory.hidden = true;
     const treatmentSub = document.querySelector('#treatmentPanel > .sub');
-    if (treatmentSub) treatmentSub.textContent = 'Choose care, movement, packaging, transport, and reassessment decisions as you would on a real call. No fixed skill-sheet sequence is required.';
+    if (treatmentSub) treatmentSub.textContent = 'Choose treatment, movement, packaging, comfort, and reassessment actions as you would on a real call. On a computer, Transport and Handoff are available in the quick-action row above the patient.';
     const returnButtonLabel = document.querySelector('#closeSheet span');
     if (returnButtonLabel) returnButtonLabel.textContent = 'Current assessment';
     window.EMSCodeSimHorseWorkspace = Object.freeze({
@@ -3760,6 +3853,9 @@
   $('horseGradeReturn')?.addEventListener('click', closeHorseCallGrade);
   $('horseGradeEndScenario')?.addEventListener('click', () => { if (window.confirm('End this scenario and return to scenario selection?')) endScenario(); });
   $('gradeScenarioFromPatient')?.addEventListener('click', openHorseCallGrade);
+  $('transportScenarioQuick')?.addEventListener('click', openHorseTransportQuick);
+  $('handoffScenarioQuick')?.addEventListener('click', () => openHorseHospitalHandoff(false));
+  $('gradeScenarioQuick')?.addEventListener('click', openHorseCallGrade);
   $('hospitalHandoffDraft')?.addEventListener('input', event => { event.currentTarget.dataset.userEdited = 'true'; });
   if ($('recordTreatmentLink')) $('recordTreatmentLink').href = toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general');
   if ($('fullPatientRecordLink')) $('fullPatientRecordLink').href = `/vitals/patient-record.html?mode=scenario&resume=1&case=${encodeURIComponent(id)}&return=${encodeURIComponent(`/vitals/visual-patient.html?case=${id}`)}`;

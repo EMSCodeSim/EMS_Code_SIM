@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2224">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2227">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2200">
   <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2212">
 </head>
@@ -19,10 +19,13 @@
         <h1 id="caseTitle">Visual Patient</h1>
         <p id="scene"></p>
       </div>
-      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small id="patientClockStatus" class="patient-clock-status">Patient clock • severe pain</small><small class="scenario-build-stamp-dark">HORSE TREATMENT 2.226</small></div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small id="patientClockStatus" class="patient-clock-status">Patient clock • severe pain</small><small class="scenario-build-stamp-dark">HORSE TOP ACTIONS 2.227</small></div>
     </header>
 
-    <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
+    <div class="scenario-quick-controls" aria-label="Scenario quick controls">
+      <button id="transportScenarioQuick" class="scenario-quick-clinical" type="button"><span aria-hidden="true">🚑</span> Transport</button>
+      <button id="handoffScenarioQuick" class="scenario-quick-clinical" type="button"><span aria-hidden="true">🏥</span> Handoff</button>
+      <button id="gradeScenarioQuick" class="scenario-quick-grade" type="button"><span aria-hidden="true">✓</span> Grade / Help</button>
       <button id="endScenarioQuick" class="scenario-quick-end" type="button">End scenario</button>
       <button id="resetScenarioQuick" class="scenario-quick-reset" type="button">Reset scenario</button>
     </div>
@@ -68,7 +71,7 @@
         </section>
         <section id="horseGradeWorkspace" class="horse-grade-workspace" hidden aria-label="Scenario grading and call review">
           <header class="horse-grade-header">
-            <div><small>CALL REVIEW</small><strong>Horse-crush scenario grade</strong><span>Overall review of assessment, decisions, treatment, reassessment, transport, and handoff</span></div>
+            <div><small id="horseGradeModeLabel">CALL REVIEW</small><strong id="horseGradeHeaderTitle">Horse-crush scenario grade</strong><span id="horseGradeHeaderSubtitle">Overall review of assessment, decisions, treatment, reassessment, transport, and handoff</span></div>
             <button id="closeHorseCallGrade" type="button">Return to patient</button>
           </header>
           <div class="horse-grade-layout">
@@ -83,15 +86,15 @@
             <section class="horse-grade-feedback">
               <div class="horse-grade-feedback-grid">
                 <article class="horse-grade-feedback-card strengths"><div><small>WHAT WENT WELL</small><strong>Strong decisions</strong></div><ul id="horseGradeStrengths"></ul></article>
-                <article class="horse-grade-feedback-card improve"><div><small>IMPROVE NEXT TIME</small><strong>Priority suggestions</strong></div><ul id="horseGradeImprovements"></ul></article>
+                <article class="horse-grade-feedback-card improve"><div><small id="horseGradeImproveLabel">PRIORITY COACHING</small><strong id="horseGradeImproveTitle">Suggestions / next steps</strong></div><ul id="horseGradeImprovements"></ul></article>
               </div>
               <article class="horse-grade-treatment-review">
                 <div class="horse-grade-section-head"><div><small>TREATMENT REVIEW</small><strong>What your care did to the patient</strong></div><span id="horseGradeTreatmentStatus"></span></div>
                 <div id="horseGradeTreatmentList" class="horse-grade-treatment-list"></div>
               </article>
               <article class="horse-grade-next-call">
-                <small>NEXT-CALL FOCUS</small>
-                <strong id="horseGradeNextFocus">Finish the call to receive a focused recommendation.</strong>
+                <small id="horseGradeNextLabel">BEST NEXT STEP</small>
+                <strong id="horseGradeNextFocus">Continue the call to receive a focused recommendation.</strong>
                 <p id="horseGradeNarrative"></p>
               </article>
               <div class="horse-grade-actions">

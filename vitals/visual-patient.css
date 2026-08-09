@@ -2066,3 +2066,44 @@ body.horse-grade-open .hospital-handoff-workspace{display:none!important}
   .horse-treatment-mobile-detail .horse-treatment-perform-row{display:grid;gap:7px}
   .horse-treatment-mobile-detail .horse-treatment-perform{min-height:46px;border:0;border-radius:10px;background:#17664f;color:#fff;font-weight:900}
 }
+
+
+/* Horse desktop top call actions 2.227 — Transport / Handoff / Grade stay above patient. */
+@media(min-width:980px){
+  body.horse-current-emt-call.desktop-scenario-layout .vp-shell{
+    grid-template-rows:auto auto minmax(0,1fr)!important;
+    gap:6px!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .scenario-quick-controls{
+    display:grid!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    gap:7px!important;
+    margin:0!important;
+    min-height:38px;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .scenario-quick-controls button{
+    min-height:38px!important;
+    padding:6px 9px!important;
+    border-radius:10px!important;
+    font-size:.72rem!important;
+    line-height:1.1!important;
+    white-space:nowrap;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .scenario-quick-clinical{
+    border:1px solid #3b7899;background:#12334a;color:#fff;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .scenario-quick-grade{
+    border:1px solid #7d6b2e;background:#4a3d14;color:#fff;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .scenario-quick-controls button.done{
+    border-color:#3d8c70!important;background:#174435!important;color:#fff!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #horseClinicalQuestionBox.treatment-active{
+    max-height:230px!important;
+  }
+}
+
+/* On phones, call-level transport/handoff remain in the compact Treatment dropdown. */
+@media(max-width:979px){
+  #transportScenarioQuick,#handoffScenarioQuick,#gradeScenarioQuick{display:none!important}
+}
