@@ -84,6 +84,7 @@
   let infoVoiceAuto = infoVoiceSupported && localStorage.getItem(INFO_VOICE_STORAGE_KEY) !== 'off';
   let infoLastSpokenSignature = '';
   let infoVoiceUtterance = null;
+  const infoQuickReplySelections = new Map();
   let assessmentComplaintFocus = '';
   let lastHistoryResponse = null;
   let horseWorkspaceContext = null;
@@ -2237,7 +2238,100 @@
     const kind = String(item.kind || '').toLowerCase();
     const text = String(item.text || '').trim();
     if (kind === 'patient_dialogue' || kind === 'patient_response' || /PATIENT RESPONSE|^PATIENT$|HISTORY ANSWER/.test(type) || /^[“"]/u.test(text)) return 'patient';
-    return 'narrator';
+    return 'silent';
+  }
+
+  function infoPresentation(item = {}) {
+    const kind = String(item.kind || '').toLowerCase();
+    const type = String(item.type || '').toUpperCase();
+    if (infoVoiceRole(item) === 'patient') return { key:'patient', label:'PATIENT', icon:'👤', spoken:true };
+    if (kind === 'vital' || /VITAL|BLOOD PRESSURE|PULSE|RESPIRATION|SPO₂|GLUCOSE|TEMPERATURE/.test(type)) return { key:'vitals', label:'VITALS', icon:'♥', spoken:false };
+    if (kind === 'observation' || kind === 'visible' || /OBSERVATION|VISIBLE/.test(type)) return { key:'observation', label:'OBSERVATION', icon:'👁', spoken:false };
+    if (kind === 'assessment' || kind === 'reassessment') return { key:'assessment', label:kind === 'reassessment' ? 'REASSESSMENT' : 'ASSESSMENT', icon:'🩺', spoken:false };
+    if (kind === 'history') return { key:'history', label:'HISTORY', icon:'💬', spoken:false };
+    if (kind === 'treatment') return { key:'treatment', label:'TREATMENT', icon:'✚', spoken:false };
+    if (kind === 'transport') return { key:'transport', label:'TRANSPORT', icon:'🚑', spoken:false };
+    if (kind === 'partner') return { key:'partner', label:'PARTNER', icon:'👥', spoken:false };
+    if (kind === 'alert') return { key:'alert', label:'ALERT', icon:'⚠', spoken:false };
+    if (kind === 'dispatch') return { key:'dispatch', label:'DISPATCH', icon:'📟', spoken:false };
+    return { key:'information', label:'INFORMATION', icon:'ℹ', spoken:false };
+  }
+
+  function patientDialogueParts(item = {}) {
+    const raw = String(item.text || '').replace(/\s+/g, ' ').trim();
+    const quoted = raw.match(/[“"]([^”"]+)[”"]/u);
+    if (quoted?.[1]) {
+      const spoken = quoted[1].trim();
+      const observation = raw.replace(quoted[0], '').trim();
+      return { spoken, observation };
+    }
+    return { spoken: raw, observation:'' };
+  }
+
+  function quickRepliesForInfo(item = {}) {
+    if (infoVoiceRole(item) !== 'patient') return [];
+    const text = patientDialogueParts(item).spoken.toLowerCase();
+    if (/stop|really hurts|worse|hurting more/.test(text)) return [
+      'I’m stopping. I’ll support your leg.',
+      'Tell me exactly what changed.',
+      'I’m going to recheck your circulation and sensation.'
+    ];
+    if (/thank you|feels better|helping|more comfortable/.test(text)) return [
+      'Good. I’m going to reassess you.',
+      'Tell me if the pain changes.',
+      'I’m going to recheck your injured leg.'
+    ];
+    if (/pain|hurt|hip|leg/.test(text)) return [
+      'Yes. I’m going to address your pain.',
+      'I need to check your leg before we move you.',
+      'Try not to move the injured leg.'
+    ];
+    if (/history answer/i.test(String(item.type || ''))) return [
+      'Thank you.',
+      'Okay, I understand.',
+      'I’m going to keep asking a few questions.'
+    ];
+    return ['Thank you.', 'I’m here with you.', 'Tell me if anything changes.'];
+  }
+
+  function recordQuickProviderReply(item, reply) {
+    if (!item || !reply) return;
+    const key = item.id || `${item.type || 'patient'}-${item.recordedAt || Date.now()}`;
+    infoQuickReplySelections.set(key, reply);
+    api?.mergeCareLog?.([{
+      type:'communication', category:'history', key:'provider_communication',
+      label:'Provider response', value:reply,
+      details:`Response to ${item.title || 'patient statement'}.`,
+      source:'patient-quick-response', suppressInfoUpdate:true, suppressCareLog:true, recordedAt:new Date().toISOString()
+    }]);
+    renderInfoQuickReplies(item);
+  }
+
+  function renderInfoQuickReplies(item = {}) {
+    const host = $('infoUpdateQuickReplies');
+    const buttons = $('infoUpdateQuickReplyButtons');
+    const status = $('infoUpdateQuickReplyStatus');
+    if (!host || !buttons || !status) return;
+    const replies = quickRepliesForInfo(item);
+    host.hidden = replies.length === 0;
+    buttons.innerHTML = '';
+    status.hidden = true;
+    status.textContent = '';
+    if (!replies.length) return;
+    const key = item.id || `${item.type || 'patient'}-${item.recordedAt || ''}`;
+    const selected = infoQuickReplySelections.get(key) || '';
+    replies.forEach(reply => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `info-update-quick-reply${selected === reply ? ' selected' : ''}`;
+      button.textContent = reply;
+      button.addEventListener('click', () => recordQuickProviderReply(item, reply));
+      buttons.appendChild(button);
+    });
+    if (selected) {
+      status.hidden = false;
+      status.textContent = `You: ${selected}`;
+    }
   }
 
   function preferredInfoVoice(role = 'narrator') {
@@ -2263,20 +2357,21 @@
       replay.disabled = true;
       toggle.classList.remove('is-on');
       toggle.setAttribute('aria-pressed', 'false');
-      toggle.setAttribute('aria-label', 'Automatic patient update voice is not supported in this browser');
+      toggle.setAttribute('aria-label', 'Patient voice is not supported in this browser');
       toggle.title = 'Text-to-speech is not available in this browser';
       const label = toggle.querySelector('.info-voice-label');
-      if (label) label.textContent = 'Voice unavailable';
+      if (label) label.textContent = 'Patient voice unavailable';
       return;
     }
     toggle.disabled = false;
-    replay.disabled = false;
+    const currentItem = infoUpdates[infoUpdateIndex];
+    replay.disabled = !currentItem || infoVoiceRole(currentItem) !== 'patient';
     toggle.classList.toggle('is-on', infoVoiceAuto);
     toggle.setAttribute('aria-pressed', String(infoVoiceAuto));
-    toggle.setAttribute('aria-label', infoVoiceAuto ? 'Turn automatic patient update voice off' : 'Turn automatic patient update voice on');
-    toggle.title = infoVoiceAuto ? 'Turn Auto Voice off' : 'Turn Auto Voice on';
+    toggle.setAttribute('aria-label', infoVoiceAuto ? 'Turn automatic patient voice off' : 'Turn automatic patient voice on');
+    toggle.title = infoVoiceAuto ? 'Turn Patient Voice off' : 'Turn Patient Voice on';
     const label = toggle.querySelector('.info-voice-label');
-    if (label) label.textContent = infoVoiceAuto ? 'Auto ON' : 'Auto OFF';
+    if (label) label.textContent = infoVoiceAuto ? 'Patient voice ON' : 'Patient voice OFF';
   }
 
   function stopInfoSpeech() {
@@ -2292,6 +2387,7 @@
     const replay = options.replay === true;
     if (!replay && !infoVoiceAuto) return false;
     const role = infoVoiceRole(item);
+    if (role !== 'patient') return false;
     let text = cleanInfoSpeechText(item.text);
     if (role === 'patient') {
       const quoted = String(item.text || '').match(/[“"]([^”"]+)[”"]/u);
@@ -2306,8 +2402,8 @@
     const voice = preferredInfoVoice(role);
     if (voice) utterance.voice = voice;
     utterance.lang = voice?.lang || 'en-US';
-    utterance.rate = role === 'patient' ? 0.98 : 0.92;
-    utterance.pitch = role === 'patient' ? 1.04 : 0.94;
+    utterance.rate = 0.98;
+    utterance.pitch = 1.04;
     utterance.volume = 1;
     utterance.onstart = () => {
       $('infoUpdateWindow')?.classList.add('is-speaking');
@@ -2337,7 +2433,7 @@
     try { localStorage.setItem(INFO_VOICE_STORAGE_KEY, infoVoiceAuto ? 'on' : 'off'); } catch (_) {}
     if (!infoVoiceAuto) stopInfoSpeech();
     updateInfoVoiceControls();
-    toast(infoVoiceAuto ? 'Auto Voice on — new patient updates will be read aloud.' : 'Auto Voice off. Use Replay whenever you want to hear an update.');
+    toast(infoVoiceAuto ? 'Patient Voice on — only patient dialogue will be read aloud.' : 'Patient Voice off. Patient dialogue will remain visual.');
   }
 
   function infoElapsed(value, startedAt) { return elapsedLabel(value, startedAt); }
@@ -2360,6 +2456,7 @@
   }
   function updateFromCareEvent(event) {
     const isAbnormal = abnormalEvent(event);
+    if (event.category === 'vital') return { id: event.id || event.eventId, type: event.type === 'reassessment' ? 'VITAL REASSESSMENT' : 'VITALS', title: event.label || labelFor(event.key), text: event.value || event.details || 'A vital sign was obtained.', kind: 'vital', recordedAt: event.recordedAt };
     if (event.source === 'partner-assignment') return { id: event.id || event.eventId, type: 'PARTNER UPDATE', title: `${event.label || labelFor(event.key)} obtained`, text: event.value || 'Partner task complete.', kind: 'partner', recordedAt: event.recordedAt };
     if (event.type === 'treatment') return { id: event.id || event.eventId, type: 'TREATMENT', title: event.label || 'Treatment performed', text: event.value || event.details || 'Treatment was recorded.', kind: 'treatment', recordedAt: event.recordedAt };
     if (event.type === 'reassessment') return { id: event.id || event.eventId, type: 'REASSESSMENT', title: event.label || 'Patient reassessed', text: event.value || event.details || 'The patient condition was reassessed.', kind: 'reassessment', recordedAt: event.recordedAt };
@@ -2419,7 +2516,7 @@
   function scheduleInfoCollapse(item, isNew) {
     clearTimeout(infoAutoCollapseTimer);
     if (!item || !isNew) return;
-    if (item.sticky) {
+    if (item.sticky || infoVoiceRole(item) === 'patient') {
       infoManuallyCollapsed = false;
       setInfoCollapsed(false);
       return;
@@ -2457,10 +2554,30 @@
     const isNew = forceLatest || changed || item.id !== lastInfoItemId;
     const collapsed = $('infoUpdateWindow').dataset.collapsed === 'true';
     const voiceRole = infoVoiceRole(item);
-    $('infoUpdateWindow').className = `info-update-window info-${item.kind || 'assessment'} voice-${voiceRole}${collapsed ? ' is-collapsed' : ''}`;
-    $('infoUpdateType').textContent = item.type;
+    const presentation = infoPresentation(item);
+    $('infoUpdateWindow').className = `info-update-window info-${item.kind || 'assessment'} info-source-${presentation.key} voice-${voiceRole}${collapsed ? ' is-collapsed' : ''}`;
+    const sourceIcon = $('infoUpdateIcon');
+    if (sourceIcon) {
+      sourceIcon.textContent = presentation.icon;
+      sourceIcon.className = `info-update-source-icon source-${presentation.key}${isNew ? ' source-blink' : ''}`;
+      if (isNew) window.setTimeout(() => sourceIcon.classList.remove('source-blink'), 2300);
+    }
+    $('infoUpdateType').textContent = presentation.label;
     $('infoUpdateTitle').textContent = item.title;
-    $('infoUpdateText').textContent = item.text;
+    const textNode = $('infoUpdateText');
+    if (voiceRole === 'patient') {
+      const parts = patientDialogueParts(item);
+      textNode.innerHTML = `<span class="patient-spoken-line">“${escapeHtml(parts.spoken)}”</span>${parts.observation ? `<span class="patient-visual-note"><span aria-hidden="true">👁</span>${escapeHtml(parts.observation)}</span>` : ''}`;
+    } else {
+      textNode.textContent = item.text;
+    }
+    renderInfoQuickReplies(item);
+    const replay = $('infoUpdateReplay');
+    if (replay) {
+      replay.disabled = voiceRole !== 'patient' || !infoVoiceSupported;
+      replay.title = voiceRole === 'patient' ? 'Replay the patient statement' : 'This finding is visual only and is not spoken';
+      replay.setAttribute('aria-label', voiceRole === 'patient' ? 'Replay the current patient statement' : 'This clinical finding is visual only');
+    }
     $('infoUpdateTime').textContent = infoElapsed(item.recordedAt, current.startedAt);
     $('infoUpdateCount').textContent = `${infoUpdateIndex + 1} of ${infoUpdates.length}`;
     $('infoUpdatePrevious').disabled = infoUpdateIndex <= 0;
@@ -2486,8 +2603,8 @@
       }
     }
 
-    // Speak only genuinely new Patient Update content. Navigating backward/forward
-    // through prior updates remains silent unless the learner presses Replay.
+    // Speak only genuinely new patient dialogue. Vitals, observations, assessments, and other
+    // clinical information remain visual-only. Navigating older updates is silent.
     if (id === 'horse_crush' && !firstRender && changed && infoUpdateIndex === infoUpdates.length - 1) {
       speakInfoUpdate(item);
     }
