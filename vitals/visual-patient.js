@@ -4083,10 +4083,13 @@
   const DESKTOP_VITAL_LABELS = {
     blood_pressure:'NIBP', pulse:'HR', respirations:'RR', spo2:'SpO₂',
     blood_glucose:'BGL', temperature:'TEMP', breath_sounds:'LUNGS',
-    pupils:'PUPILS', skin:'SKIN', mental_status:'AVPU', gcs:'GCS', pain:'PAIN'
+    pupils:'PUPILS', skin:'SKIN', mental_status:'AVPU', gcs:'GCS', pain:'PAIN', breathing:'BREATH', distal_csm:'CSM', motor_sensory:'NEURO', abdominal_assessment:'ABD/PELV', trauma_assessment:'TRAUMA'
   };
   const DESKTOP_MONITOR_PRIMARY_KEYS = ['blood_pressure','pulse','respirations','spo2','blood_glucose','temperature'];
-  const DESKTOP_MONITOR_QUICK_KEYS = ['breath_sounds','skin','pupils','mental_status','gcs','pain'];
+  const DESKTOP_MONITOR_QUICK_KEYS = [
+    'breath_sounds','breathing','skin','pupils','mental_status','gcs',
+    'distal_csm','motor_sensory','abdominal_assessment','trauma_assessment','pain'
+  ];
 
   function desktopMonitorEventText(event) {
     return String(event?.value || event?.finding || event?.details || event?.description || event?.response || '').trim();

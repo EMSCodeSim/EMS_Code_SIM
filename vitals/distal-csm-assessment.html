@@ -1,0 +1,8 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Distal CSM & Capillary Refill | EMSCodeSim</title><link rel="stylesheet" href="/vitals/visual-assessment-suite.css?v=2312"></head><body>
+<main class="va-shell"><header class="va-head"><div><small>VISUAL ASSESSMENT MINI SIM</small><h1>Distal CSM & Capillary Refill</h1></div><small>Perform → observe → document</small></header>
+<section class="va-card va-stage"><div class="va-visual"><div class="va-csm"><div class="foot"><div class="pulse-dot"></div><div class="toe">🦶</div></div><div class="cap-nail" id="nail"></div></div></div><div class="va-controls"><button class="va-btn" data-step="pulse">1. Palpate distal pulse</button><button class="va-btn" data-step="sensation">2. Check sensation</button><button class="va-btn" data-step="movement">3. Check movement</button><button class="va-btn" data-step="cap">4. Press nail bed for cap refill</button></div></section>
+<section id="result" class="va-card va-result">Perform the assessment to reveal findings.</section></main>
+<script src="/vitals/patient-record.js"></script><script src="/vitals/visual-assessment-suite.js?v=2312"></script><script>let done=new Set; document.querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>{done.add(b.dataset.step);b.classList.add('done');
+if(b.dataset.step==='cap'){let n=document.querySelector('#nail');n.classList.add('pressed');setTimeout(()=>n.classList.remove('pressed'),900)}
+if(done.size===4) VA.result('distal_csm','Distal CSM','Abnormal','DP pulse weak; sensation decreased; movement limited by pain; capillary refill 3 seconds.');});</script></body></html>
