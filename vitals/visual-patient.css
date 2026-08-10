@@ -1979,3 +1979,47 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
   .persistent-clinical-bar{right:calc(27vw + 6px)!important}
   .clinical-next-actions{right:calc(27vw + 18px)}
 }
+
+
+/* Desktop patient monitor 2.301 — live vitals with targeted reassessment pulse. */
+@media (min-width: 980px){
+  body.horse-current-emt-call.desktop-scenario-layout .desktop-patient-monitor{
+    position:fixed;
+    z-index:43;
+    top:154px;
+    right:12px;
+    width:calc(29vw - 20px);
+    height:224px;
+    padding:10px;
+    border:1px solid #294e65;
+    border-radius:15px;
+    background:linear-gradient(180deg,#06131d,#081b28 58%,#061620);
+    box-shadow:inset 0 0 0 1px rgba(111,164,193,.06),0 14px 34px rgba(0,0,0,.3);
+    color:#dff6ff;
+    overflow:hidden;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .desktop-patient-monitor:after{
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.08;
+    background:repeating-linear-gradient(180deg,transparent 0 3px,#9adfff 4px,transparent 5px);
+  }
+  .desktop-monitor-head{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid #183a4c}
+  .desktop-monitor-head>div{display:grid;gap:1px}.desktop-monitor-head small{font-size:.53rem;letter-spacing:.12em;color:#71a9c3;font-weight:900}.desktop-monitor-head strong{font-size:.72rem;color:#e8fbff}
+  .desktop-monitor-live{display:flex;align-items:center;gap:5px;font-size:.54rem;font-weight:900;letter-spacing:.08em;color:#8ee8ba}.desktop-monitor-live i{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 10px currentColor;animation:monitorLive 2s ease-in-out infinite}
+  .desktop-monitor-grid{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .desktop-monitor-vital{min-width:0;min-height:69px;padding:7px 9px;border:1px solid #17394a;border-radius:9px;background:#04111a;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto 1fr auto;column-gap:7px;align-items:center;transition:border-color .2s,box-shadow .2s,background .2s}
+  .desktop-monitor-vital>span{grid-column:1;grid-row:1;font-size:.58rem;font-weight:950;letter-spacing:.08em;color:#70a6bd}
+  .desktop-monitor-vital>strong{grid-column:1/-1;grid-row:2;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:1.52rem;line-height:1;color:#8ff5c4;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 0 10px rgba(116,255,194,.22)}
+  .desktop-monitor-vital>small{grid-column:1/-1;grid-row:3;font-size:.52rem;color:#6d91a2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .desktop-monitor-vital[data-vital-key="spo2"]>strong{color:#81d8ff;text-shadow:0 0 10px rgba(101,205,255,.22)}
+  .desktop-monitor-vital.is-due{border-color:#ffb64d;background:#1c1408;box-shadow:0 0 0 1px rgba(255,182,77,.3),0 0 16px rgba(255,151,37,.26);animation:monitorRecheck 1.15s ease-in-out infinite}
+  .desktop-monitor-vital.is-due>strong{color:#ffd277;text-shadow:0 0 13px rgba(255,184,70,.45)}
+  .desktop-monitor-vital.is-due>small{color:#ffc56b;font-weight:900}.desktop-monitor-vital.is-due>small:before{content:"↻ ";font-weight:950}
+  .desktop-monitor-foot{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;padding-top:7px;border-top:1px solid #183a4c}.desktop-monitor-foot span{font-size:.57rem;font-weight:900;color:#91b9ca}.desktop-monitor-foot small{font-size:.5rem;color:#537789;text-align:right}
+  body.horse-current-emt-call.desktop-scenario-layout .action-sheet{top:388px!important}
+  body.horse-current-emt-call.desktop-scenario-layout .persistent-clinical-bar{display:none!important}
+  @keyframes monitorRecheck{0%,100%{opacity:1;filter:brightness(1)}50%{opacity:.72;filter:brightness(1.28)}}
+  @keyframes monitorLive{0%,100%{opacity:.45}50%{opacity:1}}
+  @media (prefers-reduced-motion:reduce){.desktop-monitor-vital.is-due,.desktop-monitor-live i{animation:none!important}}
+}
+@media (min-width:1280px){body.horse-current-emt-call.desktop-scenario-layout .desktop-patient-monitor{width:calc(27vw - 20px)}}
+@media (max-width:979px){.desktop-patient-monitor{display:none!important}}

@@ -2654,6 +2654,37 @@
     return { status, latest, due, activePartner, unfinished };
   }
 
+
+  function renderDesktopPatientMonitor() {
+    const monitor = $('desktopPatientMonitor');
+    if (!monitor) return;
+    const current = record() || {};
+    const items = [
+      { key:'blood_pressure', valueId:'monitorBP', stateId:'monitorBPState' },
+      { key:'pulse', valueId:'monitorPulse', stateId:'monitorPulseState' },
+      { key:'respirations', valueId:'monitorRR', stateId:'monitorRRState' },
+      { key:'spo2', valueId:'monitorSpO2', stateId:'monitorSpO2State' }
+    ];
+    let dueCount = 0;
+    items.forEach(item => {
+      const finding = api?.getFinding?.(item.key, current) || current.findings?.[item.key] || null;
+      const state = assessmentState(item.key);
+      const value = finding ? (finding.value || finding.finding || valueFor(item.key) || '—') : '—';
+      const tile = monitor.querySelector(`[data-vital-key="${item.key}"]`);
+      const valueNode = $(item.valueId);
+      const stateNode = $(item.stateId);
+      const due = state.code === 'reassessment-due';
+      if (due) dueCount += 1;
+      if (valueNode) valueNode.textContent = String(value);
+      if (stateNode) stateNode.textContent = due ? 'RECHECK NOW' : finding ? (state.label || 'Obtained') : 'Not obtained';
+      tile?.classList.toggle('is-due', due);
+      tile?.classList.toggle('is-recorded', Boolean(finding));
+    });
+    const summary = discoveredSummary(current);
+    if ($('desktopMonitorStatus')) $('desktopMonitorStatus').textContent = summary.status || 'Monitoring';
+    if ($('desktopMonitorDue')) $('desktopMonitorDue').textContent = dueCount ? `${dueCount} vital${dueCount === 1 ? '' : 's'} due for recheck` : 'No reassessment due';
+  }
+
   function renderUnifiedClinicalBar() {
     const summary = discoveredSummary();
     if ($('clinicalBarStatus')) $('clinicalBarStatus').textContent = summary.status;
@@ -3833,6 +3864,7 @@
       renderSignatures.findings = signatures.findings;
     }
     renderUnifiedClinicalBar();
+    renderDesktopPatientMonitor();
     renderHorseReassessmentCue();
     updateCounts();
     renderHorseTopQuickActions();

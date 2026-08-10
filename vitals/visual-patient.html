@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2300">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2301">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2200">
   <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2212">
 </head>
@@ -195,6 +195,28 @@
       <div><small>Partner</small><span id="clinicalBarPartner">No active assignment</span></div>
     </div>
   </section>
+
+  <aside id="desktopPatientMonitor" class="desktop-patient-monitor" aria-label="Patient vital signs monitor">
+    <header class="desktop-monitor-head">
+      <div><small>PATIENT MONITOR</small><strong id="desktopMonitorStatus">Monitoring</strong></div>
+      <span class="desktop-monitor-live"><i aria-hidden="true"></i> LIVE</span>
+    </header>
+    <div class="desktop-monitor-grid">
+      <article id="monitorVitalBP" class="desktop-monitor-vital" data-vital-key="blood_pressure">
+        <span>BP</span><strong id="monitorBP">—</strong><small id="monitorBPState">Not obtained</small>
+      </article>
+      <article id="monitorVitalPulse" class="desktop-monitor-vital" data-vital-key="pulse">
+        <span>HR</span><strong id="monitorPulse">—</strong><small id="monitorPulseState">Not obtained</small>
+      </article>
+      <article id="monitorVitalRR" class="desktop-monitor-vital" data-vital-key="respirations">
+        <span>RR</span><strong id="monitorRR">—</strong><small id="monitorRRState">Not obtained</small>
+      </article>
+      <article id="monitorVitalSpO2" class="desktop-monitor-vital" data-vital-key="spo2">
+        <span>SpO₂</span><strong id="monitorSpO2">—</strong><small id="monitorSpO2State">Not obtained</small>
+      </article>
+    </div>
+    <footer class="desktop-monitor-foot"><span id="desktopMonitorDue">No reassessment due</span><small>Values update from the patient record</small></footer>
+  </aside>
 
   <nav class="bottom-nav" aria-label="Scenario controls">
     <button data-panel="assessmentPanel" type="button"><span>◎</span>Assessment</button>
