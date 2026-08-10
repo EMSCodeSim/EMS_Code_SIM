@@ -4081,12 +4081,68 @@
   }, true);
 
   $('closeEmbeddedSim')?.addEventListener('click', () => closeEmbeddedSimulator());
+  function fitEmbeddedSimulatorToPane() {
+    const frame = $('embeddedSimFrame');
+    if (!frame || frame.src === 'about:blank' || !desktopScenarioMode()) return;
+    try {
+      const doc = frame.contentDocument;
+      const win = frame.contentWindow;
+      if (!doc || !win) return;
+      const root = doc.documentElement;
+      const body = doc.body;
+      if (!root || !body) return;
+
+      root.dataset.emsEmbeddedFit = 'true';
+      let style = doc.getElementById('emsEmbeddedAutoFitStyle');
+      if (!style) {
+        style = doc.createElement('style');
+        style.id = 'emsEmbeddedAutoFitStyle';
+        style.textContent = `
+          html[data-ems-embedded-fit="true"], html[data-ems-embedded-fit="true"] body {
+            max-width:none!important;
+            margin:0!important;
+          }
+          html[data-ems-embedded-fit="true"] body {
+            transform-origin:top left!important;
+          }
+        `;
+        doc.head?.appendChild(style);
+      }
+
+      // Measure at natural size first, then scale the complete simulator so both
+      // width and height fit the resized patient pane. Never upscale above 100%.
+      body.style.zoom = '1';
+      body.style.width = '100%';
+      root.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
+
+      requestAnimationFrame(() => {
+        const availableW = Math.max(1, frame.clientWidth - 2);
+        const availableH = Math.max(1, frame.clientHeight - 2);
+        const contentW = Math.max(root.scrollWidth, body.scrollWidth, availableW);
+        const contentH = Math.max(root.scrollHeight, body.scrollHeight, availableH);
+        const scale = Math.max(0.52, Math.min(1, availableW / contentW, availableH / contentH));
+        body.style.zoom = String(scale);
+        body.style.width = `${100 / scale}%`;
+        body.dataset.emsFitScale = scale.toFixed(3);
+      });
+    } catch (_) {
+      // Embedded EMSCodeSim tools are same-origin. Ignore transient load states.
+    }
+  }
+
+  function scheduleEmbeddedFit() {
+    window.clearTimeout(window.__emsEmbeddedFitTimer);
+    window.__emsEmbeddedFitTimer = window.setTimeout(fitEmbeddedSimulatorToPane, 60);
+  }
+
   $('embeddedSimFrame')?.addEventListener('load', () => {
     const frame = $('embeddedSimFrame');
     if (!frame || frame.src === 'about:blank') return;
     try {
       const current = frame.contentWindow?.location;
       if (current?.pathname === '/vitals/visual-patient.html') closeEmbeddedSimulator();
+      else scheduleEmbeddedFit();
     } catch (_) {
       // All embedded tools are same-origin; ignore transient navigation access errors.
     }
@@ -4094,6 +4150,7 @@
 
   window.addEventListener('resize', () => {
     if (!desktopScenarioMode()) closeEmbeddedSimulator({ refresh:false });
+    else if (!$('embeddedSimWorkspace')?.hidden) scheduleEmbeddedFit();
   });
 
   const initialRecord = ensureRecord();

@@ -2248,3 +2248,4 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     display:none!important;
   }
 }
+\n\n/* Embedded simulator responsive fit 2.308 */\n@media(min-width:980px){\n  .embedded-sim-workspace{overflow:hidden!important;min-width:0!important;min-height:0!important}\n  .embedded-sim-workspace iframe{width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;overflow:hidden!important}\n}\n
