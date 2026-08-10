@@ -91,6 +91,8 @@
   let horseCurrentAssessment = 'abc';
   let horseAssessmentCollapsed = false;
   let horseHistoryActiveGroup = '';
+  let horseAssessmentActiveCategory = '';
+  let horseAssessmentActiveItem = '';
   let horseTreatmentActiveGroup = '';
   let horseTreatmentActivePlan = '';
   let horseHandoffOpen = false;
@@ -979,36 +981,169 @@
   }
 
 
+
+  function horseAssessmentCategoryDefinitions() {
+    return [
+      {
+        id:'abc',
+        icon:'ABC',
+        label:'Primary / ABC',
+        description:'Airway, breathing, circulation, immediate threats.',
+        items:[
+          { id:'airway', label:'Airway', prompt:'Assess the airway.' },
+          { id:'breathing', label:'Breathing', prompt:'Assess breathing adequacy.' },
+          { id:'perfusion', label:'Circulation', prompt:'Assess pulse, perfusion, and major bleeding.' }
+        ]
+      },
+      {
+        id:'head_neck',
+        icon:'H/N',
+        label:'Head / Neck',
+        description:'Head, face, neck, cervical spine.',
+        items:[
+          { id:'head_exam', label:'Head / Face', prompt:'Inspect and palpate the head and face.' },
+          { id:'neck_back', label:'Neck / C-spine', prompt:'Assess the neck and cervical spine.' }
+        ]
+      },
+      {
+        id:'chest',
+        icon:'CHEST',
+        label:'Chest',
+        description:'Inspect, palpate, and assess breath sounds.',
+        items:[
+          { id:'chest_assessment', label:'Chest Assessment', prompt:'Inspect and palpate the chest; assess respiratory findings.' },
+          { id:'lung_sounds', label:'Breath Sounds', prompt:'Auscultate bilateral breath sounds.' }
+        ]
+      },
+      {
+        id:'abdomen_pelvis',
+        icon:'A/P',
+        label:'Abdomen / Pelvis',
+        description:'Abdominal and pelvic assessment.',
+        items:[
+          { id:'abdominal_assessment', label:'Abdomen', prompt:'Inspect and palpate the abdomen.' },
+          { id:'pelvis_hip', label:'Pelvis / Hip', prompt:'Assess the pelvis and painful hip.' }
+        ]
+      },
+      {
+        id:'extremities',
+        icon:'EXT',
+        label:'Extremities',
+        description:'Upper and lower extremity injury assessment.',
+        items:[
+          { id:'upper_extremities', label:'Upper Extremities', prompt:'Assess both upper extremities.' },
+          { id:'left_leg', label:'Injured Leg', prompt:'Assess the painful/injured leg.' },
+          { id:'distal_csm', label:'Distal CSM', prompt:'Assess distal circulation, sensation, and movement.' }
+        ]
+      },
+      {
+        id:'neuro_skin',
+        icon:'N/S',
+        label:'Neuro / Skin',
+        description:'Neurologic and skin findings.',
+        items:[
+          { id:'neuro', label:'Neurologic', prompt:'Assess mental status and neurologic function.' },
+          { id:'skin', label:'Skin', prompt:'Assess skin color, temperature, and condition.' }
+        ]
+      }
+    ];
+  }
+
+  function renderHorseAssessmentCategoryWorkspace(categoryId) {
+    const box = $('assessmentTools');
+    const category = horseAssessmentCategoryDefinitions().find(item => item.id === categoryId);
+    if (!box || !category) return;
+
+    horseAssessmentActiveCategory = category.id;
+    const current = record() || {};
+    const completed = key => Boolean(api?.getFinding?.(key, current));
+
+    box.className = 'assessment-list horse-assessment-category-workspace';
+    box.innerHTML = `
+      <div class="horse-assessment-workspace-head">
+        <button type="button" class="horse-assessment-back" id="horseAssessmentBack">‹ Assessments</button>
+        <div><small>ASSESSMENT</small><strong>${escapeHtml(category.label)}</strong><span>${escapeHtml(category.description)}</span></div>
+      </div>
+      <div class="horse-assessment-workspace-actions">
+        ${category.items.map(item => `
+          <button type="button" class="horse-assessment-workspace-action${completed(item.id) ? ' used' : ''}" data-assessment-item="${escapeHtml(item.id)}">
+            <span>${completed(item.id) ? '✓' : '○'}</span>
+            <strong>${escapeHtml(item.label)}</strong>
+          </button>`).join('')}
+      </div>
+      <div id="horseAssessmentInlineQuestion" class="horse-assessment-inline-question" hidden></div>`;
+
+    box.querySelector('#horseAssessmentBack')?.addEventListener('click', () => {
+      horseAssessmentActiveCategory = '';
+      buildHorseAssessmentChooserDesktop();
+    });
+
+    box.querySelectorAll('[data-assessment-item]').forEach(button => {
+      button.addEventListener('click', () => {
+        const item = category.items.find(row => row.id === button.dataset.assessmentItem);
+        if (!item) return;
+        horseAssessmentActiveItem = item.id;
+        // Reuse existing assessment selection path if available.
+        const existing = document.querySelector(`[data-assessment-key="${CSS.escape(item.id)}"], [data-assessment="${CSS.escape(item.id)}"]`);
+        if (existing && existing !== button) {
+          existing.click();
+          return;
+        }
+        // Fallback to current assessment workflow.
+        selectHorseCurrentAssessment?.(item.id);
+      });
+    });
+  }
+
+  function renderHorseAssessmentInlineFollowup(title, bodyHtml, onBack) {
+    const box = $('assessmentTools');
+    if (!box || !desktopWorkspace()) return false;
+    box.className = 'assessment-list horse-assessment-followup-workspace';
+    box.innerHTML = `
+      <div class="horse-assessment-workspace-head">
+        <button type="button" class="horse-assessment-back" id="horseAssessmentFollowupBack">‹ Back</button>
+        <div><small>FOLLOW-UP</small><strong>${escapeHtml(title || 'Assessment question')}</strong></div>
+      </div>
+      <div class="horse-assessment-followup-body">${bodyHtml || ''}</div>`;
+    box.querySelector('#horseAssessmentFollowupBack')?.addEventListener('click', () => {
+      if (typeof onBack === 'function') onBack();
+      else if (horseAssessmentActiveCategory) renderHorseAssessmentCategoryWorkspace(horseAssessmentActiveCategory);
+      else buildHorseAssessmentChooserDesktop();
+    });
+    return true;
+  }
+
   function buildHorseAssessmentChooserDesktop() {
     const box = $('assessmentTools');
     if (!box) return;
+    if (horseAssessmentActiveCategory) {
+      renderHorseAssessmentCategoryWorkspace(horseAssessmentActiveCategory);
+      return;
+    }
     const current = record() || {};
     const completed = key => Boolean(api?.getFinding?.(key, current));
-    const groups = [
-      { id:'abc', icon:'ABC', label:'ABC Assessment', description:'Rapidly reassess airway, breathing, and circulation.', keys:['airway','breathing','perfusion'] },
-      { id:'head_to_toe', icon:'↕', label:'Head-to-Toe Exam', description:'Systematic trauma examination from head through distal extremities.', keys:['head_exam','neck_back','chest_assessment','abdominal_assessment','pelvis_hip','upper_extremities','left_leg','distal_csm'] },
-      { id:'focused_leg', icon:'◉', label:'Focused Hip / Leg', description:'Concentrate on the painful hip, injured leg, and distal CSM.', keys:['pelvis_hip','left_leg','distal_csm'] }
-    ];
+    const categories = horseAssessmentCategoryDefinitions();
 
     box.className = 'assessment-list horse-assessment-drill-menu';
     box.innerHTML = `
       <div class="horse-drill-menu-head">
         <small>ASSESSMENT</small>
-        <strong>Choose an assessment</strong>
-        <span>The selected assessment replaces this menu in the center workspace.</span>
+        <strong>Choose an assessment category</strong>
+        <span>Select a category. Its available assessments will replace this menu.</span>
       </div>
       <div class="horse-assessment-drill-grid">
-        ${groups.map(group => {
-          const done = group.keys.filter(completed).length;
-          return `<button type="button" class="horse-assessment-drill-choice" data-horse-assessment-choice="${group.id}">
-            <span class="horse-assessment-drill-icon">${group.icon}</span>
-            <span><strong>${escapeHtml(group.label)}</strong><small>${escapeHtml(group.description)}</small></span>
-            <em>${done}/${group.keys.length}</em>
+        ${categories.map(category => {
+          const done = category.items.filter(item => completed(item.id)).length;
+          return `<button type="button" class="horse-assessment-drill-choice" data-assessment-category="${escapeHtml(category.id)}">
+            <span class="horse-assessment-drill-icon">${escapeHtml(category.icon)}</span>
+            <span><strong>${escapeHtml(category.label)}</strong><small>${escapeHtml(category.description)}</small></span>
+            <em>${done}/${category.items.length}</em>
           </button>`;
         }).join('')}
       </div>`;
-    box.querySelectorAll('[data-horse-assessment-choice]').forEach(button => {
-      button.addEventListener('click', () => selectHorseCurrentAssessment(button.dataset.horseAssessmentChoice || 'abc'));
+
+    box.querySelectorAll('[data-assessment-category]').forEach(button => {
+      button.addEventListener('click', () => renderHorseAssessmentCategoryWorkspace(button.dataset.assessmentCategory || 'abc'));
     });
   }
 
@@ -1440,7 +1575,7 @@
     const questionBox = $('horseClinicalQuestionBox');
     if (questionBox) {
       questionBox.classList.remove('active','history-active');
-      questionBox.innerHTML = `<div class="horse-question-placeholder"><small>PATIENT INTERVIEW</small><strong>Questions now open directly in the History workspace.</strong></div>`;
+      questionBox.innerHTML = `<div class="horse-question-placeholder"><small>PATIENT INTERVIEW</small><strong>History questions now open directly in the center workspace.</strong></div>`;
     }
   }
 

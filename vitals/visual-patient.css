@@ -2379,3 +2379,65 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     justify-self:start;min-height:36px;border:1px solid #d5a741;border-radius:9px;background:#3a3015;color:#fff;padding:6px 11px;font-size:.66rem;font-weight:900;cursor:pointer
   }
 }
+
+
+/* ===== Assessment + History Treatment-Style Drilldown 2.310 ===== */
+@media(min-width:980px){
+  /* Dedicated follow-up box is retired on desktop. */
+  body.horse-current-emt-call.desktop-scenario-layout #horseClinicalQuestionBox{
+    display:none!important;
+  }
+
+  /* Assessment category -> assessments -> inline follow-up */
+  body.horse-current-emt-call.desktop-scenario-layout #assessmentTools.horse-assessment-category-workspace,
+  body.horse-current-emt-call.desktop-scenario-layout #assessmentTools.horse-assessment-followup-workspace{
+    height:100%;min-height:0;overflow:auto;padding:8px!important;
+    display:grid!important;grid-template-rows:auto auto minmax(0,1fr);gap:7px!important
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-workspace-head{
+    display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:center;
+    padding-bottom:6px;border-bottom:1px solid #294d64
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-workspace-head>div{display:grid;gap:1px;min-width:0}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-workspace-head small{
+    color:#8fe0c4;font-size:.56rem;font-weight:950;letter-spacing:.08em
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-workspace-head strong{color:#fff;font-size:.82rem}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-workspace-head span{
+    color:#9fb5c2;font-size:.58rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-back{
+    min-height:32px;border:1px solid #526c7c;border-radius:8px;background:#173147;color:#fff;
+    padding:5px 8px;font-size:.62rem;font-weight:900;cursor:pointer
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-workspace-actions{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-workspace-action{
+    display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:7px;min-height:44px;
+    border:1px solid #31566d;border-radius:9px;background:#0d2232;color:#fff;padding:7px 8px;text-align:left;cursor:pointer
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-workspace-action>span{
+    color:#8fe0c4;font-size:.72rem
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-workspace-action strong{
+    font-size:.67rem;line-height:1.2
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-workspace-action.used{
+    border-color:#2e946d;background:#0d3028
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-inline-question[hidden]{display:none!important}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-inline-question,
+  body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-followup-body{
+    min-height:0;overflow:auto;border:1px solid #294d64;border-radius:10px;background:#091b29;padding:8px
+  }
+
+  /* History follow-up occupies center and hides category/question menu until complete/back. */
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-inline-followup{
+    height:100%;min-height:0;overflow:auto;padding:8px!important;
+    display:grid!important;grid-template-rows:auto minmax(0,1fr);gap:7px!important
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-history-inline-followup-body{
+    min-height:0;overflow:auto;border:1px solid #294d64;border-radius:10px;background:#091b29;padding:8px
+  }
+}
