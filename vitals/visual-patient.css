@@ -2556,3 +2556,19 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
   }
   body.horse-current-emt-call.desktop-scenario-layout .bottom-nav button[data-panel="vitalsPanel"]{display:none!important}
 }
+
+
+/* ===== Embedded Mini Sim Centered Fit 2.315 ===== */
+@media(min-width:980px){
+  .embedded-sim-workspace{
+    background:#07131f!important;
+  }
+  .embedded-sim-workspace iframe{
+    width:100%!important;
+    height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    background:#07131f!important;
+    overflow:hidden!important;
+  }
+}

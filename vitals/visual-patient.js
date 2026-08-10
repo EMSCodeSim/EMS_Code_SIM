@@ -4324,48 +4324,88 @@
     if (!frame || frame.src === 'about:blank' || !desktopScenarioMode()) return;
     try {
       const doc = frame.contentDocument;
-      const win = frame.contentWindow;
-      if (!doc || !win) return;
+      if (!doc) return;
       const root = doc.documentElement;
       const body = doc.body;
       if (!root || !body) return;
 
       root.dataset.emsEmbeddedFit = 'true';
+
       let style = doc.getElementById('emsEmbeddedAutoFitStyle');
       if (!style) {
         style = doc.createElement('style');
         style.id = 'emsEmbeddedAutoFitStyle';
         style.textContent = `
-          html[data-ems-embedded-fit="true"], html[data-ems-embedded-fit="true"] body {
-            max-width:none!important;
-            margin:0!important;
+          html[data-ems-embedded-fit="true"] {
+            width:100%!important;
+            height:100%!important;
+            overflow:hidden!important;
+            background:#07131f!important;
           }
           html[data-ems-embedded-fit="true"] body {
+            margin:0!important;
+            max-width:none!important;
+            min-width:0!important;
             transform-origin:top left!important;
+            position:absolute!important;
+            left:0;
+            top:0;
+            overflow:visible!important;
           }
         `;
         doc.head?.appendChild(style);
       }
 
-      // Measure at natural size first, then scale the complete simulator so both
-      // width and height fit the resized patient pane. Never upscale above 100%.
-      body.style.zoom = '1';
-      body.style.width = '100%';
-      root.style.overflow = 'hidden';
-      body.style.overflow = 'hidden';
+      // Reset to the simulator's natural dimensions before measuring.
+      body.style.zoom = '';
+      body.style.transform = 'none';
+      body.style.left = '0px';
+      body.style.top = '0px';
+      body.style.width = 'auto';
+      body.style.height = 'auto';
 
       requestAnimationFrame(() => {
-        const availableW = Math.max(1, frame.clientWidth - 2);
-        const availableH = Math.max(1, frame.clientHeight - 2);
-        const contentW = Math.max(root.scrollWidth, body.scrollWidth, availableW);
-        const contentH = Math.max(root.scrollHeight, body.scrollHeight, availableH);
-        const scale = Math.max(0.52, Math.min(1, availableW / contentW, availableH / contentH));
-        body.style.zoom = String(scale);
-        body.style.width = `${100 / scale}%`;
+        const availableW = Math.max(1, frame.clientWidth - 12);
+        const availableH = Math.max(1, frame.clientHeight - 12);
+
+        // Prefer the actual rendered bounding size, while still accounting for
+        // any overflow created by larger controls/graphics.
+        const rect = body.getBoundingClientRect();
+        const naturalW = Math.max(
+          Math.ceil(rect.width),
+          body.scrollWidth,
+          root.scrollWidth,
+          1
+        );
+        const naturalH = Math.max(
+          Math.ceil(rect.height),
+          body.scrollHeight,
+          root.scrollHeight,
+          1
+        );
+
+        // Fit to both dimensions. Never enlarge a simulator beyond 100%.
+        // Allow smaller scales for older large BP/pulse sims when necessary.
+        const scale = Math.max(
+          0.42,
+          Math.min(1, availableW / naturalW, availableH / naturalH)
+        );
+
+        const scaledW = naturalW * scale;
+        const scaledH = naturalH * scale;
+        const offsetX = Math.max(0, (frame.clientWidth - scaledW) / 2);
+        const offsetY = Math.max(0, (frame.clientHeight - scaledH) / 2);
+
+        body.style.width = `${naturalW}px`;
+        body.style.height = `${naturalH}px`;
+        body.style.transform = `scale(${scale})`;
+        body.style.left = `${Math.round(offsetX)}px`;
+        body.style.top = `${Math.round(offsetY)}px`;
         body.dataset.emsFitScale = scale.toFixed(3);
+        body.dataset.emsFitNatural = `${naturalW}x${naturalH}`;
       });
     } catch (_) {
-      // Embedded EMSCodeSim tools are same-origin. Ignore transient load states.
+      // Same-origin embedded tools may briefly be unavailable while loading.
     }
   }
 
