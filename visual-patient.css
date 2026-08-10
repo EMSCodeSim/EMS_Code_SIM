@@ -1736,153 +1736,246 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
   body.horse-current-emt-call.desktop-scenario-layout .horse-log-list.category-view .care-log-item{margin-left:8px}
 }
 
+/* ==========================================================
+   Desktop Clinical Workspace Update 2.300
+   Desktop only. Phone/tablet behavior remains unchanged.
+   Patient = left | Patient update/guidance = center | Actions = right
+   ========================================================== */
+@media (min-width: 961px){
+  html,body{height:100%}
+  body{overflow:hidden;background:#06131f}
+  .vp-shell{
+    max-width:none;
+    width:100%;
+    height:100vh;
+    min-height:0;
+    padding:10px 12px 12px;
+    margin:0;
+    display:grid;
+    grid-template-rows:auto minmax(0,1fr);
+    gap:8px;
+  }
+  .vp-top{
+    grid-template-columns:54px minmax(0,1fr) auto;
+    min-height:62px;
+    padding:3px 0 5px;
+    border-bottom:1px solid #294e65;
+  }
+  .vp-top h1{font-size:1.16rem}
+  .vp-top p{font-size:.72rem}
+  .vp-timer{display:flex;align-items:center;gap:10px;text-align:left;padding:7px 10px}
+  .vp-timer span,.vp-timer strong,.vp-timer small{display:block}
+  .vp-timer strong{font-size:1.08rem}
+  .patient-clock-status{max-width:210px}
+  .scenario-build-stamp-dark{display:none!important}
+  .scenario-quick-controls{display:none}
 
-/* Horse hospital handoff 2.220 — bedside note board replaces the patient picture during report. */
-.hospital-handoff-workspace[hidden]{display:none!important}
-.hospital-handoff-workspace{
-  position:absolute;inset:0;z-index:14;display:flex;flex-direction:column;min-width:0;min-height:0;
-  background:#e8edf0;color:#102332
-}
-.hospital-handoff-header{
-  display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;
-  background:#0b1d2c;color:#fff;border-bottom:1px solid #31566d
-}
-.hospital-handoff-header>div{display:grid;gap:2px;min-width:0}
-.hospital-handoff-header small{color:#8ccfff;font-size:.64rem;font-weight:950;letter-spacing:.08em}
-.hospital-handoff-header strong{font-size:1.05rem}
-.hospital-handoff-header span{color:#abc2d0;font-size:.7rem}
-.hospital-handoff-header button{border:1px solid #557386;border-radius:9px;background:#142f42;color:#fff;padding:7px 10px;font-weight:850;cursor:pointer}
-.hospital-handoff-layout{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(300px,.72fr);gap:0;flex:1 1 auto;min-height:0;overflow:hidden}
-.hospital-handoff-notes,.hospital-handoff-report{min-height:0;padding:12px 13px;overflow:auto}
-.hospital-handoff-notes{
-  background-color:#f8f7f0;
-  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 27px,rgba(107,145,168,.16) 28px)
-}
-.hospital-handoff-report{background:#eef3f5;border-left:1px solid #b9c7cf}
-.hospital-handoff-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
-.hospital-handoff-section-head small{display:block;color:#47708a;font-size:.6rem;font-weight:950;letter-spacing:.07em}
-.hospital-handoff-section-head h2{margin:2px 0 0;font-size:.98rem;color:#112d3e}
-.hospital-handoff-section-head>span{border:1px solid #a9bdc9;border-radius:999px;background:#fff;padding:4px 7px;color:#486675;font-size:.6rem;font-weight:850;white-space:nowrap}
-.hospital-handoff-note-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;align-items:start}
-.handoff-note-card{border:1px solid #c4d0d6;border-radius:11px;background:rgba(255,255,255,.92);padding:9px 10px;box-shadow:0 2px 6px rgba(14,43,60,.06)}
-.handoff-note-card h3{margin:0 0 7px;padding-bottom:5px;border-bottom:1px solid #dbe4e8;color:#17384b;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
-.handoff-note-row{display:grid;grid-template-columns:82px minmax(0,1fr);gap:7px;padding:4px 0;border-bottom:1px dotted #cbd6dc}
-.handoff-note-row:last-child{border-bottom:0}
-.handoff-note-row span{color:#5f7480;font-size:.62rem;font-weight:800}
-.handoff-note-row strong{color:#172b37;font-size:.68rem;line-height:1.3;font-weight:700;overflow-wrap:anywhere}
-.handoff-note-empty{margin:4px 0;color:#8a969d;font-size:.66rem;font-style:italic}
-.handoff-note-priority{border-left:4px solid #4387ae}
-.handoff-note-vitals{border-left:4px solid #278a73}
-.handoff-note-treatment{border-left:4px solid #8a6f2b}
-.handoff-note-transport{border-left:4px solid #725aa3}
-.hospital-handoff-draft-label{display:block;margin:2px 0 5px;color:#385b6d;font-size:.67rem;font-weight:900}
-#hospitalHandoffDraft{width:100%;min-height:210px;resize:vertical;border:1px solid #93aab7;border-radius:10px;background:#fff;color:#112a38;padding:10px;font:inherit;font-size:.75rem;line-height:1.42;box-sizing:border-box}
-.hospital-handoff-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
-.hospital-handoff-actions button{min-height:38px;border-radius:9px;font-weight:900;cursor:pointer}
-.sample-handoff-panel{margin-top:9px;padding:10px;border:1px solid #9bb6c5;border-radius:10px;background:#fff}
-.sample-handoff-panel>div{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.sample-handoff-panel>div small{color:#315e77;font-size:.61rem;font-weight:950;letter-spacing:.06em}
-.sample-handoff-panel>div button{border:0;background:transparent;color:#456474;font-size:1.2rem;line-height:1;cursor:pointer}
-.sample-handoff-panel p{margin:8px 0;color:#172d39;font-size:.72rem;line-height:1.45}
-.sample-handoff-panel>small{color:#667c88;font-size:.61rem;line-height:1.35}
-body.hospital-handoff-open .patient-stage:after,body.hospital-handoff-open .scene-clue-layer{display:none!important}
-.horse-handoff-launch-card{display:grid;gap:8px;padding:8px;border:1px solid rgba(143,224,196,.2);border-radius:10px;background:#0a211b}
-.horse-handoff-launch-card>small{color:#b5cac2;font-size:.63rem;line-height:1.35}
-.horse-handoff-launch-card>div{display:flex;gap:7px;flex-wrap:wrap}
-.horse-handoff-launch-card .secondary{min-height:34px;border:1px solid #4b7064;border-radius:9px;background:#17372f;color:#e6fff6;padding:6px 10px;font-weight:900;cursor:pointer}
+  .patient-desktop-workspace{min-height:0;height:100%;padding-right:29vw}
+  .scenario-hero-layout{
+    display:grid!important;
+    grid-template-columns:minmax(0,1.58fr) minmax(360px,.92fr)!important;
+    gap:12px!important;
+    align-items:stretch!important;
+    height:100%;
+    min-height:0;
+  }
+  .patient-stage{
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+    border-radius:18px;
+    box-shadow:0 12px 34px rgba(0,0,0,.24);
+  }
+  .patient-stage img{object-position:center center}
+  .patient-control-column{
+    min-width:0;
+    height:100%;
+    max-height:100%;
+    overflow:auto;
+    overscroll-behavior:contain;
+    padding:0 4px 20px 0;
+    scrollbar-width:thin;
+  }
+  .patient-control-column::-webkit-scrollbar,.action-sheet::-webkit-scrollbar{width:7px}
+  .patient-control-column::-webkit-scrollbar-thumb,.action-sheet::-webkit-scrollbar-thumb{background:#31566d;border-radius:99px}
 
-@media(max-width:1150px) and (min-width:980px){
-  .hospital-handoff-layout{grid-template-columns:minmax(0,1fr) minmax(280px,.72fr)}
-  .hospital-handoff-note-grid{grid-template-columns:1fr}
-  .handoff-note-row{grid-template-columns:76px minmax(0,1fr)}
-  #hospitalHandoffDraft{min-height:170px}
+  /* One visually dominant, predictable patient-update location. */
+  .info-update-window{
+    position:sticky!important;
+    top:0!important;
+    z-index:14!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0 0 9px!important;
+    border-radius:15px!important;
+    box-shadow:0 10px 24px rgba(0,0,0,.24)!important;
+  }
+  .info-update-window:before{
+    content:"PATIENT UPDATE";
+    display:block;
+    margin:0 0 7px;
+    color:#8ccfff;
+    font-size:.58rem;
+    font-weight:950;
+    letter-spacing:.1em;
+  }
+  .info-update-window.is-collapsed:before{display:none}
+  .info-update-window>strong{font-size:.92rem}
+  .info-update-window>p{font-size:.79rem;line-height:1.42}
+  .info-update-controls{margin-top:7px}
+  .horse-clinical-question-box,.horse-current-assessment,.patient-entry-workflow{margin-top:9px}
+  .horse-question-placeholder{min-height:58px}
+  .patient-phase-controls{grid-template-columns:1fr 1fr}
+  .scene-guide-photo{max-height:none}
+  .guide-note{font-size:.66rem}
+
+  /* Desktop action tabs become the top of a permanent right clinical rail. */
+  .bottom-nav{
+    position:fixed!important;
+    z-index:44!important;
+    top:80px!important;
+    right:12px!important;
+    left:auto!important;
+    bottom:auto!important;
+    transform:none!important;
+    width:calc(29vw - 20px)!important;
+    max-width:none!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:6px!important;
+    padding:8px!important;
+    border:1px solid #31566d!important;
+    border-radius:15px!important;
+    background:rgba(7,24,39,.98)!important;
+    box-shadow:0 10px 30px rgba(0,0,0,.25)!important;
+  }
+  .bottom-nav button{
+    min-height:52px!important;
+    padding:7px 4px!important;
+    border-radius:10px!important;
+    font-size:.66rem!important;
+  }
+  .bottom-nav button>span{font-size:1.05rem!important;margin-bottom:1px!important}
+  .bottom-nav button[data-panel="findingsPanel"]{
+    position:absolute;
+    right:8px;
+    top:68px;
+    width:96px;
+    min-height:34px!important;
+    padding:5px 8px!important;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    background:#0d2232;
+  }
+  .bottom-nav button[data-panel="findingsPanel"]>span{display:inline!important;font-size:.9rem!important;margin:0!important}
+
+  /* On desktop the action sheet is a rail, never a bottom-sheet overlay. */
+  .sheet-backdrop{display:none!important}
+  .action-sheet{
+    position:fixed!important;
+    z-index:42!important;
+    top:154px!important;
+    right:12px!important;
+    left:auto!important;
+    bottom:12px!important;
+    transform:none!important;
+    width:calc(29vw - 20px)!important;
+    max-width:none!important;
+    max-height:none!important;
+    overflow:auto!important;
+    padding:9px 10px 18px!important;
+    border:1px solid #31566d!important;
+    border-radius:15px!important;
+    background:#0b1d2c!important;
+    box-shadow:0 14px 36px rgba(0,0,0,.28)!important;
+  }
+  .action-sheet[hidden]{
+    display:block!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+  .action-sheet:not([hidden]){visibility:visible!important;pointer-events:auto!important}
+  .sheet-handle{display:none}
+  .sheet-header{
+    top:-9px!important;
+    margin:0 -1px;
+    padding:9px 2px 8px!important;
+    border-bottom:1px solid #294e65;
+  }
+  .sheet-header p{font-size:.58rem!important;letter-spacing:.07em}
+  .sheet-header h2{font-size:1.05rem!important}
+  .return-patient-btn{width:34px!important;min-width:34px!important;height:34px!important;padding:0!important}
+  .return-patient-btn span{display:none!important}
+  .sheet-patient-context{
+    position:static!important;
+    grid-template-columns:1fr!important;
+    gap:4px!important;
+    margin:8px 0!important;
+    padding:7px 8px!important;
+    background:#071827!important;
+  }
+  .sheet-patient-context>span{display:grid!important;grid-template-columns:82px minmax(0,1fr)!important;align-items:center;gap:7px!important}
+  .sheet-patient-context small{font-size:.55rem!important}
+  .sheet-patient-context strong{margin:0!important;font-size:.65rem!important}
+  .vp-panel .sub{margin:7px 0 10px!important;font-size:.72rem!important;line-height:1.35}
+  .compact-vital-row{min-height:66px!important;padding:8px 9px!important}
+  .tool,.assessment-compact-row,.treatment-neutral-card,.care-log-item{min-height:46px}
+  .assessment-immediate,.assessment-recommended,.assessment-more-body{padding:8px!important}
+  .assessment-more>summary,.assessment-category>summary{padding:9px!important}
+  .treatment-category>summary{padding:9px 10px!important}
+  .panel-search{position:sticky;top:54px;z-index:4;background:#0b1d2c;padding-bottom:7px}
+  .history-response-card{margin-top:7px}
+  .horse-log-header small{display:none}
+  .horse-log-view-toggle{gap:4px}
+  .finding-filters{display:flex;overflow-x:auto;gap:4px;padding-bottom:4px}
+  .finding-filters button{flex:0 0 auto}
+
+  /* Clinical status is compact and only expands when the user requests it. */
+  .persistent-clinical-bar{
+    position:fixed!important;
+    z-index:45!important;
+    top:80px!important;
+    right:calc(29vw + 6px)!important;
+    left:auto!important;
+    bottom:auto!important;
+    width:min(320px,21vw)!important;
+    padding:0!important;
+    background:transparent!important;
+    border:0!important;
+  }
+  .persistent-clinical-bar>button{
+    border:1px solid #31566d!important;
+    border-radius:12px!important;
+    padding:7px 9px!important;
+    background:rgba(7,24,39,.94)!important;
+    box-shadow:0 8px 22px rgba(0,0,0,.2);
+  }
+  .persistent-clinical-bar .clinical-bar-finding{display:none}
+  .persistent-clinical-bar>button{grid-template-columns:minmax(0,1fr) auto auto!important}
+  .clinical-task-drawer{
+    position:absolute!important;
+    right:0!important;
+    top:48px!important;
+    width:320px!important;
+    grid-template-columns:1fr!important;
+    border:1px solid #31566d!important;
+    border-radius:12px!important;
+    background:#071827!important;
+    box-shadow:0 12px 28px rgba(0,0,0,.34)!important;
+  }
+  .clinical-task-drawer>div{padding:7px!important}
+  .clinical-task-drawer>div span{font-size:.68rem!important}
+
+  /* Full-screen tools still take priority over the workspace. */
+  .embedded-sim-workspace,.hospital-handoff-workspace,.horse-grade-workspace{z-index:60}
+  .clinical-next-actions{right:calc(29vw + 18px);left:auto;transform:none;bottom:18px;width:min(600px,46vw)}
+  .toast{bottom:24px}
 }
-@media(max-width:979px){
-  .hospital-handoff-workspace{display:none!important}
-}
 
-
-/* Desktop clinical workstation 2.221 */
-.scenario-desktop-quick{display:none}
-.scenario-help-message{display:grid;gap:3px;margin:8px 0;padding:9px 10px;border:1px solid #31566d;border-radius:10px;background:#0d2232;color:#d7e7f0}
-.scenario-help-message strong{color:#8ccfff;font-size:.72rem}.scenario-help-message span{font-size:.7rem;line-height:1.35}.scenario-help-message.ready{border-color:#2e946d;background:#0d3028}.scenario-help-message.ready strong{color:#9af0c5}
-@media(min-width:980px){
-body.horse-current-emt-call.desktop-scenario-layout .vp-shell{grid-template-rows:auto auto minmax(0,1fr)!important}
-body.horse-current-emt-call.desktop-scenario-layout .scenario-quick-controls{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:7px!important;margin:0!important}
-body.horse-current-emt-call.desktop-scenario-layout .scenario-desktop-quick{display:block!important}body.horse-current-emt-call.desktop-scenario-layout #resetScenarioQuick{display:none!important}
-body.horse-current-emt-call.desktop-scenario-layout #transportScenarioQuick{order:1}body.horse-current-emt-call.desktop-scenario-layout #handoffScenarioQuick{order:2}body.horse-current-emt-call.desktop-scenario-layout #progressHelpScenarioQuick{order:3}body.horse-current-emt-call.desktop-scenario-layout #endScenarioQuick{order:4}
-body.horse-current-emt-call.desktop-scenario-layout .scenario-quick-controls button{min-height:36px!important;padding:6px 10px!important;border-radius:10px!important;border:1px solid #31566d!important;background:#10283a!important;color:#fff!important;font-size:.72rem!important;font-weight:900!important}
-body.horse-current-emt-call.desktop-scenario-layout #progressHelpScenarioQuick{border-color:#39789e!important;background:#173f5a!important}body.horse-current-emt-call.desktop-scenario-layout #endScenarioQuick{border-color:#8e4850!important;background:#3b2024!important}
-body.horse-current-emt-call.desktop-scenario-layout .scenario-hero-layout{grid-template-columns:minmax(0,1.45fr) minmax(500px,1fr)!important;gap:14px!important}
-body.horse-current-emt-call.desktop-scenario-layout .patient-control-column{grid-template-rows:auto auto auto minmax(0,1fr)!important;grid-template-areas:"info" "question" "nav" "current"!important;gap:7px!important}
-body.horse-current-emt-call.desktop-scenario-layout #infoUpdateWindow{min-height:0!important;max-height:none!important;overflow:visible!important;padding:9px 11px!important}body.horse-current-emt-call.desktop-scenario-layout #infoUpdateWindow>p{max-height:none!important;overflow:visible!important}
-body.horse-current-emt-call.desktop-scenario-layout #horseClinicalQuestionBox{min-height:0!important;max-height:210px!important;overflow:auto!important}body.horse-current-emt-call.desktop-scenario-layout #horseClinicalQuestionBox[hidden]{display:none!important}
-body.horse-current-emt-call.desktop-scenario-layout .bottom-nav{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:5px!important;align-self:auto!important}
-body.horse-current-emt-call.desktop-scenario-layout .bottom-nav button{min-height:38px!important;padding:5px 4px!important;border:1px solid #294d64!important;border-radius:9px!important;background:#0d2232!important;color:#b9ceda!important;font-size:.65rem!important;font-weight:850!important}
-body.horse-current-emt-call.desktop-scenario-layout .bottom-nav button>span{display:inline!important;margin:0 3px 0 0!important;font-size:.75rem!important}body.horse-current-emt-call.desktop-scenario-layout .bottom-nav button.active{border-color:#4fb3ff!important;background:#173f5a!important;color:#fff!important;box-shadow:0 0 0 1px rgba(79,179,255,.15) inset}
-body.horse-current-emt-call.desktop-scenario-layout .bottom-nav button em{display:inline-flex;min-width:17px;height:17px;align-items:center;justify-content:center;margin-left:3px;border-radius:999px;background:#284b62;color:#fff;font-size:.55rem;font-style:normal}
-body.horse-current-emt-call.desktop-scenario-layout #horseCurrentAssessment,body.horse-current-emt-call.desktop-scenario-layout .action-sheet{grid-area:current!important;height:100%!important;min-height:0!important}
-body.horse-current-emt-call.desktop-scenario-layout .action-sheet{overflow:hidden!important;display:grid!important;grid-template-rows:auto minmax(0,1fr)!important}body.horse-current-emt-call.desktop-scenario-layout .action-sheet[hidden]{display:none!important}
-body.horse-current-emt-call.desktop-scenario-layout .sheet-header{position:static!important;padding:8px 10px!important}body.horse-current-emt-call.desktop-scenario-layout .vp-panel{min-height:0!important;overflow:auto!important;scrollbar-gutter:stable;padding:9px 10px 12px!important}body.horse-current-emt-call.desktop-scenario-layout .sheet-header .return-patient-btn{display:none!important}
-body.horse-current-emt-call.desktop-scenario-layout #vitalTools,body.horse-current-emt-call.desktop-scenario-layout #assessmentTools{grid-template-columns:repeat(2,minmax(0,1fr))!important}body.horse-current-emt-call.desktop-scenario-layout #historyCategoryList,body.horse-current-emt-call.desktop-scenario-layout #treatmentTools{gap:6px!important}
-}
-.info-update-window.new-info-pulse{animation:horseNewInfoPulse .48s ease-in-out 0s 3 alternate}.info-update-window.new-info-pulse .info-update-head{animation:horseNewInfoHead .48s ease-in-out 0s 3 alternate}
-
-
-/* Responsive mobile patient / controls workspace 2.230 */
-.mobile-workspace-toggle{display:none}
-@media(max-width:979px){
-  body{--mobile-workspace-bottom:calc(14px + env(safe-area-inset-bottom))}
-  .vp-shell{padding-bottom:92px}
-  .mobile-workspace-toggle{display:flex;position:fixed;z-index:34;left:50%;bottom:var(--mobile-workspace-bottom);transform:translateX(-50%);width:min(430px,calc(100% - 20px));min-height:58px;align-items:center;justify-content:center;gap:10px;border:1px solid #4c88ad;border-radius:17px;background:rgba(15,48,70,.98);color:#fff;padding:8px 14px;box-shadow:0 12px 30px rgba(0,0,0,.36);backdrop-filter:blur(12px);cursor:pointer}
-  .mobile-workspace-toggle-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#dff3ff;color:#0c3853;font-size:1.05rem;font-weight:950}
-  .mobile-workspace-toggle-copy{display:grid;text-align:left;line-height:1.08}
-  .mobile-workspace-toggle-copy small{color:#a9cddd;font-size:.57rem;letter-spacing:.08em;font-weight:900}
-  .mobile-workspace-toggle-copy strong{font-size:.86rem}
-  body.mobile-controls-view .mobile-workspace-toggle{top:calc(8px + env(safe-area-inset-top));bottom:auto;width:auto;left:10px;transform:none;min-height:42px;padding:5px 10px;border-radius:12px;z-index:52;background:#173f5a}
-  body.mobile-controls-view .mobile-workspace-toggle-icon{width:28px;height:28px;font-size:.85rem;background:#eef8fd}
-  body.mobile-controls-view .mobile-workspace-toggle-copy small{display:none}
-  body.mobile-controls-view .mobile-workspace-toggle-copy strong{font-size:.72rem}
-
-  /* Patient mode: patient and live update are the interface. */
-  body:not(.mobile-controls-view) .bottom-nav{display:none!important}
-  body:not(.mobile-controls-view) .action-sheet,body:not(.mobile-controls-view) .sheet-backdrop{display:none!important}
-  body:not(.mobile-controls-view) .persistent-clinical-bar{bottom:82px}
-  body:not(.mobile-controls-view) .scenario-quick-controls #endScenarioQuick,
-  body:not(.mobile-controls-view) .scenario-quick-controls #resetScenarioQuick{display:none}
-
-  /* Controls mode: replace the photo with one full-height clinical workspace. */
-  body.mobile-controls-view{overflow:hidden!important}
-  body.mobile-controls-view .vp-shell{padding:0;max-width:none;min-height:100dvh}
-  body.mobile-controls-view .vp-top,
-  body.mobile-controls-view .scenario-quick-controls,
-  body.mobile-controls-view .patient-desktop-workspace,
-  body.mobile-controls-view .persistent-clinical-bar{display:none!important}
-  body.mobile-controls-view .mobile-workspace-toggle{display:flex!important}
-  body.mobile-controls-view .sheet-backdrop{display:none!important}
-  body.mobile-controls-view .action-sheet{display:grid!important;grid-template-rows:auto auto minmax(0,1fr);position:fixed;inset:0 0 calc(70px + env(safe-area-inset-bottom)) 0;z-index:45;width:100%;height:auto;max-height:none;transform:none;overflow:hidden;border:0;border-radius:0;padding:calc(58px + env(safe-area-inset-top)) 8px 8px;background:#081a28;box-shadow:none}
-  body.mobile-controls-view .sheet-handle{display:none}
-  body.mobile-controls-view .sheet-header{position:static;top:auto;padding:4px 6px 7px;border-bottom:1px solid #294d64;background:#081a28}
-  body.mobile-controls-view .sheet-header>div{padding-left:4px}
-  body.mobile-controls-view .sheet-header .return-patient-btn{display:none}
-  body.mobile-controls-view .sheet-patient-context{margin:0 0 7px;padding:7px;grid-template-columns:1fr 1.4fr;gap:5px;border-radius:10px}
-  body.mobile-controls-view .sheet-patient-context>span:nth-child(3){display:none}
-  body.mobile-controls-view .vp-panel{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:7px 4px calc(14px + env(safe-area-inset-bottom));scrollbar-gutter:stable}
-  body.mobile-controls-view .vp-panel .sub{margin-bottom:8px;font-size:.72rem;line-height:1.35}
-  body.mobile-controls-view .bottom-nav{display:grid!important;z-index:50;left:0;right:0;bottom:0;transform:none;width:100%;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;padding:5px 5px calc(5px + env(safe-area-inset-bottom));border-top:1px solid #31566d;background:rgba(5,18,29,.99)}
-  body.mobile-controls-view .bottom-nav button{min-width:0;min-height:58px;padding:5px 1px;border-radius:10px;font-size:.58rem}
-  body.mobile-controls-view .bottom-nav button>span{font-size:1.05rem;margin-bottom:1px}
-  body.mobile-controls-view .bottom-nav em{right:2px;top:2px;width:17px;height:17px;font-size:.58rem}
-  body.mobile-controls-view .clinical-next-actions{bottom:76px}
-}
-@media(max-width:390px){
-  body.mobile-controls-view .sheet-patient-context{grid-template-columns:1fr}
-  body.mobile-controls-view .sheet-patient-context>span:nth-child(2){border-top:1px solid #294d64;padding-top:5px}
-}
-@media(max-width:979px){
-  body.horse-current-emt-call:not(.mobile-controls-view) #horseCurrentAssessment,
-  body.horse-current-emt-call:not(.mobile-controls-view) .patient-entry-workflow{display:none!important}
-  body.horse-current-emt-call:not(.mobile-controls-view) .patient-control-column{gap:7px}
-  body.horse-current-emt-call:not(.mobile-controls-view) #horseClinicalQuestionBox[hidden]{display:none!important}
-  body.horse-current-emt-call:not(.mobile-controls-view) #horseClinicalQuestionBox:not([hidden]){margin:0}
+@media (min-width: 1280px){
+  .patient-desktop-workspace{padding-right:27vw}
+  .bottom-nav,.action-sheet{width:calc(27vw - 20px)!important}
+  .persistent-clinical-bar{right:calc(27vw + 6px)!important}
+  .clinical-next-actions{right:calc(27vw + 18px)}
 }

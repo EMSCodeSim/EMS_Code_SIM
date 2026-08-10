@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2230">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2300">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2200">
   <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2212">
 </head>
@@ -19,19 +19,12 @@
         <h1 id="caseTitle">Visual Patient</h1>
         <p id="scene"></p>
       </div>
-      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small class="scenario-build-stamp-dark">RESPONSIVE WORKSTATION 2.230</small></div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small id="patientClockStatus" class="patient-clock-status">Patient clock • severe pain</small><small class="scenario-build-stamp-dark">DESKTOP CLINICAL 2.300</small></div>
     </header>
 
-    <div class="scenario-quick-controls" aria-label="Scenario quick controls">
-      <button id="mobileWorkspaceToggle" class="mobile-workspace-toggle" type="button" aria-pressed="false" aria-controls="actionSheet">
-        <span class="mobile-workspace-toggle-icon" aria-hidden="true">▦</span>
-        <span class="mobile-workspace-toggle-copy"><small id="mobileWorkspaceToggleEyebrow">PATIENT VIEW</small><strong id="mobileWorkspaceToggleLabel">Clinical Controls</strong></span>
-      </button>
+    <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
       <button id="endScenarioQuick" class="scenario-quick-end" type="button">End scenario</button>
       <button id="resetScenarioQuick" class="scenario-quick-reset" type="button">Reset scenario</button>
-      <button id="transportScenarioQuick" class="scenario-desktop-quick scenario-quick-transport" type="button">Transport</button>
-      <button id="handoffScenarioQuick" class="scenario-desktop-quick scenario-quick-handoff" type="button">Handoff</button>
-      <button id="progressHelpScenarioQuick" class="scenario-desktop-quick scenario-quick-progress" type="button">Progress / Help</button>
     </div>
 
     <div class="patient-desktop-workspace">
@@ -63,6 +56,7 @@
               <div class="hospital-handoff-actions">
                 <button id="showSampleHospitalHandoff" type="button" class="secondary">Sample handoff</button>
                 <button id="saveHospitalHandoff" type="button" class="primary-action">Save handoff</button>
+                <button id="openHorseCallGrade" type="button" class="primary-action handoff-grade-button" hidden>Grade call</button>
               </div>
               <aside id="sampleHospitalHandoffPanel" class="sample-handoff-panel" hidden aria-live="polite">
                 <div><small>SAMPLE HANDOFF</small><button id="closeSampleHospitalHandoff" type="button" aria-label="Close sample handoff">×</button></div>
@@ -72,13 +66,54 @@
             </section>
           </div>
         </section>
+        <section id="horseGradeWorkspace" class="horse-grade-workspace" hidden aria-label="Scenario grading and call review">
+          <header class="horse-grade-header">
+            <div><small>CALL REVIEW</small><strong>Horse-crush scenario grade</strong><span>Overall review of assessment, decisions, treatment, reassessment, transport, and handoff</span></div>
+            <button id="closeHorseCallGrade" type="button">Return to patient</button>
+          </header>
+          <div class="horse-grade-layout">
+            <section class="horse-grade-summary" aria-labelledby="horseGradeTitle">
+              <div class="horse-grade-score-wrap">
+                <div id="horseGradeScore" class="horse-grade-score" aria-label="Overall scenario score"><strong>0</strong><span>/100</span></div>
+                <div><small>OVERALL PERFORMANCE</small><h2 id="horseGradeTitle">Call review</h2><p id="horseGradeLabel">Complete the call to receive a grade.</p></div>
+              </div>
+              <div id="horseGradeOutcome" class="horse-grade-outcome"></div>
+              <div id="horseGradeCategories" class="horse-grade-categories"></div>
+            </section>
+            <section class="horse-grade-feedback">
+              <div class="horse-grade-feedback-grid">
+                <article class="horse-grade-feedback-card strengths"><div><small>WHAT WENT WELL</small><strong>Strong decisions</strong></div><ul id="horseGradeStrengths"></ul></article>
+                <article class="horse-grade-feedback-card improve"><div><small>IMPROVE NEXT TIME</small><strong>Priority suggestions</strong></div><ul id="horseGradeImprovements"></ul></article>
+              </div>
+              <article class="horse-grade-treatment-review">
+                <div class="horse-grade-section-head"><div><small>TREATMENT REVIEW</small><strong>What your care did to the patient</strong></div><span id="horseGradeTreatmentStatus"></span></div>
+                <div id="horseGradeTreatmentList" class="horse-grade-treatment-list"></div>
+              </article>
+              <article class="horse-grade-next-call">
+                <small>NEXT-CALL FOCUS</small>
+                <strong id="horseGradeNextFocus">Finish the call to receive a focused recommendation.</strong>
+                <p id="horseGradeNarrative"></p>
+              </article>
+              <div class="horse-grade-actions">
+                <button id="horseGradeReturn" type="button" class="secondary">Return to scenario</button>
+                <button id="horseGradeEndScenario" type="button" class="primary-action">End scenario</button>
+              </div>
+            </section>
+          </div>
+        </section>
       </section>
 
       <aside class="patient-control-column" aria-label="Scenario information and controls">
         <aside id="infoUpdateWindow" class="info-update-window info-dispatch" aria-live="polite" aria-label="Scenario information updates">
           <div class="info-update-head">
             <span id="infoUpdateType">DISPATCH</span>
-            <div class="info-update-head-actions"><span id="infoUpdateUnread" class="info-update-unread" hidden>New</span><time id="infoUpdateTime">00:00</time><button id="infoUpdateCollapse" type="button" aria-expanded="true" aria-label="Collapse patient update">⌃</button></div>
+            <div class="info-update-head-actions">
+              <div class="info-update-voice-controls" role="group" aria-label="Patient update voice controls">
+                <button id="infoUpdateVoiceToggle" class="info-update-voice-button is-on" type="button" aria-pressed="true" aria-label="Turn automatic patient update voice off" title="Turn Auto Voice off"><span aria-hidden="true">🔊</span><span class="info-voice-label">Auto</span></button>
+                <button id="infoUpdateReplay" class="info-update-voice-button" type="button" aria-label="Read the current patient update aloud" title="Replay current update"><span aria-hidden="true">▶</span><span class="info-voice-label">Replay</span></button>
+              </div>
+              <span id="infoUpdateUnread" class="info-update-unread" hidden>New</span><time id="infoUpdateTime">00:00</time><button id="infoUpdateCollapse" type="button" aria-expanded="true" aria-label="Collapse patient update">⌃</button>
+            </div>
           </div>
           <strong id="infoUpdateTitle">Dispatch information</strong>
           <p id="infoUpdateText">Review the dispatch and patient picture before beginning care.</p>
@@ -88,7 +123,7 @@
             <button id="infoUpdateNext" type="button" aria-label="Next information update">›</button>
           </div>
         </aside>
-        <section id="horseClinicalQuestionBox" class="horse-clinical-question-box" hidden aria-live="polite" aria-label="Current clinical follow-up question">
+        <section id="horseClinicalQuestionBox" class="horse-clinical-question-box" aria-live="polite" aria-label="Current clinical follow-up question">
           <div class="horse-question-placeholder">
             <small>FOLLOW-UP QUESTION</small>
             <strong>No follow-up question is active.</strong>
@@ -166,7 +201,7 @@
     <button data-panel="vitalsPanel" type="button"><span>♥</span>Vitals</button>
     <button data-panel="historyPanel" type="button"><span>◉</span>History <em id="historyBadge" hidden>0</em></button>
     <button data-panel="treatmentPanel" type="button"><span>✚</span>Treatment</button>
-    <button data-panel="findingsPanel" type="button"><span>☷</span>Log <em id="findingBadge" hidden>0</em></button>
+    <button data-panel="findingsPanel" type="button"><span>☷</span>Record <em id="findingBadge" hidden>0</em></button>
   </nav>
 
   <div id="sheetBackdrop" class="sheet-backdrop" hidden></div>
@@ -214,6 +249,7 @@
       </details>
       <section class="known-history-section" aria-labelledby="knownHistoryTitle">
         <div class="known-history-head"><div><p>KNOWN PATIENT INFORMATION</p><h3 id="knownHistoryTitle">History gathered so far</h3></div><span id="knownHistoryCount">0 items</span></div>
+        <p class="training-deid-note">Training scenario: demographic details are fictional and intentionally de-identified. Do not enter real patient identifiers.</p>
         <div id="knownHistoryList" class="known-history-list"><p class="empty">No history has been obtained.</p></div>
       </section>
       <div class="history-guided-tools">
@@ -295,15 +331,14 @@
   <section id="scenarioControlDialog" class="scenario-control-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="scenarioControlTitle">
     <div class="scenario-control-handle" aria-hidden="true"></div>
     <div class="scenario-control-head">
-      <div><p>SCENARIO CONTROLS</p><h2 id="scenarioControlTitle">Progress / Help</h2></div>
+      <div><p>SCENARIO CONTROLS</p><h2 id="scenarioControlTitle">Progress and scenario options</h2></div>
       <button id="closeScenarioControls" type="button" aria-label="Close scenario controls">×</button>
     </div>
     <details id="scenarioProgress" class="scenario-progress scenario-progress-menu" open>
       <summary><span><b>Scenario progress</b><small id="scenarioProgressSummary">Review clinical phases</small></span><i aria-hidden="true">⌄</i></summary>
       <div id="scenarioPhaseList" class="scenario-phase-list"></div>
-      <div id="scenarioHelpMessage" class="scenario-help-message" aria-live="polite"></div>
       <div id="scenarioCompletionMessage" class="scenario-completion-message" hidden></div>
-      <div class="scenario-progress-actions"><a id="handoffFromProgress" href="/vitals/pcr-handoff.html">PCR and handoff</a><button id="completeScenarioFromPatient" type="button">Check completion</button></div>
+      <div class="scenario-progress-actions"><a id="handoffFromProgress" href="/vitals/pcr-handoff.html">PCR and handoff</a><button id="gradeScenarioFromPatient" type="button" hidden>Grade call</button><button id="completeScenarioFromPatient" type="button">Check completion</button></div>
     </details>
     <button id="saveAndExitScenario" class="scenario-control-option end" type="button">
       <strong>End scenario</strong><span>Stop the call and return to scenario selection. Current progress remains available to resume.</span>
@@ -317,14 +352,14 @@
   <div id="toast" class="toast" hidden aria-live="polite"></div>
   <script src="/vitals/patient-record.js?v=2200"></script>
   <script src="/vitals/scenario-definitions.js?v=2219"></script>
-  <script src="/vitals/scenario-interviews.js?v=2200"></script>
+  <script src="/vitals/scenario-interviews.js?v=2224"></script>
   <script src="/vitals/scenario-session.js?v=2200"></script>
-  <script src="/vitals/scenario-runtime.js?v=2219"></script>
+  <script src="/vitals/scenario-runtime.js?v=2223"></script>
   <script src="/vitals/scenario-tool-registry.js?v=2200"></script>
   <script src="/vitals/scenario-phase-model.js?v=2200"></script>
-  <script src="/vitals/horse-crush-bootstrap.js?v=2219"></script>
+  <script src="/vitals/horse-crush-bootstrap.js?v=2223"></script>
   <script src="/vitals/horse-crush-scenario.js?v=2219"></script>
-  <script src="/vitals/visual-patient.js?v=2221"></script>
+  <script src="/vitals/visual-patient.js?v=2224"></script>
   <script src="/vitals/scenario-guided-start.js?v=2202"></script>
 </body>
 </html>
