@@ -174,12 +174,14 @@
 
   function setPatientImage(image, path) {
     if (!image) return;
+    const requested = id === 'horse_crush' ? '/vitals/assets/scenario-patient-horse-crush.webp' : path;
+    image.classList.remove('image-fallback');
     image.onerror = () => {
       image.onerror = null;
       image.src = id === 'pediatric' ? '/vitals/assets/scenario-patient-pediatric-v3.png' : '/vitals/assets/scenario-patient-adult-v3.png';
       image.classList.add('image-fallback');
     };
-    image.src = path;
+    image.src = requested;
     image.hidden = false;
   }
 

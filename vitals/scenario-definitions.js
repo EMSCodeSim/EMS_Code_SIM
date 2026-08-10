@@ -286,7 +286,7 @@
     horse_crush: {
       title: 'Horse-Crush Hip Injury',
       visible: 'Alert patient supine on dirt outside the south barn with the left knee flexed',
-      image: '/vitals/assets/horse-crush/patient-initial.webp',
+      image: '/vitals/assets/scenario-patient-horse-crush.webp',
       imageMode: 'horse-crush',
       sceneClues: ['BLS engine crew already on scene', 'Patient remains on the ground', 'Left leg held in a flexed position of comfort'],
       recommended: ['airway','breathing','perfusion','mental_status','neck_back','chest_assessment','abdominal_assessment','pelvis_hip','left_leg','distal_csm','blood_pressure','pulse','respirations','spo2','pain','sample'],
