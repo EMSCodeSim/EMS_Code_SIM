@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2302">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2.305">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2200">
   <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2212">
 </head>
@@ -19,7 +19,7 @@
         <h1 id="caseTitle">Visual Patient</h1>
         <p id="scene"></p>
       </div>
-      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small id="patientClockStatus" class="patient-clock-status">Patient clock • severe pain</small><small class="scenario-build-stamp-dark">DESKTOP CLINICAL 2.300</small></div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small id="patientClockStatus" class="patient-clock-status">Patient clock • severe pain</small><small class="scenario-build-stamp-dark">DESKTOP CLINICAL 2.304</small></div>
     </header>
 
     <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
@@ -196,18 +196,39 @@
     </div>
   </section>
 
-  <aside id="desktopPatientMonitor" class="desktop-patient-monitor" aria-label="Patient vital signs monitor">
+  <aside id="desktopPatientMonitor" class="desktop-patient-monitor desktop-patient-status-board" aria-label="Patient monitor and status board">
     <header class="desktop-monitor-head">
       <div><small>PATIENT MONITOR</small><strong id="desktopMonitorStatus">Monitoring</strong></div>
-      <span class="desktop-monitor-live"><i aria-hidden="true"></i> LIVE</span>
+      <span class="desktop-monitor-live"><i aria-hidden="true"></i> LIVE <b id="desktopMonitorClock">00:00</b></span>
     </header>
     <div id="desktopMonitorVitalGrid" class="desktop-monitor-grid" aria-label="Available vital signs"></div>
-    <section class="desktop-monitor-findings" aria-label="Current findings">
-      <header><span>FINDINGS</span><small id="desktopFindingCount">0 recorded</small></header>
-      <div id="desktopMonitorFindingsList" class="desktop-monitor-findings-list">
-        <div class="desktop-monitor-empty">Assessment findings will appear here.</div>
+
+    <section class="desktop-monitor-status" aria-label="Patient status">
+      <header><span>PATIENT STATUS</span><small>Known information</small></header>
+      <div id="desktopPatientStatusGrid" class="desktop-status-grid">
+        <div><small>AVPU</small><strong id="desktopStatusAvpu">—</strong></div>
+        <div><small>GCS</small><strong id="desktopStatusGcs">—</strong></div>
+        <div><small>SKIN</small><strong id="desktopStatusSkin">—</strong></div>
+        <div><small>PAIN</small><strong id="desktopStatusPain">—</strong></div>
       </div>
     </section>
+
+    <section class="desktop-monitor-concerns" aria-label="Active patient concerns">
+      <header><span>ACTIVE CONCERNS</span><small id="desktopConcernCount">0 identified</small></header>
+      <div id="desktopConcernList" class="desktop-concern-list"><div class="desktop-monitor-empty">Abnormal findings you discover will appear here.</div></div>
+    </section>
+
+    <section id="desktopPartnerStatus" class="desktop-monitor-partner" hidden aria-live="polite">
+      <header><span>PARTNER</span><small id="desktopPartnerTime"></small></header>
+      <strong id="desktopPartnerTask">Obtaining vital</strong>
+      <div class="desktop-partner-progress"><i id="desktopPartnerProgress"></i></div>
+    </section>
+
+    <section class="desktop-monitor-latest" aria-live="polite">
+      <header><span>LATEST</span><small id="desktopLatestTime"></small></header>
+      <strong id="desktopLatestFinding">No findings documented</strong>
+    </section>
+
     <section id="desktopVitalAction" class="desktop-vital-action" hidden aria-live="polite">
       <div><small>SELECTED VITAL</small><strong id="desktopVitalActionTitle">Blood pressure</strong></div>
       <p id="desktopVitalActionCopy">Choose who will obtain this vital.</p>
@@ -284,7 +305,7 @@
     </section>
 
     <section id="treatmentPanel" class="vp-panel" hidden>
-      <p class="sub">Choose a treatment group. The fixed Treatment Selection box will show the available actions and any required details; the patient response appears in Patient Update.</p>
+      <p class="sub">Choose a treatment category, then select the treatment or action you want to perform. Patient response appears in Patient Update.</p>
       <label class="panel-search"><span>Search treatment or medication</span><input id="treatmentSearch" type="search" autocomplete="off" placeholder="Airway, oxygen, aspirin, transport…"></label>
       <div id="treatmentTools" class="treatment-list"></div>
       <div class="transport-card handoff-treatment-card">
@@ -383,23 +404,7 @@
   <script src="/vitals/scenario-phase-model.js?v=2200"></script>
   <script src="/vitals/horse-crush-bootstrap.js?v=2223"></script>
   <script src="/vitals/horse-crush-scenario.js?v=2219"></script>
-  <script src="/vitals/visual-patient.js?v=2302"></script>
+  <script src="/vitals/visual-patient.js?v=2.305"></script>
   <script src="/vitals/scenario-guided-start.js?v=2202"></script>
-<aside id="desktopPatientStatusBoard" class="ems-status-board">
-<div class="ems-monitor-head"><div><strong>PATIENT MONITOR</strong><span>● Monitoring</span></div><span id="monitorElapsed">00:00</span></div>
-<div class="ems-vital-grid">
-<button class="ems-vital-tile" data-vital="blood-pressure"><span>NIBP</span><strong id="monBP">—</strong><small>Tap to obtain / reassess</small></button>
-<button class="ems-vital-tile" data-vital="pulse"><span>♥ HR</span><strong id="monHR">—</strong><small>Tap to obtain / reassess</small></button>
-<button class="ems-vital-tile" data-vital="spo2"><span>SpO₂</span><strong id="monSpO2">—</strong><small>Tap to obtain / reassess</small></button>
-<button class="ems-vital-tile" data-vital="respirations"><span>RR</span><strong id="monRR">—</strong><small>Tap to obtain / reassess</small></button>
-<button class="ems-vital-tile" data-vital="glucose"><span>BGL</span><strong id="monBGL">—</strong><small>Tap to obtain / reassess</small></button>
-<button class="ems-vital-tile" data-vital="temperature"><span>TEMP</span><strong id="monTemp">—</strong><small>Tap to obtain / reassess</small></button>
-</div>
-<section class="ems-board-section"><h3>PATIENT STATUS</h3><div class="ems-status-chips"><span><b>AVPU</b><em id="monAVPU">—</em></span><span><b>GCS</b><em id="monGCS">—</em></span><span><b>Skin</b><em id="monSkin">—</em></span><span><b>Pain</b><em id="monPain">—</em></span></div></section>
-<section class="ems-board-section ems-concerns"><h3>⚠ ACTIVE CONCERNS</h3><ul id="activeConcernsList"><li class="empty">No concerns identified yet</li></ul></section>
-<section class="ems-board-section" id="monitorPartnerSection" hidden><h3>PARTNER</h3><strong id="monitorPartnerTask">Obtaining vital</strong><div class="ems-progress"><i></i></div></section>
-<section class="ems-board-section ems-latest-board"><h3>LATEST</h3><div id="monitorLatestFinding">No findings documented</div><small id="monitorLatestTime"></small></section>
-<section class="ems-recheck-board"><span>NEXT REASSESSMENT</span><strong id="monitorRecheckTime">—</strong></section>
-</aside>
 </body>
 </html>
