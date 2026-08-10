@@ -21,3 +21,19 @@
 .va-airway{font-size:4.5rem;text-align:center}.sound-chip{display:inline-block;border:1px solid #51788d;border-radius:20px;padding:5px 9px;margin:3px;font-size:.7rem}.meter{height:10px;background:#203b49;border-radius:10px;overflow:hidden}.meter i{display:block;height:100%;width:35%;background:#8fe0c4}
 .va-stroke-face{font-size:7rem;line-height:1}.arms{display:flex;gap:16px;justify-content:center;font-size:4rem}.drift{transform:rotate(18deg) translateY(18px)}
 @media(max-width:700px){.va-stage{grid-template-columns:1fr}.va-visual{min-height:260px}.va-shell{padding:8px}}
+
+/* ===== Visual sensory realism 2.318 ===== */
+.va-chest{animation:chestBreathe var(--breath-duration,3.2s) ease-in-out infinite;transform-origin:center 80%}
+@keyframes chestBreathe{0%,100%{transform:scaleY(1) scaleX(1)}50%{transform:scaleY(1.035) scaleX(1.025)}}
+.lung-field.listening{box-shadow:0 0 0 4px rgba(143,224,196,.18),0 0 22px rgba(143,224,196,.4);animation:listenPulse .7s infinite alternate}
+@keyframes listenPulse{to{transform:scale(1.08)}}
+.toe.wiggle{animation:toeWiggle .22s 4 alternate}@keyframes toeWiggle{to{transform:rotate(16deg) translateX(4px)}}
+.cap-nail.refill:after{animation:nailRefill .8s ease-out}@keyframes nailRefill{from{background:#f5eeee}to{background:#efc6c2}}
+.va-airway.speaking{animation:airwaySpeak .18s 4 alternate}@keyframes airwaySpeak{to{transform:scale(1.08)}}
+.face-droop{transform:rotate(5deg);filter:saturate(.85)}
+.va-result.saved{display:flex!important;align-items:center;justify-content:space-between;gap:12px;border-left-color:#8fe0c4;background:#0b2b24}
+.va-result.saved strong{font-size:.72rem}.va-result.saved span{font-size:.9rem;font-weight:900;color:#8fe0c4}
+
+.quad.tender{animation:tenderPulse .35s 2;border-color:#e57b75!important;background:#5a2626!important}@keyframes tenderPulse{50%{transform:scale(.96)}}
+.va-abdomen.pelvic-alert{box-shadow:0 0 0 4px rgba(229,123,117,.22),0 0 24px rgba(229,123,117,.22)}
+.hotspot.abnormal{border-color:#ef8a7d!important;background:#6a2929!important;animation:tenderPulse .35s 2}
