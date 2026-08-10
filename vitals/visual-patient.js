@@ -4292,6 +4292,9 @@
     try { url = new URL(href, location.href); } catch { return false; }
     if (url.origin !== location.origin || !embeddedSimPaths.has(url.pathname)) return false;
     url.searchParams.set('embedded', '1');
+    url.searchParams.set('case', id);
+    url.searchParams.set('mode', 'scenario');
+    url.searchParams.set('training', trainingMode());
     url.searchParams.set('return', `/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&embeddedReturn=1`);
     const titleNode = $('embeddedSimTitle');
     if (titleNode) titleNode.textContent = title;
