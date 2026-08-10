@@ -4098,3 +4098,15 @@
     clearTimeout(infoAutoCollapseTimer);
   }, { once: true });
 })();
+
+/* Patient Monitor Status Board v2.303 */
+(function(){
+const $=s=>document.querySelector(s),all=s=>Array.from(document.querySelectorAll(s)),T=e=>(e&&e.textContent||"").trim(),start=Date.now();
+function body(){return document.body.innerText||""} function M(re){let m=body().match(re);return m&&m[1]?m[1].trim():""} function put(id,v){let e=$("#"+id);if(e&&v)e.textContent=v}
+function refresh(){
+let V={monBP:M(/\b(?:BP|Blood Pressure)\s*[:\-]?\s*(\d{2,3}\s*\/\s*\d{2,3})/i),monHR:M(/\b(?:HR|Pulse)\s*[:\-]?\s*(\d{2,3})/i),monRR:M(/\b(?:RR|Respirations?)\s*[:\-]?\s*(\d{1,2})/i),monSpO2:M(/\b(?:SpO2|SpO₂|Oxygen Saturation)\s*[:\-]?\s*(\d{2,3}\s*%?)/i),monBGL:M(/\b(?:BGL|Glucose|Blood Glucose)\s*[:\-]?\s*(\d{2,3})/i),monTemp:M(/\b(?:Temp|Temperature)\s*[:\-]?\s*(\d{2,3}(?:\.\d)?)/i)};Object.entries(V).forEach(x=>{if(x[1])put(x[0],x[1])});
+put("monAVPU",M(/\bAVPU\s*[:\-]?\s*(Alert|Voice|Pain|Unresponsive|A|V|P|U)\b/i));put("monGCS",M(/\bGCS\s*[:\-]?\s*(\d{1,2})/i));put("monPain",M(/\bPain(?: score)?\s*[:\-]?\s*(\d{1,2}(?:\s*\/\s*10)?)/i));put("monSkin",M(/\bSkin\s*[:\-]?\s*([^\n]{2,36})/i));
+let E=all('[data-finding],.finding-item,.assessment-finding,.log-entry,.timeline-entry').map(T).filter(x=>x&&x.length<160),U=[...new Set(E)].slice(-6),L=$("#activeConcernsList");if(L&&U.length){L.innerHTML="";U.slice(-4).forEach(x=>{let li=document.createElement("li");li.textContent=x;L.appendChild(li)});let z=U[U.length-1];if(z&&T($("#monitorLatestFinding"))!==z){put("monitorLatestFinding",z);put("monitorLatestTime",new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}));let C=$(".ems-latest-board");if(C){C.classList.add("new-finding");setTimeout(()=>C.classList.remove("new-finding"),6000)}}}
+let due=/reassessment\s+due|recheck\s+now/i.test(body());all(".ems-vital-tile").forEach(t=>t.classList.toggle("recheck",due&&T(t).indexOf("—")<0));put("monitorRecheckTime",due?"DUE":"—");
+let pm=body().match(/Partner[^\n]{0,80}(?:obtaining|assigned|reassess(?:ing)?)[^\n]*/i),ps=$("#monitorPartnerSection");if(ps){ps.hidden=!pm;if(pm)put("monitorPartnerTask",pm[0].replace(/^Partner\s*[:\-]?\s*/i,""))}}
+document.addEventListener("DOMContentLoaded",()=>{setInterval(()=>{let s=Math.floor((Date.now()-start)/1000);put("monitorElapsed",String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"))},1000);setTimeout(refresh,300);new MutationObserver(()=>{clearTimeout(window.__br);window.__br=setTimeout(refresh,150)}).observe(document.body,{subtree:true,childList:true,characterData:true})})})();
