@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2301">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2302">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2200">
   <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2212">
 </head>
@@ -201,26 +201,28 @@
       <div><small>PATIENT MONITOR</small><strong id="desktopMonitorStatus">Monitoring</strong></div>
       <span class="desktop-monitor-live"><i aria-hidden="true"></i> LIVE</span>
     </header>
-    <div class="desktop-monitor-grid">
-      <article id="monitorVitalBP" class="desktop-monitor-vital" data-vital-key="blood_pressure">
-        <span>BP</span><strong id="monitorBP">—</strong><small id="monitorBPState">Not obtained</small>
-      </article>
-      <article id="monitorVitalPulse" class="desktop-monitor-vital" data-vital-key="pulse">
-        <span>HR</span><strong id="monitorPulse">—</strong><small id="monitorPulseState">Not obtained</small>
-      </article>
-      <article id="monitorVitalRR" class="desktop-monitor-vital" data-vital-key="respirations">
-        <span>RR</span><strong id="monitorRR">—</strong><small id="monitorRRState">Not obtained</small>
-      </article>
-      <article id="monitorVitalSpO2" class="desktop-monitor-vital" data-vital-key="spo2">
-        <span>SpO₂</span><strong id="monitorSpO2">—</strong><small id="monitorSpO2State">Not obtained</small>
-      </article>
-    </div>
-    <footer class="desktop-monitor-foot"><span id="desktopMonitorDue">No reassessment due</span><small>Values update from the patient record</small></footer>
+    <div id="desktopMonitorVitalGrid" class="desktop-monitor-grid" aria-label="Available vital signs"></div>
+    <section class="desktop-monitor-findings" aria-label="Current findings">
+      <header><span>FINDINGS</span><small id="desktopFindingCount">0 recorded</small></header>
+      <div id="desktopMonitorFindingsList" class="desktop-monitor-findings-list">
+        <div class="desktop-monitor-empty">Assessment findings will appear here.</div>
+      </div>
+    </section>
+    <section id="desktopVitalAction" class="desktop-vital-action" hidden aria-live="polite">
+      <div><small>SELECTED VITAL</small><strong id="desktopVitalActionTitle">Blood pressure</strong></div>
+      <p id="desktopVitalActionCopy">Choose who will obtain this vital.</p>
+      <div class="desktop-vital-action-buttons">
+        <button id="desktopVitalTake" type="button">Take myself</button>
+        <button id="desktopVitalPartner" type="button">Assign to partner</button>
+        <button id="desktopVitalCancel" type="button" class="ghost">Cancel</button>
+      </div>
+    </section>
+    <footer class="desktop-monitor-foot"><span id="desktopMonitorDue">No reassessment due</span><small>Click any vital to obtain or assign it</small></footer>
   </aside>
 
   <nav class="bottom-nav" aria-label="Scenario controls">
     <button data-panel="assessmentPanel" type="button"><span>◎</span>Assessment</button>
-    <button data-panel="vitalsPanel" type="button"><span>♥</span>Vitals</button>
+    <button class="desktop-hide-vitals-nav" data-panel="vitalsPanel" type="button"><span>♥</span>Vitals</button>
     <button data-panel="historyPanel" type="button"><span>◉</span>History <em id="historyBadge" hidden>0</em></button>
     <button data-panel="treatmentPanel" type="button"><span>✚</span>Treatment</button>
     <button data-panel="findingsPanel" type="button"><span>☷</span>Record <em id="findingBadge" hidden>0</em></button>
@@ -245,7 +247,7 @@
     </section>
 
     <section id="assessmentPanel" class="vp-panel" hidden>
-      <p class="sub">Start with immediate threats, use recommendations in Learning Mode, then open More assessments as needed. Vital signs are located in the separate Vitals tab.</p>
+      <p class="sub">Start with immediate threats, use recommendations in Learning Mode, then open More assessments as needed. Vital signs are controlled from the patient monitor on desktop.</p>
       <div id="assessmentTools" class="assessment-list assessment-three-level"></div>
     </section>
 
@@ -381,7 +383,7 @@
   <script src="/vitals/scenario-phase-model.js?v=2200"></script>
   <script src="/vitals/horse-crush-bootstrap.js?v=2223"></script>
   <script src="/vitals/horse-crush-scenario.js?v=2219"></script>
-  <script src="/vitals/visual-patient.js?v=2224"></script>
+  <script src="/vitals/visual-patient.js?v=2302"></script>
   <script src="/vitals/scenario-guided-start.js?v=2202"></script>
 </body>
 </html>

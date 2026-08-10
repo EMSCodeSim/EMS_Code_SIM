@@ -76,6 +76,7 @@
   let conditionEvaluationActive = false;
   let treatmentCategoryFocus = '';
   let nextActionFinding = null;
+  let selectedDesktopVitalKey = '';
   let infoAutoCollapseTimer = 0;
   let infoManuallyCollapsed = false;
   let lastInfoItemId = '';
@@ -2655,34 +2656,126 @@
   }
 
 
+  function desktopVitalTool(key) {
+    return (registry?.vitalTools || []).find(tool => tool.key === key) || null;
+  }
+
+  function openDesktopVitalAction(key) {
+    if (!desktopWorkspace()) return;
+    const tool = desktopVitalTool(key);
+    if (!tool) return;
+    selectedDesktopVitalKey = key;
+    const current = record() || {};
+    const finding = api?.getFinding?.(key, current) || current.findings?.[key] || null;
+    const task = partnerTaskFor(key);
+    const pending = ['active','pending','queued'].includes(task?.status);
+    const state = assessmentState(key);
+    const action = $('desktopVitalAction');
+    if (!action) return;
+    $('desktopVitalActionTitle').textContent = tool.label;
+    $('desktopVitalActionCopy').textContent = pending
+      ? `${tool.label} is already assigned to your partner.`
+      : finding
+        ? `${tool.label} is already recorded${state.code === 'reassessment-due' ? ' and is due for reassessment' : ''}. Choose how to recheck it.`
+        : 'Choose who will obtain this vital.';
+    const take = $('desktopVitalTake');
+    const partner = $('desktopVitalPartner');
+    if (take) {
+      take.textContent = finding ? 'Recheck myself' : 'Take myself';
+      take.disabled = false;
+    }
+    if (partner) {
+      partner.textContent = pending ? (task?.status === 'queued' ? 'Partner queued' : 'Partner working') : finding ? 'Assign recheck' : 'Assign to partner';
+      partner.disabled = pending;
+    }
+    action.hidden = false;
+  }
+
+  function closeDesktopVitalAction() {
+    selectedDesktopVitalKey = '';
+    if ($('desktopVitalAction')) $('desktopVitalAction').hidden = true;
+  }
+
+  function takeDesktopVital() {
+    const key = selectedDesktopVitalKey;
+    const tool = desktopVitalTool(key);
+    if (!key || !tool) return;
+    const current = record() || {};
+    const finding = api?.getFinding?.(key, current) || current.findings?.[key] || null;
+    const u = new URL(toolUrl(tool.url), location.origin);
+    if (finding) u.searchParams.set('reassess','1');
+    location.href = `${u.pathname}${u.search}${u.hash}`;
+  }
+
+  function assignDesktopVitalToPartner() {
+    const key = selectedDesktopVitalKey;
+    const tool = desktopVitalTool(key);
+    if (!key || !tool) return;
+    try {
+      session?.assignPartnerTask?.({ key, label: tool.label, value: valueFor(key), delaySeconds: tool.delay || 12 }, id);
+      renderSignatures.vitals = '';
+      closeDesktopVitalAction();
+      refreshFromRecord();
+      toast(`${tool.label} assigned to partner`);
+    } catch (error) {
+      console.error(error);
+      toast('Partner task could not be assigned.');
+    }
+  }
+
+  function monitorVitalAbbreviation(key, label) {
+    return ({ blood_pressure:'BP', pulse:'HR', respirations:'RR', spo2:'SpO₂', blood_glucose:'BGL', temperature:'TEMP' })[key] || label;
+  }
+
+  function renderDesktopMonitorFindings(current) {
+    const host = $('desktopMonitorFindingsList');
+    if (!host) return;
+    const findings = Object.entries(current.findings || {})
+      .filter(([key, finding]) => finding && !MEASURABLE_TOOL_KEYS.has(key))
+      .map(([key, finding]) => ({ key, finding, at: new Date(finding.recordedAt || finding.time || 0).getTime() || 0 }))
+      .sort((a,b) => b.at - a.at);
+    if ($('desktopFindingCount')) $('desktopFindingCount').textContent = `${findings.length} recorded`;
+    if (!findings.length) {
+      host.innerHTML = '<div class="desktop-monitor-empty">Assessment findings will appear here.</div>';
+      return;
+    }
+    host.innerHTML = findings.map(({key, finding}) => {
+      const raw = finding.value || finding.finding || finding.result || 'Recorded';
+      const label = finding.label || labelFor(key);
+      return `<div class="desktop-monitor-finding"><small>${escapeHtml(label)}</small><strong title="${escapeHtml(String(raw))}">${escapeHtml(String(raw))}</strong></div>`;
+    }).join('');
+  }
+
   function renderDesktopPatientMonitor() {
     const monitor = $('desktopPatientMonitor');
-    if (!monitor) return;
+    const grid = $('desktopMonitorVitalGrid');
+    if (!monitor || !grid) return;
     const current = record() || {};
-    const items = [
-      { key:'blood_pressure', valueId:'monitorBP', stateId:'monitorBPState' },
-      { key:'pulse', valueId:'monitorPulse', stateId:'monitorPulseState' },
-      { key:'respirations', valueId:'monitorRR', stateId:'monitorRRState' },
-      { key:'spo2', valueId:'monitorSpO2', stateId:'monitorSpO2State' }
-    ];
+    const tools = (registry?.vitalTools || []).filter(tool => MEASURABLE_TOOL_KEYS.has(tool.key));
     let dueCount = 0;
-    items.forEach(item => {
-      const finding = api?.getFinding?.(item.key, current) || current.findings?.[item.key] || null;
-      const state = assessmentState(item.key);
-      const value = finding ? (finding.value || finding.finding || valueFor(item.key) || '—') : '—';
-      const tile = monitor.querySelector(`[data-vital-key="${item.key}"]`);
-      const valueNode = $(item.valueId);
-      const stateNode = $(item.stateId);
+    grid.innerHTML = '';
+    tools.forEach(tool => {
+      const finding = api?.getFinding?.(tool.key, current) || current.findings?.[tool.key] || null;
+      const state = assessmentState(tool.key);
+      const task = partnerTaskFor(tool.key);
+      const pending = ['active','pending'].includes(task?.status);
+      const queued = task?.status === 'queued';
       const due = state.code === 'reassessment-due';
       if (due) dueCount += 1;
-      if (valueNode) valueNode.textContent = String(value);
-      if (stateNode) stateNode.textContent = due ? 'RECHECK NOW' : finding ? (state.label || 'Obtained') : 'Not obtained';
-      tile?.classList.toggle('is-due', due);
-      tile?.classList.toggle('is-recorded', Boolean(finding));
+      const value = finding ? (finding.value || finding.finding || valueFor(tool.key) || '—') : '—';
+      const status = due ? 'RECHECK NOW' : pending ? `Partner · ${secondsRemaining(task)}s` : queued ? 'Partner queued' : finding ? (state.label || 'Obtained') : 'Tap to obtain';
+      const tile = document.createElement('button');
+      tile.type = 'button';
+      tile.className = `desktop-monitor-vital${due ? ' is-due' : ''}${finding ? ' is-recorded' : ''}${pending || queued ? ' is-partner' : ''}`;
+      tile.dataset.vitalKey = tool.key;
+      tile.innerHTML = `<span>${escapeHtml(monitorVitalAbbreviation(tool.key, tool.label))}</span><strong>${escapeHtml(String(value))}</strong><small>${escapeHtml(status)}</small>`;
+      tile.addEventListener('click', () => openDesktopVitalAction(tool.key));
+      grid.appendChild(tile);
     });
+    renderDesktopMonitorFindings(current);
     const summary = discoveredSummary(current);
     if ($('desktopMonitorStatus')) $('desktopMonitorStatus').textContent = summary.status || 'Monitoring';
-    if ($('desktopMonitorDue')) $('desktopMonitorDue').textContent = dueCount ? `${dueCount} vital${dueCount === 1 ? '' : 's'} due for recheck` : 'No reassessment due';
+    if ($('desktopMonitorDue')) $('desktopMonitorDue').textContent = dueCount ? `${dueCount} vital${dueCount === 1 ? '' : 's'} due for recheck` : 'Click a vital to obtain or assign it';
   }
 
   function renderUnifiedClinicalBar() {
@@ -4064,10 +4157,13 @@
     hideClinicalNextActions();
     openSheet('treatmentPanel');
   });
-  $('clinicalNextVitals')?.addEventListener('click', () => { hideClinicalNextActions(); openSheet('vitalsPanel'); });
+  $('clinicalNextVitals')?.addEventListener('click', () => { hideClinicalNextActions(); if (desktopWorkspace()) { document.getElementById('desktopPatientMonitor')?.scrollIntoView({ block:'nearest' }); } else openSheet('vitalsPanel'); });
   $('clinicalNextPatient')?.addEventListener('click', () => { hideClinicalNextActions(); closeSheet(); });
   $('clinicalNextUncertain')?.addEventListener('click', () => recordUncertainty(nextActionFinding || {}));
   $('clinicalNextClose')?.addEventListener('click', hideClinicalNextActions);
+  $('desktopVitalTake')?.addEventListener('click', takeDesktopVital);
+  $('desktopVitalPartner')?.addEventListener('click', assignDesktopVitalToPartner);
+  $('desktopVitalCancel')?.addEventListener('click', closeDesktopVitalAction);
   $('closeSheet').addEventListener('click', closeSheet);
   $('sheetBackdrop').addEventListener('click', closeSheet);
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && !$('scenarioControlDialog').hidden) closeScenarioControls(); });
