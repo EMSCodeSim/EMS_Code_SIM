@@ -2792,3 +2792,45 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     padding:8px!important;
   }
 }
+
+
+/* ===== Full Photo-Area Mini Sims 2.317 ===== */
+@media(min-width:961px){
+  body.desktop-scenario-layout.sim-workspace-open .patient-stage{
+    padding:0!important;
+    overflow:hidden!important;
+  }
+  body.desktop-scenario-layout .embedded-sim-workspace{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    max-width:none!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:0!important;
+    border-radius:inherit!important;
+    background:#07131f!important;
+    display:grid!important;
+    grid-template-rows:auto minmax(0,1fr)!important;
+    overflow:hidden!important;
+    z-index:20!important;
+  }
+  body.desktop-scenario-layout .embedded-sim-header{
+    min-height:42px!important;
+    padding:6px 9px!important;
+    background:#0b2230!important;
+    border-bottom:1px solid #31566d!important;
+  }
+  body.desktop-scenario-layout .embedded-sim-workspace iframe{
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    min-width:100%!important;
+    min-height:100%!important;
+    border:0!important;
+    margin:0!important;
+    padding:0!important;
+    background:#07131f!important;
+  }
+}

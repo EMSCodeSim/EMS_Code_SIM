@@ -4271,7 +4271,56 @@
     return matching?.label || anchor?.textContent?.trim() || 'Assessment simulator';
   }
 
+
+  let embeddedRecordSignature = '';
+  let embeddedCompletionTimer = 0;
+
+  function embeddedRecordCompletionSignature() {
+    try {
+      const current = record() || {};
+      return JSON.stringify({
+        findings:current.findings || {},
+        vitals:current.vitals || {},
+        updatedAt:current.updatedAt || current.lastUpdated || ''
+      });
+    } catch (_) { return ''; }
+  }
+
+  function armEmbeddedCompletionWatcher() {
+    clearInterval(embeddedCompletionTimer);
+    embeddedRecordSignature = embeddedRecordCompletionSignature();
+    embeddedCompletionTimer = window.setInterval(() => {
+      const workspace = $('embeddedSimWorkspace');
+      if (!workspace || workspace.hidden) {
+        clearInterval(embeddedCompletionTimer);
+        return;
+      }
+      const next = embeddedRecordCompletionSignature();
+      if (next && embeddedRecordSignature && next !== embeddedRecordSignature) {
+        clearInterval(embeddedCompletionTimer);
+        window.setTimeout(() => {
+          closeEmbeddedSimulator({refresh:true});
+          toast('Assessment saved');
+        }, 180);
+      }
+      embeddedRecordSignature = next || embeddedRecordSignature;
+    }, 350);
+  }
+
+  function handleEmbeddedSimulatorComplete(event) {
+    const data = event?.data;
+    if (!data || typeof data !== 'object') return;
+    if (!['ems-sim-complete','ems-assessment-saved','ems-vital-saved'].includes(data.type)) return;
+    const frame = $('embeddedSimFrame');
+    if (frame?.contentWindow && event.source !== frame.contentWindow) return;
+    clearInterval(embeddedCompletionTimer);
+    closeEmbeddedSimulator({refresh:true});
+    toast(data.label ? `${data.label} saved` : 'Assessment saved');
+  }
+  window.addEventListener('message', handleEmbeddedSimulatorComplete);
+
   function closeEmbeddedSimulator(options = {}) {
+    clearInterval(embeddedCompletionTimer);
     const workspace = $('embeddedSimWorkspace');
     const frame = $('embeddedSimFrame');
     if (!workspace || workspace.hidden) return;
@@ -4292,6 +4341,7 @@
     try { url = new URL(href, location.href); } catch { return false; }
     if (url.origin !== location.origin || !embeddedSimPaths.has(url.pathname)) return false;
     url.searchParams.set('embedded', '1');
+    url.searchParams.set('autosaveclose', '1');
     url.searchParams.set('case', id);
     url.searchParams.set('mode', 'scenario');
     url.searchParams.set('training', trainingMode());
@@ -4336,77 +4386,92 @@
         style = doc.createElement('style');
         style.id = 'emsEmbeddedAutoFitStyle';
         style.textContent = `
-          html[data-ems-embedded-fit="true"] {
-            width:100%!important;
-            height:100%!important;
-            overflow:hidden!important;
+          html[data-ems-embedded-fit="true"]{
+            width:100%!important;height:100%!important;min-height:100%!important;
+            overflow:hidden!important;background:#07131f!important;
+          }
+          html[data-ems-embedded-fit="true"] body{
+            margin:0!important;max-width:none!important;min-width:0!important;
+            transform-origin:center center!important;overflow:auto!important;
             background:#07131f!important;
           }
-          html[data-ems-embedded-fit="true"] body {
-            margin:0!important;
-            max-width:none!important;
-            min-width:0!important;
-            transform-origin:top left!important;
-            position:absolute!important;
-            left:0;
-            top:0;
-            overflow:visible!important;
+          html[data-ems-embedded-fit="true"] body > main,
+          html[data-ems-embedded-fit="true"] body > .app,
+          html[data-ems-embedded-fit="true"] body > .wrap,
+          html[data-ems-embedded-fit="true"] body > .container,
+          html[data-ems-embedded-fit="true"] body > .page,
+          html[data-ems-embedded-fit="true"] body > .sim-shell,
+          html[data-ems-embedded-fit="true"] body > .learning-shell,
+          html[data-ems-embedded-fit="true"] body > .va-shell{
+            width:100%!important;max-width:none!important;min-height:100%!important;
+            margin:0!important;border-radius:0!important;
           }
         `;
         doc.head?.appendChild(style);
       }
 
-      // Reset to the simulator's natural dimensions before measuring.
       body.style.zoom = '';
       body.style.transform = 'none';
-      body.style.left = '0px';
-      body.style.top = '0px';
-      body.style.width = 'auto';
-      body.style.height = 'auto';
+      body.style.position = 'relative';
+      body.style.left = '0';
+      body.style.top = '0';
+      body.style.width = '100%';
+      body.style.height = '100%';
 
       requestAnimationFrame(() => {
-        const availableW = Math.max(1, frame.clientWidth - 12);
-        const availableH = Math.max(1, frame.clientHeight - 12);
+        const availableW = Math.max(1, frame.clientWidth);
+        const availableH = Math.max(1, frame.clientHeight);
+        const naturalW = Math.max(body.scrollWidth, root.scrollWidth, availableW);
+        const naturalH = Math.max(body.scrollHeight, root.scrollHeight, availableH);
 
-        // Prefer the actual rendered bounding size, while still accounting for
-        // any overflow created by larger controls/graphics.
-        const rect = body.getBoundingClientRect();
-        const naturalW = Math.max(
-          Math.ceil(rect.width),
-          body.scrollWidth,
-          root.scrollWidth,
-          1
-        );
-        const naturalH = Math.max(
-          Math.ceil(rect.height),
-          body.scrollHeight,
-          root.scrollHeight,
-          1
-        );
-
-        // Fit to both dimensions. Never enlarge a simulator beyond 100%.
-        // Allow smaller scales for older large BP/pulse sims when necessary.
-        const scale = Math.max(
-          0.42,
-          Math.min(1, availableW / naturalW, availableH / naturalH)
-        );
-
-        const scaledW = naturalW * scale;
-        const scaledH = naturalH * scale;
-        const offsetX = Math.max(0, (frame.clientWidth - scaledW) / 2);
-        const offsetY = Math.max(0, (frame.clientHeight - scaledH) / 2);
-
-        body.style.width = `${naturalW}px`;
-        body.style.height = `${naturalH}px`;
-        body.style.transform = `scale(${scale})`;
-        body.style.left = `${Math.round(offsetX)}px`;
-        body.style.top = `${Math.round(offsetY)}px`;
-        body.dataset.emsFitScale = scale.toFixed(3);
-        body.dataset.emsFitNatural = `${naturalW}x${naturalH}`;
+        // Default to full-size photo-area presentation. Only scale down when
+        // the simulator's intrinsic layout is genuinely larger than the pane.
+        const overflowW = naturalW > availableW * 1.03;
+        const overflowH = naturalH > availableH * 1.03;
+        if (overflowW || overflowH) {
+          const scale = Math.max(.55, Math.min(1, availableW/naturalW, availableH/naturalH));
+          body.style.position = 'absolute';
+          body.style.width = `${naturalW}px`;
+          body.style.height = `${naturalH}px`;
+          body.style.transform = `scale(${scale})`;
+          body.style.transformOrigin = 'top left';
+          body.style.left = `${Math.max(0,(availableW-naturalW*scale)/2)}px`;
+          body.style.top = `${Math.max(0,(availableH-naturalH*scale)/2)}px`;
+          body.dataset.emsFitScale = scale.toFixed(3);
+        } else {
+          body.dataset.emsFitScale = '1.000';
+        }
       });
-    } catch (_) {
-      // Same-origin embedded tools may briefly be unavailable while loading.
-    }
+    } catch (_) {}
+  }
+
+
+  function installEmbeddedSaveBridge() {
+    const frame = $('embeddedSimFrame');
+    try {
+      const win = frame?.contentWindow;
+      const doc = frame?.contentDocument;
+      if (!win || !doc || win.__emsSaveBridgeInstalled) return;
+      win.__emsSaveBridgeInstalled = true;
+
+      // Generic save/record/submit controls: after the sim's own handler runs,
+      // allow record watcher to detect the change. If the sim explicitly marks
+      // completion, close immediately.
+      doc.addEventListener('click', event => {
+        const control = event.target?.closest?.('button,input[type="submit"],[role="button"]');
+        if (!control) return;
+        const label = String(control.textContent || control.value || '').trim().toLowerCase();
+        if (!/(save|record|submit|complete|document|done|use result|return to patient)/.test(label)) return;
+        window.setTimeout(() => {
+          const next = embeddedRecordCompletionSignature();
+          if (next && embeddedRecordSignature && next !== embeddedRecordSignature) {
+            clearInterval(embeddedCompletionTimer);
+            closeEmbeddedSimulator({refresh:true});
+            toast('Assessment saved');
+          }
+        }, 220);
+      }, true);
+    } catch (_) {}
   }
 
   function scheduleEmbeddedFit() {
