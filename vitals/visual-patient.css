@@ -2834,3 +2834,19 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     background:#07131f!important;
   }
 }
+
+/* ===== Full-size embedded tools + patient photo 2.320 ===== */
+@media(min-width:961px){
+  body.desktop-scenario-layout .embedded-sim-workspace{
+    position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+    max-width:none!important;max-height:none!important;overflow:hidden!important;background:#07131f!important;
+  }
+  body.desktop-scenario-layout .embedded-sim-workspace iframe{
+    width:100%!important;height:100%!important;min-width:100%!important;min-height:100%!important;
+    max-width:none!important;max-height:none!important;transform:none!important;margin:0!important;
+  }
+  body.desktop-scenario-layout .patient-stage>img#patientImage{
+    display:block!important;width:100%!important;height:100%!important;
+    object-fit:cover!important;object-position:center center!important;
+  }
+}

@@ -4391,60 +4391,56 @@
             overflow:hidden!important;background:#07131f!important;
           }
           html[data-ems-embedded-fit="true"] body{
-            margin:0!important;max-width:none!important;min-width:0!important;
-            transform-origin:center center!important;overflow:auto!important;
-            background:#07131f!important;
+            width:100%!important;height:100%!important;min-height:100%!important;
+            margin:0!important;max-width:none!important;transform:none!important;
+            zoom:1!important;position:relative!important;left:0!important;top:0!important;
+            overflow:auto!important;background:#07131f!important;
           }
-          html[data-ems-embedded-fit="true"] body > main,
-          html[data-ems-embedded-fit="true"] body > .app,
-          html[data-ems-embedded-fit="true"] body > .wrap,
-          html[data-ems-embedded-fit="true"] body > .container,
-          html[data-ems-embedded-fit="true"] body > .page,
-          html[data-ems-embedded-fit="true"] body > .sim-shell,
-          html[data-ems-embedded-fit="true"] body > .learning-shell,
-          html[data-ems-embedded-fit="true"] body > .va-shell{
+          html[data-ems-embedded-fit="true"] .sv-main{
+            width:100%!important;max-width:none!important;
+            min-height:calc(100vh - 52px)!important;margin:0!important;
+            padding:9px 10px 12px!important;gap:9px!important;
+          }
+          html[data-ems-embedded-fit="true"] .sv-topbar{
+            padding-top:6px!important;padding-bottom:7px!important;
+          }
+          html[data-ems-embedded-fit="true"] .sv-card{
+            width:100%!important;max-width:none!important;padding:11px!important;
+          }
+          html[data-ems-embedded-fit="true"] .sv-stage{
+            width:100%!important;min-height:clamp(260px,46vh,430px)!important;padding:10px!important;
+          }
+          html[data-ems-embedded-fit="true"] .va-shell{
             width:100%!important;max-width:none!important;min-height:100%!important;
-            margin:0!important;border-radius:0!important;
+            margin:0!important;padding:8px!important;
+          }
+          html[data-ems-embedded-fit="true"] .va-stage{
+            min-height:calc(100vh - 90px)!important;
+          }
+          html[data-ems-embedded-fit="true"] main,
+          html[data-ems-embedded-fit="true"] .app,
+          html[data-ems-embedded-fit="true"] .wrap,
+          html[data-ems-embedded-fit="true"] .container,
+          html[data-ems-embedded-fit="true"] .page,
+          html[data-ems-embedded-fit="true"] .sim-shell,
+          html[data-ems-embedded-fit="true"] .learning-shell{
+            max-width:none!important;
           }
         `;
         doc.head?.appendChild(style);
       }
 
-      body.style.zoom = '';
       body.style.transform = 'none';
-      body.style.position = 'relative';
-      body.style.left = '0';
-      body.style.top = '0';
+      body.style.zoom = '1';
       body.style.width = '100%';
       body.style.height = '100%';
-
-      requestAnimationFrame(() => {
-        const availableW = Math.max(1, frame.clientWidth);
-        const availableH = Math.max(1, frame.clientHeight);
-        const naturalW = Math.max(body.scrollWidth, root.scrollWidth, availableW);
-        const naturalH = Math.max(body.scrollHeight, root.scrollHeight, availableH);
-
-        // Default to full-size photo-area presentation. Only scale down when
-        // the simulator's intrinsic layout is genuinely larger than the pane.
-        const overflowW = naturalW > availableW * 1.03;
-        const overflowH = naturalH > availableH * 1.03;
-        if (overflowW || overflowH) {
-          const scale = Math.max(.55, Math.min(1, availableW/naturalW, availableH/naturalH));
-          body.style.position = 'absolute';
-          body.style.width = `${naturalW}px`;
-          body.style.height = `${naturalH}px`;
-          body.style.transform = `scale(${scale})`;
-          body.style.transformOrigin = 'top left';
-          body.style.left = `${Math.max(0,(availableW-naturalW*scale)/2)}px`;
-          body.style.top = `${Math.max(0,(availableH-naturalH*scale)/2)}px`;
-          body.dataset.emsFitScale = scale.toFixed(3);
-        } else {
-          body.dataset.emsFitScale = '1.000';
-        }
-      });
+      body.style.left = '0';
+      body.style.top = '0';
+      body.style.position = 'relative';
+      body.dataset.emsFitScale = '1.000';
+      body.dataset.emsFitMode = 'full-photo-area';
     } catch (_) {}
   }
-
 
   function installEmbeddedSaveBridge() {
     const frame = $('embeddedSimFrame');
