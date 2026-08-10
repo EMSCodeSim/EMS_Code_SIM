@@ -1736,432 +1736,246 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
   body.horse-current-emt-call.desktop-scenario-layout .horse-log-list.category-view .care-log-item{margin-left:8px}
 }
 
+/* ==========================================================
+   Desktop Clinical Workspace Update 2.300
+   Desktop only. Phone/tablet behavior remains unchanged.
+   Patient = left | Patient update/guidance = center | Actions = right
+   ========================================================== */
+@media (min-width: 961px){
+  html,body{height:100%}
+  body{overflow:hidden;background:#06131f}
+  .vp-shell{
+    max-width:none;
+    width:100%;
+    height:100vh;
+    min-height:0;
+    padding:10px 12px 12px;
+    margin:0;
+    display:grid;
+    grid-template-rows:auto minmax(0,1fr);
+    gap:8px;
+  }
+  .vp-top{
+    grid-template-columns:54px minmax(0,1fr) auto;
+    min-height:62px;
+    padding:3px 0 5px;
+    border-bottom:1px solid #294e65;
+  }
+  .vp-top h1{font-size:1.16rem}
+  .vp-top p{font-size:.72rem}
+  .vp-timer{display:flex;align-items:center;gap:10px;text-align:left;padding:7px 10px}
+  .vp-timer span,.vp-timer strong,.vp-timer small{display:block}
+  .vp-timer strong{font-size:1.08rem}
+  .patient-clock-status{max-width:210px}
+  .scenario-build-stamp-dark{display:none!important}
+  .scenario-quick-controls{display:none}
 
-/* Horse hospital handoff 2.220 — bedside note board replaces the patient picture during report. */
-.hospital-handoff-workspace[hidden]{display:none!important}
-.hospital-handoff-workspace{
-  position:absolute;inset:0;z-index:14;display:flex;flex-direction:column;min-width:0;min-height:0;
-  background:#e8edf0;color:#102332
-}
-.hospital-handoff-header{
-  display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 14px;
-  background:#0b1d2c;color:#fff;border-bottom:1px solid #31566d
-}
-.hospital-handoff-header>div{display:grid;gap:2px;min-width:0}
-.hospital-handoff-header small{color:#8ccfff;font-size:.64rem;font-weight:950;letter-spacing:.08em}
-.hospital-handoff-header strong{font-size:1.05rem}
-.hospital-handoff-header span{color:#abc2d0;font-size:.7rem}
-.hospital-handoff-header button{border:1px solid #557386;border-radius:9px;background:#142f42;color:#fff;padding:7px 10px;font-weight:850;cursor:pointer}
-.hospital-handoff-layout{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(300px,.72fr);gap:0;flex:1 1 auto;min-height:0;overflow:hidden}
-.hospital-handoff-notes,.hospital-handoff-report{min-height:0;padding:12px 13px;overflow:auto}
-.hospital-handoff-notes{
-  background-color:#f8f7f0;
-  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 27px,rgba(107,145,168,.16) 28px)
-}
-.hospital-handoff-report{background:#eef3f5;border-left:1px solid #b9c7cf}
-.hospital-handoff-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
-.hospital-handoff-section-head small{display:block;color:#47708a;font-size:.6rem;font-weight:950;letter-spacing:.07em}
-.hospital-handoff-section-head h2{margin:2px 0 0;font-size:.98rem;color:#112d3e}
-.hospital-handoff-section-head>span{border:1px solid #a9bdc9;border-radius:999px;background:#fff;padding:4px 7px;color:#486675;font-size:.6rem;font-weight:850;white-space:nowrap}
-.hospital-handoff-note-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;align-items:start}
-.handoff-note-card{border:1px solid #c4d0d6;border-radius:11px;background:rgba(255,255,255,.92);padding:9px 10px;box-shadow:0 2px 6px rgba(14,43,60,.06)}
-.handoff-note-card h3{margin:0 0 7px;padding-bottom:5px;border-bottom:1px solid #dbe4e8;color:#17384b;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
-.handoff-note-row{display:grid;grid-template-columns:82px minmax(0,1fr);gap:7px;padding:4px 0;border-bottom:1px dotted #cbd6dc}
-.handoff-note-row:last-child{border-bottom:0}
-.handoff-note-row span{color:#5f7480;font-size:.62rem;font-weight:800}
-.handoff-note-row strong{color:#172b37;font-size:.68rem;line-height:1.3;font-weight:700;overflow-wrap:anywhere}
-.handoff-note-empty{margin:4px 0;color:#8a969d;font-size:.66rem;font-style:italic}
-.handoff-note-priority{border-left:4px solid #4387ae}
-.handoff-note-vitals{border-left:4px solid #278a73}
-.handoff-note-treatment{border-left:4px solid #8a6f2b}
-.handoff-note-transport{border-left:4px solid #725aa3}
-.hospital-handoff-draft-label{display:block;margin:2px 0 5px;color:#385b6d;font-size:.67rem;font-weight:900}
-#hospitalHandoffDraft{width:100%;min-height:210px;resize:vertical;border:1px solid #93aab7;border-radius:10px;background:#fff;color:#112a38;padding:10px;font:inherit;font-size:.75rem;line-height:1.42;box-sizing:border-box}
-.hospital-handoff-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
-.hospital-handoff-actions button{min-height:38px;border-radius:9px;font-weight:900;cursor:pointer}
-.sample-handoff-panel{margin-top:9px;padding:10px;border:1px solid #9bb6c5;border-radius:10px;background:#fff}
-.sample-handoff-panel>div{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.sample-handoff-panel>div small{color:#315e77;font-size:.61rem;font-weight:950;letter-spacing:.06em}
-.sample-handoff-panel>div button{border:0;background:transparent;color:#456474;font-size:1.2rem;line-height:1;cursor:pointer}
-.sample-handoff-panel p{margin:8px 0;color:#172d39;font-size:.72rem;line-height:1.45}
-.sample-handoff-panel>small{color:#667c88;font-size:.61rem;line-height:1.35}
-body.hospital-handoff-open .patient-stage:after,body.hospital-handoff-open .scene-clue-layer{display:none!important}
-.horse-handoff-launch-card{display:grid;gap:8px;padding:8px;border:1px solid rgba(143,224,196,.2);border-radius:10px;background:#0a211b}
-.horse-handoff-launch-card>small{color:#b5cac2;font-size:.63rem;line-height:1.35}
-.horse-handoff-launch-card>div{display:flex;gap:7px;flex-wrap:wrap}
-.horse-handoff-launch-card .secondary{min-height:34px;border:1px solid #4b7064;border-radius:9px;background:#17372f;color:#e6fff6;padding:6px 10px;font-weight:900;cursor:pointer}
-
-@media(max-width:1150px) and (min-width:980px){
-  .hospital-handoff-layout{grid-template-columns:minmax(0,1fr) minmax(280px,.72fr)}
-  .hospital-handoff-note-grid{grid-template-columns:1fr}
-  .handoff-note-row{grid-template-columns:76px minmax(0,1fr)}
-  #hospitalHandoffDraft{min-height:170px}
-}
-@media(max-width:979px){
-  .hospital-handoff-workspace{display:none!important}
-}
-
-/* Horse scenario grading 2.221 — final call review inside the patient-picture workspace. */
-.horse-grade-workspace[hidden]{display:none!important}
-.horse-grade-workspace{
-  position:absolute;inset:0;z-index:16;display:flex;flex-direction:column;min-width:0;min-height:0;
-  background:#e9eef1;color:#102332
-}
-.horse-grade-header{
-  display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 14px;
-  background:#0b1d2c;color:#fff;border-bottom:1px solid #31566d
-}
-.horse-grade-header>div{display:grid;gap:2px;min-width:0}
-.horse-grade-header small{color:#8ccfff;font-size:.62rem;font-weight:950;letter-spacing:.08em}
-.horse-grade-header strong{font-size:1.02rem}
-.horse-grade-header span{color:#abc2d0;font-size:.68rem}
-.horse-grade-header button{border:1px solid #557386;border-radius:9px;background:#142f42;color:#fff;padding:7px 10px;font-weight:850;cursor:pointer}
-.horse-grade-layout{display:grid;grid-template-columns:minmax(245px,.82fr) minmax(0,1.18fr);gap:0;flex:1 1 auto;min-height:0;overflow:hidden}
-.horse-grade-summary,.horse-grade-feedback{min-width:0;min-height:0;overflow:auto;padding:12px 13px}
-.horse-grade-summary{background:#f8fafb;border-right:1px solid #c2d0d8}
-.horse-grade-feedback{background:#eef3f5}
-.horse-grade-score-wrap{display:grid;grid-template-columns:92px minmax(0,1fr);align-items:center;gap:12px;padding-bottom:11px;border-bottom:1px solid #d0dbe1}
-.horse-grade-score{width:88px;height:88px;border-radius:50%;display:grid;place-content:center;text-align:center;background:#102d3e;color:#fff;border:6px solid #73b8dc;box-sizing:border-box}
-.horse-grade-score strong{font-size:1.72rem;line-height:1}
-.horse-grade-score span{font-size:.62rem;color:#c8e7f7;font-weight:850}
-.horse-grade-score-wrap>div:last-child small{display:block;color:#557383;font-size:.58rem;font-weight:950;letter-spacing:.07em}
-.horse-grade-score-wrap h2{margin:2px 0 2px;font-size:1.03rem;color:#102d3e}
-.horse-grade-score-wrap p{margin:0;color:#4b6574;font-size:.7rem;font-weight:750}
-.horse-grade-outcome{margin:10px 0;padding:9px 10px;border:1px solid #a9c6b9;border-left:4px solid #318367;border-radius:9px;background:#f5fbf8}
-.horse-grade-outcome small{display:block;color:#537067;font-size:.56rem;font-weight:950;letter-spacing:.07em}
-.horse-grade-outcome strong{display:block;margin:2px 0;color:#154e3d;font-size:.8rem}
-.horse-grade-outcome p{margin:0;color:#3f5c53;font-size:.66rem;line-height:1.35}
-.horse-grade-categories{display:grid;gap:7px}
-.horse-grade-category{padding:7px 8px;border:1px solid #d1dde3;border-radius:8px;background:#fff}
-.horse-grade-category>div:first-child{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:5px}
-.horse-grade-category strong{color:#233f50;font-size:.67rem}
-.horse-grade-category span{color:#567180;font-size:.62rem;font-weight:900}
-.horse-grade-bar{height:7px;border-radius:99px;background:#dfe8ec;overflow:hidden}
-.horse-grade-bar i{display:block;height:100%;border-radius:inherit;background:#337fa6}
-.horse-grade-feedback-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
-.horse-grade-feedback-card{border:1px solid #c6d3d9;border-radius:10px;background:#fff;padding:9px 10px}
-.horse-grade-feedback-card.strengths{border-top:4px solid #318367}
-.horse-grade-feedback-card.improve{border-top:4px solid #b37b28}
-.horse-grade-feedback-card>div small{display:block;color:#657c88;font-size:.55rem;font-weight:950;letter-spacing:.07em}
-.horse-grade-feedback-card>div strong{font-size:.76rem;color:#1e3948}
-.horse-grade-feedback-card ul{margin:7px 0 0;padding-left:17px;display:grid;gap:5px}
-.horse-grade-feedback-card li{color:#405965;font-size:.64rem;line-height:1.32}
-.horse-grade-treatment-review{border:1px solid #c4d2d9;border-radius:10px;background:#fff;padding:9px 10px;margin-bottom:9px}
-.horse-grade-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:7px}
-.horse-grade-section-head small{display:block;color:#647b88;font-size:.55rem;font-weight:950;letter-spacing:.07em}
-.horse-grade-section-head strong{display:block;color:#203b4a;font-size:.76rem}
-.horse-grade-section-head>span{border:1px solid #ccd8de;border-radius:99px;background:#f6f9fa;padding:3px 7px;color:#58707c;font-size:.56rem;font-weight:850;white-space:nowrap}
-.horse-grade-treatment-list{display:grid;gap:6px}
-.horse-grade-treatment-item{border-left:4px solid #8195a0;border-radius:7px;background:#f5f8f9;padding:7px 8px}
-.horse-grade-treatment-item.helped{border-left-color:#318367;background:#f1f8f5}
-.horse-grade-treatment-item.harmful{border-left-color:#b33d3d;background:#fff3f2}
-.horse-grade-treatment-item.unnecessary{border-left-color:#b37b28;background:#fff9ef}
-.horse-grade-treatment-item.review{border-left-color:#587fb1;background:#f3f7fc}
-.horse-grade-treatment-item>div{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.horse-grade-treatment-item strong{font-size:.65rem;color:#263f4c}
-.horse-grade-treatment-item span{font-size:.54rem;font-weight:950;text-transform:uppercase;color:#5c7480;white-space:nowrap}
-.horse-grade-treatment-item p{margin:3px 0 0;color:#526973;font-size:.61rem;line-height:1.3}
-.horse-grade-empty{margin:0;color:#758791;font-size:.64rem;font-style:italic}
-.horse-grade-next-call{border:1px solid #9ebacc;border-left:4px solid #337fa6;border-radius:10px;background:#f7fbfd;padding:9px 10px}
-.horse-grade-next-call small{display:block;color:#517286;font-size:.55rem;font-weight:950;letter-spacing:.07em}
-.horse-grade-next-call strong{display:block;margin:2px 0;color:#173c51;font-size:.72rem;line-height:1.3}
-.horse-grade-next-call p{margin:4px 0 0;color:#536a76;font-size:.63rem;line-height:1.35}
-.horse-grade-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:9px}
-.horse-grade-actions button{min-height:36px;border-radius:8px;padding:6px 11px;font-weight:900;cursor:pointer}
-.handoff-grade-button[hidden]{display:none!important}
-body.horse-grade-open .patient-stage:after,body.horse-grade-open .scene-clue-layer{display:none!important}
-body.horse-grade-open .hospital-handoff-workspace{display:none!important}
-
-@media(min-width:980px){
-  .hospital-handoff-actions:has(.handoff-grade-button:not([hidden])){grid-template-columns:1fr 1fr 1fr}
-}
-@media(max-width:1150px) and (min-width:980px){
-  .horse-grade-layout{grid-template-columns:minmax(230px,.78fr) minmax(0,1.22fr)}
-  .horse-grade-feedback-grid{grid-template-columns:1fr}
-  .horse-grade-score-wrap{grid-template-columns:78px minmax(0,1fr)}
-  .horse-grade-score{width:74px;height:74px;border-width:5px}
-  .horse-grade-score strong{font-size:1.42rem}
-}
-@media(max-width:979px){
-  .horse-grade-workspace{display:none!important}
-}
-
-
-/* Horse Patient Update TTS 2.222 — compact browser text-to-speech controls. */
-.info-update-head-actions{
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-  gap:6px;
-  flex-wrap:wrap;
-}
-.info-update-voice-controls{
-  display:inline-flex;
-  align-items:center;
-  gap:4px;
-}
-.info-update-voice-button{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:4px;
-  min-height:28px;
-  padding:4px 8px;
-  border:1px solid rgba(148,196,226,.38);
-  border-radius:9px;
-  background:rgba(7,25,38,.54);
-  color:#dceefa;
-  font:inherit;
-  font-size:.72rem;
-  font-weight:750;
-  line-height:1;
-  cursor:pointer;
-}
-.info-update-voice-button:hover{background:rgba(31,78,105,.58);border-color:rgba(126,203,247,.72)}
-.info-update-voice-button:focus-visible{outline:3px solid rgba(79,179,255,.38);outline-offset:2px}
-.info-update-voice-button.is-on{
-  border-color:#4fb3ff;
-  background:rgba(21,91,132,.54);
-  color:#fff;
-}
-.info-update-voice-button.is-speaking{
-  border-color:#7bd7a9;
-  background:rgba(27,106,72,.48);
-}
-.info-update-voice-button:disabled{opacity:.5;cursor:not-allowed}
-.info-update-window.is-speaking{
-  border-left-color:#7bd7a9 !important;
-  box-shadow:inset 0 0 0 1px rgba(123,215,169,.18) !important;
-}
-@media(max-width:560px){
-  .info-update-voice-button{padding:4px 6px}
-  .info-update-voice-button .info-voice-label{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-}
-
-
-/* HORSE CLINICAL LOOP 2.223 — condition clock + targeted reassessment */
-.patient-clock-status{display:block;max-width:170px;color:#cfe8f6;font-size:.62rem;font-weight:800;line-height:1.2;text-align:center}
-.vp-timer.patient-clock-watch #timer{color:#ffd58c}
-.vp-timer.patient-clock-alert #timer{color:#ff9d9d}
-.patient-clock-status.clock-watch{color:#ffd58c}
-.patient-clock-status.clock-alert{color:#ffb0b0}
-.info-update-window.voice-patient.is-speaking{box-shadow:inset 0 0 0 2px rgba(155,214,255,.28)}
-.info-update-window.voice-narrator.is-speaking{box-shadow:inset 0 0 0 2px rgba(224,205,255,.24)}
-.info-update-window.voice-patient #infoUpdateVoiceToggle .info-voice-label:after{content:" · Patient";font-size:.58rem;opacity:.75}
-.info-update-window.voice-narrator #infoUpdateVoiceToggle .info-voice-label:after{content:" · Narrator";font-size:.58rem;opacity:.75}
-
-/* HORSE DE-ID 2.225 — persistent desktop history, compact workspace, fictional demographics. */
-@media(min-width:980px){
-  body.horse-current-emt-call.desktop-scenario-layout #historyCategoryList{
-    gap:6px!important
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-history-group>summary{
-    display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;
-    min-height:54px;padding:8px 10px;cursor:pointer
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-history-group>summary>span:nth-child(2){
-    display:grid;gap:2px;min-width:0
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-history-group>summary em{
-    color:#bda6df;font-size:.62rem;font-style:normal;font-weight:900
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-history-group-preview{
-    display:block!important;padding:0 10px 8px!important
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-history-group:not(.selected) .horse-history-group-preview{
-    display:none!important
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-history-group-preview>small{
-    display:block!important;padding:6px 8px!important;border:1px solid rgba(189,166,223,.2);border-radius:8px;
-    background:#111c2d;color:#b8c7d1!important;font-size:.61rem!important;line-height:1.3!important
-  }
-
-  body.horse-current-emt-call.desktop-scenario-layout #horseClinicalQuestionBox.history-active{
-    max-height:258px!important;overflow:hidden!important;border-color:#7455a7;background:#171c31
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-head{
-    margin-bottom:6px!important
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-grid{
-    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-button{
-    display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:7px;
-    min-height:44px;border:1px solid #4a5472;border-radius:9px;background:#0d1628;color:#eef5ff;
-    padding:7px 8px;text-align:left;cursor:pointer
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-button:hover{
-    border-color:#a486d2;background:#151e34
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-button>span{
-    display:grid;place-items:center;min-width:27px;height:22px;border-radius:6px;background:#493267;color:#eadcff;
-    padding:0 5px;font-size:.55rem;font-weight:950;text-transform:uppercase
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-button>strong{
-    align-self:center;font-size:.66rem;line-height:1.22;font-weight:800
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-button.asked{
-    border-color:#2f8d6b;background:#0d2c26
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-button.asked>span{
-    background:#17644e;color:#e2fff5
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-history-question-hint{
-    margin-top:6px!important;color:#aebac7!important;font-size:.58rem!important
-  }
-}
-
-/* Training privacy note */
-.training-deid-note{margin:6px 0 10px;padding:7px 9px;border:1px solid #36576d;border-radius:9px;background:#10283a;color:#bcd0dd;font-size:.68rem;line-height:1.35}
-
-
-/* Horse responsive treatment selector 2.226 — desktop quick actions, phone dropdowns. */
-@media(min-width:980px){
-  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu{
-    display:grid!important;grid-template-columns:1fr!important;gap:6px!important
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice{
-    width:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;
-    min-height:52px;padding:8px 9px;border:1px solid #31566d;border-radius:11px;background:#10283a;color:#fff;
-    text-align:left;cursor:pointer
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice>span:nth-child(2){display:grid;gap:2px;min-width:0}
-  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice strong{font-size:.78rem}
-  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice small{font-size:.61rem;color:#9eb3bf;line-height:1.25}
-  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice em{font-style:normal;font-size:.61rem;color:#a9c9bc;font-weight:900}
-  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice.selected{
-    border-color:#65c2a3;background:#11352c;box-shadow:0 0 0 1px rgba(101,194,163,.18) inset
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-quick-grid{
-    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-quick{
-    min-height:42px;display:flex;align-items:center;gap:7px;padding:7px 8px;border:1px solid #365d50;border-radius:9px;
-    background:#0a1e19;color:#eefaf5;text-align:left;cursor:pointer
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-quick>span{color:#9fb5ab;font-weight:950}
-  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-quick strong{font-size:.67rem;line-height:1.2}
-  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-quick:hover,
-  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-quick.selected{border-color:#6dd0ad;background:#174435}
-  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-quick.used{border-color:#3d8c70}
-  body.horse-current-emt-call.desktop-scenario-layout #horseClinicalQuestionBox.treatment-active{max-height:355px!important}
-}
-
-@media(max-width:979px){
-  .horse-treatment-mobile-menu{display:grid;gap:11px}
-  .horse-treatment-mobile-intro{display:grid;gap:3px;padding:10px 11px;border:1px solid #31566d;border-radius:12px;background:#0d2638}
-  .horse-treatment-mobile-intro strong{color:#fff}
-  .horse-treatment-mobile-intro span{font-size:.76rem;color:#a9bfcc;line-height:1.35}
-  .horse-treatment-mobile-select{display:grid;gap:5px;color:#dcecf5;font-size:.75rem;font-weight:850}
-  .horse-treatment-mobile-select select{width:100%;min-height:46px;border:1px solid #45657a;border-radius:11px;background:#071827;color:#fff;padding:9px 10px;font:inherit}
-  .horse-treatment-mobile-select select:disabled{opacity:.55}
-  .horse-treatment-mobile-detail{display:grid;gap:8px;padding:10px;border:1px solid #31566d;border-radius:12px;background:#10283a}
-  .horse-treatment-mobile-detail>small{color:#9eb3bf;font-size:.72rem}
-  .horse-treatment-mobile-detail .horse-treatment-detail-grid{display:grid;grid-template-columns:1fr;gap:8px}
-  .horse-treatment-mobile-detail .horse-treatment-detail-grid label,
-  .horse-treatment-mobile-detail .horse-treatment-rationale{display:grid;gap:5px;color:#dcecf5;font-size:.72rem;font-weight:800}
-  .horse-treatment-mobile-detail select,
-  .horse-treatment-mobile-detail input,
-  .horse-treatment-mobile-detail textarea{width:100%;border:1px solid #45657a;border-radius:10px;background:#071827;color:#fff;padding:10px;font:inherit}
-  .horse-treatment-mobile-detail .horse-treatment-perform-row{display:grid;gap:7px}
-  .horse-treatment-mobile-detail .horse-treatment-perform{min-height:46px;border:0;border-radius:10px;background:#17664f;color:#fff;font-weight:900}
-}
-
-
-/* Horse desktop top call actions 2.227 — Transport / Handoff / Grade stay above patient. */
-@media(min-width:980px){
-  body.horse-current-emt-call.desktop-scenario-layout .vp-shell{
-    grid-template-rows:auto auto minmax(0,1fr)!important;
-    gap:6px!important;
-  }
-  body.horse-current-emt-call.desktop-scenario-layout .scenario-quick-controls{
+  .patient-desktop-workspace{min-height:0;height:100%;padding-right:29vw}
+  .scenario-hero-layout{
     display:grid!important;
-    grid-template-columns:repeat(5,minmax(0,1fr))!important;
-    gap:7px!important;
-    margin:0!important;
-    min-height:38px;
+    grid-template-columns:minmax(0,1.58fr) minmax(360px,.92fr)!important;
+    gap:12px!important;
+    align-items:stretch!important;
+    height:100%;
+    min-height:0;
   }
-  body.horse-current-emt-call.desktop-scenario-layout .scenario-quick-controls button{
-    min-height:38px!important;
-    padding:6px 9px!important;
+  .patient-stage{
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+    border-radius:18px;
+    box-shadow:0 12px 34px rgba(0,0,0,.24);
+  }
+  .patient-stage img{object-position:center center}
+  .patient-control-column{
+    min-width:0;
+    height:100%;
+    max-height:100%;
+    overflow:auto;
+    overscroll-behavior:contain;
+    padding:0 4px 20px 0;
+    scrollbar-width:thin;
+  }
+  .patient-control-column::-webkit-scrollbar,.action-sheet::-webkit-scrollbar{width:7px}
+  .patient-control-column::-webkit-scrollbar-thumb,.action-sheet::-webkit-scrollbar-thumb{background:#31566d;border-radius:99px}
+
+  /* One visually dominant, predictable patient-update location. */
+  .info-update-window{
+    position:sticky!important;
+    top:0!important;
+    z-index:14!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0 0 9px!important;
+    border-radius:15px!important;
+    box-shadow:0 10px 24px rgba(0,0,0,.24)!important;
+  }
+  .info-update-window:before{
+    content:"PATIENT UPDATE";
+    display:block;
+    margin:0 0 7px;
+    color:#8ccfff;
+    font-size:.58rem;
+    font-weight:950;
+    letter-spacing:.1em;
+  }
+  .info-update-window.is-collapsed:before{display:none}
+  .info-update-window>strong{font-size:.92rem}
+  .info-update-window>p{font-size:.79rem;line-height:1.42}
+  .info-update-controls{margin-top:7px}
+  .horse-clinical-question-box,.horse-current-assessment,.patient-entry-workflow{margin-top:9px}
+  .horse-question-placeholder{min-height:58px}
+  .patient-phase-controls{grid-template-columns:1fr 1fr}
+  .scene-guide-photo{max-height:none}
+  .guide-note{font-size:.66rem}
+
+  /* Desktop action tabs become the top of a permanent right clinical rail. */
+  .bottom-nav{
+    position:fixed!important;
+    z-index:44!important;
+    top:80px!important;
+    right:12px!important;
+    left:auto!important;
+    bottom:auto!important;
+    transform:none!important;
+    width:calc(29vw - 20px)!important;
+    max-width:none!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:6px!important;
+    padding:8px!important;
+    border:1px solid #31566d!important;
+    border-radius:15px!important;
+    background:rgba(7,24,39,.98)!important;
+    box-shadow:0 10px 30px rgba(0,0,0,.25)!important;
+  }
+  .bottom-nav button{
+    min-height:52px!important;
+    padding:7px 4px!important;
     border-radius:10px!important;
-    font-size:.72rem!important;
-    line-height:1.1!important;
-    white-space:nowrap;
+    font-size:.66rem!important;
   }
-  body.horse-current-emt-call.desktop-scenario-layout .scenario-quick-clinical{
-    border:1px solid #3b7899;background:#12334a;color:#fff;
+  .bottom-nav button>span{font-size:1.05rem!important;margin-bottom:1px!important}
+  .bottom-nav button[data-panel="findingsPanel"]{
+    position:absolute;
+    right:8px;
+    top:68px;
+    width:96px;
+    min-height:34px!important;
+    padding:5px 8px!important;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    background:#0d2232;
   }
-  body.horse-current-emt-call.desktop-scenario-layout .scenario-quick-grade{
-    border:1px solid #7d6b2e;background:#4a3d14;color:#fff;
+  .bottom-nav button[data-panel="findingsPanel"]>span{display:inline!important;font-size:.9rem!important;margin:0!important}
+
+  /* On desktop the action sheet is a rail, never a bottom-sheet overlay. */
+  .sheet-backdrop{display:none!important}
+  .action-sheet{
+    position:fixed!important;
+    z-index:42!important;
+    top:154px!important;
+    right:12px!important;
+    left:auto!important;
+    bottom:12px!important;
+    transform:none!important;
+    width:calc(29vw - 20px)!important;
+    max-width:none!important;
+    max-height:none!important;
+    overflow:auto!important;
+    padding:9px 10px 18px!important;
+    border:1px solid #31566d!important;
+    border-radius:15px!important;
+    background:#0b1d2c!important;
+    box-shadow:0 14px 36px rgba(0,0,0,.28)!important;
   }
-  body.horse-current-emt-call.desktop-scenario-layout .scenario-quick-controls button.done{
-    border-color:#3d8c70!important;background:#174435!important;color:#fff!important;
+  .action-sheet[hidden]{
+    display:block!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
   }
-  body.horse-current-emt-call.desktop-scenario-layout #horseClinicalQuestionBox.treatment-active{
-    max-height:230px!important;
+  .action-sheet:not([hidden]){visibility:visible!important;pointer-events:auto!important}
+  .sheet-handle{display:none}
+  .sheet-header{
+    top:-9px!important;
+    margin:0 -1px;
+    padding:9px 2px 8px!important;
+    border-bottom:1px solid #294e65;
   }
+  .sheet-header p{font-size:.58rem!important;letter-spacing:.07em}
+  .sheet-header h2{font-size:1.05rem!important}
+  .return-patient-btn{width:34px!important;min-width:34px!important;height:34px!important;padding:0!important}
+  .return-patient-btn span{display:none!important}
+  .sheet-patient-context{
+    position:static!important;
+    grid-template-columns:1fr!important;
+    gap:4px!important;
+    margin:8px 0!important;
+    padding:7px 8px!important;
+    background:#071827!important;
+  }
+  .sheet-patient-context>span{display:grid!important;grid-template-columns:82px minmax(0,1fr)!important;align-items:center;gap:7px!important}
+  .sheet-patient-context small{font-size:.55rem!important}
+  .sheet-patient-context strong{margin:0!important;font-size:.65rem!important}
+  .vp-panel .sub{margin:7px 0 10px!important;font-size:.72rem!important;line-height:1.35}
+  .compact-vital-row{min-height:66px!important;padding:8px 9px!important}
+  .tool,.assessment-compact-row,.treatment-neutral-card,.care-log-item{min-height:46px}
+  .assessment-immediate,.assessment-recommended,.assessment-more-body{padding:8px!important}
+  .assessment-more>summary,.assessment-category>summary{padding:9px!important}
+  .treatment-category>summary{padding:9px 10px!important}
+  .panel-search{position:sticky;top:54px;z-index:4;background:#0b1d2c;padding-bottom:7px}
+  .history-response-card{margin-top:7px}
+  .horse-log-header small{display:none}
+  .horse-log-view-toggle{gap:4px}
+  .finding-filters{display:flex;overflow-x:auto;gap:4px;padding-bottom:4px}
+  .finding-filters button{flex:0 0 auto}
+
+  /* Clinical status is compact and only expands when the user requests it. */
+  .persistent-clinical-bar{
+    position:fixed!important;
+    z-index:45!important;
+    top:80px!important;
+    right:calc(29vw + 6px)!important;
+    left:auto!important;
+    bottom:auto!important;
+    width:min(320px,21vw)!important;
+    padding:0!important;
+    background:transparent!important;
+    border:0!important;
+  }
+  .persistent-clinical-bar>button{
+    border:1px solid #31566d!important;
+    border-radius:12px!important;
+    padding:7px 9px!important;
+    background:rgba(7,24,39,.94)!important;
+    box-shadow:0 8px 22px rgba(0,0,0,.2);
+  }
+  .persistent-clinical-bar .clinical-bar-finding{display:none}
+  .persistent-clinical-bar>button{grid-template-columns:minmax(0,1fr) auto auto!important}
+  .clinical-task-drawer{
+    position:absolute!important;
+    right:0!important;
+    top:48px!important;
+    width:320px!important;
+    grid-template-columns:1fr!important;
+    border:1px solid #31566d!important;
+    border-radius:12px!important;
+    background:#071827!important;
+    box-shadow:0 12px 28px rgba(0,0,0,.34)!important;
+  }
+  .clinical-task-drawer>div{padding:7px!important}
+  .clinical-task-drawer>div span{font-size:.68rem!important}
+
+  /* Full-screen tools still take priority over the workspace. */
+  .embedded-sim-workspace,.hospital-handoff-workspace,.horse-grade-workspace{z-index:60}
+  .clinical-next-actions{right:calc(29vw + 18px);left:auto;transform:none;bottom:18px;width:min(600px,46vw)}
+  .toast{bottom:24px}
 }
 
-/* On phones, call-level transport/handoff remain in the compact Treatment dropdown. */
-@media(max-width:979px){
-  #transportScenarioQuick,#handoffScenarioQuick,#gradeScenarioQuick{display:none!important}
-}
-
-
-/* HORSE PATIENT-DRIVEN INFO 2.228 — source icons, silent clinical findings, patient quick replies. */
-.info-update-source{display:flex;align-items:center;gap:7px;min-width:0}
-.info-update-source #infoUpdateType{font-size:.62rem;font-weight:950;letter-spacing:.08em;color:#b9ddf2;white-space:nowrap}
-.info-update-source-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 30px;width:30px;height:30px;border:1px solid rgba(171,210,235,.42);border-radius:50%;background:rgba(13,39,56,.82);font-size:1rem;line-height:1;box-shadow:inset 0 0 0 1px rgba(255,255,255,.025)}
-.info-update-source-icon.source-patient{border-color:#7ec8f4;background:rgba(25,82,116,.72)}
-.info-update-source-icon.source-vitals{border-color:#f09a9a;background:rgba(111,32,38,.62)}
-.info-update-source-icon.source-observation{border-color:#f2c66e;background:rgba(104,72,20,.58)}
-.info-update-source-icon.source-assessment{border-color:#8ccfff;background:rgba(23,76,110,.65)}
-.info-update-source-icon.source-history{border-color:#cba6ff;background:rgba(73,49,105,.62)}
-.info-update-source-icon.source-treatment{border-color:#7bd7a9;background:rgba(27,92,67,.64)}
-.info-update-source-icon.source-transport{border-color:#f1b64a;background:rgba(97,66,18,.64)}
-.info-update-source-icon.source-partner{border-color:#bda8ef;background:rgba(68,51,105,.62)}
-.info-update-source-icon.source-alert{border-color:#ff9696;background:rgba(121,29,36,.7)}
-.info-update-source-icon.source-dispatch{border-color:#91a9ba;background:rgba(46,65,79,.7)}
-.info-update-source-icon.source-information{border-color:#a6b7c2;background:rgba(44,61,72,.7)}
-@keyframes infoSourceBlink{0%,100%{opacity:1;transform:scale(1)}18%{opacity:.18;transform:scale(.92)}36%{opacity:1;transform:scale(1.08)}54%{opacity:.25;transform:scale(.94)}72%{opacity:1;transform:scale(1.05)}}
-.info-update-source-icon.source-blink{animation:infoSourceBlink .7s ease-in-out 3}
-
-@keyframes infoSourceActivePulse{0%,100%{filter:brightness(1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.025)}50%{filter:brightness(1.18);box-shadow:0 0 0 3px rgba(126,203,247,.07),inset 0 0 0 1px rgba(255,255,255,.04)}}
-.info-update-source-icon{animation:infoSourceActivePulse 2.2s ease-in-out infinite}
-.info-update-source-icon.source-blink{animation:infoSourceBlink .7s ease-in-out 3}
-.info-update-window.info-source-patient{border-left-color:#69bdf0;background:rgba(7,29,45,.97)}
-.info-update-window.info-source-vitals{border-left-color:#dd7474}
-.info-update-window.info-source-observation{border-left-color:#e8b64f}
-.info-update-window.info-source-assessment{border-left-color:#76bfe9}
-.info-update-window.info-source-history{border-left-color:#ba91ee}
-.info-update-window.info-source-treatment{border-left-color:#68c69a}
-.info-update-window.info-source-transport{border-left-color:#e5a93f}
-.info-update-window.info-source-alert{border-left-color:#e75a61}
-.patient-spoken-line{display:block;color:#fff;font-size:.88rem;font-weight:760;line-height:1.38}
-.patient-visual-note{display:flex;align-items:flex-start;gap:5px;margin-top:5px;padding-top:5px;border-top:1px solid rgba(153,196,221,.16);color:#b7cad6;font-size:.67rem;font-weight:650;line-height:1.3}
-.patient-visual-note>span{flex:0 0 auto}
-.info-update-quick-replies{margin:7px 0 6px;padding-top:6px;border-top:1px solid rgba(140,207,255,.18)}
-.info-update-quick-replies[hidden]{display:none!important}
-.info-update-quick-replies>small{display:block;margin-bottom:5px;color:#8ccfff;font-size:.54rem;font-weight:950;letter-spacing:.07em}
-.info-update-quick-reply-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
-.info-update-quick-reply{min-height:34px;border:1px solid #42667c;border-radius:8px;background:#0b2537;color:#e8f5fc;padding:5px 7px;font:inherit;font-size:.61rem;font-weight:800;line-height:1.18;text-align:left;cursor:pointer}
-.info-update-quick-reply:hover,.info-update-quick-reply:focus-visible{border-color:#78c8f4;background:#143b54}
-.info-update-quick-reply.selected{border-color:#75cfa5;background:#164533;color:#fff}
-.info-update-quick-reply-status{margin:5px 0 0!important;color:#b9dfce!important;font-size:.62rem!important;font-weight:800!important;line-height:1.25!important}
-.info-update-window.is-collapsed>.info-update-quick-replies{display:none!important}
-.info-update-window.voice-silent #infoUpdateReplay{opacity:.38}
-.info-update-window.info-source-patient.is-speaking{border-left-color:#7bd7a9!important}
-
-@media(min-width:980px){
-  body.horse-current-emt-call.desktop-scenario-layout .info-update-window{padding:9px 10px 8px}
-  body.horse-current-emt-call.desktop-scenario-layout .info-update-window>strong{font-size:.8rem}
-  body.horse-current-emt-call.desktop-scenario-layout .info-update-window>p{margin:3px 0 5px;font-size:.73rem;line-height:1.28}
-  body.horse-current-emt-call.desktop-scenario-layout .patient-spoken-line{font-size:.82rem}
-  body.horse-current-emt-call.desktop-scenario-layout .info-update-quick-reply{min-height:31px;padding:4px 6px;font-size:.58rem}
-}
-@media(max-width:700px){
-  .info-update-source-icon{width:27px;height:27px;flex-basis:27px;font-size:.9rem}
-  .info-update-quick-reply-buttons{grid-template-columns:1fr}
-  .info-update-quick-reply{min-height:38px;font-size:.68rem}
+@media (min-width: 1280px){
+  .patient-desktop-workspace{padding-right:27vw}
+  .bottom-nav,.action-sheet{width:calc(27vw - 20px)!important}
+  .persistent-clinical-bar{right:calc(27vw + 6px)!important}
+  .clinical-next-actions{right:calc(27vw + 18px)}
 }
