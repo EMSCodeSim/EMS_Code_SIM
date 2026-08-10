@@ -385,5 +385,21 @@
   <script src="/vitals/horse-crush-scenario.js?v=2219"></script>
   <script src="/vitals/visual-patient.js?v=2302"></script>
   <script src="/vitals/scenario-guided-start.js?v=2202"></script>
+<aside id="desktopPatientStatusBoard" class="ems-status-board">
+<div class="ems-monitor-head"><div><strong>PATIENT MONITOR</strong><span>● Monitoring</span></div><span id="monitorElapsed">00:00</span></div>
+<div class="ems-vital-grid">
+<button class="ems-vital-tile" data-vital="blood-pressure"><span>NIBP</span><strong id="monBP">—</strong><small>Tap to obtain / reassess</small></button>
+<button class="ems-vital-tile" data-vital="pulse"><span>♥ HR</span><strong id="monHR">—</strong><small>Tap to obtain / reassess</small></button>
+<button class="ems-vital-tile" data-vital="spo2"><span>SpO₂</span><strong id="monSpO2">—</strong><small>Tap to obtain / reassess</small></button>
+<button class="ems-vital-tile" data-vital="respirations"><span>RR</span><strong id="monRR">—</strong><small>Tap to obtain / reassess</small></button>
+<button class="ems-vital-tile" data-vital="glucose"><span>BGL</span><strong id="monBGL">—</strong><small>Tap to obtain / reassess</small></button>
+<button class="ems-vital-tile" data-vital="temperature"><span>TEMP</span><strong id="monTemp">—</strong><small>Tap to obtain / reassess</small></button>
+</div>
+<section class="ems-board-section"><h3>PATIENT STATUS</h3><div class="ems-status-chips"><span><b>AVPU</b><em id="monAVPU">—</em></span><span><b>GCS</b><em id="monGCS">—</em></span><span><b>Skin</b><em id="monSkin">—</em></span><span><b>Pain</b><em id="monPain">—</em></span></div></section>
+<section class="ems-board-section ems-concerns"><h3>⚠ ACTIVE CONCERNS</h3><ul id="activeConcernsList"><li class="empty">No concerns identified yet</li></ul></section>
+<section class="ems-board-section" id="monitorPartnerSection" hidden><h3>PARTNER</h3><strong id="monitorPartnerTask">Obtaining vital</strong><div class="ems-progress"><i></i></div></section>
+<section class="ems-board-section ems-latest-board"><h3>LATEST</h3><div id="monitorLatestFinding">No findings documented</div><small id="monitorLatestTime"></small></section>
+<section class="ems-recheck-board"><span>NEXT REASSESSMENT</span><strong id="monitorRecheckTime">—</strong></section>
+</aside>
 </body>
 </html>
