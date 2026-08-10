@@ -11,7 +11,7 @@
     "build:public": "node tools/build-public.js",
     "build:functions": "node tools/prepare-functions.js",
     "verify:dist": "node tools/validate-site.js --root dist --deployment",
-    "build": "npm run clean:retired && npm run validate && npm run verify:scenario-contracts && npm run test:scenario-definitions && npm run test:daily-protocol && npm run test:scenario-modes && npm run test:scenario-selection && npm run test:rapid-primary && npm run test:vitals-tab && npm run test:patient-interview && npm run test:treatment-workflow && npm run test:treatment-decision && npm run test:targeted-reassessment && npm run test:crash-recovery && npm run test:full-call-debrief && npm run test:persistence && npm run test:care-log && npm run test:scenario-phases && npm run test:scenario-history && npm run test:condition-engine && npm run build:public && npm run build:functions && npm run verify:dist",
+    "build": "npm run clean:retired && npm run validate && npm run verify:scenario-contracts && npm run test:scenario-definitions && npm run test:scenario-images && npm run test:daily-protocol && npm run test:scenario-modes && npm run test:scenario-selection && npm run test:rapid-primary && npm run test:vitals-tab && npm run test:patient-interview && npm run test:treatment-workflow && npm run test:treatment-decision && npm run test:targeted-reassessment && npm run test:crash-recovery && npm run test:full-call-debrief && npm run test:persistence && npm run test:care-log && npm run test:scenario-phases && npm run test:scenario-history && npm run test:condition-engine && npm run build:public && npm run build:functions && npm run verify:dist",
     "serve:dist": "node tools/serve-dist.js",
     "test:interaction": "npm run build && playwright test",
     "test:interaction:headed": "npm run build && playwright test --headed",
@@ -34,7 +34,8 @@
     "test:daily-protocol": "node tools/test-daily-protocol.js",
     "test:patient-interview": "node tools/test-patient-interview.js",
     "test:scenario-selection": "node tools/test-scenario-selection-menu.js",
-    "clean:retired": "node tools/remove-retired-scenario-files.js"
+    "clean:retired": "node tools/remove-retired-scenario-files.js",
+    "test:scenario-images": "node tools/test-scenario-image-assets.js"
   },
   "engines": {
     "node": ">=18 <23"
