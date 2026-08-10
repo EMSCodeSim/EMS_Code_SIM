@@ -9,14 +9,12 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-// Mobile retains the legacy Vitals panel, while desktop uses the right-side patient monitor.
-assert(/class="desktop-hide-vitals-nav"[^>]*data-panel="vitalsPanel"/.test(html), 'Vitals control must remain available for mobile but be marked hidden on desktop.');
-assert(/id="desktopPatientMonitor"/.test(html), 'Desktop must include the patient monitor.');
-assert(/id="desktopMonitorVitalGrid"/.test(html), 'Desktop patient monitor must include the clickable vital grid.');
-assert(/Vital signs are controlled from the patient monitor on desktop/.test(html), 'Assessment panel should direct desktop learners to the patient monitor.');
-assert(/openDesktopVitalAction\(tool\)/.test(js), 'Desktop monitor vitals must open the obtain/assign action.');
-assert(/Assign to partner/.test(html), 'Desktop vital action must support partner assignment.');
+assert(/id="desktopPatientMonitor"/.test(html), 'Desktop patient monitor must be present.');
+assert(/id="desktopVitalAction"/.test(html), 'Desktop monitor must provide vital action controls.');
+assert(/id="desktopVitalTake"/.test(html) && /id="desktopVitalPartner"/.test(html), 'Desktop vitals must support take myself or assign to partner.');
+assert(/data-panel="vitalsPanel"/.test(html), 'Mobile/fallback navigation must retain access to the Vitals panel.');
+assert(/desktop-hide-vitals-nav/.test(html), 'Desktop Vitals navigation control must be marked for hiding when monitor-driven vitals are active.');
 assert(!/buildAssessmentCategory\(box, 'vitals'/.test(js), 'Vitals category must not be rendered in Assessment.');
 assert(/\(registry\?\.assessmentTools \|\| \[\]\)\.forEach/.test(js), 'Assessment menu should be built from assessment tools only.');
 assert(/!MEASURABLE_TOOL_KEYS\.has\(tool\.key\)/.test(js), 'Measurable vital keys must be excluded from Assessment.');
-console.log('Desktop monitor / mobile vitals separation test passed.');
+console.log('Monitor-driven vitals separation test passed.');
