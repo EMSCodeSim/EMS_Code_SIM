@@ -2048,12 +2048,76 @@
     if (horseTreatmentActivePlan) selectPlan(horseTreatmentActivePlan);
   }
 
+
+  function renderHorseTreatmentCategoryWorkspace(groupId) {
+    const box = $('treatmentTools');
+    const group = HORSE_TREATMENT_GROUPS.find(item => item.id === groupId);
+    if (!box || !group) return;
+
+    const plans = horseTreatmentGroupPlans(group);
+    horseTreatmentActiveGroup = group.id;
+    if (!plans.some(plan => plan.id === horseTreatmentActivePlan)) horseTreatmentActivePlan = '';
+
+    box.className = 'treatment-list horse-treatment-category-workspace';
+    box.innerHTML = `
+      <div class="horse-treatment-workspace-head">
+        <button type="button" class="horse-treatment-back" id="horseTreatmentBackToGroups" aria-label="Back to treatment categories">‹ Categories</button>
+        <div><small>TREATMENT</small><strong>${escapeHtml(group.label)}</strong><span>${escapeHtml(group.description || '')}</span></div>
+      </div>
+      <div class="horse-treatment-workspace-actions" role="group" aria-label="${escapeHtml(group.label)} treatment options">
+        ${plans.map(plan => {
+          const used = horseTreatmentRecordedCount(plan) > 0;
+          return `<button type="button" class="horse-treatment-workspace-action${used ? ' used' : ''}" data-horse-workspace-plan="${escapeHtml(plan.id)}">
+            <span aria-hidden="true">${used ? '✓' : '○'}</span>
+            <strong>${escapeHtml(plan.label)}</strong>
+          </button>`;
+        }).join('')}
+      </div>
+      <div id="horseTreatmentWorkspaceDetail" class="horse-treatment-workspace-detail">
+        <small>Select a treatment above to review and perform it.</small>
+      </div>`;
+
+    box.querySelector('#horseTreatmentBackToGroups')?.addEventListener('click', () => {
+      horseTreatmentActiveGroup = '';
+      horseTreatmentActivePlan = '';
+      sceneObservationUpdate = {
+        id:`horse-treatment-menu-${Date.now()}`,
+        type:'TREATMENT',
+        title:'Treatment options',
+        text:'Choose a treatment category based on the patient assessment and the care you want to provide.',
+        kind:'treatment',
+        sticky:true,
+        recordedAt:new Date().toISOString()
+      };
+      lastInfoSignature = '';
+      renderInfoUpdate(true);
+      buildHorseTreatmentsDesktop();
+    });
+
+    const detail = box.querySelector('#horseTreatmentWorkspaceDetail');
+    const choosePlan = planId => {
+      const plan = plans.find(item => item.id === planId);
+      if (!plan) return;
+      horseTreatmentActivePlan = plan.id;
+      box.querySelectorAll('[data-horse-workspace-plan]').forEach(button => {
+        button.classList.toggle('selected', button.dataset.horseWorkspacePlan === plan.id);
+      });
+      renderHorseTreatmentPlanDetail(plan, detail);
+    };
+
+    box.querySelectorAll('[data-horse-workspace-plan]').forEach(button => {
+      button.addEventListener('click', () => choosePlan(button.dataset.horseWorkspacePlan || ''));
+    });
+    if (horseTreatmentActivePlan) choosePlan(horseTreatmentActivePlan);
+  }
+
   function selectHorseTreatmentGroup(groupId, options = {}) {
     if (id !== 'horse_crush' || !desktopWorkspace()) return;
     const group = HORSE_TREATMENT_GROUPS.find(item => item.id === groupId);
     if (!group) return;
     if (horseTreatmentActiveGroup !== group.id) horseTreatmentActivePlan = '';
     horseTreatmentActiveGroup = group.id;
+
     if (options.updateInfo !== false) {
       sceneObservationUpdate = {
         id:`horse-treatment-group-${group.id}`,
@@ -2068,40 +2132,44 @@
       lastInfoSignature = '';
       renderInfoUpdate(true);
     }
-    renderHorseTreatmentSelectionBox(group.id);
-    document.querySelectorAll('#treatmentTools [data-horse-treatment-group]').forEach(control => {
-      const selected = control.dataset.horseTreatmentGroup === group.id;
-      control.classList.toggle('selected', selected);
-      control.setAttribute('aria-pressed', String(selected));
-    });
+
+    renderHorseTreatmentCategoryWorkspace(group.id);
   }
 
   function buildHorseTreatmentsDesktop() {
     const box = $('treatmentTools');
     if (!box) return;
+
+    if (horseTreatmentActiveGroup) {
+      renderHorseTreatmentCategoryWorkspace(horseTreatmentActiveGroup);
+      return;
+    }
+
     box.innerHTML = '';
     box.className = 'treatment-list horse-treatment-groups horse-treatment-group-menu';
+
+    const menuHead = document.createElement('div');
+    menuHead.className = 'horse-treatment-menu-head';
+    menuHead.innerHTML = `<small>TREATMENT</small><strong>Choose a category</strong><span>Select the type of care you want to provide.</span>`;
+    box.appendChild(menuHead);
 
     HORSE_TREATMENT_GROUPS
       .filter(group => !['transport','handoff'].includes(group.id))
       .forEach(group => {
-      const plans = horseTreatmentGroupPlans(group);
-      if (!plans.length) return;
-      const completed = plans.filter(plan => horseTreatmentRecordedCount(plan) > 0).length;
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = `horse-treatment-group-choice${horseTreatmentActiveGroup === group.id ? ' selected' : ''}`;
-      button.dataset.horseTreatmentGroup = group.id;
-      button.setAttribute('aria-pressed', String(horseTreatmentActiveGroup === group.id));
-      button.innerHTML = `
-        <span class="horse-treatment-group-icon" aria-hidden="true">${escapeHtml(group.icon)}</span>
-        <span><strong>${escapeHtml(group.label)}</strong><small>${escapeHtml(group.description)}</small></span>
-        <em>${completed ? `${completed}/${plans.length}` : `${plans.length}`}</em>`;
-      button.addEventListener('click', () => selectHorseTreatmentGroup(group.id));
-      box.appendChild(button);
-    });
-
-    renderHorseTreatmentSelectionBox();
+        const plans = horseTreatmentGroupPlans(group);
+        if (!plans.length) return;
+        const completed = plans.filter(plan => horseTreatmentRecordedCount(plan) > 0).length;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'horse-treatment-group-choice';
+        button.dataset.horseTreatmentGroup = group.id;
+        button.innerHTML = `
+          <span class="horse-treatment-group-icon" aria-hidden="true">${escapeHtml(group.icon)}</span>
+          <span><strong>${escapeHtml(group.label)}</strong><small>${escapeHtml(group.description)}</small></span>
+          <em>${completed ? `${completed}/${plans.length}` : `${plans.length}`}</em>`;
+        button.addEventListener('click', () => selectHorseTreatmentGroup(group.id));
+        box.appendChild(button);
+      });
   }
 
   function buildHorseTreatmentsMobile() {
@@ -2580,6 +2648,7 @@
     }
     $('infoUpdateTime').textContent = infoElapsed(item.recordedAt, current.startedAt);
     $('infoUpdateCount').textContent = `${infoUpdateIndex + 1} of ${infoUpdates.length}`;
+    $('infoUpdateWindow')?.classList.toggle('single-update', infoUpdates.length <= 1);
     $('infoUpdatePrevious').disabled = infoUpdateIndex <= 0;
     $('infoUpdateNext').disabled = infoUpdateIndex >= infoUpdates.length - 1;
 
@@ -3682,7 +3751,7 @@
         horseTreatmentActivePlan = '';
       }
       buildTreatments();
-      if (desktopWorkspace()) renderHorseTreatmentSelectionBox();
+      if (desktopWorkspace()) horseWorkspaceContext?.resetQuestionBox?.();
       showHorsePainReminderIfNeeded();
     } else if (id === 'horse_crush' && desktopWorkspace()) {
       horseTreatmentActiveGroup = '';
