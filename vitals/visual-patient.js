@@ -174,7 +174,7 @@
 
   function setPatientImage(image, path) {
     if (!image) return;
-    const requested = id === 'horse_crush' ? '/vitals/assets/scenario-patient-horse-crush.webp' : path;
+    const requested = path;
     image.classList.remove('image-fallback');
     image.onerror = () => {
       image.onerror = null;
