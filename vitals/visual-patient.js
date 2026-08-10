@@ -4179,7 +4179,7 @@
       }
     }
 
-    const dueTools = tools.filter(tool => assessmentState(tool.key).code === 'reassessment-due');
+    const dueTools = allMonitorTools.filter(tool => [...DESKTOP_MONITOR_PRIMARY_KEYS, ...DESKTOP_MONITOR_QUICK_KEYS].includes(tool.key) && assessmentState(tool.key).code === 'reassessment-due');
     if ($('desktopMonitorDue')) {
       $('desktopMonitorDue').textContent = dueTools.length ? `↻ RECHECK: ${dueTools.map(tool => DESKTOP_VITAL_LABELS[tool.key] || tool.label).join(' · ')}` : 'No reassessment due';
       $('desktopMonitorDue').classList.toggle('is-due', Boolean(dueTools.length));
