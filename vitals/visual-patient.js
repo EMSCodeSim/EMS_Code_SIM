@@ -4665,6 +4665,19 @@
   window.addEventListener('emscodesim:scenario-finding-saved', refreshFromRecord);
   window.addEventListener('emscodesim:partner-task-updated', () => { refreshFromRecord(); updatePartnerTasks(); });
   window.addEventListener('emscodesim:partner-task-completed', () => { refreshFromRecord(); renderInfoUpdate(true); updatePartnerTasks(); });
+  function resetScenarioVisualOverlaysOnStartup() {
+    const workspace = $('embeddedSimWorkspace');
+    const frame = $('embeddedSimFrame');
+    if (workspace) workspace.hidden = true;
+    if (frame) frame.src = 'about:blank';
+    document.body.classList.remove('sim-workspace-open');
+    ['hospitalHandoffWorkspace','horseGradeWorkspace','desktopVitalAction','assessmentFocus','scenarioControlDialog','clinicalNextActions'].forEach(key => {
+      const node = $(key); if (node) node.hidden = true;
+    });
+    const image = $('patientImage');
+    if (image) { image.hidden = false; image.style.removeProperty('display'); image.style.removeProperty('visibility'); image.style.removeProperty('opacity'); }
+  }
+  resetScenarioVisualOverlaysOnStartup();
   desktopWorkspaceQuery.addEventListener('change', configureDesktopWorkspace);
   configureDesktopWorkspace();
   window.addEventListener('pageshow', () => {

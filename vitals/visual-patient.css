@@ -2248,7 +2248,14 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     display:none!important;
   }
 }
-\n\n/* Embedded simulator responsive fit 2.308 */\n@media(min-width:980px){\n  .embedded-sim-workspace{overflow:hidden!important;min-width:0!important;min-height:0!important}\n  .embedded-sim-workspace iframe{width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;overflow:hidden!important}\n}\n
+
+
+/* Embedded simulator responsive fit 2.308 */
+@media(min-width:980px){
+  .embedded-sim-workspace{overflow:hidden!important;min-width:0!important;min-height:0!important}
+  .embedded-sim-workspace iframe{width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;overflow:hidden!important}
+}
+
 
 /* ===== Unified Drill-Down Workspace 2.309 ===== */
 @media(min-width:980px){
@@ -2849,4 +2856,18 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     display:block!important;width:100%!important;height:100%!important;
     object-fit:cover!important;object-position:center center!important;
   }
+}
+
+
+/* ===== Overlay hidden-state recovery 2.323 ===== */
+.embedded-sim-workspace[hidden],
+.hospital-handoff-workspace[hidden],
+.horse-grade-workspace[hidden],
+#desktopVitalAction[hidden],
+#assessmentFocus[hidden],
+#scenarioControlDialog[hidden],
+#clinicalNextActions[hidden],
+#actionSheet[hidden]{display:none!important;}
+@media(min-width:961px){
+  body.desktop-scenario-layout:not(.sim-workspace-open) .patient-stage>img#patientImage{display:block!important;visibility:visible!important;opacity:1!important;}
 }
