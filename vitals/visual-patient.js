@@ -4080,7 +4080,13 @@
 
   let desktopSelectedVitalKey = '';
   let desktopLastLatestId = '';
-  const DESKTOP_VITAL_LABELS = { blood_pressure:'NIBP', pulse:'HR', respirations:'RR', spo2:'SpO₂', blood_glucose:'BGL', temperature:'TEMP' };
+  const DESKTOP_VITAL_LABELS = {
+    blood_pressure:'NIBP', pulse:'HR', respirations:'RR', spo2:'SpO₂',
+    blood_glucose:'BGL', temperature:'TEMP', breath_sounds:'LUNGS',
+    pupils:'PUPILS', skin:'SKIN', mental_status:'AVPU', gcs:'GCS', pain:'PAIN'
+  };
+  const DESKTOP_MONITOR_PRIMARY_KEYS = ['blood_pressure','pulse','respirations','spo2','blood_glucose','temperature'];
+  const DESKTOP_MONITOR_QUICK_KEYS = ['breath_sounds','skin','pupils','mental_status','gcs','pain'];
 
   function desktopMonitorEventText(event) {
     return String(event?.value || event?.finding || event?.details || event?.description || event?.response || '').trim();
@@ -4090,34 +4096,48 @@
     if (!$('desktopPatientMonitor')) return;
     const current = record() || {};
     const findings = current.findings || {};
-    const tools = (registry?.vitalTools || []).filter(tool => MEASURABLE_TOOL_KEYS.has(tool.key));
+
+    const allMonitorTools = [...(registry?.vitalTools || []), ...(registry?.assessmentTools || [])]
+      .filter((tool, index, list) => tool?.key && list.findIndex(row => row.key === tool.key) === index);
+
+    const toolForKey = key => allMonitorTools.find(tool => tool.key === key);
+    const renderMonitorTile = (tool, compact = false) => {
+      if (!tool) return null;
+      const finding = api?.getFinding?.(tool.key, current) || findings[tool.key] || null;
+      const state = assessmentState(tool.key);
+      const task = partnerTaskFor(tool.key);
+      const activeTask = ['active','pending','queued'].includes(task?.status);
+      const rawValue = finding ? (finding.value || finding.finding || finding.description || valueFor(tool.key)) : '—';
+      const value = String(rawValue || '—');
+      const tile = document.createElement('button');
+      tile.type = 'button';
+      tile.className = `desktop-monitor-vital desktop-monitor-launcher${compact ? ' compact' : ''}${state.code === 'reassessment-due' ? ' is-due' : ''}`;
+      tile.dataset.vitalKey = tool.key;
+      const helper = activeTask
+        ? (task.status === 'queued' ? 'Partner queued' : `Partner · ${secondsRemaining(task)} sec`)
+        : finding ? 'Tap to reassess' : 'Tap to open mini sim';
+      tile.innerHTML = `<small>${escapeHtml(DESKTOP_VITAL_LABELS[tool.key] || tool.label)}</small><strong title="${escapeHtml(value)}">${escapeHtml(value)}</strong><span>${escapeHtml(helper)}</span>`;
+      tile.addEventListener('click', () => openDesktopVitalAction(tool));
+      return tile;
+    };
+
     const host = $('desktopMonitorVitalGrid');
     if (host) {
       host.innerHTML = '';
-      tools.forEach(tool => {
-        const finding = api?.getFinding?.(tool.key, current) || findings[tool.key] || null;
-        const state = assessmentState(tool.key);
-        const task = partnerTaskFor(tool.key);
-        const activeTask = ['active','pending','queued'].includes(task?.status);
-        const value = finding ? (finding.value || finding.finding || valueFor(tool.key)) : '—';
-        const tile = document.createElement('button');
-        tile.type = 'button';
-        tile.className = `desktop-monitor-vital${state.code === 'reassessment-due' ? ' is-due' : ''}`;
-        tile.dataset.vitalKey = tool.key;
-        tile.innerHTML = `<small>${escapeHtml(DESKTOP_VITAL_LABELS[tool.key] || tool.label)}</small><strong>${escapeHtml(value)}</strong><span>${escapeHtml(activeTask ? (task.status === 'queued' ? 'Partner queued' : `Partner · ${secondsRemaining(task)} sec`) : finding ? 'Tap to reassess' : 'Tap to obtain')}</span>`;
-        tile.addEventListener('click', () => openDesktopVitalAction(tool));
-        host.appendChild(tile);
+      DESKTOP_MONITOR_PRIMARY_KEYS.forEach(key => {
+        const tile = renderMonitorTile(toolForKey(key));
+        if (tile) host.appendChild(tile);
       });
     }
 
-    const statusValue = key => {
-      const f = api?.getFinding?.(key, current) || findings[key];
-      return f ? (f.value || f.finding || f.description || 'Recorded') : '—';
-    };
-    if ($('desktopStatusAvpu')) $('desktopStatusAvpu').textContent = statusValue('mental_status') !== '—' ? statusValue('mental_status') : statusValue('avpu');
-    if ($('desktopStatusGcs')) $('desktopStatusGcs').textContent = statusValue('gcs');
-    if ($('desktopStatusSkin')) $('desktopStatusSkin').textContent = statusValue('skin');
-    if ($('desktopStatusPain')) $('desktopStatusPain').textContent = statusValue('pain');
+    const quickHost = $('desktopQuickAssessmentGrid');
+    if (quickHost) {
+      quickHost.innerHTML = '';
+      DESKTOP_MONITOR_QUICK_KEYS.forEach(key => {
+        const tile = renderMonitorTile(toolForKey(key), true);
+        if (tile) quickHost.appendChild(tile);
+      });
+    }
 
     const careLog = (api?.listCareLog?.(current, 'all') || current.careLog || []).filter(usefulLogEvent);
     const discoveredConcerns = careLog.filter(event => {
@@ -4168,15 +4188,21 @@
     const current = record() || {};
     const finding = api?.getFinding?.(tool.key, current) || current.findings?.[tool.key] || null;
     if ($('desktopVitalActionTitle')) $('desktopVitalActionTitle').textContent = tool.label;
-    if ($('desktopVitalActionCopy')) $('desktopVitalActionCopy').textContent = finding ? 'Repeat this vital yourself or assign the reassessment to your partner.' : 'Choose who will obtain this vital.';
-    if ($('desktopVitalTake')) $('desktopVitalTake').textContent = finding ? 'Reassess myself' : 'Take myself';
+    const isPrimaryVital = DESKTOP_MONITOR_PRIMARY_KEYS.includes(tool.key);
+    if ($('desktopVitalActionCopy')) $('desktopVitalActionCopy').textContent = finding
+      ? `Repeat this ${isPrimaryVital ? 'vital' : 'assessment'} yourself or assign the reassessment to your partner.`
+      : `Choose who will perform this ${isPrimaryVital ? 'vital' : 'assessment'}.`;
+    if ($('desktopVitalTake')) $('desktopVitalTake').textContent = finding ? 'Reassess myself' : 'Do it myself';
     if ($('desktopVitalPartner')) $('desktopVitalPartner').textContent = finding ? 'Partner reassess' : 'Assign to partner';
     if ($('desktopVitalAction')) $('desktopVitalAction').hidden = false;
   }
 
   function closeDesktopVitalAction() { desktopSelectedVitalKey = ''; if ($('desktopVitalAction')) $('desktopVitalAction').hidden = true; }
 
-  function desktopSelectedVitalTool() { return (registry?.vitalTools || []).find(tool => tool.key === desktopSelectedVitalKey); }
+  function desktopSelectedVitalTool() {
+    return [...(registry?.vitalTools || []), ...(registry?.assessmentTools || [])]
+      .find(tool => tool.key === desktopSelectedVitalKey);
+  }
 
   function refreshFromRecord(options = {}) {
     const force = options === true || options.force === true;
@@ -4480,7 +4506,13 @@
   });
   $('desktopVitalPartner')?.addEventListener('click', () => {
     const tool = desktopSelectedVitalTool(); if (!tool) return;
-    try { session?.assignPartnerTask?.({ key:tool.key, label:tool.label, value:valueFor(tool.key), delaySeconds:tool.delay || 12 }, id); closeDesktopVitalAction(); renderSignatures.vitals=''; refreshFromRecord(); toast(`${tool.label} assigned to partner`); }
+    try {
+      const current = record() || {};
+      const existing = api?.getFinding?.(tool.key, current) || current.findings?.[tool.key];
+      const partnerValue = valueFor(tool.key) || existing?.value || existing?.finding || existing?.description || 'Recorded';
+      session?.assignPartnerTask?.({ key:tool.key, label:tool.label, value:partnerValue, delaySeconds:tool.delay || 12 }, id);
+      closeDesktopVitalAction(); renderSignatures.vitals=''; refreshFromRecord(); toast(`${tool.label} assigned to partner`);
+    }
     catch(error){ console.error(error); toast('Partner task could not be assigned.'); }
   });
   $('desktopVitalCancel')?.addEventListener('click', closeDesktopVitalAction);

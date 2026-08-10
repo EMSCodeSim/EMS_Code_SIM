@@ -2441,3 +2441,60 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     min-height:0;overflow:auto;border:1px solid #294d64;border-radius:10px;background:#091b29;padding:8px
   }
 }
+
+
+/* ===== Right-side Mini Sim Launcher 2.311 ===== */
+@media(min-width:980px){
+  body.horse-current-emt-call.desktop-scenario-layout #desktopPatientMonitor{
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    scrollbar-width:thin;
+    overscroll-behavior:contain;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .desktop-monitor-grid{
+    flex:0 0 auto!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .desktop-quick-assessment-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .desktop-monitor-launcher{
+    cursor:pointer!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .desktop-monitor-launcher.compact{
+    min-height:62px!important;
+    padding:6px 7px!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .desktop-monitor-launcher.compact small{
+    font-size:.55rem!important;
+    letter-spacing:.05em!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .desktop-monitor-launcher.compact strong{
+    display:block!important;
+    max-width:100%!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+    font-size:.83rem!important;
+    line-height:1.2!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .desktop-monitor-launcher.compact span{
+    font-size:.53rem!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .desktop-monitor-launcher:hover,
+  body.horse-current-emt-call.desktop-scenario-layout .desktop-monitor-launcher:focus-visible{
+    border-color:#73d2b2!important;
+    box-shadow:0 0 0 1px rgba(115,210,178,.22) inset!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .desktop-monitor-status{
+    flex:0 0 auto!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .desktop-vital-action{
+    position:sticky!important;
+    bottom:0!important;
+    z-index:5!important;
+    background:#0b1916!important;
+    box-shadow:0 -8px 18px rgba(0,0,0,.35)!important;
+  }
+}

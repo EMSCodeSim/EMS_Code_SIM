@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2310">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2311">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2200">
   <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2212">
 </head>
@@ -19,7 +19,7 @@
         <h1 id="caseTitle">Visual Patient</h1>
         <p id="scene"></p>
       </div>
-      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small id="patientClockStatus" class="patient-clock-status">Patient clock • severe pain</small><small class="scenario-build-stamp-dark">DESKTOP CLINICAL 2.310</small></div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small id="patientClockStatus" class="patient-clock-status">Patient clock • severe pain</small><small class="scenario-build-stamp-dark">DESKTOP CLINICAL 2.311</small></div>
     </header>
 
     <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
@@ -203,14 +203,9 @@
     </header>
     <div id="desktopMonitorVitalGrid" class="desktop-monitor-grid" aria-label="Available vital signs"></div>
 
-    <section class="desktop-monitor-status" aria-label="Patient status">
-      <header><span>PATIENT STATUS</span><small>Known information</small></header>
-      <div id="desktopPatientStatusGrid" class="desktop-status-grid">
-        <div><small>AVPU</small><strong id="desktopStatusAvpu">—</strong></div>
-        <div><small>GCS</small><strong id="desktopStatusGcs">—</strong></div>
-        <div><small>SKIN</small><strong id="desktopStatusSkin">—</strong></div>
-        <div><small>PAIN</small><strong id="desktopStatusPain">—</strong></div>
-      </div>
+    <section class="desktop-monitor-status" aria-label="Quick assessment mini simulators">
+      <header><span>QUICK ASSESSMENTS</span><small>Click to perform or assign</small></header>
+      <div id="desktopQuickAssessmentGrid" class="desktop-status-grid desktop-quick-assessment-grid"></div>
     </section>
 
     <section class="desktop-monitor-concerns" aria-label="Active patient concerns">
@@ -230,15 +225,15 @@
     </section>
 
     <section id="desktopVitalAction" class="desktop-vital-action" hidden aria-live="polite">
-      <div><small>SELECTED VITAL</small><strong id="desktopVitalActionTitle">Blood pressure</strong></div>
-      <p id="desktopVitalActionCopy">Choose who will obtain this vital.</p>
+      <div><small>SELECTED MINI SIM</small><strong id="desktopVitalActionTitle">Blood pressure</strong></div>
+      <p id="desktopVitalActionCopy">Choose who will perform this assessment.</p>
       <div class="desktop-vital-action-buttons">
         <button id="desktopVitalTake" type="button">Take myself</button>
         <button id="desktopVitalPartner" type="button">Assign to partner</button>
         <button id="desktopVitalCancel" type="button" class="ghost">Cancel</button>
       </div>
     </section>
-    <footer class="desktop-monitor-foot"><span id="desktopMonitorDue">No reassessment due</span><small>Click any vital to obtain or assign it</small></footer>
+    <footer class="desktop-monitor-foot"><span id="desktopMonitorDue">No reassessment due</span><small>Click any tile to open its mini sim or assign it</small></footer>
   </aside>
 
   <nav class="bottom-nav" aria-label="Scenario controls">
@@ -404,7 +399,7 @@
   <script src="/vitals/scenario-phase-model.js?v=2200"></script>
   <script src="/vitals/horse-crush-bootstrap.js?v=2223"></script>
   <script src="/vitals/horse-crush-scenario.js?v=2219"></script>
-  <script src="/vitals/visual-patient.js?v=2310"></script>
+  <script src="/vitals/visual-patient.js?v=2311"></script>
   <script src="/vitals/scenario-guided-start.js?v=2202"></script>
 </body>
 </html>
