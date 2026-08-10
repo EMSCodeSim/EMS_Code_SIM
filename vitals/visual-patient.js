@@ -978,8 +978,46 @@
     box.appendChild(article);
   }
 
+
+  function buildHorseAssessmentChooserDesktop() {
+    const box = $('assessmentTools');
+    if (!box) return;
+    const current = record() || {};
+    const completed = key => Boolean(api?.getFinding?.(key, current));
+    const groups = [
+      { id:'abc', icon:'ABC', label:'ABC Assessment', description:'Rapidly reassess airway, breathing, and circulation.', keys:['airway','breathing','perfusion'] },
+      { id:'head_to_toe', icon:'↕', label:'Head-to-Toe Exam', description:'Systematic trauma examination from head through distal extremities.', keys:['head_exam','neck_back','chest_assessment','abdominal_assessment','pelvis_hip','upper_extremities','left_leg','distal_csm'] },
+      { id:'focused_leg', icon:'◉', label:'Focused Hip / Leg', description:'Concentrate on the painful hip, injured leg, and distal CSM.', keys:['pelvis_hip','left_leg','distal_csm'] }
+    ];
+
+    box.className = 'assessment-list horse-assessment-drill-menu';
+    box.innerHTML = `
+      <div class="horse-drill-menu-head">
+        <small>ASSESSMENT</small>
+        <strong>Choose an assessment</strong>
+        <span>The selected assessment replaces this menu in the center workspace.</span>
+      </div>
+      <div class="horse-assessment-drill-grid">
+        ${groups.map(group => {
+          const done = group.keys.filter(completed).length;
+          return `<button type="button" class="horse-assessment-drill-choice" data-horse-assessment-choice="${group.id}">
+            <span class="horse-assessment-drill-icon">${group.icon}</span>
+            <span><strong>${escapeHtml(group.label)}</strong><small>${escapeHtml(group.description)}</small></span>
+            <em>${done}/${group.keys.length}</em>
+          </button>`;
+        }).join('')}
+      </div>`;
+    box.querySelectorAll('[data-horse-assessment-choice]').forEach(button => {
+      button.addEventListener('click', () => selectHorseCurrentAssessment(button.dataset.horseAssessmentChoice || 'abc'));
+    });
+  }
+
   function buildAssessments() {
     const box = $('assessmentTools');
+    if (id === 'horse_crush' && desktopWorkspace()) {
+      buildHorseAssessmentChooserDesktop();
+      return;
+    }
     const openCategories = detailsState(box, 'data-assessment-category');
     const openSections = detailsState(box, 'data-assessment-section');
     const existingFocus = box?.querySelector('.assessment-focus-control select')?.value;
@@ -1255,16 +1293,11 @@
 
   function renderHorseHistoryQuestionBox(groupId = horseHistoryActiveGroup) {
     if (id !== 'horse_crush' || !desktopWorkspace()) return;
-    const questionBox = $('horseClinicalQuestionBox');
-    if (!questionBox) return;
+    const host = $('historyCategoryList');
+    if (!host) return;
     const group = HORSE_HISTORY_GROUPS.find(item => item.id === groupId);
     if (!group) {
-      questionBox.classList.remove('active','history-active','treatment-active');
-      questionBox.innerHTML = `
-        <div class="horse-question-placeholder">
-          <small>HISTORY QUESTIONS</small>
-          <strong>Select a history group on the left. All available questions for that group will stay open here.</strong>
-        </div>`;
+      buildHorseHistoryDesktop();
       return;
     }
 
@@ -1272,27 +1305,42 @@
     const asked = new Set(askedInterviewQuestions(current).map(question => question.id));
     const questions = horseHistoryGroupQuestions(group);
     const askedCount = questions.filter(question => asked.has(question.id)).length;
-    questionBox.classList.remove('treatment-active');
-    questionBox.classList.add('active','history-active');
-    questionBox.innerHTML = `
-      <div class="horse-question-head horse-history-question-head">
-        <div><small>ASK THE PATIENT</small><strong>${escapeHtml(group.label)}</strong></div>
-        <span>${askedCount}/${questions.length} asked</span>
+
+    host.className = 'history-category-list horse-history-drill-workspace';
+    host.innerHTML = `
+      <div class="horse-history-drill-head">
+        <button type="button" class="horse-history-back" id="horseHistoryBack">‹ History</button>
+        <div><small>ASK THE PATIENT</small><strong>${escapeHtml(group.label)}</strong><span>${askedCount}/${questions.length} asked</span></div>
       </div>
-      <div class="horse-history-question-grid" role="group" aria-label="${escapeHtml(group.label)} questions">
+      <div class="horse-history-drill-questions" role="group" aria-label="${escapeHtml(group.label)} questions">
         ${questions.map(question => `
-          <button type="button" class="horse-history-question-button${asked.has(question.id) ? ' asked' : ''}" data-history-question="${escapeHtml(question.id)}">
+          <button type="button" class="horse-history-drill-question${asked.has(question.id) ? ' asked' : ''}" data-history-question="${escapeHtml(question.id)}">
             <span>${asked.has(question.id) ? '✓' : 'Ask'}</span>
             <strong>${escapeHtml(question.prompt || question.label)}</strong>
           </button>`).join('')}
-      </div>
-      <small class="horse-history-question-hint">Click any question to ask it. This question set stays open until you select another history group.</small>`;
+      </div>`;
 
-    questionBox.querySelectorAll('[data-history-question]').forEach(button => {
+    host.querySelector('#horseHistoryBack')?.addEventListener('click', () => {
+      horseHistoryActiveGroup = '';
+      buildHorseHistoryDesktop();
+      sceneObservationUpdate = {
+        id:`horse-history-menu-${Date.now()}`,
+        type:'HISTORY',
+        title:'Patient history',
+        text:'Choose the type of history you want to obtain.',
+        kind:'history',
+        recordedAt:new Date().toISOString()
+      };
+      lastInfoSignature = '';
+      renderInfoUpdate(true);
+    });
+
+    host.querySelectorAll('[data-history-question]').forEach(button => {
       button.addEventListener('click', () => {
         const question = questions.find(item => item.id === button.dataset.historyQuestion);
         if (!question) return;
         askInterviewQuestion(question);
+        window.setTimeout(() => renderHorseHistoryQuestionBox(group.id), 40);
       });
     });
   }
@@ -1304,12 +1352,11 @@
     horseHistoryActiveGroup = group.id;
     if (options.updateInfo !== false) {
       sceneObservationUpdate = {
-        id:`horse-history-group-${group.id}`,
+        id:`horse-history-group-${group.id}-${Date.now()}`,
         type:'HISTORY',
-        title:`${group.label} questions`,
+        title:group.label,
         text:group.instruction,
         kind:'history',
-        sticky:true,
         recordedAt:new Date().toISOString()
       };
       infoManuallyCollapsed = false;
@@ -1317,14 +1364,32 @@
       renderInfoUpdate(true);
     }
     renderHorseHistoryQuestionBox(group.id);
-    document.querySelectorAll('#historyCategoryList .horse-history-group').forEach(details => {
-      const selected = details.dataset.historyGroup === group.id;
-      details.classList.toggle('selected', selected);
-      details.open = selected;
-      const note = details.querySelector('.horse-history-group-preview small');
-      if (note) note.textContent = selected
-        ? 'Questions are open in the right-side Patient Question panel. Ask as many as you need; this section remains selected.'
-        : 'Select this section to load all of its questions into the right-side Patient Question panel.';
+  }
+
+  function renderHorseCustomHistoryWorkspace() {
+    const host = $('historyCategoryList');
+    if (!host) return;
+    host.className = 'history-category-list horse-history-drill-workspace';
+    host.innerHTML = `
+      <div class="horse-history-drill-head">
+        <button type="button" class="horse-history-back" id="horseHistoryCustomBack">‹ History</button>
+        <div><small>HISTORY</small><strong>Ask your own question</strong><span>Use a focused EMS interview question.</span></div>
+      </div>
+      <div class="horse-history-custom-workspace">
+        <textarea id="horseHistoryCustomText" rows="3" maxlength="240" placeholder="Example: Do you take any blood thinners?"></textarea>
+        <button id="horseHistoryCustomAsk" type="button">Ask patient</button>
+      </div>`;
+    host.querySelector('#horseHistoryCustomBack')?.addEventListener('click', () => {
+      horseHistoryActiveGroup = '';
+      buildHorseHistoryDesktop();
+    });
+    host.querySelector('#horseHistoryCustomAsk')?.addEventListener('click', () => {
+      const source = host.querySelector('#horseHistoryCustomText');
+      const shared = $('historyCustomInput');
+      if (!source?.value.trim()) return;
+      if (shared) shared.value = source.value.trim();
+      $('askHistoryCustom')?.click();
+      source.value = '';
     });
   }
 
@@ -1333,49 +1398,50 @@
     if (!host) return;
     const current = record() || {};
     const asked = new Set(askedInterviewQuestions(current).map(question => question.id));
-    if (!HORSE_HISTORY_GROUPS.some(group => group.id === horseHistoryActiveGroup)) {
-      horseHistoryActiveGroup = 'patient_info';
-    }
     $('historyResponderLabel').textContent = String(interview.responder || 'Patient').toUpperCase();
-    $('historyCommunicationStatus').textContent = 'Choose a history group. Every question in that group stays available on the right until you choose another group.';
+    $('historyCommunicationStatus').textContent = 'Choose a history type. The selected question set will replace this menu.';
     $('historyAskedCount').textContent = `${asked.size} asked`;
-    host.innerHTML = '';
 
-    HORSE_HISTORY_GROUPS.forEach(group => {
-      const questions = horseHistoryGroupQuestions(group);
-      const complete = questions.filter(question => asked.has(question.id)).length;
-      const details = document.createElement('details');
-      details.className = `history-question-category horse-history-group${horseHistoryActiveGroup === group.id ? ' selected' : ''}`;
-      details.dataset.historyGroup = group.id;
-      details.open = horseHistoryActiveGroup === group.id;
-      details.innerHTML = `
-        <summary>
-          <span class="history-category-icon" aria-hidden="true">${escapeHtml(group.icon)}</span>
-          <span><strong>${escapeHtml(group.label)}</strong><small>${escapeHtml(group.description)}</small></span>
-          <em>${complete}/${questions.length}</em>
-        </summary>
-        <div class="horse-history-group-preview">
-          <small>${horseHistoryActiveGroup === group.id ? 'Questions are open in the right-side Patient Question panel. Ask as many as you need; this section remains selected.' : 'Select this section to load all of its questions into the right-side Patient Question panel.'}</small>
-        </div>`;
-      const summary = details.querySelector('summary');
-      summary?.addEventListener('click', event => {
-        event.preventDefault();
-        if (horseHistoryActiveGroup === group.id) {
-          details.open = true;
-          return;
-        }
-        selectHorseHistoryGroup(group.id);
-      });
-      host.appendChild(details);
-    });
+    if (horseHistoryActiveGroup && HORSE_HISTORY_GROUPS.some(group => group.id === horseHistoryActiveGroup)) {
+      renderHorseHistoryQuestionBox(horseHistoryActiveGroup);
+      return;
+    }
 
-    document.querySelectorAll('#historyCategoryList .horse-history-group').forEach(details => {
-      const selected = details.dataset.historyGroup === horseHistoryActiveGroup;
-      details.classList.toggle('selected', selected);
-      details.open = selected;
+    host.className = 'history-category-list horse-history-drill-menu';
+    host.innerHTML = `
+      <div class="horse-drill-menu-head">
+        <small>HISTORY</small>
+        <strong>What do you want to ask about?</strong>
+        <span>Select a category. Its questions will replace this menu.</span>
+      </div>
+      <div class="horse-history-drill-grid">
+        ${HORSE_HISTORY_GROUPS.map(group => {
+          const questions = horseHistoryGroupQuestions(group);
+          const complete = questions.filter(question => asked.has(question.id)).length;
+          return `<button type="button" class="horse-history-drill-choice" data-history-group="${escapeHtml(group.id)}">
+            <span class="history-category-icon">${escapeHtml(group.icon)}</span>
+            <span><strong>${escapeHtml(group.label)}</strong><small>${escapeHtml(group.description)}</small></span>
+            <em>${complete}/${questions.length}</em>
+          </button>`;
+        }).join('')}
+        <button type="button" class="horse-history-drill-choice horse-history-custom-choice" data-history-custom="true">
+          <span class="history-category-icon">?</span>
+          <span><strong>Ask your own question</strong><small>Enter a natural patient-interview question.</small></span>
+          <em>Open</em>
+        </button>
+      </div>`;
+
+    host.querySelectorAll('[data-history-group]').forEach(button => {
+      button.addEventListener('click', () => selectHorseHistoryGroup(button.dataset.historyGroup || ''));
     });
+    host.querySelector('[data-history-custom]')?.addEventListener('click', renderHorseCustomHistoryWorkspace);
     renderKnownHistory();
-    renderHorseHistoryQuestionBox(horseHistoryActiveGroup);
+
+    const questionBox = $('horseClinicalQuestionBox');
+    if (questionBox) {
+      questionBox.classList.remove('active','history-active');
+      questionBox.innerHTML = `<div class="horse-question-placeholder"><small>PATIENT INTERVIEW</small><strong>Questions now open directly in the History workspace.</strong></div>`;
+    }
   }
 
   function buildHistory() {
@@ -2587,6 +2653,11 @@
     if (item.sticky || infoVoiceRole(item) === 'patient') {
       infoManuallyCollapsed = false;
       setInfoCollapsed(false);
+      if (id === 'horse_crush' && desktopWorkspace()) {
+        infoAutoCollapseTimer = window.setTimeout(() => {
+          setInfoCollapsed(true, { markViewed:false });
+        }, infoVoiceRole(item) === 'patient' ? 7000 : 5500);
+      }
       return;
     }
     if (item.kind === 'alert') {
@@ -3742,7 +3813,7 @@
     if (panelId === 'historyPanel') {
       if (id === 'horse_crush' && desktopWorkspace()) {
         horseTreatmentActiveGroup = '';
-        if (!horseHistoryActiveGroup) horseHistoryActiveGroup = 'patient_info';
+        horseHistoryActiveGroup = '';
       }
       buildHistory();
     } else if (panelId === 'treatmentPanel' && id === 'horse_crush') {
