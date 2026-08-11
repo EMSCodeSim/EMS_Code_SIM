@@ -81,7 +81,8 @@ test('skin comparison, complete assessment tools, and assessment return paths re
   await page.reload();
   await expect(page.locator('.bottom-nav')).not.toHaveClass(/guide-locked/);
   await page.locator('[data-panel="assessmentPanel"]').click();
-  await expect(page.locator('#assessmentTools')).toContainText('Airway assessment');
+  await expect(page.locator('#assessmentTools')).toContainText('Initial ABC');
+  await expect(page.locator('#assessmentTools')).toContainText('Patent; patient speaking');
   await expect(page.locator('#assessmentTools')).toContainText('Glasgow Coma Scale');
   await expect(page.locator('#assessmentTools')).toContainText('Rule of Nines');
   await expect(page.locator('#assessmentTools')).toContainText('Pupils, light, and gaze');
