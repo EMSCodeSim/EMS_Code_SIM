@@ -86,7 +86,8 @@ test('skin comparison, complete assessment tools, and assessment return paths re
   await expect(page.locator('#assessmentTools')).toContainText('Glasgow Coma Scale');
   await expect(page.locator('#assessmentTools')).toContainText('Rule of Nines');
   await expect(page.locator('#assessmentTools')).toContainText('Pupils, light, and gaze');
-  expect(await page.locator('#assessmentTools .assessment-card').count()).toBeGreaterThanOrEqual(17);
+  await expect(page.locator('#assessmentTools')).toContainText('More assessments');
+  expect(await page.locator('#assessmentTools button, #assessmentTools a').count()).toBeGreaterThanOrEqual(8);
 
   await page.goto('/vitals/airway-assessment.html?mode=scenario&resume=1&case=stroke');
   await expect(page.locator('#practicePanel')).toBeVisible();
