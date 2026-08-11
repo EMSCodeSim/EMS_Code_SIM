@@ -13,7 +13,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,3 +27,7 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Build and validate production site
         run: npm run build
+      - name: Install Chromium for interaction tests
+        run: npx playwright install --with-deps chromium
+      - name: Run desktop and mobile interaction tests
+        run: npx playwright test
