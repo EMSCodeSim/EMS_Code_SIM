@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const BUILD = '2026.08.11.4';
+  const BUILD = '2026.08.11.5';
 
   function loadOnce(attribute, src) {
     if (document.querySelector(`script[${attribute}]`)) return;
@@ -55,12 +55,33 @@
     document.head.appendChild(style);
   }
 
+  function clearScenarioControlOverlay() {
+    const dialog = document.getElementById('scenarioControlDialog');
+    const backdrop = document.getElementById('scenarioControlBackdrop');
+    if (dialog) dialog.hidden = true;
+    if (backdrop) backdrop.hidden = true;
+  }
+
+  function installScenarioTransitionGuard() {
+    document.addEventListener('click', event => {
+      const params = new URLSearchParams(location.search);
+      if (params.get('case') !== CASE_ID) return;
+      if (!event.target.closest?.('#handoffFromProgress, #transportScenarioQuick')) return;
+      // The core click handler opens either Transport or Hospital Handoff first.
+      // Clear the modal/backdrop immediately afterward so it cannot intercept
+      // controls in the newly opened clinical workspace.
+      window.setTimeout(clearScenarioControlOverlay, 0);
+      window.requestAnimationFrame(clearScenarioControlOverlay);
+    });
+  }
+
   // The desktop learning cue is inserted as a real sibling between the patient
   // update and clinical workspace. A three-row CSS grid could auto-place that
   // fourth child into the flexible track and collapse the action sheet to a few
   // pixels. Use a flex column for the real DOM order: update -> cue -> workspace
   // -> navigation. The workspace then deterministically receives remaining height.
   installDesktopLayoutGuard();
+  installScenarioTransitionGuard();
 
   // These helpers are shared by the finished learning cases. They are defensive
   // and wait for DOMContentLoaded, so they can be requested before the main
