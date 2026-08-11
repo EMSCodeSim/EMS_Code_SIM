@@ -17,7 +17,12 @@
   function saveChoice(value){try{localStorage.setItem(consentKey,value);}catch(e){} }
   function removeBanner(){const b=document.getElementById('privacyBanner');if(b)b.remove();}
   function choose(value){saveChoice(value);removeBanner();if(value==='allow')loadAnalytics();window.dispatchEvent(new CustomEvent('emscodesim:privacy-choice',{detail:value}));}
+  function isClinicalTrainingSurface(){
+    const path=String(window.location.pathname||'').toLowerCase();
+    return path==='/vitals'||path.startsWith('/vitals/');
+  }
   function showBanner(){
+    if(isClinicalTrainingSurface())return;
     if(document.getElementById('privacyBanner'))return;
     const banner=document.createElement('aside');banner.id='privacyBanner';banner.className='privacy-banner';banner.setAttribute('aria-label','Analytics privacy choice');
     banner.innerHTML='<strong>Help improve EMSCodeSim</strong><p>EMSCodeSim uses optional Google Analytics to understand which free guides and training tools are useful. Progress data stays on this device.</p><div class="privacy-actions"><button class="allow" type="button" data-choice="allow">Allow analytics</button><button class="decline" type="button" data-choice="decline">Not now</button><a href="/privacy.html">Privacy details</a></div>';
@@ -25,5 +30,9 @@
     document.body.appendChild(banner);
   }
   window.EMSCodeSimPrivacy={reset:function(){saveChoice('');showBanner();},choice:getChoice,allow:function(){choose('allow');},decline:function(){choose('decline');}};
-  document.addEventListener('DOMContentLoaded',function(){const choice=getChoice();if(choice==='allow')loadAnalytics();else if(choice!=='decline')showBanner();});
+  document.addEventListener('DOMContentLoaded',function(){
+    const choice=getChoice();
+    if(choice==='allow')loadAnalytics();
+    else if(choice!=='decline'&&!isClinicalTrainingSurface())showBanner();
+  });
 })();
