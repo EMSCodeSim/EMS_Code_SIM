@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const BUILD = '2026.08.11.2';
+  const BUILD = '2026.08.11.3';
 
   function loadOnce(attribute, src) {
     if (document.querySelector(`script[${attribute}]`)) return;
@@ -13,22 +13,12 @@
     document.head.appendChild(script);
   }
 
-  function loadStylesheetOnce(attribute, href) {
-    if (document.querySelector(`link[${attribute}]`)) return;
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = `${href}?v=${encodeURIComponent(BUILD)}`;
-    link.setAttribute(attribute, '1');
-    document.head.appendChild(link);
-  }
-
   // These helpers are shared by the finished learning cases. They are defensive
   // and wait for DOMContentLoaded, so they can be requested before the main
   // visual-patient runtime without creating a parser-order dependency.
   loadOnce('data-scenario-learning-upgrade', '/vitals/scenario-learning-upgrade.js');
   loadOnce('data-condition-alert-priority', '/vitals/scenario-condition-alert-priority.js');
   loadOnce('data-horse-crush-ui-fix', '/vitals/horse-crush-ui-fix.js');
-  loadStylesheetOnce('data-horse-desktop-workspace-fix', '/vitals/horse-desktop-workspace-fix.css');
 
   const defs = window.EMSCodeSimScenarioDefinitions;
   const requiredGroups = [
