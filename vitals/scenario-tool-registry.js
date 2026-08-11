@@ -22,7 +22,6 @@
     { category: 'Burns', key: 'rule_of_nines', label: 'Rule of Nines', description: 'Estimate total body surface area involved in burns.', url: '/vitals/nines.html' }
   ];
 
-
   // Scenario-contract compatibility paths retained while visual assessment sims replace their older UI:
   // /vitals/airway-assessment.html /vitals/breathing-assessment.html /vitals/perfusion-assessment.html
   // /vitals/motor-sensory-assessment.html /vitals/chest-assessment.html /vitals/abdominal-assessment.html /vitals/trauma-assessment.html
@@ -62,4 +61,15 @@
   }
 
   window.EMSCodeSimToolRegistry = { assessmentTools, vitalTools, buildUrl, currentPageReturn, safeReturn };
+
+  // The patient simulator owns a single shared mini-sim overlay. Loading it from
+  // the registry keeps every registered vital and assessment tool on the same
+  // presentation and completion contract without duplicating shell logic.
+  if (/\/vitals\/visual-patient(?:\.html)?$/.test(location.pathname) && !document.querySelector('script[data-scenario-mini-sim-overlay]')) {
+    const script = document.createElement('script');
+    script.src = '/vitals/scenario-mini-sim-overlay.js?v=2026.08.11.1';
+    script.async = false;
+    script.dataset.scenarioMiniSimOverlay = '1';
+    document.head.appendChild(script);
+  }
 })();
