@@ -132,7 +132,9 @@ test('main care path remains usable after partner completion', async ({ page }) 
   await assignVitalToPartner(page, 'pulse');
   await runPendingPartnerSkill(page, 'asthma', 'pulse');
 
-  for (const panel of ['assessmentPanel', 'historyPanel', 'treatmentPanel', 'findingsPanel']) {
+  // These are the permanent user-facing desktop domains after the interface update.
+  // Record/Log remains an internal data surface and is tested separately.
+  for (const panel of ['assessmentPanel', 'historyPanel', 'treatmentPanel']) {
     await page.locator(`[data-panel="${panel}"]`).click();
     await expect(page.locator(`#${panel}`)).toBeVisible();
     if (await page.locator('#closeSheet').isVisible().catch(() => false)) await page.locator('#closeSheet').click();
