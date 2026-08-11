@@ -1,0 +1,244 @@
+/* Desktop clinical domain workspace — UI 2.40
+   Patient left, domain controls center, selected clinical workspace right. */
+@media (min-width:980px){
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .scenario-hero-layout{
+    grid-template-columns:minmax(0,1.45fr) 86px minmax(390px,.82fr)!important;
+    grid-template-rows:minmax(0,1fr)!important;
+    gap:10px!important;
+    align-items:stretch!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .patient-stage{
+    grid-column:1!important;
+    grid-row:1!important;
+    min-width:0!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .bottom-nav.clinical-domain-rail{
+    grid-column:2!important;
+    grid-row:1!important;
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
+    align-self:center!important;
+    justify-self:stretch!important;
+    width:100%!important;
+    display:flex!important;
+    flex-direction:column!important;
+    gap:8px!important;
+    padding:8px!important;
+    border:1px solid #31566d!important;
+    border-radius:18px!important;
+    background:#0b1d2c!important;
+    box-shadow:0 14px 34px rgba(0,0,0,.24)!important;
+    backdrop-filter:none!important;
+    z-index:20!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .bottom-nav.clinical-domain-rail button{
+    width:100%!important;
+    min-height:68px!important;
+    padding:8px 4px!important;
+    display:grid!important;
+    place-items:center!important;
+    align-content:center!important;
+    gap:3px!important;
+    border:1px solid #31566d!important;
+    border-radius:12px!important;
+    background:#10283a!important;
+    color:#dcecf5!important;
+    font-size:.62rem!important;
+    line-height:1.08!important;
+    font-weight:850!important;
+    cursor:pointer!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .bottom-nav.clinical-domain-rail button>span{
+    margin:0!important;
+    font-size:1.2rem!important;
+    line-height:1!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .bottom-nav.clinical-domain-rail button.active{
+    border-color:#67c2f5!important;
+    background:#174a68!important;
+    color:#fff!important;
+    box-shadow:inset 0 0 0 1px rgba(103,194,245,.26)!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .bottom-nav.clinical-domain-rail button[data-panel="treatmentPanel"].active{
+    border-color:#e2b65d!important;
+    background:#57431b!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .bottom-nav.clinical-domain-rail button[data-panel="findingsPanel"].active{
+    border-color:#9db0bd!important;
+    background:#263c4b!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .bottom-nav.clinical-domain-rail .desktop-domain-hidden{
+    display:none!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .patient-control-column{
+    grid-column:3!important;
+    grid-row:1!important;
+    position:relative!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:hidden!important;
+    padding:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    gap:8px!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .info-update-window{
+    order:1!important;
+    flex:0 0 auto!important;
+    width:100%!important;
+    max-width:none!important;
+    max-height:130px!important;
+    margin:0!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #horseArrivalDecision{
+    order:2!important;
+    flex:1 1 auto!important;
+    min-height:0!important;
+    overflow:auto!important;
+    margin:0!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .action-sheet{
+    order:3!important;
+    flex:1 1 0!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow:hidden!important;
+    margin:0!important;
+    border-radius:15px!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .action-sheet[hidden]{
+    display:flex!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.horse-arrival-pending .action-sheet{
+    display:none!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .sheet-header{
+    flex:0 0 auto!important;
+    position:static!important;
+    padding:9px 11px 8px!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .sheet-header h2{
+    font-size:1rem!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .sheet-patient-context{
+    flex:0 0 auto!important;
+    position:static!important;
+    margin:6px 8px 0!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .vp-panel{
+    flex:1 1 0!important;
+    min-height:0!important;
+    overflow:auto!important;
+    padding:8px 9px 12px!important;
+    scrollbar-gutter:stable!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #desktopPatientMonitor{
+    display:none!important;
+  }
+
+  /* Old horse-specific duplicate workspaces are retired on desktop. The selected
+     domain now owns the right field; mini sims own the patient-image overlay. */
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #horseCurrentAssessment,
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #horseClinicalQuestionBox{
+    display:none!important;
+  }
+
+  /* The right-side vital list itself is the launch control. */
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .compact-vital-row{
+    cursor:pointer!important;
+    grid-template-columns:30px minmax(0,1fr) auto!important;
+    min-height:72px!important;
+    padding:9px 10px!important;
+    transition:border-color .14s ease,background .14s ease,transform .14s ease!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .compact-vital-row:hover{
+    border-color:#4b93bb!important;
+    background:#123147!important;
+    transform:translateY(-1px)!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .vital-row-actions{
+    display:block!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .vital-row-actions a{
+    display:grid!important;
+    min-width:74px!important;
+    min-height:38px!important;
+    place-items:center!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .vital-row-actions .partner-action{
+    display:none!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .assignment-progress{
+    display:none!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .vital-latest-result{
+    color:#fff!important;
+    font-size:.79rem!important;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .compact-vital-row.done .vital-latest-result{
+    color:#bff5dc!important;
+  }
+
+  /* History remains available from the Assessment workspace without occupying
+     another permanent center-rail button. */
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .assessment-history-launcher{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin:0 0 9px;
+    padding:10px 11px;
+    border:1px solid #6b55a5;
+    border-radius:13px;
+    background:#30244d;
+    color:#fff;
+    text-align:left;
+    cursor:pointer;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .assessment-history-launcher>span{
+    min-width:0;
+    display:grid;
+    gap:2px;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .assessment-history-launcher strong{
+    font-size:.79rem;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .assessment-history-launcher small{
+    color:#d8caef;
+    font-size:.63rem;
+  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .assessment-history-launcher em{
+    flex:0 0 auto;
+    font-style:normal;
+    font-size:.68rem;
+    font-weight:900;
+    color:#efe7ff;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #assessmentPanel details,
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #treatmentPanel details{
+    scroll-margin-top:8px;
+  }
+}
+
+@media (min-width:1280px){
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .scenario-hero-layout{
+    grid-template-columns:minmax(0,1.55fr) 90px minmax(430px,.82fr)!important;
+    gap:12px!important;
+  }
+}
