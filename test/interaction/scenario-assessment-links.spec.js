@@ -62,7 +62,24 @@ test('skin comparison, complete assessment tools, and assessment return paths re
   await page.locator('#moistureSkin').click();
   await expect(page.locator('#observations')).toContainText('visible sweat or moisture');
 
-  await page.goto('/vitals/visual-patient.html?case=stroke');
+  // The current simulator intentionally locks clinical tabs until the learner
+  // completes scene size-up and the initial ABC pass. Seed those prerequisites
+  // here because this test is about the assessment tool library, not the guide.
+  await page.goto('/vitals/visual-patient.html?case=stroke&training=learning&reset=1');
+  await page.evaluate(() => {
+    const session = window.EMSCodeSimScenarioSession;
+    session.sync('stroke');
+    session.saveFinding('scene_size_up', 'Scene size-up completed for assessment-link test', {
+      label: 'Scene size-up and first impression',
+      source: 'browser-test',
+      classification: 'Complete'
+    });
+    session.saveFinding('airway', 'Patent; patient speaking', { source: 'browser-test', normality: 'normal', status: 'normal' });
+    session.saveFinding('breathing', 'Breathing present and adequate for rapid primary pass', { source: 'browser-test', normality: 'normal', status: 'normal' });
+    session.saveFinding('perfusion', 'Radial pulse present; no major external bleeding', { source: 'browser-test', normality: 'normal', status: 'normal' });
+  });
+  await page.reload();
+  await expect(page.locator('.bottom-nav')).not.toHaveClass(/guide-locked/);
   await page.locator('[data-panel="assessmentPanel"]').click();
   await expect(page.locator('#assessmentTools')).toContainText('Airway assessment');
   await expect(page.locator('#assessmentTools')).toContainText('Glasgow Coma Scale');
