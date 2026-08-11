@@ -10,6 +10,7 @@ const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const netlify = read('netlify.toml');
 const patientHtml = read('vitals/visual-patient.html');
 const bootstrap = read('vitals/horse-crush-bootstrap.js');
+const horseUiFix = read('vitals/horse-crush-ui-fix.js');
 const definitions = read('vitals/scenario-definitions.js');
 
 function assertRevalidatedHeader(pattern) {
@@ -72,6 +73,18 @@ assert(
 assert(
   bootstrap.includes("loadOnce('data-condition-alert-priority'"),
   'Horse bootstrap must request condition alert priority handling'
+);
+assert(
+  bootstrap.includes("loadOnce('data-horse-crush-ui-fix'"),
+  'Horse bootstrap must request the focused-assessment routing fix'
+);
+assert(
+  horseUiFix.includes("event.target.closest?.('#assessmentTools [data-assessment-item]')"),
+  'Horse assessment routing fix must intercept desktop assessment-item clicks'
+);
+assert(
+  horseUiFix.includes("horse.performExam(key)"),
+  'Horse assessment routing fix must route focused assessment items to the horse exam engine'
 );
 
 console.log('Scenario deployment contract OK');
