@@ -11,6 +11,7 @@ const netlify = read('netlify.toml');
 const patientHtml = read('vitals/visual-patient.html');
 const bootstrap = read('vitals/horse-crush-bootstrap.js');
 const horseUiFix = read('vitals/horse-crush-ui-fix.js');
+const horseWorkspaceFix = read('vitals/horse-desktop-workspace-fix.css');
 const definitions = read('vitals/scenario-definitions.js');
 
 function assertRevalidatedHeader(pattern) {
@@ -77,6 +78,18 @@ assert(
 assert(
   bootstrap.includes("loadOnce('data-horse-crush-ui-fix'"),
   'Horse bootstrap must request the desktop horse assessment routing fix'
+);
+assert(
+  bootstrap.includes("loadStylesheetOnce('data-horse-desktop-workspace-fix'"),
+  'Horse bootstrap must load the desktop workspace containment styles'
+);
+assert(
+  horseWorkspaceFix.includes('grid-template-rows: auto auto auto minmax(0, 1fr)'),
+  'Horse desktop action sheet must reserve a bounded row for the active clinical panel'
+);
+assert(
+  horseWorkspaceFix.includes('position: static !important'),
+  'Horse desktop sheet header/context must not overlay the active clinical panel'
 );
 assert(
   horseUiFix.includes("event.target.closest?.('#assessmentTools [data-assessment-item]')"),
