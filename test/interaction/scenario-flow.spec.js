@@ -53,12 +53,9 @@ test('desktop patient image remains rendered during the horse scenario workspace
   expect(rendered.width).toBeGreaterThan(100);
   expect(rendered.height).toBeGreaterThan(100);
 
-  const recordButton = page.locator('.bottom-nav button[data-panel="findingsPanel"]');
-  if (await recordButton.isVisible()) {
-    await recordButton.click();
-    await expect(page.locator('#findingsPanel')).toBeVisible();
-  }
-
+  // The desktop guided start intentionally keeps Record unavailable until the
+  // required opening assessment sequence is complete. This regression only
+  // protects the patient image from being hidden by desktop workspace CSS.
   await expect(patientImage).toBeVisible();
   await expect.poll(() => patientImage.evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
   await assertNoPageErrors();
