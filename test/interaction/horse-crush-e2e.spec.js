@@ -23,32 +23,38 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientRecord.active()?.findings?.arrival_parking))).toBe(true);
   await expect(page.locator('#patientImage')).toBeVisible();
 
-  // Initial ABC: use the same current-assessment controls a learner clicks.
-  async function recordAbc(label) {
-    const button = page.locator('#horseCurrentAssessmentBody .horse-current-exam-button', { hasText: label }).first();
+  // Initial ABC through the desktop center Assessment workspace. This protects
+  // the concrete airway/breathing/perfusion item routing that previously fell
+  // through to a group selector and silently returned the user to ABC.
+  await page.locator('.bottom-nav button[data-panel="assessmentPanel"]').click();
+  await expect(page.locator('#assessmentPanel')).toBeVisible();
+  await page.locator('[data-assessment-category="abc"]').click();
+
+  async function recordAbc(key) {
+    const button = page.locator(`[data-assessment-item="${key}"]`);
     await expect(button).toBeVisible();
     await button.click();
-    const select = page.locator('#horseClinicalQuestionBox select').first();
+    const select = page.locator('#horseAssessmentInlineQuestion select');
     await expect(select).toBeVisible();
     await select.selectOption({ index: 1 });
-    const record = page.locator('#horseClinicalQuestionBox .horse-question-save');
+    const record = page.locator('#horseAssessmentInlineQuestion .horse-question-save');
     await expect(record).toBeEnabled();
     await record.click();
+    await expect.poll(() => page.evaluate(findingKey => Boolean(window.EMSCodeSimPatientRecord.active()?.findings?.[findingKey]), key)).toBe(true);
   }
 
-  await recordAbc('Airway');
-  await recordAbc('Breathing');
-  await recordAbc('Circulation');
+  await recordAbc('airway');
+  await recordAbc('breathing');
+  await recordAbc('perfusion');
 
   await expect.poll(() => page.evaluate(() => {
     const findings = window.EMSCodeSimPatientRecord.active()?.findings || {};
     return ['airway', 'breathing', 'perfusion'].every(key => Boolean(findings[key]));
   })).toBe(true);
 
-  // Focused trauma assessment from the desktop assessment-category menu. This
-  // specifically protects the former pelvis/leg routing bug that fell back to ABC.
-  await page.locator('.bottom-nav button[data-panel="assessmentPanel"]').click();
-  await expect(page.locator('#assessmentPanel')).toBeVisible();
+  // Focused trauma assessment from the same desktop assessment-category menu.
+  // This protects the former pelvis/leg routing bug that also fell back to ABC.
+  await page.locator('#horseAssessmentBack').click();
   await page.locator('[data-assessment-category="abdomen_pelvis"]').click();
   await page.locator('[data-assessment-item="pelvis_hip"]').click();
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientRecord.active()?.findings?.pelvis_hip))).toBe(true);
