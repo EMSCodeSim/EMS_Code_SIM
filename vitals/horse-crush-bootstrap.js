@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const BUILD = '2026.08.11.3';
+  const BUILD = '2026.08.11.4';
 
   function loadOnce(attribute, src) {
     if (document.querySelector(`script[${attribute}]`)) return;
@@ -12,6 +12,55 @@
     script.setAttribute(attribute, '1');
     document.head.appendChild(script);
   }
+
+  function installDesktopLayoutGuard() {
+    if (document.querySelector('style[data-horse-desktop-layout-guard]')) return;
+    const style = document.createElement('style');
+    style.dataset.horseDesktopLayoutGuard = '1';
+    style.textContent = `
+      @media (min-width: 961px) {
+        body.horse-current-emt-call.desktop-scenario-layout .patient-control-column {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 7px !important;
+          min-height: 0 !important;
+          height: 100% !important;
+          overflow: hidden !important;
+        }
+        body.horse-current-emt-call.desktop-scenario-layout #infoUpdateWindow,
+        body.horse-current-emt-call.desktop-scenario-layout #reasoningDiscoveryCue,
+        body.horse-current-emt-call.desktop-scenario-layout .bottom-nav {
+          flex: 0 0 auto !important;
+        }
+        body.horse-current-emt-call.desktop-scenario-layout #reasoningDiscoveryCue {
+          position: static !important;
+          inset: auto !important;
+          width: 100% !important;
+          margin: 0 !important;
+          z-index: auto !important;
+        }
+        body.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet {
+          flex: 1 1 0 !important;
+          width: 100% !important;
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: none !important;
+          overflow: hidden !important;
+        }
+        body.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet:not([hidden]) {
+          display: grid !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // The desktop learning cue is inserted as a real sibling between the patient
+  // update and clinical workspace. A three-row CSS grid could auto-place that
+  // fourth child into the flexible track and collapse the action sheet to a few
+  // pixels. Use a flex column for the real DOM order: update -> cue -> workspace
+  // -> navigation. The workspace then deterministically receives remaining height.
+  installDesktopLayoutGuard();
 
   // These helpers are shared by the finished learning cases. They are defensive
   // and wait for DOMContentLoaded, so they can be requested before the main
