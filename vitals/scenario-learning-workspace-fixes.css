@@ -1,5 +1,46 @@
 /* Finished-scenario desktop workspace fixes. Keep narrowly scoped to the reasoning upgrade. */
 @media (min-width: 961px) {
+  /*
+   * Desktop uses a fixed clinical workstation with multiple overlays. Mobile never
+   * enters this layout, so protect the actual patient image here from stale or
+   * competing desktop display/visibility rules. Active simulator/handoff overlays
+   * may still cover the image by z-index, but the underlying image remains rendered
+   * and is immediately visible again when those overlays close.
+   */
+  body.desktop-scenario-layout.reasoning-upgrade-active .patient-stage {
+    isolation: isolate;
+    background: #0b1d2c;
+  }
+
+  body.desktop-scenario-layout.reasoning-upgrade-active .patient-stage > img#patientImage {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    z-index: 0 !important;
+  }
+
+  body.desktop-scenario-layout.reasoning-upgrade-active .patient-stage::after {
+    z-index: 1;
+  }
+
+  body.desktop-scenario-layout.reasoning-upgrade-active .scene-clue-layer {
+    z-index: 2;
+  }
+
+  body.desktop-scenario-layout.reasoning-upgrade-active .embedded-sim-workspace,
+  body.desktop-scenario-layout.reasoning-upgrade-active .hospital-handoff-workspace,
+  body.desktop-scenario-layout.reasoning-upgrade-active .horse-grade-workspace {
+    z-index: 12;
+  }
+
   body.desktop-scenario-layout.scene-guide-active.reasoning-upgrade-active:has(.bottom-nav button[data-panel="findingsPanel"].active) .scene-guide-photo {
     display: none !important;
   }
