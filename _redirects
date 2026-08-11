@@ -165,10 +165,9 @@
 /vitals/pain.html /vitals/pain-opqrst.html 301
 /vitals/sample.html /vitals/sample-history.html 301
 /vitals/pat.html /vitals/pediatric-assessment-triangle.html 301
-@@
- /ems-wellness /ems-wellness.html 301
-+/ems-leadership /ems-leadership.html 301
-+/ems-supervisor /ems-leadership.html 301
-+/ems-specialties /ems-specialty-careers.html 301
-+/ems-safety /ems-safety-health.html 301
-+/ems-clinician-safety /ems-safety-health.html 301
+/ems-wellness /ems-wellness.html 301
+/ems-leadership /ems-leadership.html 301
+/ems-supervisor /ems-leadership.html 301
+/ems-specialties /ems-specialty-careers.html 301
+/ems-safety /ems-safety-health.html 301
+/ems-clinician-safety /ems-safety-health.html 301
