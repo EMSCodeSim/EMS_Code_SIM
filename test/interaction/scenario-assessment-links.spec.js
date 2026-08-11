@@ -62,17 +62,12 @@ test('skin comparison, complete assessment tools, and assessment return paths re
   await page.locator('#moistureSkin').click();
   await expect(page.locator('#observations')).toContainText('visible sweat or moisture');
 
-  // The current simulator intentionally locks clinical tabs until the learner
-  // completes scene size-up and the initial ABC pass. Seed those prerequisites
-  // here because this test is about the assessment tool library, not the guide.
   await page.goto('/vitals/visual-patient.html?case=stroke&training=learning&reset=1');
   await page.evaluate(() => {
     const session = window.EMSCodeSimScenarioSession;
     session.sync('stroke');
     session.saveFinding('scene_size_up', 'Scene size-up completed for assessment-link test', {
-      label: 'Scene size-up and first impression',
-      source: 'browser-test',
-      classification: 'Complete'
+      label: 'Scene size-up and first impression', source: 'browser-test', classification: 'Complete'
     });
     session.saveFinding('airway', 'Patent; patient speaking', { source: 'browser-test', normality: 'normal', status: 'normal' });
     session.saveFinding('breathing', 'Breathing present and adequate for rapid primary pass', { source: 'browser-test', normality: 'normal', status: 'normal' });
@@ -89,46 +84,34 @@ test('skin comparison, complete assessment tools, and assessment return paths re
   await expect(page.locator('#assessmentTools')).toContainText('More assessments');
   expect(await page.locator('#assessmentTools button, #assessmentTools a').count()).toBeGreaterThanOrEqual(8);
 
+  // Current scenario assessment pages return directly to the patient rather than
+  // exposing the retired connected-tools link cluster.
   await page.goto('/vitals/airway-assessment.html?mode=scenario&resume=1&case=stroke');
   await expect(page.locator('#practicePanel')).toBeVisible();
-  const respirationsLink = page.locator('#scenarioConnectedTools a', { hasText: 'Respiratory rate' });
-  const breathSoundsLink = page.locator('#scenarioConnectedTools a', { hasText: 'Breath sounds' });
-  const spo2Link = page.locator('#scenarioConnectedTools a', { hasText: 'SpO₂' });
-  await expect(respirationsLink).toBeVisible();
-  await expect(breathSoundsLink).toBeVisible();
-  await expect(spo2Link).toBeVisible();
-  expect(await respirationsLink.getAttribute('href')).toContain('return=%2Fvitals%2Fairway-assessment.html');
-
-  await respirationsLink.click();
-  await expect(page).toHaveURL(/respiratory-rate-scenario\.html/);
-  await expect(page.locator('#contextReturnLink')).toHaveText('← Return to Airway assessment');
-  await expect(page.locator('#patientHomeLink')).toHaveText('Patient home');
-  await expect(page.locator('#returnBtn')).toHaveText('Return to Airway assessment');
+  await expect(page.locator('#findingBox')).toBeVisible();
+  await page.locator('input[name="normality"][value="normal"]').check();
+  await expect(page).toHaveURL(/visual-patient\.html\?case=stroke/);
+  await expect(page.locator('#patientImage')).toBeVisible();
   await assertNoPageErrors();
 });
 
-test('recorded airway finding unlocks treatment choices and returns to the assessment', async ({ page }) => {
+test('abnormal airway decision records care and returns to the patient', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
   await page.goto('/vitals/airway-assessment.html?mode=scenario&resume=1&case=stroke');
   await expect(page.locator('#practicePanel')).toBeVisible();
-  await expect(page.locator('#scenarioConnectedTools')).toContainText('Record the assessment finding to unlock treatment');
+  await expect(page.locator('#findingBox')).toBeVisible();
 
-  await page.locator('#assessAirway').click();
-  await page.locator('input[name="normality"][value="normal"]').check();
-  await page.locator('#problemSelect').selectOption('patent');
-  await page.locator('#actionSelect').selectOption('monitor');
-  await expect(page.locator('#pcrText')).not.toHaveAttribute('required', '');
-  await page.locator('#submitCase').click();
+  await page.locator('input[name="normality"][value="abnormal"]').check();
+  await expect(page.locator('#problemSelect')).toBeVisible();
+  await expect(page.locator('#actionSelect')).toBeVisible();
+  await page.locator('#problemSelect').selectOption('soft-tissue');
+  await page.locator('#actionSelect').selectOption('position');
+  await page.locator('.scenario-assessment-actions .continue-patient').click();
 
-  const treatLink = page.locator('#scenarioConnectedTools a', { hasText: 'Treat recorded airway finding' });
-  await expect(treatLink).toBeVisible();
-  await treatLink.click();
-  await expect(page).toHaveURL(/treatment-reassessment\.html/);
-  await expect(page.locator('#activeTreatmentContext')).toContainText('Recorded finding');
-  await expect(page.locator('#treatmentReturnNav')).toContainText('Return to Airway assessment');
-
-  for (const value of ['monitor', 'position', 'suction', 'opa', 'npa', 'bvm', 'lma', 'intubation', 'cric']) {
-    await expect(page.locator(`#treatmentSelect option[value="${value}"]`)).toHaveCount(1);
-  }
+  await expect(page).toHaveURL(/visual-patient\.html\?case=stroke/);
+  const saved = await page.evaluate(() => window.EMSCodeSimPatientRecord.active());
+  expect(saved?.findings?.airway).toBeTruthy();
+  expect((saved?.treatments || []).some(entry => /airway|head-tilt|chin-lift/i.test(`${entry.treatment || ''} ${entry.description || ''}`))).toBe(true);
+  await expect(page.locator('#patientImage')).toBeVisible();
   await assertNoPageErrors();
 });
