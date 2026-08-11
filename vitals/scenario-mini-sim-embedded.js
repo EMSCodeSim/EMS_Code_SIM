@@ -6,6 +6,10 @@
   body.dataset.emsMiniSimEnhanced = '1';
   body.classList.add('ems-embedded-mini-sim');
 
+  const params = new URLSearchParams(location.search);
+  const caseId = params.get('case') || '';
+  const pathname = location.pathname;
+
   const flow = document.createElement('div');
   flow.className = 'ems-mini-flow';
   flow.setAttribute('aria-label', 'Mini simulator workflow');
@@ -38,10 +42,35 @@
     if (!unlocked) setFlow(2);
   }
 
+  function parentRuntimeVital(key, fallback = '') {
+    try { return window.parent?.EMSCodeSimScenarioRuntime?.vital?.(key, fallback) ?? fallback; }
+    catch (_) { return fallback; }
+  }
+
+  function saveLegacyFinding(key, label, value, meta = {}) {
+    const payload = {
+      label,
+      finding: String(value),
+      learnerFinding: String(value),
+      reviewAtDebrief: true,
+      source: 'embedded-mini-sim-adapter',
+      ...meta
+    };
+    try {
+      const session = window.parent?.EMSCodeSimScenarioSession;
+      const api = window.parent?.EMSCodeSimPatientRecord;
+      if (session?.saveFinding) session.saveFinding(key, String(value), payload, caseId || undefined);
+      else if (api?.setFinding) api.setFinding(key, String(value), payload);
+    } catch (_) {}
+    try {
+      window.parent?.postMessage?.({ type:'ems-assessment-saved', key, label, value:String(value) }, location.origin);
+    } catch (_) {}
+  }
+
   if (answer) answer.classList.add('ems-discovery-locked');
 
-  // Numeric/device simulations already gate the Save button until the learner has
-  // actually completed the measurement. Use that signal to reveal documentation.
+  // Numeric/device simulations already gate Save until the learner has actually
+  // completed the measurement. Use that signal to reveal documentation.
   if (submit && ['pulse','respirations','spo2','bgl','temperature'].includes(sim)) {
     const watchSubmit = new MutationObserver(() => {
       if (!submit.disabled) unlockDocument();
@@ -51,8 +80,8 @@
     if (!submit.disabled) unlockDocument();
   }
 
-  // Blood pressure has its own mature cuff/auscultation engine. Its answer area
-  // unlocks only after the cuff sequence has enabled the submit control.
+  // Blood pressure has its own cuff/auscultation engine. Its answer area unlocks
+  // only after the cuff sequence has enabled the submit control.
   if (body.querySelector('.bp-scenario-answer') && submit) {
     body.querySelector('.bp-scenario-answer')?.classList.add('ems-discovery-locked');
     const watchBp = new MutationObserver(() => {
@@ -93,8 +122,8 @@
     }));
   }
 
-  // Visual assessment-suite pages create their own interpretation panel only after
-  // the physical/visual exam is complete. Keep the flow indicator in sync.
+  // Visual assessment-suite pages create their own interpretation panel only
+  // after the physical/visual exam is complete. Keep the flow indicator in sync.
   const result = document.getElementById('result');
   if (result && !answer) {
     const observer = new MutationObserver(() => {
@@ -108,14 +137,159 @@
     observer.observe(result, { childList:true, subtree:true, attributes:true });
   }
 
+  function installGcsAdapter() {
+    if (pathname !== '/vitals/gcs.html') return;
+    const eyes = document.getElementById('selE');
+    const verbal = document.getElementById('selV');
+    const motor = document.getElementById('selM');
+    const show = document.getElementById('showResults');
+    const buttons = {
+      E: document.getElementById('btnEyes'),
+      V: document.getElementById('btnVerbal'),
+      M: document.getElementById('btnMotor')
+    };
+    if (!eyes || !verbal || !motor || !show) return;
+
+    [eyes, verbal, motor].forEach(select => {
+      if (!select.querySelector('option[value=""]')) {
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Select after assessment';
+        select.prepend(placeholder);
+      }
+      select.value = '';
+    });
+    show.disabled = true;
+    show.textContent = 'Record GCS';
+
+    const avpu = String(parentRuntimeVital('avpu', 'A')).trim().toUpperCase();
+    const directE = Number(parentRuntimeVital('gcs_eye', NaN));
+    const directV = Number(parentRuntimeVital('gcs_verbal', NaN));
+    const directM = Number(parentRuntimeVital('gcs_motor', NaN));
+    const fallback = {
+      A: { E:4, V:5, M:6 },
+      V: { E:3, V:4, M:6 },
+      P: { E:2, V:2, M:4 },
+      U: { E:1, V:1, M:1 }
+    }[avpu] || { E:4, V:5, M:6 };
+    const truth = {
+      E: Number.isFinite(directE) && directE >= 1 && directE <= 4 ? directE : fallback.E,
+      V: Number.isFinite(directV) && directV >= 1 && directV <= 5 ? directV : fallback.V,
+      M: Number.isFinite(directM) && directM >= 1 && directM <= 6 ? directM : fallback.M
+    };
+    const responseText = {
+      E: { 1:'No eye opening to voice or pain.',2:'Opens eyes only to painful stimulus.',3:'Opens eyes when spoken to.',4:'Eyes are open spontaneously and track you.' },
+      V: { 1:'No verbal response.',2:'Only incomprehensible sounds or moaning.',3:'Uses inappropriate or random words.',4:'Converses but is confused or disoriented.',5:'Answers appropriately and is oriented.' },
+      M: { 1:'No motor response to pain.',2:'Extends to painful stimulus.',3:'Abnormal flexion to pain.',4:'Withdraws from painful stimulus.',5:'Localizes the stimulus and pushes it away.',6:'Obeys commands and moves as requested.' }
+    };
+    const assessed = new Set();
+    const lineFor = domain => document.querySelector(`#resp-${domain === 'E' ? 'eyes' : domain === 'V' ? 'verbal' : 'motor'} .line`);
+
+    Object.entries(buttons).forEach(([domain, button]) => button?.addEventListener('click', () => {
+      assessed.add(domain);
+      markObserved();
+      window.setTimeout(() => {
+        const line = lineFor(domain);
+        if (line) line.textContent = responseText[domain][truth[domain]];
+        const wrap = document.getElementById(`resp-${domain === 'E' ? 'eyes' : domain === 'V' ? 'verbal' : 'motor'}`);
+        if (wrap) wrap.hidden = false;
+        if (assessed.size === 3) {
+          unlocked = true;
+          setFlow(3);
+          show.disabled = false;
+        }
+      }, 0);
+    }, true));
+
+    show.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (assessed.size < 3) return;
+      const e = Number(eyes.value), v = Number(verbal.value), m = Number(motor.value);
+      if (![e,v,m].every(Number.isFinite) || !eyes.value || !verbal.value || !motor.value) {
+        const summary = document.getElementById('summary');
+        const results = document.getElementById('results');
+        if (results) results.hidden = false;
+        if (summary) summary.innerHTML = '<strong>Document each E / V / M score before recording.</strong>';
+        return;
+      }
+      const total = e + v + m;
+      const expected = truth.E + truth.V + truth.M;
+      saveLegacyFinding('gcs', 'Glasgow Coma Scale', `GCS ${total} (E${e} V${v} M${m})`, {
+        expectedFinding: `GCS ${expected} (E${truth.E} V${truth.V} M${truth.M})`,
+        accurate: e === truth.E && v === truth.V && m === truth.M,
+        correct: e === truth.E && v === truth.V && m === truth.M
+      });
+    }, true);
+  }
+
+  function installNinesAdapter() {
+    if (pathname !== '/vitals/nines.html') return;
+    const input = document.getElementById('answerVal');
+    const button = document.getElementById('submitBtn');
+    if (!input || !button) return;
+    const pctAdult = {'head-front':4.5,'head-back':4.5,chest:9,abdomen:9,'upper-back':9,'lower-back':9,'armL-front':4.5,'armR-front':4.5,'armL-back':4.5,'armR-back':4.5,'legL-front':9,'legR-front':9,'legL-back':9,'legR-back':9,perineum:1};
+    const pctPeds = {'head-front':9,'head-back':9,chest:9,abdomen:9,'upper-back':9,'lower-back':9,'armL-front':4.5,'armR-front':4.5,'armL-back':4.5,'armR-back':4.5,'legL-front':7,'legR-front':7,'legL-back':7,'legR-back':7,perineum:1};
+    unlocked = true;
+    setFlow(3);
+    button.textContent = 'Record TBSA';
+    button.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const entered = Number(input.value);
+      if (!Number.isFinite(entered)) return;
+      const pediatric = document.getElementById('modeOut')?.textContent?.toLowerCase().includes('pediatric');
+      const map = pediatric ? pctPeds : pctAdult;
+      const svg = pediatric ? document.getElementById('pedsSVG') : document.getElementById('adultSVG');
+      let expected = 0;
+      svg?.querySelectorAll('.zone').forEach(zone => {
+        const state = Number(zone.getAttribute('data-state') || 0);
+        const key = zone.getAttribute('data-key') || '';
+        expected += (map[key] || 0) * state;
+      });
+      expected = Math.round(expected * 100) / 100;
+      saveLegacyFinding('rule_of_nines', 'Rule of Nines', `${entered}% TBSA`, {
+        expectedFinding: `${expected}% TBSA`,
+        accurate: Math.abs(entered - expected) <= 0.25,
+        correct: Math.abs(entered - expected) <= 0.25,
+        patientType: pediatric ? 'pediatric' : 'adult'
+      });
+    }, true);
+  }
+
+  function installIntegratedPracticeFlow() {
+    if (!['/vitals/pain-opqrst.html','/vitals/sample-history.html','/vitals/pediatric-assessment-triangle.html'].includes(pathname)) return;
+    const practice = document.getElementById('practicePanel');
+    if (practice) {
+      document.querySelectorAll('.lesson-panel').forEach(panel => { panel.hidden = panel !== practice; });
+      practice.hidden = false;
+      practice.classList.add('is-active');
+    }
+    const revealButtons = [...document.querySelectorAll('button')].filter(button => /ask|assess|perform|observe|examine|begin|start/i.test(button.textContent || ''));
+    revealButtons.forEach(button => button.addEventListener('click', () => {
+      markObserved();
+      window.setTimeout(() => { unlocked = true; setFlow(3); }, 40);
+    }));
+    const form = practice?.querySelector('form') || document.querySelector('form');
+    if (form && !revealButtons.length) {
+      unlocked = true;
+      setFlow(3);
+    }
+  }
+
+  installGcsAdapter();
+  installNinesAdapter();
+  installIntegratedPracticeFlow();
+
   document.addEventListener('click', event => {
     if (event.target.closest('button,a,[role="button"]')) markObserved();
   }, true);
 
   window.EMSCodeSimEmbeddedMiniSim = Object.freeze({
-    version: '2026.08.11.1',
+    version: '2026.08.11.2',
     unlockDocument,
     markObserved,
-    setFlow
+    setFlow,
+    saveLegacyFinding
   });
 })();
