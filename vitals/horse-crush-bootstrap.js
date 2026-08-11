@@ -14,6 +14,17 @@
     document.head.appendChild(learningScript);
   }
 
+  // Patient deterioration must outrank routine guided-start observations in the
+  // visible update window. This helper watches the shared care log for condition
+  // changes and surfaces them immediately on every visual-patient scenario.
+  if (!document.querySelector('script[data-condition-alert-priority]')) {
+    const alertScript = document.createElement('script');
+    alertScript.src = '/vitals/scenario-condition-alert-priority.js?v=100';
+    alertScript.async = false;
+    alertScript.dataset.conditionAlertPriority = '1';
+    document.head.appendChild(alertScript);
+  }
+
   if (!defs) return;
 
   // This compatibility layer makes the scenario work even when a browser or CDN
