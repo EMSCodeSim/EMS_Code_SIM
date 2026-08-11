@@ -51,7 +51,11 @@ for (const required of ['index.html', '_redirects', 'robots.txt', 'sitemap.xml',
 const requiredScenarioImages = [
   'vitals/assets/scenario-patient-adult-v3.png',
   'vitals/assets/scenario-patient-pediatric-v3.png',
-  'vitals/assets/scenario-patient-horse-crush.webp'
+  'vitals/assets/scenario-patient-horse-crush.webp',
+  'vitals/assets/horse-crush/patient-initial.webp',
+  'vitals/assets/scenario-asthma-learning.svg',
+  'vitals/assets/scenario-stroke-learning.svg',
+  'vitals/assets/scenario-hypoglycemia-learning.svg'
 ];
 for (const relative of requiredScenarioImages) {
   const builtPath = path.join(out, relative);
