@@ -48,6 +48,17 @@ for (const required of ['index.html', '_redirects', 'robots.txt', 'sitemap.xml',
   if (!fs.existsSync(path.join(out, required))) throw new Error(`Build missing required file: ${required}`);
 }
 
+const requiredScenarioImages = [
+  'vitals/assets/scenario-patient-adult-v3.png',
+  'vitals/assets/scenario-patient-pediatric-v3.png',
+  'vitals/assets/scenario-patient-horse-crush.webp'
+];
+for (const relative of requiredScenarioImages) {
+  const builtPath = path.join(out, relative);
+  if (!fs.existsSync(builtPath)) throw new Error(`Build missing scenario image asset: ${relative}`);
+  if (fs.statSync(builtPath).size === 0) throw new Error(`Build produced empty scenario image asset: ${relative}`);
+}
+
 for (const retired of [...RETIRED_FILES, ...RETIRED_DIRECTORIES]) {
   if (fs.existsSync(path.join(out, retired))) throw new Error(`Retired path was copied into deployment: ${retired}`);
 }
@@ -56,4 +67,5 @@ for (const sourceOnly of ['tools', 'tests', 'docs/updates', 'netlify', 'netlify-
   if (fs.existsSync(path.join(out, sourceOnly))) throw new Error(`Source-only path was copied into deployment: ${sourceOnly}`);
 }
 
+console.log(`Verified ${requiredScenarioImages.length} required scenario patient images in dist.`);
 console.log(`Built dist with ${copied} files (${(bytes / 1024 / 1024).toFixed(1)} MB).`);
