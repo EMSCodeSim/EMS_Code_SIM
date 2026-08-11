@@ -84,12 +84,24 @@ assert(
   'Horse bootstrap must request the desktop horse assessment routing fix'
 );
 assert(
-  horseScenarioCss.includes('grid-template-rows:auto auto auto minmax(0,1fr)'),
-  'Synchronous horse stylesheet must reserve a bounded row for the active clinical panel'
+  bootstrap.includes('installDesktopLayoutGuard()'),
+  'Horse bootstrap must install the synchronous desktop layout guard before shared learning helpers load'
 );
 assert(
-  horseScenarioCss.includes('position:static!important'),
-  'Synchronous horse stylesheet must keep sheet header/context from overlaying the active clinical panel'
+  bootstrap.includes('display: flex !important') && bootstrap.includes('flex-direction: column !important'),
+  'Horse desktop right column must follow the real update/cue/workspace/nav DOM order instead of a fixed three-row grid'
+);
+assert(
+  bootstrap.includes('flex: 1 1 0 !important') && bootstrap.includes('height: auto !important'),
+  'Horse desktop action sheet must receive the remaining right-column height'
+);
+assert(
+  bootstrap.includes('#reasoningDiscoveryCue') && bootstrap.includes('position: static !important'),
+  'The learning cue must participate in normal horse desktop layout instead of overlaying clinical controls'
+);
+assert(
+  horseScenarioCss.includes('grid-template-rows:auto auto auto minmax(0,1fr)'),
+  'Horse action sheet must reserve a bounded row for the active clinical panel'
 );
 assert(
   horseUiFix.includes("event.target.closest?.('#assessmentTools [data-assessment-item]')"),
