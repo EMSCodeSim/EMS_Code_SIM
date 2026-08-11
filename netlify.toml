@@ -6,6 +6,11 @@
   directory = "netlify-functions-dist"
 
 [[headers]]
+  for = "/build-info.json"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
   for = "/vitals/visual-patient.html"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
