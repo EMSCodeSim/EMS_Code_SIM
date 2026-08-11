@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.11.2';
+  const VERSION = '2026.08.11.3';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -30,7 +30,7 @@
   }
 
   function activePanelId() {
-    return centerRail()?.querySelector('button[data-panel].active:not(.desktop-domain-hidden)')?.dataset.panel || '';
+    return centerRail()?.querySelector('button[data-panel].active')?.dataset.panel || '';
   }
 
   function rightWorkspaceReady() {
