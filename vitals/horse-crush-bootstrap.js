@@ -18,6 +18,7 @@
   // visual-patient runtime without creating a parser-order dependency.
   loadOnce('data-scenario-learning-upgrade', '/vitals/scenario-learning-upgrade.js');
   loadOnce('data-condition-alert-priority', '/vitals/scenario-condition-alert-priority.js');
+  loadOnce('data-horse-crush-ui-fix', '/vitals/horse-crush-ui-fix.js');
 
   const defs = window.EMSCodeSimScenarioDefinitions;
   const requiredGroups = [
