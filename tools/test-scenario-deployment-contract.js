@@ -104,6 +104,10 @@ assert(
   'Horse action sheet must reserve a bounded row for the active clinical panel'
 );
 assert(
+  horseUiFix.includes('relocateReasoningBoard') && horseUiFix.includes("document.getElementById('findingsPanel')"),
+  'The detailed horse reasoning board must live inside the Record panel instead of consuming permanent desktop workspace height'
+);
+assert(
   horseUiFix.includes("event.target.closest?.('#assessmentTools [data-assessment-item]')"),
   'Horse assessment routing fix must intercept desktop assessment-item clicks'
 );
