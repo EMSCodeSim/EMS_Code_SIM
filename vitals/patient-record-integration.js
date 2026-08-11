@@ -39,6 +39,19 @@
     return value === 'normal' ? 'normal' : 'not-normal';
   }
 
+  function notifyScenarioShell(entry) {
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'ems-assessment-saved',
+          key: entry.assessment,
+          label: entry.label,
+          value: entry.finding
+        }, location.origin);
+      }
+    } catch (_) {}
+  }
+
   function saveAssessment(input) {
     const entry = {
       assessment: input.assessment,
@@ -65,6 +78,7 @@
       else api.setFinding(entry.assessment, entry.finding, entry);
       showNotice(`Saved ${entry.label} to the active patient record.`, true);
       window.dispatchEvent(new CustomEvent('emscodesim:assessment-saved', { detail: entry }));
+      notifyScenarioShell(entry);
       setTimeout(() => window.EMSCodeSimScenarioFlow?.show?.(), 0);
       return { linked: true, entry };
     }
