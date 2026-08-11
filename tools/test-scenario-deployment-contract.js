@@ -76,14 +76,22 @@ assert(
 );
 assert(
   bootstrap.includes("loadOnce('data-horse-crush-ui-fix'"),
-  'Horse bootstrap must request the focused-assessment routing fix'
+  'Horse bootstrap must request the desktop horse assessment routing fix'
 );
 assert(
   horseUiFix.includes("event.target.closest?.('#assessmentTools [data-assessment-item]')"),
   'Horse assessment routing fix must intercept desktop assessment-item clicks'
 );
 assert(
-  horseUiFix.includes("horse.performExam(key)"),
+  horseUiFix.includes('openDesktopAbcFollowup(button, key)'),
+  'Horse assessment routing fix must route ABC item clicks to the visible desktop follow-up workspace'
+);
+assert(
+  horseUiFix.includes("window.EMSCodeSimScenarioSession.saveFinding(key, value, payload, CASE_ID)"),
+  'Horse desktop ABC findings must save through the shared scenario session'
+);
+assert(
+  horseUiFix.includes('horse.performExam(key)'),
   'Horse assessment routing fix must route focused assessment items to the horse exam engine'
 );
 
