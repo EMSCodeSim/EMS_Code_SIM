@@ -95,10 +95,65 @@
     return true;
   }
 
-  function startReasoningBoardRelocation() {
+  function showPromotedTreatmentPanel(title = 'Transport') {
+    if (!isDesktopHorse()) return false;
+    const sheet = document.getElementById('actionSheet');
+    const panel = document.getElementById('treatmentPanel');
+    if (!sheet || !panel) return false;
+
+    document.querySelectorAll('.vp-panel').forEach(item => { item.hidden = item !== panel; });
+    panel.hidden = false;
+    sheet.hidden = false;
+    const sheetTitle = document.getElementById('sheetTitle');
+    if (sheetTitle) sheetTitle.textContent = title;
+    document.querySelectorAll('.bottom-nav button').forEach(button => {
+      button.classList.toggle('active', button.dataset.panel === 'treatmentPanel');
+    });
+    document.body.classList.add('horse-tool-sheet-open');
+    document.body.style.overflow = '';
+    return true;
+  }
+
+  function promoteHiddenTransportForm() {
+    if (!isDesktopHorse()) return false;
+    const hiddenQuestion = document.getElementById('horseClinicalQuestionBox');
+    const form = hiddenQuestion?.querySelector('form.horse-transport-selection-form');
+    const tools = document.getElementById('treatmentTools');
+    if (!form || !tools) return false;
+    if (form.closest('#treatmentTools')) return showPromotedTreatmentPanel('Transport');
+
+    const detail = form.closest('#horseTreatmentDetail') || form.parentElement;
+    tools.className = 'treatment-list horse-treatment-category-workspace horse-promoted-transport-workspace';
+    tools.innerHTML = `
+      <div class="horse-treatment-workspace-head">
+        <div><small>TRANSPORT</small><strong>Transport decision</strong><span>Choose working impression, urgency, destination, and notification from the findings you gathered.</span></div>
+      </div>
+      <div id="horsePromotedTransportHost" class="horse-treatment-workspace-detail"></div>`;
+    const host = document.getElementById('horsePromotedTransportHost');
+    if (!host) return false;
+
+    if (detail && detail !== hiddenQuestion) host.appendChild(detail);
+    else host.appendChild(form);
+    hiddenQuestion?.classList.remove('active', 'treatment-active');
+    showPromotedTreatmentPanel('Transport');
+    return true;
+  }
+
+  function scheduleTransportPromotion() {
+    window.setTimeout(() => {
+      promoteHiddenTransportForm();
+      window.requestAnimationFrame(() => promoteHiddenTransportForm());
+    }, 0);
+  }
+
+  function startDesktopCompatibilityObservers() {
     if (!isDesktopHorse()) return;
     relocateReasoningBoard();
-    const observer = new MutationObserver(() => relocateReasoningBoard());
+    promoteHiddenTransportForm();
+    const observer = new MutationObserver(() => {
+      relocateReasoningBoard();
+      promoteHiddenTransportForm();
+    });
     observer.observe(document.body, { childList: true, subtree: true });
     window.addEventListener('pagehide', () => observer.disconnect(), { once: true });
   }
@@ -210,16 +265,23 @@
     if (result) markRecorded(button);
   }, true);
 
+  document.addEventListener('click', event => {
+    if (!isDesktopHorse()) return;
+    if (!event.target.closest?.('#handoffFromProgress, #transportScenarioQuick')) return;
+    scheduleTransportPromotion();
+  });
+
   window.EMSCodeSimHorseCrushUiFix = Object.freeze({
-    version: '1.3',
+    version: '1.4',
     abcKeys: Object.freeze(Object.keys(ABC)),
     focusedExams: Object.freeze([...FOCUSED_EXAMS]),
-    relocateReasoningBoard
+    relocateReasoningBoard,
+    promoteHiddenTransportForm
   });
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startReasoningBoardRelocation, { once: true });
+    document.addEventListener('DOMContentLoaded', startDesktopCompatibilityObservers, { once: true });
   } else {
-    startReasoningBoardRelocation();
+    startDesktopCompatibilityObservers();
   }
 })();
