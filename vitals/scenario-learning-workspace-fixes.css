@@ -1,0 +1,10 @@
+/* Finished-scenario desktop workspace fixes. Keep narrowly scoped to the reasoning upgrade. */
+@media (min-width: 961px) {
+  body.desktop-scenario-layout.scene-guide-active.reasoning-upgrade-active:has(.bottom-nav button[data-panel="findingsPanel"].active) .scene-guide-photo {
+    display: none !important;
+  }
+
+  body.desktop-scenario-layout.scene-guide-active.reasoning-upgrade-active:has(.bottom-nav button[data-panel="findingsPanel"].active) .action-sheet {
+    display: flex !important;
+  }
+}
