@@ -29,5 +29,5 @@ jobs:
         run: npm run build
       - name: Install Chromium for interaction tests
         run: npx playwright install --with-deps chromium
-      - name: Run focused assessment and mobile interaction tests
-        run: npx playwright test test/interaction/scenario-assessment-links.spec.js test/interaction/mobile-simulator.spec.js --max-failures=1
+      - name: Run desktop and mobile interaction tests
+        run: npx playwright test --max-failures=1
