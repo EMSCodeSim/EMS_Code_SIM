@@ -120,7 +120,9 @@ test('timed patient deterioration occurs without opening a panel', async ({ page
   await page.clock.runFor(5_100);
   const conditionEvents = await page.evaluate(() => window.EMSCodeSimPatientRecord.active().careLog.filter(event => event.type === 'condition_change'));
   expect(conditionEvents.length).toBeGreaterThan(0);
-  await expect(page.locator('#infoUpdateWindow')).toContainText(/condition|breathing|worsen/i);
+  const info = page.locator('#infoUpdateWindow');
+  await expect(info).toHaveClass(/info-alert/);
+  await expect(info).toContainText(/respiratory|fatigue|wheez|air movement|decreas/i);
 });
 
 test('main care path remains usable after partner completion', async ({ page }) => {
