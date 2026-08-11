@@ -40,7 +40,12 @@ function interpret(config={}){
   const choice=choices.find(item=>String(item.value)===selected)||{label:selected};
   const correct=typeof config.isAccurate==='function'?Boolean(config.isAccurate(selected)):String(selected)===String(config.correctValue??'');
   const value=typeof config.formatValue==='function'?config.formatValue(selected,choice):String(choice.savedValue||choice.label||selected);
-  result(config.key||'assessment',config.label||'Assessment',value,config.detail||value,{expectedFinding:String(config.expectedFinding??''),expectedChoice:String(config.correctValue??''),accurate:correct,correct,selectedChoice:selected,...(config.meta||{})});
+  const sharedMeta={expectedFinding:String(config.expectedFinding??''),expectedChoice:String(config.correctValue??''),accurate:correct,correct,selectedChoice:selected,...(config.meta||{})};
+  (config.alsoSave||[]).forEach(extra=>{
+   const extraValue=typeof extra.formatValue==='function'?extra.formatValue(selected,choice):String(extra.value??choice.savedValue??choice.label??selected);
+   result(extra.key,extra.label||extra.key,extraValue,extra.detail||extraValue,{...sharedMeta,expectedFinding:String(extra.expectedFinding??config.expectedFinding??'')});
+  });
+  result(config.key||'assessment',config.label||'Assessment',value,config.detail||value,sharedMeta);
  });
  return {box,choices}
 }
