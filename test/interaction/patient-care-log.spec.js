@@ -24,6 +24,25 @@ test('Record keeps a chronological log and filters vitals and treatments', async
   });
 
   await page.locator('[data-panel="findingsPanel"]').click();
+  const diagnostic = await page.evaluate(() => {
+    const describe = el => {
+      if (!el) return null;
+      const rect = el.getBoundingClientRect();
+      const style = getComputedStyle(el);
+      return { hidden:el.hidden, display:style.display, visibility:style.visibility, opacity:style.opacity, pointerEvents:style.pointerEvents, position:style.position, overflow:style.overflow, x:rect.x, y:rect.y, width:rect.width, height:rect.height, scrollTop:el.scrollTop, className:el.className };
+    };
+    return {
+      body: document.body.className,
+      sheet: describe(document.getElementById('actionSheet')),
+      assessment: describe(document.getElementById('assessmentPanel')),
+      findings: describe(document.getElementById('findingsPanel')),
+      recordButton: describe(document.querySelector('[data-panel="findingsPanel"]')),
+      activeButtons: [...document.querySelectorAll('.bottom-nav button.active')].map(button => button.dataset.panel),
+      title: document.getElementById('sheetTitle')?.textContent || ''
+    };
+  });
+  console.log('RECORD_PANEL_AFTER_CLICK', JSON.stringify(diagnostic));
+
   await expect(page.locator('#findingsPanel')).toBeVisible({ timeout: 3000 });
   await expect(page.locator('#findingList .care-log-item')).toHaveCount(7);
   await expect(page.locator('#findingList')).toContainText('SAMPLE history');
@@ -33,28 +52,6 @@ test('Record keeps a chronological log and filters vitals and treatments', async
   await expect(page.locator('#findingFilterSummary')).toContainText('7 useful all entries');
 
   const vitalsFilter = page.locator('[data-log-filter="vitals"]');
-  const filterDiagnostic = await page.evaluate(() => {
-    const ids = ['actionSheet', 'findingsPanel'];
-    const snapshot = Object.fromEntries(ids.map(id => {
-      const el = document.getElementById(id);
-      if (!el) return [id, null];
-      const rect = el.getBoundingClientRect();
-      const style = getComputedStyle(el);
-      return [id, { hidden:el.hidden, display:style.display, visibility:style.visibility, opacity:style.opacity, overflow:style.overflow, x:rect.x, y:rect.y, width:rect.width, height:rect.height, scrollTop:el.scrollTop }];
-    }));
-    const toolbar = document.querySelector('#findingsPanel .finding-toolbar');
-    const filters = document.querySelector('#findingsPanel .finding-filters');
-    const button = document.querySelector('[data-log-filter="vitals"]');
-    for (const [key, el] of [['toolbar', toolbar], ['filters', filters], ['button', button]]) {
-      if (!el) { snapshot[key] = null; continue; }
-      const rect = el.getBoundingClientRect();
-      const style = getComputedStyle(el);
-      snapshot[key] = { display:style.display, visibility:style.visibility, opacity:style.opacity, position:style.position, overflow:style.overflow, x:rect.x, y:rect.y, width:rect.width, height:rect.height };
-    }
-    snapshot.bodyClasses = document.body.className;
-    return snapshot;
-  });
-  console.log('RECORD_FILTER_DIAGNOSTIC', JSON.stringify(filterDiagnostic));
   await expect(vitalsFilter).toBeVisible({ timeout: 3000 });
   await vitalsFilter.click();
   await expect(page.locator('#findingList .care-log-item')).toHaveCount(2);
