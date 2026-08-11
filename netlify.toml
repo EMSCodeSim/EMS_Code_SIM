@@ -35,6 +35,16 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
+[[headers]]
+  for = "/vitals/horse-crush-scenario.css"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/vitals/mobile-simulator-upgrade.css"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
 [[redirects]]
   from = "/vitals/assessment-workspace.html"
   to = "/vitals/visual-patient.html"
