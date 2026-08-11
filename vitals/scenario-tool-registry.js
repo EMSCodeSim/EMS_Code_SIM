@@ -62,14 +62,26 @@
 
   window.EMSCodeSimToolRegistry = { assessmentTools, vitalTools, buildUrl, currentPageReturn, safeReturn };
 
-  // The patient simulator owns a single shared mini-sim overlay. Loading it from
-  // the registry keeps every registered vital and assessment tool on the same
-  // presentation and completion contract without duplicating shell logic.
-  if (/\/vitals\/visual-patient(?:\.html)?$/.test(location.pathname) && !document.querySelector('script[data-scenario-mini-sim-overlay]')) {
+  function loadPatientScenarioScript(src, dataKey, selector) {
+    if (!/\/vitals\/visual-patient(?:\.html)?$/.test(location.pathname) || document.querySelector(selector)) return;
     const script = document.createElement('script');
-    script.src = '/vitals/scenario-mini-sim-overlay.js?v=2026.08.11.1';
+    script.src = src;
     script.async = false;
-    script.dataset.scenarioMiniSimOverlay = '1';
+    script.dataset[dataKey] = '1';
     document.head.appendChild(script);
   }
+
+  // The patient simulator owns one shared mini-sim overlay and one desktop domain
+  // workspace. Keeping both behind the registry means every registered tool uses
+  // the same launch, save, return-to-patient, and right-field behavior.
+  loadPatientScenarioScript(
+    '/vitals/scenario-mini-sim-overlay.js?v=2026.08.11.1',
+    'scenarioMiniSimOverlay',
+    'script[data-scenario-mini-sim-overlay]'
+  );
+  loadPatientScenarioScript(
+    '/vitals/scenario-domain-workspace.js?v=2026.08.11.1',
+    'scenarioDomainWorkspace',
+    'script[data-scenario-domain-workspace]'
+  );
 })();
