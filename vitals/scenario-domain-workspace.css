@@ -1,4 +1,4 @@
-/* Desktop clinical domain workspace — UI 2.40
+/* Desktop clinical domain workspace — UI 2.41
    Patient left, domain controls center, selected clinical workspace right. */
 @media (min-width:980px){
   body.desktop-scenario-layout.clinical-domain-workspace-v2 .scenario-hero-layout{
@@ -6,6 +6,7 @@
     grid-template-rows:minmax(0,1fr)!important;
     gap:10px!important;
     align-items:stretch!important;
+    isolation:isolate!important;
   }
 
   body.desktop-scenario-layout.clinical-domain-workspace-v2 .patient-stage{
@@ -17,7 +18,7 @@
   body.desktop-scenario-layout.clinical-domain-workspace-v2 .bottom-nav.clinical-domain-rail{
     grid-column:2!important;
     grid-row:1!important;
-    position:static!important;
+    position:relative!important;
     inset:auto!important;
     transform:none!important;
     align-self:center!important;
@@ -32,10 +33,13 @@
     background:#0b1d2c!important;
     box-shadow:0 14px 34px rgba(0,0,0,.24)!important;
     backdrop-filter:none!important;
-    z-index:20!important;
+    z-index:500!important;
+    isolation:isolate!important;
   }
 
   body.desktop-scenario-layout.clinical-domain-workspace-v2 .bottom-nav.clinical-domain-rail button{
+    position:relative!important;
+    z-index:1!important;
     width:100%!important;
     min-height:68px!important;
     padding:8px 4px!important;
@@ -80,18 +84,31 @@
     grid-row:1!important;
     position:relative!important;
     height:100%!important;
+    min-width:0!important;
     min-height:0!important;
+    max-width:100%!important;
     max-height:none!important;
     overflow:hidden!important;
     padding:0!important;
     display:flex!important;
     flex-direction:column!important;
     gap:8px!important;
+    contain:layout paint!important;
+    isolation:isolate!important;
+    z-index:1!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .patient-control-column>*{
+    min-width:0!important;
+    max-width:100%!important;
   }
 
   body.desktop-scenario-layout.clinical-domain-workspace-v2 .info-update-window{
     order:1!important;
     flex:0 0 auto!important;
+    position:static!important;
+    inset:auto!important;
+    transform:none!important;
     width:100%!important;
     max-width:none!important;
     max-height:130px!important;
@@ -106,12 +123,35 @@
     margin:0!important;
   }
 
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .patient-entry-workflow,
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .patient-phase-controls,
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .scene-guide-photo{
+    position:static!important;
+    inset:auto!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+    transform:none!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+
   body.desktop-scenario-layout.clinical-domain-workspace-v2 .action-sheet{
     order:3!important;
     flex:1 1 0!important;
+    position:relative!important;
+    inset:auto!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+    transform:none!important;
     width:100%!important;
     height:auto!important;
+    min-width:0!important;
     min-height:0!important;
+    max-width:100%!important;
     max-height:none!important;
     display:flex!important;
     flex-direction:column!important;
@@ -140,7 +180,9 @@
   }
   body.desktop-scenario-layout.clinical-domain-workspace-v2 .vp-panel{
     flex:1 1 0!important;
+    min-width:0!important;
     min-height:0!important;
+    max-width:100%!important;
     overflow:auto!important;
     padding:8px 9px 12px!important;
     scrollbar-gutter:stable!important;
