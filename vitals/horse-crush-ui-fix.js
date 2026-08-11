@@ -83,7 +83,7 @@
     const item = ABC[key];
     if (!item) return;
     window.EMSCodeSimPatientInfo?.showSceneObservation?.({
-      id: `horse-abc-fix-${key}-${Date.now()}`,
+      id: `horse-abc-desktop-${key}-${Date.now()}`,
       type: 'NEW ASSESSMENT INFORMATION',
       title: `${item.label} assessment`,
       text: item.observation,
@@ -93,20 +93,9 @@
     });
   }
 
-  function resetQuestionBox() {
-    const box = document.getElementById('horseClinicalQuestionBox');
-    if (!box) return;
-    box.classList.remove('active', 'history-active', 'treatment-active');
-    box.innerHTML = `
-      <div class="horse-question-placeholder">
-        <small>FOLLOW-UP QUESTION</small>
-        <strong>Select Airway, Breathing, or Circulation.</strong>
-      </div>`;
-  }
-
   function saveAbcFinding(key, value, normality) {
     const item = ABC[key];
-    if (!item || !value) return false;
+    if (!item || !value) return null;
     const payload = {
       source: 'horse-rapid-abc',
       label: item.label,
@@ -117,29 +106,22 @@
       reviewAtDebrief: true,
       suppressInfoUpdate: true
     };
-    try {
-      if (window.EMSCodeSimScenarioSession?.saveFinding) {
-        window.EMSCodeSimScenarioSession.saveFinding(key, value, payload, CASE_ID);
-      } else {
-        window.EMSCodeSimPatientRecord?.setFinding?.(key, value, payload);
-      }
-      resetQuestionBox();
-      renderCurrentAssessmentIfNeeded(true);
-      return true;
-    } catch (error) {
-      console.error('[EMSCodeSim] Unable to save horse ABC finding.', error);
-      return false;
+    if (window.EMSCodeSimScenarioSession?.saveFinding) {
+      return window.EMSCodeSimScenarioSession.saveFinding(key, value, payload, CASE_ID);
     }
+    window.EMSCodeSimPatientRecord?.setFinding?.(key, value, payload);
+    return window.EMSCodeSimPatientRecord?.getFinding?.(key) || null;
   }
 
-  function openAbcFollowup(key) {
+  function openDesktopAbcFollowup(button, key) {
     const item = ABC[key];
-    const box = document.getElementById('horseClinicalQuestionBox');
-    if (!item || !box) return;
+    const inline = document.getElementById('horseAssessmentInlineQuestion');
+    if (!item || !inline) return false;
+
     const current = finding(key);
-    box.classList.remove('history-active', 'treatment-active');
-    box.classList.add('active');
-    box.innerHTML = `
+    showObservation(key);
+    inline.hidden = false;
+    inline.innerHTML = `
       <div class="horse-question-head">
         <div><small>FOLLOW-UP QUESTION</small><strong>${escapeHtml(item.label)}</strong></div>
       </div>
@@ -152,80 +134,47 @@
         <button type="button" class="horse-question-save" disabled>Record</button>
       </div>`;
 
-    const select = box.querySelector('select');
-    const save = box.querySelector('.horse-question-save');
+    const select = inline.querySelector('select');
+    const save = inline.querySelector('.horse-question-save');
     const sync = () => { if (save) save.disabled = !select?.value; };
     select?.addEventListener('change', sync);
     sync();
     save?.addEventListener('click', () => {
       if (!select?.value) return;
-      const normality = select.selectedOptions[0]?.dataset?.normality || '';
-      saveAbcFinding(key, select.value, normality);
+      try {
+        const normality = select.selectedOptions[0]?.dataset?.normality || '';
+        const saved = saveAbcFinding(key, select.value, normality);
+        if (!saved) return;
+        markRecorded(button);
+        inline.hidden = true;
+        inline.innerHTML = '';
+      } catch (error) {
+        console.error('[EMSCodeSim] Unable to save horse ABC finding.', error);
+      }
     });
     window.requestAnimationFrame(() => select?.focus());
+    return true;
   }
 
-  function openAssessmentPanel() {
-    document.querySelector('.bottom-nav button[data-panel="assessmentPanel"]')?.click();
-  }
-
-  function renderCurrentAssessmentIfNeeded(force = false) {
-    if (!isHorseScenario()) return;
-    const body = document.getElementById('horseCurrentAssessmentBody');
-    const title = document.getElementById('horseCurrentAssessmentTitle');
-    const choose = document.getElementById('horseChooseAssessment');
-    const collapse = document.getElementById('horseCollapseAssessment');
-    if (!body || !title) return;
-
-    // If the core runtime has already initialized this workspace, leave it in
-    // control. This shim only fills the desktop early-return gap.
-    if (!force && body.querySelector('.horse-current-exam-button')) return;
-
-    title.textContent = 'ABC Assessment';
-    body.hidden = false;
-    body.innerHTML = `
-      <p class="horse-current-assessment-help">Rapidly confirm immediate life threats.</p>
-      <div class="horse-current-exam-grid"></div>`;
-    const grid = body.querySelector('.horse-current-exam-grid');
-
-    Object.entries(ABC).forEach(([key, item]) => {
-      const current = finding(key);
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = `horse-current-exam-button${current ? ' complete' : ''}${current?.normality === 'not-normal' || current?.status === 'abnormal' ? ' abnormal' : ''}`;
-      button.dataset.horseAbcKey = key;
-      button.innerHTML = `<span>${current ? '✓' : '○'}</span><div><strong>${escapeHtml(item.label)}</strong><small>${current ? 'Recorded — click to reassess/review' : 'Perform exam'}</small></div>`;
-      button.addEventListener('click', () => {
-        showObservation(key);
-        openAbcFollowup(key);
-      });
-      grid.appendChild(button);
-    });
-
-    if (choose) choose.onclick = openAssessmentPanel;
-    if (collapse) {
-      collapse.textContent = '⌃';
-      collapse.setAttribute('aria-expanded', 'true');
-      collapse.onclick = () => {
-        const collapsed = !body.hidden;
-        body.hidden = collapsed;
-        collapse.textContent = collapsed ? '⌄' : '⌃';
-        collapse.setAttribute('aria-expanded', String(!collapsed));
-      };
-    }
-  }
-
-  // The desktop assessment-category workspace historically passed item ids such
-  // as "pelvis_hip" into selectHorseCurrentAssessment(), which only accepts
-  // abc/head_to_toe/focused_leg. The call then silently fell back to ABC. Handle
-  // the actual horse focused-exam items before that legacy click handler runs.
+  // The desktop horse assessment menu passes concrete item ids such as
+  // "airway" and "pelvis_hip" into a fallback that only understands the group
+  // ids abc/head_to_toe/focused_leg. Intercept those item clicks and route them
+  // to the actual ABC or focused-exam engine before the legacy fallback runs.
   document.addEventListener('click', event => {
     if (!isHorseScenario()) return;
     const button = event.target.closest?.('#assessmentTools [data-assessment-item]');
     if (!button) return;
     const key = String(button.dataset.assessmentItem || '');
-    if (!FOCUSED_EXAMS.has(key)) return;
 
+    if (ABC[key]) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation?.();
+      openDesktopAbcFollowup(button, key);
+      return;
+    }
+
+    if (!FOCUSED_EXAMS.has(key)) return;
     const horse = window.EMSCodeSimHorseCrush;
     if (!horse?.performExam) return;
 
@@ -237,19 +186,9 @@
     if (result) markRecorded(button);
   }, true);
 
-  function init() {
-    if (!isHorseScenario()) return;
-    renderCurrentAssessmentIfNeeded();
-    window.addEventListener('emscodesim:scenario-finding-saved', () => renderCurrentAssessmentIfNeeded(true));
-    window.addEventListener('pageshow', () => renderCurrentAssessmentIfNeeded());
-  }
-
   window.EMSCodeSimHorseCrushUiFix = Object.freeze({
-    version: '1.1',
-    focusedExams: Object.freeze([...FOCUSED_EXAMS]),
-    renderCurrentAssessment: renderCurrentAssessmentIfNeeded
+    version: '1.2',
+    abcKeys: Object.freeze(Object.keys(ABC)),
+    focusedExams: Object.freeze([...FOCUSED_EXAMS])
   });
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
-  else window.setTimeout(init, 0);
 })();
