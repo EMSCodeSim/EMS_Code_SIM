@@ -1,3 +1,4 @@
+@import url('/vitals/mobile-simulator-upgrade.css?v=3000');
 .horse-arrival-card{margin:14px 16px 92px;padding:16px;border:1px solid #cbd5e1;border-radius:18px;background:#fff;box-shadow:0 10px 30px rgba(15,23,42,.08)}
 .horse-arrival-card.complete{border-color:#86efac;background:#f0fdf4}
 .horse-arrival-head,.horse-arrival-complete-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
