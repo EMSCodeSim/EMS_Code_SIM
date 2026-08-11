@@ -27,6 +27,43 @@ test('picture-first launcher opens a patient and starts Learning Mode', async ({
   await assertNoPageErrors();
 });
 
+test('desktop patient image remains rendered during the horse scenario workspace', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium', 'Desktop-only regression');
+  const assertNoPageErrors = watchPageErrors(page);
+  await openScenario(page, 'horse_crush', 'learning');
+
+  const patientImage = page.locator('#patientImage');
+  await expect(patientImage).toBeVisible();
+  await expect.poll(() => patientImage.evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
+
+  const rendered = await patientImage.evaluate(image => {
+    const style = getComputedStyle(image);
+    const rect = image.getBoundingClientRect();
+    return {
+      display: style.display,
+      visibility: style.visibility,
+      opacity: Number(style.opacity),
+      width: rect.width,
+      height: rect.height
+    };
+  });
+  expect(rendered.display).not.toBe('none');
+  expect(rendered.visibility).toBe('visible');
+  expect(rendered.opacity).toBeGreaterThan(0);
+  expect(rendered.width).toBeGreaterThan(100);
+  expect(rendered.height).toBeGreaterThan(100);
+
+  const recordButton = page.locator('.bottom-nav button[data-panel="findingsPanel"]');
+  if (await recordButton.isVisible()) {
+    await recordButton.click();
+    await expect(page.locator('#findingsPanel')).toBeVisible();
+  }
+
+  await expect(patientImage).toBeVisible();
+  await expect.poll(() => patientImage.evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
+  await assertNoPageErrors();
+});
+
 test('Learning Mode unlocks a clinical decision only after the needed evidence is discovered', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
   await openScenario(page, 'asthma', 'learning');
