@@ -56,6 +56,10 @@
     return activeCase() === CASE_ID;
   }
 
+  function isDesktopHorse() {
+    return isHorseScenario() && window.matchMedia?.('(min-width: 961px)')?.matches === true;
+  }
+
   function record() {
     return window.EMSCodeSimScenarioSession?.active?.(CASE_ID)
       || window.EMSCodeSimPatientRecord?.active?.()
@@ -77,6 +81,26 @@
     button.classList.add('used');
     const marker = button.querySelector('span');
     if (marker) marker.textContent = '✓';
+  }
+
+  function relocateReasoningBoard() {
+    if (!isDesktopHorse()) return false;
+    const board = document.getElementById('clinicalReasoningBoard');
+    const recordPanel = document.getElementById('findingsPanel');
+    if (!board || !recordPanel) return false;
+    if (board.parentNode !== recordPanel) {
+      board.classList.add('horse-reasoning-in-record');
+      recordPanel.prepend(board);
+    }
+    return true;
+  }
+
+  function startReasoningBoardRelocation() {
+    if (!isDesktopHorse()) return;
+    relocateReasoningBoard();
+    const observer = new MutationObserver(() => relocateReasoningBoard());
+    observer.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener('pagehide', () => observer.disconnect(), { once: true });
   }
 
   function showObservation(key) {
@@ -187,8 +211,15 @@
   }, true);
 
   window.EMSCodeSimHorseCrushUiFix = Object.freeze({
-    version: '1.2',
+    version: '1.3',
     abcKeys: Object.freeze(Object.keys(ABC)),
-    focusedExams: Object.freeze([...FOCUSED_EXAMS])
+    focusedExams: Object.freeze([...FOCUSED_EXAMS]),
+    relocateReasoningBoard
   });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startReasoningBoardRelocation, { once: true });
+  } else {
+    startReasoningBoardRelocation();
+  }
 })();
