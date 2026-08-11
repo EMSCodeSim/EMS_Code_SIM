@@ -94,3 +94,41 @@
   .horse-movement-note textarea{min-height:82px;padding:8px}
   .horse-movement-feedback{padding:8px;font-size:.76rem}
 }
+
+/* Desktop clinical-workspace containment — UI 1.13.
+   This stylesheet is linked synchronously in visual-patient.html, so these rules
+   are active before the horse scenario becomes interactive. */
+@media(min-width:961px){
+  body.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet:not([hidden]){
+    display:grid!important;
+    grid-template-rows:auto auto auto minmax(0,1fr)!important;
+    align-content:stretch!important;
+    min-height:0!important;
+    height:100%!important;
+    max-height:none!important;
+    overflow:hidden!important;
+    padding:6px 8px 8px!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #actionSheet .sheet-handle{margin:0 auto 4px!important}
+  body.horse-current-emt-call.desktop-scenario-layout #actionSheet .sheet-header{
+    position:static!important;top:auto!important;min-height:0!important;padding:2px 0 6px!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #actionSheet .sheet-patient-context{
+    position:static!important;top:auto!important;min-height:0!important;margin:0 0 6px!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #actionSheet .vp-panel:not([hidden]){
+    grid-row:4!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+    padding-bottom:10px!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #assessmentTools,
+  body.horse-current-emt-call.desktop-scenario-layout #historyCategoryList,
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools{
+    min-height:0!important;max-height:100%!important;
+  }
+}
