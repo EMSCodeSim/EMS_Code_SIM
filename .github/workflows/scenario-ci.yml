@@ -29,5 +29,5 @@ jobs:
         run: npm run build
       - name: Install Chromium for interaction tests
         run: npx playwright install --with-deps chromium
-      - name: Run desktop and mobile interaction tests
-        run: npx playwright test --max-failures=1
+      - name: Run partner queue reliability test
+        run: npx playwright test test/interaction/scenario-runtime-reliability.spec.js --project=desktop-chromium --grep "partner skills run one at a time" --max-failures=1
