@@ -20,6 +20,20 @@
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
 
+# Scenario code is deliberately revalidated on every navigation. The simulator
+# is split across several cooperating files, so serving a stale definition or
+# runtime beside a newer patient page can break only one scenario while the
+# rest of the site still appears healthy.
+[[headers]]
+  for = "/vitals/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/vitals/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
 [[headers]]
   for = "/vitals/scenario-learning-upgrade.js"
   [headers.values]
