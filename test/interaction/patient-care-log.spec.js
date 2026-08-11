@@ -24,25 +24,6 @@ test('Record keeps a chronological log and filters vitals and treatments', async
   });
 
   await page.locator('[data-panel="findingsPanel"]').click();
-  const diagnostic = await page.evaluate(() => {
-    const describe = el => {
-      if (!el) return null;
-      const rect = el.getBoundingClientRect();
-      const style = getComputedStyle(el);
-      return { hidden:el.hidden, display:style.display, visibility:style.visibility, opacity:style.opacity, pointerEvents:style.pointerEvents, position:style.position, overflow:style.overflow, x:rect.x, y:rect.y, width:rect.width, height:rect.height, scrollTop:el.scrollTop, className:el.className };
-    };
-    return {
-      body: document.body.className,
-      sheet: describe(document.getElementById('actionSheet')),
-      assessment: describe(document.getElementById('assessmentPanel')),
-      findings: describe(document.getElementById('findingsPanel')),
-      recordButton: describe(document.querySelector('[data-panel="findingsPanel"]')),
-      activeButtons: [...document.querySelectorAll('.bottom-nav button.active')].map(button => button.dataset.panel),
-      title: document.getElementById('sheetTitle')?.textContent || ''
-    };
-  });
-  console.log('RECORD_PANEL_AFTER_CLICK', JSON.stringify(diagnostic));
-
   await expect(page.locator('#findingsPanel')).toBeVisible({ timeout: 3000 });
   await expect(page.locator('#findingList .care-log-item')).toHaveCount(7);
   await expect(page.locator('#findingList')).toContainText('SAMPLE history');
@@ -61,7 +42,7 @@ test('Record keeps a chronological log and filters vitals and treatments', async
 
   await page.locator('[data-log-filter="treatments"]').click();
   await expect(page.locator('#findingList .care-log-item')).toHaveCount(2);
-  await expect(page.locator('#findingFilterSummary')).toContainText('2 useful treatments entries');
+  await expect(page.locator('#findingFilterSummary')).toContainText('2 useful treatment entries');
   await expect(page.locator('#findingList')).toContainText('Treatment');
   await expect(page.locator('#findingList')).toContainText('Reassessment');
   await assertNoPageErrors();
