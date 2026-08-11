@@ -1,4 +1,4 @@
-/* Desktop clinical domain workspace — UI 2.41
+/* Desktop clinical domain workspace — UI 2.42
    Patient left, domain controls center, selected clinical workspace right. */
 @media (min-width:980px){
   body.desktop-scenario-layout.clinical-domain-workspace-v2 .scenario-hero-layout{
@@ -213,19 +213,28 @@
     transform:translateY(-1px)!important;
   }
   body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .vital-row-actions{
-    display:block!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    flex-wrap:wrap!important;
+    gap:6px!important;
   }
   body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .vital-row-actions a{
     display:grid!important;
-    min-width:74px!important;
+    min-width:70px!important;
     min-height:38px!important;
     place-items:center!important;
   }
   body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .vital-row-actions .partner-action{
-    display:none!important;
+    display:inline-grid!important;
+    min-width:64px!important;
+    min-height:38px!important;
+    place-items:center!important;
   }
   body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .assignment-progress{
-    display:none!important;
+    display:block!important;
+    grid-column:1/-1!important;
+    width:100%!important;
   }
   body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .vital-latest-result{
     color:#fff!important;
