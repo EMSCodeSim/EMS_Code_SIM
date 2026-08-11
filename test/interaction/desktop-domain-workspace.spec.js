@@ -30,8 +30,14 @@ test('desktop center controls populate one right clinical workspace and vitals r
     return Boolean(railNode && layout && controls && railNode.parentElement === layout && railNode.nextElementSibling === controls);
   })).toBe(true);
 
+  // The permanent desktop domains are Assessment, Vitals, History, and Treatment.
+  // Record/Log remains internal for grading and handoff but does not consume a rail button.
   await expect(rail.locator('button[data-panel]:visible')).toHaveCount(4);
-  await expect(rail.locator('button[data-panel="historyPanel"]')).toBeHidden();
+  await expect(rail.locator('button[data-panel="assessmentPanel"]')).toBeVisible();
+  await expect(rail.locator('button[data-panel="vitalsPanel"]')).toBeVisible();
+  await expect(rail.locator('button[data-panel="historyPanel"]')).toBeVisible();
+  await expect(rail.locator('button[data-panel="treatmentPanel"]')).toBeVisible();
+  await expect(rail.locator('button[data-panel="findingsPanel"]')).toBeHidden();
   await expect(page.locator('#desktopPatientMonitor')).toBeHidden();
 
   // Vitals: selecting the center control populates the right field with every measurable vital.
@@ -62,24 +68,20 @@ test('desktop center controls populate one right clinical workspace and vitals r
   // The entered result is retained in the same right-side vital row.
   await expect.poll(async () => (await spo2Row.locator('.vital-latest-result').textContent()) || '').toContain(displayedSpo2);
 
-  // Assessment populates the same right field. History is launched from here,
-  // eliminating a duplicate permanent History control from the center rail.
+  // Assessment populates the same right field.
   await rail.locator('button[data-panel="assessmentPanel"]').click();
   await expect(page.locator('#assessmentPanel')).toBeVisible();
   await expect(page.locator('#assessmentTools')).toBeVisible();
-  const historyLauncher = page.locator('#assessmentPanel .assessment-history-launcher');
-  await expect(historyLauncher).toBeVisible();
-  await historyLauncher.click();
+
+  // History is its own permanent center control and populates the same right field.
+  await rail.locator('button[data-panel="historyPanel"]').click();
   await expect(page.locator('#historyPanel')).toBeVisible();
   await expect(page.locator('#historyCategoryList')).toBeVisible();
 
-  // Treatment and Record reuse the same right field instead of opening separate desktop surfaces.
+  // Treatment reuses the same right field.
   await rail.locator('button[data-panel="treatmentPanel"]').click();
   await expect(page.locator('#treatmentPanel')).toBeVisible();
   await expect(page.locator('#treatmentTools')).toBeVisible();
-
-  await rail.locator('button[data-panel="findingsPanel"]').click();
-  await expect(page.locator('#findingsPanel')).toBeVisible();
 
   const rightField = page.locator('.patient-control-column');
   const rightBox = await rightField.boundingBox();
