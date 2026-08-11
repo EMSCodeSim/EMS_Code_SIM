@@ -23,7 +23,9 @@ test('Record keeps a chronological log and filters vitals and treatments', async
     session.addReassessment({ response: 'Breathing improved', nextAction: 'Continue monitoring', time: '2026-08-01T18:06:00-06:00', source: 'test' });
   });
 
-  await page.locator('[data-panel="findingsPanel"]').click();
+  // Record/Log is still a functional internal data surface for grading and
+  // handoff, but its permanent desktop rail button is intentionally hidden.
+  await page.evaluate(() => document.querySelector('[data-panel="findingsPanel"]')?.click());
   await expect(page.locator('#findingsPanel')).toBeVisible({ timeout: 3000 });
   await expect(page.locator('#findingList .care-log-item')).toHaveCount(7);
   await expect(page.locator('#findingList')).toContainText('SAMPLE history');
