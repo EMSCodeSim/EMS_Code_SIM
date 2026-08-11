@@ -100,6 +100,14 @@ assert(
   'The learning cue must participate in normal horse desktop layout instead of overlaying clinical controls'
 );
 assert(
+  bootstrap.includes('installScenarioTransitionGuard()') && bootstrap.includes('clearScenarioControlOverlay'),
+  'Horse transport and handoff transitions must clear the scenario control modal/backdrop'
+);
+assert(
+  bootstrap.includes("#handoffFromProgress, #transportScenarioQuick"),
+  'Horse scenario transition guard must cover both progress handoff and quick transport controls'
+);
+assert(
   horseScenarioCss.includes('grid-template-rows:auto auto auto minmax(0,1fr)'),
   'Horse action sheet must reserve a bounded row for the active clinical panel'
 );
@@ -122,6 +130,18 @@ assert(
 assert(
   horseUiFix.includes('horse.performExam(key)'),
   'Horse assessment routing fix must route focused assessment items to the horse exam engine'
+);
+assert(
+  horseUiFix.includes('promoteHiddenTransportForm') && horseUiFix.includes('form.horse-transport-selection-form'),
+  'Horse desktop transport form must be promoted out of the retired hidden question box'
+);
+assert(
+  horseUiFix.includes("document.getElementById('treatmentTools')") && horseUiFix.includes("document.getElementById('treatmentPanel')"),
+  'Horse transport promotion must target the visible Treatment workspace'
+);
+assert(
+  horseUiFix.includes('closeScenarioControlOverlay') && horseUiFix.includes("document.getElementById('scenarioControlDialog')"),
+  'Horse transport promotion must close stale scenario controls before showing the Treatment workspace'
 );
 
 console.log('Scenario deployment contract OK');
