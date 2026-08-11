@@ -5,6 +5,36 @@
 [functions]
   directory = "netlify-functions-dist"
 
+[[headers]]
+  for = "/vitals/visual-patient.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/vitals/scenario-launcher.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/vitals/scenario-learning-upgrade.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/vitals/horse-crush-bootstrap.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/vitals/scenario-launcher.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/vitals/scenario-learning-upgrade.css"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
 [[redirects]]
   from = "/vitals/assessment-workspace.html"
   to = "/vitals/visual-patient.html"
@@ -14,6 +44,7 @@
   from = "/styles/assessment-workspace.html"
   to = "/vitals/visual-patient.html"
   status = 301
+
 [[redirects]]
   from = "/visual-patient.html"
   to = "/vitals/visual-patient.html"
@@ -25,7 +56,6 @@
   to = "/vitals/visual-patient.html"
   status = 301
   force = true
-
 
 [[redirects]]
   from = "/scenario-launcher.html"
