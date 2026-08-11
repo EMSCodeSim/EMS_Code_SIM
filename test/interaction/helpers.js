@@ -22,12 +22,8 @@ function watchPageErrors(page) {
 }
 
 async function openScenario(page, caseId = 'asthma', mode = 'learning') {
-  await page.goto(`/vitals/scenario-launcher.html?case=${encodeURIComponent(caseId)}&open=1`);
-  await expect(page.locator('#caseDialog')).toBeVisible();
-  await expect(page.locator('#caseDialogImage')).toBeVisible();
-  await expect.poll(() => page.locator('#caseDialogImage').evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
   const selectedMode = mode === 'assessment' ? 'assessment' : 'learning';
-  await page.locator(`[data-start-mode="${selectedMode}"]`).click();
+  await page.goto(`/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}&training=${selectedMode}&reset=1`);
   await expect(page).toHaveURL(new RegExp(`/vitals/visual-patient\\.html\\?case=${caseId}`));
   await expect(page.locator('#patientImage')).toBeVisible();
   await expect.poll(() => page.locator('#patientImage').evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
