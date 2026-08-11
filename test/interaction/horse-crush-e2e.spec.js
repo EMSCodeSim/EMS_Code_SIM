@@ -14,13 +14,73 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
   await openScenario(page, 'horse_crush', 'learning');
   await expect.poll(() => page.evaluate(() => window.EMSCodeSimScenarioBootstrapStatus?.ok)).toBe(true);
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimHorseCrushUiFix))).toBe(true);
+  await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimHorsePhotoLayerFix))).toBe(true);
+  await expect.poll(() => page.evaluate(() => document.getElementById('embeddedSimWorkspace')?.parentElement?.classList.contains('patient-control-column') === true)).toBe(true);
+
+  async function expectHorsePhoto(pathname) {
+    await expect.poll(() => page.evaluate(expectedPath => {
+      const image = document.getElementById('patientImage');
+      if (!image) return false;
+      let actualPath = '';
+      try { actualPath = new URL(image.src, location.href).pathname; } catch { return false; }
+      const style = getComputedStyle(image);
+      const rect = image.getBoundingClientRect();
+      return actualPath === expectedPath
+        && image.complete
+        && image.naturalWidth > 0
+        && image.naturalHeight > 0
+        && !image.hidden
+        && style.display !== 'none'
+        && style.visibility !== 'hidden'
+        && Number(style.opacity || 1) > 0
+        && rect.width > 0
+        && rect.height > 0;
+    }, pathname)).toBe(true);
+  }
+
+  async function expectSimulatorClearOfPatientPhoto() {
+    const layout = await page.evaluate(() => {
+      const workspace = document.getElementById('embeddedSimWorkspace');
+      const image = document.getElementById('patientImage');
+      if (!workspace || !image) return { ok:false, reason:'missing workspace or image' };
+      const wasHidden = workspace.hidden;
+      const hadBodyClass = document.body.classList.contains('sim-workspace-open');
+      workspace.hidden = false;
+      document.body.classList.add('sim-workspace-open');
+      const imageRect = image.getBoundingClientRect();
+      const simRect = workspace.getBoundingClientRect();
+      const overlap = !(
+        simRect.right <= imageRect.left
+        || simRect.left >= imageRect.right
+        || simRect.bottom <= imageRect.top
+        || simRect.top >= imageRect.bottom
+      );
+      const result = {
+        ok:true,
+        overlap,
+        parentClass: workspace.parentElement?.className || '',
+        imageRect:{ x:imageRect.x, y:imageRect.y, width:imageRect.width, height:imageRect.height },
+        simRect:{ x:simRect.x, y:simRect.y, width:simRect.width, height:simRect.height }
+      };
+      workspace.hidden = wasHidden;
+      if (!hadBodyClass) document.body.classList.remove('sim-workspace-open');
+      return result;
+    });
+    expect(layout.ok, JSON.stringify(layout)).toBe(true);
+    expect(layout.parentClass, JSON.stringify(layout)).toContain('patient-control-column');
+    expect(layout.overlap, `Assessment simulator is covering the patient photo: ${JSON.stringify(layout)}`).toBe(false);
+  }
+
+  await expectHorsePhoto('/vitals/assets/horse-crush/map-arrival.webp');
+  await expectSimulatorClearOfPatientPhoto();
 
   // Arrival / parking decision.
   const parking = page.locator('[data-horse-parking="south_barn_access"]');
   await expect(parking).toBeVisible();
   await parking.click();
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientRecord.active()?.findings?.arrival_parking))).toBe(true);
-  await expect(page.locator('#patientImage')).toBeVisible();
+  await expectHorsePhoto('/vitals/assets/horse-crush/patient-initial.webp');
+  await expectSimulatorClearOfPatientPhoto();
 
   // Visible desktop ABC workflow.
   await page.locator('.bottom-nav button[data-panel="assessmentPanel"]').click();
@@ -49,13 +109,17 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
   await page.locator('[data-assessment-category="abdomen_pelvis"]').click();
   await page.locator('[data-assessment-item="pelvis_hip"]').click();
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientRecord.active()?.findings?.pelvis_hip))).toBe(true);
+  await expectHorsePhoto('/vitals/assets/horse-crush/exam-pelvis.webp');
 
   await page.locator('#horseAssessmentBack').click();
   await page.locator('[data-assessment-category="extremities"]').click();
   await page.locator('[data-assessment-item="left_leg"]').click();
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientRecord.active()?.findings?.left_leg))).toBe(true);
+  await expectHorsePhoto('/vitals/assets/horse-crush/exam-leg.webp');
   await page.locator('[data-assessment-item="distal_csm"]').click();
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientRecord.active()?.findings?.distal_csm))).toBe(true);
+  await expectHorsePhoto('/vitals/assets/horse-crush/exam-leg.webp');
+  await expectSimulatorClearOfPatientPhoto();
 
   // Stabilization treatment.
   await page.locator('.bottom-nav button[data-panel="treatmentPanel"]').click();
