@@ -24,7 +24,56 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
 
   await page.locator('.bottom-nav button[data-panel="assessmentPanel"]').click();
   await expect(page.locator('#assessmentPanel')).toBeVisible();
-  await page.locator('[data-assessment-category="abc"]').click();
+
+  const abcCategory = page.locator('[data-assessment-category="abc"]');
+  await expect(abcCategory).toBeVisible();
+  const layout = await abcCategory.evaluate(target => {
+    const rect = node => {
+      if (!node) return null;
+      const box = node.getBoundingClientRect();
+      return { x:box.x, y:box.y, width:box.width, height:box.height, top:box.top, right:box.right, bottom:box.bottom, left:box.left };
+    };
+    const targetRect = target.getBoundingClientRect();
+    const x = targetRect.left + targetRect.width / 2;
+    const y = targetRect.top + targetRect.height / 2;
+    const top = document.elementFromPoint(x, y);
+    const describe = node => node ? {
+      tag:node.tagName,
+      id:node.id || '',
+      className:typeof node.className === 'string' ? node.className : '',
+      text:String(node.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 120)
+    } : null;
+    return {
+      viewport:{ width:innerWidth, height:innerHeight },
+      point:{ x, y },
+      target:describe(target),
+      targetRect:rect(target),
+      top:describe(top),
+      topRect:rect(top),
+      topInsideTarget:Boolean(top && (top === target || target.contains(top))),
+      actionSheetRect:rect(document.getElementById('actionSheet')),
+      assessmentPanelRect:rect(document.getElementById('assessmentPanel')),
+      assessmentToolsRect:rect(document.getElementById('assessmentTools')),
+      infoRect:rect(document.getElementById('infoUpdateWindow')),
+      navRect:rect(document.querySelector('.bottom-nav')),
+      controlColumnRect:rect(document.querySelector('.patient-control-column')),
+      actionSheetStyle:{
+        display:getComputedStyle(document.getElementById('actionSheet')).display,
+        gridTemplateRows:getComputedStyle(document.getElementById('actionSheet')).gridTemplateRows,
+        overflow:getComputedStyle(document.getElementById('actionSheet')).overflow,
+        position:getComputedStyle(document.getElementById('actionSheet')).position
+      },
+      panelStyle:{
+        display:getComputedStyle(document.getElementById('assessmentPanel')).display,
+        height:getComputedStyle(document.getElementById('assessmentPanel')).height,
+        overflow:getComputedStyle(document.getElementById('assessmentPanel')).overflow,
+        gridRow:getComputedStyle(document.getElementById('assessmentPanel')).gridRow
+      }
+    };
+  });
+  console.log(`HORSE_LAYOUT_DIAGNOSTIC ${JSON.stringify(layout)}`);
+  expect(layout.topInsideTarget, `ABC category center is covered: ${JSON.stringify(layout)}`).toBe(true);
+  await abcCategory.click();
 
   async function recordAbc(key) {
     const button = page.locator(`[data-assessment-item="${key}"]`);
