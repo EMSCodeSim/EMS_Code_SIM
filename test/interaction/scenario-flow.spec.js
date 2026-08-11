@@ -4,120 +4,87 @@ const { test, expect } = require('@playwright/test');
 const { clearSiteStorage, watchPageErrors, openScenario } = require('./helpers');
 
 test.beforeEach(async ({ page }) => {
-  await page.clock.install({ time: new Date('2026-08-01T10:00:00-06:00') });
   await clearSiteStorage(page);
 });
 
-test('visual patient keeps scene size-up manual and guides it without blocking a missed decision', async ({ page }) => {
+test('picture-first launcher opens a patient and starts Learning Mode', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
-  await page.goto('/vitals/visual-patient.html?case=asthma&mode=scenario&resume=1');
+  await page.goto('/vitals/scenario-launcher.html');
+
+  const asthmaCard = page.locator('[data-case="asthma"]');
+  await expect(asthmaCard).toBeVisible();
+  await asthmaCard.click();
+
+  await expect(page.locator('#caseDialog')).toBeVisible();
+  await expect(page.locator('#caseDialogTitle')).toHaveText('Respiratory Distress');
+  await expect(page.locator('#modeSelectionPanel')).toBeVisible();
+  await expect.poll(() => page.locator('#caseDialogImage').evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
+
+  await page.locator('[data-start-mode="learning"]').click();
+  await expect(page).toHaveURL(/visual-patient\.html\?case=asthma&training=learning/);
   await expect(page.locator('#patientImage')).toBeVisible();
-  await expect(page.locator('#sceneGuide')).toBeHidden();
-  await page.locator('[data-panel="assessmentPanel"]').click();
-  await expect(page.locator('#assessmentTools .scene-size-card')).toBeVisible();
-  await expect(page.locator('#assessmentTools .sequence-card').nth(0)).toContainText('Scene size-up');
-  await expect(page.locator('#assessmentTools .sequence-card').nth(1)).toContainText('Airway');
-  await expect(page.locator('#assessmentTools .sequence-card').nth(2)).toContainText('Breathing');
-  await expect(page.locator('#assessmentTools .sequence-card').nth(3)).toContainText('Circulation');
-  await page.locator('.scene-guide-card-button').click();
-  await expect(page.locator('#sceneGuide')).toBeVisible();
-  await expect(page.locator('#sceneGuideQuestion')).toContainText('What PPE should you use?');
-
-  for (let index = 0; index < 9; index += 1) {
-    await page.locator('input[name="sceneGuideAnswer"]').first().check();
-    await page.locator('#sceneGuideNext').click();
-    await expect(page.locator('#sceneGuideFeedback')).toBeVisible();
-    await page.locator('#sceneGuideNext').click();
-  }
-
-  await expect(page.locator('#sceneGuideComplete')).toBeVisible();
-  const saved = await page.evaluate(() => {
-    const record = JSON.parse(localStorage.getItem('emscodesim_patient_record_asthma'));
-    const state = JSON.parse(localStorage.getItem('emscodesim_scenario_asthma'));
-    return { finding: record.findings.scene_size_up, done: state.done };
-  });
-  expect(saved.finding.answers).toHaveLength(9);
-  expect(saved.finding.score).toBeLessThan(9);
-  expect(saved.done).toContain(0);
-
-  await page.goto('/vitals/scenario-debrief.html');
-  const sceneCard = page.locator('.finding-card', { hasText: 'Scene Size Up' });
-  await expect(sceneCard).toContainText('Review guided scene decisions');
-  await expect(sceneCard).toContainText('Preferred choice');
+  await expect(page.locator('#clinicalReasoningBoard')).toBeVisible();
   await assertNoPageErrors();
 });
 
-test('picture-first scenario launches, records a timed respiratory rate, and restores progress', async ({ page }) => {
+test('Learning Mode unlocks a clinical decision only after the needed evidence is discovered', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
-  await openScenario(page, 'asthma');
+  await openScenario(page, 'asthma', 'learning');
 
-  await expect(page.locator('#caseTitle')).toHaveText('Respiratory Distress');
-  await expect(page.locator('#progressLabel')).toHaveText('0 of 12 complete');
-  await expect(page.locator('#scenarioPatientImage')).toBeVisible();
-  await expect.poll(() => page.locator('#scenarioPatientImage').evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
-
-  await page.locator('#steps a[href^="/vitals/respiratory-rate-scenario.html"]').click();
-  await expect(page).toHaveURL(/respiratory-rate-scenario\.html/);
-  await expect(page.locator('#patientStrip')).toBeVisible();
-
-  await page.locator('#startMeasure').click();
-  await expect(page.locator('#timer')).toHaveText('15');
-  await page.clock.runFor(16_000);
-  await expect(page.locator('#timer')).toHaveText('0');
-  await expect(page.locator('#submitBtn')).toBeEnabled();
-
-  await page.locator('#rrInput').fill('20');
-  await page.locator('#effortInput').selectOption('unlabored');
-  await page.locator('#submitBtn').click();
-  await expect(page.locator('#result')).toContainText('Accuracy will be reviewed at the end of the scenario');
-  await expect(page.locator('#returnBtn')).toBeVisible();
-
-  const savedRespirations = await page.evaluate(() => {
-    const id = localStorage.getItem('emscodesim_active_patient_record');
-    const record = JSON.parse(localStorage.getItem(`emscodesim_patient_record_${id}`));
-    return record.findings.respirations;
-  });
-  expect(savedRespirations.value).toBe('20/min; unlabored');
-  expect(savedRespirations.expectedFinding).toBe('28/min; labored');
-  expect(savedRespirations.accurate).toBe(false);
-  expect(savedRespirations.normality).toBe('not-normal');
-
-
-  await page.goto('/vitals/scenario-debrief.html');
-  const respiratoryCard = page.locator('.finding-card', { hasText: 'Respiratory Rate' });
-  await expect(respiratoryCard).toContainText('Review this finding');
-  await expect(respiratoryCard).toContainText('28/min; labored');
-
-  await page.goto('/vitals/scenario-launcher.html?case=asthma&resume=1');
-  await expect(page.locator('#progressLabel')).toHaveText('1 of 12 complete');
-  const respiratoryStep = page.locator('.step').filter({ hasText: 'Respiratory rate' });
-  await expect(respiratoryStep.locator('.step-status')).toHaveText('Recorded');
-
-  await page.reload();
-  await expect(page.locator('#progressLabel')).toHaveText('1 of 12 complete');
-  await assertNoPageErrors();
-});
-
-test('scenario completion blocks incomplete work and persists completed state', async ({ page }) => {
-  await openScenario(page, 'asthma');
-  await page.locator('#completeScenario').click();
-  await expect(page.locator('#completionMessage')).toContainText('Complete each required step');
+  const severityCard = page.locator('[data-reasoning-card="severity"]');
+  await expect(severityCard).toHaveClass(/locked/);
+  await expect(severityCard).toContainText('Obtain breathing quality, respiratory rate, and SpO₂.');
 
   await page.evaluate(() => {
-    localStorage.setItem('emscodesim_scenario_asthma', JSON.stringify({
-      done: Array.from({ length: 12 }, (_, index) => index),
-      complete: false
-    }));
+    const session = window.EMSCodeSimScenarioSession;
+    session.sync('asthma');
+    session.saveFinding('breathing', 'Labored with accessory muscle use', { source: 'browser-test' });
+    session.saveFinding('respirations', '28/min; labored', { source: 'browser-test' });
+    session.saveFinding('spo2', '91% on room air', { source: 'browser-test' });
   });
-  await page.reload();
-  await expect(page.locator('#progressLabel')).toHaveText('12 of 12 complete');
-  await page.locator('#completeScenario').click();
-  await expect(page.locator('#completionMessage')).toContainText('Scenario complete');
 
-  const state = await page.evaluate(() => ({
-    scenario: JSON.parse(localStorage.getItem('emscodesim_scenario_asthma')),
-    mastered: localStorage.getItem('emscodesim_mastered_scenario_asthma')
-  }));
-  expect(state.scenario.complete).toBe(true);
-  expect(state.mastered).toBe('true');
+  await expect(severityCard).toHaveClass(/ready/);
+  await expect(severityCard.locator('[data-option="work"]')).toBeVisible();
+  await severityCard.locator('[data-option="work"]').click();
+  await expect(severityCard).toContainText('Strong reasoning');
+
+  const saved = await page.evaluate(() => {
+    const record = window.EMSCodeSimPatientRecord.active();
+    return {
+      decision: record.documentation?.reasoningDecisions?.severity,
+      fakePatientFinding: record.findings?.decision_severity || null
+    };
+  });
+  expect(saved.decision?.selected).toBe('work');
+  expect(saved.decision?.correct).toBe(true);
+  expect(saved.fakePatientFinding).toBeNull();
+  await assertNoPageErrors();
+});
+
+test('Assessment Mode hides future reasoning prompts and defers correctness feedback', async ({ page }) => {
+  const assertNoPageErrors = watchPageErrors(page);
+  await openScenario(page, 'stroke', 'assessment');
+
+  const timeCard = page.locator('[data-reasoning-card="time"], .reasoning-card.assessment-hidden').first();
+  await expect(page.locator('#clinicalReasoningBoard')).toContainText('Clinical decision 1');
+  await expect(page.locator('#clinicalReasoningBoard')).not.toContainText('Which time matters most for hospital stroke decisions?');
+  await expect(page.locator('#clinicalReasoningBoard')).not.toContainText('Last known well / last known normal time');
+
+  await page.evaluate(() => {
+    const session = window.EMSCodeSimScenarioSession;
+    session.sync('stroke');
+    session.saveFinding('sample', 'Family reports sudden onset; last known well established.', { source: 'browser-test' });
+  });
+
+  const unlocked = page.locator('[data-reasoning-card="time"]');
+  await expect(unlocked).toHaveClass(/ready/);
+  await unlocked.locator('[data-option="lkw"]').click();
+  await expect(unlocked).toContainText('Decision recorded');
+  await expect(unlocked).not.toContainText('Strong reasoning');
+  await expect(unlocked.locator('[data-option="lkw"]')).toBeDisabled();
+
+  const saved = await page.evaluate(() => window.EMSCodeSimPatientRecord.active().documentation?.reasoningDecisions?.time);
+  expect(saved?.selected).toBe('lkw');
+  expect(saved?.correct).toBe(true);
+  await assertNoPageErrors();
 });
