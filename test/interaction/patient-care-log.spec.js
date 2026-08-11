@@ -24,8 +24,17 @@ test('Record keeps a chronological log and filters vitals and treatments', async
   });
 
   // Record/Log is still a functional internal data surface for grading and
-  // handoff, but its permanent desktop rail button is intentionally hidden.
-  await page.evaluate(() => document.querySelector('[data-panel="findingsPanel"]')?.click());
+  // handoff. Temporarily expose its control inside the test only so the normal
+  // panel-opening code is exercised without restoring the user-facing Log button.
+  await page.evaluate(async () => {
+    const button = document.querySelector('[data-panel="findingsPanel"]');
+    if (!button) return;
+    const wasHidden = button.classList.contains('desktop-domain-hidden');
+    button.classList.remove('desktop-domain-hidden');
+    button.click();
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    if (wasHidden) button.classList.add('desktop-domain-hidden');
+  });
   await expect(page.locator('#findingsPanel')).toBeVisible({ timeout: 3000 });
   await expect(page.locator('#findingList .care-log-item')).toHaveCount(7);
   await expect(page.locator('#findingList')).toContainText('SAMPLE history');
