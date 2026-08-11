@@ -112,7 +112,7 @@
   const treatmentCount = r => Array.isArray(r?.treatments) ? r.treatments.length : 0;
   const reassessmentCount = r => Array.isArray(r?.reassessments) ? r.reassessments.length : 0;
   const text = r => { try { return JSON.stringify({findings:r?.findings||{},history:r?.history||{},careLog:r?.careLog||[],treatments:r?.treatments||[]}); } catch { return ''; } };
-  const hasTreatment = (r,ids) => { const t=text({treatments:r?.treatments||{},careLog:(r?.careLog||[]).filter(x=>x?.type==='treatment'||x?.category==='treatment')}).toLowerCase(); return ids.some(id=>t.includes(id.toLowerCase())||t.includes(id.toLowerCase().replace(/_/g,' '))); };
+  const hasTreatment = (r,ids) => { const t=text({treatments:r?.treatments||[],careLog:(r?.careLog||[]).filter(x=>x?.type==='treatment'||x?.category==='treatment')}).toLowerCase(); return ids.some(id=>t.includes(id.toLowerCase())||t.includes(id.toLowerCase().replace(/_/g,' '))); };
   const esc = value => String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const decisionFor = (r,id) => r?.documentation?.reasoningDecisions?.[id] || null;
   const optionFor = (checkpoint,decision) => decision ? checkpoint[5].find(option=>option[0]===decision.selected || option[1]===decision.label) || null : null;
@@ -129,6 +129,7 @@
     const api=window.EMSCodeSimPatientRecord;
     const current=api?.active?.()||{};
     const previous=current?.documentation?.reasoningDecisions||{};
+    if(mode()==='assessment' && previous[checkpoint[0]]) return current;
     const recordedAt=new Date().toISOString();
     return api?.setDocumentation?.({
       reasoningDecisions:{...previous,[checkpoint[0]]:{checkpointId:checkpoint[0],checkpointTitle:checkpoint[1],selected:option[0],label:option[1],correct:Boolean(option[2]),rationale:option[3],recordedAt,source:'scenario-learning-upgrade'}},
@@ -139,7 +140,7 @@
   function injectStyles(){
     if(document.querySelector('link[data-learning-reasoning-style]')) return;
     const link=document.createElement('link');
-    link.rel='stylesheet'; link.href='/vitals/scenario-learning-upgrade.css?v=2402'; link.dataset.learningReasoningStyle='1';
+    link.rel='stylesheet'; link.href='/vitals/scenario-learning-upgrade.css?v=2403'; link.dataset.learningReasoningStyle='1';
     document.head.appendChild(link);
   }
 
@@ -170,10 +171,13 @@
     const chosen=optionFor(checkpoint,decision);
     const assessment=mode()==='assessment';
     const reveal=reviewUnlocked();
+    if(assessment && !unlocked && !chosen){
+      return `<article class="reasoning-card locked assessment-hidden"><div class="reasoning-card-top"><span>${index+1}</span><div><small>DISCOVER FIRST</small><strong>Clinical decision ${index+1}</strong></div></div><p>Gather relevant patient information before this decision point becomes available.</p><div class="reasoning-lock"><b>🔒</b><span>No assessment hints are shown in Assessment Mode.</span></div></article>`;
+    }
     const correct=Boolean(chosen?.[2]);
     const state=chosen ? (assessment&&!reveal?'recorded':correct?'complete':'review') : unlocked?'ready':'locked';
     const status=chosen ? (assessment&&!reveal?'DECISION RECORDED':correct?'STRONG DECISION':'DECISION TO REVIEW') : unlocked?'READY TO DECIDE':'DISCOVER FIRST';
-    const options=(unlocked||chosen) ? `<div class="reasoning-options">${checkpoint[5].map(option=>`<button type="button" data-checkpoint="${esc(checkpoint[0])}" data-option="${esc(option[0])}" class="${chosen?.[0]===option[0]?'selected':''}" ${assessment&&chosen&&!reveal?'disabled':''}>${esc(option[1])}</button>`).join('')}</div>` : '';
+    const options=(unlocked||chosen) ? `<div class="reasoning-options">${checkpoint[5].map(option=>`<button type="button" data-checkpoint="${esc(checkpoint[0])}" data-option="${esc(option[0])}" class="${chosen?.[0]===option[0]?'selected':''}" ${assessment&&chosen?'disabled':''}>${esc(option[1])}</button>`).join('')}</div>` : '';
     let feedback='';
     if(chosen){
       if(assessment&&!reveal) feedback='<div class="reasoning-feedback"><strong>Decision recorded</strong><span>Correctness and rationale stay hidden until call review.</span></div>';
@@ -192,8 +196,16 @@
       board=document.createElement('section'); board.id='clinicalReasoningBoard'; board.className='clinical-reasoning-board'; board.setAttribute('aria-label','Clinical reasoning checkpoints');
       if(anchor?.parentNode) anchor.parentNode.insertBefore(board,anchor); else document.querySelector('.patient-control-column')?.prepend(board);
     }
-    const complete=config.checkpoints.filter(cp=>decisionFor(r,cp[0])).length;
-    board.innerHTML=`<header class="reasoning-board-head"><div><small>CLINICAL REASONING</small><strong>${esc(config.label)}</strong></div><span>${complete}/${config.checkpoints.length}</span></header><p class="reasoning-board-focus">${esc(config.focus)}</p><div class="reasoning-checkpoints">${config.checkpoints.map((cp,i)=>cardMarkup(cp,i,r)).join('')}</div><footer class="reasoning-board-foot"><span>${complete===config.checkpoints.length?'Reasoning checkpoints complete. Continue treatment, reassessment, transport, and handoff.':'Decisions unlock only after you discover the information needed to make them.'}</span></footer>`;
+    const decided=config.checkpoints.map(cp=>({cp,decision:decisionFor(r,cp[0])})).filter(item=>item.decision);
+    const complete=decided.length;
+    const strong=decided.filter(item=>item.decision.correct===true).length;
+    const assessmentReview=mode()==='assessment'&&reviewUnlocked();
+    const footer=assessmentReview
+      ? `Clinical reasoning review: ${strong}/${complete} recorded decisions were strong. Review each checkpoint before ending the scenario.`
+      : complete===config.checkpoints.length
+        ? 'Reasoning checkpoints complete. Continue treatment, reassessment, transport, and handoff.'
+        : 'Decisions unlock only after you discover the information needed to make them.';
+    board.innerHTML=`<header class="reasoning-board-head"><div><small>CLINICAL REASONING</small><strong>${esc(config.label)}</strong></div><span>${complete}/${config.checkpoints.length}</span></header><p class="reasoning-board-focus">${esc(config.focus)}</p><div class="reasoning-checkpoints">${config.checkpoints.map((cp,i)=>cardMarkup(cp,i,r)).join('')}</div><footer class="reasoning-board-foot"><span>${esc(footer)}</span></footer>`;
     board.querySelectorAll('[data-checkpoint][data-option]').forEach(button=>button.addEventListener('click',()=>{
       const cp=config.checkpoints.find(item=>item[0]===button.dataset.checkpoint);
       const option=cp?.[5].find(item=>item[0]===button.dataset.option);
@@ -217,6 +229,6 @@
     },700);
   }
 
-  window.EMSCodeSimScenarioLearningUpgrade=Object.freeze({version:'2.402',cases:Object.keys(CASES)});
+  window.EMSCodeSimScenarioLearningUpgrade=Object.freeze({version:'2.403',cases:Object.keys(CASES)});
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else init();
 })();
