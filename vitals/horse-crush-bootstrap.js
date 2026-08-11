@@ -2,6 +2,18 @@
   'use strict';
   const ID = 'horse_crush';
   const defs = window.EMSCodeSimScenarioDefinitions;
+
+  // Load the shared decision-making layer for the four finished learning cases.
+  // It is intentionally defensive and waits for DOMContentLoaded, so this bootstrap
+  // can stay ahead of visual-patient.js without creating a race.
+  if (!document.querySelector('script[data-scenario-learning-upgrade]')) {
+    const learningScript = document.createElement('script');
+    learningScript.src = '/vitals/scenario-learning-upgrade.js?v=2401';
+    learningScript.async = false;
+    learningScript.dataset.scenarioLearningUpgrade = '1';
+    document.head.appendChild(learningScript);
+  }
+
   if (!defs) return;
 
   // This compatibility layer makes the scenario work even when a browser or CDN
