@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.11.1';
+  const VERSION = '2026.08.11.2';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -30,7 +30,7 @@
   }
 
   function activePanelId() {
-    return centerRail()?.querySelector('button[data-panel].active')?.dataset.panel || '';
+    return centerRail()?.querySelector('button[data-panel].active:not(.desktop-domain-hidden)')?.dataset.panel || '';
   }
 
   function rightWorkspaceReady() {
@@ -51,10 +51,12 @@
       layout.insertBefore(nav, control);
     }
 
-    // The previous dedicated History navigation button is removed from the
-    // desktop control rail. History remains available as a clinical option in
-    // the Assessment workspace so the interview still uses the same right field.
-    nav.querySelector('button[data-panel="historyPanel"]')?.classList.add('desktop-domain-hidden');
+    // Desktop uses four permanent clinical domains: Assessment, Vitals,
+    // History, and Treatment. The chronological Record/Log remains available
+    // to grading, handoff, and internal workflows, but no longer consumes a
+    // permanent center-rail control.
+    nav.querySelector('button[data-panel="historyPanel"]')?.classList.remove('desktop-domain-hidden');
+    nav.querySelector('button[data-panel="findingsPanel"]')?.classList.add('desktop-domain-hidden');
     return true;
   }
 
@@ -64,25 +66,6 @@
     if (!sheet || !control) return false;
     if (sheet.parentElement !== control) control.appendChild(sheet);
     return sheet.parentElement === control;
-  }
-
-  function ensureHistoryLauncher() {
-    const panel = $('assessmentPanel');
-    const tools = $('assessmentTools');
-    const historyButton = domainButton('historyPanel');
-    if (!panel || !tools || !historyButton) return;
-
-    let launcher = panel.querySelector('.assessment-history-launcher');
-    if (!launcher) {
-      launcher = document.createElement('button');
-      launcher.type = 'button';
-      launcher.className = 'assessment-history-launcher';
-      launcher.innerHTML = `
-        <span><strong>Patient history & interview</strong><small>Ask SAMPLE, OPQRST, medications, allergies, events, or your own focused question.</small></span>
-        <em>Open history ›</em>`;
-      launcher.addEventListener('click', () => historyButton.click());
-      panel.insertBefore(launcher, tools);
-    }
   }
 
   function expandAssessmentChoices() {
@@ -126,7 +109,6 @@
     document.body.classList.add('clinical-domain-workspace-v2');
     moveControlsToCenter();
     keepSheetInRightField();
-    ensureHistoryLauncher();
     openDefaultDomainWhenReady();
   }
 
@@ -148,14 +130,13 @@
 
   function handleDomainClick(event) {
     const button = event.target.closest?.('.bottom-nav button[data-panel]');
-    if (!button || !desktopActive()) return;
+    if (!button || !desktopActive() || button.classList.contains('desktop-domain-hidden')) return;
     window.requestAnimationFrame(() => {
       const panelId = button.dataset.panel || '';
       updateWorkspaceHeading(panelId);
       if (panelId === 'assessmentPanel') expandAssessmentChoices();
       const sheet = $('actionSheet');
       if (sheet && !document.body.classList.contains('horse-arrival-pending')) sheet.hidden = false;
-      ensureHistoryLauncher();
     });
   }
 
