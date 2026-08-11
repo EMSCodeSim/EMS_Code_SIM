@@ -30,4 +30,4 @@ jobs:
       - name: Install Chromium for interaction tests
         run: npx playwright install --with-deps chromium
       - name: Run desktop and mobile interaction tests
-        run: npx playwright test
+        run: npx playwright test --max-failures=1
