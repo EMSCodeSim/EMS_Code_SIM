@@ -48,4 +48,33 @@ for (const required of [
   if (!urls.has(required)) throw new Error(`Finished learning scenario does not reference required artwork: ${required}`);
 }
 
-console.log(`Scenario image asset check passed for ${urls.size} configured images across ${sources.length} scenario sources.`);
+// Horse-crush focused exams use template-built asset URLs, so the generic
+// literal-URL scan above cannot see them. Validate every photo used by the
+// scenario explicitly and require the scenario runtime to reference each one.
+const horseScenarioPath = path.join(root, 'vitals/horse-crush-scenario.js');
+const horseScenario = fs.readFileSync(horseScenarioPath, 'utf8');
+const horseAssets = [
+  'map-arrival.webp',
+  'patient-initial.webp',
+  'exam-neck-back.webp',
+  'exam-chest.webp',
+  'exam-abdomen.webp',
+  'exam-pelvis.webp',
+  'exam-leg.webp',
+  'movement-blankets.webp',
+  'movement-scoop.webp'
+];
+for (const filename of horseAssets) {
+  if (!horseScenario.includes(filename)) {
+    throw new Error(`Horse scenario no longer references required photo: ${filename}`);
+  }
+  const filePath = path.join(root, 'vitals/assets/horse-crush', filename);
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Horse scenario photo is missing: /vitals/assets/horse-crush/${filename}`);
+  }
+  if (fs.statSync(filePath).size === 0) {
+    throw new Error(`Horse scenario photo is empty: /vitals/assets/horse-crush/${filename}`);
+  }
+}
+
+console.log(`Scenario image asset check passed for ${urls.size} configured images across ${sources.length} scenario sources plus ${horseAssets.length} horse-crush photos.`);
