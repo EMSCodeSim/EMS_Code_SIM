@@ -1,0 +1,57 @@
+html[data-ems-mini-sim="embedded"],html[data-ems-mini-sim="embedded"] body{width:100%!important;height:100%!important;min-height:100%!important;margin:0!important;overflow:auto!important;background:#eaf2f6!important}
+body.ems-embedded-mini-sim{overscroll-behavior:contain}
+body.ems-embedded-mini-sim .sv-topbar,body.ems-embedded-mini-sim .topbar,body.ems-embedded-mini-sim .va-head,body.ems-embedded-mini-sim .sv-context-nav,body.ems-embedded-mini-sim #scenarioReturnPaths,body.ems-embedded-mini-sim .sv-patient,body.ems-embedded-mini-sim #patientStrip{display:none!important}
+body.ems-embedded-mini-sim .ems-mini-flow{position:sticky;top:0;z-index:60;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:6px 8px;background:rgba(7,19,31,.97);border-bottom:1px solid #31566d;color:#dcecf5;box-shadow:0 5px 16px rgba(0,0,0,.18)}
+body.ems-embedded-mini-sim .ems-mini-flow span{display:flex;align-items:center;justify-content:center;gap:5px;min-height:27px;border:1px solid #31566d;border-radius:8px;background:#10283a;font-size:.64rem;font-weight:850}
+body.ems-embedded-mini-sim .ems-mini-flow span::before{content:attr(data-step);display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#274b62;color:#fff;font-size:.58rem}
+body.ems-embedded-mini-sim .ems-mini-flow span.active{border-color:#4fb3ff;background:#123b56;color:#fff}
+body.ems-embedded-mini-sim .ems-mini-flow span.complete{border-color:#2e946d;background:#10392d;color:#bff5dc}
+body.ems-embedded-mini-sim .sv-main{width:100%!important;max-width:none!important;min-height:0!important;margin:0!important;padding:8px!important;display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(250px,.75fr)!important;grid-template-rows:minmax(0,1fr)!important;gap:8px!important;align-items:stretch!important}
+body.ems-embedded-mini-sim .sv-card{margin:0!important;padding:10px!important;border-radius:14px!important;box-shadow:none!important}
+body.ems-embedded-mini-sim #simCard{grid-column:1!important;display:flex!important;flex-direction:column!important;min-height:0!important;overflow:auto!important}
+body.ems-embedded-mini-sim #answerCard{grid-column:2!important;align-self:stretch!important;min-height:0!important;overflow:auto!important;animation:emsMiniReveal .18s ease-out}
+body.ems-embedded-mini-sim #answerCard.ems-discovery-locked{display:none!important}
+body.ems-embedded-mini-sim #simCard:has(+ #answerCard.ems-discovery-locked){grid-column:1/-1!important}
+body.ems-embedded-mini-sim .sv-instruction{margin:0 0 7px!important;font-size:.76rem!important;line-height:1.35!important}
+body.ems-embedded-mini-sim .sv-stage{flex:1 1 auto!important;min-height:190px!important;padding:8px!important;border-radius:12px!important}
+body.ems-embedded-mini-sim .sv-actions{margin-top:7px!important;gap:6px!important}
+body.ems-embedded-mini-sim .sv-btn{min-height:39px!important;padding:7px 9px!important;border-radius:10px!important;font-size:.76rem!important}
+body.ems-embedded-mini-sim .sv-state{min-height:18px!important;margin:6px 0 0!important;font-size:.7rem!important;line-height:1.3!important}
+body.ems-embedded-mini-sim .sv-answer h2{font-size:.9rem!important}
+body.ems-embedded-mini-sim .sv-answer>p{font-size:.7rem!important;margin-bottom:6px!important}
+body.ems-embedded-mini-sim .sv-field{gap:3px!important;margin-top:6px!important;font-size:.7rem!important}
+body.ems-embedded-mini-sim .sv-field input,body.ems-embedded-mini-sim .sv-field select{padding:8px!important;border-radius:9px!important;font-size:.78rem!important}
+body.ems-embedded-mini-sim .sv-grid-2,body.ems-embedded-mini-sim .sv-grid-3{gap:6px!important}
+body.ems-embedded-mini-sim .sv-result{min-height:18px!important;margin-top:5px!important;font-size:.72rem!important}
+body.ems-embedded-mini-sim .sv-return,body.ems-embedded-mini-sim .sv-post-save{display:none!important}
+body.ems-embedded-mini-sim .sv-monitor{padding:12px!important;border-width:6px!important;max-width:330px!important}
+body.ems-embedded-mini-sim .sv-monitor-value{font-size:clamp(2.5rem,10vh,4.2rem)!important}
+body.ems-embedded-mini-sim .sv-device{padding:11px!important;border-width:6px!important}
+body.ems-embedded-mini-sim .sv-device-screen{min-height:60px!important;font-size:2rem!important}
+body.ems-embedded-mini-sim .sv-step-list{gap:5px!important}.ems-embedded-mini-sim .sv-step{padding:7px!important;font-size:.72rem!important}
+body.ems-embedded-mini-sim .sv-heart{width:104px!important;height:104px!important;font-size:3.3rem!important}
+body.ems-embedded-mini-sim .sv-stopwatch{transform:scale(.88)}
+body.ems-embedded-mini-sim .sv-eyes{gap:18px!important}.ems-embedded-mini-sim .sv-eye{width:96px!important;height:64px!important}.ems-embedded-mini-sim .sv-iris{width:42px!important;height:42px!important}
+body.ems-embedded-mini-sim .sv-skin-swatch{width:130px!important;height:100px!important;border-radius:22px!important}
+body.ems-embedded-mini-sim .sv-observation{gap:4px!important}.ems-embedded-mini-sim .sv-observation p{padding:6px 8px!important;font-size:.68rem!important}
+body.ems-embedded-mini-sim .sv-chest{transform:scale(.82);transform-origin:center}
+body.ems-embedded-mini-sim .va-shell{width:100%!important;max-width:none!important;min-height:100%!important;margin:0!important;padding:8px!important;display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(250px,.75fr)!important;gap:8px!important;align-items:stretch!important}
+body.ems-embedded-mini-sim .va-stage{margin:0!important;min-height:0!important;align-self:stretch!important}
+body.ems-embedded-mini-sim .va-card{margin:0!important;border-radius:14px!important;box-shadow:none!important}
+body.ems-embedded-mini-sim .va-result{align-self:stretch!important;min-height:0!important;overflow:auto!important}
+body.ems-embedded-mini-sim .va-controls{gap:6px!important}.ems-embedded-mini-sim .va-btn{min-height:40px!important;padding:7px 9px!important;font-size:.74rem!important}
+body.ems-embedded-mini-sim .va-interpret{display:grid;gap:8px}.ems-embedded-mini-sim .va-interpret>small{color:#526777;font-size:.68rem;font-weight:850;letter-spacing:.05em}.ems-embedded-mini-sim .va-interpret h2{margin:0;font-size:.92rem}.ems-embedded-mini-sim .va-interpret p{margin:0;color:#526777;font-size:.72rem;line-height:1.35}
+body.ems-embedded-mini-sim .va-interpret-options{display:grid;gap:6px}.ems-embedded-mini-sim .va-interpret-option{min-height:40px;border:1px solid #b8cbd7;border-radius:10px;background:#f6fafc;color:#173044;padding:8px 9px;text-align:left;font-weight:800;font-size:.72rem;cursor:pointer}.ems-embedded-mini-sim .va-interpret-option.selected{border-color:#087eae;background:#e7f6fc;box-shadow:inset 0 0 0 1px #087eae}.ems-embedded-mini-sim .va-interpret-save{min-height:42px;border:0;border-radius:10px;background:#087eae;color:#fff;font-weight:900;cursor:pointer}.ems-embedded-mini-sim .va-interpret-save:disabled{opacity:.45;cursor:not-allowed}
+body.ems-embedded-mini-sim .bp-scenario-answer.ems-discovery-locked{display:none!important}
+body.ems-embedded-mini-sim main:has(.bp-scenario-answer.ems-discovery-locked){grid-template-columns:1fr!important}
+body.ems-embedded-mini-sim .bp-scenario-sim{grid-column:1/-1!important}
+body.ems-embedded-mini-sim #gauge-container{width:min(43vh,310px,45vw)!important;height:min(43vh,310px,45vw)!important}
+body.ems-embedded-mini-sim .patient-strip,body.ems-embedded-mini-sim .post-save-continue,body.ems-embedded-mini-sim #returnBtn{display:none!important}
+@keyframes emsMiniReveal{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:none}}
+@media(max-width:700px){
+ body.ems-embedded-mini-sim .sv-main,body.ems-embedded-mini-sim .va-shell{grid-template-columns:1fr!important;grid-template-rows:auto auto!important;overflow:auto!important}
+ body.ems-embedded-mini-sim #simCard,body.ems-embedded-mini-sim #answerCard,body.ems-embedded-mini-sim .va-stage,body.ems-embedded-mini-sim .va-result{grid-column:1!important}
+ body.ems-embedded-mini-sim .sv-stage{min-height:180px!important}
+ body.ems-embedded-mini-sim .sv-grid-3{grid-template-columns:1fr!important}
+ body.ems-embedded-mini-sim .ems-mini-flow{padding:4px 5px!important}.ems-embedded-mini-sim .ems-mini-flow span{font-size:.58rem!important}
+}
