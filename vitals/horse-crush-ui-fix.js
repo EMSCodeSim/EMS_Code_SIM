@@ -95,12 +95,21 @@
     return true;
   }
 
+  function closeScenarioControlOverlay() {
+    const dialog = document.getElementById('scenarioControlDialog');
+    const backdrop = document.getElementById('scenarioControlBackdrop');
+    if (dialog) dialog.hidden = true;
+    if (backdrop) backdrop.hidden = true;
+    return true;
+  }
+
   function showPromotedTreatmentPanel(title = 'Transport') {
     if (!isDesktopHorse()) return false;
     const sheet = document.getElementById('actionSheet');
     const panel = document.getElementById('treatmentPanel');
     if (!sheet || !panel) return false;
 
+    closeScenarioControlOverlay();
     document.querySelectorAll('.vp-panel').forEach(item => { item.hidden = item !== panel; });
     panel.hidden = false;
     sheet.hidden = false;
@@ -272,11 +281,12 @@
   });
 
   window.EMSCodeSimHorseCrushUiFix = Object.freeze({
-    version: '1.4',
+    version: '1.5',
     abcKeys: Object.freeze(Object.keys(ABC)),
     focusedExams: Object.freeze([...FOCUSED_EXAMS]),
     relocateReasoningBoard,
-    promoteHiddenTransportForm
+    promoteHiddenTransportForm,
+    closeScenarioControlOverlay
   });
 
   if (document.readyState === 'loading') {
