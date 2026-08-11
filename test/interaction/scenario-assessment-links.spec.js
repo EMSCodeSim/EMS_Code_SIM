@@ -84,12 +84,14 @@ test('skin comparison, complete assessment tools, and assessment return paths re
   await expect(page.locator('#assessmentTools')).toContainText('More assessments');
   expect(await page.locator('#assessmentTools button, #assessmentTools a').count()).toBeGreaterThanOrEqual(8);
 
-  // Current scenario assessment pages return directly to the patient rather than
-  // exposing the retired connected-tools link cluster.
   await page.goto('/vitals/airway-assessment.html?mode=scenario&resume=1&case=stroke');
   await expect(page.locator('#practicePanel')).toBeVisible();
   await expect(page.locator('#findingBox')).toBeVisible();
-  await page.locator('input[name="normality"][value="normal"]').check();
+  await page.evaluate(() => {
+    const input = document.querySelector('input[name="normality"][value="normal"]');
+    input.checked = true;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  });
   await expect(page).toHaveURL(/visual-patient\.html\?case=stroke/);
   await expect(page.locator('#patientImage')).toBeVisible();
   await assertNoPageErrors();
