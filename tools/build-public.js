@@ -71,5 +71,21 @@ for (const sourceOnly of ['tools', 'tests', 'docs/updates', 'netlify', 'netlify-
   if (fs.existsSync(path.join(out, sourceOnly))) throw new Error(`Source-only path was copied into deployment: ${sourceOnly}`);
 }
 
+// Netlify exposes COMMIT_REF/DEPLOY_ID/CONTEXT during production builds. Publishing
+// those values gives us a no-guessing way to prove exactly which commit is live.
+// Local/CI builds still generate the file with explicit local fallbacks.
+const buildInfo = {
+  app: 'EMSCodeSim',
+  commit: process.env.COMMIT_REF || process.env.GITHUB_SHA || 'local',
+  deployId: process.env.DEPLOY_ID || null,
+  context: process.env.CONTEXT || process.env.DEPLOY_CONTEXT || 'local',
+  branch: process.env.BRANCH || process.env.HEAD || process.env.GITHUB_REF_NAME || 'local',
+  builtAt: new Date().toISOString()
+};
+fs.writeFileSync(path.join(out, 'build-info.json'), `${JSON.stringify(buildInfo, null, 2)}\n`, 'utf8');
+copied += 1;
+bytes += fs.statSync(path.join(out, 'build-info.json')).size;
+
+console.log(`Build provenance: ${buildInfo.commit} (${buildInfo.context}/${buildInfo.branch}).`);
 console.log(`Verified ${requiredScenarioImages.length} required scenario patient images in dist.`);
 console.log(`Built dist with ${copied} files (${(bytes / 1024 / 1024).toFixed(1)} MB).`);
