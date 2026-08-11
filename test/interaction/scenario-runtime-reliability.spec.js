@@ -8,13 +8,38 @@ test.beforeEach(async ({ page }) => {
   await clearSiteStorage(page);
 });
 
+async function unlockGuidedCare(page, caseId = 'asthma') {
+  await page.evaluate(caseId => {
+    const session = window.EMSCodeSimScenarioSession;
+    session.sync(caseId);
+    session.saveFinding('scene_size_up', 'Scene size-up completed for reliability test', { source:'browser-test', classification:'Complete' });
+    session.saveFinding('airway', 'Patent; patient speaking', { source:'browser-test', normality:'normal', status:'normal' });
+    session.saveFinding('breathing', 'Breathing assessed', { source:'browser-test', normality:'not-normal', status:'abnormal' });
+    session.saveFinding('perfusion', 'Radial pulse present; no major external bleeding', { source:'browser-test', normality:'normal', status:'normal' });
+  }, caseId);
+  await page.reload();
+  await expect(page.locator('.bottom-nav')).not.toHaveClass(/guide-locked/);
+}
+
+async function assignVitalToPartner(page, key) {
+  const desktopTile = page.locator(`[data-vital-key="${key}"]`);
+  if (await desktopTile.isVisible().catch(() => false)) {
+    await desktopTile.click();
+    await expect(page.locator('#desktopVitalAction')).toBeVisible();
+    await page.locator('#desktopVitalPartner').click();
+    return;
+  }
+  await page.locator('[data-panel="vitalsPanel"]').click();
+  await page.locator(`[data-tool-key="${key}"] .partner-action`).click();
+}
+
 test('partner skills run one at a time, survive reload, and save every result', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
-  await page.goto('/vitals/visual-patient.html?case=asthma&mode=scenario&resume=1');
-  await page.locator('[data-panel="vitalsPanel"]').click();
+  await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
+  await unlockGuidedCare(page, 'asthma');
 
   for (const key of ['blood_pressure', 'pulse', 'respirations']) {
-    await page.locator(`[data-tool-key="${key}"] .partner-action`).click();
+    await assignVitalToPartner(page, key);
   }
 
   let tasks = await page.evaluate(() => window.EMSCodeSimScenarioSession.readPartnerTasks('asthma'));
@@ -23,8 +48,13 @@ test('partner skills run one at a time, survive reload, and save every result', 
   expect(tasks.respirations.status).toBe('queued');
 
   await page.reload();
-  await page.locator('[data-panel="vitalsPanel"]').click();
-  await expect(page.locator('[data-tool-key="blood_pressure"] .assignment-progress')).toContainText('Partner gathering');
+  const desktopBp = page.locator('[data-vital-key="blood_pressure"]');
+  if (await desktopBp.isVisible().catch(() => false)) {
+    await expect(desktopBp).toContainText(/Partner/);
+  } else {
+    await page.locator('[data-panel="vitalsPanel"]').click();
+    await expect(page.locator('[data-tool-key="blood_pressure"] .assignment-progress')).toContainText('Partner gathering');
+  }
 
   await page.clock.runFor(13_000);
   await expect.poll(async () => page.evaluate(() => window.EMSCodeSimScenarioSession.readPartnerTasks('asthma').blood_pressure.status)).toBe('complete');
@@ -60,7 +90,7 @@ test('the patient timer does not write scenario storage every second', async ({ 
       return original.call(this, key, value);
     };
   });
-  await page.goto('/vitals/visual-patient.html?case=asthma&mode=scenario&resume=1');
+  await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
   const before = await page.evaluate(() => window.__scenarioStorageWrites);
   await page.clock.runFor(20_000);
   const after = await page.evaluate(() => window.__scenarioStorageWrites);
@@ -69,7 +99,7 @@ test('the patient timer does not write scenario storage every second', async ({ 
 });
 
 test('timed patient deterioration occurs without opening a panel', async ({ page }) => {
-  await page.goto('/vitals/visual-patient.html?case=asthma&mode=scenario&resume=1');
+  await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
   const firstStage = await page.evaluate(() => {
     const record = window.EMSCodeSimPatientRecord.active();
     record.startedAt = new Date(Date.now() - 181_000).toISOString();
@@ -85,16 +115,16 @@ test('timed patient deterioration occurs without opening a panel', async ({ page
 
 test('main care path remains usable after partner completion', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
-  await page.goto('/vitals/visual-patient.html?case=asthma&mode=scenario&resume=1');
-  await page.locator('[data-panel="vitalsPanel"]').click();
-  await page.locator('[data-tool-key="pulse"] .partner-action').click();
+  await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
+  await unlockGuidedCare(page, 'asthma');
+  await assignVitalToPartner(page, 'pulse');
   await page.clock.runFor(13_000);
   await expect.poll(async () => page.evaluate(() => window.EMSCodeSimScenarioSession.readPartnerTasks('asthma').pulse.status)).toBe('complete');
 
-  for (const panel of ['assessmentPanel', 'treatmentPanel', 'transportPanel', 'findingsPanel']) {
+  for (const panel of ['assessmentPanel', 'historyPanel', 'treatmentPanel', 'findingsPanel']) {
     await page.locator(`[data-panel="${panel}"]`).click();
     await expect(page.locator(`#${panel}`)).toBeVisible();
-    await page.locator('#closeSheet').click();
+    if (await page.locator('#closeSheet').isVisible().catch(() => false)) await page.locator('#closeSheet').click();
   }
   await assertNoPageErrors();
 });
