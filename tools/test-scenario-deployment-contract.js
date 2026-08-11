@@ -11,6 +11,7 @@ const netlify = read('netlify.toml');
 const patientHtml = read('vitals/visual-patient.html');
 const bootstrap = read('vitals/horse-crush-bootstrap.js');
 const horseUiFix = read('vitals/horse-crush-ui-fix.js');
+const horsePhotoFix = read('vitals/horse-photo-layer-fix.js');
 const horseScenarioCss = read('vitals/horse-crush-scenario.css');
 const definitions = read('vitals/scenario-definitions.js');
 
@@ -84,6 +85,10 @@ assert(
   'Horse bootstrap must request the desktop horse assessment routing fix'
 );
 assert(
+  bootstrap.includes("loadOnce('data-horse-photo-layer-fix'"),
+  'Horse bootstrap must load the patient-photo layer guard'
+);
+assert(
   bootstrap.includes('installDesktopLayoutGuard()'),
   'Horse bootstrap must install the synchronous desktop layout guard before shared learning helpers load'
 );
@@ -142,6 +147,33 @@ assert(
 assert(
   horseUiFix.includes('closeScenarioControlOverlay') && horseUiFix.includes("document.getElementById('scenarioControlDialog')"),
   'Horse transport promotion must close stale scenario controls before showing the Treatment workspace'
+);
+
+assert(
+  horsePhotoFix.includes('moveSimulatorToClinicalColumn')
+    && horsePhotoFix.includes("document.querySelector('.patient-control-column')"),
+  'Horse desktop mini simulator must be relocated into the clinical control column'
+);
+assert(
+  horsePhotoFix.includes("workspace.classList.add('horse-sidecar-sim')")
+    && horsePhotoFix.includes("controlColumn.insertBefore(workspace, actionSheet)"),
+  'Horse simulator must sit beside the patient photo and before the clinical tool sheet'
+);
+assert(
+  horsePhotoFix.includes('sim-workspace-open #actionSheet.action-sheet')
+    && horsePhotoFix.includes('display: none !important'),
+  'Opening an embedded simulator must replace the right-side tool sheet instead of covering the patient image'
+);
+assert(
+  horsePhotoFix.includes('.patient-stage > #patientImage')
+    && horsePhotoFix.includes('visibility: visible !important')
+    && horsePhotoFix.includes('opacity: 1 !important'),
+  'Horse patient photo must remain visibly rendered on desktop'
+);
+assert(
+  horsePhotoFix.includes('restoreSimulatorToPatientStage')
+    && horsePhotoFix.includes("clueLayer.insertAdjacentElement('afterend', workspace)"),
+  'Responsive changes must restore the embedded simulator to the mobile patient-stage structure'
 );
 
 console.log('Scenario deployment contract OK');
