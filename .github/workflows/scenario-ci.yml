@@ -29,5 +29,5 @@ jobs:
         run: npm run build
       - name: Install Chromium for interaction tests
         run: npx playwright install --with-deps chromium
-      - name: Run Record interaction diagnostic
-        run: npx playwright test test/interaction/patient-care-log.spec.js --project=desktop-chromium --max-failures=1
+      - name: Run desktop and mobile interaction tests
+        run: npx playwright test --max-failures=1
