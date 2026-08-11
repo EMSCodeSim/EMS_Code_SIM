@@ -15,7 +15,8 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
   await expect.poll(() => page.evaluate(() => window.EMSCodeSimScenarioBootstrapStatus?.ok)).toBe(true);
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimHorseCrushUiFix))).toBe(true);
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimHorsePhotoLayerFix))).toBe(true);
-  await expect.poll(() => page.evaluate(() => document.getElementById('embeddedSimWorkspace')?.parentElement?.classList.contains('patient-control-column') === true)).toBe(true);
+  await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimMiniSimOverlay))).toBe(true);
+  await expect.poll(() => page.evaluate(() => document.getElementById('embeddedSimWorkspace')?.parentElement?.classList.contains('patient-stage') === true)).toBe(true);
 
   async function expectHorsePhoto(pathname) {
     await expect.poll(() => page.evaluate(expectedPath => {
@@ -38,7 +39,7 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
     }, pathname)).toBe(true);
   }
 
-  async function expectSimulatorClearOfPatientPhoto() {
+  async function expectSimulatorOverPatientPhoto() {
     const layout = await page.evaluate(() => {
       const workspace = document.getElementById('embeddedSimWorkspace');
       const image = document.getElementById('patientImage');
@@ -49,15 +50,14 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
       document.body.classList.add('sim-workspace-open');
       const imageRect = image.getBoundingClientRect();
       const simRect = workspace.getBoundingClientRect();
-      const overlap = !(
-        simRect.right <= imageRect.left
-        || simRect.left >= imageRect.right
-        || simRect.bottom <= imageRect.top
-        || simRect.top >= imageRect.bottom
-      );
+      const overlapWidth = Math.max(0, Math.min(simRect.right, imageRect.right) - Math.max(simRect.left, imageRect.left));
+      const overlapHeight = Math.max(0, Math.min(simRect.bottom, imageRect.bottom) - Math.max(simRect.top, imageRect.top));
+      const overlapArea = overlapWidth * overlapHeight;
+      const simArea = Math.max(1, simRect.width * simRect.height);
+      const overlapRatio = overlapArea / simArea;
       const result = {
         ok:true,
-        overlap,
+        overlapRatio,
         parentClass: workspace.parentElement?.className || '',
         imageRect:{ x:imageRect.x, y:imageRect.y, width:imageRect.width, height:imageRect.height },
         simRect:{ x:simRect.x, y:simRect.y, width:simRect.width, height:simRect.height }
@@ -67,12 +67,12 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
       return result;
     });
     expect(layout.ok, JSON.stringify(layout)).toBe(true);
-    expect(layout.parentClass, JSON.stringify(layout)).toContain('patient-control-column');
-    expect(layout.overlap, `Assessment simulator is covering the patient photo: ${JSON.stringify(layout)}`).toBe(false);
+    expect(layout.parentClass, JSON.stringify(layout)).toContain('patient-stage');
+    expect(layout.overlapRatio, `Assessment simulator must open over the patient photo: ${JSON.stringify(layout)}`).toBeGreaterThan(0.75);
   }
 
   await expectHorsePhoto('/vitals/assets/horse-crush/map-arrival.webp');
-  await expectSimulatorClearOfPatientPhoto();
+  await expectSimulatorOverPatientPhoto();
 
   // Arrival / parking decision.
   const parking = page.locator('[data-horse-parking="south_barn_access"]');
@@ -80,7 +80,7 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
   await parking.click();
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientRecord.active()?.findings?.arrival_parking))).toBe(true);
   await expectHorsePhoto('/vitals/assets/horse-crush/patient-initial.webp');
-  await expectSimulatorClearOfPatientPhoto();
+  await expectSimulatorOverPatientPhoto();
 
   // Visible desktop ABC workflow.
   await page.locator('.bottom-nav button[data-panel="assessmentPanel"]').click();
@@ -119,7 +119,7 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
   await page.locator('[data-assessment-item="distal_csm"]').click();
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientRecord.active()?.findings?.distal_csm))).toBe(true);
   await expectHorsePhoto('/vitals/assets/horse-crush/exam-leg.webp');
-  await expectSimulatorClearOfPatientPhoto();
+  await expectSimulatorOverPatientPhoto();
 
   // Stabilization treatment.
   await page.locator('.bottom-nav button[data-panel="treatmentPanel"]').click();
