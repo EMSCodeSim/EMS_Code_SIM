@@ -33,6 +33,14 @@ async function assignVitalToPartner(page, key) {
   await page.locator(`[data-tool-key="${key}"] .partner-action`).click();
 }
 
+async function runPendingPartnerSkill(page, caseId, key) {
+  const task = await page.evaluate(({ caseId, key }) => window.EMSCodeSimScenarioSession.readPartnerTasks(caseId)[key], { caseId, key });
+  expect(task?.status).toBe('pending');
+  const remainingMs = Math.max(0, new Date(task.dueAt).getTime() - await page.evaluate(() => Date.now()));
+  await page.clock.runFor(remainingMs + 1_000);
+  await expect.poll(async () => page.evaluate(({ caseId, key }) => window.EMSCodeSimScenarioSession.readPartnerTasks(caseId)[key]?.status, { caseId, key })).toBe('complete');
+}
+
 test('partner skills run one at a time, survive reload, and save every result', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
   await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
@@ -44,6 +52,7 @@ test('partner skills run one at a time, survive reload, and save every result', 
 
   let tasks = await page.evaluate(() => window.EMSCodeSimScenarioSession.readPartnerTasks('asthma'));
   expect(tasks.blood_pressure.status).toBe('pending');
+  expect(tasks.blood_pressure.delaySeconds).toBe(24);
   expect(tasks.pulse.status).toBe('queued');
   expect(tasks.respirations.status).toBe('queued');
 
@@ -56,16 +65,17 @@ test('partner skills run one at a time, survive reload, and save every result', 
     await expect(page.locator('[data-tool-key="blood_pressure"] .assignment-progress')).toContainText('Partner gathering');
   }
 
-  await page.clock.runFor(13_000);
-  await expect.poll(async () => page.evaluate(() => window.EMSCodeSimScenarioSession.readPartnerTasks('asthma').blood_pressure.status)).toBe('complete');
+  await runPendingPartnerSkill(page, 'asthma', 'blood_pressure');
   await expect.poll(async () => page.evaluate(() => window.EMSCodeSimScenarioSession.readPartnerTasks('asthma').pulse.status)).toBe('pending');
 
-  await page.clock.runFor(13_000);
-  await expect.poll(async () => page.evaluate(() => window.EMSCodeSimScenarioSession.readPartnerTasks('asthma').pulse.status)).toBe('complete');
+  tasks = await page.evaluate(() => window.EMSCodeSimScenarioSession.readPartnerTasks('asthma'));
+  expect(tasks.pulse.delaySeconds).toBe(15);
+  await runPendingPartnerSkill(page, 'asthma', 'pulse');
   await expect.poll(async () => page.evaluate(() => window.EMSCodeSimScenarioSession.readPartnerTasks('asthma').respirations.status)).toBe('pending');
 
-  await page.clock.runFor(13_000);
-  await expect.poll(async () => page.evaluate(() => window.EMSCodeSimScenarioSession.readPartnerTasks('asthma').respirations.status)).toBe('complete');
+  tasks = await page.evaluate(() => window.EMSCodeSimScenarioSession.readPartnerTasks('asthma'));
+  expect(tasks.respirations.delaySeconds).toBe(20);
+  await runPendingPartnerSkill(page, 'asthma', 'respirations');
 
   const result = await page.evaluate(() => {
     const record = window.EMSCodeSimPatientRecord.active();
@@ -118,8 +128,7 @@ test('main care path remains usable after partner completion', async ({ page }) 
   await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
   await unlockGuidedCare(page, 'asthma');
   await assignVitalToPartner(page, 'pulse');
-  await page.clock.runFor(13_000);
-  await expect.poll(async () => page.evaluate(() => window.EMSCodeSimScenarioSession.readPartnerTasks('asthma').pulse.status)).toBe('complete');
+  await runPendingPartnerSkill(page, 'asthma', 'pulse');
 
   for (const panel of ['assessmentPanel', 'historyPanel', 'treatmentPanel', 'findingsPanel']) {
     await page.locator(`[data-panel="${panel}"]`).click();
