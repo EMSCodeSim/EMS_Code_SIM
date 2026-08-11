@@ -44,9 +44,18 @@ test('direct vital entry saves and restores the complete pupil finding', async (
   expect(saved.patient.findings.pupils.rightReactive).toBe(true);
   expect(saved.scenario.findings.pupils.value).toBe(saved.patient.findings.pupils.value);
 
+  // Record/Log is no longer a permanent desktop control. Verify the simulator
+  // restores the complete finding through the patient-record API instead of
+  // navigating to the hidden Record panel.
   await page.goto('/vitals/visual-patient.html?case=stroke');
-  await page.locator('[data-panel="findingsPanel"]').click();
-  await expect(page.locator('#findingList')).toContainText('Pupils');
+  await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientRecord?.active()?.findings?.pupils))).toBe(true);
+  const restored = await page.evaluate(() => window.EMSCodeSimPatientRecord.active().findings.pupils);
+  expect(restored.value).toBe(saved.patient.findings.pupils.value);
+  expect(restored.gaze).toBe('midline');
+  expect(restored.tracking).toBe('smooth');
+  expect(restored.expectedFinding).toContain('left gaze deviation');
+  expect(restored.leftReactive).toBe(true);
+  expect(restored.rightReactive).toBe(true);
   await assertNoPageErrors();
 });
 
