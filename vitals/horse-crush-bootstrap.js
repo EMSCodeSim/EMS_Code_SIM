@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const BUILD = '2026.08.11.5';
+  const BUILD = '2026.08.11.6';
 
   function loadOnce(attribute, src) {
     if (document.querySelector(`script[${attribute}]`)) return;
@@ -89,6 +89,7 @@
   loadOnce('data-scenario-learning-upgrade', '/vitals/scenario-learning-upgrade.js');
   loadOnce('data-condition-alert-priority', '/vitals/scenario-condition-alert-priority.js');
   loadOnce('data-horse-crush-ui-fix', '/vitals/horse-crush-ui-fix.js');
+  loadOnce('data-horse-photo-layer-fix', '/vitals/horse-photo-layer-fix.js');
 
   const defs = window.EMSCodeSimScenarioDefinitions;
   const requiredGroups = [
