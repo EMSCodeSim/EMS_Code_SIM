@@ -1,7 +1,26 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.08.12.12';
+  const PATIENT_WORKSPACE_BUILD = '2026.08.12.13';
+
+  // The patient page has several independent layout layers that can move the same
+  // nodes during startup. A stale insertBefore reference should never crash the
+  // encounter; preserve native behavior for valid references and safely append
+  // only when the reference no longer belongs to the requested parent.
+  if (!window.EMSCodeSimDomInsertionGuard) {
+    const nativeInsertBefore = Node.prototype.insertBefore;
+    Object.defineProperty(Node.prototype, 'insertBefore', {
+      configurable: true,
+      writable: true,
+      value(newNode, referenceNode) {
+        if (referenceNode != null && referenceNode.parentNode !== this) {
+          return nativeInsertBefore.call(this, newNode, null);
+        }
+        return nativeInsertBefore.call(this, newNode, referenceNode);
+      }
+    });
+    window.EMSCodeSimDomInsertionGuard = Object.freeze({ version:'2026.08.12.2', active:true });
+  }
 
   const assessmentTools = [
     { category: 'Scene size-up', key: 'scene_size_up', label: 'Scene size-up & first impression', description: 'Use dispatch and the patient picture to decide PPE, safety, patient count, NOI/MOI, resources, spinal precautions, general impression, responsiveness, and priority.', url: '/vitals/visual-patient.html' },
