@@ -1,6 +1,5 @@
 /* Desktop Patient Update / info window fix — 2026-08-12
-   Keep the center interaction column predictable:
-   Patient Update first, domain buttons second, follow-up interaction third. */
+   Keep Patient Update readable first: one compact header, then title/text, with controls secondary. */
 @media (min-width:980px){
   body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #clinicalInteractionColumn{
     align-items:stretch!important;
@@ -11,19 +10,15 @@
     order:0!important;
     position:relative!important;
     inset:auto!important;
-    left:auto!important;
-    right:auto!important;
-    top:auto!important;
-    bottom:auto!important;
     transform:none!important;
     flex:0 0 auto!important;
     width:100%!important;
     min-width:0!important;
     max-width:100%!important;
-    min-height:104px!important;
-    max-height:164px!important;
+    min-height:106px!important;
+    max-height:154px!important;
     margin:0!important;
-    padding:10px 12px!important;
+    padding:9px 10px 28px!important;
     overflow:auto!important;
     border:1px solid #3d6d88!important;
     border-radius:14px!important;
@@ -32,32 +27,84 @@
     z-index:2!important;
   }
 
-  /* Keep the voice/replay toolbar compact so the clinical update remains the focus. */
-  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #infoUpdateWindow button,
-  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #infoUpdateWindow select{
-    min-height:28px!important;
-    max-height:32px!important;
-    padding-top:3px!important;
-    padding-bottom:3px!important;
+  #infoUpdateWindow .info-update-head{
+    min-height:22px!important;
+    margin:0 0 3px!important;
+    align-items:center!important;
+  }
+  #infoUpdateWindow .info-update-head-actions{
+    gap:4px!important;
+  }
+  #infoUpdateWindow .info-update-voice-controls{
+    display:flex!important;
+    gap:3px!important;
+  }
+  #infoUpdateWindow .info-update-voice-button{
+    width:26px!important;
+    min-width:26px!important;
+    height:26px!important;
+    min-height:26px!important;
+    padding:0!important;
+    border-radius:7px!important;
+  }
+  #infoUpdateWindow .info-update-voice-button .info-voice-label{
+    display:none!important;
+  }
+  #infoUpdateWindow #infoUpdateCollapse{
+    width:26px!important;
+    min-width:26px!important;
+    height:26px!important;
+    min-height:26px!important;
+    padding:0!important;
+  }
+  #infoUpdateWindow #infoUpdateTime{
+    font-size:.68rem!important;
   }
 
-  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #infoUpdateWindow p,
-  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #infoUpdateWindow .info-update-copy,
-  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #infoUpdateWindow .patient-update-copy{
-    margin-top:6px!important;
-    margin-bottom:0!important;
-    font-size:.83rem!important;
+  #infoUpdateWindow>#infoUpdateTitle{
+    display:block!important;
+    margin:1px 0 3px!important;
+    font-size:.94rem!important;
+    line-height:1.2!important;
+  }
+  #infoUpdateWindow>#infoUpdateText{
+    margin:0!important;
+    padding:0 2px 0 0!important;
+    font-size:.86rem!important;
     line-height:1.38!important;
   }
 
-  /* Domain controls always follow Patient Update, never precede it. */
+  /* History navigation stays available without using a full row above the update text. */
+  #infoUpdateWindow .info-update-controls{
+    position:absolute!important;
+    left:10px!important;
+    bottom:5px!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:5px!important;
+    margin:0!important;
+    padding:0!important;
+    width:auto!important;
+  }
+  #infoUpdateWindow .info-update-controls button{
+    width:24px!important;
+    min-width:24px!important;
+    height:22px!important;
+    min-height:22px!important;
+    padding:0!important;
+    border-radius:6px!important;
+  }
+  #infoUpdateWindow #infoUpdateCount{
+    font-size:.65rem!important;
+    line-height:1!important;
+  }
+
   body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #clinicalInteractionColumn>.bottom-nav.clinical-domain-rail{
     order:1!important;
     flex:0 0 auto!important;
     margin:0!important;
   }
 
-  /* Follow-up area is the next logical interaction surface. */
   body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #clinicalInteractionColumn>#horseClinicalQuestionBox{
     order:2!important;
     position:relative!important;
@@ -79,7 +126,6 @@
     order:4!important;
   }
 
-  /* Do not let legacy patient-update rules place the window back over the photo. */
   body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .patient-stage>#infoUpdateWindow,
   body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .patient-stage>.info-update-window{
     display:none!important;
