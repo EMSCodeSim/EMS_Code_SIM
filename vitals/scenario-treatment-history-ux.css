@@ -1,0 +1,177 @@
+@media (min-width: 980px) {
+  #treatmentPanel .treatment-native-select-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  #treatmentPanel .horse-treatment-detail-grid label {
+    display: block;
+  }
+
+  #treatmentPanel .treatment-followup-choice-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  #treatmentPanel .treatment-followup-choice {
+    min-height: 44px;
+    border: 1px solid rgba(120, 180, 210, .35);
+    border-radius: 10px;
+    background: rgba(8, 31, 49, .72);
+    color: #f4fbff;
+    font: inherit;
+    font-weight: 700;
+    padding: 9px 10px;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  #treatmentPanel .treatment-followup-choice:hover,
+  #treatmentPanel .treatment-followup-choice:focus-visible {
+    border-color: rgba(119, 211, 245, .85);
+    background: rgba(16, 53, 76, .92);
+  }
+
+  #treatmentPanel .treatment-followup-choice.selected {
+    border-color: #7ae0b4;
+    background: rgba(28, 105, 78, .45);
+    box-shadow: inset 0 0 0 1px rgba(122, 224, 180, .25);
+  }
+
+  #horseMovementChoices {
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid rgba(111, 190, 224, .34);
+    border-radius: 12px;
+    background: rgba(8, 27, 42, .72);
+  }
+
+  .horse-movement-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 7px;
+  }
+
+  .horse-movement-head small {
+    display: block;
+    margin-bottom: 2px;
+    color: #8bcde9;
+    font-size: 10px;
+    letter-spacing: .08em;
+    font-weight: 800;
+  }
+
+  .horse-movement-head strong {
+    display: block;
+    color: #fff;
+    font-size: 15px;
+  }
+
+  .horse-movement-head > span {
+    color: #b9ceda;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  #horseMovementChoices > p {
+    margin: 0 0 10px;
+    color: #c6d8e3;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .horse-movement-option-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .horse-movement-option-grid button {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-height: 58px;
+    padding: 9px 10px;
+    border: 1px solid rgba(119, 185, 214, .35);
+    border-radius: 10px;
+    background: rgba(11, 40, 59, .78);
+    color: #eefaff;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .horse-movement-option-grid button strong {
+    font-size: 13px;
+  }
+
+  .horse-movement-option-grid button span {
+    color: #b9cfda;
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  .horse-movement-option-grid button:hover,
+  .horse-movement-option-grid button:focus-visible {
+    border-color: rgba(120, 218, 246, .8);
+    background: rgba(16, 55, 78, .95);
+  }
+
+  .horse-movement-option-grid button.selected {
+    border-color: #74dfae;
+    background: rgba(26, 98, 72, .42);
+  }
+}
+
+@media (max-width: 979px) {
+  #treatmentPanel .treatment-native-select-hidden {
+    display: none !important;
+  }
+
+  #treatmentPanel .treatment-followup-choice-group,
+  .horse-movement-option-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  #treatmentPanel .treatment-followup-choice,
+  .horse-movement-option-grid button {
+    min-height: 46px;
+    width: 100%;
+    border: 1px solid rgba(115, 183, 215, .4);
+    border-radius: 10px;
+    background: rgba(10, 38, 57, .9);
+    color: #fff;
+    padding: 10px;
+    text-align: left;
+    font: inherit;
+  }
+
+  #treatmentPanel .treatment-followup-choice.selected,
+  .horse-movement-option-grid button.selected {
+    border-color: #74dfae;
+    background: rgba(26, 98, 72, .48);
+  }
+
+  #horseMovementChoices {
+    margin-top: 12px;
+    padding: 10px;
+    border: 1px solid rgba(111, 190, 224, .3);
+    border-radius: 12px;
+  }
+
+  .horse-movement-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+}
