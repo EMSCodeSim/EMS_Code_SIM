@@ -19,21 +19,21 @@ function hasReassessmentDue(){return Boolean(document.querySelector('.reassessme
 function vitalMissing(){return ['blood_pressure','pulse','respirations','spo2'].filter(key=>!finding(key))}
 function abcMissing(){return ['airway','breathing','perfusion'].filter(key=>!finding(key))}
 function historyRemaining(){const badge=document.querySelector('.bottom-nav button[data-panel="historyPanel"] .badge,.bottom-nav button[data-panel="historyPanel"] [class*="badge"]');const n=Number((badge?.textContent||'').trim());return Number.isFinite(n)&&n>0?n:0}
+function cueState(){
+ if(hasReassessmentDue())return {reassess:true,html:'<strong>Reassessment due.</strong> Treatment or a condition change has created a finding that should be checked again.'};
+ const abc=abcMissing();
+ if(abc.length)return {reassess:false,html:`<strong>Initial assessment incomplete.</strong> Still assess ${abc.map(k=>k==='perfusion'?'circulation':k).join(', ')}.`};
+ const vitals=vitalMissing();
+ if(vitals.length>=3)return {reassess:false,html:'<strong>Keep gathering objective data.</strong> Obtain the vital signs that are clinically appropriate for this patient.'};
+ const history=historyRemaining();
+ if(history>0)return {reassess:false,html:'<strong>Continue focused discovery.</strong> Use history, targeted assessment, and the mini-sims to answer the questions raised by the patient presentation.'};
+ return {reassess:false,html:'<strong>Commit to the next clinical decision.</strong> Treat what you found, then reassess the patient response.'};
+}
 function renderCue(){
  const cue=ensureCue();if(!cue)return;
- cue.classList.remove('reassess');
- if(hasReassessmentDue()){
-   cue.classList.add('reassess');
-   cue.innerHTML='<strong>Reassessment due.</strong> Treatment or a condition change has created a finding that should be checked again.';
-   return;
- }
- const abc=abcMissing();
- if(abc.length){cue.innerHTML=`<strong>Initial assessment incomplete.</strong> Still assess ${abc.map(k=>k==='perfusion'?'circulation':k).join(', ')}.`;return}
- const vitals=vitalMissing();
- if(vitals.length>=3){cue.innerHTML='<strong>Keep gathering objective data.</strong> Obtain the vital signs that are clinically appropriate for this patient.';return}
- const history=historyRemaining();
- if(history>0){cue.innerHTML='<strong>Continue focused discovery.</strong> Use history, targeted assessment, and the mini-sims to answer the questions raised by the patient presentation.';return}
- cue.innerHTML='<strong>Commit to the next clinical decision.</strong> Treat what you found, then reassess the patient response.';
+ const state=cueState();
+ cue.classList.toggle('reassess',state.reassess);
+ if(cue.innerHTML!==state.html)cue.innerHTML=state.html;
 }
 function normalizeInfoAnchor(){
  if(!horse())return;
@@ -41,9 +41,28 @@ function normalizeInfoAnchor(){
  if(column&&update&&update.parentElement!==column)column.prepend(update);
 }
 function run(){if(!horse())return;normalizeInfoAnchor();renderCue()}
-const observer=new MutationObserver(()=>{if(horse())requestAnimationFrame(run)});
-document.addEventListener('DOMContentLoaded',()=>{run();observer.observe(document.body,{subtree:true,childList:true,attributes:true});setTimeout(run,250);setTimeout(run,900)});
-window.addEventListener('emscodesim:assessment-saved',run);
-window.addEventListener('emscodesim:vital-saved',run);
-window.addEventListener('storage',run);
+let queued=false;
+function scheduleRun(){
+ if(queued||!horse())return;
+ queued=true;
+ requestAnimationFrame(()=>{queued=false;run()});
+}
+const observer=new MutationObserver(mutations=>{
+ if(!horse())return;
+ const meaningful=mutations.some(m=>{
+   const target=m.target?.nodeType===1?m.target:m.target?.parentElement;
+   return !target?.closest?.('#clinicalNextCue');
+ });
+ if(meaningful)scheduleRun();
+});
+document.addEventListener('DOMContentLoaded',()=>{
+ run();
+ observer.observe(document.body,{subtree:true,childList:true});
+ setTimeout(run,250);
+ setTimeout(run,900);
+});
+window.addEventListener('emscodesim:assessment-saved',scheduleRun);
+window.addEventListener('emscodesim:vital-saved',scheduleRun);
+window.addEventListener('storage',scheduleRun);
+window.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
 })();
