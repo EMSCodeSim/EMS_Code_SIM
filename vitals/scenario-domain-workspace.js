@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.11.9';
+  const VERSION = '2026.08.11.10';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -51,6 +51,15 @@
     return $('clinicalInteractionColumn');
   }
 
+  function setInteractionOrder(node, value) {
+    if (!node) return;
+    node.style.setProperty('order', String(value), 'important');
+  }
+
+  function clearInteractionOrder(node) {
+    node?.style?.removeProperty('order');
+  }
+
   function ensureInteractionColumn() {
     const layout = document.querySelector('.scenario-hero-layout');
     const control = document.querySelector('.patient-control-column');
@@ -79,24 +88,34 @@
     nav.setAttribute('aria-label', 'Clinical domains');
     nav.querySelector('button[data-panel="historyPanel"]')?.classList.remove('desktop-domain-hidden');
     nav.querySelector('button[data-panel="findingsPanel"]')?.classList.add('desktop-domain-hidden');
-
     if (nav.parentElement !== column) column.appendChild(nav);
+    setInteractionOrder(nav, 0);
 
     const update = document.querySelector('.info-update-window');
     if (update) {
       update.classList.remove('cockpit-patient-update');
       update.classList.add('cockpit-center-update');
       if (update.parentElement !== column) column.appendChild(update);
+      setInteractionOrder(update, 1);
     }
 
     const question = $('horseClinicalQuestionBox');
-    if (question && question.parentElement !== column) column.appendChild(question);
+    if (question) {
+      if (question.parentElement !== column) column.appendChild(question);
+      setInteractionOrder(question, 2);
+    }
 
     const inlineQuestion = $('horseAssessmentInlineQuestion');
-    if (inlineQuestion && inlineQuestion.parentElement !== column) column.appendChild(inlineQuestion);
+    if (inlineQuestion) {
+      if (inlineQuestion.parentElement !== column) column.appendChild(inlineQuestion);
+      setInteractionOrder(inlineQuestion, 3);
+    }
 
     const entryWorkflow = document.querySelector('.patient-entry-workflow');
-    if (entryWorkflow && entryWorkflow.parentElement !== column) column.appendChild(entryWorkflow);
+    if (entryWorkflow) {
+      if (entryWorkflow.parentElement !== column) column.appendChild(entryWorkflow);
+      setInteractionOrder(entryWorkflow, 4);
+    }
 
     return true;
   }
@@ -108,9 +127,11 @@
     const nav = centerRail();
     if (!layout || !control) return;
 
+    clearInteractionOrder(nav);
     if (nav && nav.parentElement !== layout) layout.insertBefore(nav, control);
 
     const update = document.querySelector('.info-update-window');
+    clearInteractionOrder(update);
     if (update && update.parentElement !== control) {
       update.classList.remove('cockpit-center-update');
       control.insertBefore(update, control.firstChild);
@@ -118,17 +139,20 @@
 
     const currentAssessment = $('horseCurrentAssessment');
     const question = $('horseClinicalQuestionBox');
+    clearInteractionOrder(question);
     if (question && question.parentElement !== control) {
       control.insertBefore(question, currentAssessment || control.querySelector('.patient-entry-workflow') || $('actionSheet'));
     }
 
     const entryWorkflow = document.querySelector('.patient-entry-workflow');
+    clearInteractionOrder(entryWorkflow);
     if (entryWorkflow && entryWorkflow.parentElement !== control) {
       if (currentAssessment?.parentElement === control) currentAssessment.insertAdjacentElement('afterend', entryWorkflow);
       else control.insertBefore(entryWorkflow, $('actionSheet'));
     }
 
     const inlineQuestion = $('horseAssessmentInlineQuestion');
+    clearInteractionOrder(inlineQuestion);
     const assessmentTools = $('assessmentTools');
     if (inlineQuestion && assessmentTools && inlineQuestion.parentElement !== assessmentTools) assessmentTools.prepend(inlineQuestion);
 
