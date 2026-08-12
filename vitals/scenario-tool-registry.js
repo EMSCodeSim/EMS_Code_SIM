@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.08.12.16';
+  const PATIENT_WORKSPACE_BUILD = '2026.08.12.17';
 
   // The patient page has several independent layout layers that can move the same
   // nodes during startup. A stale insertBefore reference should never crash the
@@ -118,5 +118,7 @@
   loadPatientScenarioScript(`/vitals/scenario-natural-dialogue.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioNaturalDialogue', 'script[data-scenario-natural-dialogue]');
   loadPatientScenarioScript(`/vitals/scenario-treatment-history-ux.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioTreatmentHistoryUx', 'script[data-scenario-treatment-history-ux]');
   loadPatientScenarioScript(`/vitals/scenario-patient-rapport.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioPatientRapport', 'script[data-scenario-patient-rapport]');
+  loadPatientScenarioScript(`/vitals/scenario-patient-anger.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioPatientAnger', 'script[data-scenario-patient-anger]');
   loadPatientScenarioScript(`/vitals/scenario-communication-debrief.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioCommunicationDebrief', 'script[data-scenario-communication-debrief]');
+  loadPatientScenarioScript(`/vitals/scenario-anger-debrief.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioAngerDebrief', 'script[data-scenario-anger-debrief]');
 })();
