@@ -1,0 +1,134 @@
+/* Single-screen compact layer for scenario mini sims. Loaded after the shared
+   embedded stylesheet so legacy tools inherit the same viewport discipline. */
+html[data-ems-mini-sim="embedded"],
+html[data-ems-mini-sim="embedded"] body{
+  height:100%!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+body.ems-embedded-mini-sim{
+  height:100%!important;
+  min-height:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+}
+body.ems-embedded-mini-sim .ems-mini-flow{
+  position:relative!important;
+  flex:0 0 auto!important;
+  padding:3px 6px!important;
+  gap:4px!important;
+}
+body.ems-embedded-mini-sim .ems-mini-flow span{
+  min-height:23px!important;
+  font-size:.58rem!important;
+}
+body.ems-embedded-mini-sim .ems-mini-flow span::before{
+  width:16px!important;height:16px!important;font-size:.52rem!important;
+}
+
+body.ems-embedded-mini-sim .sv-main,
+body.ems-embedded-mini-sim .va-shell,
+body.ems-embedded-mini-sim .page-shell,
+body.ems-embedded-mini-sim[data-vital-topic="gcs"] main,
+body.ems-embedded-mini-sim:has(#adultSVG) .wrap{
+  flex:1 1 0!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+  padding:5px!important;
+  gap:5px!important;
+}
+
+body.ems-embedded-mini-sim .sv-card,
+body.ems-embedded-mini-sim .va-card,
+body.ems-embedded-mini-sim[data-vital-topic="gcs"] main>.card{
+  padding:7px!important;
+  border-radius:10px!important;
+}
+body.ems-embedded-mini-sim #simCard,
+body.ems-embedded-mini-sim #answerCard,
+body.ems-embedded-mini-sim .va-stage,
+body.ems-embedded-mini-sim .va-result{
+  min-height:0!important;
+  max-height:100%!important;
+  overflow:auto!important;
+  overscroll-behavior:contain!important;
+}
+body.ems-embedded-mini-sim .sv-stage{
+  min-height:120px!important;
+  padding:5px!important;
+}
+body.ems-embedded-mini-sim .sv-instruction{margin-bottom:4px!important;font-size:.68rem!important;line-height:1.22!important}
+body.ems-embedded-mini-sim .sv-actions{margin-top:4px!important;gap:4px!important}
+body.ems-embedded-mini-sim .sv-btn,
+body.ems-embedded-mini-sim .va-btn{
+  min-height:33px!important;
+  padding:5px 7px!important;
+  font-size:.68rem!important;
+}
+body.ems-embedded-mini-sim .sv-state{margin-top:3px!important;font-size:.63rem!important}
+body.ems-embedded-mini-sim .sv-field{margin-top:4px!important}
+body.ems-embedded-mini-sim .sv-field input,
+body.ems-embedded-mini-sim .sv-field select{padding:6px!important;font-size:.72rem!important}
+body.ems-embedded-mini-sim .sv-answer h2,
+body.ems-embedded-mini-sim .va-interpret h2{font-size:.82rem!important}
+body.ems-embedded-mini-sim .sv-answer>p,
+body.ems-embedded-mini-sim .va-interpret p{font-size:.64rem!important;line-height:1.22!important}
+body.ems-embedded-mini-sim .sv-monitor{padding:8px!important;max-width:270px!important}
+body.ems-embedded-mini-sim .sv-monitor-value{font-size:clamp(2.1rem,8vh,3.4rem)!important}
+body.ems-embedded-mini-sim .sv-device{padding:8px!important}
+body.ems-embedded-mini-sim .sv-device-screen{min-height:48px!important;font-size:1.65rem!important}
+body.ems-embedded-mini-sim .sv-heart{width:82px!important;height:82px!important;font-size:2.7rem!important}
+body.ems-embedded-mini-sim .sv-eyes{gap:12px!important}
+body.ems-embedded-mini-sim .sv-eye{width:82px!important;height:54px!important}
+body.ems-embedded-mini-sim .sv-iris{width:36px!important;height:36px!important}
+body.ems-embedded-mini-sim .sv-skin-swatch{width:110px!important;height:78px!important}
+body.ems-embedded-mini-sim .sv-chest{transform:scale(.70)!important}
+body.ems-embedded-mini-sim #gauge-container{width:min(35vh,245px,38vw)!important;height:min(35vh,245px,38vw)!important}
+
+/* Practice-style legacy pages become compact split layouts. */
+body.ems-embedded-mini-sim .page-shell>#practicePanel{
+  height:100%!important;
+  min-height:0!important;
+  overflow:auto!important;
+}
+body.ems-embedded-mini-sim #practicePanel .section-heading{padding:5px 7px!important;margin-bottom:4px!important}
+body.ems-embedded-mini-sim #practicePanel .section-heading p{display:none!important}
+body.ems-embedded-mini-sim #practicePanel .patient-card,
+body.ems-embedded-mini-sim #practicePanel .decision-card,
+body.ems-embedded-mini-sim #practicePanel .results-panel{padding:6px!important;margin-bottom:4px!important}
+body.ems-embedded-mini-sim #practicePanel textarea{min-height:48px!important;max-height:68px!important}
+
+/* GCS and burn tools are specifically prone to vertical overflow. */
+body.ems-embedded-mini-sim[data-vital-topic="gcs"] main{align-items:stretch!important}
+body.ems-embedded-mini-sim[data-vital-topic="gcs"] .q{padding:5px!important;margin-bottom:3px!important}
+body.ems-embedded-mini-sim[data-vital-topic="gcs"] .q h3{font-size:.73rem!important;margin:0 0 3px!important}
+body.ems-embedded-mini-sim[data-vital-topic="gcs"] .btn,
+body.ems-embedded-mini-sim[data-vital-topic="gcs"] .resp{padding:.35rem .45rem!important;font-size:.64rem!important}
+body.ems-embedded-mini-sim:has(#adultSVG) .wrap{grid-template-rows:auto minmax(0,1fr) auto!important}
+body.ems-embedded-mini-sim:has(#adultSVG) .svg-wrap{width:min(100%,240px)!important;max-height:260px!important}
+body.ems-embedded-mini-sim:has(#adultSVG) .results{padding:4px!important}
+body.ems-embedded-mini-sim:has(#adultSVG) .controls,
+body.ems-embedded-mini-sim:has(#adultSVG) .quiz{padding:5px!important}
+
+/* Wide mini-sim frames should remain side-by-side; only narrow frames stack. */
+@media (max-width:620px){
+  html[data-ems-mini-sim="embedded"],html[data-ems-mini-sim="embedded"] body,
+  body.ems-embedded-mini-sim{overflow:auto!important;height:auto!important;min-height:100%!important}
+  body.ems-embedded-mini-sim .sv-main,
+  body.ems-embedded-mini-sim .va-shell,
+  body.ems-embedded-mini-sim[data-vital-topic="gcs"] main,
+  body.ems-embedded-mini-sim:has(#adultSVG) .wrap{
+    grid-template-columns:1fr!important;
+    overflow:auto!important;
+  }
+}
+
+@media (max-height:620px) and (min-width:621px){
+  body.ems-embedded-mini-sim .ems-mini-flow span{min-height:20px!important;font-size:.53rem!important}
+  body.ems-embedded-mini-sim .sv-stage{min-height:90px!important}
+  body.ems-embedded-mini-sim .sv-monitor{max-width:230px!important}
+  body.ems-embedded-mini-sim #gauge-container{width:min(30vh,210px)!important;height:min(30vh,210px)!important}
+}
