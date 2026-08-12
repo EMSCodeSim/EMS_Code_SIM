@@ -1,40 +1,14 @@
 @media (min-width:980px){
+  /* Progress remains available to encounter validation and grading, but is not
+     shown during play. The center column is reserved for patient speech. */
   body.desktop-scenario-layout.clinical-domain-workspace-v2 .horse-encounter-progress{
-    order:2!important;
-    display:grid!important;
-    gap:7px!important;
-    margin:0!important;
-    padding:9px 10px!important;
-    border:1px solid rgba(94,153,185,.35)!important;
-    border-radius:12px!important;
-    background:rgba(6,24,36,.72)!important;
+    display:none!important;
   }
-  body.desktop-scenario-layout.clinical-domain-workspace-v2 .horse-encounter-progress-head{
-    display:flex;align-items:center;justify-content:space-between;gap:8px;
-    font-size:.64rem;letter-spacing:.1em;color:#98b6c7;font-weight:900;
-  }
-  body.desktop-scenario-layout.clinical-domain-workspace-v2 .horse-encounter-progress-head strong{color:#d9edf8;font-size:.72rem}
-  body.desktop-scenario-layout.clinical-domain-workspace-v2 .horse-encounter-steps{
-    display:flex;flex-wrap:wrap;gap:5px;
-  }
-  body.desktop-scenario-layout.clinical-domain-workspace-v2 .horse-encounter-steps span{
-    padding:4px 6px;border:1px solid rgba(104,145,167,.28);border-radius:999px;
-    color:#819cab;background:#091d2b;font-size:.63rem;font-weight:800;white-space:nowrap;
-  }
-  body.desktop-scenario-layout.clinical-domain-workspace-v2 .horse-encounter-steps span.complete{
-    border-color:rgba(83,188,140,.42);color:#bdebd3;background:rgba(19,70,55,.36);
-  }
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .horse-encounter-progress-head,
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 .horse-encounter-steps,
   body.desktop-scenario-layout.clinical-domain-workspace-v2 .horse-next-clinical-cue{
-    display:grid;grid-template-columns:auto 1fr;gap:6px;margin:0;padding:7px 8px;
-    border-radius:9px;background:rgba(20,51,70,.48);color:#c5dce9;font-size:.68rem;line-height:1.35;
+    display:none!important;
   }
-  body.desktop-scenario-layout.clinical-domain-workspace-v2 .horse-next-clinical-cue strong{
-    color:#75c8f2;font-size:.6rem;letter-spacing:.08em;
-  }
-  body.desktop-scenario-layout.clinical-domain-workspace-v2 .horse-next-clinical-cue.urgent{
-    background:rgba(94,59,12,.42);border:1px solid rgba(231,174,75,.32);color:#f5deb1;
-  }
-  body.desktop-scenario-layout.clinical-domain-workspace-v2 .horse-next-clinical-cue.urgent strong{color:#f4c86d}
   body.desktop-scenario-layout.clinical-domain-workspace-v2 #horseClinicalQuestionBox{order:3!important}
   body.desktop-scenario-layout.clinical-domain-workspace-v2 #horseAssessmentInlineQuestion{order:4!important}
 }
