@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.08.12.13';
+  const PATIENT_WORKSPACE_BUILD = '2026.08.12.14';
 
   // The patient page has several independent layout layers that can move the same
   // nodes during startup. A stale insertBefore reference should never crash the
@@ -106,6 +106,7 @@
   loadPatientScenarioStyle(`/vitals/scenario-clinical-flow-polish.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioClinicalFlowPolish', 'link[data-scenario-clinical-flow-polish]');
   loadPatientScenarioStyle(`/vitals/horse-encounter-validation.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'horseEncounterValidation', 'link[data-horse-encounter-validation]');
   loadPatientScenarioStyle(`/vitals/scenario-assessment-followup-cleanup.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioAssessmentFollowupCleanup', 'link[data-scenario-assessment-followup-cleanup]');
+  loadPatientScenarioStyle(`/vitals/scenario-treatment-history-ux.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioTreatmentHistoryUx', 'link[data-scenario-treatment-history-ux]');
 
   loadPatientScenarioScript(`/vitals/scenario-mini-sim-overlay.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioMiniSimOverlay', 'script[data-scenario-mini-sim-overlay]');
   loadPatientScenarioScript(`/vitals/scenario-domain-workspace.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioDomainWorkspace', 'script[data-scenario-domain-workspace]');
@@ -115,4 +116,5 @@
   loadPatientScenarioScript(`/vitals/scenario-transport-handoff-actions.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioTransportHandoffActions', 'script[data-scenario-transport-handoff-actions]');
   loadPatientScenarioScript(`/vitals/scenario-patient-conversation.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioPatientConversation', 'script[data-scenario-patient-conversation]');
   loadPatientScenarioScript(`/vitals/scenario-natural-dialogue.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioNaturalDialogue', 'script[data-scenario-natural-dialogue]');
+  loadPatientScenarioScript(`/vitals/scenario-treatment-history-ux.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioTreatmentHistoryUx', 'script[data-scenario-treatment-history-ux]');
 })();
