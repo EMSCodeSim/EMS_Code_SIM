@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.11.14';
+  const VERSION = '2026.08.12.1';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -100,20 +100,20 @@
     const nav = centerRail();
     if (!column || !nav) return false;
 
-    nav.classList.add('clinical-domain-rail');
-    nav.setAttribute('aria-label', 'Clinical domains');
-    nav.querySelector('button[data-panel="historyPanel"]')?.classList.remove('desktop-domain-hidden');
-    nav.querySelector('button[data-panel="findingsPanel"]')?.classList.add('desktop-domain-hidden');
-    if (nav.parentElement !== column) column.appendChild(nav);
-    setInteractionOrder(nav, 0);
-
     const update = document.querySelector('.info-update-window');
     if (update) {
       update.classList.remove('cockpit-patient-update');
       update.classList.add('cockpit-center-update');
       if (update.parentElement !== column) column.appendChild(update);
-      setInteractionOrder(update, 1);
+      setInteractionOrder(update, 0);
     }
+
+    nav.classList.add('clinical-domain-rail');
+    nav.setAttribute('aria-label', 'Clinical domains');
+    nav.querySelector('button[data-panel="historyPanel"]')?.classList.remove('desktop-domain-hidden');
+    nav.querySelector('button[data-panel="findingsPanel"]')?.classList.add('desktop-domain-hidden');
+    if (nav.parentElement !== column) column.appendChild(nav);
+    setInteractionOrder(nav, 1);
 
     const question = $('horseClinicalQuestionBox');
     if (question) {
@@ -326,10 +326,6 @@
     window.addEventListener('emscodesim:vital-saved', scheduleReconcile);
     startObserver();
     scheduleReconcile();
-    // The horse arrival card is initialized asynchronously by its scenario layer.
-    // Hold its legacy insertion anchor long enough for that initialization. In the
-    // normal path the MutationObserver sees the card much sooner and the center
-    // workspace can move immediately on the following reconcile.
     window.setTimeout(() => {
       horseArrivalAnchorReleased = true;
       scheduleReconcile();
