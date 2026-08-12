@@ -1,5 +1,63 @@
 /* EMSCodeSim vital board — empty until measured, then fill with recorded value. */
 @media (min-width:980px){
+  /* Final desktop geometry guard. The clinical cockpit has several older layout
+     layers, so center the complete simulator at the outermost visible wrappers.
+     This keeps PATIENT | INTERACTION | WORKSPACE together as one centered unit. */
+  html body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4{
+    overflow-x:hidden!important;
+  }
+
+  html body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .vp-shell.vp-shell{
+    box-sizing:border-box!important;
+    width:min(1500px,calc(100vw - 40px))!important;
+    max-width:1500px!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    padding-left:0!important;
+    padding-right:0!important;
+  }
+
+  html body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .patient-desktop-workspace.patient-desktop-workspace{
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    padding-left:0!important;
+    padding-right:0!important;
+    min-width:0!important;
+  }
+
+  html body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .scenario-hero-layout.scenario-hero-layout{
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    left:auto!important;
+    right:auto!important;
+    transform:none!important;
+    grid-template-columns:minmax(360px,1.12fr) minmax(300px,.78fr) minmax(360px,.9fr)!important;
+    gap:14px!important;
+  }
+
+  html body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .patient-stage.patient-stage{
+    min-width:0!important;
+    width:100%!important;
+    max-width:100%!important;
+    overflow:hidden!important;
+  }
+
+  html body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .patient-stage #patientImage{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:100%!important;
+    object-fit:contain!important;
+    object-position:center center!important;
+    margin:0 auto!important;
+  }
+
   body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools{
     display:grid!important;
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
@@ -119,6 +177,13 @@
 }
 
 @media (min-width:980px) and (max-width:1180px){
+  html body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .vp-shell.vp-shell{
+    width:calc(100vw - 24px)!important;
+  }
+  html body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .scenario-hero-layout.scenario-hero-layout{
+    grid-template-columns:minmax(320px,1fr) minmax(280px,.78fr) minmax(330px,.9fr)!important;
+    gap:10px!important;
+  }
   body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools{
     grid-template-columns:1fr!important;
   }
