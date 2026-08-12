@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.11.4';
+  const VERSION = '2026.08.11.5';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -106,9 +106,57 @@
     }
   }
 
+  function setSectionTitle(section, title, subtitle) {
+    if (!section) return;
+    const titleNode = section.querySelector('.assessment-section-title span');
+    const subtitleNode = section.querySelector('.assessment-section-title small');
+    if (titleNode) titleNode.textContent = title;
+    if (subtitleNode) subtitleNode.textContent = subtitle;
+  }
+
+  function refineAssessmentHierarchy() {
+    const panel = $('assessmentPanel');
+    const tools = $('assessmentTools');
+    if (!panel || !tools) return;
+
+    tools.classList.add('assessment-priority-workspace');
+
+    const immediate = tools.querySelector('.assessment-immediate');
+    if (immediate) {
+      immediate.dataset.assessmentPriority = 'immediate';
+      setSectionTitle(immediate, 'Immediate', 'Scene safety and rapid Airway, Breathing, Circulation. Address immediate threats first.');
+    }
+
+    const focused = tools.querySelector('.horse-assessment-section');
+    if (focused) {
+      focused.dataset.assessmentPriority = 'focused';
+      setSectionTitle(focused, 'Focused', 'Examine the chief complaint or injured region. You decide which findings matter and in what order.');
+    }
+
+    const more = tools.querySelector('.assessment-more');
+    if (more) {
+      more.dataset.assessmentPriority = 'more';
+      const strong = more.querySelector('summary strong');
+      const small = more.querySelector('summary small');
+      if (strong) strong.textContent = 'More';
+      if (small) small.textContent = 'Additional examinations when the presentation or your findings justify them';
+
+      const body = more.querySelector('.assessment-more-body');
+      if (body && !body.querySelector('.assessment-focused-guide')) {
+        const guide = document.createElement('div');
+        guide.className = 'assessment-focused-guide';
+        guide.innerHTML = '<span>FOCUSED VIEW</span><p>Use the focus list to narrow the assessment library by complaint. This organizes choices only—it does not identify the correct exam.</p>';
+        body.prepend(guide);
+      }
+    }
+
+    panel.dataset.assessmentHierarchy = focused ? 'three-level' : 'progressive';
+  }
+
   function expandAssessmentChoices() {
     const panel = $('assessmentPanel');
     if (!panel || panel.hidden) return;
+    refineAssessmentHierarchy();
     panel.querySelectorAll('details').forEach(details => { details.open = true; });
   }
 
@@ -161,6 +209,7 @@
     moveControlsToCenter();
     keepSheetInRightField();
     movePatientUpdateToPatient();
+    refineAssessmentHierarchy();
     openDefaultDomainWhenReady();
   }
 
