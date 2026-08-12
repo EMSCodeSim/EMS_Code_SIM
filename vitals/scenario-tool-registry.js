@@ -1,6 +1,8 @@
 (() => {
   'use strict';
 
+  const PATIENT_WORKSPACE_BUILD = '2026.08.11.8';
+
   const assessmentTools = [
     { category: 'Scene size-up', key: 'scene_size_up', label: 'Scene size-up & first impression', description: 'Use dispatch and the patient picture to decide PPE, safety, patient count, NOI/MOI, resources, spinal precautions, general impression, responsiveness, and priority.', url: '/vitals/visual-patient.html' },
     { category: 'Primary assessment', key: 'airway', label: 'Airway assessment', description: 'Determine patency, threats, sounds, secretions, and protection.', url: '/vitals/visual-airway-assessment.html' },
@@ -72,15 +74,15 @@
   }
 
   // The patient simulator owns one shared mini-sim overlay and one desktop domain
-  // workspace. Keeping both behind the registry means every registered tool uses
-  // the same launch, save, return-to-patient, and right-field behavior.
+  // workspace. Keep both behind the registry, but use a single explicit build
+  // token so browsers and the CDN cannot reuse an older workspace after a release.
   loadPatientScenarioScript(
-    '/vitals/scenario-mini-sim-overlay.js?v=2026.08.11.1',
+    `/vitals/scenario-mini-sim-overlay.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,
     'scenarioMiniSimOverlay',
     'script[data-scenario-mini-sim-overlay]'
   );
   loadPatientScenarioScript(
-    '/vitals/scenario-domain-workspace.js?v=2026.08.11.1',
+    `/vitals/scenario-domain-workspace.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,
     'scenarioDomainWorkspace',
     'script[data-scenario-domain-workspace]'
   );
