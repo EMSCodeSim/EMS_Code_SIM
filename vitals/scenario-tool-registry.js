@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.08.12.6';
+  const PATIENT_WORKSPACE_BUILD = '2026.08.12.7';
 
   const assessmentTools = [
     { category: 'Scene size-up', key: 'scene_size_up', label: 'Scene size-up & first impression', description: 'Use dispatch and the patient picture to decide PPE, safety, patient count, NOI/MOI, resources, spinal precautions, general impression, responsiveness, and priority.', url: '/vitals/visual-patient.html' },
@@ -86,9 +86,11 @@
   loadPatientScenarioStyle(`/vitals/scenario-info-window-fix.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioInfoWindowFix', 'link[data-scenario-info-window-fix]');
   loadPatientScenarioStyle(`/vitals/scenario-clinical-flow-polish.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioClinicalFlowPolish', 'link[data-scenario-clinical-flow-polish]');
   loadPatientScenarioStyle(`/vitals/horse-encounter-validation.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'horseEncounterValidation', 'link[data-horse-encounter-validation]');
+  loadPatientScenarioStyle(`/vitals/scenario-assessment-followup-cleanup.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioAssessmentFollowupCleanup', 'link[data-scenario-assessment-followup-cleanup]');
 
   loadPatientScenarioScript(`/vitals/scenario-mini-sim-overlay.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioMiniSimOverlay', 'script[data-scenario-mini-sim-overlay]');
   loadPatientScenarioScript(`/vitals/scenario-domain-workspace.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioDomainWorkspace', 'script[data-scenario-domain-workspace]');
   loadPatientScenarioScript(`/vitals/scenario-clinical-flow-polish.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioClinicalFlowPolish', 'script[data-scenario-clinical-flow-polish]');
   loadPatientScenarioScript(`/vitals/horse-encounter-validation.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'horseEncounterValidation', 'script[data-horse-encounter-validation]');
+  loadPatientScenarioScript(`/vitals/scenario-assessment-followup-cleanup.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioAssessmentFollowupCleanup', 'script[data-scenario-assessment-followup-cleanup]');
 })();
