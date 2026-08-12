@@ -1,0 +1,208 @@
+/* EMSCodeSim desktop single-screen cockpit — UI 2.47
+   Goal: routine patient care should fit in one viewport. Internal workspace
+   scrolling is allowed when a long library genuinely exceeds the available area. */
+@media (min-width:980px){
+  html:has(body.desktop-scenario-layout.clinical-cockpit-v3),
+  body.desktop-scenario-layout.clinical-cockpit-v3{
+    height:100dvh!important;
+    min-height:100dvh!important;
+    overflow:hidden!important;
+  }
+
+  body.desktop-scenario-layout.clinical-cockpit-v3 .vp-shell{
+    width:100%!important;
+    max-width:1680px!important;
+    height:100dvh!important;
+    min-height:0!important;
+    margin:0 auto!important;
+    padding:6px 10px 8px!important;
+    display:grid!important;
+    grid-template-rows:auto minmax(0,1fr)!important;
+    gap:6px!important;
+    overflow:hidden!important;
+  }
+
+  body.desktop-scenario-layout.clinical-cockpit-v3 .vp-top{
+    min-height:44px!important;
+    padding:2px 0 4px!important;
+    gap:7px!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 .vp-top h1{font-size:1rem!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 .vp-top p{font-size:.68rem!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 .icon-btn,
+  body.desktop-scenario-layout.clinical-cockpit-v3 .vp-timer{transform:scale(.92)}
+
+  body.desktop-scenario-layout.clinical-cockpit-v3 .scenario-hero-layout{
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:hidden!important;
+    align-self:stretch!important;
+  }
+
+  body.desktop-scenario-layout.clinical-cockpit-v3 .patient-stage,
+  body.desktop-scenario-layout.clinical-cockpit-v3 .patient-control-column,
+  body.desktop-scenario-layout.clinical-cockpit-v3 .action-sheet{
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+  }
+
+  /* Keep the patient visible without sacrificing lower controls. */
+  body.desktop-scenario-layout.clinical-cockpit-v3 .patient-stage{
+    max-height:none!important;
+  }
+
+  body.desktop-scenario-layout.clinical-cockpit-v3 .patient-stage>.info-update-window.cockpit-patient-update{
+    left:10px!important;
+    right:10px!important;
+    bottom:10px!important;
+    max-height:min(112px,18dvh)!important;
+    padding:8px 10px!important;
+  }
+
+  /* Compact action rail: four controls should never require scrolling. */
+  body.desktop-scenario-layout.clinical-cockpit-v3 .bottom-nav.clinical-domain-rail{
+    padding:5px!important;
+    gap:5px!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 .bottom-nav.clinical-domain-rail button{
+    min-height:58px!important;
+    padding:6px 3px!important;
+    font-size:.59rem!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 .bottom-nav.clinical-domain-rail button>span{
+    font-size:1.05rem!important;
+  }
+
+  /* Workspace chrome is deliberately small; the selected domain gets the space. */
+  body.desktop-scenario-layout.clinical-cockpit-v3 .sheet-header{
+    min-height:48px!important;
+    padding:8px 11px 7px!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 .sheet-header p{font-size:.56rem!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 .sheet-header h2{font-size:1.02rem!important}
+
+  body.desktop-scenario-layout.clinical-cockpit-v3 .sheet-patient-context{
+    margin:5px 7px 0!important;
+    padding:5px 7px!important;
+    gap:5px!important;
+    min-height:0!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 .sheet-patient-context small{font-size:.54rem!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 .sheet-patient-context strong{font-size:.68rem!important}
+
+  body.desktop-scenario-layout.clinical-cockpit-v3 .vp-panel{
+    padding:7px 8px 9px!important;
+    overscroll-behavior:contain!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 .vp-panel>.sub{
+    margin:0 0 6px!important;
+    font-size:.69rem!important;
+    line-height:1.25!important;
+  }
+
+  /* Vitals: six common measurements fit without a page scroll on normal laptops. */
+  body.desktop-scenario-layout.clinical-cockpit-v3 #vitalTools{gap:4px!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 #vitalTools .compact-vital-row{
+    min-height:52px!important;
+    padding:6px 8px!important;
+    border-radius:9px!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 #vitalTools .vital-row-actions a,
+  body.desktop-scenario-layout.clinical-cockpit-v3 #vitalTools .vital-row-actions .partner-action{
+    min-height:31px!important;
+    min-width:58px!important;
+    padding:4px 7px!important;
+    font-size:.65rem!important;
+  }
+
+  /* Assessment priority sections become compact accordions. Immediate stays open;
+     Focused and More can use the same vertical space instead of stacking endlessly. */
+  body.desktop-scenario-layout.clinical-cockpit-v3 #assessmentTools{gap:5px!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 #assessmentTools .assessment-level{
+    margin:0!important;
+    border-radius:10px!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 #assessmentTools .assessment-section-title,
+  body.desktop-scenario-layout.clinical-cockpit-v3 #assessmentTools details>summary{
+    padding:7px 8px!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 #assessmentTools .assessment-section-title small,
+  body.desktop-scenario-layout.clinical-cockpit-v3 #assessmentTools details>summary small{
+    font-size:.62rem!important;
+    line-height:1.2!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 #assessmentTools .assessment-card{
+    padding:7px 8px!important;
+    border-radius:9px!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 #assessmentTools .assessment-card p{
+    margin-bottom:5px!important;
+    font-size:.68rem!important;
+  }
+
+  /* History: conversation belongs on the patient, so the right side is mostly questions. */
+  body.desktop-scenario-layout.clinical-cockpit-v3 #historyPanel .history-patient-banner{
+    padding:6px 8px!important;
+    margin-bottom:5px!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 #historyPanel .history-category-list{gap:5px!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 #historyPanel details{margin:0!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 #historyPanel summary{padding:7px 8px!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 #historyPanel .known-history-section,
+  body.desktop-scenario-layout.clinical-cockpit-v3 #historyPanel .history-guided-tools{
+    margin-top:6px!important;
+  }
+
+  /* Treatment cards use denser rows while preserving usable hit targets. */
+  body.desktop-scenario-layout.clinical-cockpit-v3 #treatmentTools{gap:5px!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 #treatmentTools .treatment-card{
+    padding:7px 8px!important;
+    border-radius:9px!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 #treatmentTools .treatment-card p{
+    margin-bottom:5px!important;
+    font-size:.68rem!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 .panel-search{margin-bottom:6px!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 .panel-search input{padding:7px 9px!important}
+
+  /* Global page-level accessories should not steal vertical viewport on desktop. */
+  body.desktop-scenario-layout.clinical-cockpit-v3 #persistentClinicalBar{
+    display:none!important;
+  }
+
+  /* Focused visual assessment modal also obeys the viewport. */
+  body.desktop-scenario-layout.clinical-cockpit-v3 .assessment-focus{
+    padding:7px!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 .focus-card{
+    width:min(920px,96vw)!important;
+    height:min(720px,94dvh)!important;
+    max-height:94dvh!important;
+    overflow:hidden!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1.45fr) minmax(280px,.55fr)!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 .focus-image-wrap{
+    height:100%!important;
+    min-height:0!important;
+  }
+  body.desktop-scenario-layout.clinical-cockpit-v3 .focus-content{
+    min-height:0!important;
+    overflow:auto!important;
+    padding:12px!important;
+  }
+}
+
+/* Short laptop screens get an even denser shell. */
+@media (min-width:980px) and (max-height:760px){
+  body.desktop-scenario-layout.clinical-cockpit-v3 .vp-shell{padding-top:3px!important;padding-bottom:4px!important;gap:3px!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 .vp-top{min-height:38px!important;padding:0 0 2px!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 .vp-top p{display:none!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 .sheet-patient-context{display:none!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 .vp-panel>.sub{display:none!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 .bottom-nav.clinical-domain-rail button{min-height:52px!important}
+  body.desktop-scenario-layout.clinical-cockpit-v3 .patient-stage>.info-update-window.cockpit-patient-update{max-height:94px!important}
+}
