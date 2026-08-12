@@ -1,0 +1,23 @@
+@media (min-width:980px){
+  #assessmentPanel .assessment-followup-host{
+    display:grid;
+    gap:10px;
+    margin:0 0 12px;
+  }
+  #assessmentPanel .assessment-followup-host[hidden]{display:none!important}
+  #assessmentPanel .right-workspace-followup{
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+  }
+  #assessmentPanel .right-workspace-followup .horse-question-card,
+  #assessmentPanel .right-workspace-followup .assessment-question-card{
+    width:100%;
+  }
+  body:has(#horseEncounterProgress) #clinicalNextCue{
+    display:none!important;
+  }
+}
