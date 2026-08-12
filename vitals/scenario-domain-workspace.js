@@ -1,12 +1,10 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.11.4';
+  const VERSION = '2026.08.11.9';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
-  let patientUpdateHome = null;
-  let patientUpdateNext = null;
 
   const $ = id => document.getElementById(id);
 
@@ -49,23 +47,92 @@
     return Boolean(sheet && control && sheet.parentElement === control);
   }
 
-  function moveControlsToCenter() {
+  function interactionColumn() {
+    return $('clinicalInteractionColumn');
+  }
+
+  function ensureInteractionColumn() {
     const layout = document.querySelector('.scenario-hero-layout');
     const control = document.querySelector('.patient-control-column');
+    if (!layout || !control) return null;
+
+    let column = interactionColumn();
+    if (!column) {
+      column = document.createElement('section');
+      column.id = 'clinicalInteractionColumn';
+      column.className = 'clinical-interaction-column';
+      column.setAttribute('aria-label', 'Patient interaction and clinical controls');
+    }
+
+    if (column.parentElement !== layout || column.nextElementSibling !== control) {
+      layout.insertBefore(column, control);
+    }
+    return column;
+  }
+
+  function moveInteractionToCenter() {
+    const column = ensureInteractionColumn();
     const nav = centerRail();
-    if (!layout || !control || !nav) return false;
+    if (!column || !nav) return false;
 
     nav.classList.add('clinical-domain-rail');
     nav.setAttribute('aria-label', 'Clinical domains');
-    if (nav.parentElement !== layout || nav.nextElementSibling !== control) {
-      layout.insertBefore(nav, control);
-    }
-
-    // Desktop cockpit has four permanent clinical domains. Record/Log remains
-    // available to the scenario engine, grading, handoff, and persistence.
     nav.querySelector('button[data-panel="historyPanel"]')?.classList.remove('desktop-domain-hidden');
     nav.querySelector('button[data-panel="findingsPanel"]')?.classList.add('desktop-domain-hidden');
+
+    if (nav.parentElement !== column) column.appendChild(nav);
+
+    const update = document.querySelector('.info-update-window');
+    if (update) {
+      update.classList.remove('cockpit-patient-update');
+      update.classList.add('cockpit-center-update');
+      if (update.parentElement !== column) column.appendChild(update);
+    }
+
+    const question = $('horseClinicalQuestionBox');
+    if (question && question.parentElement !== column) column.appendChild(question);
+
+    const inlineQuestion = $('horseAssessmentInlineQuestion');
+    if (inlineQuestion && inlineQuestion.parentElement !== column) column.appendChild(inlineQuestion);
+
+    const entryWorkflow = document.querySelector('.patient-entry-workflow');
+    if (entryWorkflow && entryWorkflow.parentElement !== column) column.appendChild(entryWorkflow);
+
     return true;
+  }
+
+  function restoreMobileStructure() {
+    const layout = document.querySelector('.scenario-hero-layout');
+    const control = document.querySelector('.patient-control-column');
+    const column = interactionColumn();
+    const nav = centerRail();
+    if (!layout || !control) return;
+
+    if (nav && nav.parentElement !== layout) layout.insertBefore(nav, control);
+
+    const update = document.querySelector('.info-update-window');
+    if (update && update.parentElement !== control) {
+      update.classList.remove('cockpit-center-update');
+      control.insertBefore(update, control.firstChild);
+    }
+
+    const currentAssessment = $('horseCurrentAssessment');
+    const question = $('horseClinicalQuestionBox');
+    if (question && question.parentElement !== control) {
+      control.insertBefore(question, currentAssessment || control.querySelector('.patient-entry-workflow') || $('actionSheet'));
+    }
+
+    const entryWorkflow = document.querySelector('.patient-entry-workflow');
+    if (entryWorkflow && entryWorkflow.parentElement !== control) {
+      if (currentAssessment?.parentElement === control) currentAssessment.insertAdjacentElement('afterend', entryWorkflow);
+      else control.insertBefore(entryWorkflow, $('actionSheet'));
+    }
+
+    const inlineQuestion = $('horseAssessmentInlineQuestion');
+    const assessmentTools = $('assessmentTools');
+    if (inlineQuestion && assessmentTools && inlineQuestion.parentElement !== assessmentTools) assessmentTools.prepend(inlineQuestion);
+
+    if (column?.parentElement) column.remove();
   }
 
   function keepSheetInRightField() {
@@ -74,36 +141,6 @@
     if (!sheet || !control) return false;
     if (sheet.parentElement !== control) control.appendChild(sheet);
     return sheet.parentElement === control;
-  }
-
-  function patientUpdateWindow() {
-    return document.querySelector('.info-update-window');
-  }
-
-  function movePatientUpdateToPatient() {
-    const update = patientUpdateWindow();
-    const stage = document.querySelector('.patient-stage');
-    if (!update || !stage) return false;
-
-    if (!patientUpdateHome) {
-      patientUpdateHome = update.parentElement;
-      patientUpdateNext = update.nextSibling;
-    }
-    if (update.parentElement !== stage) stage.appendChild(update);
-    update.classList.add('cockpit-patient-update');
-    return true;
-  }
-
-  function restorePatientUpdate() {
-    const update = patientUpdateWindow();
-    if (!update) return;
-    update.classList.remove('cockpit-patient-update');
-    if (!patientUpdateHome || update.parentElement === patientUpdateHome) return;
-    if (patientUpdateNext && patientUpdateNext.parentNode === patientUpdateHome) {
-      patientUpdateHome.insertBefore(update, patientUpdateNext);
-    } else {
-      patientUpdateHome.appendChild(update);
-    }
   }
 
   function expandAssessmentChoices() {
@@ -151,16 +188,15 @@
   function reconcile() {
     reconcileQueued = false;
     if (!desktopActive()) {
-      document.body.classList.remove('clinical-domain-workspace-v2', 'clinical-cockpit-v3');
-      restorePatientUpdate();
+      document.body.classList.remove('clinical-domain-workspace-v2', 'clinical-cockpit-v3', 'clinical-interaction-workspace-v4');
+      restoreMobileStructure();
       return;
     }
 
     installStyles();
-    document.body.classList.add('clinical-domain-workspace-v2', 'clinical-cockpit-v3');
-    moveControlsToCenter();
+    document.body.classList.add('clinical-domain-workspace-v2', 'clinical-cockpit-v3', 'clinical-interaction-workspace-v4');
+    moveInteractionToCenter();
     keepSheetInRightField();
-    movePatientUpdateToPatient();
     openDefaultDomainWhenReady();
   }
 
@@ -189,6 +225,7 @@
       if (panelId === 'assessmentPanel') expandAssessmentChoices();
       const sheet = $('actionSheet');
       if (sheet && !document.body.classList.contains('horse-arrival-pending')) sheet.hidden = false;
+      scheduleReconcile();
     });
   }
 
@@ -220,7 +257,8 @@
     version: VERSION,
     reconcile: scheduleReconcile,
     activePanelId,
-    rightWorkspaceReady
+    rightWorkspaceReady,
+    interactionColumnReady: () => Boolean(interactionColumn())
   });
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
