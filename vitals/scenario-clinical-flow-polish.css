@@ -1,0 +1,65 @@
+/* Horse Scenario Clinical Flow Polish
+   One information anchor, one follow-up zone, subtle next-step guidance. */
+@media (min-width:980px){
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.horse-current-emt-call #clinicalInteractionColumn{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:9px!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.horse-current-emt-call #clinicalInteractionColumn>.info-update-window{
+    order:0!important;
+    flex:0 0 auto!important;
+    width:100%!important;
+    max-height:176px!important;
+    min-height:104px!important;
+    overflow:auto!important;
+    margin:0!important;
+    border:1px solid #42708a!important;
+    border-radius:14px!important;
+    background:#0b2232!important;
+    box-shadow:inset 0 0 0 1px rgba(125,196,231,.06)!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.horse-current-emt-call #clinicalInteractionColumn>.bottom-nav.clinical-domain-rail{
+    order:1!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.horse-current-emt-call #horseClinicalQuestionBox{
+    order:2!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.horse-current-emt-call #horseAssessmentInlineQuestion{
+    order:3!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.horse-current-emt-call #clinicalNextCue{
+    order:4!important;
+    flex:0 0 auto!important;
+    width:100%!important;
+    margin:0!important;
+    padding:9px 11px!important;
+    border:1px solid rgba(91,153,187,.42)!important;
+    border-radius:11px!important;
+    background:rgba(9,34,50,.72)!important;
+    color:#b9d7e8!important;
+    font-size:.72rem!important;
+    line-height:1.35!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.horse-current-emt-call #clinicalNextCue strong{
+    color:#eef9ff!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.horse-current-emt-call #clinicalNextCue.reassess{
+    border-color:rgba(226,182,93,.55)!important;
+    background:rgba(73,54,16,.42)!important;
+    color:#f2d99c!important;
+  }
+
+  /* Patient Update is the single information anchor on desktop. Keep the right
+     workspace focused on selectable clinical tools instead of repeating context. */
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.horse-current-emt-call .patient-control-column .sheet-patient-context{
+    display:none!important;
+  }
+}
