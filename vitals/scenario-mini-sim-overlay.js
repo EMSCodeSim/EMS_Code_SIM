@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const OVERLAY_VERSION = '2026.08.11.2';
+  const OVERLAY_VERSION = '2026.08.11.1';
   const registry = window.EMSCodeSimToolRegistry;
   const toolPaths = new Set([
     ...(registry?.vitalTools || []).map(tool => tool.url),
@@ -34,7 +34,7 @@
       .patient-stage{isolation:isolate}
       #embeddedSimWorkspace.embedded-sim-workspace{
         position:absolute!important;
-        inset:clamp(6px,1vw,10px)!important;
+        inset:clamp(12px,2.4vw,24px)!important;
         z-index:90!important;
         width:auto!important;
         height:auto!important;
@@ -46,23 +46,22 @@
         display:flex!important;
         flex-direction:column!important;
         border:1px solid rgba(154,214,247,.48)!important;
-        border-radius:16px!important;
+        border-radius:22px!important;
         background:#07131f!important;
-        box-shadow:0 18px 54px rgba(0,0,0,.56),0 0 0 999px rgba(3,12,20,.24)!important;
+        box-shadow:0 24px 70px rgba(0,0,0,.58),0 0 0 999px rgba(3,12,20,.28)!important;
         transform:none!important;
       }
       #embeddedSimWorkspace.embedded-sim-workspace[hidden]{display:none!important}
       #embeddedSimWorkspace .embedded-sim-header{
-        flex:0 0 auto!important;
-        min-height:40px!important;
-        padding:5px 8px!important;
+        min-height:48px!important;
+        padding:7px 10px!important;
         border-bottom:1px solid #31566d!important;
         background:linear-gradient(180deg,#102b40,#0b1f2e)!important;
       }
-      #embeddedSimWorkspace .embedded-sim-header small{color:#7fd0ff!important;font-size:.5rem!important;letter-spacing:.09em!important}
-      #embeddedSimWorkspace .embedded-sim-header strong{font-size:.76rem!important}
+      #embeddedSimWorkspace .embedded-sim-header small{color:#7fd0ff!important;font-size:.55rem!important;letter-spacing:.1em!important}
+      #embeddedSimWorkspace .embedded-sim-header strong{font-size:.82rem!important}
       #embeddedSimWorkspace .embedded-sim-header button{
-        min-height:30px!important;padding:4px 8px!important;border-radius:8px!important;
+        min-height:34px!important;padding:6px 10px!important;border-radius:9px!important;
         border:1px solid #4b8caf!important;background:#173f5a!important;color:#fff!important;
       }
       #embeddedSimWorkspace iframe{display:block!important;flex:1 1 0!important;width:100%!important;height:100%!important;min-height:0!important;border:0!important;background:#eaf2f6!important}
@@ -72,13 +71,13 @@
       body.sim-workspace-open .patient-stage:after{display:none!important}
       @media(max-width:979px){
         body.sim-workspace-open .patient-stage{height:min(72dvh,650px)!important;min-height:430px!important;max-height:650px!important}
-        #embeddedSimWorkspace.embedded-sim-workspace{inset:4px!important;border-radius:14px!important;box-shadow:0 12px 38px rgba(0,0,0,.55)!important}
-        #embeddedSimWorkspace .embedded-sim-header{min-height:40px!important;padding:5px 7px!important}
+        #embeddedSimWorkspace.embedded-sim-workspace{inset:6px!important;border-radius:16px!important;box-shadow:0 14px 44px rgba(0,0,0,.55)!important}
+        #embeddedSimWorkspace .embedded-sim-header{min-height:44px!important;padding:6px 8px!important}
       }
       @media(max-width:480px){
         body.sim-workspace-open .patient-stage{height:72dvh!important;min-height:410px!important}
-        #embeddedSimWorkspace.embedded-sim-workspace{inset:3px!important;border-radius:12px!important}
-        #embeddedSimWorkspace .embedded-sim-header strong{font-size:.72rem!important}
+        #embeddedSimWorkspace.embedded-sim-workspace{inset:4px!important;border-radius:14px!important}
+        #embeddedSimWorkspace .embedded-sim-header strong{font-size:.76rem!important}
       }
     `;
     document.head.appendChild(style);
@@ -152,13 +151,6 @@
         link.href = `/vitals/scenario-mini-sim-embedded.css?v=${encodeURIComponent(OVERLAY_VERSION)}`;
         link.dataset.emsMiniSimCss = '1';
         doc.head.appendChild(link);
-      }
-      if (!doc.querySelector('link[data-ems-mini-sim-compact-css]')) {
-        const compact = doc.createElement('link');
-        compact.rel = 'stylesheet';
-        compact.href = `/vitals/scenario-mini-sim-compact.css?v=${encodeURIComponent(OVERLAY_VERSION)}`;
-        compact.dataset.emsMiniSimCompactCss = '1';
-        doc.head.appendChild(compact);
       }
       if (!doc.querySelector('script[data-ems-mini-sim-js]')) {
         const script = doc.createElement('script');
