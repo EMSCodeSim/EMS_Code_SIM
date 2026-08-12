@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.11.10';
+  const VERSION = '2026.08.11.11';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -10,6 +10,13 @@
 
   function desktopActive() {
     return desktopQuery.matches && document.body.classList.contains('desktop-scenario-layout');
+  }
+
+  function placeNode(parent, node, reference = null) {
+    if (!parent || !node) return false;
+    if (reference && reference.parentElement === parent) parent.insertBefore(node, reference);
+    else parent.appendChild(node);
+    return node.parentElement === parent;
   }
 
   function installStyles() {
@@ -74,7 +81,7 @@
     }
 
     if (column.parentElement !== layout || column.nextElementSibling !== control) {
-      layout.insertBefore(column, control);
+      placeNode(layout, column, control.parentElement === layout ? control : null);
     }
     return column;
   }
@@ -128,27 +135,35 @@
     if (!layout || !control) return;
 
     clearInteractionOrder(nav);
-    if (nav && nav.parentElement !== layout) layout.insertBefore(nav, control);
+    if (nav && nav.parentElement !== layout) {
+      placeNode(layout, nav, control.parentElement === layout ? control : null);
+    }
 
     const update = document.querySelector('.info-update-window');
     clearInteractionOrder(update);
     if (update && update.parentElement !== control) {
       update.classList.remove('cockpit-center-update');
-      control.insertBefore(update, control.firstChild);
+      placeNode(control, update, control.firstElementChild);
     }
 
     const currentAssessment = $('horseCurrentAssessment');
     const question = $('horseClinicalQuestionBox');
     clearInteractionOrder(question);
     if (question && question.parentElement !== control) {
-      control.insertBefore(question, currentAssessment || control.querySelector('.patient-entry-workflow') || $('actionSheet'));
+      const reference = [currentAssessment, control.querySelector('.patient-entry-workflow'), $('actionSheet')]
+        .find(node => node?.parentElement === control) || null;
+      placeNode(control, question, reference);
     }
 
     const entryWorkflow = document.querySelector('.patient-entry-workflow');
     clearInteractionOrder(entryWorkflow);
     if (entryWorkflow && entryWorkflow.parentElement !== control) {
-      if (currentAssessment?.parentElement === control) currentAssessment.insertAdjacentElement('afterend', entryWorkflow);
-      else control.insertBefore(entryWorkflow, $('actionSheet'));
+      if (currentAssessment?.parentElement === control) {
+        placeNode(control, entryWorkflow, currentAssessment.nextElementSibling);
+      } else {
+        const sheet = $('actionSheet');
+        placeNode(control, entryWorkflow, sheet?.parentElement === control ? sheet : null);
+      }
     }
 
     const inlineQuestion = $('horseAssessmentInlineQuestion');
@@ -156,7 +171,7 @@
     const assessmentTools = $('assessmentTools');
     if (inlineQuestion && assessmentTools && inlineQuestion.parentElement !== assessmentTools) assessmentTools.prepend(inlineQuestion);
 
-    if (column?.parentElement) column.remove();
+    if (column?.parentElement && !column.children.length) column.remove();
   }
 
   function keepSheetInRightField() {
@@ -211,6 +226,15 @@
 
   function reconcile() {
     reconcileQueued = false;
+
+    // On desktop the core scenario runtime adds desktop-scenario-layout shortly
+    // after parsing. Do not temporarily restore the mobile DOM while that class
+    // is still settling; just retry once the desktop runtime is ready.
+    if (desktopQuery.matches && !document.body.classList.contains('desktop-scenario-layout')) {
+      window.setTimeout(scheduleReconcile, 40);
+      return;
+    }
+
     if (!desktopActive()) {
       document.body.classList.remove('clinical-domain-workspace-v2', 'clinical-cockpit-v3', 'clinical-interaction-workspace-v4');
       restoreMobileStructure();
