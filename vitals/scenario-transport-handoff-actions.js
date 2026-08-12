@@ -24,7 +24,7 @@
   }
 
   function escapeHtml(value) {
-    return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+    return String(value ?? '').replace(/[&<>'\"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[ch]));
   }
 
   function option(value, selected) {
@@ -46,8 +46,16 @@
     }
 
     const handoffCard = panel.querySelector('.handoff-treatment-card');
-    if (host.parentElement !== panel || host.previousElementSibling !== tools) {
-      panel.insertBefore(host, handoffCard?.parentElement === panel ? handoffCard : tools.nextSibling);
+    const toolsInPanel = tools.parentElement === panel;
+    const handoffInPanel = handoffCard?.parentElement === panel;
+    const correctlyPlaced = host.parentElement === panel
+      && ((toolsInPanel && host.previousElementSibling === tools)
+        || (!toolsInPanel && (!handoffInPanel || host.nextElementSibling === handoffCard)));
+
+    if (!correctlyPlaced) {
+      if (toolsInPanel) tools.insertAdjacentElement('afterend', host);
+      else if (handoffInPanel) handoffCard.insertAdjacentElement('beforebegin', host);
+      else panel.appendChild(host);
     }
     return host;
   }
