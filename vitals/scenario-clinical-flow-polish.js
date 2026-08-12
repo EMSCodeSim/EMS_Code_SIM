@@ -10,6 +10,13 @@ function record(){return session?.sync?.()||api?.active?.()||null}
 function finding(key){return api?.getFinding?.(key,record())||record()?.findings?.[key]||null}
 function ensureCue(){
  if(!horse())return null;
+ // The encounter-validation layer is the single source of truth for clinical
+ // progress and reassessment status. Once it is present, do not create a
+ // second clinical cue in the center column.
+ if($('horseEncounterProgress')){
+   $('clinicalNextCue')?.remove();
+   return null;
+ }
  const column=$('clinicalInteractionColumn');if(!column)return null;
  let cue=$('clinicalNextCue');
  if(!cue){cue=document.createElement('div');cue.id='clinicalNextCue';cue.setAttribute('aria-live','polite');column.appendChild(cue)}
