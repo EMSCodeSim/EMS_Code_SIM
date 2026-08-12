@@ -1,4 +1,40 @@
 @media (min-width: 980px) {
+  #treatmentPanel {
+    align-content: start !important;
+    justify-content: stretch !important;
+    gap: 8px !important;
+  }
+
+  #treatmentPanel > *,
+  #treatmentPanel .horse-treatment-action-form,
+  #treatmentPanel .horse-treatment-detail-grid,
+  #treatmentPanel .treatment-followup-choice-group,
+  #treatmentPanel #horseMovementChoices {
+    margin-top: 0 !important;
+  }
+
+  #treatmentPanel .horse-treatment-action-form {
+    display: grid !important;
+    gap: 8px !important;
+    align-content: start !important;
+  }
+
+  #treatmentPanel .horse-treatment-detail-grid {
+    display: grid !important;
+    gap: 8px !important;
+    align-content: start !important;
+  }
+
+  #treatmentPanel .horse-treatment-summary {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #treatmentPanel .horse-treatment-perform-row {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
   #treatmentPanel .treatment-native-select-hidden {
     position: absolute !important;
     width: 1px !important;
@@ -16,7 +52,7 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
-    margin-top: 8px;
+    margin-bottom: 0 !important;
   }
 
   #treatmentPanel .treatment-followup-choice {
@@ -45,7 +81,7 @@
   }
 
   #horseMovementChoices {
-    margin-top: 12px;
+    margin-bottom: 0 !important;
     padding: 12px;
     border: 1px solid rgba(111, 190, 224, .34);
     border-radius: 12px;
