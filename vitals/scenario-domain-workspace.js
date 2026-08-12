@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.11.5';
+  const VERSION = '2026.08.11.6';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -28,6 +28,20 @@
       cockpit.href = `/vitals/scenario-clinical-cockpit.css?v=${encodeURIComponent(VERSION)}`;
       cockpit.dataset.clinicalCockpitCss = VERSION;
       document.head.appendChild(cockpit);
+    }
+    if (!document.querySelector('link[data-patient-conversation-css]')) {
+      const conversation = document.createElement('link');
+      conversation.rel = 'stylesheet';
+      conversation.href = `/vitals/scenario-patient-conversation.css?v=${encodeURIComponent(VERSION)}`;
+      conversation.dataset.patientConversationCss = VERSION;
+      document.head.appendChild(conversation);
+    }
+    if (!document.querySelector('script[data-patient-conversation-js]')) {
+      const conversationScript = document.createElement('script');
+      conversationScript.src = `/vitals/scenario-patient-conversation.js?v=${encodeURIComponent(VERSION)}`;
+      conversationScript.defer = true;
+      conversationScript.dataset.patientConversationJs = VERSION;
+      document.head.appendChild(conversationScript);
     }
   }
 
@@ -61,8 +75,6 @@
       layout.insertBefore(nav, control);
     }
 
-    // Desktop cockpit has four permanent clinical domains. Record/Log remains
-    // available to the scenario engine, grading, handoff, and persistence.
     nav.querySelector('button[data-panel="historyPanel"]')?.classList.remove('desktop-domain-hidden');
     nav.querySelector('button[data-panel="findingsPanel"]')?.classList.add('desktop-domain-hidden');
     return true;
@@ -173,13 +185,14 @@
   function updateWorkspaceHeading(panelId) {
     const eyebrow = $('sheetEyebrow');
     const title = $('sheetTitle');
-    if (eyebrow) eyebrow.textContent = 'CLINICAL DOMAIN';
-    if (title) title.textContent = domainLabel(panelId);
+    if (eyebrow) eyebrow.textContent = panelId === 'historyPanel' ? 'TALK TO THE PATIENT' : 'CLINICAL DOMAIN';
+    if (title) title.textContent = panelId === 'historyPanel' ? 'Ask a question' : domainLabel(panelId);
     const panel = $(panelId);
     if (panel) panel.dataset.domainWorkspaceActive = 'true';
     document.querySelectorAll('.vp-panel').forEach(item => {
       if (item !== panel) delete item.dataset.domainWorkspaceActive;
     });
+    window.EMSCodeSimPatientConversation?.sync?.();
   }
 
   function openDefaultDomainWhenReady() {
@@ -201,6 +214,7 @@
     if (!desktopActive()) {
       document.body.classList.remove('clinical-domain-workspace-v2', 'clinical-cockpit-v3');
       restorePatientUpdate();
+      window.EMSCodeSimPatientConversation?.sync?.();
       return;
     }
 
@@ -211,6 +225,7 @@
     movePatientUpdateToPatient();
     refineAssessmentHierarchy();
     openDefaultDomainWhenReady();
+    window.EMSCodeSimPatientConversation?.sync?.();
   }
 
   function scheduleReconcile() {
