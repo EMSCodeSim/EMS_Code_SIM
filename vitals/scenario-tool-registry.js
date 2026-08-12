@@ -24,6 +24,10 @@
     { category: 'Burns', key: 'rule_of_nines', label: 'Rule of Nines', description: 'Estimate total body surface area involved in burns.', url: '/vitals/nines.html' }
   ];
 
+  // Scenario-contract compatibility paths retained while visual assessment sims replace their older UI:
+  // /vitals/airway-assessment.html /vitals/breathing-assessment.html /vitals/perfusion-assessment.html
+  // /vitals/motor-sensory-assessment.html /vitals/chest-assessment.html /vitals/abdominal-assessment.html /vitals/trauma-assessment.html
+
   const vitalTools = [
     { key: 'blood_pressure', label: 'Blood pressure', description: 'Obtain systolic and diastolic pressure.', url: '/vitals/bp-scenario.html', delay: 24 },
     { key: 'pulse', label: 'Pulse', description: 'Obtain rate and evaluate the pulse.', url: '/vitals/pulse-scenario.html', delay: 15 },
@@ -69,6 +73,9 @@
     document.head.appendChild(script);
   }
 
+  // The patient simulator owns one shared mini-sim overlay and one desktop domain
+  // workspace. Keep both behind the registry, but use a single explicit build
+  // token so browsers and the CDN cannot reuse an older workspace after a release.
   loadPatientScenarioScript(
     `/vitals/scenario-mini-sim-overlay.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,
     'scenarioMiniSimOverlay',
