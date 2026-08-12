@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.11.6';
+  const VERSION = '2026.08.11.7';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -35,6 +35,13 @@
       conversation.href = `/vitals/scenario-patient-conversation.css?v=${encodeURIComponent(VERSION)}`;
       conversation.dataset.patientConversationCss = VERSION;
       document.head.appendChild(conversation);
+    }
+    if (!document.querySelector('link[data-single-screen-css]')) {
+      const compact = document.createElement('link');
+      compact.rel = 'stylesheet';
+      compact.href = `/vitals/scenario-single-screen.css?v=${encodeURIComponent(VERSION)}`;
+      compact.dataset.singleScreenCss = VERSION;
+      document.head.appendChild(compact);
     }
     if (!document.querySelector('script[data-patient-conversation-js]')) {
       const conversationScript = document.createElement('script');
@@ -165,11 +172,16 @@
     panel.dataset.assessmentHierarchy = focused ? 'three-level' : 'progressive';
   }
 
-  function expandAssessmentChoices() {
+  function compactAssessmentChoices() {
     const panel = $('assessmentPanel');
     if (!panel || panel.hidden) return;
     refineAssessmentHierarchy();
-    panel.querySelectorAll('details').forEach(details => { details.open = true; });
+
+    // Secondary libraries stay collapsed on desktop. The learner can open them
+    // deliberately, rather than landing in a long pre-expanded document.
+    panel.querySelectorAll('details.assessment-more').forEach(details => {
+      if (!details.dataset.userOpened) details.open = false;
+    });
   }
 
   function domainLabel(panelId) {
@@ -203,7 +215,7 @@
     if (activeId) {
       if (sheet) sheet.hidden = false;
       updateWorkspaceHeading(activeId);
-      if (activeId === 'assessmentPanel') expandAssessmentChoices();
+      if (activeId === 'assessmentPanel') compactAssessmentChoices();
       return;
     }
     domainButton('assessmentPanel')?.click();
@@ -212,14 +224,14 @@
   function reconcile() {
     reconcileQueued = false;
     if (!desktopActive()) {
-      document.body.classList.remove('clinical-domain-workspace-v2', 'clinical-cockpit-v3');
+      document.body.classList.remove('clinical-domain-workspace-v2', 'clinical-cockpit-v3', 'single-screen-cockpit');
       restorePatientUpdate();
       window.EMSCodeSimPatientConversation?.sync?.();
       return;
     }
 
     installStyles();
-    document.body.classList.add('clinical-domain-workspace-v2', 'clinical-cockpit-v3');
+    document.body.classList.add('clinical-domain-workspace-v2', 'clinical-cockpit-v3', 'single-screen-cockpit');
     moveControlsToCenter();
     keepSheetInRightField();
     movePatientUpdateToPatient();
@@ -250,10 +262,17 @@
     window.requestAnimationFrame(() => {
       const panelId = button.dataset.panel || '';
       updateWorkspaceHeading(panelId);
-      if (panelId === 'assessmentPanel') expandAssessmentChoices();
+      if (panelId === 'assessmentPanel') compactAssessmentChoices();
       const sheet = $('actionSheet');
       if (sheet && !document.body.classList.contains('horse-arrival-pending')) sheet.hidden = false;
     });
+  }
+
+  function trackAssessmentDisclosure(event) {
+    if (!desktopActive()) return;
+    const details = event.target;
+    if (!(details instanceof HTMLDetailsElement) || !details.classList.contains('assessment-more')) return;
+    if (details.open) details.dataset.userOpened = 'true';
   }
 
   function startObserver() {
@@ -270,6 +289,7 @@
     installStyles();
     document.addEventListener('click', launchVitalFromRow, true);
     document.addEventListener('click', handleDomainClick, true);
+    document.addEventListener('toggle', trackAssessmentDisclosure, true);
     desktopQuery.addEventListener?.('change', scheduleReconcile);
     window.addEventListener('resize', scheduleReconcile, { passive:true });
     window.addEventListener('emscodesim:assessment-saved', scheduleReconcile);
