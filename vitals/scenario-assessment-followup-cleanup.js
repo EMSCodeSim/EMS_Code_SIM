@@ -8,6 +8,11 @@ function active(){
  return desktop.matches&&document.body.classList.contains('desktop-scenario-layout');
 }
 
+function assessmentActive(){
+ const panel=$('assessmentPanel');
+ return active()&&panel&&!panel.hidden;
+}
+
 function ensureHost(){
  const panel=$('assessmentPanel');
  if(!panel)return null;
@@ -26,7 +31,6 @@ function ensureHost(){
 
 function assessmentQuestionNodes(){
  const nodes=[
-   $('horseClinicalQuestionBox'),
    $('horseAssessmentInlineQuestion'),
    ...document.querySelectorAll('[data-assessment-follow-up],.assessment-follow-up-question')
  ].filter(Boolean);
@@ -34,7 +38,7 @@ function assessmentQuestionNodes(){
 }
 
 function moveRight(){
- if(!active())return;
+ if(!assessmentActive())return;
  const host=ensureHost();
  if(!host)return;
  const nodes=assessmentQuestionNodes();
@@ -46,24 +50,32 @@ function moveRight(){
  host.hidden=!nodes.some(node=>!node.hidden&&getComputedStyle(node).display!=='none');
 }
 
-function restoreMobile(){
- const host=$('assessmentFollowupHost');
- if(!host)return;
- const tools=$('assessmentTools');
- const control=document.querySelector('.patient-control-column');
- const inline=$('horseAssessmentInlineQuestion');
+function restoreSharedClinicalBox(){
  const clinical=$('horseClinicalQuestionBox');
- if(inline&&tools&&inline.parentElement===host)tools.prepend(inline);
- if(clinical&&control&&clinical.parentElement===host){
+ const control=document.querySelector('.patient-control-column');
+ if(!clinical||!control)return;
+ // The shared clinical box belongs to Treatment/History and must never be captured
+ // by the Assessment-only follow-up host.
+ if(clinical.closest('#assessmentFollowupHost')){
    const sheet=$('actionSheet');
    control.insertBefore(clinical,sheet?.parentElement===control?sheet:null);
  }
- if(!host.children.length)host.remove();
+ clinical.classList.remove('right-workspace-followup');
+}
+
+function restoreMobile(){
+ const host=$('assessmentFollowupHost');
+ const tools=$('assessmentTools');
+ const inline=$('horseAssessmentInlineQuestion');
+ if(host&&inline&&tools&&inline.parentElement===host)tools.prepend(inline);
+ if(host&&!host.children.length)host.remove();
+ restoreSharedClinicalBox();
 }
 
 function reconcile(){
  queued=false;
- if(active())moveRight();
+ restoreSharedClinicalBox();
+ if(assessmentActive())moveRight();
  else restoreMobile();
 }
 function schedule(){
@@ -77,6 +89,7 @@ function start(){
  desktop.addEventListener?.('change',schedule);
  document.addEventListener('click',schedule,true);
  window.addEventListener('emscodesim:assessment-saved',schedule);
+ window.addEventListener('emscodesim:treatment-saved',schedule);
  observer=new MutationObserver(mutations=>{
    const meaningful=mutations.some(m=>{
      const target=m.target?.nodeType===1?m.target:m.target?.parentElement;
