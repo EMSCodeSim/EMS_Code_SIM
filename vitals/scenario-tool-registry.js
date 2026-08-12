@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.08.12.4';
+  const PATIENT_WORKSPACE_BUILD = '2026.08.12.5';
 
   const assessmentTools = [
     { category: 'Scene size-up', key: 'scene_size_up', label: 'Scene size-up & first impression', description: 'Use dispatch and the patient picture to decide PPE, safety, patient count, NOI/MOI, resources, spinal precautions, general impression, responsiveness, and priority.', url: '/vitals/visual-patient.html' },
@@ -23,10 +23,6 @@
     { category: 'Pediatric', key: 'pediatric_assessment_triangle', label: 'Pediatric Assessment Triangle', description: 'Assess appearance, work of breathing, and circulation to skin.', url: '/vitals/pediatric-assessment-triangle.html' },
     { category: 'Burns', key: 'rule_of_nines', label: 'Rule of Nines', description: 'Estimate total body surface area involved in burns.', url: '/vitals/nines.html' }
   ];
-
-  // Scenario-contract compatibility paths retained while visual assessment sims replace their older UI:
-  // /vitals/airway-assessment.html /vitals/breathing-assessment.html /vitals/perfusion-assessment.html
-  // /vitals/motor-sensory-assessment.html /vitals/chest-assessment.html /vitals/abdominal-assessment.html /vitals/trauma-assessment.html
 
   const vitalTools = [
     { key: 'blood_pressure', label: 'Blood pressure', description: 'Obtain systolic and diastolic pressure.', url: '/vitals/bp-scenario.html', delay: 24 },
@@ -86,40 +82,13 @@
     document.head.appendChild(script);
   }
 
-  loadPatientScenarioStyle(
-    `/vitals/scenario-vital-board.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,
-    'scenarioVitalBoard',
-    'link[data-scenario-vital-board]'
-  );
+  loadPatientScenarioStyle(`/vitals/scenario-vital-board.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioVitalBoard', 'link[data-scenario-vital-board]');
+  loadPatientScenarioStyle(`/vitals/scenario-info-window-fix.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioInfoWindowFix', 'link[data-scenario-info-window-fix]');
+  loadPatientScenarioStyle(`/vitals/scenario-clinical-flow-polish.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioClinicalFlowPolish', 'link[data-scenario-clinical-flow-polish]');
+  loadPatientScenarioStyle(`/vitals/horse-encounter-validation.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'horseEncounterValidation', 'link[data-horse-encounter-validation]');
 
-  loadPatientScenarioStyle(
-    `/vitals/scenario-info-window-fix.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,
-    'scenarioInfoWindowFix',
-    'link[data-scenario-info-window-fix]'
-  );
-
-  loadPatientScenarioStyle(
-    `/vitals/scenario-clinical-flow-polish.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,
-    'scenarioClinicalFlowPolish',
-    'link[data-scenario-clinical-flow-polish]'
-  );
-
-  // The patient simulator owns one shared mini-sim overlay and one desktop domain
-  // workspace. Keep both behind the registry, but use a single explicit build
-  // token so browsers and the CDN cannot reuse an older workspace after a release.
-  loadPatientScenarioScript(
-    `/vitals/scenario-mini-sim-overlay.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,
-    'scenarioMiniSimOverlay',
-    'script[data-scenario-mini-sim-overlay]'
-  );
-  loadPatientScenarioScript(
-    `/vitals/scenario-domain-workspace.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,
-    'scenarioDomainWorkspace',
-    'script[data-scenario-domain-workspace]'
-  );
-  loadPatientScenarioScript(
-    `/vitals/scenario-clinical-flow-polish.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,
-    'scenarioClinicalFlowPolish',
-    'script[data-scenario-clinical-flow-polish]'
-  );
+  loadPatientScenarioScript(`/vitals/scenario-mini-sim-overlay.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioMiniSimOverlay', 'script[data-scenario-mini-sim-overlay]');
+  loadPatientScenarioScript(`/vitals/scenario-domain-workspace.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioDomainWorkspace', 'script[data-scenario-domain-workspace]');
+  loadPatientScenarioScript(`/vitals/scenario-clinical-flow-polish.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioClinicalFlowPolish', 'script[data-scenario-clinical-flow-polish]');
+  loadPatientScenarioScript(`/vitals/horse-encounter-validation.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'horseEncounterValidation', 'script[data-horse-encounter-validation]');
 })();
