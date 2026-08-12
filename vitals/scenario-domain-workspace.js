@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.11.11';
+  const VERSION = '2026.08.11.12';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -10,6 +10,19 @@
 
   function desktopActive() {
     return desktopQuery.matches && document.body.classList.contains('desktop-scenario-layout');
+  }
+
+  function horseScenarioRequested() {
+    const requested = new URLSearchParams(location.search).get('case');
+    return requested === 'horse_crush'
+      || document.body.classList.contains('horse-current-emt-call')
+      || window.EMSCodeSimPatientRecord?.active?.()?.scenarioId === 'horse_crush';
+  }
+
+  function horseArrivalComplete() {
+    const record = window.EMSCodeSimScenarioSession?.active?.('horse_crush')
+      || window.EMSCodeSimPatientRecord?.active?.();
+    return Boolean(record?.findings?.arrival_parking);
   }
 
   function placeNode(parent, node, reference = null) {
@@ -118,10 +131,23 @@
       setInteractionOrder(inlineQuestion, 3);
     }
 
+    const arrival = $('horseArrivalDecision');
+    if (arrival) {
+      if (arrival.parentElement !== column) column.appendChild(arrival);
+      setInteractionOrder(arrival, 4);
+    }
+
     const entryWorkflow = document.querySelector('.patient-entry-workflow');
     if (entryWorkflow) {
-      if (entryWorkflow.parentElement !== column) column.appendChild(entryWorkflow);
-      setInteractionOrder(entryWorkflow, 4);
+      // horse-crush-scenario.js creates the arrival card with
+      // controlColumn.insertBefore(section, entryWorkflow). Keep that original
+      // anchor in place only until the arrival card has been created. Afterward,
+      // the arrival card and normal interaction workflow both belong here.
+      const preserveArrivalAnchor = horseScenarioRequested() && !arrival && !horseArrivalComplete();
+      if (!preserveArrivalAnchor) {
+        if (entryWorkflow.parentElement !== column) column.appendChild(entryWorkflow);
+        setInteractionOrder(entryWorkflow, arrival ? 5 : 4);
+      }
     }
 
     return true;
@@ -155,8 +181,11 @@
       placeNode(control, question, reference);
     }
 
+    const arrival = $('horseArrivalDecision');
+    clearInteractionOrder(arrival);
     const entryWorkflow = document.querySelector('.patient-entry-workflow');
     clearInteractionOrder(entryWorkflow);
+
     if (entryWorkflow && entryWorkflow.parentElement !== control) {
       if (currentAssessment?.parentElement === control) {
         placeNode(control, entryWorkflow, currentAssessment.nextElementSibling);
@@ -164,6 +193,13 @@
         const sheet = $('actionSheet');
         placeNode(control, entryWorkflow, sheet?.parentElement === control ? sheet : null);
       }
+    }
+
+    if (arrival && arrival.parentElement !== control) {
+      const reference = entryWorkflow?.parentElement === control
+        ? entryWorkflow
+        : ($('actionSheet')?.parentElement === control ? $('actionSheet') : null);
+      placeNode(control, arrival, reference);
     }
 
     const inlineQuestion = $('horseAssessmentInlineQuestion');
