@@ -1,0 +1,125 @@
+/* EMSCodeSim vital board — empty until measured, then fill with recorded value. */
+@media (min-width:980px){
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+    align-content:start!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools>.tool-group-heading{
+    grid-column:1/-1!important;
+    margin:0 0 2px!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .compact-vital-row{
+    min-height:118px!important;
+    display:grid!important;
+    grid-template-columns:30px minmax(0,1fr)!important;
+    grid-template-rows:auto 1fr auto!important;
+    gap:6px 8px!important;
+    padding:12px!important;
+    border:1px solid #31566d!important;
+    border-radius:14px!important;
+    background:#0d2232!important;
+    box-shadow:none!important;
+    cursor:pointer!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .compact-vital-row:hover{
+    border-color:#5ca7cf!important;
+    background:#112b3f!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .vital-row-icon{
+    grid-column:1!important;
+    grid-row:1!important;
+    align-self:start!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .vital-row-copy{
+    grid-column:2!important;
+    grid-row:1/3!important;
+    min-width:0!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .vital-row-heading{
+    display:flex!important;
+    align-items:flex-start!important;
+    justify-content:space-between!important;
+    gap:8px!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .vital-row-heading h3{
+    margin:0!important;
+    font-size:.86rem!important;
+  }
+
+  /* Before a vital is obtained, show an intentionally empty monitor slot instead
+     of instructional copy. The row remains clickable to launch the mini sim. */
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .compact-vital-row:not(.done) .vital-latest-result{
+    display:flex!important;
+    align-items:center!important;
+    min-height:40px!important;
+    margin-top:8px!important;
+    font-size:0!important;
+    color:#7892a2!important;
+    border:1px dashed rgba(122,160,182,.42)!important;
+    border-radius:9px!important;
+    padding:7px 9px!important;
+    background:rgba(5,18,27,.35)!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .compact-vital-row:not(.done) .vital-latest-result::after{
+    content:'—';
+    font-size:1.35rem!important;
+    line-height:1!important;
+    font-weight:800!important;
+    letter-spacing:.08em!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .compact-vital-row:not(.done) .vital-row-copy>small{
+    color:#8ca4b3!important;
+  }
+
+  /* Once measured, the same visual slot becomes the live documented value. */
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .compact-vital-row.done{
+    border-color:rgba(111,211,166,.52)!important;
+    background:#0d2a2a!important;
+    box-shadow:inset 3px 0 0 rgba(111,211,166,.72)!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .compact-vital-row.done .vital-latest-result{
+    display:flex!important;
+    align-items:center!important;
+    min-height:40px!important;
+    margin-top:8px!important;
+    padding:7px 9px!important;
+    border:1px solid rgba(111,211,166,.28)!important;
+    border-radius:9px!important;
+    background:rgba(7,39,31,.62)!important;
+    color:#d8fff0!important;
+    font-size:1.08rem!important;
+    line-height:1.15!important;
+    font-weight:900!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .vital-row-actions{
+    grid-column:1/-1!important;
+    grid-row:3!important;
+    display:flex!important;
+    justify-content:flex-end!important;
+    align-items:center!important;
+    gap:6px!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools .assignment-progress{
+    grid-column:1/-1!important;
+  }
+}
+
+@media (min-width:980px) and (max-width:1180px){
+  body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools{
+    grid-template-columns:1fr!important;
+  }
+}
