@@ -1,10 +1,12 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.11.12';
+  const VERSION = '2026.08.11.13';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
+  let horseArrivalSeen = false;
+  let horseArrivalAnchorReleased = false;
 
   const $ = id => document.getElementById(id);
 
@@ -17,12 +19,6 @@
     return requested === 'horse_crush'
       || document.body.classList.contains('horse-current-emt-call')
       || window.EMSCodeSimPatientRecord?.active?.()?.scenarioId === 'horse_crush';
-  }
-
-  function horseArrivalComplete() {
-    const record = window.EMSCodeSimScenarioSession?.active?.('horse_crush')
-      || window.EMSCodeSimPatientRecord?.active?.();
-    return Boolean(record?.findings?.arrival_parking);
   }
 
   function placeNode(parent, node, reference = null) {
@@ -133,17 +129,21 @@
 
     const arrival = $('horseArrivalDecision');
     if (arrival) {
+      horseArrivalSeen = true;
       if (arrival.parentElement !== column) column.appendChild(arrival);
       setInteractionOrder(arrival, 4);
     }
 
     const entryWorkflow = document.querySelector('.patient-entry-workflow');
     if (entryWorkflow) {
-      // horse-crush-scenario.js creates the arrival card with
-      // controlColumn.insertBefore(section, entryWorkflow). Keep that original
-      // anchor in place only until the arrival card has been created. Afterward,
-      // the arrival card and normal interaction workflow both belong here.
-      const preserveArrivalAnchor = horseScenarioRequested() && !arrival && !horseArrivalComplete();
+      // horse-crush-scenario.js creates its arrival card by inserting it before
+      // patient-entry-workflow in the original control column. Preserve that
+      // anchor through the current DOMContentLoaded turn. Once this page has
+      // actually seen the arrival card—or startup has advanced to the next task—
+      // the workflow can safely move into the center interaction column.
+      const preserveArrivalAnchor = horseScenarioRequested()
+        && !horseArrivalSeen
+        && !horseArrivalAnchorReleased;
       if (!preserveArrivalAnchor) {
         if (entryWorkflow.parentElement !== column) column.appendChild(entryWorkflow);
         setInteractionOrder(entryWorkflow, arrival ? 5 : 4);
@@ -263,9 +263,6 @@
   function reconcile() {
     reconcileQueued = false;
 
-    // On desktop the core scenario runtime adds desktop-scenario-layout shortly
-    // after parsing. Do not temporarily restore the mobile DOM while that class
-    // is still settling; just retry once the desktop runtime is ready.
     if (desktopQuery.matches && !document.body.classList.contains('desktop-scenario-layout')) {
       window.setTimeout(scheduleReconcile, 40);
       return;
@@ -317,6 +314,7 @@
     if (observer || !document.body) return;
     observer = new MutationObserver(mutations => {
       if (!desktopActive()) return;
+      if ($('horseArrivalDecision')) horseArrivalSeen = true;
       const structuralChange = mutations.some(mutation => mutation.type === 'childList');
       if (structuralChange) scheduleReconcile();
     });
@@ -333,6 +331,13 @@
     window.addEventListener('emscodesim:vital-saved', scheduleReconcile);
     startObserver();
     scheduleReconcile();
+    // DOMContentLoaded listeners execute in registration order within one task.
+    // Release the legacy horse arrival anchor only on the next task, after the
+    // horse scenario has had a synchronous opportunity to create its arrival card.
+    window.setTimeout(() => {
+      horseArrivalAnchorReleased = true;
+      scheduleReconcile();
+    }, 0);
     window.setTimeout(scheduleReconcile, 120);
     window.setTimeout(scheduleReconcile, 500);
   }
