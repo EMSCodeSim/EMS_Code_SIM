@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.08.12.9';
+  const PATIENT_WORKSPACE_BUILD = '2026.08.12.10';
 
   const assessmentTools = [
     { category: 'Scene size-up', key: 'scene_size_up', label: 'Scene size-up & first impression', description: 'Use dispatch and the patient picture to decide PPE, safety, patient count, NOI/MOI, resources, spinal precautions, general impression, responsiveness, and priority.', url: '/vitals/visual-patient.html' },
@@ -93,4 +93,5 @@
   loadPatientScenarioScript(`/vitals/scenario-clinical-flow-polish.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioClinicalFlowPolish', 'script[data-scenario-clinical-flow-polish]');
   loadPatientScenarioScript(`/vitals/horse-encounter-validation.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'horseEncounterValidation', 'script[data-horse-encounter-validation]');
   loadPatientScenarioScript(`/vitals/scenario-assessment-followup-cleanup.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioAssessmentFollowupCleanup', 'script[data-scenario-assessment-followup-cleanup]');
+  loadPatientScenarioScript(`/vitals/scenario-transport-handoff-actions.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`, 'scenarioTransportHandoffActions', 'script[data-scenario-transport-handoff-actions]');
 })();
