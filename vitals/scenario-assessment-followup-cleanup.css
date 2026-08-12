@@ -1,8 +1,8 @@
 @media (min-width:980px){
   #assessmentPanel .assessment-followup-host{
     display:grid;
-    gap:10px;
-    margin:0 0 12px;
+    gap:8px;
+    margin:0 0 8px;
   }
   #assessmentPanel .assessment-followup-host[hidden]{display:none!important}
   #assessmentPanel .right-workspace-followup{
@@ -17,6 +17,57 @@
   #assessmentPanel .right-workspace-followup .assessment-question-card{
     width:100%;
   }
+
+  /* Keep the right clinical field action-first. The panel title already names the domain. */
+  #actionSheet .sheet-patient-context,
+  #vitalsPanel>p.sub,
+  #assessmentPanel>p.sub,
+  #historyPanel>p.sub,
+  #treatmentPanel>p.sub{
+    display:none!important;
+  }
+
+  #actionSheet .sheet-header{
+    min-height:42px!important;
+    padding:6px 10px!important;
+  }
+  #actionSheet .sheet-header p{
+    display:none!important;
+  }
+  #actionSheet .sheet-header h2{
+    margin:0!important;
+    font-size:1rem!important;
+  }
+  #actionSheet .sheet-header .return-patient-btn{
+    min-height:32px!important;
+    padding:4px 8px!important;
+  }
+  #actionSheet .vp-panel{
+    padding-top:8px!important;
+  }
+
+  /* Treatment search remains available, but it should not consume a full text-heavy block. */
+  #treatmentPanel .panel-search{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:4px!important;
+    margin:0 0 8px!important;
+  }
+  #treatmentPanel .panel-search>span{
+    display:none!important;
+  }
+  #treatmentPanel .panel-search input{
+    min-height:34px!important;
+    padding:6px 9px!important;
+  }
+
+  #vitalTools,
+  #assessmentTools,
+  #treatmentTools,
+  #historyCategoryList{
+    scroll-margin-top:8px;
+  }
+
   body:has(#horseEncounterProgress) #clinicalNextCue{
     display:none!important;
   }
