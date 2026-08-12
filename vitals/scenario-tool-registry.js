@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.08.11.8';
+  const PATIENT_WORKSPACE_BUILD = '2026.08.11.9';
 
   const assessmentTools = [
     { category: 'Scene size-up', key: 'scene_size_up', label: 'Scene size-up & first impression', description: 'Use dispatch and the patient picture to decide PPE, safety, patient count, NOI/MOI, resources, spinal precautions, general impression, responsiveness, and priority.', url: '/vitals/visual-patient.html' },
@@ -15,7 +15,7 @@
     { category: 'Respiratory', key: 'breath_sounds', label: 'Breath sounds', description: 'Auscultate and compare all lung fields.', url: '/vitals/breath-sounds-scenario.html' },
     { category: 'Respiratory', key: 'chest_assessment', label: 'Chest assessment', description: 'Inspect and palpate chest movement, tenderness, and injury.', url: '/vitals/respiratory-assessment-visual.html' },
     { category: 'Focused examination', key: 'distal_csm', label: 'Distal CSM & capillary refill', description: 'Check distal pulse, sensation, movement, and capillary refill.', url: '/vitals/distal-csm-assessment.html' },
-    { category: 'Focused examination', key: 'skin', label: 'Skin signs', description: 'Compare color, temperature, moisture, and perfusion clues.', url: '/vitals/skin-scenario.html' },
+    { category: 'Focused examination', key: 'skin', label: 'Skin signs', description: 'Compare color, temperature, and moisture.', url: '/vitals/skin-scenario.html' },
     { category: 'Focused examination', key: 'abdominal_assessment', label: 'Abdominal assessment', description: 'Assess tenderness, guarding, rigidity, and distention.', url: '/vitals/abdomen-pelvis-visual.html' },
     { category: 'Focused examination', key: 'trauma_assessment', label: 'Rapid trauma assessment', description: 'Perform a systematic head-to-toe trauma examination.', url: '/vitals/visual-trauma-body-exam.html' },
     { category: 'Focused examination', key: 'pain', label: 'Pain / OPQRST', description: 'Characterize symptoms and pain using OPQRST.', url: '/vitals/pain-opqrst.html' },
