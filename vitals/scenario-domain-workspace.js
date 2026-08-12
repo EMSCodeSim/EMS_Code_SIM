@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.11.13';
+  const VERSION = '2026.08.11.14';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -136,11 +136,6 @@
 
     const entryWorkflow = document.querySelector('.patient-entry-workflow');
     if (entryWorkflow) {
-      // horse-crush-scenario.js creates its arrival card by inserting it before
-      // patient-entry-workflow in the original control column. Preserve that
-      // anchor through the current DOMContentLoaded turn. Once this page has
-      // actually seen the arrival card—or startup has advanced to the next task—
-      // the workflow can safely move into the center interaction column.
       const preserveArrivalAnchor = horseScenarioRequested()
         && !horseArrivalSeen
         && !horseArrivalAnchorReleased;
@@ -331,13 +326,14 @@
     window.addEventListener('emscodesim:vital-saved', scheduleReconcile);
     startObserver();
     scheduleReconcile();
-    // DOMContentLoaded listeners execute in registration order within one task.
-    // Release the legacy horse arrival anchor only on the next task, after the
-    // horse scenario has had a synchronous opportunity to create its arrival card.
+    // The horse arrival card is initialized asynchronously by its scenario layer.
+    // Hold its legacy insertion anchor long enough for that initialization. In the
+    // normal path the MutationObserver sees the card much sooner and the center
+    // workspace can move immediately on the following reconcile.
     window.setTimeout(() => {
       horseArrivalAnchorReleased = true;
       scheduleReconcile();
-    }, 0);
+    }, 3000);
     window.setTimeout(scheduleReconcile, 120);
     window.setTimeout(scheduleReconcile, 500);
   }
