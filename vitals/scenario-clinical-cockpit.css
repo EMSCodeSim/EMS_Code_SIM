@@ -1,4 +1,4 @@
-/* EMSCodeSim desktop clinical cockpit — UI 2.44
+/* EMSCodeSim desktop clinical cockpit — UI 2.45
    PATIENT | ACTIONS | WORKSPACE
    This layer intentionally overrides the stable domain-workspace layout without
    changing scenario state, mini-sim behavior, grading, or mobile controls. */
@@ -155,6 +155,99 @@
 
   body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #vitalTools .compact-vital-row.done{
     box-shadow:inset 3px 0 0 rgba(111,211,166,.62)!important;
+  }
+
+  /* ASSESSMENT — a visible priority ladder without disclosing the right answer. */
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools.assessment-priority-workspace{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:9px!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools.assessment-priority-workspace>[data-assessment-priority]{
+    position:relative!important;
+    margin:0!important;
+    border-radius:13px!important;
+    border:1px solid rgba(96,148,177,.28)!important;
+    overflow:hidden!important;
+    background:rgba(10,31,45,.52)!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools.assessment-priority-workspace>[data-assessment-priority]::before{
+    position:absolute!important;
+    z-index:3!important;
+    top:9px!important;
+    right:10px!important;
+    min-width:27px!important;
+    height:27px!important;
+    display:grid!important;
+    place-items:center!important;
+    border-radius:999px!important;
+    border:1px solid rgba(151,198,224,.32)!important;
+    background:#10283a!important;
+    color:#dcecf5!important;
+    font-size:.67rem!important;
+    font-weight:900!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools [data-assessment-priority="immediate"]::before{content:'1';}
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools [data-assessment-priority="focused"]::before{content:'2';}
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools [data-assessment-priority="more"]::before{content:'3';}
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools [data-assessment-priority="immediate"]{
+    border-left:4px solid rgba(120,202,245,.82)!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools [data-assessment-priority="focused"]{
+    border-left:4px solid rgba(177,157,229,.78)!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools [data-assessment-priority="more"]{
+    border-left:4px solid rgba(143,164,176,.50)!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools .assessment-section-title,
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools .assessment-more>summary{
+    padding-right:48px!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools .assessment-section-title span,
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools .assessment-more>summary strong{
+    font-size:.91rem!important;
+    letter-spacing:.01em!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools .assessment-section-title small,
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools .assessment-more>summary small{
+    display:block!important;
+    margin-top:3px!important;
+    font-size:.71rem!important;
+    line-height:1.3!important;
+    opacity:.72!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools .assessment-focused-guide{
+    margin:7px 0 8px!important;
+    padding:8px 9px!important;
+    border-radius:10px!important;
+    background:rgba(114,145,164,.09)!important;
+    border:1px solid rgba(114,145,164,.16)!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools .assessment-focused-guide span{
+    display:block!important;
+    margin-bottom:2px!important;
+    font-size:.61rem!important;
+    font-weight:900!important;
+    letter-spacing:.12em!important;
+    opacity:.68!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-cockpit-v3 #assessmentTools .assessment-focused-guide p{
+    margin:0!important;
+    font-size:.72rem!important;
+    line-height:1.35!important;
+    opacity:.80!important;
   }
 
   /* Arrival remains a deliberate pre-clinical exception. Once cleared, the
