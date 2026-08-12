@@ -1,10 +1,12 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.11.3';
+  const VERSION = '2026.08.11.4';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
+  let patientUpdateHome = null;
+  let patientUpdateNext = null;
 
   const $ = id => document.getElementById(id);
 
@@ -13,12 +15,20 @@
   }
 
   function installStyles() {
-    if (document.querySelector('link[data-domain-workspace-css]')) return;
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = `/vitals/scenario-domain-workspace.css?v=${encodeURIComponent(VERSION)}`;
-    link.dataset.domainWorkspaceCss = VERSION;
-    document.head.appendChild(link);
+    if (!document.querySelector('link[data-domain-workspace-css]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = `/vitals/scenario-domain-workspace.css?v=${encodeURIComponent(VERSION)}`;
+      link.dataset.domainWorkspaceCss = VERSION;
+      document.head.appendChild(link);
+    }
+    if (!document.querySelector('link[data-clinical-cockpit-css]')) {
+      const cockpit = document.createElement('link');
+      cockpit.rel = 'stylesheet';
+      cockpit.href = `/vitals/scenario-clinical-cockpit.css?v=${encodeURIComponent(VERSION)}`;
+      cockpit.dataset.clinicalCockpitCss = VERSION;
+      document.head.appendChild(cockpit);
+    }
   }
 
   function centerRail() {
@@ -51,10 +61,8 @@
       layout.insertBefore(nav, control);
     }
 
-    // Desktop uses four permanent clinical domains: Assessment, Vitals,
-    // History, and Treatment. The chronological Record/Log remains available
-    // to grading, handoff, and internal workflows, but no longer consumes a
-    // permanent center-rail control.
+    // Desktop cockpit has four permanent clinical domains. Record/Log remains
+    // available to the scenario engine, grading, handoff, and persistence.
     nav.querySelector('button[data-panel="historyPanel"]')?.classList.remove('desktop-domain-hidden');
     nav.querySelector('button[data-panel="findingsPanel"]')?.classList.add('desktop-domain-hidden');
     return true;
@@ -68,15 +76,57 @@
     return sheet.parentElement === control;
   }
 
+  function patientUpdateWindow() {
+    return document.querySelector('.info-update-window');
+  }
+
+  function movePatientUpdateToPatient() {
+    const update = patientUpdateWindow();
+    const stage = document.querySelector('.patient-stage');
+    if (!update || !stage) return false;
+
+    if (!patientUpdateHome) {
+      patientUpdateHome = update.parentElement;
+      patientUpdateNext = update.nextSibling;
+    }
+    if (update.parentElement !== stage) stage.appendChild(update);
+    update.classList.add('cockpit-patient-update');
+    return true;
+  }
+
+  function restorePatientUpdate() {
+    const update = patientUpdateWindow();
+    if (!update) return;
+    update.classList.remove('cockpit-patient-update');
+    if (!patientUpdateHome || update.parentElement === patientUpdateHome) return;
+    if (patientUpdateNext && patientUpdateNext.parentNode === patientUpdateHome) {
+      patientUpdateHome.insertBefore(update, patientUpdateNext);
+    } else {
+      patientUpdateHome.appendChild(update);
+    }
+  }
+
   function expandAssessmentChoices() {
     const panel = $('assessmentPanel');
     if (!panel || panel.hidden) return;
     panel.querySelectorAll('details').forEach(details => { details.open = true; });
   }
 
+  function domainLabel(panelId) {
+    return ({
+      assessmentPanel: 'Assessment',
+      vitalsPanel: 'Vitals',
+      historyPanel: 'History',
+      treatmentPanel: 'Treatment',
+      findingsPanel: 'Patient record'
+    })[panelId] || 'Clinical workspace';
+  }
+
   function updateWorkspaceHeading(panelId) {
     const eyebrow = $('sheetEyebrow');
-    if (eyebrow) eyebrow.textContent = 'CLINICAL WORKSPACE';
+    const title = $('sheetTitle');
+    if (eyebrow) eyebrow.textContent = 'CLINICAL DOMAIN';
+    if (title) title.textContent = domainLabel(panelId);
     const panel = $(panelId);
     if (panel) panel.dataset.domainWorkspaceActive = 'true';
     document.querySelectorAll('.vp-panel').forEach(item => {
@@ -101,14 +151,16 @@
   function reconcile() {
     reconcileQueued = false;
     if (!desktopActive()) {
-      document.body.classList.remove('clinical-domain-workspace-v2');
+      document.body.classList.remove('clinical-domain-workspace-v2', 'clinical-cockpit-v3');
+      restorePatientUpdate();
       return;
     }
 
     installStyles();
-    document.body.classList.add('clinical-domain-workspace-v2');
+    document.body.classList.add('clinical-domain-workspace-v2', 'clinical-cockpit-v3');
     moveControlsToCenter();
     keepSheetInRightField();
+    movePatientUpdateToPatient();
     openDefaultDomainWhenReady();
   }
 
