@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.11.7';
+  const VERSION = '2026.08.11.4';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -28,27 +28,6 @@
       cockpit.href = `/vitals/scenario-clinical-cockpit.css?v=${encodeURIComponent(VERSION)}`;
       cockpit.dataset.clinicalCockpitCss = VERSION;
       document.head.appendChild(cockpit);
-    }
-    if (!document.querySelector('link[data-patient-conversation-css]')) {
-      const conversation = document.createElement('link');
-      conversation.rel = 'stylesheet';
-      conversation.href = `/vitals/scenario-patient-conversation.css?v=${encodeURIComponent(VERSION)}`;
-      conversation.dataset.patientConversationCss = VERSION;
-      document.head.appendChild(conversation);
-    }
-    if (!document.querySelector('link[data-single-screen-css]')) {
-      const compact = document.createElement('link');
-      compact.rel = 'stylesheet';
-      compact.href = `/vitals/scenario-single-screen.css?v=${encodeURIComponent(VERSION)}`;
-      compact.dataset.singleScreenCss = VERSION;
-      document.head.appendChild(compact);
-    }
-    if (!document.querySelector('script[data-patient-conversation-js]')) {
-      const conversationScript = document.createElement('script');
-      conversationScript.src = `/vitals/scenario-patient-conversation.js?v=${encodeURIComponent(VERSION)}`;
-      conversationScript.defer = true;
-      conversationScript.dataset.patientConversationJs = VERSION;
-      document.head.appendChild(conversationScript);
     }
   }
 
@@ -82,6 +61,8 @@
       layout.insertBefore(nav, control);
     }
 
+    // Desktop cockpit has four permanent clinical domains. Record/Log remains
+    // available to the scenario engine, grading, handoff, and persistence.
     nav.querySelector('button[data-panel="historyPanel"]')?.classList.remove('desktop-domain-hidden');
     nav.querySelector('button[data-panel="findingsPanel"]')?.classList.add('desktop-domain-hidden');
     return true;
@@ -125,63 +106,10 @@
     }
   }
 
-  function setSectionTitle(section, title, subtitle) {
-    if (!section) return;
-    const titleNode = section.querySelector('.assessment-section-title span');
-    const subtitleNode = section.querySelector('.assessment-section-title small');
-    if (titleNode) titleNode.textContent = title;
-    if (subtitleNode) subtitleNode.textContent = subtitle;
-  }
-
-  function refineAssessmentHierarchy() {
-    const panel = $('assessmentPanel');
-    const tools = $('assessmentTools');
-    if (!panel || !tools) return;
-
-    tools.classList.add('assessment-priority-workspace');
-
-    const immediate = tools.querySelector('.assessment-immediate');
-    if (immediate) {
-      immediate.dataset.assessmentPriority = 'immediate';
-      setSectionTitle(immediate, 'Immediate', 'Scene safety and rapid Airway, Breathing, Circulation. Address immediate threats first.');
-    }
-
-    const focused = tools.querySelector('.horse-assessment-section');
-    if (focused) {
-      focused.dataset.assessmentPriority = 'focused';
-      setSectionTitle(focused, 'Focused', 'Examine the chief complaint or injured region. You decide which findings matter and in what order.');
-    }
-
-    const more = tools.querySelector('.assessment-more');
-    if (more) {
-      more.dataset.assessmentPriority = 'more';
-      const strong = more.querySelector('summary strong');
-      const small = more.querySelector('summary small');
-      if (strong) strong.textContent = 'More';
-      if (small) small.textContent = 'Additional examinations when the presentation or your findings justify them';
-
-      const body = more.querySelector('.assessment-more-body');
-      if (body && !body.querySelector('.assessment-focused-guide')) {
-        const guide = document.createElement('div');
-        guide.className = 'assessment-focused-guide';
-        guide.innerHTML = '<span>FOCUSED VIEW</span><p>Use the focus list to narrow the assessment library by complaint. This organizes choices only—it does not identify the correct exam.</p>';
-        body.prepend(guide);
-      }
-    }
-
-    panel.dataset.assessmentHierarchy = focused ? 'three-level' : 'progressive';
-  }
-
-  function compactAssessmentChoices() {
+  function expandAssessmentChoices() {
     const panel = $('assessmentPanel');
     if (!panel || panel.hidden) return;
-    refineAssessmentHierarchy();
-
-    // Secondary libraries stay collapsed on desktop. The learner can open them
-    // deliberately, rather than landing in a long pre-expanded document.
-    panel.querySelectorAll('details.assessment-more').forEach(details => {
-      if (!details.dataset.userOpened) details.open = false;
-    });
+    panel.querySelectorAll('details').forEach(details => { details.open = true; });
   }
 
   function domainLabel(panelId) {
@@ -197,14 +125,13 @@
   function updateWorkspaceHeading(panelId) {
     const eyebrow = $('sheetEyebrow');
     const title = $('sheetTitle');
-    if (eyebrow) eyebrow.textContent = panelId === 'historyPanel' ? 'TALK TO THE PATIENT' : 'CLINICAL DOMAIN';
-    if (title) title.textContent = panelId === 'historyPanel' ? 'Ask a question' : domainLabel(panelId);
+    if (eyebrow) eyebrow.textContent = 'CLINICAL DOMAIN';
+    if (title) title.textContent = domainLabel(panelId);
     const panel = $(panelId);
     if (panel) panel.dataset.domainWorkspaceActive = 'true';
     document.querySelectorAll('.vp-panel').forEach(item => {
       if (item !== panel) delete item.dataset.domainWorkspaceActive;
     });
-    window.EMSCodeSimPatientConversation?.sync?.();
   }
 
   function openDefaultDomainWhenReady() {
@@ -215,7 +142,7 @@
     if (activeId) {
       if (sheet) sheet.hidden = false;
       updateWorkspaceHeading(activeId);
-      if (activeId === 'assessmentPanel') compactAssessmentChoices();
+      if (activeId === 'assessmentPanel') expandAssessmentChoices();
       return;
     }
     domainButton('assessmentPanel')?.click();
@@ -224,20 +151,17 @@
   function reconcile() {
     reconcileQueued = false;
     if (!desktopActive()) {
-      document.body.classList.remove('clinical-domain-workspace-v2', 'clinical-cockpit-v3', 'single-screen-cockpit');
+      document.body.classList.remove('clinical-domain-workspace-v2', 'clinical-cockpit-v3');
       restorePatientUpdate();
-      window.EMSCodeSimPatientConversation?.sync?.();
       return;
     }
 
     installStyles();
-    document.body.classList.add('clinical-domain-workspace-v2', 'clinical-cockpit-v3', 'single-screen-cockpit');
+    document.body.classList.add('clinical-domain-workspace-v2', 'clinical-cockpit-v3');
     moveControlsToCenter();
     keepSheetInRightField();
     movePatientUpdateToPatient();
-    refineAssessmentHierarchy();
     openDefaultDomainWhenReady();
-    window.EMSCodeSimPatientConversation?.sync?.();
   }
 
   function scheduleReconcile() {
@@ -262,17 +186,10 @@
     window.requestAnimationFrame(() => {
       const panelId = button.dataset.panel || '';
       updateWorkspaceHeading(panelId);
-      if (panelId === 'assessmentPanel') compactAssessmentChoices();
+      if (panelId === 'assessmentPanel') expandAssessmentChoices();
       const sheet = $('actionSheet');
       if (sheet && !document.body.classList.contains('horse-arrival-pending')) sheet.hidden = false;
     });
-  }
-
-  function trackAssessmentDisclosure(event) {
-    if (!desktopActive()) return;
-    const details = event.target;
-    if (!(details instanceof HTMLDetailsElement) || !details.classList.contains('assessment-more')) return;
-    if (details.open) details.dataset.userOpened = 'true';
   }
 
   function startObserver() {
@@ -289,7 +206,6 @@
     installStyles();
     document.addEventListener('click', launchVitalFromRow, true);
     document.addEventListener('click', handleDomainClick, true);
-    document.addEventListener('toggle', trackAssessmentDisclosure, true);
     desktopQuery.addEventListener?.('change', scheduleReconcile);
     window.addEventListener('resize', scheduleReconcile, { passive:true });
     window.addEventListener('emscodesim:assessment-saved', scheduleReconcile);
