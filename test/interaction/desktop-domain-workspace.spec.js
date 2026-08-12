@@ -7,13 +7,14 @@ test.beforeEach(async ({ page }) => {
   await clearSiteStorage(page);
 });
 
-test('desktop center controls populate one right clinical workspace and vitals retain entered values', async ({ page }, testInfo) => {
+test('desktop center interaction column owns patient updates while right workspace handles clinical domains', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Desktop three-column clinical workspace');
   const assertNoPageErrors = watchPageErrors(page);
 
   await openScenario(page, 'horse_crush', 'learning');
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimDomainWorkspace))).toBe(true);
   await expect(page.locator('body')).toHaveClass(/clinical-domain-workspace-v2/);
+  await expect(page.locator('body')).toHaveClass(/clinical-interaction-workspace-v4/);
 
   // Complete the horse arrival gate before using the normal clinical workspace.
   const parking = page.locator('[data-horse-parking="south_barn_access"]');
@@ -22,16 +23,33 @@ test('desktop center controls populate one right clinical workspace and vitals r
   await expect(page.locator('#horseArrivalDecision')).toHaveCount(0);
 
   const rail = page.locator('.bottom-nav.clinical-domain-rail');
+  const interaction = page.locator('#clinicalInteractionColumn');
+  const rightField = page.locator('.patient-control-column');
+  await expect(interaction).toBeVisible();
   await expect(rail).toBeVisible();
+
+  // The center column is now a true interaction area: domain controls, Patient
+  // Update, then follow-up/initial-assessment interaction. The photo stays clear.
   await expect.poll(() => page.evaluate(() => {
+    const column = document.getElementById('clinicalInteractionColumn');
     const railNode = document.querySelector('.bottom-nav.clinical-domain-rail');
+    const update = document.getElementById('infoUpdateWindow');
+    const question = document.getElementById('horseClinicalQuestionBox');
     const layout = document.querySelector('.scenario-hero-layout');
     const controls = document.querySelector('.patient-control-column');
-    return Boolean(railNode && layout && controls && railNode.parentElement === layout && railNode.nextElementSibling === controls);
+    const patient = document.querySelector('.patient-stage');
+    return Boolean(
+      column && railNode && update && question && layout && controls && patient &&
+      column.parentElement === layout && column.nextElementSibling === controls &&
+      railNode.parentElement === column && update.parentElement === column &&
+      question.parentElement === column && !patient.contains(update)
+    );
   })).toBe(true);
+  await expect(page.locator('#infoUpdateWindow')).toBeVisible();
+  await expect(page.locator('#horseClinicalQuestionBox')).toBeVisible();
 
   // The permanent desktop domains are Assessment, Vitals, History, and Treatment.
-  // Record/Log remains internal for grading and handoff but does not consume a rail button.
+  // Record/Log remains internal for grading and handoff but does not consume a button.
   await expect(rail.locator('button[data-panel]:visible')).toHaveCount(4);
   await expect(rail.locator('button[data-panel="assessmentPanel"]')).toBeVisible();
   await expect(rail.locator('button[data-panel="vitalsPanel"]')).toBeVisible();
@@ -83,15 +101,21 @@ test('desktop center controls populate one right clinical workspace and vitals r
   await expect(page.locator('#treatmentPanel')).toBeVisible();
   await expect(page.locator('#treatmentTools')).toBeVisible();
 
-  const rightField = page.locator('.patient-control-column');
+  // Desktop uses the available width: patient -> larger interaction column -> right workspace.
   const rightBox = await rightField.boundingBox();
-  const railBox = await rail.boundingBox();
+  const interactionBox = await interaction.boundingBox();
   const patientBox = await page.locator('.patient-stage').boundingBox();
+  const updateBox = await page.locator('#infoUpdateWindow').boundingBox();
+  const questionBox = await page.locator('#horseClinicalQuestionBox').boundingBox();
   expect(rightBox).not.toBeNull();
-  expect(railBox).not.toBeNull();
+  expect(interactionBox).not.toBeNull();
   expect(patientBox).not.toBeNull();
-  expect(patientBox.x + patientBox.width).toBeLessThanOrEqual(railBox.x + 2);
-  expect(railBox.x + railBox.width).toBeLessThanOrEqual(rightBox.x + 2);
+  expect(updateBox).not.toBeNull();
+  expect(questionBox).not.toBeNull();
+  expect(interactionBox.width).toBeGreaterThanOrEqual(270);
+  expect(patientBox.x + patientBox.width).toBeLessThanOrEqual(interactionBox.x + 2);
+  expect(interactionBox.x + interactionBox.width).toBeLessThanOrEqual(rightBox.x + 2);
+  expect(updateBox.y + updateBox.height).toBeLessThanOrEqual(questionBox.y + 3);
 
   await assertNoPageErrors();
 });
