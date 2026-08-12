@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.08.12.1';
+  const PATIENT_WORKSPACE_BUILD = '2026.08.12.2';
 
   const assessmentTools = [
     { category: 'Scene size-up', key: 'scene_size_up', label: 'Scene size-up & first impression', description: 'Use dispatch and the patient picture to decide PPE, safety, patient count, NOI/MOI, resources, spinal precautions, general impression, responsiveness, and priority.', url: '/vitals/visual-patient.html' },
@@ -64,14 +64,33 @@
 
   window.EMSCodeSimToolRegistry = { assessmentTools, vitalTools, buildUrl, currentPageReturn, safeReturn };
 
+  function onPatientScenarioPage() {
+    return /\/vitals\/visual-patient(?:\.html)?$/.test(location.pathname);
+  }
+
+  function loadPatientScenarioStyle(href, dataKey, selector) {
+    if (!onPatientScenarioPage() || document.querySelector(selector)) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.dataset[dataKey] = '1';
+    document.head.appendChild(link);
+  }
+
   function loadPatientScenarioScript(src, dataKey, selector) {
-    if (!/\/vitals\/visual-patient(?:\.html)?$/.test(location.pathname) || document.querySelector(selector)) return;
+    if (!onPatientScenarioPage() || document.querySelector(selector)) return;
     const script = document.createElement('script');
     script.src = src;
     script.async = false;
     script.dataset[dataKey] = '1';
     document.head.appendChild(script);
   }
+
+  loadPatientScenarioStyle(
+    `/vitals/scenario-vital-board.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,
+    'scenarioVitalBoard',
+    'link[data-scenario-vital-board]'
+  );
 
   // The patient simulator owns one shared mini-sim overlay and one desktop domain
   // workspace. Keep both behind the registry, but use a single explicit build
