@@ -123,11 +123,15 @@ includesAll(skillSheetPage, [
 ], 'NREMT skill-sheet library');
 
 const registry = read('vitals/scenario-tool-registry.js');
+// These are the active production assessment routes. Older narrative assessment pages
+// may remain for compatibility, but the registry should point learners into the visual,
+// scenario-first tools used by the current patient simulator.
 includesAll(registry, [
-  '/vitals/visual-patient.html', 'scene_size_up', '/vitals/airway-assessment.html', '/vitals/breathing-assessment.html', '/vitals/perfusion-assessment.html',
-  '/vitals/avpu-scenario.html', '/vitals/pupil-scenario.html', '/vitals/motor-sensory-assessment.html',
-  '/vitals/gcs.html', '/vitals/breath-sounds-scenario.html', '/vitals/chest-assessment.html',
-  '/vitals/skin-scenario.html', '/vitals/abdominal-assessment.html', '/vitals/trauma-assessment.html',
+  '/vitals/visual-patient.html', 'scene_size_up',
+  '/vitals/visual-airway-assessment.html', '/vitals/respiratory-assessment-visual.html', '/vitals/distal-csm-assessment.html',
+  '/vitals/avpu-scenario.html', '/vitals/pupil-scenario.html', '/vitals/visual-neuro-stroke-assessment.html',
+  '/vitals/gcs.html', '/vitals/breath-sounds-scenario.html',
+  '/vitals/skin-scenario.html', '/vitals/abdomen-pelvis-visual.html', '/vitals/visual-trauma-body-exam.html',
   '/vitals/pain-opqrst.html', '/vitals/sample-history.html', '/vitals/pediatric-assessment-triangle.html', '/vitals/nines.html'
 ], 'Assessment registry');
 
