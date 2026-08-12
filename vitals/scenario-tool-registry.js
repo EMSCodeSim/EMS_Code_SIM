@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.08.12.3';
+  const PATIENT_WORKSPACE_BUILD = '2026.08.12.4';
 
   const assessmentTools = [
     { category: 'Scene size-up', key: 'scene_size_up', label: 'Scene size-up & first impression', description: 'Use dispatch and the patient picture to decide PPE, safety, patient count, NOI/MOI, resources, spinal precautions, general impression, responsiveness, and priority.', url: '/vitals/visual-patient.html' },
@@ -98,6 +98,12 @@
     'link[data-scenario-info-window-fix]'
   );
 
+  loadPatientScenarioStyle(
+    `/vitals/scenario-clinical-flow-polish.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,
+    'scenarioClinicalFlowPolish',
+    'link[data-scenario-clinical-flow-polish]'
+  );
+
   // The patient simulator owns one shared mini-sim overlay and one desktop domain
   // workspace. Keep both behind the registry, but use a single explicit build
   // token so browsers and the CDN cannot reuse an older workspace after a release.
@@ -110,5 +116,10 @@
     `/vitals/scenario-domain-workspace.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,
     'scenarioDomainWorkspace',
     'script[data-scenario-domain-workspace]'
+  );
+  loadPatientScenarioScript(
+    `/vitals/scenario-clinical-flow-polish.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,
+    'scenarioClinicalFlowPolish',
+    'script[data-scenario-clinical-flow-polish]'
   );
 })();
