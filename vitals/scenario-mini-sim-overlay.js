@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const OVERLAY_VERSION = '2026.08.11.1';
+  const OVERLAY_VERSION = '2026.08.12.2';
   const registry = window.EMSCodeSimToolRegistry;
   const toolPaths = new Set([
     ...(registry?.vitalTools || []).map(tool => tool.url),
@@ -157,6 +157,12 @@
         script.src = `/vitals/scenario-mini-sim-embedded.js?v=${encodeURIComponent(OVERLAY_VERSION)}`;
         script.dataset.emsMiniSimJs = '1';
         doc.body.appendChild(script);
+      }
+      if (!doc.querySelector('script[data-ems-mini-sim-audio-boost]')) {
+        const audioBoost = doc.createElement('script');
+        audioBoost.src = `/vitals/scenario-mini-sim-audio-boost.js?v=${encodeURIComponent(OVERLAY_VERSION)}`;
+        audioBoost.dataset.emsMiniSimAudioBoost = '1';
+        doc.body.appendChild(audioBoost);
       }
     } catch (_) {
       // Scenario mini sims are same-origin. Ignore a transient load/navigation state.
