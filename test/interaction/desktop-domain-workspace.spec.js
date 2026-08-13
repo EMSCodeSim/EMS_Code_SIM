@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
   await clearSiteStorage(page);
 });
 
-test('desktop center interaction column owns patient updates while right workspace handles clinical domains', async ({ page }, testInfo) => {
+test('desktop center interaction column owns patient communication while right workspace handles clinical domains', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Desktop three-column clinical workspace');
   const assertNoPageErrors = watchPageErrors(page);
 
@@ -28,24 +28,31 @@ test('desktop center interaction column owns patient updates while right workspa
   await expect(interaction).toBeVisible();
   await expect(rail).toBeVisible();
 
-  // The center column is now a true interaction area: domain controls, Patient
-  // Update, then follow-up/initial-assessment interaction. The photo stays clear.
+  // Current desktop architecture:
+  // - Scene / Crew Update is the non-patient information surface in the center column.
+  // - Patient speech plus SAMPLE/assessment follow-up interaction lives inside
+  //   patientCommunicationStage in the center middle.
+  // - The four clinical-domain controls remain fixed at the bottom.
+  // - The patient photo remains clear of both information surfaces.
   await expect.poll(() => page.evaluate(() => {
     const column = document.getElementById('clinicalInteractionColumn');
     const railNode = document.querySelector('.bottom-nav.clinical-domain-rail');
     const update = document.getElementById('infoUpdateWindow');
+    const stage = document.getElementById('patientCommunicationStage');
     const question = document.getElementById('horseClinicalQuestionBox');
     const layout = document.querySelector('.scenario-hero-layout');
     const controls = document.querySelector('.patient-control-column');
     const patient = document.querySelector('.patient-stage');
     return Boolean(
-      column && railNode && update && question && layout && controls && patient &&
+      column && railNode && update && stage && question && layout && controls && patient &&
       column.parentElement === layout && column.nextElementSibling === controls &&
       railNode.parentElement === column && update.parentElement === column &&
-      question.parentElement === column && !patient.contains(update)
+      stage.parentElement === column && question.parentElement === stage &&
+      !patient.contains(update) && !patient.contains(stage)
     );
   })).toBe(true);
   await expect(page.locator('#infoUpdateWindow')).toBeVisible();
+  await expect(page.locator('#patientCommunicationStage')).toBeVisible();
   await expect(page.locator('#horseClinicalQuestionBox')).toBeVisible();
 
   // The permanent desktop domains are Assessment, Vitals, History, and Treatment.
@@ -106,16 +113,16 @@ test('desktop center interaction column owns patient updates while right workspa
   const interactionBox = await interaction.boundingBox();
   const patientBox = await page.locator('.patient-stage').boundingBox();
   const updateBox = await page.locator('#infoUpdateWindow').boundingBox();
-  const questionBox = await page.locator('#horseClinicalQuestionBox').boundingBox();
+  const stageBox = await page.locator('#patientCommunicationStage').boundingBox();
   expect(rightBox).not.toBeNull();
   expect(interactionBox).not.toBeNull();
   expect(patientBox).not.toBeNull();
   expect(updateBox).not.toBeNull();
-  expect(questionBox).not.toBeNull();
+  expect(stageBox).not.toBeNull();
   expect(interactionBox.width).toBeGreaterThanOrEqual(270);
   expect(patientBox.x + patientBox.width).toBeLessThanOrEqual(interactionBox.x + 2);
   expect(interactionBox.x + interactionBox.width).toBeLessThanOrEqual(rightBox.x + 2);
-  expect(updateBox.y + updateBox.height).toBeLessThanOrEqual(questionBox.y + 3);
+  expect(updateBox.y + updateBox.height).toBeLessThanOrEqual(stageBox.y + 3);
 
   await assertNoPageErrors();
 });
