@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.12.1';
+  const VERSION = '2026.08.13.1';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   if (requested !== 'horse_crush') return;
@@ -9,6 +9,33 @@
   const $ = id => document.getElementById(id);
   let observer = null;
   let queued = false;
+
+  function installPatientResponseHitTargetFix() {
+    if (document.querySelector('style[data-patient-response-hit-target-fix]')) return;
+    const style = document.createElement('style');
+    style.dataset.patientResponseHitTargetFix = VERSION;
+    style.textContent = `
+      #patientCommunicationStage,
+      #patientConversationTurn,
+      #patientConversationTurn .patient-conversation-choices {
+        position: relative !important;
+        pointer-events: auto !important;
+      }
+      #patientCommunicationStage { z-index: 40 !important; }
+      #patientConversationTurn { z-index: 41 !important; }
+      #patientConversationTurn .patient-conversation-choices { z-index: 42 !important; }
+      #patientConversationTurn .patient-conversation-choices button,
+      #patientConversationTurn button[data-patient-choice],
+      #patientConversationTurn button[data-first-time-choice] {
+        position: relative !important;
+        z-index: 43 !important;
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+        cursor: pointer !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
 
   function statusFor(score) {
     if (score >= 85) return 'Strong';
@@ -78,6 +105,7 @@
   }
 
   function start() {
+    installPatientResponseHitTargetFix();
     observer = new MutationObserver(schedule);
     observer.observe(document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['hidden'] });
     window.addEventListener('emscodesim:patient-anger-change', schedule);
