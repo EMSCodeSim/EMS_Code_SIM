@@ -32,6 +32,7 @@ test('desktop center interaction column owns patient communication while right w
   // - Scene / Crew Update is the non-patient information surface in the center column.
   // - Patient speech plus SAMPLE/assessment follow-up interaction lives inside
   //   patientCommunicationStage in the center middle.
+  // - The follow-up box may be hidden while idle; visibility is driven by an active question.
   // - The four clinical-domain controls remain fixed at the bottom.
   // - The patient photo remains clear of both information surfaces.
   await expect.poll(() => page.evaluate(() => {
@@ -53,7 +54,25 @@ test('desktop center interaction column owns patient communication while right w
   })).toBe(true);
   await expect(page.locator('#infoUpdateWindow')).toBeVisible();
   await expect(page.locator('#patientCommunicationStage')).toBeVisible();
-  await expect(page.locator('#horseClinicalQuestionBox')).toBeVisible();
+  await expect(page.locator('#horseClinicalQuestionBox')).toBeHidden();
+
+  // A real patient turn must render clickable response buttons in the center,
+  // accept a response after the DOM has been reparented/polished, and show Linda's reply.
+  await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientConversation?.showPatientTurn))).toBe(true);
+  await page.evaluate(() => {
+    window.EMSCodeSimPatientConversation.showPatientTurn({
+      text:'Can you tell me what you are doing before you move me?',
+      choices:[
+        ['Yes. I will explain the plan and support your leg before we move.', 'Thank you. That makes me feel a lot better about moving.'],
+        ['Just relax. We need to get this done.', 'No. I need you to explain what you are doing first.']
+      ]
+    });
+  });
+  const patientChoice = page.locator('#patientConversationTurn button[data-patient-choice="0"]');
+  await expect(patientChoice).toBeVisible();
+  await patientChoice.click();
+  await expect(page.locator('#patientConversationTurn .patient-provider-reply')).toContainText('You:');
+  await expect(page.locator('#patientConversationTurn .patient-line')).toContainText('Thank you');
 
   // The permanent desktop domains are Assessment, Vitals, History, and Treatment.
   // Record/Log remains internal for grading and handoff but does not consume a button.
