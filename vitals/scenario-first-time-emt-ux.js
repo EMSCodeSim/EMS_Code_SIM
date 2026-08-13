@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.12.1';
+  const VERSION = '2026.08.12.2';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';
@@ -86,13 +86,13 @@
       <header><span aria-hidden="true">👤</span><strong>Linda</strong></header>
       <p class="patient-line">“${clean(text).replace(/[“”"]/g, '')}”</p>
       <div class="patient-conversation-choices">
-        ${choices.map((choice, index) => `<button type="button" data-patient-choice="${index}" data-first-time-choice="${index}">${choice.label}</button>`).join('')}
+        ${choices.map((choice, index) => `<button type="button" data-first-time-choice="${index}">${choice.label}</button>`).join('')}
       </div>`;
     host.querySelectorAll('[data-first-time-choice]').forEach(button => {
       button.addEventListener('click', () => {
         const choice = choices[Number(button.dataset.firstTimeChoice)];
         if (!choice) return;
-        if (choice.onChoose) choice.onChoose();
+        choice.onChoose?.();
         host.classList.add('replying');
         host.innerHTML = `<header><span aria-hidden="true">👤</span><strong>Linda</strong></header><p class="patient-line">“${choice.patient.replace(/[“”"]/g, '')}”</p><p class="patient-provider-reply">You: ${choice.label}</p>`;
         speakPatient(choice.patient);
@@ -101,18 +101,57 @@
     speakPatient(text);
   }
 
+  // 1 + 11: conversation-first center column and stronger visual hierarchy.
+  function simplifyConversationCenter() {
+    const stage = communicationStage();
+    if (!stage) return;
+    stage.classList.add('emt-conversation-first');
+    const idle = stage.querySelector('.patient-communication-idle');
+    if (idle) idle.hidden = true;
+    const progress = stage.querySelector('.horse-encounter-progress');
+    if (progress) progress.hidden = true;
+  }
+
+  // 2: Scene / Crew Update is the single top information surface.
   function renameTopWindow() {
     const info = document.getElementById('infoUpdateWindow');
     if (!info) return;
     info.setAttribute('aria-label', 'Scene and crew updates');
+    info.dataset.firstTimeLabel = 'scene-crew';
     const type = document.getElementById('infoUpdateType');
-    if (type && /PATIENT UPDATE/i.test(type.textContent || '')) type.textContent = 'SCENE / CREW';
     const title = document.getElementById('infoUpdateTitle');
-    if (title && /patient update/i.test(title.textContent || '')) title.textContent = 'Scene / crew update';
+    if (type && /PATIENT UPDATE/i.test(type.textContent || '')) type.textContent = 'SCENE / CREW';
+    if (title && /patient update/i.test(title.textContent || '')) title.textContent = 'Scene / Crew Update';
     const toggle = document.getElementById('infoUpdateVoiceToggle');
     if (toggle) toggle.setAttribute('aria-label', 'Turn automatic scene and crew voice on or off');
     const replay = document.getElementById('infoUpdateReplay');
     if (replay) replay.setAttribute('aria-label', 'Replay the current scene or crew update');
+  }
+
+  // 3: the four domains are the only permanent navigation and stay at the bottom.
+  function lockDomainRailToBottom() {
+    const column = document.getElementById('clinicalInteractionColumn');
+    if (!column) return;
+    const nav = column.querySelector('.bottom-nav');
+    if (!nav) return;
+    nav.classList.add('emt-primary-domain-rail');
+    const allowed = new Set(['assessmentPanel','vitalsPanel','historyPanel','treatmentPanel']);
+    [...nav.querySelectorAll('button[data-panel]')].forEach(button => {
+      button.hidden = !allowed.has(button.dataset.panel);
+    });
+  }
+
+  // 4: right workspace should immediately show actions, not explanatory prose.
+  function simplifyRightWorkspace() {
+    const root = document.getElementById('clinicalDomainWorkspace') || document.querySelector('.clinical-domain-workspace');
+    if (!root) return;
+    root.classList.add('emt-action-first-workspace');
+    ['assessmentPanel','vitalsPanel','historyPanel','treatmentPanel'].forEach(id => {
+      const panel = document.getElementById(id);
+      if (!panel) return;
+      panel.classList.add('emt-action-first-panel');
+      $$(':scope > p, :scope > .sub, :scope > .panel-description, :scope > .domain-description', panel).forEach(node => node.hidden = true);
+    });
   }
 
   function simplifyAssessmentClock() {
@@ -121,9 +160,11 @@
     if (status && status.textContent !== 'Patient clock') status.textContent = 'Patient clock';
   }
 
+  // 6: patient speech itself becomes part of the ABC assessment evidence.
   const ABC_PATIENT_LINES = {
     airway: 'Yes, I can breathe. My hip is what really hurts.',
     breathing: 'I’m breathing okay. It just hurts when I move.',
+    perfusion: 'I feel a little shaky, but I’m not dizzy. My hip is still the main thing.',
     mental_status: 'I’m awake. I know where I am. I just want this hip to stop hurting.'
   };
 
@@ -134,6 +175,7 @@
     window.setTimeout(() => showPatientStatement(ABC_PATIENT_LINES[key]), 80);
   }
 
+  // 5: History is a question launcher; answers live in the center conversation.
   function makeHistoryQuestionLauncher() {
     const panel = document.getElementById('historyPanel');
     if (!panel) return;
@@ -146,10 +188,11 @@
     });
   }
 
+  // 7: surface the small, case-relevant set first.
   function primaryTreatmentGroup(button) {
     const id = String(button?.dataset?.horseTreatmentGroup || '').toLowerCase();
     const text = clean(button?.textContent).toLowerCase();
-    return /splint|support|pain|medicat|circulation|shock|resource|trauma/.test(`${id} ${text}`);
+    return /splint|support|pain|medicat|circulation|shock|resource|trauma|warm|position/.test(`${id} ${text}`);
   }
 
   function simplifyTreatmentGroups() {
@@ -158,7 +201,6 @@
     if (!panel || !tools) return;
     const groups = $$('[data-horse-treatment-group]', tools);
     if (!groups.length) return;
-
     groups.forEach(button => {
       const endEncounter = /transport|handoff/.test(String(button.dataset.horseTreatmentGroup || '').toLowerCase());
       const primary = primaryTreatmentGroup(button);
@@ -167,7 +209,6 @@
       if (!primary && !endEncounter) button.hidden = !extraTreatmentsShown;
       if (endEncounter) button.hidden = true;
     });
-
     let more = document.getElementById('horseMoreTreatmentsToggle');
     if (!more) {
       more = document.createElement('button');
@@ -188,9 +229,17 @@
     return treatments.some(item => /manual_leg_support|splint|support|pain/i.test(String(item?.actionId || item?.treatment || item?.name || '')));
   }
 
+  // 8: Movement is a focused consent/cooperation moment.
+  function focusMovementWorkspace(active) {
+    const panel = document.getElementById('treatmentPanel');
+    if (!panel) return;
+    panel.classList.toggle('emt-movement-focus', Boolean(active));
+  }
+
   function movementConsentPrompt(button) {
     if (movementPromptActive) return;
     movementPromptActive = true;
+    focusMovementWorkspace(true);
     const supported = treatmentReadyForMovement();
     showPatientChoicePrompt(
       'Hold on. Before you move me, tell me what you’re going to do with my leg.',
@@ -200,6 +249,7 @@
           patient:supported ? 'Okay. If you keep it supported and go slowly, I’ll work with you.' : 'Okay. Please support it first, then tell me when you’re ready.',
           onChoose:() => {
             movementPromptActive = false;
+            focusMovementWorkspace(false);
             if (!supported) return;
             button.dataset.movementConsentReady = '1';
             window.setTimeout(() => button.click(), 80);
@@ -224,6 +274,7 @@
     if (!button || !horseScenario()) return;
     if (button.dataset.movementConsentReady === '1') {
       delete button.dataset.movementConsentReady;
+      focusMovementWorkspace(false);
       return;
     }
     event.preventDefault();
@@ -231,19 +282,18 @@
     movementConsentPrompt(button);
   }
 
+  // 9: transport/handoff is the natural finish of Treatment.
   function makeTransportNaturalEnd() {
     const panel = document.getElementById('treatmentPanel');
     const movement = document.getElementById('horseMovementChoices');
     const actions = document.getElementById('horseTransportHandoffActions');
     if (!panel || !actions) return;
     actions.classList.add('horse-natural-encounter-end');
-    if (movement?.parentElement === panel && actions.previousElementSibling !== movement) {
-      movement.insertAdjacentElement('afterend', actions);
-    }
+    if (movement?.parentElement === panel && actions.previousElementSibling !== movement) movement.insertAdjacentElement('afterend', actions);
     if (!actions.querySelector('.horse-natural-end-heading')) {
       const heading = document.createElement('div');
       heading.className = 'horse-natural-end-heading';
-      heading.innerHTML = '<small>END OF ENCOUNTER</small><strong>Ready to transport?</strong><span>Choose transport when assessment, treatment, and movement planning are complete.</span>';
+      heading.innerHTML = '<small>END OF ENCOUNTER</small><strong>Ready to transport?</strong><span>Move into transport when your assessment, treatment, and movement plan are complete.</span>';
       actions.prepend(heading);
     }
   }
@@ -256,41 +306,99 @@
     sample.hidden = !saved;
   }
 
+  // 10: remove permanent development/status clutter in Assessment Mode.
+  function reduceAssessmentChrome() {
+    if (!assessmentMode) return;
+    $$('.scenario-build-stamp-dark,.horse-encounter-progress,.horse-next-clinical-cue').forEach(node => node.hidden = true);
+    const bar = document.getElementById('persistentClinicalBar');
+    if (bar) bar.hidden = true;
+    const monitor = document.getElementById('desktopPatientMonitor');
+    if (monitor) monitor.classList.add('emt-monitor-deemphasized');
+    const quick = document.querySelector('.scenario-quick-controls');
+    if (quick) quick.classList.add('emt-secondary-quick-controls');
+  }
+
+  // 12: one-time, non-CI first-use orientation. It is deliberately short.
+  function firstUseOrientation() {
+    if (!assessmentMode || navigator.webdriver) return;
+    let seen = false;
+    try { seen = localStorage.getItem('emscodesim_horse_orientation_v1') === '1'; } catch (_) {}
+    if (seen || document.getElementById('emtFirstUseOrientation')) return;
+    const overlay = document.createElement('div');
+    overlay.id = 'emtFirstUseOrientation';
+    overlay.className = 'emt-first-use-orientation';
+    overlay.innerHTML = `
+      <div class="emt-first-use-card" role="dialog" aria-modal="true" aria-label="How to use the patient simulator">
+        <small>FIRST CALL</small>
+        <strong>Look at the patient. Talk in the center. Perform care on the right.</strong>
+        <p>Incoming scene and crew information appears at the top. Your clinical tools stay on the right.</p>
+        <button type="button">Start call</button>
+      </div>`;
+    overlay.querySelector('button').addEventListener('click', () => {
+      try { localStorage.setItem('emscodesim_horse_orientation_v1','1'); } catch (_) {}
+      overlay.remove();
+    });
+    document.body.appendChild(overlay);
+  }
+
   function installStyles() {
     if (document.querySelector('style[data-first-time-emt-ux]')) return;
     const style = document.createElement('style');
     style.dataset.firstTimeEmtUx = VERSION;
     style.textContent = `
       @media(min-width:980px){
-        #patientCommunicationStage{justify-content:flex-start!important;padding-top:12px!important;min-height:250px!important}
+        #clinicalInteractionColumn{display:flex!important;flex-direction:column!important}
+        #patientCommunicationStage.emt-conversation-first{justify-content:flex-start!important;padding:14px 2px 6px!important;min-height:280px!important;flex:1 1 auto!important;background:transparent!important;border:0!important;box-shadow:none!important}
         #patientCommunicationStage .patient-communication-idle{display:none!important}
-        #patientCommunicationStage #patientConversationTurn{font-size:1rem}
-        #patientCommunicationStage .patient-line{font-size:1rem!important;line-height:1.45!important}
-        #patientCommunicationStage .patient-conversation-choices{gap:8px!important}
-        #patientCommunicationStage .patient-conversation-choices button{min-height:42px!important;font-size:.8rem!important}
-        #historyPanel.history-question-launcher-mode #historyResponseText,
-        #historyPanel.history-question-launcher-mode .history-response,
-        #historyPanel.history-question-launcher-mode .history-answer,
-        #historyPanel.history-question-launcher-mode [data-history-response]{display:none!important}
-        #treatmentPanel .horse-more-treatments-toggle{width:100%;min-height:38px;margin-top:7px;border:1px dashed rgba(116,181,210,.42);border-radius:9px;background:rgba(8,30,45,.45);color:#b9d7e5;font-weight:800;cursor:pointer}
+        #patientCommunicationStage #patientConversationTurn{font-size:1rem;border:0!important;background:transparent!important;padding:6px 2px!important;box-shadow:none!important}
+        #patientCommunicationStage #patientConversationTurn header{font-size:.72rem!important;margin-bottom:5px!important}
+        #patientCommunicationStage .patient-line{font-size:1.08rem!important;line-height:1.48!important;font-weight:760!important}
+        #patientCommunicationStage .patient-conversation-choices{gap:8px!important;margin-top:6px!important}
+        #patientCommunicationStage .patient-conversation-choices button{min-height:44px!important;font-size:.81rem!important;border-radius:9px!important}
+        #clinicalInteractionColumn>.emt-primary-domain-rail{order:99!important;margin-top:auto!important;position:sticky!important;bottom:0!important;z-index:15!important;background:rgba(6,23,34,.96)!important;padding-top:7px!important}
+        #clinicalInteractionColumn>.emt-primary-domain-rail button{min-height:44px!important}
+        .emt-action-first-workspace .emt-action-first-panel{align-content:start!important}
+        .emt-action-first-workspace .emt-action-first-panel>header{margin-bottom:6px!important;padding-bottom:6px!important}
+        .emt-action-first-workspace .emt-action-first-panel>header small,.emt-action-first-workspace .emt-action-first-panel>header p{display:none!important}
+        #historyPanel.history-question-launcher-mode #historyResponseText,#historyPanel.history-question-launcher-mode .history-response,#historyPanel.history-question-launcher-mode .history-answer,#historyPanel.history-question-launcher-mode [data-history-response]{display:none!important}
+        #historyPanel.history-question-launcher-mode .history-question-button{min-height:42px!important}
+        #assessmentPanel [data-assessment-category="abc"]{font-weight:900!important}
+        #assessmentPanel [data-assessment-item="airway"],#assessmentPanel [data-assessment-item="breathing"],#assessmentPanel [data-assessment-item="perfusion"]{min-height:46px!important;font-size:.86rem!important}
+        #treatmentPanel .horse-more-treatments-toggle{width:100%;min-height:40px;margin-top:7px;border:1px dashed rgba(116,181,210,.42);border-radius:9px;background:rgba(8,30,45,.45);color:#b9d7e5;font-weight:800;cursor:pointer}
+        #treatmentPanel.emt-movement-focus #treatmentTools,#treatmentPanel.emt-movement-focus #horseTreatmentWorkspaceDetail{opacity:.22;pointer-events:none}
+        #treatmentPanel.emt-movement-focus #horseMovementChoices{border-color:rgba(113,211,245,.75)!important;box-shadow:0 0 0 1px rgba(113,211,245,.14),0 12px 30px rgba(0,0,0,.22)}
         #treatmentPanel .horse-natural-encounter-end{margin-top:10px!important;padding-top:10px!important;border-top:1px solid rgba(91,145,171,.35)}
         #treatmentPanel .horse-natural-end-heading{display:grid;gap:2px;margin-bottom:8px}
         #treatmentPanel .horse-natural-end-heading small{font-size:.65rem;font-weight:900;letter-spacing:.09em;color:#8fcbe2}
-        #treatmentPanel .horse-natural-end-heading strong{font-size:.95rem;color:#fff}
+        #treatmentPanel .horse-natural-end-heading strong{font-size:.98rem;color:#fff}
         #treatmentPanel .horse-natural-end-heading span{font-size:.7rem;line-height:1.35;color:#a8c2cf}
+        #infoUpdateWindow[data-first-time-label="scene-crew"]{border-color:rgba(99,160,190,.4)!important}
+        #infoUpdateWindow[data-first-time-label="scene-crew"] #infoUpdateText{font-size:.79rem!important;line-height:1.4!important}
+        .emt-monitor-deemphasized{opacity:.92}
+        .emt-secondary-quick-controls{opacity:.7;transform:scale(.94);transform-origin:right top}
       }
+      .emt-first-use-orientation{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:rgba(2,12,18,.72);backdrop-filter:blur(5px);padding:20px}
+      .emt-first-use-card{width:min(460px,calc(100vw - 32px));padding:22px;border:1px solid rgba(114,201,235,.55);border-radius:16px;background:#0a2232;color:#fff;box-shadow:0 22px 60px rgba(0,0,0,.42);display:grid;gap:10px;text-align:left}
+      .emt-first-use-card small{font-size:.67rem;letter-spacing:.11em;font-weight:900;color:#8bd8f3}
+      .emt-first-use-card strong{font-size:1.18rem;line-height:1.35}
+      .emt-first-use-card p{margin:0;color:#bdd0da;font-size:.82rem;line-height:1.45}
+      .emt-first-use-card button{justify-self:start;min-height:42px;padding:8px 16px;border:0;border-radius:10px;background:#d9f3ff;color:#062238;font-weight:900;cursor:pointer}
     `;
     document.head.appendChild(style);
   }
 
   function reconcile() {
     queued = false;
+    simplifyConversationCenter();
     renameTopWindow();
+    lockDomainRailToBottom();
+    simplifyRightWorkspace();
     simplifyAssessmentClock();
     makeHistoryQuestionLauncher();
     simplifyTreatmentGroups();
     makeTransportNaturalEnd();
     hideAssessmentModeHandoffHelp();
+    reduceAssessmentChrome();
   }
 
   function schedule() {
@@ -312,14 +420,14 @@
     observer = new MutationObserver(mutations => {
       const relevant = mutations.some(mutation => {
         const target = mutation.target?.nodeType === 1 ? mutation.target : mutation.target?.parentElement;
-        return Boolean(target?.closest?.('#infoUpdateWindow,#historyPanel,#treatmentPanel,#hospitalHandoffWorkspace,#patientClockStatus'));
+        return Boolean(target?.closest?.('#infoUpdateWindow,#historyPanel,#treatmentPanel,#hospitalHandoffWorkspace,#patientClockStatus,#clinicalInteractionColumn,.clinical-domain-workspace'));
       });
       if (relevant) schedule();
     });
     observer.observe(document.body, { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:['hidden','class'] });
     schedule();
     window.setTimeout(schedule, 250);
-    window.setTimeout(schedule, 900);
+    window.setTimeout(() => { schedule(); firstUseOrientation(); }, 900);
     window.addEventListener('pagehide', () => observer?.disconnect(), { once:true });
   }
 
