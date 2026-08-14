@@ -132,37 +132,8 @@
   }
 
   function injectExpandedAssessments() {
-    if (!isHorseScenario()) return false;
-    const tools = document.getElementById('assessmentTools');
-    if (!tools) return false;
-    let section = document.getElementById('horseExpandedAssessments');
-    if (section) return true;
-    section = document.createElement('section');
-    section.id = 'horseExpandedAssessments';
-    section.className = 'horse-expanded-assessments';
-    section.innerHTML = `
-      <header><div><small>DETAILED PATIENT ASSESSMENT</small><strong>Choose the body area or assessment you want to perform</strong></div></header>
-      <div class="horse-assessment-group"><small>HEAD / NEUROLOGIC</small><div class="horse-assessment-group-grid">
-        ${deepButton('head_exam','Head exam','Inspect and palpate the head.')}
-        ${deepButton('neck_back','Neck / back','Assess cervical, thoracic, and lumbar findings.')}
-        ${deepButton('pupils','Eyes & pupils','Open the pupil light, equality, gaze, and tracking simulator.','sim')}
-        ${deepButton('mental_status','Mental status / AVPU','Open the neurologic responsiveness assessment.','sim')}
-      </div></div>
-      <div class="horse-assessment-group"><small>CHEST / RESPIRATORY</small><div class="horse-assessment-group-grid">
-        ${deepButton('chest_assessment','Chest exam','Inspect and palpate chest wall movement and injury.')}
-        ${deepButton('breath_sounds','Breath sounds','Open the breath-sound auscultation simulator.','sim')}
-      </div></div>
-      <div class="horse-assessment-group"><small>ABDOMEN / PELVIS</small><div class="horse-assessment-group-grid">
-        ${deepButton('abdominal_assessment','Abdominal exam','Assess all four quadrants for trauma findings.')}
-        ${deepButton('pelvis_hip','Pelvis / hip','Perform one gentle pelvis and focused hip assessment.')}
-      </div></div>
-      <div class="horse-assessment-group"><small>EXTREMITIES / NEUROVASCULAR</small><div class="horse-assessment-group-grid">
-        ${deepButton('upper_extremities','Upper extremities','Inspect and compare both arms.')}
-        ${deepButton('left_leg','Lower extremities','Inspect both legs with focus on the injured left side.')}
-        ${deepButton('distal_csm','Distal CSM','Check distal pulse, sensation, movement, and capillary refill.')}
-      </div></div>`;
-    tools.prepend(section);
-    return true;
+    document.getElementById('horseExpandedAssessments')?.remove();
+    return false;
   }
 
   function relocateReasoningBoard() {
