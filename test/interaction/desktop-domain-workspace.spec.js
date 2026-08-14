@@ -50,16 +50,15 @@ test('desktop center interaction column owns patient communication while right w
       !column.contains(question) && !patient.contains(update) && !patient.contains(stage)
     );
   })).toBe(true);
-  await expect(page.locator('#infoUpdateWindow')).toBeVisible();
+  await expect(page.locator('#infoUpdateWindow')).toBeHidden();
   await expect(page.locator('#patientCommunicationStage')).toBeVisible();
   await expect(page.locator('#horseClinicalQuestionBox')).toBeHidden();
   await expect(page.locator('.clinical-interaction-column .patient-entry-workflow')).toBeHidden();
   await expect.poll(() => page.evaluate(() => {
     const info = getComputedStyle(document.getElementById('infoUpdateWindow'));
     const patient = getComputedStyle(document.getElementById('patientCommunicationStage'));
-    return info.borderLeftWidth === '0px'
+    return info.display === 'none'
       && patient.borderLeftWidth === '0px'
-      && info.backgroundColor === 'rgba(0, 0, 0, 0)'
       && patient.backgroundColor === 'rgba(0, 0, 0, 0)';
   })).toBe(true);
 
@@ -124,6 +123,16 @@ test('desktop center interaction column owns patient communication while right w
   await expect(page.locator('#assessmentPanel')).toBeVisible();
   await expect(page.locator('#assessmentTools')).toBeVisible();
 
+  // Primary/ABC opens in the right field and uses direct finding buttons, not a dropdown.
+  const primaryCategory = page.locator('[data-assessment-category]', { hasText:'Primary / ABC' });
+  if (await primaryCategory.isVisible()) await primaryCategory.click();
+  await page.locator('[data-assessment-item="airway"]').click();
+  await expect(page.locator('#horseClinicalQuestionBox')).toBeVisible();
+  await expect(page.locator('#horseClinicalQuestionBox select')).toHaveCount(0);
+  await expect(page.locator('#horseClinicalQuestionBox .horse-question-choice')).toHaveCount(3);
+  await page.locator('#horseClinicalQuestionBox .horse-question-choice').first().click();
+  await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientRecord?.getFinding?.('airway', window.EMSCodeSimPatientRecord?.active?.())))).toBe(true);
+
   // History is its own permanent center control and populates the same right field.
   await rail.locator('button[data-panel="historyPanel"]').click();
   await expect(page.locator('#historyPanel')).toBeVisible();
@@ -154,17 +163,17 @@ test('desktop center interaction column owns patient communication while right w
   const rightBox = await rightField.boundingBox();
   const interactionBox = await interaction.boundingBox();
   const patientBox = await page.locator('.patient-stage').boundingBox();
-  const updateBox = await page.locator('#infoUpdateWindow').boundingBox();
+  const timelineBox = await page.locator('#communicationTimeline').boundingBox();
   const stageBox = await page.locator('#patientCommunicationStage').boundingBox();
   expect(rightBox).not.toBeNull();
   expect(interactionBox).not.toBeNull();
   expect(patientBox).not.toBeNull();
-  expect(updateBox).not.toBeNull();
+  expect(timelineBox).not.toBeNull();
   expect(stageBox).not.toBeNull();
   expect(interactionBox.width).toBeGreaterThanOrEqual(330);
   expect(patientBox.x + patientBox.width).toBeLessThanOrEqual(interactionBox.x + 2);
   expect(interactionBox.x + interactionBox.width).toBeLessThanOrEqual(rightBox.x + 2);
-  expect(updateBox.y + updateBox.height).toBeLessThanOrEqual(stageBox.y + 3);
+  expect(timelineBox.height).toBeGreaterThanOrEqual(interactionBox.height * 0.55);
 
   const controlBoxes = await rail.locator('button[data-panel]:visible').evaluateAll(buttons => buttons.map(button => {
     const box = button.getBoundingClientRect();
