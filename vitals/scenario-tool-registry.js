@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.08.14.12';
+  const PATIENT_WORKSPACE_BUILD = '2026.08.14.13';
 
   // The patient page has several independent layout layers that can move the same
   // nodes during startup. A stale insertBefore reference should never crash the
