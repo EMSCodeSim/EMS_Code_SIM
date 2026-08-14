@@ -1737,8 +1737,23 @@
 
   function treatmentAlreadyRecorded(plan) { return treatmentCount(plan) > 0; }
 
+  function isMedicationTreatment(plan) {
+    return treatmentCategory(plan) === 'medications'
+      || /aspirin|nitro|epinephrine|naloxone|glucose|bronchodilator|medication|pain_control/i.test(`${plan?.id || ''} ${plan?.label || ''}`);
+  }
+
   function treatmentDocumentation(plan) {
-    return Array.isArray(plan.documentation) ? plan.documentation : [];
+    const fields = Array.isArray(plan.documentation) ? [...plan.documentation] : [];
+    if (!isMedicationTreatment(plan)) return fields;
+
+    const names = new Set(fields.map(field => field.name));
+    const safetyFields = [
+      { name:'indication', label:'Clinical indication', required:true, placeholder:'Why is this medication indicated?' },
+      { name:'protocolCheck', label:'Protocol / medical-direction authorization', type:'select', required:true, options:['Confirmed for this patient and provider level','Not confirmed'] },
+      { name:'contraindicationCheck', label:'Contraindication screen', type:'select', required:true, options:['No contraindication identified','Possible or confirmed contraindication'] }
+    ];
+    safetyFields.forEach(field => { if (!names.has(field.name)) fields.unshift(field); });
+    return fields;
   }
 
   function treatmentInputValue(form, field) {
@@ -1918,6 +1933,13 @@
       classification = 'unnecessary';
       response = 'The intervention does not address a current abnormal finding and produces no meaningful improvement.';
     }
+
+    if (isMedicationTreatment(plan)
+        && (documentation.protocolCheck === 'Not confirmed'
+          || documentation.contraindicationCheck === 'Possible or confirmed contraindication')) {
+      classification = 'contraindicated';
+      response = 'Medication administration should stop until protocol authorization is confirmed and the possible contraindication is resolved.';
+    }
     const documentationText = treatmentDocumentationText(plan, documentation);
     const treatment = {
       actionId: plan.id,
@@ -2049,6 +2071,10 @@
     return article;
   }
 
+  const HORSE_NON_INDICATED_MEDICATION_IDS = new Set([
+    'aspirin','nitroglycerin_assist','epinephrine_auto','naloxone','oral_glucose_general','bronchodilator_general'
+  ]);
+
   const HORSE_TREATMENT_GROUPS = [
     {
       id:'splinting', label:'Splinting / stabilization', icon:'S',
@@ -2081,6 +2107,12 @@
       planIds:['heat_conservation','control_bleeding','shock_care','cpr_aed']
     },
     {
+      id:'medications', label:'Medications', icon:'Rx',
+      description:'EMT medications, pain-management coordination, and medication safety checks.',
+      instruction:'Choose a medication only after confirming the indication, contraindications, patient allergies, local protocol, provider authorization, dose, and route.',
+      planIds:['pain_control','aspirin','nitroglycerin_assist','epinephrine_auto','naloxone','oral_glucose_general','bronchodilator_general']
+    },
+    {
       id:'pain', label:'Pain / comfort', icon:'P',
       description:'Positioning, support, and protocol-appropriate pain management.',
       instruction:'Choose how you want to address pain and comfort before or during movement.',
@@ -2110,7 +2142,13 @@
     const unique = new Map();
     (TREATMENT_PLANS[id] || []).forEach(plan => unique.set(plan.id, plan));
     EMT_TREATMENT_LIBRARY.forEach(plan => {
-      if (!unique.has(plan.id)) unique.set(plan.id, { ...plan, category:plan.category || treatmentCategory(plan) });
+      if (unique.has(plan.id)) return;
+      const normalized = { ...plan, category:plan.category || treatmentCategory(plan) };
+      if (id === 'horse_crush' && HORSE_NON_INDICATED_MEDICATION_IDS.has(plan.id)) {
+        normalized.outcomeClass = 'unnecessary';
+        normalized.response = 'This medication has no indication in the current isolated hip-injury presentation and produces no clinical improvement.';
+      }
+      unique.set(plan.id, normalized);
     });
     return [...unique.values()];
   }
