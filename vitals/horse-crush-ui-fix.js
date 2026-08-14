@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.14.3';
+  const VERSION = '2026.08.14.4';
   const FOCUSED_EXAMS = new Set([
     'head_exam',
     'neck_back',
@@ -206,23 +206,29 @@
     inline.hidden = false;
     inline.innerHTML = `<div class="horse-question-head"><div><small>FOLLOW-UP QUESTION</small><strong>${escapeHtml(item.label)}</strong></div></div><p>${escapeHtml(item.prompt)}</p><div class="horse-question-choice-grid" role="group" aria-label="${escapeHtml(item.label)} finding choices">${item.choices.map(([value, label, normality], index) => {
       const selected = current && (current.value === value || current.finding === value);
-      return `<button type="button" class="horse-question-choice${selected ? ' selected' : ''}" data-abc-inline-choice="${index}" data-normality="${normality}"><span>${selected ? '✓' : '○'}</span><strong>${escapeHtml(label)}</strong></button>`;
+      return `<button type="button" class="horse-question-choice${selected ? ' selected' : ''}" data-abc-inline-choice="${index}" data-normality="${normality}" aria-pressed="${selected ? 'true' : 'false'}"><span>${selected ? '✓' : '○'}</span><strong>${escapeHtml(label)}</strong></button>`;
     }).join('')}</div><p class="horse-question-choice-help">Select one finding to record it.</p>`;
     const choices = [...inline.querySelectorAll('[data-abc-inline-choice]')];
     choices.forEach(choiceButton => choiceButton.addEventListener('click', () => {
       const choice = item.choices[Number(choiceButton.dataset.abcInlineChoice)];
       if (!choice) return;
-      const [value,,normality] = choice;
+      const [value,label,normality] = choice;
       const saved = saveAbcFinding(key, value, normality);
       if (!saved) return;
       choices.forEach(node => {
         const selected = node === choiceButton;
         node.classList.toggle('selected', selected);
+        node.setAttribute('aria-pressed', selected ? 'true' : 'false');
         const marker = node.querySelector('span');
         if (marker) marker.textContent = selected ? '✓' : '○';
       });
+      const help = inline.querySelector('.horse-question-choice-help');
+      if (help) {
+        help.textContent = `Recorded: ${label}`;
+        help.classList.add('recorded');
+        help.setAttribute('role', 'status');
+      }
       markRecorded(button);
-      window.setTimeout(() => { inline.hidden = true; inline.innerHTML = ''; }, 220);
     }));
     window.requestAnimationFrame(() => choices[0]?.focus());
     return true;
