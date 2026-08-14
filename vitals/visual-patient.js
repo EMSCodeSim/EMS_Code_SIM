@@ -2113,12 +2113,6 @@
       planIds:['pain_control','aspirin','nitroglycerin_assist','epinephrine_auto','naloxone','oral_glucose_general','bronchodilator_general']
     },
     {
-      id:'pain', label:'Pain / comfort', icon:'P',
-      description:'Positioning, support, and protocol-appropriate pain management.',
-      instruction:'Choose how you want to address pain and comfort before or during movement.',
-      planIds:['pain_control']
-    },
-    {
       id:'transport', label:'Transport', icon:'T',
       description:'Working impression, urgency, destination, and notification.',
       instruction:'Make the transport decision from the information you have gathered. Select the transport option below to set urgency and destination.',
