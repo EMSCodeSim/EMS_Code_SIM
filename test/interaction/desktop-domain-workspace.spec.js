@@ -53,6 +53,7 @@ test('desktop center interaction column owns patient communication while right w
   await expect(page.locator('#infoUpdateWindow')).toBeVisible();
   await expect(page.locator('#patientCommunicationStage')).toBeVisible();
   await expect(page.locator('#horseClinicalQuestionBox')).toBeHidden();
+  await expect(page.locator('.clinical-interaction-column .patient-entry-workflow')).toBeHidden();
 
   // A real patient turn must render clickable response buttons in the center,
   // accept a response after the DOM has been reparented/polished, and show Linda's reply.
@@ -167,6 +168,7 @@ test('desktop center interaction column owns patient communication while right w
   const railBox = await rail.boundingBox();
   expect(railBox).not.toBeNull();
   expect(railBox.y).toBeGreaterThanOrEqual(stageBox.y + stageBox.height - 3);
+  expect(railBox.y - (stageBox.y + stageBox.height)).toBeLessThanOrEqual(16);
 
   await assertNoPageErrors();
 });
