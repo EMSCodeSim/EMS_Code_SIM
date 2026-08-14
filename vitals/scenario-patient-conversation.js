@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.3';
+  const VERSION = '2026.08.14.4';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').trim().toLowerCase();
   const api = window.EMSCodeSimPatientRecord;
@@ -275,8 +275,8 @@
       ${Array.isArray(turn.choices) && turn.choices.length ? `<div class="patient-conversation-choices">${turn.choices.map((choice,index) => `<button type="button" data-patient-choice="${index}">${choice[0]}</button>`).join('')}</div>` : ''}`;
     speak(turn.text, 'patient');
     logConversation(spontaneous ? 'Patient comment' : 'Patient question', turn.text, spontaneous ? 'patient-small-talk' : 'patient-initiated-question');
-    window.EMSCodeSimCommunicationRouter?.push?.('patient', turn.text);
     if (spontaneous || !turn.choices?.length) {
+      window.EMSCodeSimCommunicationRouter?.push?.('patient', turn.text);
       window.setTimeout(() => {
         if (host && !host.hidden && activeTurn === turn) { host.hidden = true; host.innerHTML = ''; activeTurn = null; }
       }, 10000);
@@ -307,6 +307,7 @@
     }
     logConversation('Provider response', provider, 'patient-conversation-choice');
     logConversation('Patient response', patient, 'patient-conversation-response');
+    window.EMSCodeSimCommunicationRouter?.push?.('patient', activeTurn.text);
     window.EMSCodeSimCommunicationRouter?.push?.('provider', provider);
     window.EMSCodeSimCommunicationRouter?.push?.('patient', patient);
     host.classList.add('replying');
