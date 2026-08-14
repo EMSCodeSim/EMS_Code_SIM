@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const VERSION='2026.08.12.15';
+const VERSION='2026.08.14.16';
 const params=new URLSearchParams(location.search);
 const requested=(params.get('case')||'').toLowerCase();
 const api=window.EMSCodeSimPatientRecord;
@@ -81,17 +81,12 @@ function injectStyles(){
 function ensureConversationStage(){
  if(!horse()||!desktop())return null;
  const column=$('clinicalInteractionColumn');
- if(!column)return null;
- let stage=$('patientConversationStage');
- if(!stage){
-   stage=document.createElement('section');
-   stage.id='patientConversationStage';
-   stage.className='patient-conversation-stage';
-   stage.setAttribute('aria-label','Patient conversation and quick responses');
- }
- if(stage.parentElement!==column)column.appendChild(stage);
+ const stage=$('patientCommunicationStage');
+ if(!column||!stage)return null;
+ const legacy=$('patientConversationStage');
  const turn=$('patientConversationTurn');
  if(turn&&turn.parentElement!==stage)stage.appendChild(turn);
+ if(legacy&&legacy!==stage)legacy.remove();
  return stage;
 }
 
@@ -185,7 +180,7 @@ function start(){
  });
  observer.observe(document.body,{subtree:true,childList:true});
  setTimeout(run,250);setTimeout(run,900);setTimeout(run,1800);
- scheduleDistraction(16000,28000);
+ // The unified patient-conversation module owns question timing.
 }
 
 document.addEventListener('DOMContentLoaded',start,{once:true});
