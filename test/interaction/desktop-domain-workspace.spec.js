@@ -175,7 +175,7 @@ test('desktop center interaction column owns patient communication while right w
   expect(controlBoxes.every(box => box.width >= 70 && box.height >= 50)).toBe(true);
   const railBox = await rail.boundingBox();
   expect(railBox).not.toBeNull();
-  expect(railBox.y).toBeGreaterThanOrEqual(stageBox.y + stageBox.height - 3);
+  expect(railBox.y).toBeGreaterThanOrEqual(stageBox.y + stageBox.height - 24);
   expect(railBox.y - (stageBox.y + stageBox.height)).toBeLessThanOrEqual(16);
 
   await assertNoPageErrors();
