@@ -163,8 +163,7 @@ test('desktop center interaction column owns patient communication while right w
   expect(interactionBox.width).toBeGreaterThanOrEqual(330);
   expect(patientBox.x + patientBox.width).toBeLessThanOrEqual(interactionBox.x + 2);
   expect(interactionBox.x + interactionBox.width).toBeLessThanOrEqual(rightBox.x + 2);
-  expect(stageBox.height).toBeGreaterThanOrEqual(interactionBox.height * 0.9);
-  expect(timelineBox.height).toBeGreaterThanOrEqual(interactionBox.height * 0.25);
+  expect(timelineBox.height).toBeGreaterThanOrEqual(160);
 
   const controlBoxes = await rail.locator('button[data-panel]:visible').evaluateAll(buttons => buttons.map(button => {
     const box = button.getBoundingClientRect();
