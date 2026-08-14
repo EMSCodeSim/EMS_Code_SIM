@@ -2,6 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
+  const VERSION = '2026.08.13.2';
   const FOCUSED_EXAMS = new Set([
     'head_exam',
     'neck_back',
@@ -12,6 +13,12 @@
     'left_leg',
     'distal_csm'
   ]);
+
+  const SIM_ASSESSMENTS = {
+    pupils: { label:'Eyes & pupils', url:'/vitals/pupil-scenario.html' },
+    mental_status: { label:'Mental status / AVPU', url:'/vitals/avpu-scenario.html' },
+    breath_sounds: { label:'Breath sounds', url:'/vitals/breath-sounds-scenario.html' }
+  };
 
   const ABC = {
     airway: {
@@ -52,35 +59,110 @@
     return params.get('case') || window.EMSCodeSimPatientRecord?.active?.()?.scenarioId || '';
   }
 
-  function isHorseScenario() {
-    return activeCase() === CASE_ID;
-  }
-
-  function isDesktopHorse() {
-    return isHorseScenario() && window.matchMedia?.('(min-width: 961px)')?.matches === true;
-  }
-
+  function isHorseScenario() { return activeCase() === CASE_ID; }
+  function isDesktopHorse() { return isHorseScenario() && window.matchMedia?.('(min-width: 961px)')?.matches === true; }
   function record() {
     return window.EMSCodeSimScenarioSession?.active?.(CASE_ID)
       || window.EMSCodeSimPatientRecord?.active?.()
       || null;
   }
-
-  function finding(key) {
-    return record()?.findings?.[key] || window.EMSCodeSimPatientRecord?.getFinding?.(key) || null;
-  }
-
+  function finding(key) { return record()?.findings?.[key] || window.EMSCodeSimPatientRecord?.getFinding?.(key) || null; }
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, char => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     }[char]));
   }
 
+  function installStyles() {
+    if (document.querySelector('style[data-horse-ui-fix]')) return;
+    const style = document.createElement('style');
+    style.dataset.horseUiFix = VERSION;
+    style.textContent = `
+      #horseArrivalDecision.horse-arrival-fullwidth{
+        width:auto!important;max-width:none!important;min-width:0!important;
+        margin:12px 16px!important;position:relative!important;z-index:120!important;
+        overflow:visible!important;max-height:none!important;pointer-events:auto!important;
+      }
+      #horseArrivalDecision.horse-arrival-fullwidth .horse-parking-options{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+      #horseArrivalDecision.horse-arrival-fullwidth [data-horse-parking]{display:flex!important;min-height:76px!important;width:100%!important;padding:14px!important;pointer-events:auto!important;touch-action:manipulation!important;cursor:pointer!important;position:relative!important;z-index:121!important}
+      #horseArrivalDecision.horse-arrival-fullwidth [data-horse-parking] strong{font-size:.9rem!important;line-height:1.3!important}
+      .horse-expanded-assessments{margin:10px 0 14px;padding:10px;border:1px solid #31566d;border-radius:12px;background:#0b2231;display:grid;gap:10px}
+      .horse-expanded-assessments>header{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+      .horse-expanded-assessments>header small{display:block;color:#7fd0ff;font-size:.63rem;font-weight:900;letter-spacing:.09em}
+      .horse-expanded-assessments>header strong{display:block;color:#fff;font-size:.95rem;margin-top:2px}
+      .horse-assessment-group{display:grid;gap:6px}.horse-assessment-group>small{color:#91b9cc;font-size:.63rem;font-weight:900;letter-spacing:.08em}
+      .horse-assessment-group-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+      .horse-assessment-deep-button{min-height:48px;padding:9px 10px;border:1px solid #3c6a80;border-radius:9px;background:#12384d;color:#fff;text-align:left;font:inherit;cursor:pointer}
+      .horse-assessment-deep-button strong{display:block;font-size:.78rem}.horse-assessment-deep-button small{display:block;margin-top:2px;color:#a9c6d4;font-size:.64rem;line-height:1.25}
+      .horse-assessment-deep-button:hover,.horse-assessment-deep-button:focus-visible{background:#194c66;border-color:#67b9df}
+      .horse-assessment-deep-button.used{border-color:#4d9b73;background:#103a35}
+      @media(max-width:760px){#horseArrivalDecision.horse-arrival-fullwidth{margin:8px!important}#horseArrivalDecision.horse-arrival-fullwidth .horse-parking-options,.horse-assessment-group-grid{grid-template-columns:1fr!important}}
+    `;
+    document.head.appendChild(style);
+  }
+
   function markRecorded(button) {
     if (!button) return;
     button.classList.add('used');
-    const marker = button.querySelector('span');
-    if (marker) marker.textContent = '✓';
+    const marker = button.querySelector('[data-mark]');
+    if (marker) marker.textContent = 'Recorded';
+  }
+
+  function relocateArrivalDecision() {
+    if (!isHorseScenario()) return false;
+    const card = document.getElementById('horseArrivalDecision');
+    const workspace = document.querySelector('.patient-desktop-workspace');
+    const hero = workspace?.querySelector('.scenario-hero-layout');
+    if (!card || !workspace || !hero) return false;
+    if (card.parentElement !== workspace || card.nextElementSibling !== hero) workspace.insertBefore(card, hero);
+    card.classList.add('horse-arrival-fullwidth');
+    return true;
+  }
+
+  function openAssessmentSim(key, button) {
+    const item = SIM_ASSESSMENTS[key];
+    if (!item) return false;
+    const opened = window.EMSCodeSimMiniSimOverlay?.openOverlay?.(item.url, item.label);
+    if (opened) markRecorded(button);
+    return Boolean(opened);
+  }
+
+  function deepButton(key, label, help, kind = 'exam') {
+    return `<button type="button" class="horse-assessment-deep-button" data-horse-deep-kind="${kind}" data-horse-deep-key="${key}"><strong>${label}</strong><small>${help}</small></button>`;
+  }
+
+  function injectExpandedAssessments() {
+    if (!isHorseScenario()) return false;
+    const tools = document.getElementById('assessmentTools');
+    if (!tools) return false;
+    let section = document.getElementById('horseExpandedAssessments');
+    if (section) return true;
+    section = document.createElement('section');
+    section.id = 'horseExpandedAssessments';
+    section.className = 'horse-expanded-assessments';
+    section.innerHTML = `
+      <header><div><small>DETAILED PATIENT ASSESSMENT</small><strong>Choose the body area or assessment you want to perform</strong></div></header>
+      <div class="horse-assessment-group"><small>HEAD / NEUROLOGIC</small><div class="horse-assessment-group-grid">
+        ${deepButton('head_exam','Head exam','Inspect and palpate the head.')}
+        ${deepButton('neck_back','Neck / back','Assess cervical, thoracic, and lumbar findings.')}
+        ${deepButton('pupils','Eyes & pupils','Open the pupil light, equality, gaze, and tracking simulator.','sim')}
+        ${deepButton('mental_status','Mental status / AVPU','Open the neurologic responsiveness assessment.','sim')}
+      </div></div>
+      <div class="horse-assessment-group"><small>CHEST / RESPIRATORY</small><div class="horse-assessment-group-grid">
+        ${deepButton('chest_assessment','Chest exam','Inspect and palpate chest wall movement and injury.')}
+        ${deepButton('breath_sounds','Breath sounds','Open the breath-sound auscultation simulator.','sim')}
+      </div></div>
+      <div class="horse-assessment-group"><small>ABDOMEN / PELVIS</small><div class="horse-assessment-group-grid">
+        ${deepButton('abdominal_assessment','Abdominal exam','Assess all four quadrants for trauma findings.')}
+        ${deepButton('pelvis_hip','Pelvis / hip','Perform one gentle pelvis and focused hip assessment.')}
+      </div></div>
+      <div class="horse-assessment-group"><small>EXTREMITIES / NEUROVASCULAR</small><div class="horse-assessment-group-grid">
+        ${deepButton('upper_extremities','Upper extremities','Inspect and compare both arms.')}
+        ${deepButton('left_leg','Lower extremities','Inspect both legs with focus on the injured left side.')}
+        ${deepButton('distal_csm','Distal CSM','Check distal pulse, sensation, movement, and capillary refill.')}
+      </div></div>`;
+    tools.prepend(section);
+    return true;
   }
 
   function relocateReasoningBoard() {
@@ -108,16 +190,13 @@
     const sheet = document.getElementById('actionSheet');
     const panel = document.getElementById('treatmentPanel');
     if (!sheet || !panel) return false;
-
     closeScenarioControlOverlay();
     document.querySelectorAll('.vp-panel').forEach(item => { item.hidden = item !== panel; });
     panel.hidden = false;
     sheet.hidden = false;
     const sheetTitle = document.getElementById('sheetTitle');
     if (sheetTitle) sheetTitle.textContent = title;
-    document.querySelectorAll('.bottom-nav button').forEach(button => {
-      button.classList.toggle('active', button.dataset.panel === 'treatmentPanel');
-    });
+    document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === 'treatmentPanel'));
     document.body.classList.add('horse-tool-sheet-open');
     document.body.style.overflow = '';
     return true;
@@ -130,41 +209,19 @@
     const tools = document.getElementById('treatmentTools');
     if (!form || !tools) return false;
     if (form.closest('#treatmentTools')) return showPromotedTreatmentPanel('Transport');
-
     const detail = form.closest('#horseTreatmentDetail') || form.parentElement;
     tools.className = 'treatment-list horse-treatment-category-workspace horse-promoted-transport-workspace';
-    tools.innerHTML = `
-      <div class="horse-treatment-workspace-head">
-        <div><small>TRANSPORT</small><strong>Transport decision</strong><span>Choose working impression, urgency, destination, and notification from the findings you gathered.</span></div>
-      </div>
-      <div id="horsePromotedTransportHost" class="horse-treatment-workspace-detail"></div>`;
+    tools.innerHTML = `<div class="horse-treatment-workspace-head"><div><small>TRANSPORT</small><strong>Transport decision</strong><span>Choose working impression, urgency, destination, and notification from the findings you gathered.</span></div></div><div id="horsePromotedTransportHost" class="horse-treatment-workspace-detail"></div>`;
     const host = document.getElementById('horsePromotedTransportHost');
     if (!host) return false;
-
-    if (detail && detail !== hiddenQuestion) host.appendChild(detail);
-    else host.appendChild(form);
+    if (detail && detail !== hiddenQuestion) host.appendChild(detail); else host.appendChild(form);
     hiddenQuestion?.classList.remove('active', 'treatment-active');
     showPromotedTreatmentPanel('Transport');
     return true;
   }
 
   function scheduleTransportPromotion() {
-    window.setTimeout(() => {
-      promoteHiddenTransportForm();
-      window.requestAnimationFrame(() => promoteHiddenTransportForm());
-    }, 0);
-  }
-
-  function startDesktopCompatibilityObservers() {
-    if (!isDesktopHorse()) return;
-    relocateReasoningBoard();
-    promoteHiddenTransportForm();
-    const observer = new MutationObserver(() => {
-      relocateReasoningBoard();
-      promoteHiddenTransportForm();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-    window.addEventListener('pagehide', () => observer.disconnect(), { once: true });
+    window.setTimeout(() => { promoteHiddenTransportForm(); window.requestAnimationFrame(() => promoteHiddenTransportForm()); }, 0);
   }
 
   function showObservation(key) {
@@ -175,28 +232,15 @@
       type: 'NEW ASSESSMENT INFORMATION',
       title: `${item.label} assessment`,
       text: item.observation,
-      kind: 'assessment',
-      sticky: true,
-      recordedAt: new Date().toISOString()
+      kind: 'assessment', sticky: true, recordedAt: new Date().toISOString()
     });
   }
 
   function saveAbcFinding(key, value, normality) {
     const item = ABC[key];
     if (!item || !value) return null;
-    const payload = {
-      source: 'horse-rapid-abc',
-      label: item.label,
-      finding: value,
-      normality,
-      status: normality === 'normal' ? 'normal' : normality === 'not-normal' ? 'abnormal' : 'uncertain',
-      rapidAssessment: true,
-      reviewAtDebrief: true,
-      suppressInfoUpdate: true
-    };
-    if (window.EMSCodeSimScenarioSession?.saveFinding) {
-      return window.EMSCodeSimScenarioSession.saveFinding(key, value, payload, CASE_ID);
-    }
+    const payload = { source:'horse-rapid-abc', label:item.label, finding:value, normality, status:normality === 'normal' ? 'normal' : normality === 'not-normal' ? 'abnormal' : 'uncertain', rapidAssessment:true, reviewAtDebrief:true, suppressInfoUpdate:true };
+    if (window.EMSCodeSimScenarioSession?.saveFinding) return window.EMSCodeSimScenarioSession.saveFinding(key, value, payload, CASE_ID);
     window.EMSCodeSimPatientRecord?.setFinding?.(key, value, payload);
     return window.EMSCodeSimPatientRecord?.getFinding?.(key) || null;
   }
@@ -205,73 +249,51 @@
     const item = ABC[key];
     const inline = document.getElementById('horseAssessmentInlineQuestion');
     if (!item || !inline) return false;
-
     const current = finding(key);
     showObservation(key);
     inline.hidden = false;
-    inline.innerHTML = `
-      <div class="horse-question-head">
-        <div><small>FOLLOW-UP QUESTION</small><strong>${escapeHtml(item.label)}</strong></div>
-      </div>
-      <p>${escapeHtml(item.prompt)}</p>
-      <div class="horse-question-answer-row">
-        <label><span>Your finding</span><select aria-label="${escapeHtml(item.label)} finding">
-          <option value="">Choose your finding</option>
-          ${item.choices.map(([value, label, normality]) => `<option value="${escapeHtml(value)}" data-normality="${normality}" ${current && (current.value === value || current.finding === value) ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}
-        </select></label>
-        <button type="button" class="horse-question-save" disabled>Record</button>
-      </div>`;
-
+    inline.innerHTML = `<div class="horse-question-head"><div><small>FOLLOW-UP QUESTION</small><strong>${escapeHtml(item.label)}</strong></div></div><p>${escapeHtml(item.prompt)}</p><div class="horse-question-answer-row"><label><span>Your finding</span><select aria-label="${escapeHtml(item.label)} finding"><option value="">Choose your finding</option>${item.choices.map(([value, label, normality]) => `<option value="${escapeHtml(value)}" data-normality="${normality}" ${current && (current.value === value || current.finding === value) ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select></label><button type="button" class="horse-question-save" disabled>Record</button></div>`;
     const select = inline.querySelector('select');
     const save = inline.querySelector('.horse-question-save');
     const sync = () => { if (save) save.disabled = !select?.value; };
-    select?.addEventListener('change', sync);
-    sync();
+    select?.addEventListener('change', sync); sync();
     save?.addEventListener('click', () => {
       if (!select?.value) return;
-      try {
-        const normality = select.selectedOptions[0]?.dataset?.normality || '';
-        const saved = saveAbcFinding(key, select.value, normality);
-        if (!saved) return;
-        markRecorded(button);
-        inline.hidden = true;
-        inline.innerHTML = '';
-      } catch (error) {
-        console.error('[EMSCodeSim] Unable to save horse ABC finding.', error);
-      }
+      const normality = select.selectedOptions[0]?.dataset?.normality || '';
+      const saved = saveAbcFinding(key, select.value, normality);
+      if (!saved) return;
+      markRecorded(button); inline.hidden = true; inline.innerHTML = '';
     });
     window.requestAnimationFrame(() => select?.focus());
     return true;
   }
 
-  // The desktop horse assessment menu passes concrete item ids such as
-  // "airway" and "pelvis_hip" into a fallback that only understands the group
-  // ids abc/head_to_toe/focused_leg. Intercept those item clicks and route them
-  // to the actual ABC or focused-exam engine before the legacy fallback runs.
   document.addEventListener('click', event => {
     if (!isHorseScenario()) return;
-    const button = event.target.closest?.('#assessmentTools [data-assessment-item]');
-    if (!button) return;
-    const key = String(button.dataset.assessmentItem || '');
-
-    if (ABC[key]) {
+    const deep = event.target.closest?.('[data-horse-deep-key]');
+    if (deep) {
       event.preventDefault();
       event.stopPropagation();
-      event.stopImmediatePropagation?.();
-      openDesktopAbcFollowup(button, key);
+      const key = String(deep.dataset.horseDeepKey || '');
+      if (deep.dataset.horseDeepKind === 'sim') { openAssessmentSim(key, deep); return; }
+      if (FOCUSED_EXAMS.has(key)) {
+        const result = window.EMSCodeSimHorseCrush?.performExam?.(key);
+        if (result) markRecorded(deep);
+      }
       return;
     }
 
+    const button = event.target.closest?.('#assessmentTools [data-assessment-item]');
+    if (!button) return;
+    const key = String(button.dataset.assessmentItem || '');
+    if (ABC[key]) {
+      event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation?.(); openDesktopAbcFollowup(button, key); return;
+    }
     if (!FOCUSED_EXAMS.has(key)) return;
     const horse = window.EMSCodeSimHorseCrush;
     if (!horse?.performExam) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation?.();
-
-    const result = horse.performExam(key);
-    if (result) markRecorded(button);
+    event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation?.();
+    const result = horse.performExam(key); if (result) markRecorded(button);
   }, true);
 
   document.addEventListener('click', event => {
@@ -280,18 +302,33 @@
     scheduleTransportPromotion();
   });
 
+  function refresh() {
+    installStyles();
+    relocateArrivalDecision();
+    injectExpandedAssessments();
+    relocateReasoningBoard();
+    promoteHiddenTransportForm();
+  }
+
+  function start() {
+    refresh();
+    const observer = new MutationObserver(() => refresh());
+    observer.observe(document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['hidden'] });
+    window.addEventListener('pagehide', () => observer.disconnect(), { once:true });
+  }
+
   window.EMSCodeSimHorseCrushUiFix = Object.freeze({
-    version: '1.5',
+    version: VERSION,
     abcKeys: Object.freeze(Object.keys(ABC)),
     focusedExams: Object.freeze([...FOCUSED_EXAMS]),
+    simAssessments: Object.freeze(Object.keys(SIM_ASSESSMENTS)),
+    relocateArrivalDecision,
+    injectExpandedAssessments,
     relocateReasoningBoard,
     promoteHiddenTransportForm,
     closeScenarioControlOverlay
   });
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startDesktopCompatibilityObservers, { once: true });
-  } else {
-    startDesktopCompatibilityObservers();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
+  else start();
 })();
