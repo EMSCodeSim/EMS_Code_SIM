@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.6';
+  const VERSION = '2026.08.14.7';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').trim().toLowerCase();
   const api = window.EMSCodeSimPatientRecord;
@@ -273,6 +273,11 @@
       <header><span aria-hidden="true">👤</span><strong>${spontaneous ? 'Patient' : 'Patient asks'}</strong></header>
       <p class="patient-line">“${String(turn.text).replace(/[“”"]/g,'')}”</p>
       ${Array.isArray(turn.choices) && turn.choices.length ? `<div class="patient-conversation-choices">${turn.choices.map((choice,index) => `<button type="button" data-patient-choice="${index}">${choice[0]}</button>`).join('')}</div>` : ''}`;
+    host.querySelectorAll('[data-patient-choice]').forEach(button => button.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      chooseResponse(Number(button.dataset.patientChoice));
+    }));
     speak(turn.text, 'patient');
     logConversation(spontaneous ? 'Patient comment' : 'Patient question', turn.text, spontaneous ? 'patient-small-talk' : 'patient-initiated-question');
     if (spontaneous || !turn.choices?.length) {
@@ -407,7 +412,6 @@
   function start() {
     injectStyles();
     removeSimulationDisclaimers();
-    document.addEventListener('click', handlePatientChoiceClick, true);
     currentConversationHost();
     watchInfoWindow();
     schedulePatientQuestion(18000, 30000);
@@ -419,7 +423,6 @@
       clearTimeout(smallTalkTimer);
       infoObserver?.disconnect();
       cleanupObserver?.disconnect();
-      document.removeEventListener('click', handlePatientChoiceClick, true);
       try { window.speechSynthesis?.cancel?.(); } catch (_) {}
     }, { once:true });
   }
