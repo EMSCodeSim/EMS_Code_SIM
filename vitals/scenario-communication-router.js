@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.24';
+  const VERSION = '2026.08.14.25';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -346,11 +346,11 @@
       #clinicalInteractionColumn>#infoUpdateWindow{display:none!important}
       #patientCommunicationStage{order:5!important;flex:1 1 0!important;min-height:0!important;height:auto!important;display:flex;flex-direction:column;justify-content:stretch;gap:8px;padding:12px 4px 82px!important;overflow:hidden!important}
       body.desktop-scenario-layout #clinicalInteractionColumn>.bottom-nav.clinical-domain-rail{position:absolute!important;inset:auto 4px 4px 4px!important;z-index:190!important;order:99!important;margin:0!important;flex:0 0 auto!important;transform:none!important}
-      #patientCommunicationStage>.communication-timeline{flex:1 1 auto!important;min-height:0!important}
+      #patientCommunicationStage>.communication-timeline{flex:1 0 64%!important;min-height:64%!important;height:auto!important}
       #patientCommunicationStage #patientConversationTurn,#patientCommunicationStage #horseClinicalQuestionBox{position:relative!important;inset:auto!important;width:100%!important;margin:0!important}
       .patient-communication-idle{margin:auto;text-align:center;opacity:.58;max-width:260px}.patient-communication-idle[hidden]{display:none!important}.patient-communication-idle small{font-size:.64rem;font-weight:900;letter-spacing:.09em}.patient-communication-idle p{margin:5px 0 0;font-size:.75rem;line-height:1.35}
       .routed-patient-communication{padding:11px 12px;border:1px solid #397d9c;border-radius:11px;background:#0e2b3d;display:grid;gap:6px}.routed-patient-communication[hidden]{display:none!important}.routed-patient-communication header{display:flex;gap:7px;align-items:center;font-size:.67rem;font-weight:900;letter-spacing:.08em;color:#9edfff;text-transform:uppercase}.routed-patient-communication p{margin:0;color:#fff;font-size:.93rem;line-height:1.4;font-weight:700}
-      #communicationTimeline{flex:1 1 auto;min-height:0;display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:7px;overflow:hidden}
+      #communicationTimeline{flex:1 0 64%;min-height:64%;display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:7px;overflow:hidden}
       .communication-timeline-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.communication-timeline-head strong{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:#a8dbf2}.communication-timeline-head span{font-size:.59rem;font-weight:900;color:#fff;background:#9b342f;border-radius:999px;padding:3px 7px}
       .communication-filters{display:flex;gap:4px;overflow-x:auto}.communication-filters button{min-height:27px;padding:4px 8px;border:1px solid #31566d;border-radius:999px;background:transparent;color:#b7cfda;font-size:.61rem;font-weight:850;cursor:pointer}.communication-filters button.active{background:#174a68;border-color:#67c2f5;color:#fff}
       .communication-timeline-list{min-height:0;overflow:auto;display:grid;align-content:start;gap:3px;padding-right:3px}.communication-entry{padding:7px 6px 7px 9px;border-left:3px solid #547b90}.communication-entry.source-dispatch{border-left-color:#4fb3ff}.communication-entry.source-crew{border-left-color:#9da9cf}.communication-entry.source-patient{border-left-color:#55c990}.communication-entry.source-critical{border-left-color:#ff6b61}.communication-entry header{display:flex;align-items:center;gap:5px}.communication-entry header strong{font-size:.62rem;text-transform:uppercase;letter-spacing:.06em}.communication-entry time{margin-left:auto;font-size:.56rem;color:#7897a7}.communication-entry p{margin:3px 0 0;color:#e8f3f9;font-size:.75rem;line-height:1.34}.communication-empty{margin:auto;text-align:center;color:#7694a3;font-size:.7rem}
