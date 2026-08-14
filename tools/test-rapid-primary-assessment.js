@@ -7,6 +7,8 @@ const guide = fs.readFileSync(path.join(root, 'vitals', 'scenario-guided-start.j
 const css = fs.readFileSync(path.join(root, 'vitals', 'visual-patient.css'), 'utf8');
 const html = fs.readFileSync(path.join(root, 'vitals', 'visual-patient.html'), 'utf8');
 const horseCss = fs.readFileSync(path.join(root, 'vitals', 'horse-crush-scenario.css'), 'utf8');
+const horseBootstrap = fs.readFileSync(path.join(root, 'vitals', 'horse-crush-bootstrap.js'), 'utf8');
+const horseUiFix = fs.readFileSync(path.join(root, 'vitals', 'horse-crush-ui-fix.js'), 'utf8');
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -31,4 +33,11 @@ assert(!patient.includes('data-primary-choice'), 'The assessment menu must not u
 assert(css.includes('.primary-photo-launch') && css.includes('.state-uncertain'), 'Photo ABC controls and uncertainty states must be styled.');
 assert(html.includes('sceneGuideEyebrow'), 'The shared photo guide must support a dynamic phase heading.');
 
-console.log('Right-screen rapid primary assessment checks passed.');
+
+assert(html.includes('role="log"') && html.includes('aria-relevant="additions text"'), 'Scenario communications must expose an accessible live log.');
+assert(horseBootstrap.includes('showLoadError') && horseBootstrap.includes("script.addEventListener('error'"), 'Horse bootstrap must provide visible module-load recovery.');
+assert(!horseUiFix.includes('data-horse-parking') && !horseUiFix.includes('relocateArrivalDecision'), 'Retired parking workflow code must not execute in production.');
+assert(horseUiFix.includes('requestAnimationFrame') && horseUiFix.includes('refreshQueued'), 'Horse UI mutation refreshes must be frame-throttled.');
+assert(horseCss.includes('prefers-reduced-motion:reduce'), 'Scenario UI must honor reduced-motion preferences.');
+
+console.log('Right-screen rapid primary and production-readiness checks passed.');
