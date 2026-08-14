@@ -448,6 +448,8 @@
     grid-column:1!important;
     grid-row:2!important;
     height:auto!important;
+    box-sizing:border-box!important;
+    overflow:auto!important;
   }
 
   body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #clinicalInteractionColumn>.bottom-nav{
