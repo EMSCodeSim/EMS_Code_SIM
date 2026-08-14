@@ -233,7 +233,9 @@
   function refresh() {
     queued = false;
     enhanceTreatmentSelects();
-    renderMovementChoices();
+    // Movement is already a treatment category. Remove the legacy always-open
+    // movement workspace so Treatment has one drill-down surface.
+    document.getElementById('horseMovementChoices')?.remove();
   }
 
   function schedule() {
