@@ -1,5 +1,6 @@
 (() => {
   'use strict';
+
   const CASE_ID = 'horse_crush';
   const BUILD = '2026.08.13.7';
 
@@ -16,15 +17,41 @@
     if (document.querySelector('style[data-horse-desktop-layout-guard]')) return;
     const style = document.createElement('style');
     style.dataset.horseDesktopLayoutGuard = '1';
-    style.textContent = `@media (min-width:961px){
-      body.horse-current-emt-call.desktop-scenario-layout .patient-control-column{display:flex!important;flex-direction:column!important;gap:7px!important;min-height:0!important;height:100%!important;overflow:hidden!important}
-      body.horse-current-emt-call.desktop-scenario-layout #infoUpdateWindow,
-      body.horse-current-emt-call.desktop-scenario-layout #reasoningDiscoveryCue,
-      body.horse-current-emt-call.desktop-scenario-layout .bottom-nav{flex:0 0 auto!important}
-      body.horse-current-emt-call.desktop-scenario-layout #reasoningDiscoveryCue{position:static!important;inset:auto!important;width:100%!important;margin:0!important;z-index:auto!important}
-      body.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet{flex:1 1 0!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:hidden!important}
-      body.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet:not([hidden]){display:grid!important}
-    }`;
+    style.textContent = `
+      @media (min-width: 961px) {
+        body.horse-current-emt-call.desktop-scenario-layout .patient-control-column {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 7px !important;
+          min-height: 0 !important;
+          height: 100% !important;
+          overflow: hidden !important;
+        }
+        body.horse-current-emt-call.desktop-scenario-layout #infoUpdateWindow,
+        body.horse-current-emt-call.desktop-scenario-layout #reasoningDiscoveryCue,
+        body.horse-current-emt-call.desktop-scenario-layout .bottom-nav {
+          flex: 0 0 auto !important;
+        }
+        body.horse-current-emt-call.desktop-scenario-layout #reasoningDiscoveryCue {
+          position: static !important;
+          inset: auto !important;
+          width: 100% !important;
+          margin: 0 !important;
+          z-index: auto !important;
+        }
+        body.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet {
+          flex: 1 1 0 !important;
+          width: 100% !important;
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: none !important;
+          overflow: hidden !important;
+        }
+        body.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet:not([hidden]) {
+          display: grid !important;
+        }
+      }
+    `;
     document.head.appendChild(style);
   }
 
@@ -35,14 +62,18 @@
     if (backdrop) backdrop.hidden = true;
   }
 
+  function installScenarioTransitionGuard() {
+    document.addEventListener('click', event => {
+      const params = new URLSearchParams(location.search);
+      if (params.get('case') !== CASE_ID) return;
+      if (!event.target.closest?.('#handoffFromProgress, #transportScenarioQuick')) return;
+      window.setTimeout(clearScenarioControlOverlay, 0);
+      window.requestAnimationFrame(clearScenarioControlOverlay);
+    });
+  }
+
   installDesktopLayoutGuard();
-  document.addEventListener('click', event => {
-    const params = new URLSearchParams(location.search);
-    if (params.get('case') !== CASE_ID) return;
-    if (!event.target.closest?.('#handoffFromProgress, #transportScenarioQuick')) return;
-    window.setTimeout(clearScenarioControlOverlay, 0);
-    window.requestAnimationFrame(clearScenarioControlOverlay);
-  });
+  installScenarioTransitionGuard();
 
   loadOnce('data-scenario-learning-upgrade', '/vitals/scenario-learning-upgrade.js');
   loadOnce('data-condition-alert-priority', '/vitals/scenario-condition-alert-priority.js');
