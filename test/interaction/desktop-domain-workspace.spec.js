@@ -65,6 +65,7 @@ test('desktop center interaction column owns patient communication while right w
   // A real patient turn must render clickable response buttons in the center,
   // accept a response after the DOM has been reparented/polished, and show Linda's reply.
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientConversation?.showPatientTurn))).toBe(true);
+  await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimCommunicationRouter?.ask))).toBe(true);
   await page.evaluate(() => {
     window.EMSCodeSimPatientConversation.showPatientTurn({
       text:'Can you tell me what you are doing before you move me?',
