@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.12.2';
+  const VERSION = '2026.08.14.15';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -15,6 +15,9 @@
   let lastPatientSignature = '';
   let lastPatientShownAt = 0;
   let lastExternalInfo = null;
+  let communicationFilter = 'all';
+  let lastTimelineSignature = '';
+  let lastTimelineAt = 0;
 
   function record() {
     try { return session?.sync?.() || api?.active?.() || null; }
@@ -67,6 +70,100 @@
     };
   }
 
+  const SOURCE_META = {
+    dispatch:{ label:'Dispatch', icon:'📟' },
+    crew:{ label:'Crew', icon:'👥' },
+    patient:{ label:'Patient', icon:'👤' },
+    finding:{ label:'Observed finding', icon:'👁' },
+    critical:{ label:'Critical change', icon:'⚠' },
+    provider:{ label:'You', icon:'🩺' }
+  };
+
+  function sourceFor(snapshot = {}) {
+    const value = `${snapshot.type || ''} ${snapshot.title || ''} ${snapshot.text || ''}`;
+    if (patientInfo(snapshot)) return 'patient';
+    if (partnerInfo(snapshot)) return 'crew';
+    if (/DISPATCH|RADIO|CALL INFORMATION/i.test(value)) return 'dispatch';
+    if (/ALERT|CRITICAL|DETERIORAT|WORSEN/i.test(value)) return 'critical';
+    return 'finding';
+  }
+
+  function timelineStorageKey() {
+    const current = record();
+    return `emscodesim:communications:${current?.startedAt || current?.id || 'horse-crush'}`;
+  }
+
+  function timelineMessages() {
+    try {
+      const parsed = JSON.parse(sessionStorage.getItem(timelineStorageKey()) || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (_) { return []; }
+  }
+
+  function ensureTimeline(stage) {
+    if (!stage) return null;
+    let timeline = $('communicationTimeline');
+    if (!timeline) {
+      timeline = document.createElement('section');
+      timeline.id = 'communicationTimeline';
+      timeline.className = 'communication-timeline';
+      timeline.setAttribute('aria-label', 'Communication timeline');
+      timeline.innerHTML = `
+        <header class="communication-timeline-head"><strong>Communication</strong><span id="communicationNewBadge" hidden>New message</span></header>
+        <nav class="communication-filters" aria-label="Filter communications">
+          ${[['all','All'],['dispatch','Dispatch'],['crew','Crew'],['patient','Patient'],['finding','Findings']].map(([key,label]) => `<button type="button" data-communication-filter="${key}" class="${key === 'all' ? 'active' : ''}">${label}</button>`).join('')}
+        </nav>
+        <div id="communicationTimelineList" class="communication-timeline-list" role="log" aria-live="polite"></div>`;
+      stage.prepend(timeline);
+      timeline.querySelectorAll('[data-communication-filter]').forEach(button => button.addEventListener('click', () => {
+        communicationFilter = button.dataset.communicationFilter || 'all';
+        timeline.querySelectorAll('[data-communication-filter]').forEach(item => item.classList.toggle('active', item === button));
+        renderTimeline();
+      }));
+    }
+    renderTimeline();
+    return timeline;
+  }
+
+  function renderTimeline() {
+    const list = $('communicationTimelineList');
+    if (!list) return;
+    const messages = timelineMessages();
+    const visible = communicationFilter === 'all'
+      ? messages
+      : messages.filter(message => message.source === communicationFilter || (communicationFilter === 'finding' && message.source === 'critical'));
+    list.innerHTML = visible.map(message => {
+      const meta = SOURCE_META[message.source] || SOURCE_META.finding;
+      const stamp = new Date(message.at || Date.now()).toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
+      const safe = String(message.text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return `<article class="communication-entry source-${message.source}" data-communication-source="${message.source}"><header><span aria-hidden="true">${meta.icon}</span><strong>${meta.label}</strong><time>${stamp}</time></header><p>${safe}</p></article>`;
+    }).join('') || '<p class="communication-empty">No messages in this filter yet.</p>';
+    list.scrollTop = list.scrollHeight;
+  }
+
+  function pushTimeline(source, text) {
+    const value = clean(text);
+    if (!value) return;
+    const signature = `${source}|${value.toLowerCase()}`;
+    const now = Date.now();
+    if (signature === lastTimelineSignature && now - lastTimelineAt < 1800) return;
+    lastTimelineSignature = signature;
+    lastTimelineAt = now;
+    const messages = timelineMessages();
+    messages.push({ id:`comm-${now}-${messages.length}`, source, text:value, at:now });
+    try { sessionStorage.setItem(timelineStorageKey(), JSON.stringify(messages.slice(-80))); } catch (_) {}
+    const stage = ensureStage();
+    if (stage) ensureTimeline(stage);
+    const column = $('clinicalInteractionColumn');
+    const badge = $('communicationNewBadge');
+    column?.classList.add('communication-has-new');
+    if (badge) badge.hidden = false;
+    window.setTimeout(() => {
+      column?.classList.remove('communication-has-new');
+      if (badge) badge.hidden = true;
+    }, 1800);
+  }
+
   function restoreExternalInfo() {
     if (restoreGuard) return;
     const typeNode = $('infoUpdateType');
@@ -102,6 +199,7 @@
     } else if (nav?.parentElement === column && stage.nextElementSibling !== nav) {
       nav.insertAdjacentElement('beforebegin', stage);
     }
+    ensureTimeline(stage);
     return stage;
   }
 
@@ -134,6 +232,7 @@
     }
     routed.innerHTML = `<header><span aria-hidden="true">👤</span><strong>${label}</strong></header><p>“${value.replace(/[“”"]/g, '')}”</p>`;
     routed.hidden = false;
+    pushTimeline('patient', value);
     stage.querySelector('.patient-communication-idle')?.setAttribute('hidden','');
     window.setTimeout(() => {
       if (routed && normalize(routed.textContent).includes(signature.slice(0, Math.min(24, signature.length)))) routed.hidden = true;
@@ -149,6 +248,7 @@
       restoreExternalInfo();
     } else {
       rememberExternalInfo(snapshot);
+      pushTimeline(sourceFor(snapshot), snapshot.text);
     }
   }
 
@@ -217,6 +317,12 @@
       #patientCommunicationStage #patientConversationTurn,#patientCommunicationStage #horseClinicalQuestionBox,#patientCommunicationStage #horseAssessmentInlineQuestion{position:relative!important;inset:auto!important;width:100%!important;margin:0!important}
       .patient-communication-idle{margin:auto;text-align:center;opacity:.58;max-width:260px}.patient-communication-idle[hidden]{display:none!important}.patient-communication-idle small{font-size:.64rem;font-weight:900;letter-spacing:.09em}.patient-communication-idle p{margin:5px 0 0;font-size:.75rem;line-height:1.35}
       .routed-patient-communication{padding:11px 12px;border:1px solid #397d9c;border-radius:11px;background:#0e2b3d;display:grid;gap:6px}.routed-patient-communication[hidden]{display:none!important}.routed-patient-communication header{display:flex;gap:7px;align-items:center;font-size:.67rem;font-weight:900;letter-spacing:.08em;color:#9edfff;text-transform:uppercase}.routed-patient-communication p{margin:0;color:#fff;font-size:.93rem;line-height:1.4;font-weight:700}
+      #communicationTimeline{flex:1 1 auto;min-height:0;display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:7px;overflow:hidden}
+      .communication-timeline-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.communication-timeline-head strong{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:#a8dbf2}.communication-timeline-head span{font-size:.59rem;font-weight:900;color:#fff;background:#9b342f;border-radius:999px;padding:3px 7px}
+      .communication-filters{display:flex;gap:4px;overflow-x:auto}.communication-filters button{min-height:27px;padding:4px 8px;border:1px solid #31566d;border-radius:999px;background:transparent;color:#b7cfda;font-size:.61rem;font-weight:850;cursor:pointer}.communication-filters button.active{background:#174a68;border-color:#67c2f5;color:#fff}
+      .communication-timeline-list{min-height:0;overflow:auto;display:grid;align-content:start;gap:3px;padding-right:3px}.communication-entry{padding:7px 6px 7px 9px;border-left:3px solid #547b90}.communication-entry.source-dispatch{border-left-color:#4fb3ff}.communication-entry.source-crew{border-left-color:#9da9cf}.communication-entry.source-patient{border-left-color:#55c990}.communication-entry.source-critical{border-left-color:#ff6b61}.communication-entry header{display:flex;align-items:center;gap:5px}.communication-entry header strong{font-size:.62rem;text-transform:uppercase;letter-spacing:.06em}.communication-entry time{margin-left:auto;font-size:.56rem;color:#7897a7}.communication-entry p{margin:3px 0 0;color:#e8f3f9;font-size:.75rem;line-height:1.34}.communication-empty{margin:auto;text-align:center;color:#7694a3;font-size:.7rem}
+      #patientCommunicationStage #patientConversationTurn:not([hidden]),#patientCommunicationStage #horseClinicalQuestionBox:not([hidden]),#patientCommunicationStage #horseAssessmentInlineQuestion:not([hidden]){flex:0 0 auto;position:sticky!important;bottom:0!important;z-index:8;background:#0b2231!important;box-shadow:0 -8px 20px rgba(3,13,20,.32)!important}
+      #clinicalInteractionColumn.communication-has-new{box-shadow:0 0 0 2px rgba(103,194,245,.55),0 12px 30px rgba(0,0,0,.18)!important}
     }`;
     document.head.appendChild(style);
   }
