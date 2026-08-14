@@ -23,6 +23,9 @@ function result(key,label,value,detail='',meta={}){
  }catch(_){}
  beep();
  try{parent?.postMessage?.({type:'ems-assessment-saved',key,label,value:String(value)},location.origin)}catch(_){}
+ if(mode==='scenario'&&caseId&&window.parent===window){
+  window.setTimeout(()=>location.replace(`/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}&training=learning`),450);
+ }
  return value
 }
 function interpret(config={}){
