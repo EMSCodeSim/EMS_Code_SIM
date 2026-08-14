@@ -163,7 +163,7 @@
       const choice = decision?.choices?.[index];
       if (!decision || !choice) return;
       activeDecision = null;
-      pushTimeline('provider', choice.label);
+      pushTimeline(decision.source, decision.text);
       try { decision.onChoose?.(choice.value, index, choice); } catch (error) { console.error(error); }
       renderTimeline();
     }));
