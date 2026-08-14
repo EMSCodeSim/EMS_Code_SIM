@@ -71,14 +71,9 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
     expect(layout.overlapRatio, `Assessment simulator must open over the patient photo: ${JSON.stringify(layout)}`).toBeGreaterThan(0.75);
   }
 
-  await expectHorsePhoto('/vitals/assets/horse-crush/map-arrival.webp');
-  await expectSimulatorOverPatientPhoto();
-
-  // Arrival / parking decision.
-  const parking = page.locator('[data-horse-parking="south_barn_access"]');
-  await expect(parking).toBeVisible();
-  await parking.click();
-  await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientRecord.active()?.findings?.arrival_parking))).toBe(true);
+  // The retired map and parking gate stay removed; begin directly with the patient.
+  await expect(page.locator('[data-horse-parking]')).toHaveCount(0);
+  await expect(page.locator('#horseArrivalDecision')).toHaveCount(0);
   await expectHorsePhoto('/vitals/assets/horse-crush/patient-initial.webp');
   await expectSimulatorOverPatientPhoto();
 
