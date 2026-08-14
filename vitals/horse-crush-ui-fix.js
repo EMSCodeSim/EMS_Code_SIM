@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.14.4';
+  const VERSION = '2026.08.14.5';
   const FOCUSED_EXAMS = new Set([
     'head_exam',
     'neck_back',
@@ -207,7 +207,7 @@
     inline.innerHTML = `<div class="horse-question-head"><div><small>FOLLOW-UP QUESTION</small><strong>${escapeHtml(item.label)}</strong></div></div><p>${escapeHtml(item.prompt)}</p><div class="horse-question-choice-grid" role="group" aria-label="${escapeHtml(item.label)} finding choices">${item.choices.map(([value, label, normality], index) => {
       const selected = current && (current.value === value || current.finding === value);
       return `<button type="button" class="horse-question-choice${selected ? ' selected' : ''}" data-abc-inline-choice="${index}" data-normality="${normality}" aria-pressed="${selected ? 'true' : 'false'}"><span>${selected ? '✓' : '○'}</span><strong>${escapeHtml(label)}</strong></button>`;
-    }).join('')}</div><p class="horse-question-choice-help">Select one finding to record it.</p>`;
+    }).join('')}</div><p class="horse-question-choice-help${current ? ' recorded' : ''}"${current ? ' role="status"' : ''}>${current ? `Recorded: ${escapeHtml(current.value || current.finding || '')}` : 'Select one finding to record it.'}</p>`;
     const choices = [...inline.querySelectorAll('[data-abc-inline-choice]')];
     choices.forEach(choiceButton => choiceButton.addEventListener('click', () => {
       const choice = item.choices[Number(choiceButton.dataset.abcInlineChoice)];
@@ -229,6 +229,15 @@
         help.setAttribute('role', 'status');
       }
       markRecorded(button);
+      // Saving dispatches an assessment update that rebuilds this workspace.
+      // Restore the same follow-up so the selected answer remains visible.
+      window.setTimeout(() => {
+        const freshButton = document.querySelector(`#assessmentTools [data-assessment-item="${CSS.escape(key)}"]`);
+        const freshInline = document.getElementById('horseAssessmentInlineQuestion');
+        if (freshButton && (!freshInline || !freshInline.querySelector('[data-abc-inline-choice]'))) {
+          openDesktopAbcFollowup(freshButton, key);
+        }
+      }, 180);
     }));
     window.requestAnimationFrame(() => choices[0]?.focus());
     return true;
