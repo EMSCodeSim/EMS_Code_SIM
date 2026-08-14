@@ -2871,3 +2871,13 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
 @media(min-width:961px){
   body.desktop-scenario-layout:not(.sim-workspace-open) .patient-stage>img#patientImage{display:block!important;visibility:visible!important;opacity:1!important;}
 }
+
+
+/* Horse treatment decision timeline */
+.horse-care-sequence{margin-top:12px;padding:10px;border:1px solid #31566d;border-radius:10px;background:#0b2231;display:grid;gap:6px}
+.horse-care-sequence>small{color:#7fd0ff;font-size:.62rem;font-weight:900;letter-spacing:.09em}
+.horse-care-sequence>span{display:grid;grid-template-columns:54px 1fr;gap:8px;align-items:center;color:#dcecf4;font-size:.72rem}
+.horse-care-sequence time{color:#91b9cc;font-variant-numeric:tabular-nums}
+.horse-care-sequence strong{font-size:.74rem;font-weight:750}
+.horse-care-sequence.empty>span{display:block;color:#91b9cc}
+@media(max-width:760px){.horse-care-sequence>span{grid-template-columns:48px 1fr}}
