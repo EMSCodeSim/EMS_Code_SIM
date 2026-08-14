@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.26';
+  const VERSION = '2026.08.14.27';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -338,7 +338,9 @@
   }
 
   function installStyles() {
-    if (document.querySelector('style[data-communication-router]')) return;
+    const existing = document.querySelector('style[data-communication-router]');
+    if (existing?.dataset.communicationRouter === VERSION) return;
+    existing?.remove();
     const style = document.createElement('style');
     style.dataset.communicationRouter = VERSION;
     style.textContent = `@media(min-width:980px){
