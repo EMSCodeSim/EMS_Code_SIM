@@ -33,31 +33,46 @@
 
   function ensureHost() {
     if (!active()) return null;
-    const panel = $('treatmentPanel');
     const tools = $('treatmentTools');
-    if (!panel || !tools) return null;
+    if (!tools) return null;
 
     let host = $('horseTransportHandoffActions');
+    const menuActive = tools.classList.contains('horse-treatment-group-menu');
+    if (!menuActive) {
+      host?.remove();
+      return null;
+    }
     if (!host) {
       host = document.createElement('section');
       host.id = 'horseTransportHandoffActions';
       host.className = 'horse-transport-handoff-actions';
       host.setAttribute('aria-label', 'Transport and hospital handoff');
     }
-
-    const handoffCard = panel.querySelector('.handoff-treatment-card');
-    const toolsInPanel = tools.parentElement === panel;
-    const handoffInPanel = handoffCard?.parentElement === panel;
-    const correctlyPlaced = host.parentElement === panel
-      && ((toolsInPanel && host.previousElementSibling === tools)
-        || (!toolsInPanel && (!handoffInPanel || host.nextElementSibling === handoffCard)));
-
-    if (!correctlyPlaced) {
-      if (toolsInPanel) tools.insertAdjacentElement('afterend', host);
-      else if (handoffInPanel) handoffCard.insertAdjacentElement('beforebegin', host);
-      else panel.appendChild(host);
-    }
+    if (host.parentElement !== tools) tools.appendChild(host);
     return host;
+  }
+
+  function focusEndpoint(host) {
+    const tools = $('treatmentTools');
+    if (!tools || !host) return;
+    [...tools.children].forEach(child => {
+      if (child !== host) {
+        child.dataset.endpointHidden = child.hidden ? '1' : '0';
+        child.hidden = true;
+      }
+    });
+    host.scrollIntoView({ block:'start' });
+  }
+
+  function restoreEndpointMenu(host) {
+    const tools = $('treatmentTools');
+    if (!tools) return;
+    [...tools.children].forEach(child => {
+      if (child === host) return;
+      child.hidden = child.dataset.endpointHidden === '1';
+      delete child.dataset.endpointHidden;
+    });
+    tools.scrollIntoView({ block:'start' });
   }
 
   function transportSaved(current = record()) {
@@ -108,6 +123,7 @@
     if (!host || !detail) return;
     host.dataset.mode = 'detail';
     detail.hidden = false;
+    focusEndpoint(host);
     const d = current.documentation || {};
     const impression = current.impressions?.primary || '';
     const priorities = ['Non-emergent transport','Prompt trauma transport','Emergent trauma transport'];
@@ -175,31 +191,34 @@
     const host = ensureHost();
     const detail = $('horseEndpointDetail');
     const card = document.querySelector('#treatmentPanel .handoff-treatment-card');
-    if (!host || !detail) return;
+    if (!host || !detail || !card) return;
     host.dataset.mode = 'detail';
     detail.hidden = false;
+    focusEndpoint(host);
     const transported = transportSaved();
     detail.innerHTML = `
       <div class="horse-endpoint-detail-head"><button type="button" id="horseEndpointBack">‹ Back</button><div><small>HANDOFF</small><strong>Hospital handoff</strong></div></div>
-      <div class="horse-endpoint-handoff-launch">
-        <p>${transported ? 'Transport is documented. Build your handoff from the findings, vitals, history, treatments, and reassessments you actually obtained.' : 'Transport has not been documented yet. You can prepare the report, but transport details may be incomplete.'}</p>
-        <button type="button" id="horseUseHandoffCard">Open handoff report</button>
-      </div>`;
+      <p>${transported ? 'Transport is documented. Build your handoff from the findings, vitals, history, treatments, and reassessments you actually obtained.' : 'Transport has not been documented yet. You can prepare the report, but transport details may be incomplete.'}</p>
+      <div id="horseEndpointHandoffMount"></div>`;
+    $('horseEndpointHandoffMount')?.appendChild(card);
+    card.hidden = false;
+    card.classList.add('horse-handoff-active');
+    const generate = card.querySelector('#generateHandoff');
+    if (generate && !card.querySelector('#handoffDraft')?.value?.trim()) generate.click();
     $('horseEndpointBack')?.addEventListener('click', closeDetail);
-    $('horseUseHandoffCard')?.addEventListener('click', () => {
-      if (!card) return;
-      card.hidden = false;
-      card.classList.add('horse-handoff-active');
-      card.scrollIntoView({ behavior:'smooth', block:'start' });
-      const generate = card.querySelector('#generateHandoff');
-      if (generate && !card.querySelector('#handoffDraft')?.value?.trim()) generate.click();
-      card.querySelector('#handoffDraft')?.focus?.({ preventScroll:true });
-    });
   }
 
   function closeDetail() {
     const host = $('horseTransportHandoffActions');
     if (!host) return;
+    const card = host.querySelector('.handoff-treatment-card');
+    const tools = $('treatmentTools');
+    if (card && tools) {
+      tools.insertAdjacentElement('afterend', card);
+      card.hidden = true;
+      card.classList.remove('horse-handoff-active');
+    }
+    restoreEndpointMenu(host);
     host.dataset.mode = '';
     host.innerHTML = summaryMarkup();
     bindSummary(host);
