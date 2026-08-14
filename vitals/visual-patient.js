@@ -2625,7 +2625,7 @@
     if (kind === 'history') return { key:'history', label:'HISTORY', icon:'💬', spoken:false };
     if (kind === 'treatment') return { key:'treatment', label:'TREATMENT', icon:'✚', spoken:false };
     if (kind === 'transport') return { key:'transport', label:'TRANSPORT', icon:'🚑', spoken:false };
-    if (kind === 'partner') return { key:'partner', label:'PARTNER', icon:'👥', spoken:false };
+    if (kind === 'partner') return { key:'partner', label:'ON-SCENE CREW', icon:'👥', spoken:false };
     if (kind === 'alert') return { key:'alert', label:'ALERT', icon:'⚠', spoken:false };
     if (kind === 'dispatch') return { key:'dispatch', label:'DISPATCH', icon:'📟', spoken:false };
     return { key:'information', label:'INFORMATION', icon:'ℹ', spoken:false };
@@ -2842,10 +2842,25 @@
   }
   function buildInfoUpdates(current) {
     const startedAt = current?.startedAt || new Date().toISOString();
+    const startMs = new Date(startedAt).getTime();
     const updates = [
-      { id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information', text: current?.dispatch || scenario.title, kind: 'dispatch', recordedAt: startedAt },
-      { id: 'visible', type: 'VISIBLE CONDITION', title: 'First patient view', text: scenario.visible, kind: 'visible', recordedAt: new Date(new Date(startedAt).getTime() + 1).toISOString() }
+      { id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information', text: current?.dispatch || scenario.title, kind: 'dispatch', recordedAt: startedAt }
     ];
+    if (id === 'horse_crush') {
+      updates.push({
+        id:'first-on-scene-handoff',
+        type:'FIRST-ON-SCENE CREW',
+        title:'Engine crew handoff',
+        text:'We found the patient on the ground outside the south barn after being squeezed between two horses and falling. The scene is safe. The patient has remained alert, reports severe left-hip pain, and has not been moved.',
+        kind:'partner',
+        sticky:true,
+        recordedAt:new Date(startMs + 1).toISOString()
+      });
+    }
+    updates.push({
+      id:'visible', type:'VISIBLE CONDITION', title:'First patient view', text:scenario.visible,
+      kind:'visible', recordedAt:new Date(startMs + 2).toISOString()
+    });
     const log = api?.listCareLog?.(current, 'all') || [];
     log.filter(event => isInformationUpdate(event) && !event.suppressInfoUpdate && !(id === 'horse_crush' && event.source === 'horse-rapid-abc'))
       .forEach(event => updates.push(updateFromCareEvent(event)));
@@ -2890,6 +2905,11 @@
   function scheduleInfoCollapse(item, isNew) {
     clearTimeout(infoAutoCollapseTimer);
     if (!item || !isNew) return;
+    if (desktopWorkspace()) {
+      infoManuallyCollapsed = false;
+      setInfoCollapsed(false);
+      return;
+    }
     if (item.sticky || infoVoiceRole(item) === 'patient') {
       infoManuallyCollapsed = false;
       setInfoCollapsed(false);
