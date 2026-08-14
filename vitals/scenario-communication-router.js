@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.17';
+  const VERSION = '2026.08.14.18';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -216,9 +216,14 @@
     if (clinicalQuestion && belongsInCommunication && clinicalQuestion.parentElement !== stage) {
       stage.appendChild(clinicalQuestion);
     } else if (clinicalQuestion && !belongsInCommunication) {
-      const infoWindow = $('infoUpdateWindow');
-      if (infoWindow && clinicalQuestion.previousElementSibling !== infoWindow) {
-        infoWindow.insertAdjacentElement('afterend', clinicalQuestion);
+      const rightField = document.querySelector('.patient-control-column');
+      const currentAssessment = $('horseCurrentAssessment');
+      if (rightField && clinicalQuestion.parentElement !== rightField) {
+        if (currentAssessment?.parentElement === rightField) {
+          currentAssessment.insertAdjacentElement('beforebegin', clinicalQuestion);
+        } else {
+          rightField.prepend(clinicalQuestion);
+        }
       }
     }
 
