@@ -729,43 +729,41 @@
           <div><small>FOLLOW-UP QUESTION</small><strong>${escapeHtml(labels[key])}</strong></div>
         </div>
         <p>${escapeHtml(prompts[key])}</p>
-        <div class="horse-question-answer-row">
-          <label><span>Your finding</span><select aria-label="${escapeHtml(labels[key])} finding">
-            <option value="">Choose your finding</option>
-            ${choices[key].map(([value,label,normality]) => `<option value="${escapeHtml(value)}" data-normality="${normality}" ${current && (current.value === value || current.finding === value) ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}
-          </select></label>
-          <button type="button" class="horse-question-save" disabled>Record</button>
-        </div>`;
-      const select = questionBox.querySelector('select');
-      const save = questionBox.querySelector('.horse-question-save');
-      const sync = () => { if (save) save.disabled = !select?.value; };
-      select?.addEventListener('change', sync);
-      sync();
-      save?.addEventListener('click', () => {
-        if (!select?.value) return;
-        const option = select.selectedOptions[0];
-        const normality = option?.dataset?.normality || '';
+        <div class="horse-question-choice-grid" role="group" aria-label="${escapeHtml(labels[key])} finding choices">
+          ${choices[key].map(([value,label,normality], index) => {
+            const selected = current && (current.value === value || current.finding === value);
+            return `<button type="button" class="horse-question-choice${selected ? ' selected' : ''}" data-abc-choice="${index}" data-normality="${normality}"><span>${selected ? '✓' : '○'}</span><strong>${escapeHtml(label)}</strong></button>`;
+          }).join('')}
+        </div>
+        <p class="horse-question-choice-help">Select one finding to record it.</p>`;
+      const buttons = [...questionBox.querySelectorAll('[data-abc-choice]')];
+      buttons.forEach(button => button.addEventListener('click', () => {
+        const choice = choices[key][Number(button.dataset.abcChoice)];
+        if (!choice) return;
+        const [value,,normality] = choice;
         const payload = {
           source:'horse-rapid-abc',
           label:labels[key],
-          finding:select.value,
+          finding:value,
           normality,
           status:normality === 'normal' ? 'normal' : normality === 'not-normal' ? 'abnormal' : 'uncertain',
           rapidAssessment:true,
           reviewAtDebrief:true,
           suppressInfoUpdate:true
         };
+        buttons.forEach(item => { item.disabled = true; item.classList.toggle('selected', item === button); });
         try {
-          if (session?.saveFinding) session.saveFinding(key, select.value, payload);
-          else api?.setFinding?.(key, select.value, payload);
+          if (session?.saveFinding) session.saveFinding(key, value, payload);
+          else api?.setFinding?.(key, value, payload);
           refreshFromRecord({ force:true });
           resetQuestionBox();
         } catch (error) {
+          buttons.forEach(item => { item.disabled = false; });
           console.error(error);
           toast('Finding was not saved. Try again.');
         }
-      });
-      window.requestAnimationFrame(() => select?.focus());
+      }));
+      window.requestAnimationFrame(() => buttons[0]?.focus());
     }
 
     const article = document.createElement('section');
