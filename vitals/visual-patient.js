@@ -1788,6 +1788,30 @@
   const HORSE_CSM_BASELINE_REQUIRED_IDS = new Set([
     'splint','scoop_position_comfort','vacuum_mattress','board_transfer'
   ]);
+  const HORSE_EXCLUSIVE_MOVEMENT_IDS = new Set([
+    'scoop_position_comfort','vacuum_mattress','board_transfer','stand_pivot'
+  ]);
+  const HORSE_EXCLUSIVE_ALS_IDS = new Set([
+    'request_als_scene','arrange_als_intercept','transport_without_als_wait','continue_bls_care'
+  ]);
+
+  function horseTreatmentConflict(plan, current = record() || {}) {
+    if (id !== 'horse_crush' || !plan?.id) return null;
+    const prior = (current.treatments || []).map(item => item?.actionId).filter(Boolean);
+    const firstPrior = set => prior.find(actionId => set.has(actionId) && actionId !== plan.id);
+    if (HORSE_EXCLUSIVE_MOVEMENT_IDS.has(plan.id)) {
+      const previous = firstPrior(HORSE_EXCLUSIVE_MOVEMENT_IDS);
+      if (previous) return `A different transfer method was already committed (${previous.replace(/_/g, ' ')}). Reassess and explicitly revise the plan instead of performing two incompatible transfers.`;
+    }
+    if (HORSE_EXCLUSIVE_ALS_IDS.has(plan.id)) {
+      const previous = firstPrior(HORSE_EXCLUSIVE_ALS_IDS);
+      if (previous) return `An ALS/transport strategy was already selected (${previous.replace(/_/g, ' ')}). Choose one operational plan or document why the plan changed.`;
+    }
+    const supported = prior.some(actionId => ['position_comfort','blanket_support','splint'].includes(actionId));
+    if (plan.id === 'force_straight' && supported) return 'The leg was already supported in its tolerated flexed position. Forcing it straight contradicts that plan and worsens pain.';
+    if (plan.id === 'traction_splint' && prior.some(actionId => ['splint','blanket_support','scoop_position_comfort','vacuum_mattress'].includes(actionId))) return 'A non-traction stabilization and packaging plan is already in progress. Traction for isolated hip pain conflicts with the documented injury pattern.';
+    return null;
+  }
 
   function horseClinicalState() {
     return id === 'horse_crush' ? runtime?.horseClinicalState?.(record()) || null : null;
@@ -1803,6 +1827,18 @@
     if (classification === 'unnecessary' && /oxygen|airway|bvm|cpap/i.test(plan.id || '')) {
       return '“I’m breathing fine. It’s my hip that really hurts.” The intervention does not meaningfully change the current complaint.';
     }
+    if (classification === 'unnecessary') {
+      const medicationFeedback = {
+        aspirin:'Aspirin is not indicated because the presentation does not suggest acute coronary syndrome.',
+        nitroglycerin_assist:'Nitroglycerin is not indicated: there is no ischemic chest-pain presentation or applicable medication-assistance indication.',
+        epinephrine_auto:'Epinephrine is not indicated because there are no findings of anaphylaxis.',
+        naloxone:'Naloxone is not indicated because there is no opioid-associated respiratory depression.',
+        oral_glucose_general:'Oral glucose is not indicated because hypoglycemia has not been demonstrated and mental status is intact.',
+        bronchodilator_general:'A bronchodilator is not indicated because there is no bronchospasm, wheezing, or respiratory distress.'
+      };
+      if (medicationFeedback[plan.id]) return medicationFeedback[plan.id];
+    }
+    if (classification === 'conflicting') return fallback || 'The new action conflicts with a treatment or movement plan already performed. Reassess and document a deliberate change in plan.';
     if (classification === 'premature') return 'The patient has no meaningful change. Gather the missing assessment information and reconsider the treatment.';
     if (classification === 'unnecessary') return fallback || 'The treatment does not change the patient’s current condition.';
     return fallback || state?.patientText || 'Reassess the patient after the intervention.';
@@ -1939,6 +1975,11 @@
           || documentation.contraindicationCheck === 'Possible or confirmed contraindication')) {
       classification = 'contraindicated';
       response = 'Medication administration should stop until protocol authorization is confirmed and the possible contraindication is resolved.';
+    }
+    const conflict = horseTreatmentConflict(plan, current);
+    if (conflict) {
+      classification = 'conflicting';
+      response = conflict;
     }
     const documentationText = treatmentDocumentationText(plan, documentation);
     const treatment = {
@@ -2087,6 +2128,12 @@
       description:'Crew coordination, lift method, transfer device, and positioning.',
       instruction:'Choose a movement or packaging action. Consider the patient’s position of comfort and the findings you obtained before moving her.',
       planIds:['request_help','scoop_position_comfort','vacuum_mattress','board_transfer','stand_pivot','force_straight']
+    },
+    {
+      id:'resources', label:'ALS / operational plan', icon:'ALS',
+      description:'Choose whether ALS comes to the scene, intercepts, or BLS transports without waiting.',
+      instruction:'Commit to one operational strategy after considering stability, pain, response time, access, transport time, and whether waiting delays definitive care.',
+      planIds:['request_als_scene','arrange_als_intercept','transport_without_als_wait','continue_bls_care']
     },
     {
       id:'airway', label:'Airway', icon:'A',
@@ -2371,6 +2418,24 @@
     renderHorseTreatmentCategoryWorkspace(group.id);
   }
 
+  function horseCareSequenceMarkup() {
+    const current = record() || {};
+    const events = [
+      ...(current.treatments || []).map(item => ({
+        time:item.recordedAt || item.createdAt || current.updatedAt,
+        label:item.name || item.treatment || 'Treatment',
+        tone:item.classification || 'recorded'
+      })),
+      ...(current.reassessments || []).map(item => ({
+        time:item.recordedAt || item.createdAt || current.updatedAt,
+        label:item.label || item.name || 'Reassessment',
+        tone:'reassessment'
+      }))
+    ].filter(item => item.label).sort((a,b) => new Date(a.time || 0) - new Date(b.time || 0)).slice(-5);
+    if (!events.length) return '<div class="horse-care-sequence empty"><small>CARE SEQUENCE</small><span>No treatment or reassessment recorded yet.</span></div>';
+    return `<div class="horse-care-sequence"><small>CARE SEQUENCE</small>${events.map(item => `<span><time>${escapeHtml(formatClock(item.time) || '--:--')}</time><strong>${escapeHtml(item.label)}</strong></span>`).join('')}</div>`;
+  }
+
   function buildHorseTreatmentsDesktop() {
     const box = $('treatmentTools');
     if (!box) return;
@@ -2385,7 +2450,7 @@
 
     const menuHead = document.createElement('div');
     menuHead.className = 'horse-treatment-menu-head';
-    menuHead.innerHTML = `<small>TREATMENT</small><strong>Choose a category</strong><span>Select the type of care you want to provide.</span>`;
+    menuHead.innerHTML = `<small>TREATMENT</small><strong>Choose a category</strong><span>Start with care supported by your findings. Additional EMT options remain available for clinical decision practice.</span>${horseCareSequenceMarkup()}`;
     box.appendChild(menuHead);
 
     HORSE_TREATMENT_GROUPS
@@ -3588,8 +3653,10 @@
     else if (['supported','pain-improved'].includes(state?.stage)) treatmentScore += 1;
 
     const harmful = treatments.filter(item => item?.classification === 'contraindicated');
+    const conflicting = treatments.filter(item => item?.classification === 'conflicting');
     const unnecessary = treatments.filter(item => item?.classification === 'unnecessary');
     treatmentScore -= harmful.length * 6;
+    treatmentScore -= conflicting.length * 3;
     treatmentScore -= unnecessary.length;
     treatmentScore -= csmBaselineMisses * 3;
     treatmentScore = Math.max(0, Math.min(25, treatmentScore));
@@ -3605,6 +3672,7 @@
     else improvements.push('Repeat distal CSM after every major movement or stabilization step; this is a critical reassessment in this scenario.');
     if (csmBaselineMisses) critical.push('A splinting/packaging step occurred before baseline distal CSM was documented. Obtain circulation, sensation, and movement before the move whenever feasible, then repeat it afterward so you can identify a treatment-related change.');
     harmful.forEach(item => critical.push(`${item.name || item.treatment || 'A treatment'} was contraindicated and increased the patient’s pain. Stop the maneuver, return to the tolerated position, and reassess.`));
+    conflicting.forEach(item => improvements.push(`${item.name || item.treatment || 'A treatment'} conflicted with an earlier care plan. Commit to one coherent strategy or document a deliberate change after reassessment.`));
     unnecessary.forEach(item => improvements.push(`${item.name || item.treatment || 'A treatment'} was not indicated by the findings and added care without meaningful benefit.`));
 
     // 6. Transport and hospital handoff — 15 points.
@@ -3662,6 +3730,7 @@
       'defensible':['Reasonable with caution','review'],
       'unnecessary':['Not indicated','unnecessary'],
       'contraindicated':['Harmful choice','harmful'],
+      'conflicting':['Conflicting plan','review'],
       'premature':['Too early','review'],
       'transport-choice-review':['Review transport choice','review']
     };
