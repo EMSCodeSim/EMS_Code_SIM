@@ -70,33 +70,6 @@
     }
   ];
 
-  const PARKING_OPTIONS = [
-    {
-      value: 'south_barn_access',
-      label: 'Park near the south barn apron, facing out and leaving the driveway open',
-      classification: 'appropriate',
-      feedback: 'This provides short equipment access, preserves an exit path, and avoids blocking the engine or the main driveway.'
-    },
-    {
-      value: 'roadway',
-      label: 'Leave the ambulance on County Road 61 and carry equipment in',
-      classification: 'suboptimal',
-      feedback: 'This preserves the property access but adds a long carry and delays movement. A closer safe position is available.'
-    },
-    {
-      value: 'block_driveway',
-      label: 'Stop across the driveway entrance so no other vehicle can enter',
-      classification: 'unsafe',
-      feedback: 'This can block additional resources and complicate egress. Keep the main access route open.'
-    },
-    {
-      value: 'animal_area',
-      label: 'Drive through the gate into the horse enclosure',
-      classification: 'unsafe',
-      feedback: 'Do not enter an animal enclosure unless it has been confirmed safe and doing so is operationally necessary.'
-    }
-  ];
-
   function activeCase() {
     const params = new URLSearchParams(location.search);
     return params.get('case') || window.EMSCodeSimPatientRecord?.active?.()?.scenarioId || '';
@@ -162,78 +135,33 @@
     window.setTimeout(showHandoff, 30);
   }
 
-  function arrivalFeedback(option) {
-    if (assessmentMode()) return 'Parking decision recorded. Detailed feedback will be reviewed during the debrief.';
-    return option.feedback;
-  }
-
   function renderArrivalCard() {
     if (!isActive()) return;
-    let section = document.getElementById('horseArrivalDecision');
-    if (!section) {
-      section = document.createElement('section');
-      section.id = 'horseArrivalDecision';
-      section.className = 'horse-arrival-card';
-      const controlColumn = document.querySelector('.patient-control-column');
-      const entryWorkflow = document.querySelector('.patient-entry-workflow');
-      if (controlColumn && entryWorkflow) controlColumn.insertBefore(section, entryWorkflow);
-      else if (controlColumn) controlColumn.prepend(section);
-      else document.querySelector('.patient-stage')?.insertAdjacentElement('afterend', section);
-    }
 
-    const saved = record()?.findings?.arrival_parking;
-    if (saved) {
-      document.body.classList.remove('horse-arrival-pending');
-      // The arrival decision is complete. Remove the temporary arrival card so the
-      // right-side desktop workspace stays clear; the BLS handoff is shown in the
-      // persistent information window instead.
-      section.remove();
-      revealPatientImage();
-      return;
-    }
+    document.getElementById('horseArrivalDecision')?.remove();
+    document.body.classList.remove('horse-arrival-pending');
+    revealPatientImage();
 
-    document.body.classList.add('horse-arrival-pending');
-    setMainPatientImage(`${ASSET}map-arrival.webp`, 'Satellite view of the horse facility showing the south barn and patient location');
-    const controls = document.getElementById('patientPhaseControls');
-    if (controls) controls.hidden = true;
-    const layer = document.getElementById('sceneClueLayer');
-    if (layer) layer.hidden = true;
-    document.querySelector('.patient-stage')?.classList.add('horse-arrival-map');
-
-    section.classList.remove('complete');
-    section.innerHTML = `
-      <div class="horse-arrival-head"><div><span>ARRIVAL DECISION</span><h2>Where will you position the ambulance?</h2></div><em>Scene is reported safe</em></div>
-      <p>A BLS engine crew is already with the patient outside the south barn. Choose a parking location that supports patient access, equipment movement, additional resources, and a clean exit.</p>
-      <div class="horse-parking-options">
-        ${PARKING_OPTIONS.map(option => `<button type="button" data-horse-parking="${option.value}"><strong>${escapeHtml(option.label)}</strong><small>Select this location</small></button>`).join('')}
-      </div>
-      <div id="horseParkingFeedback" class="horse-parking-feedback" hidden aria-live="polite"></div>`;
-
-    section.querySelectorAll('[data-horse-parking]').forEach(button => {
-      button.addEventListener('click', () => {
-        const option = PARKING_OPTIONS.find(item => item.value === button.dataset.horseParking);
-        if (!option) return;
-        const feedback = section.querySelector('#horseParkingFeedback');
-        if (feedback) {
-          feedback.hidden = false;
-          feedback.textContent = arrivalFeedback(option);
-        }
-        saveFinding('arrival_parking', option.label, {
-          label: 'Ambulance parking decision',
-          selected: option.value,
-          decisionClass: option.classification,
-          normality: option.classification === 'appropriate' ? 'normal' : 'not-normal',
-          details: option.feedback
-        });
-        saveFinding('bls_handoff', 'Compressed between two horses, fell to the ground, no LOC, A&O ×4, severe left-hip pain, not moved.', {
-          label: 'BLS engine handoff',
-          normality: 'not-normal',
-          details: 'The engine crew confirms the horses are secured and the patient has not been moved.',
-          source: 'bls-handoff'
-        });
-        window.setTimeout(renderArrivalCard, 120);
+    if (!has('arrival_parking')) {
+      saveFinding('arrival_parking', 'Ambulance positioned safely near the south barn', {
+        label: 'Scene arrival',
+        selected: 'scenario_start',
+        decisionClass: 'appropriate',
+        normality: 'normal',
+        details: 'The ambulance is positioned for patient access with the driveway and exit path clear.',
+        source: 'scenario-start',
+        suppressInfoUpdate: true
       });
-    });
+    }
+
+    if (!has('bls_handoff')) {
+      saveFinding('bls_handoff', 'Compressed between two horses, fell to the ground, no LOC, A&O ×4, severe left-hip pain, not moved.', {
+        label: 'BLS engine handoff',
+        normality: 'not-normal',
+        details: 'The engine crew confirms the horses are secured and the patient has not been moved.',
+        source: 'bls-handoff'
+      });
+    }
   }
 
   function maybeSaveCompleteTraumaExam() {
