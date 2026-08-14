@@ -61,6 +61,9 @@
         child.hidden = true;
       }
     });
+    tools.style.setProperty('display', 'block', 'important');
+    const panel = $('treatmentPanel');
+    if (panel) panel.scrollTop = 0;
     host.scrollIntoView({ block:'start' });
   }
 
@@ -72,6 +75,7 @@
       child.hidden = child.dataset.endpointHidden === '1';
       delete child.dataset.endpointHidden;
     });
+    tools.style.removeProperty('display');
     tools.scrollIntoView({ block:'start' });
   }
 
@@ -212,6 +216,7 @@
     $('horseEndpointHandoffMount')?.appendChild(card);
     card.hidden = false;
     card.classList.add('horse-handoff-active');
+    window.requestAnimationFrame(() => card.scrollIntoView({ block:'start' }));
     const generate = card.querySelector('#generateHandoff');
     if (generate && !card.querySelector('#handoffDraft')?.value?.trim()) generate.click();
     $('horseEndpointBack')?.addEventListener('click', closeDetail);
