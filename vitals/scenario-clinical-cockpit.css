@@ -479,9 +479,10 @@
     box-shadow:none!important;
   }
 
-  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column>.bottom-nav.clinical-domain-rail{
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #clinicalInteractionColumn>.bottom-nav.clinical-domain-rail.emt-primary-domain-rail{
     flex:0 0 auto!important;
     margin:0!important;
+    margin-top:0!important;
     padding:10px 0 0!important;
     border-top:1px solid rgba(117,174,206,.2)!important;
     background:#081a28!important;
