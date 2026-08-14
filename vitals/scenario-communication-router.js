@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.22';
+  const VERSION = '2026.08.14.23';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -367,6 +367,8 @@
       const trigger = event.target.closest?.('[data-assessment-item]');
       const key = trigger?.dataset?.assessmentItem;
       if (!definitions[key] || window.innerWidth < 980) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
       window.setTimeout(() => {
         const box = $('horseClinicalQuestionBox');
         const rightField = document.querySelector('.patient-control-column');
