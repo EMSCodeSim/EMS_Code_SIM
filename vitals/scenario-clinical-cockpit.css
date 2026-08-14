@@ -447,6 +447,7 @@
   body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #clinicalInteractionColumn>#patientCommunicationStage{
     grid-column:1!important;
     grid-row:2!important;
+    min-height:0!important;
     height:auto!important;
     box-sizing:border-box!important;
     overflow:auto!important;
