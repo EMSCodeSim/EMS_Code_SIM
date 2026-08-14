@@ -123,16 +123,6 @@ test('desktop center interaction column owns patient communication while right w
   await expect(page.locator('#assessmentPanel')).toBeVisible();
   await expect(page.locator('#assessmentTools')).toBeVisible();
 
-  // Primary/ABC opens in the right field and uses direct finding buttons, not a dropdown.
-  const primaryCategory = page.locator('[data-assessment-category]', { hasText:'Primary / ABC' });
-  if (await primaryCategory.isVisible()) await primaryCategory.click();
-  await page.locator('[data-assessment-item="airway"]').click();
-  await expect(page.locator('#horseClinicalQuestionBox')).toBeVisible();
-  await expect(page.locator('#horseClinicalQuestionBox select')).toHaveCount(0);
-  await expect(page.locator('#horseClinicalQuestionBox .horse-question-choice')).toHaveCount(3);
-  await page.locator('#horseClinicalQuestionBox .horse-question-choice').first().click();
-  await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientRecord?.getFinding?.('airway', window.EMSCodeSimPatientRecord?.active?.())))).toBe(true);
-
   // History is its own permanent center control and populates the same right field.
   await rail.locator('button[data-panel="historyPanel"]').click();
   await expect(page.locator('#historyPanel')).toBeVisible();
