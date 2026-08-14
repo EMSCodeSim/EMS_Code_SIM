@@ -503,6 +503,10 @@
   }
 
   body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #clinicalInteractionColumn>.bottom-nav.clinical-domain-rail.emt-primary-domain-rail{
+    position:static!important;
+    inset:auto!important;
+    bottom:auto!important;
+    transform:none!important;
     flex:0 0 auto!important;
     margin:0!important;
     margin-top:0!important;
