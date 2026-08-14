@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.32';
+  const VERSION = '2026.08.14.33';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -18,6 +18,8 @@
   let communicationFilter = 'all';
   let lastTimelineSignature = '';
   let lastTimelineAt = 0;
+  let activeDecision = null;
+  let decisionSequence = 0;
 
   function record() {
     try { return session?.sync?.() || api?.active?.() || null; }
@@ -132,14 +134,50 @@
     const visible = communicationFilter === 'all'
       ? messages
       : messages.filter(message => message.source === communicationFilter || (communicationFilter === 'finding' && message.source === 'critical'));
-    list.innerHTML = visible.map(message => {
+    const entries = visible.map(message => {
       const meta = SOURCE_META[message.source] || SOURCE_META.finding;
       const stamp = new Date(message.at || Date.now()).toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
       const safe = String(message.text || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       return `<article class="communication-entry source-${message.source}" data-communication-source="${message.source}"><header><span aria-hidden="true">${meta.icon}</span><strong>${meta.label}</strong><time>${stamp}</time></header><p>${safe}</p></article>`;
-    }).join('') || '<p class="communication-empty">No messages in this filter yet.</p>';
+    }).join('');
+    const decision = activeDecision && (communicationFilter === 'all' || communicationFilter === activeDecision.source) ? renderDecision(activeDecision) : '';
+    list.innerHTML = entries + decision || '<p class="communication-empty">No messages in this filter yet.</p>';
+    bindDecisionButtons();
     list.scrollTop = list.scrollHeight;
   }
+
+  function escapeHtml(value) { return String(value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function renderDecision(decision) {
+    const meta = SOURCE_META[decision.source] || SOURCE_META.finding;
+    const choices = decision.choices.map((choice,index) => `<button type="button" data-communication-choice="${index}"><span aria-hidden="true">○</span><strong>${escapeHtml(choice.label)}</strong></button>`).join('');
+    return `<article class="communication-entry communication-decision source-${decision.source}" data-communication-decision="${decision.id}"><header><span aria-hidden="true">${meta.icon}</span><strong>${escapeHtml(decision.label || meta.label)}</strong><em>Response required</em></header><p>${escapeHtml(decision.text)}</p><div class="communication-decision-choices" role="group">${choices}</div></article>`;
+  }
+  function bindDecisionButtons() {
+    const card = document.querySelector('[data-communication-decision]');
+    if (!card || !activeDecision || card.dataset.bound === 'true') return;
+    card.dataset.bound = 'true';
+    card.querySelectorAll('[data-communication-choice]').forEach(button => button.addEventListener('click', event => {
+      event.preventDefault(); event.stopPropagation();
+      const decision = activeDecision;
+      const index = Number(button.dataset.communicationChoice);
+      const choice = decision?.choices?.[index];
+      if (!decision || !choice) return;
+      activeDecision = null;
+      pushTimeline('provider', choice.label);
+      try { decision.onChoose?.(choice.value, index, choice); } catch (error) { console.error(error); }
+      renderTimeline();
+    }));
+  }
+  function ask(source, text, choices = [], onChoose, options = {}) {
+    const normalizedChoices = choices.map((choice,index) => Array.isArray(choice) ? {label:clean(choice[0]),value:choice[1] ?? index} : typeof choice === 'string' ? {label:clean(choice),value:index} : {label:clean(choice?.label || choice?.text),value:choice?.value ?? index}).filter(choice => choice.label);
+    if (!clean(text) || !normalizedChoices.length) return false;
+    activeDecision = { id:`decision-${Date.now()}-${++decisionSequence}`, source:SOURCE_META[source] ? source : 'finding', label:clean(options.label), text:clean(text), choices:normalizedChoices, onChoose };
+    communicationFilter = 'all';
+    const stage = ensureStage(); ensureTimeline(stage);
+    stage?.querySelectorAll('[data-communication-filter]').forEach(item => item.classList.toggle('active', item.dataset.communicationFilter === 'all'));
+    renderTimeline(); return true;
+  }
+  function clearDecision() { activeDecision = null; renderTimeline(); }
 
   function pushTimeline(source, text) {
     const value = clean(text);
@@ -214,7 +252,8 @@
     if (clinicalQuestion?.classList.contains('active') && clinicalQuestion.querySelector('.horse-question-choice')) {
       clinicalQuestion.hidden = false;
     }
-    const belongsInCommunication = clinicalQuestion?.classList.contains('history-active')
+    const belongsInCommunication = clinicalQuestion?.classList.contains('active')
+      || clinicalQuestion?.classList.contains('history-active')
       || clinicalQuestion?.classList.contains('treatment-active');
     if (clinicalQuestion && belongsInCommunication && clinicalQuestion.parentElement !== stage) {
       stage.appendChild(clinicalQuestion);
@@ -230,15 +269,11 @@
       }
     }
 
-    // Assessment follow-ups are owned by the right-side assessment workspace.
-    // Never relocate this node into the communication center.
     const assessmentQuestion = $('horseAssessmentInlineQuestion');
-    const assessmentTools = $('assessmentTools');
-    if (assessmentQuestion && assessmentTools && !assessmentTools.contains(assessmentQuestion)) {
-      assessmentTools.appendChild(assessmentQuestion);
-    }
+    const assessmentVisible = assessmentQuestion && !assessmentQuestion.hidden && clean(assessmentQuestion.textContent);
+    if (assessmentVisible && assessmentQuestion.parentElement !== stage) stage.appendChild(assessmentQuestion);
 
-    const active = [patientTurn, belongsInCommunication ? clinicalQuestion : null]
+    const active = [patientTurn, belongsInCommunication ? clinicalQuestion : null, assessmentVisible ? assessmentQuestion : null]
       .some(node => node && !node.hidden && clean(node.textContent));
     const idle = stage.querySelector('.patient-communication-idle');
     if (idle) idle.hidden = active;
@@ -355,7 +390,7 @@
       #communicationTimeline{flex:1 0 64%;min-height:64%;display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:7px;overflow:hidden}
       .communication-timeline-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.communication-timeline-head strong{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:#a8dbf2}.communication-timeline-head span{font-size:.59rem;font-weight:900;color:#fff;background:#9b342f;border-radius:999px;padding:3px 7px}
       .communication-filters{display:flex;gap:4px;overflow-x:auto}.communication-filters button{min-height:27px;padding:4px 8px;border:1px solid #31566d;border-radius:999px;background:transparent;color:#b7cfda;font-size:.61rem;font-weight:850;cursor:pointer}.communication-filters button.active{background:#174a68;border-color:#67c2f5;color:#fff}
-      .communication-timeline-list{min-height:0;overflow:auto;display:grid;align-content:start;gap:3px;padding-right:3px}.communication-entry{padding:7px 6px 7px 9px;border-left:3px solid #547b90}.communication-entry.source-dispatch{border-left-color:#4fb3ff}.communication-entry.source-crew{border-left-color:#9da9cf}.communication-entry.source-patient{border-left-color:#55c990}.communication-entry.source-critical{border-left-color:#ff6b61}.communication-entry header{display:flex;align-items:center;gap:5px}.communication-entry header strong{font-size:.62rem;text-transform:uppercase;letter-spacing:.06em}.communication-entry time{margin-left:auto;font-size:.56rem;color:#7897a7}.communication-entry p{margin:3px 0 0;color:#e8f3f9;font-size:.75rem;line-height:1.34}.communication-empty{margin:auto;text-align:center;color:#7694a3;font-size:.7rem}
+      .communication-timeline-list{min-height:0;overflow:auto;display:grid;align-content:start;gap:3px;padding-right:3px}.communication-entry{padding:7px 6px 7px 9px;border-left:3px solid #547b90}.communication-entry.source-dispatch{border-left-color:#4fb3ff}.communication-entry.source-crew{border-left-color:#9da9cf}.communication-entry.source-patient{border-left-color:#55c990}.communication-entry.source-critical{border-left-color:#ff6b61}.communication-entry header{display:flex;align-items:center;gap:5px}.communication-entry header strong{font-size:.62rem;text-transform:uppercase;letter-spacing:.06em}.communication-entry time{margin-left:auto;font-size:.56rem;color:#7897a7}.communication-entry p{margin:3px 0 0;color:#e8f3f9;font-size:.75rem;line-height:1.34}.communication-decision{margin-top:8px;padding:11px!important;border:1px solid #5cb9e8!important;border-left-width:4px!important;border-radius:10px;background:#0c293a}.communication-decision header em{margin-left:auto;color:#ffd27a;font-size:.57rem;font-style:normal;font-weight:900;text-transform:uppercase}.communication-decision>p{font-size:.88rem!important;font-weight:750!important;margin:7px 0 9px!important}.communication-decision-choices{display:grid;gap:7px}.communication-decision-choices button{width:100%;min-height:46px;display:grid;grid-template-columns:22px 1fr;align-items:center;gap:8px;padding:9px 11px;border:1px solid #39708c;border-radius:9px;background:#12384d;color:#fff;text-align:left;cursor:pointer;pointer-events:auto;touch-action:manipulation}.communication-decision-choices button:hover,.communication-decision-choices button:focus-visible{background:#194b64;border-color:#78d1f7}.communication-decision-choices button span{color:#78d1f7;font-weight:900}.communication-decision-choices button strong{font-size:.78rem;line-height:1.3}.communication-empty{margin:auto;text-align:center;color:#7694a3;font-size:.7rem}
       #patientCommunicationStage #patientConversationTurn:not([hidden]),#patientCommunicationStage #horseClinicalQuestionBox:not([hidden]){flex:0 0 auto;position:sticky!important;bottom:0!important;z-index:8;background:#0b2231!important;box-shadow:0 -8px 20px rgba(3,13,20,.32)!important}
       #clinicalInteractionColumn.communication-has-new{box-shadow:0 0 0 2px rgba(103,194,245,.55),0 12px 30px rgba(0,0,0,.18)!important}
       .horse-question-choice-grid{display:grid!important;grid-template-columns:1fr!important;gap:9px!important;margin-top:12px!important}
@@ -395,7 +430,7 @@
     }, { once:true });
   }
 
-  window.EMSCodeSimCommunicationRouter = Object.freeze({ version:VERSION, reconcile:scheduleReconcile, push:(source,text) => pushTimeline(source,text), patientInfo, partnerInfo, vitalInfo });
+  window.EMSCodeSimCommunicationRouter = Object.freeze({ version:VERSION, reconcile:scheduleReconcile, push:(source,text) => pushTimeline(source,text), ask, clearDecision, patientInfo, partnerInfo, vitalInfo });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
   else start();
 })();
