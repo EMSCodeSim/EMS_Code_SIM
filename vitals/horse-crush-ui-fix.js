@@ -78,14 +78,6 @@
     const style = document.createElement('style');
     style.dataset.horseUiFix = VERSION;
     style.textContent = `
-      #horseArrivalDecision.horse-arrival-fullwidth{
-        width:auto!important;max-width:none!important;min-width:0!important;
-        margin:12px 16px!important;position:relative!important;z-index:120!important;
-        overflow:visible!important;max-height:none!important;pointer-events:auto!important;
-      }
-      #horseArrivalDecision.horse-arrival-fullwidth .horse-parking-options{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
-      #horseArrivalDecision.horse-arrival-fullwidth [data-horse-parking]{display:flex!important;min-height:76px!important;width:100%!important;padding:14px!important;pointer-events:auto!important;touch-action:manipulation!important;cursor:pointer!important;position:relative!important;z-index:121!important}
-      #horseArrivalDecision.horse-arrival-fullwidth [data-horse-parking] strong{font-size:.9rem!important;line-height:1.3!important}
       .horse-expanded-assessments{margin:10px 0 14px;padding:10px;border:1px solid #31566d;border-radius:12px;background:#0b2231;display:grid;gap:10px}
       .horse-expanded-assessments>header{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
       .horse-expanded-assessments>header small{display:block;color:#7fd0ff;font-size:.63rem;font-weight:900;letter-spacing:.09em}
@@ -96,7 +88,7 @@
       .horse-assessment-deep-button strong{display:block;font-size:.78rem}.horse-assessment-deep-button small{display:block;margin-top:2px;color:#a9c6d4;font-size:.64rem;line-height:1.25}
       .horse-assessment-deep-button:hover,.horse-assessment-deep-button:focus-visible{background:#194c66;border-color:#67b9df}
       .horse-assessment-deep-button.used{border-color:#4d9b73;background:#103a35}
-      @media(max-width:760px){#horseArrivalDecision.horse-arrival-fullwidth{margin:8px!important}#horseArrivalDecision.horse-arrival-fullwidth .horse-parking-options,.horse-assessment-group-grid{grid-template-columns:1fr!important}}
+      @media(max-width:760px){.horse-assessment-group-grid{grid-template-columns:1fr!important}}
     `;
     document.head.appendChild(style);
   }
@@ -106,17 +98,6 @@
     button.classList.add('used');
     const marker = button.querySelector('[data-mark]');
     if (marker) marker.textContent = 'Recorded';
-  }
-
-  function relocateArrivalDecision() {
-    if (!isHorseScenario()) return false;
-    const card = document.getElementById('horseArrivalDecision');
-    const workspace = document.querySelector('.patient-desktop-workspace');
-    const hero = workspace?.querySelector('.scenario-hero-layout');
-    if (!card || !workspace || !hero) return false;
-    if (card.parentElement !== workspace || card.nextElementSibling !== hero) workspace.insertBefore(card, hero);
-    card.classList.add('horse-arrival-fullwidth');
-    return true;
   }
 
   function openAssessmentSim(key, button) {
@@ -275,15 +256,24 @@
 
   function refresh() {
     installStyles();
-    relocateArrivalDecision();
     injectExpandedAssessments();
     relocateReasoningBoard();
     promoteHiddenTransportForm();
   }
 
+  let refreshQueued = false;
+  function scheduleRefresh() {
+    if (refreshQueued) return;
+    refreshQueued = true;
+    window.requestAnimationFrame(() => {
+      refreshQueued = false;
+      refresh();
+    });
+  }
+
   function start() {
     refresh();
-    const observer = new MutationObserver(() => refresh());
+    const observer = new MutationObserver(scheduleRefresh);
     observer.observe(document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['hidden'] });
     window.addEventListener('pagehide', () => observer.disconnect(), { once:true });
   }
@@ -293,7 +283,6 @@
     abcKeys: Object.freeze(Object.keys(ABC)),
     focusedExams: Object.freeze([...FOCUSED_EXAMS]),
     simAssessments: Object.freeze(Object.keys(SIM_ASSESSMENTS)),
-    relocateArrivalDecision,
     injectExpandedAssessments,
     relocateReasoningBoard,
     promoteHiddenTransportForm,
