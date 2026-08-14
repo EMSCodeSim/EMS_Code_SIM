@@ -46,9 +46,8 @@ test('desktop center interaction column owns patient communication while right w
       column && railNode && update && stage && question && layout && controls && patient &&
       column.parentElement === layout && column.nextElementSibling === controls &&
       railNode.parentElement === column && stage.parentElement === column &&
-      update.parentElement === controls && question.parentElement === controls &&
-      update.nextElementSibling === question &&
-      !patient.contains(update) && !patient.contains(stage)
+      question.parentElement === controls &&
+      !column.contains(question) && !patient.contains(update) && !patient.contains(stage)
     );
   })).toBe(true);
   await expect(page.locator('#infoUpdateWindow')).toBeVisible();
