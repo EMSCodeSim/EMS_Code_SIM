@@ -75,6 +75,15 @@
     tools.scrollIntoView({ block:'start' });
   }
 
+  function showEndpointDetail(host, detail) {
+    if (!host || !detail) return;
+    [...host.children].forEach(child => {
+      if (child !== detail) child.hidden = true;
+    });
+    detail.hidden = false;
+    detail.scrollIntoView({ block:'start' });
+  }
+
   function transportSaved(current = record()) {
     return Boolean(current?.documentation?.transportDecisionAt);
   }
@@ -122,8 +131,8 @@
     const current = record() || {};
     if (!host || !detail) return;
     host.dataset.mode = 'detail';
-    detail.hidden = false;
     focusEndpoint(host);
+    showEndpointDetail(host, detail);
     const d = current.documentation || {};
     const impression = current.impressions?.primary || '';
     const priorities = ['Non-emergent transport','Prompt trauma transport','Emergent trauma transport'];
@@ -193,8 +202,8 @@
     const card = document.querySelector('#treatmentPanel .handoff-treatment-card');
     if (!host || !detail || !card) return;
     host.dataset.mode = 'detail';
-    detail.hidden = false;
     focusEndpoint(host);
+    showEndpointDetail(host, detail);
     const transported = transportSaved();
     detail.innerHTML = `
       <div class="horse-endpoint-detail-head"><button type="button" id="horseEndpointBack">‹ Back</button><div><small>HANDOFF</small><strong>Hospital handoff</strong></div></div>
