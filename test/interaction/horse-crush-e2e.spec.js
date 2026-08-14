@@ -7,6 +7,8 @@ test.beforeEach(async ({ page }) => {
   await clearSiteStorage(page);
 });
 
+const ABC_CHOICE_COUNTS = { airway:3, breathing:4, perfusion:3 };
+
 test('horse-crush call works from arrival through hospital handoff', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Full horse workflow is protected on the desktop clinical workspace');
   const assertNoPageErrors = watchPageErrors(page);
@@ -86,12 +88,10 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
     const button = page.locator(`[data-assessment-item="${key}"]`);
     await expect(button).toBeVisible();
     await button.click();
-    const select = page.locator('#horseAssessmentInlineQuestion select');
-    await expect(select).toBeVisible();
-    await select.selectOption({ index: 1 });
-    const record = page.locator('#horseAssessmentInlineQuestion .horse-question-save');
-    await expect(record).toBeEnabled();
-    await record.click();
+    const choices = page.locator('#horseAssessmentInlineQuestion .horse-question-choice');
+    await expect(choices.first()).toBeVisible();
+    await expect(choices).toHaveCount(ABC_CHOICE_COUNTS[key]);
+    await choices.first().click();
     await expect.poll(() => page.evaluate(findingKey => Boolean(window.EMSCodeSimPatientRecord.active()?.findings?.[findingKey]), key)).toBe(true);
   }
 
