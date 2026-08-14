@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.28';
+  const VERSION = '2026.08.14.31';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -366,6 +366,7 @@
       .horse-question-choice span{color:#68c9f5;font-weight:900}.horse-question-choice strong{font-size:.82rem;line-height:1.25}.horse-question-choice-help{margin:9px 0 0!important;color:#8faeba!important;font-size:.68rem!important}
       body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4.horse-current-emt-call #clinicalInteractionColumn.clinical-interaction-column{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr) auto!important;gap:8px!important;position:relative!important;height:100%!important;min-height:0!important;overflow:hidden!important}
       body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4.horse-current-emt-call #clinicalInteractionColumn.clinical-interaction-column>#infoUpdateWindow{display:none!important}
+      body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4.horse-current-emt-call #clinicalInteractionColumn.clinical-interaction-column>#patientConversationStage,body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4.horse-current-emt-call #clinicalInteractionColumn.clinical-interaction-column>#horseEncounterProgress,body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4.horse-current-emt-call #clinicalInteractionColumn.clinical-interaction-column>.patient-entry-workflow{display:none!important;grid-area:auto!important;height:0!important;min-height:0!important;margin:0!important;padding:0!important}
       body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4.horse-current-emt-call #clinicalInteractionColumn.clinical-interaction-column>#patientCommunicationStage{grid-area:1/1!important;position:relative!important;inset:auto!important;width:100%!important;height:100%!important;min-height:0!important;padding:8px 4px!important;overflow:hidden!important}
       body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4.horse-current-emt-call #clinicalInteractionColumn.clinical-interaction-column>.bottom-nav.clinical-domain-rail{grid-area:2/1!important;position:relative!important;inset:auto!important;place-self:end stretch!important;width:100%!important;margin:0!important;transform:none!important;z-index:190!important}
       body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4.horse-current-emt-call #patientCommunicationStage>.communication-timeline{height:100%!important;min-height:0!important;flex:1 1 0!important}
