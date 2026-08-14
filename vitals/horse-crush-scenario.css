@@ -212,3 +212,17 @@ body.horse-arrival-pending #horseArrivalDecision [data-horse-parking]{display:fl
     z-index:75!important;
   }
 }
+
+
+/* Dock next-action suggestions in the right field, clear of center domain controls */
+@media(min-width:980px){
+  body.desktop-scenario-layout .clinical-next-actions{
+    left:auto!important;
+    right:12px!important;
+    bottom:16px!important;
+    transform:none!important;
+    width:min(420px,calc(34vw - 20px))!important;
+    max-height:calc(100vh - 32px)!important;
+    overflow:auto!important;
+  }
+}
