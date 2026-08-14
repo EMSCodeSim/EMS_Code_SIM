@@ -94,13 +94,14 @@ test('skin comparison, complete assessment tools, and assessment return paths re
   expect(await page.locator('#assessmentTools button, #assessmentTools a').count()).toBeGreaterThanOrEqual(8);
 
   await page.goto('/vitals/airway-assessment.html?mode=scenario&resume=1&case=stroke');
-  await expect(page.locator('#practicePanel')).toBeVisible();
-  await expect(page.locator('#findingBox')).toBeVisible();
-  await page.evaluate(() => {
-    const input = document.querySelector('input[name="normality"][value="normal"]');
-    input.checked = true;
-    input.dispatchEvent(new Event('change', { bubbles: true }));
-  });
+  await expect(page).toHaveURL(/visual-airway-assessment\.html/);
+  await expect(page.locator('#airwayObservation')).toBeVisible();
+  await expect(page.locator('#result')).toBeVisible();
+  for (const action of ['speak','look','listen','protect']) {
+    await page.locator(`[data-a="${action}"]`).click();
+  }
+  await page.locator('.va-interpret-option[data-value="patent"]').click();
+  await page.locator('.va-interpret-save').click();
   await expect(page).toHaveURL(/visual-patient\.html\?case=stroke/);
   await expect(page.locator('#patientImage')).toBeVisible();
   await assertNoPageErrors();
@@ -109,15 +110,12 @@ test('skin comparison, complete assessment tools, and assessment return paths re
 test('abnormal airway decision records care and returns to the patient', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
   await page.goto('/vitals/airway-assessment.html?mode=scenario&resume=1&case=stroke');
-  await expect(page.locator('#practicePanel')).toBeVisible();
-  await expect(page.locator('#findingBox')).toBeVisible();
-
-  await page.locator('input[name="normality"][value="abnormal"]').check();
-  await expect(page.locator('#problemSelect')).toBeVisible();
-  await expect(page.locator('#actionSelect')).toBeVisible();
-  await page.locator('#problemSelect').selectOption('soft-tissue');
-  await page.locator('#actionSelect').selectOption('position');
-  await page.locator('.scenario-assessment-actions .continue-patient').click();
+  await expect(page).toHaveURL(/visual-airway-assessment\.html/);
+  for (const action of ['speak','look','listen','protect']) {
+    await page.locator(`[data-a="${action}"]`).click();
+  }
+  await page.locator('.va-interpret-option[data-value="threatened"]').click();
+  await page.locator('.va-interpret-save').click();
 
   await expect(page).toHaveURL(/visual-patient\.html\?case=stroke/);
   const saved = await page.evaluate(() => window.EMSCodeSimPatientRecord.active());
