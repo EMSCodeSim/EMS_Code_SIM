@@ -28,9 +28,9 @@ test('desktop center interaction column owns patient communication while right w
 
   // Current desktop architecture:
   // - Dispatch, scene crew, and observed findings share the large center communication surface.
-  // - Patient speech plus SAMPLE/assessment follow-up interaction lives inside
+  // - Patient speech plus History/Treatment interaction lives inside
   //   patientCommunicationStage in the center middle.
-  // - The follow-up box may be hidden while idle; visibility is driven by an active question.
+  // - Primary/ABC findings and follow-up questions remain in the right clinical workspace.
   // - The four clinical controls remain in one horizontal row fixed at the bottom.
   // - The patient photo remains clear of both information surfaces.
   await expect.poll(() => page.evaluate(() => {
@@ -45,8 +45,9 @@ test('desktop center interaction column owns patient communication while right w
     return Boolean(
       column && railNode && update && stage && question && layout && controls && patient &&
       column.parentElement === layout && column.nextElementSibling === controls &&
-      railNode.parentElement === column && update.parentElement === column &&
-      stage.parentElement === column && question.parentElement === stage &&
+      railNode.parentElement === column && stage.parentElement === column &&
+      update.parentElement === controls && question.parentElement === controls &&
+      update.nextElementSibling === question &&
       !patient.contains(update) && !patient.contains(stage)
     );
   })).toBe(true);
