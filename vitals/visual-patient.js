@@ -2954,7 +2954,7 @@
     const collapsed = $('infoUpdateWindow').dataset.collapsed === 'true';
     const voiceRole = infoVoiceRole(item);
     const presentation = infoPresentation(item);
-    $('infoUpdateWindow').className = `info-update-window info-${item.kind || 'assessment'} info-source-${presentation.key} voice-${voiceRole}${collapsed ? ' is-collapsed' : ''}`;
+    $('infoUpdateWindow').className = `info-update-window communication-workspace info-${item.kind || 'assessment'} info-source-${presentation.key} voice-${voiceRole}${collapsed ? ' is-collapsed' : ''}`;
     const sourceIcon = $('infoUpdateIcon');
     if (sourceIcon) {
       sourceIcon.textContent = presentation.icon;
