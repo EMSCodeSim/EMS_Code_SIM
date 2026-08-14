@@ -107,7 +107,7 @@ test('skin comparison, complete assessment tools, and assessment return paths re
   await assertNoPageErrors();
 });
 
-test('abnormal airway decision records care and returns to the patient', async ({ page }) => {
+test('abnormal airway decision records the finding and returns to the patient', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
   await page.goto('/vitals/airway-assessment.html?mode=scenario&resume=1&case=stroke');
   await expect(page).toHaveURL(/visual-airway-assessment\.html/);
@@ -120,7 +120,7 @@ test('abnormal airway decision records care and returns to the patient', async (
   await expect(page).toHaveURL(/visual-patient\.html\?case=stroke/);
   const saved = await page.evaluate(() => window.EMSCodeSimPatientRecord.active());
   expect(saved?.findings?.airway).toBeTruthy();
-  expect((saved?.treatments || []).some(entry => /airway|head-tilt|chin-lift/i.test(`${entry.treatment || ''} ${entry.description || ''}`))).toBe(true);
+  expect((saved?.treatments || []).some(entry => /airway|head-tilt|chin-lift/i.test(`${entry.treatment || ''} ${entry.description || ''}`))).toBe(false);
   await expect(page.locator('#patientImage')).toBeVisible();
   await assertNoPageErrors();
 });
