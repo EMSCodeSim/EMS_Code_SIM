@@ -405,6 +405,72 @@
   }
 }
 
+/* Unified communication surface — UI 2.51
+   The center reads as one continuous panel, not a stack of cards. */
+@media (min-width:980px){
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column::before{
+    content:none!important;
+    display:none!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column{
+    gap:0!important;
+    padding:12px!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column>.info-update-window.cockpit-center-update{
+    flex:0 0 auto!important;
+    min-height:0!important;
+    max-height:34%!important;
+    margin:0!important;
+    padding:2px 2px 12px!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    overflow:auto!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #patientCommunicationStage{
+    flex:1 1 0!important;
+    min-height:0!important;
+    margin:0!important;
+    padding:12px 2px 10px!important;
+    border:0!important;
+    border-top:1px solid rgba(117,174,206,.2)!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    overflow:auto!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #patientCommunicationStage .routed-patient-communication,
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #patientCommunicationStage #patientConversationTurn{
+    margin:0!important;
+    padding:10px 8px!important;
+    border:0!important;
+    border-left:3px solid #397d9c!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #patientCommunicationStage #horseClinicalQuestionBox,
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #patientCommunicationStage #horseAssessmentInlineQuestion{
+    margin:8px 0 0!important;
+    border-radius:10px!important;
+    box-shadow:none!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column>.bottom-nav.clinical-domain-rail{
+    flex:0 0 auto!important;
+    margin:0!important;
+    padding:10px 0 0!important;
+    border-top:1px solid rgba(117,174,206,.2)!important;
+    background:#081a28!important;
+  }
+}
+
 @media (min-width:1200px){
   body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .scenario-hero-layout{
     grid-template-columns:minmax(0,.92fr) minmax(430px,1.12fr) minmax(390px,.96fr)!important;
