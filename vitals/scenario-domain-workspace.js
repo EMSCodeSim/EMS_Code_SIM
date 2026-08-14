@@ -246,6 +246,13 @@
     if (document.body.classList.contains('horse-arrival-pending') || $('horseArrivalDecision')) return;
     const sheet = $('actionSheet');
     const activeId = activePanelId();
+
+    if (document.body.classList.contains('horse-current-emt-call') && !activeId) {
+      if (sheet) sheet.hidden = true;
+      document.body.classList.remove('horse-tool-sheet-open');
+      return;
+    }
+
     if (activeId) {
       if (sheet) sheet.hidden = false;
       updateWorkspaceHeading(activeId);
