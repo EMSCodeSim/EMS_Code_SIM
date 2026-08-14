@@ -29,7 +29,7 @@ vm.runInContext(read('vitals/scenario-interviews.js'), context, { filename:'scen
 const engine = context.window.EMSCodeSimScenarioInterviews;
 assert(engine, 'Scenario interview engine did not initialize.');
 
-const expected = ['asthma','stroke','hypoglycemia','trauma','pediatric'];
+const expected = ['asthma','stroke','hypoglycemia','trauma','pediatric','horse_crush'];
 expected.forEach(id => {
   const profile = engine.get(id);
   assert(profile.responder, `${id}: responder is missing.`);
@@ -45,5 +45,15 @@ expected.forEach(id => {
   const allergy = engine.findQuestion(id, 'Do you have any allergies?');
   assert(allergy?.id === 'allergies', `${id}: custom allergy question does not resolve correctly.`);
 });
+
+const horse = engine.get('horse_crush');
+assert(horse.responder === 'Patient', 'horse_crush: History responses must come from Linda, not the crew.');
+assert(horse.questions.length === 28, 'horse_crush: all 28 History responses must remain available.');
+assert(!/Janet|fictional training|The patient says|Patient and BLS/i.test(JSON.stringify(horse)), 'horse_crush: stale History wording returned.');
+const horseAnswers = Object.fromEntries(horse.questions.map(question => [question.id, question.response]));
+assert(/Linda/.test(horseAnswers.name), 'horse_crush: updated patient name response missing.');
+assert(/Wellbutrin/.test(horseAnswers.medications), 'horse_crush: updated medication response missing.');
+assert(/few hours ago/.test(horseAnswers.last_intake), 'horse_crush: updated last-intake response missing.');
+assert(/squeezed me/.test(horseAnswers.events), 'horse_crush: updated mechanism response missing.');
 
 console.log('Patient interview test passed: History replaces the old transport position, supports focused and custom questions, records local history, and preserves transport inside Treatment.');
