@@ -275,6 +275,7 @@
       ${Array.isArray(turn.choices) && turn.choices.length ? `<div class="patient-conversation-choices">${turn.choices.map((choice,index) => `<button type="button" data-patient-choice="${index}">${choice[0]}</button>`).join('')}</div>` : ''}`;
     speak(turn.text, 'patient');
     logConversation(spontaneous ? 'Patient comment' : 'Patient question', turn.text, spontaneous ? 'patient-small-talk' : 'patient-initiated-question');
+    window.EMSCodeSimCommunicationRouter?.push?.('patient', turn.text);
     if (spontaneous || !turn.choices?.length) {
       window.setTimeout(() => {
         if (host && !host.hidden && activeTurn === turn) { host.hidden = true; host.innerHTML = ''; activeTurn = null; }
@@ -306,6 +307,8 @@
     }
     logConversation('Provider response', provider, 'patient-conversation-choice');
     logConversation('Patient response', patient, 'patient-conversation-response');
+    window.EMSCodeSimCommunicationRouter?.push?.('provider', provider);
+    window.EMSCodeSimCommunicationRouter?.push?.('patient', patient);
     host.classList.add('replying');
     host.innerHTML = `
       <header><span aria-hidden="true">👤</span><strong>Patient responds</strong></header>
