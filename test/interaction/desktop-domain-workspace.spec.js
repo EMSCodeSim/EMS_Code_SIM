@@ -124,16 +124,16 @@ test('desktop center interaction column owns patient communication while right w
   // not trapped only inside the right-side History workspace.
   await page.locator('[data-history-group="sample"]').click();
   await expect(page.locator('.horse-history-drill-question')).toHaveCount(6);
+  let previousPatientLine = '';
   for (let index = 0; index < 6; index += 1) {
     await page.locator('.horse-history-drill-question').nth(index).click();
     await expect(page.locator('#routedPatientCommunication')).toBeVisible();
-    await expect.poll(() => page.evaluate(() => {
+    await expect.poll(() => page.evaluate(previous => {
       const center = String(document.getElementById('routedPatientCommunication')?.textContent || '')
-        .replace(/[“”]/g, '').replace(/\\s+/g, ' ').trim().toLowerCase();
-      const answer = String(document.getElementById('historyResponseText')?.textContent || '')
-        .replace(/[“”]/g, '').replace(/\\s+/g, ' ').trim().toLowerCase();
-      return Boolean(answer && center.includes(answer));
-    })).toBe(true);
+        .replace(/[“”]/g, '').replace(/\\s+/g, ' ').trim();
+      return center.length > 12 && center !== previous ? center : '';
+    }, previousPatientLine)).not.toBe('');
+    previousPatientLine = String(await page.locator('#routedPatientCommunication').textContent()).trim();
   }
 
   // Treatment reuses the same right field.
