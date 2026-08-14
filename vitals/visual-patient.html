@@ -8,7 +8,7 @@
   <link rel="icon" href="/favicon.png">
   <link rel="stylesheet" href="/vitals/visual-patient.css?v=2324">
   <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2200">
-  <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2213">
+  <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2214">
 </head>
 <body>
   <main class="vp-shell">
@@ -104,9 +104,17 @@
       </section>
 
       <aside class="patient-control-column" aria-label="Scenario information and controls">
-        <aside id="infoUpdateWindow" class="info-update-window info-dispatch" aria-live="polite" aria-label="Scenario information updates">
+        <aside id="infoUpdateWindow" class="info-update-window communication-workspace info-dispatch" aria-live="polite" aria-label="Scenario communications">
+          <div class="communication-workspace-head">
+            <div><small>COMMUNICATIONS</small><strong>Scene information</strong></div>
+            <div class="communication-source-key" aria-label="Communication sources">
+              <span><i aria-hidden="true">📟</i>Dispatch</span>
+              <span><i aria-hidden="true">👥</i>On-scene crew</span>
+              <span><i aria-hidden="true">👤</i>Patient</span>
+            </div>
+          </div>
           <div class="info-update-head">
-            <span id="infoUpdateType">DISPATCH</span>
+            <div class="info-update-source"><span id="infoUpdateIcon" class="info-update-source-icon source-dispatch" aria-hidden="true">📟</span><span id="infoUpdateType">DISPATCH</span></div>
             <div class="info-update-head-actions">
               <div class="info-update-voice-controls" role="group" aria-label="Patient update voice controls">
                 <button id="infoUpdateVoiceToggle" class="info-update-voice-button is-on" type="button" aria-pressed="true" aria-label="Turn automatic patient update voice off" title="Turn Auto Voice off"><span aria-hidden="true">🔊</span><span class="info-voice-label">Auto</span></button>
@@ -117,10 +125,15 @@
           </div>
           <strong id="infoUpdateTitle">Dispatch information</strong>
           <p id="infoUpdateText">Review the dispatch and patient picture before beginning care.</p>
+          <div id="infoUpdateQuickReplies" class="info-update-quick-replies" hidden>
+            <small>YOUR RESPONSE</small>
+            <div id="infoUpdateQuickReplyButtons" class="info-update-quick-reply-buttons"></div>
+            <p id="infoUpdateQuickReplyStatus" hidden></p>
+          </div>
           <div class="info-update-controls">
-            <button id="infoUpdatePrevious" type="button" aria-label="Previous information update">‹</button>
+            <button id="infoUpdatePrevious" type="button" aria-label="Previous communication">‹</button>
             <span id="infoUpdateCount">1 of 1</span>
-            <button id="infoUpdateNext" type="button" aria-label="Next information update">›</button>
+            <button id="infoUpdateNext" type="button" aria-label="Next communication">›</button>
           </div>
         </aside>
         <section id="horseClinicalQuestionBox" class="horse-clinical-question-box" aria-live="polite" aria-label="Current clinical follow-up question">
@@ -399,7 +412,7 @@
   <script src="/vitals/scenario-phase-model.js?v=2200"></script>
   <script src="/vitals/horse-crush-bootstrap.js?v=2224"></script>
   <script src="/vitals/horse-crush-scenario.js?v=2220"></script>
-  <script src="/vitals/visual-patient.js?v=2327"></script>
+  <script src="/vitals/visual-patient.js?v=2328"></script>
   <script src="/vitals/scenario-guided-start.js?v=2202"></script>
 </body>
 </html>
