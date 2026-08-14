@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const BUILD = '2026.08.14.8';
+  const BUILD = '2026.08.14.9';
 
   function loadOnce(attribute, src) {
     if (document.querySelector(`script[${attribute}]`)) return;
