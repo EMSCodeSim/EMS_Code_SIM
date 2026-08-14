@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.4';
+  const VERSION = '2026.08.14.5';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';
@@ -293,18 +293,11 @@
 
   // 9: transport/handoff is the natural finish of Treatment.
   function makeTransportNaturalEnd() {
-    const panel = document.getElementById('treatmentPanel');
-    const movement = document.getElementById('horseMovementChoices');
     const actions = document.getElementById('horseTransportHandoffActions');
-    if (!panel || !actions) return;
+    if (!actions) return;
     actions.classList.add('horse-natural-encounter-end');
-    if (movement?.parentElement === panel && actions.previousElementSibling !== movement) movement.insertAdjacentElement('afterend', actions);
-    if (!actions.querySelector('.horse-natural-end-heading')) {
-      const heading = document.createElement('div');
-      heading.className = 'horse-natural-end-heading';
-      heading.innerHTML = '<small>END OF ENCOUNTER</small><strong>Ready to transport?</strong><span>Move into transport when your assessment, treatment, and movement plan are complete.</span>';
-      actions.prepend(heading);
-    }
+    // The endpoint module supplies the single Transport / Handoff heading.
+    actions.querySelector('.horse-natural-end-heading')?.remove();
   }
 
   function hideAssessmentModeHandoffHelp() {
