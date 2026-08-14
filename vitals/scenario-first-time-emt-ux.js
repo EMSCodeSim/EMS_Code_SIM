@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.3';
+  const VERSION = '2026.08.14.4';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';
@@ -68,19 +68,16 @@
   }
 
   function showPatientStatement(text, label = 'Linda') {
-    const host = conversationHost();
-    if (!host) return;
-    host.hidden = false;
-    host.classList.remove('replying');
-    host.innerHTML = `<header><span aria-hidden="true">👤</span><strong>${label}</strong></header><p class="patient-line">“${clean(text).replace(/[“”"]/g, '')}”</p>`;
-    const idle = document.querySelector('#patientCommunicationStage .patient-communication-idle');
-    if (idle) idle.hidden = true;
+    // ABC speech belongs in the unified communication feed. Never replace an
+    // active patient question or its provider-response buttons.
+    window.EMSCodeSimCommunicationRouter?.push?.('patient', clean(text));
     speakPatient(text);
   }
 
   function showPatientChoicePrompt(text, choices) {
     const host = conversationHost();
-    if (!host) return;
+    if (!host) return false;
+    if (host.querySelector('[data-patient-choice]')) return false;
     host.hidden = false;
     host.classList.remove('replying');
     activeFirstTimeChoices = choices;
@@ -91,6 +88,7 @@
         ${choices.map((choice, index) => `<button type="button" data-first-time-choice="${index}">${choice.label}</button>`).join('')}
       </div>`;
     speakPatient(text);
+    return true;
   }
 
   function handleFirstTimeChoiceClick(event) {
@@ -248,7 +246,7 @@
     movementPromptActive = true;
     focusMovementWorkspace(true);
     const supported = treatmentReadyForMovement();
-    showPatientChoicePrompt(
+    const shown = showPatientChoicePrompt(
       'Hold on. Before you move me, tell me what you’re going to do with my leg.',
       [
         {
@@ -274,6 +272,10 @@
         }
       ]
     );
+    if (!shown) {
+      movementPromptActive = false;
+      focusMovementWorkspace(false);
+    }
   }
 
   function interceptMovement(event) {
