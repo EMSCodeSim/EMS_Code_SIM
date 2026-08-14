@@ -430,9 +430,29 @@
     display:none!important;
   }
 
-  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column{
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #clinicalInteractionColumn.clinical-interaction-column{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto minmax(0,1fr) auto!important;
+    align-content:stretch!important;
     gap:0!important;
     padding:12px!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #clinicalInteractionColumn>#infoUpdateWindow{
+    grid-column:1!important;
+    grid-row:1!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #clinicalInteractionColumn>#patientCommunicationStage{
+    grid-column:1!important;
+    grid-row:2!important;
+    height:100%!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #clinicalInteractionColumn>.bottom-nav{
+    grid-column:1!important;
+    grid-row:3!important;
   }
 
   body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #clinicalInteractionColumn>#infoUpdateWindow.info-update-window.cockpit-center-update{
