@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.12.1';
+  const VERSION = '2026.08.14.5';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').trim().toLowerCase();
   const $ = id => document.getElementById(id);
@@ -123,7 +123,8 @@
   function personalAnswer(question) {
     const q = String(question || '').toLowerCase();
     if (/what(?:'s| is) your name|your name/.test(q)) return `Linda. Linda is fine.`;
-    if (/how old|your age|date of birth|birthday/.test(q)) return `I’m ${PROFILE.age}.`;
+    if (/date of birth|birth year|birthday|when.*born|year.*born/.test(q)) return 'I was born in 1962.';
+    if (/how old|your age|approximate age/.test(q)) return `I’m ${PROFILE.age}.`;
     if (/where do you live|home address|your address|live alone/.test(q)) return `I live at ${PROFILE.home} with my husband, ${PROFILE.spouse}.`;
     if (/married|husband|wife|spouse|family/.test(q)) return `I’m married. My husband is ${PROFILE.spouse}, and we have ${PROFILE.family}.`;
     if (/emergency contact|who should we call|call anyone|contact/.test(q)) return `Please call my husband, ${PROFILE.spouse}. He should be nearby.`;
