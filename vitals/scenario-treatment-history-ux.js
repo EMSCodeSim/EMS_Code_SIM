@@ -111,9 +111,14 @@
   }
 
   function handleHistoryClick(event) {
-    const button = event.target.closest?.('.history-question-button');
+    const button = event.target.closest?.('.history-question-button, .horse-history-drill-question, #horseHistoryCustomAsk, #askHistoryCustom');
     if (!button || !horse()) return;
-    const question = historyQuestionText(button);
+    const customInput = button.id === 'horseHistoryCustomAsk'
+      ? document.getElementById('horseHistoryCustomText')
+      : button.id === 'askHistoryCustom'
+        ? document.getElementById('historyCustomInput')
+        : null;
+    const question = String(customInput?.value || historyQuestionText(button)).trim();
     if (!question) return;
     const count = (historyCounts.get(question) || 0) + 1;
     historyCounts.set(question, count);
