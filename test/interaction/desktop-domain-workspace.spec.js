@@ -16,10 +16,8 @@ test('desktop center interaction column owns patient communication while right w
   await expect(page.locator('body')).toHaveClass(/clinical-domain-workspace-v2/);
   await expect(page.locator('body')).toHaveClass(/clinical-interaction-workspace-v4/);
 
-  // Complete the horse arrival gate before using the normal clinical workspace.
-  const parking = page.locator('[data-horse-parking="south_barn_access"]');
-  await expect(parking).toBeVisible();
-  await parking.click();
+  // The retired parking gate must not return; the clinical workspace opens directly.
+  await expect(page.locator('[data-horse-parking]')).toHaveCount(0);
   await expect(page.locator('#horseArrivalDecision')).toHaveCount(0);
 
   const rail = page.locator('.bottom-nav.clinical-domain-rail');
