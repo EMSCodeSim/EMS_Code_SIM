@@ -172,3 +172,30 @@ body.horse-arrival-pending #horseArrivalDecision [data-horse-parking]{display:fl
     box-shadow:0 0 0 1px rgba(79,179,255,.12)!important;
   }
 }
+
+
+/* Communications-first right rail — UI 2.33 */
+.communication-workspace-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:9px;margin-bottom:10px;border-bottom:1px solid #294d64}
+.communication-workspace-head>div:first-child{display:grid;gap:2px}.communication-workspace-head small{color:#8ccfff;font-size:.58rem;font-weight:950;letter-spacing:.11em}.communication-workspace-head strong{color:#fff;font-size:.92rem}
+.communication-source-key{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px}.communication-source-key span{display:inline-flex;align-items:center;gap:4px;padding:4px 6px;border:1px solid #31566d;border-radius:999px;background:#10283a;color:#c6d9e6;font-size:.55rem;font-weight:800}.communication-source-key i{font-style:normal}
+.info-update-source{display:flex;align-items:center;gap:7px}.info-update-source-icon{width:31px;height:31px;display:grid;place-items:center;border-radius:9px;background:#173f5a;font-size:1rem}.info-update-source-icon.source-dispatch{background:#173f5a}.info-update-source-icon.source-partner{background:#334563}.info-update-source-icon.source-patient{background:#2e4a3e}
+.communication-workspace #infoUpdateTitle{display:block;margin-top:12px;font-size:1rem}.communication-workspace #infoUpdateText{display:block;margin:8px 0 0;padding:12px 14px;border-radius:4px 14px 14px 14px;background:#10283a;color:#e8f3f9;font-size:.86rem;line-height:1.5}
+.communication-workspace.info-source-dispatch #infoUpdateText{border-left:4px solid #4fb3ff}.communication-workspace.info-source-partner #infoUpdateText{border-left:4px solid #9da9cf}.communication-workspace.info-source-patient #infoUpdateText{border-left:4px solid #55c990;background:#102d27}
+.info-update-quick-replies{margin-top:10px;padding-top:9px;border-top:1px solid #294d64}.info-update-quick-replies>small{color:#8ccfff;font-size:.56rem;font-weight:950;letter-spacing:.08em}.info-update-quick-reply-buttons{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.info-update-quick-reply{border:1px solid #447490;border-radius:999px;padding:6px 9px;background:#173f5a;color:#fff;font-size:.67rem;font-weight:800;cursor:pointer}.info-update-quick-reply.selected{border-color:#55c990;background:#174936}.info-update-quick-replies>p{margin:7px 0 0!important;color:#9fe1bd!important;font-size:.68rem!important}
+@media(min-width:980px){
+  body.desktop-scenario-layout .patient-control-column,
+  body.horse-current-emt-call.desktop-scenario-layout .patient-control-column{
+    grid-template-rows:minmax(190px,.95fr) auto minmax(0,1.05fr) auto!important;
+    grid-template-areas:"info" "question" "current" "nav"!important;
+  }
+  body.desktop-scenario-layout #infoUpdateWindow{
+    grid-area:info!important;min-height:190px!important;max-height:none!important;height:100%!important;overflow:auto!important;padding:12px 14px!important;
+  }
+  body.desktop-scenario-layout #infoUpdateCollapse{display:none!important}
+  body.desktop-scenario-layout #horseClinicalQuestionBox{grid-area:question!important}
+  body.desktop-scenario-layout #horseCurrentAssessment{grid-area:current!important}
+}
+@media(max-width:700px){
+  .communication-workspace-head{display:grid}.communication-source-key{justify-content:flex-start}.communication-source-key span{font-size:.52rem}
+  .communication-workspace #infoUpdateText{font-size:.8rem}.info-update-quick-reply-buttons{display:grid}.info-update-quick-reply{text-align:left;border-radius:9px}
+}
