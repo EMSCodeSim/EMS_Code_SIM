@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.21';
+  const VERSION = '2026.08.14.22';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -410,7 +410,7 @@
         }));
         box.querySelector('[data-router-abc-choice]')?.focus();
       }, 0);
-    });
+    }, true);
   }
 
   function installStyles() {
