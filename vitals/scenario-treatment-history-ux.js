@@ -76,33 +76,8 @@
     } catch (_) {}
   }
 
-  function naturalHistoryAnswer(question, displayed) {
-    const q = String(question || '').toLowerCase();
-    const base = String(displayed || '').replace(/[“”]/g, '').trim();
-    const profile = window.EMSCodeSimSyntheticPatientProfile || {};
-    const state = window.EMSCodeSimScenarioRuntime?.horseClinicalState?.(record());
-
-    if (/allerg/.test(q)) return 'No, I don’t have any medication allergies that I know of.';
-    if (/medication|medicine|meds/.test(q)) return 'I take Wellbutrin. That’s the only regular prescription I take.';
-    if (/blood thinner|anticoag/.test(q)) return 'No, I don’t take any blood thinners.';
-    if (/what happened|how.*happen|event|mechanism/.test(q)) return 'I was between two horses when they crowded together and squeezed me. Then I fell to the ground.';
-    if (/loss of consciousness|passed out|black.*out|hit your head|head strike/.test(q)) return 'No. I stayed awake the whole time, and I don’t think I hit my head.';
-    if (/where.*hurt|pain|how bad/.test(q)) return `It’s mostly my left hip. It’s about ${state?.painScore || 8} out of ten right now, and moving it makes it much worse.`;
-    if (/numb|tingl|sensation|feel.*foot/.test(q)) return 'No numbness or tingling. I can feel my foot and move my toes.';
-    if (/last.*eat|last.*drink|oral intake/.test(q)) return 'I ate earlier today, a few hours before I came out to feed the horses.';
-    if (/medical history|health problems|past history/.test(q)) return 'Nothing major that I think matters here. I’m usually pretty healthy.';
-    if (/name/.test(q) && profile.firstName) return `${profile.firstName}. You can call me ${profile.firstName}.`;
-    if (/how old|age/.test(q) && profile.age) return `I’m ${profile.age}.`;
-    if (/family|husband|spouse|emergency contact/.test(q) && profile.spouse) return `My husband is ${profile.spouse}. He should be nearby if you need him.`;
-
-    if (/^patient (denies|reports|states|says)/i.test(base)) {
-      return base
-        .replace(/^patient denies\s*/i, 'No, ')
-        .replace(/^patient reports\s*/i, '')
-        .replace(/^patient states\s*/i, '')
-        .replace(/^patient says\s*/i, '');
-    }
-    return base || 'I’m not sure.';
+  function naturalHistoryAnswer(_question, displayed) {
+    return String(displayed || '').replace(/[“”]/g, '').trim() || 'I’m not sure.';
   }
 
   function historyQuestionText(button) {
