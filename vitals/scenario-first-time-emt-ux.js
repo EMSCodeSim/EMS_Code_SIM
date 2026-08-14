@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.12.2';
+  const VERSION = '2026.08.14.3';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';
@@ -12,6 +12,7 @@
   let queued = false;
   let extraTreatmentsShown = false;
   let movementPromptActive = false;
+  let activeFirstTimeChoices = [];
   const abcSpoken = new Set();
 
   function record() {
@@ -82,23 +83,29 @@
     if (!host) return;
     host.hidden = false;
     host.classList.remove('replying');
+    activeFirstTimeChoices = choices;
     host.innerHTML = `
       <header><span aria-hidden="true">👤</span><strong>Linda</strong></header>
       <p class="patient-line">“${clean(text).replace(/[“”"]/g, '')}”</p>
       <div class="patient-conversation-choices">
         ${choices.map((choice, index) => `<button type="button" data-first-time-choice="${index}">${choice.label}</button>`).join('')}
       </div>`;
-    host.querySelectorAll('[data-first-time-choice]').forEach(button => {
-      button.addEventListener('click', () => {
-        const choice = choices[Number(button.dataset.firstTimeChoice)];
-        if (!choice) return;
-        choice.onChoose?.();
-        host.classList.add('replying');
-        host.innerHTML = `<header><span aria-hidden="true">👤</span><strong>Linda</strong></header><p class="patient-line">“${choice.patient.replace(/[“”"]/g, '')}”</p><p class="patient-provider-reply">You: ${choice.label}</p>`;
-        speakPatient(choice.patient);
-      });
-    });
     speakPatient(text);
+  }
+
+  function handleFirstTimeChoiceClick(event) {
+    const button = event.target.closest?.('#patientConversationTurn [data-first-time-choice]');
+    if (!button) return;
+    const choice = activeFirstTimeChoices[Number(button.dataset.firstTimeChoice)];
+    const host = conversationHost();
+    if (!choice || !host) return;
+    event.preventDefault();
+    event.stopPropagation();
+    activeFirstTimeChoices = [];
+    choice.onChoose?.();
+    host.classList.add('replying');
+    host.innerHTML = `<header><span aria-hidden="true">👤</span><strong>Linda</strong></header><p class="patient-line">“${choice.patient.replace(/[“”"]/g, '')}”</p><p class="patient-provider-reply">You: ${choice.label}</p>`;
+    speakPatient(choice.patient);
   }
 
   // 1 + 11: conversation-first center column and stronger visual hierarchy.
@@ -409,6 +416,7 @@
 
   function start() {
     installStyles();
+    document.addEventListener('click', handleFirstTimeChoiceClick, true);
     document.addEventListener('click', event => {
       const assessment = event.target.closest?.('[data-assessment-item]');
       if (assessment) maybeSpeakAbc(assessment);
