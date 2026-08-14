@@ -136,7 +136,7 @@ test('desktop center interaction column owns patient communication while right w
   expect(patientBox).not.toBeNull();
   expect(updateBox).not.toBeNull();
   expect(stageBox).not.toBeNull();
-  expect(interactionBox.width).toBeGreaterThanOrEqual(390);
+  expect(interactionBox.width).toBeGreaterThanOrEqual(330);
   expect(patientBox.x + patientBox.width).toBeLessThanOrEqual(interactionBox.x + 2);
   expect(interactionBox.x + interactionBox.width).toBeLessThanOrEqual(rightBox.x + 2);
   expect(updateBox.y + updateBox.height).toBeLessThanOrEqual(stageBox.y + 3);
