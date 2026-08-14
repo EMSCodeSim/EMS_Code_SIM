@@ -199,3 +199,16 @@ body.horse-arrival-pending #horseArrivalDecision [data-horse-parking]{display:fl
   .communication-workspace-head{display:grid}.communication-source-key{justify-content:flex-start}.communication-source-key span{font-size:.52rem}
   .communication-workspace #infoUpdateText{font-size:.8rem}.info-update-quick-reply-buttons{display:grid}.info-update-quick-reply{text-align:left;border-radius:9px}
 }
+
+
+/* Keep permanent clinical domains clickable above next-action suggestions */
+@media(min-width:980px){
+  body.desktop-scenario-layout .bottom-nav.clinical-domain-rail{
+    position:relative!important;
+    z-index:90!important;
+    isolation:isolate;
+  }
+  body.desktop-scenario-layout .clinical-next-actions{
+    z-index:75!important;
+  }
+}
