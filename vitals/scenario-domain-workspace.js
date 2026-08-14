@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.12.1';
+  const VERSION = '2026.08.14.2';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -86,7 +86,7 @@
       column = document.createElement('section');
       column.id = 'clinicalInteractionColumn';
       column.className = 'clinical-interaction-column';
-      column.setAttribute('aria-label', 'Patient interaction and clinical controls');
+      column.setAttribute('aria-label', 'Unified communication center and clinical controls');
     }
 
     if (column.parentElement !== layout || column.nextElementSibling !== control) {
@@ -109,11 +109,11 @@
     }
 
     nav.classList.add('clinical-domain-rail');
-    nav.setAttribute('aria-label', 'Clinical domains');
+    nav.setAttribute('aria-label', 'Clinical controls');
     nav.querySelector('button[data-panel="historyPanel"]')?.classList.remove('desktop-domain-hidden');
     nav.querySelector('button[data-panel="findingsPanel"]')?.classList.add('desktop-domain-hidden');
     if (nav.parentElement !== column) column.appendChild(nav);
-    setInteractionOrder(nav, 1);
+    setInteractionOrder(nav, 99);
 
     const question = $('horseClinicalQuestionBox');
     if (question) {
