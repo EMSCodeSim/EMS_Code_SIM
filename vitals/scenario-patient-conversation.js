@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.4';
+  const VERSION = '2026.08.14.5';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').trim().toLowerCase();
   const api = window.EMSCodeSimPatientRecord;
@@ -267,6 +267,19 @@
     activeTurn = turn;
     turnSequence += 1;
     lastPatientTurnAt = Date.now();
+    if (Array.isArray(turn.choices) && turn.choices.length && window.EMSCodeSimCommunicationRouter?.ask?.(
+      'patient',
+      turn.text,
+      turn.choices.map((choice,index) => ({ label:choice[0], value:index })),
+      value => chooseResponse(Number(value)),
+      { label:'Patient asks' }
+    )) {
+      host.hidden = true;
+      host.innerHTML = '';
+      speak(turn.text, 'patient');
+      logConversation('Patient question', turn.text, 'patient-initiated-question');
+      return;
+    }
     host.hidden = false;
     host.classList.remove('replying');
     host.innerHTML = `
