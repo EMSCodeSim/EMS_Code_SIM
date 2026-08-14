@@ -241,6 +241,23 @@
     scrollbar-gutter:stable!important;
   }
 
+  /* Arrival/parking is retired. Do not reserve center-column space for its old workflow. */
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column .patient-entry-workflow{
+    display:none!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #patientCommunicationStage{
+    flex:1 1 0!important;
+    min-height:0!important;
+    height:auto!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #patientConversationTurn,
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #patientConversationTurn .patient-conversation-choices,
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #patientConversationTurn .patient-conversation-choices button{
+    pointer-events:auto!important;
+  }
+
   body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column .patient-phase-controls,
   body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column .scene-guide-photo{
     position:static!important;
