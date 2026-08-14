@@ -1598,11 +1598,6 @@
     host.querySelector('[data-history-custom]')?.addEventListener('click', renderHorseCustomHistoryWorkspace);
     renderKnownHistory();
 
-    const questionBox = $('horseClinicalQuestionBox');
-    if (questionBox) {
-      questionBox.classList.remove('active','history-active');
-      questionBox.innerHTML = `<div class="horse-question-placeholder"><small>PATIENT INTERVIEW</small><strong>History questions now open directly in the center workspace.</strong></div>`;
-    }
   }
 
   function buildHistory() {
