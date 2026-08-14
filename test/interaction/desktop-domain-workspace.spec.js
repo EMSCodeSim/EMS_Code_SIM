@@ -120,6 +120,22 @@ test('desktop center interaction column owns patient communication while right w
   await expect(page.locator('#historyPanel')).toBeVisible();
   await expect(page.locator('#historyCategoryList')).toBeVisible();
 
+  // Every SAMPLE answer is patient communication: it must be visible in the center,
+  // not trapped only inside the right-side History workspace.
+  await page.locator('[data-history-group="sample"]').click();
+  await expect(page.locator('.horse-history-drill-question')).toHaveCount(6);
+  for (let index = 0; index < 6; index += 1) {
+    await page.locator('.horse-history-drill-question').nth(index).click();
+    await expect(page.locator('#routedPatientCommunication')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => {
+      const center = String(document.getElementById('routedPatientCommunication')?.textContent || '')
+        .replace(/[“”]/g, '').replace(/\\s+/g, ' ').trim().toLowerCase();
+      const answer = String(document.getElementById('historyResponseText')?.textContent || '')
+        .replace(/[“”]/g, '').replace(/\\s+/g, ' ').trim().toLowerCase();
+      return Boolean(answer && center.includes(answer));
+    })).toBe(true);
+  }
+
   // Treatment reuses the same right field.
   await rail.locator('button[data-panel="treatmentPanel"]').click();
   await expect(page.locator('#treatmentPanel')).toBeVisible();
