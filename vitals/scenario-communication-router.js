@@ -348,7 +348,7 @@
     }, { once:true });
   }
 
-  window.EMSCodeSimCommunicationRouter = Object.freeze({ version:VERSION, reconcile:scheduleReconcile, patientInfo, partnerInfo, vitalInfo });
+  window.EMSCodeSimCommunicationRouter = Object.freeze({ version:VERSION, reconcile:scheduleReconcile, push:(source,text) => pushTimeline(source,text), patientInfo, partnerInfo, vitalInfo });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
   else start();
 })();
