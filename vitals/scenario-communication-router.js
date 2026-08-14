@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.20';
+  const VERSION = '2026.08.14.21';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -337,6 +337,82 @@
     requestAnimationFrame(reconcile);
   }
 
+  function installDesktopAbcFallback() {
+    if (document.body.dataset.abcButtonFallback === VERSION) return;
+    document.body.dataset.abcButtonFallback = VERSION;
+    const definitions = {
+      airway: [
+        ['Airway patent; no obstruction','Airway patent; no obstruction','normal'],
+        ['Airway not patent or obstruction present','Airway not patent or obstruction present','not-normal'],
+        ['Not enough information at this time','Not enough information at this time','uncertain']
+      ],
+      breathing: [
+        ['Breathing adequate','Breathing adequate','normal'],
+        ['Breathing inadequate','Breathing inadequate','not-normal'],
+        ['Not enough information at this time','Not enough information at this time','uncertain']
+      ],
+      perfusion: [
+        ['Perfusion adequate; no major bleeding','Perfusion adequate; no major bleeding','normal'],
+        ['Poor perfusion or major bleeding','Poor perfusion or major bleeding is present','not-normal'],
+        ['Not enough information at this time','Not enough information at this time','uncertain']
+      ]
+    };
+    const labels = { airway:'Airway', breathing:'Breathing', perfusion:'Circulation / perfusion' };
+    const prompts = {
+      airway:'Based on the new airway information, how would you classify the airway?',
+      breathing:'Based on the new breathing information, how would you classify breathing?',
+      perfusion:'Based on the new circulation information, how would you classify perfusion?'
+    };
+    document.body.addEventListener('click', event => {
+      const trigger = event.target.closest?.('[data-assessment-item]');
+      const key = trigger?.dataset?.assessmentItem;
+      if (!definitions[key] || window.innerWidth < 980) return;
+      window.setTimeout(() => {
+        const box = $('horseClinicalQuestionBox');
+        const rightField = document.querySelector('.patient-control-column');
+        const currentAssessment = $('horseCurrentAssessment');
+        if (!box || !rightField) return;
+        if (box.parentElement !== rightField) {
+          if (currentAssessment?.parentElement === rightField) currentAssessment.insertAdjacentElement('beforebegin', box);
+          else rightField.prepend(box);
+        }
+        box.hidden = false;
+        box.classList.add('active');
+        box.classList.remove('history-active','treatment-active');
+        box.innerHTML = `
+          <div class="horse-question-head"><div><small>FOLLOW-UP QUESTION</small><strong>${labels[key]}</strong></div></div>
+          <p>${prompts[key]}</p>
+          <div class="horse-question-choice-grid" role="group" aria-label="${labels[key]} finding choices">
+            ${definitions[key].map(([value,label,normality], index) => `<button type="button" class="horse-question-choice" data-router-abc-choice="${index}" data-normality="${normality}"><span>○</span><strong>${label}</strong></button>`).join('')}
+          </div>
+          <p class="horse-question-choice-help">Select one finding to record it.</p>`;
+        box.querySelectorAll('[data-router-abc-choice]').forEach(button => button.addEventListener('click', () => {
+          const choice = definitions[key][Number(button.dataset.routerAbcChoice)];
+          if (!choice) return;
+          const [value,,normality] = choice;
+          const payload = {
+            source:'horse-rapid-abc',
+            label:labels[key],
+            finding:value,
+            normality,
+            status:normality === 'normal' ? 'normal' : normality === 'not-normal' ? 'abnormal' : 'uncertain',
+            rapidAssessment:true,
+            reviewAtDebrief:true,
+            suppressInfoUpdate:true
+          };
+          try {
+            if (session?.saveFinding) session.saveFinding(key, value, payload);
+            else api?.setFinding?.(key, value, payload);
+            box.hidden = true;
+            box.classList.remove('active');
+            scheduleReconcile();
+          } catch (_) {}
+        }));
+        box.querySelector('[data-router-abc-choice]')?.focus();
+      }, 0);
+    });
+  }
+
   function installStyles() {
     if (document.querySelector('style[data-communication-router]')) return;
     const style = document.createElement('style');
@@ -368,6 +444,7 @@
 
   function start() {
     installStyles();
+    installDesktopAbcFallback();
     installVitalSpeechRule();
     scheduleReconcile();
     bodyObserver = new MutationObserver(mutations => {
