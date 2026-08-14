@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.33';
+  const VERSION = '2026.08.14.34';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -252,8 +252,7 @@
     if (clinicalQuestion?.classList.contains('active') && clinicalQuestion.querySelector('.horse-question-choice')) {
       clinicalQuestion.hidden = false;
     }
-    const belongsInCommunication = clinicalQuestion?.classList.contains('active')
-      || clinicalQuestion?.classList.contains('history-active')
+    const belongsInCommunication = clinicalQuestion?.classList.contains('history-active')
       || clinicalQuestion?.classList.contains('treatment-active');
     if (clinicalQuestion && belongsInCommunication && clinicalQuestion.parentElement !== stage) {
       stage.appendChild(clinicalQuestion);
@@ -269,11 +268,14 @@
       }
     }
 
+    // ABC and focused-assessment follow-ups belong to the right clinical workspace.
     const assessmentQuestion = $('horseAssessmentInlineQuestion');
-    const assessmentVisible = assessmentQuestion && !assessmentQuestion.hidden && clean(assessmentQuestion.textContent);
-    if (assessmentVisible && assessmentQuestion.parentElement !== stage) stage.appendChild(assessmentQuestion);
+    const assessmentTools = $('assessmentTools');
+    if (assessmentQuestion && assessmentTools && !assessmentTools.contains(assessmentQuestion)) {
+      assessmentTools.appendChild(assessmentQuestion);
+    }
 
-    const active = [patientTurn, belongsInCommunication ? clinicalQuestion : null, assessmentVisible ? assessmentQuestion : null]
+    const active = [patientTurn, belongsInCommunication ? clinicalQuestion : null]
       .some(node => node && !node.hidden && clean(node.textContent));
     const idle = stage.querySelector('.patient-communication-idle');
     if (idle) idle.hidden = active;
