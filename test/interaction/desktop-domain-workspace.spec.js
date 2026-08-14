@@ -54,6 +54,14 @@ test('desktop center interaction column owns patient communication while right w
   await expect(page.locator('#patientCommunicationStage')).toBeVisible();
   await expect(page.locator('#horseClinicalQuestionBox')).toBeHidden();
   await expect(page.locator('.clinical-interaction-column .patient-entry-workflow')).toBeHidden();
+  await expect.poll(() => page.evaluate(() => {
+    const info = getComputedStyle(document.getElementById('infoUpdateWindow'));
+    const patient = getComputedStyle(document.getElementById('patientCommunicationStage'));
+    return info.borderLeftWidth === '0px'
+      && patient.borderLeftWidth === '0px'
+      && info.backgroundColor === 'rgba(0, 0, 0, 0)'
+      && patient.backgroundColor === 'rgba(0, 0, 0, 0)';
+  })).toBe(true);
 
   // A real patient turn must render clickable response buttons in the center,
   // accept a response after the DOM has been reparented/polished, and show Linda's reply.
