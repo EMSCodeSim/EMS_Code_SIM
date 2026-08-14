@@ -246,6 +246,23 @@
     display:none!important;
   }
 
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #clinicalInteractionColumn>#infoUpdateWindow{
+    height:auto!important;
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #clinicalInteractionColumn>#infoUpdateWindow #infoUpdateText{
+    margin:8px 0 0!important;
+    padding:8px 0!important;
+    border:0!important;
+    border-left:3px solid #4fb3ff!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+
   body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #patientCommunicationStage{
     flex:1 1 0!important;
     min-height:0!important;
@@ -418,7 +435,7 @@
     padding:12px!important;
   }
 
-  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column>.info-update-window.cockpit-center-update{
+  body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #clinicalInteractionColumn>#infoUpdateWindow.info-update-window.cockpit-center-update{
     flex:0 0 auto!important;
     min-height:0!important;
     max-height:34%!important;
