@@ -712,6 +712,7 @@
     const questionBox = $('horseClinicalQuestionBox');
     function resetQuestionBox() {
       if (!questionBox) return;
+      questionBox.hidden = true;
       questionBox.classList.remove('active','history-active','treatment-active');
       const activeLabel = horseCurrentAssessment === 'abc' ? 'Select Airway, Breathing, or Circulation.' : 'Perform an exam segment. Any follow-up question will appear here.';
       questionBox.innerHTML = `
@@ -723,6 +724,7 @@
     function openFollowup(key) {
       if (!questionBox) return;
       const current = api?.getFinding?.(key, record());
+      questionBox.hidden = false;
       questionBox.classList.add('active');
       questionBox.innerHTML = `
         <div class="horse-question-head">
