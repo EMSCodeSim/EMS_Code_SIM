@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.25';
+  const VERSION = '2026.08.14.26';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -344,7 +344,7 @@
     style.textContent = `@media(min-width:980px){
       #clinicalInteractionColumn{display:flex!important;flex-direction:column!important;position:relative!important;align-self:stretch!important;min-height:0!important;height:100%!important;overflow:hidden!important}
       #clinicalInteractionColumn>#infoUpdateWindow{display:none!important}
-      #patientCommunicationStage{order:5!important;flex:1 1 0!important;min-height:0!important;height:auto!important;display:flex;flex-direction:column;justify-content:stretch;gap:8px;padding:12px 4px 82px!important;overflow:hidden!important}
+      #patientCommunicationStage{position:absolute!important;inset:0!important;z-index:1!important;order:5!important;min-height:0!important;height:100%!important;display:flex!important;flex-direction:column!important;justify-content:stretch!important;gap:8px!important;padding:12px 4px 82px!important;overflow:hidden!important}
       body.desktop-scenario-layout #clinicalInteractionColumn>.bottom-nav.clinical-domain-rail{position:absolute!important;inset:auto 4px 4px 4px!important;z-index:190!important;order:99!important;margin:0!important;flex:0 0 auto!important;transform:none!important}
       #patientCommunicationStage>.communication-timeline{flex:1 0 64%!important;min-height:64%!important;height:auto!important}
       #patientCommunicationStage #patientConversationTurn,#patientCommunicationStage #horseClinicalQuestionBox{position:relative!important;inset:auto!important;width:100%!important;margin:0!important}
