@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.13.2';
+  const VERSION = '2026.08.14.3';
   const FOCUSED_EXAMS = new Set([
     'head_exam',
     'neck_back',
@@ -204,19 +204,27 @@
     const current = finding(key);
     showObservation(key);
     inline.hidden = false;
-    inline.innerHTML = `<div class="horse-question-head"><div><small>FOLLOW-UP QUESTION</small><strong>${escapeHtml(item.label)}</strong></div></div><p>${escapeHtml(item.prompt)}</p><div class="horse-question-answer-row"><label><span>Your finding</span><select aria-label="${escapeHtml(item.label)} finding"><option value="">Choose your finding</option>${item.choices.map(([value, label, normality]) => `<option value="${escapeHtml(value)}" data-normality="${normality}" ${current && (current.value === value || current.finding === value) ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}</select></label><button type="button" class="horse-question-save" disabled>Record</button></div>`;
-    const select = inline.querySelector('select');
-    const save = inline.querySelector('.horse-question-save');
-    const sync = () => { if (save) save.disabled = !select?.value; };
-    select?.addEventListener('change', sync); sync();
-    save?.addEventListener('click', () => {
-      if (!select?.value) return;
-      const normality = select.selectedOptions[0]?.dataset?.normality || '';
-      const saved = saveAbcFinding(key, select.value, normality);
+    inline.innerHTML = `<div class="horse-question-head"><div><small>FOLLOW-UP QUESTION</small><strong>${escapeHtml(item.label)}</strong></div></div><p>${escapeHtml(item.prompt)}</p><div class="horse-question-choice-grid" role="group" aria-label="${escapeHtml(item.label)} finding choices">${item.choices.map(([value, label, normality], index) => {
+      const selected = current && (current.value === value || current.finding === value);
+      return `<button type="button" class="horse-question-choice${selected ? ' selected' : ''}" data-abc-inline-choice="${index}" data-normality="${normality}"><span>${selected ? '✓' : '○'}</span><strong>${escapeHtml(label)}</strong></button>`;
+    }).join('')}</div><p class="horse-question-choice-help">Select one finding to record it.</p>`;
+    const choices = [...inline.querySelectorAll('[data-abc-inline-choice]')];
+    choices.forEach(choiceButton => choiceButton.addEventListener('click', () => {
+      const choice = item.choices[Number(choiceButton.dataset.abcInlineChoice)];
+      if (!choice) return;
+      const [value,,normality] = choice;
+      const saved = saveAbcFinding(key, value, normality);
       if (!saved) return;
-      markRecorded(button); inline.hidden = true; inline.innerHTML = '';
-    });
-    window.requestAnimationFrame(() => select?.focus());
+      choices.forEach(node => {
+        const selected = node === choiceButton;
+        node.classList.toggle('selected', selected);
+        const marker = node.querySelector('span');
+        if (marker) marker.textContent = selected ? '✓' : '○';
+      });
+      markRecorded(button);
+      window.setTimeout(() => { inline.hidden = true; inline.innerHTML = ''; }, 220);
+    }));
+    window.requestAnimationFrame(() => choices[0]?.focus());
     return true;
   }
 
