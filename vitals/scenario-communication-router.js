@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.18';
+  const VERSION = '2026.08.14.19';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -339,9 +339,10 @@
     const style = document.createElement('style');
     style.dataset.communicationRouter = VERSION;
     style.textContent = `@media(min-width:980px){
-      #clinicalInteractionColumn{display:flex!important;flex-direction:column!important;position:relative!important;min-height:0!important;height:100%!important;overflow:hidden!important}
-      #patientCommunicationStage{order:5!important;flex:1 1 auto;min-height:0!important;height:100%!important;display:flex;flex-direction:column;justify-content:stretch;gap:8px;padding:8px 2px 78px!important;overflow:hidden!important}
-      #clinicalInteractionColumn>.bottom-nav{position:absolute!important;left:2px!important;right:2px!important;bottom:2px!important;z-index:90!important;order:99!important;margin:0!important;flex:0 0 auto!important}
+      #clinicalInteractionColumn{display:flex!important;flex-direction:column!important;position:relative!important;align-self:stretch!important;min-height:0!important;height:100%!important;overflow:hidden!important}
+      #clinicalInteractionColumn>#infoUpdateWindow{display:none!important}
+      #patientCommunicationStage{order:5!important;flex:1 1 0!important;min-height:0!important;height:auto!important;display:flex;flex-direction:column;justify-content:stretch;gap:8px;padding:12px 4px 82px!important;overflow:hidden!important}
+      body.desktop-scenario-layout #clinicalInteractionColumn>.bottom-nav.clinical-domain-rail{position:absolute!important;inset:auto 4px 4px 4px!important;z-index:190!important;order:99!important;margin:0!important;flex:0 0 auto!important;transform:none!important}
       #patientCommunicationStage>.communication-timeline{flex:1 1 auto!important;min-height:0!important}
       #patientCommunicationStage #patientConversationTurn,#patientCommunicationStage #horseClinicalQuestionBox{position:relative!important;inset:auto!important;width:100%!important;margin:0!important}
       .patient-communication-idle{margin:auto;text-align:center;opacity:.58;max-width:260px}.patient-communication-idle[hidden]{display:none!important}.patient-communication-idle small{font-size:.64rem;font-weight:900;letter-spacing:.09em}.patient-communication-idle p{margin:5px 0 0;font-size:.75rem;line-height:1.35}
@@ -352,6 +353,11 @@
       .communication-timeline-list{min-height:0;overflow:auto;display:grid;align-content:start;gap:3px;padding-right:3px}.communication-entry{padding:7px 6px 7px 9px;border-left:3px solid #547b90}.communication-entry.source-dispatch{border-left-color:#4fb3ff}.communication-entry.source-crew{border-left-color:#9da9cf}.communication-entry.source-patient{border-left-color:#55c990}.communication-entry.source-critical{border-left-color:#ff6b61}.communication-entry header{display:flex;align-items:center;gap:5px}.communication-entry header strong{font-size:.62rem;text-transform:uppercase;letter-spacing:.06em}.communication-entry time{margin-left:auto;font-size:.56rem;color:#7897a7}.communication-entry p{margin:3px 0 0;color:#e8f3f9;font-size:.75rem;line-height:1.34}.communication-empty{margin:auto;text-align:center;color:#7694a3;font-size:.7rem}
       #patientCommunicationStage #patientConversationTurn:not([hidden]),#patientCommunicationStage #horseClinicalQuestionBox:not([hidden]){flex:0 0 auto;position:sticky!important;bottom:0!important;z-index:8;background:#0b2231!important;box-shadow:0 -8px 20px rgba(3,13,20,.32)!important}
       #clinicalInteractionColumn.communication-has-new{box-shadow:0 0 0 2px rgba(103,194,245,.55),0 12px 30px rgba(0,0,0,.18)!important}
+      .horse-question-choice-grid{display:grid!important;grid-template-columns:1fr!important;gap:9px!important;margin-top:12px!important}
+      .horse-question-choice{width:100%!important;min-height:52px!important;display:grid!important;grid-template-columns:24px 1fr!important;align-items:center!important;gap:9px!important;padding:11px 13px!important;border:1px solid #315f76!important;border-radius:10px!important;background:#0b2636!important;color:#f4fbff!important;text-align:left!important;cursor:pointer!important}
+      .horse-question-choice:hover,.horse-question-choice:focus-visible{border-color:#68c9f5!important;background:#10364a!important;outline:2px solid rgba(104,201,245,.25)!important}
+      .horse-question-choice.selected{border-color:#55c990!important;background:#103b34!important}
+      .horse-question-choice span{color:#68c9f5;font-weight:900}.horse-question-choice strong{font-size:.82rem;line-height:1.25}.horse-question-choice-help{margin:9px 0 0!important;color:#8faeba!important;font-size:.68rem!important}
     }`;
     document.head.appendChild(style);
   }
