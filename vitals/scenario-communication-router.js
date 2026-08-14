@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.19';
+  const VERSION = '2026.08.14.20';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -211,6 +211,9 @@
     if (patientTurn && patientTurn.parentElement !== stage) stage.appendChild(patientTurn);
 
     const clinicalQuestion = $('horseClinicalQuestionBox');
+    if (clinicalQuestion?.classList.contains('active') && clinicalQuestion.querySelector('.horse-question-choice')) {
+      clinicalQuestion.hidden = false;
+    }
     const belongsInCommunication = clinicalQuestion?.classList.contains('history-active')
       || clinicalQuestion?.classList.contains('treatment-active');
     if (clinicalQuestion && belongsInCommunication && clinicalQuestion.parentElement !== stage) {
@@ -356,6 +359,7 @@
       .horse-question-choice-grid{display:grid!important;grid-template-columns:1fr!important;gap:9px!important;margin-top:12px!important}
       .horse-question-choice{width:100%!important;min-height:52px!important;display:grid!important;grid-template-columns:24px 1fr!important;align-items:center!important;gap:9px!important;padding:11px 13px!important;border:1px solid #315f76!important;border-radius:10px!important;background:#0b2636!important;color:#f4fbff!important;text-align:left!important;cursor:pointer!important}
       .horse-question-choice:hover,.horse-question-choice:focus-visible{border-color:#68c9f5!important;background:#10364a!important;outline:2px solid rgba(104,201,245,.25)!important}
+      #horseClinicalQuestionBox.active[hidden]:has(.horse-question-choice){display:block!important}
       .horse-question-choice.selected{border-color:#55c990!important;background:#103b34!important}
       .horse-question-choice span{color:#68c9f5;font-weight:900}.horse-question-choice strong{font-size:.82rem;line-height:1.25}.horse-question-choice-help{margin:9px 0 0!important;color:#8faeba!important;font-size:.68rem!important}
     }`;
