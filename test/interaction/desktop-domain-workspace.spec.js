@@ -27,11 +27,11 @@ test('desktop center interaction column owns patient communication while right w
   await expect(rail).toBeVisible();
 
   // Current desktop architecture:
-  // - Scene / Crew Update is the non-patient information surface in the center column.
+  // - Dispatch, scene crew, and observed findings share the large center communication surface.
   // - Patient speech plus SAMPLE/assessment follow-up interaction lives inside
   //   patientCommunicationStage in the center middle.
   // - The follow-up box may be hidden while idle; visibility is driven by an active question.
-  // - The four clinical-domain controls remain fixed at the bottom.
+  // - The four clinical controls remain in one horizontal row fixed at the bottom.
   // - The patient photo remains clear of both information surfaces.
   await expect.poll(() => page.evaluate(() => {
     const column = document.getElementById('clinicalInteractionColumn');
@@ -136,10 +136,21 @@ test('desktop center interaction column owns patient communication while right w
   expect(patientBox).not.toBeNull();
   expect(updateBox).not.toBeNull();
   expect(stageBox).not.toBeNull();
-  expect(interactionBox.width).toBeGreaterThanOrEqual(270);
+  expect(interactionBox.width).toBeGreaterThanOrEqual(390);
   expect(patientBox.x + patientBox.width).toBeLessThanOrEqual(interactionBox.x + 2);
   expect(interactionBox.x + interactionBox.width).toBeLessThanOrEqual(rightBox.x + 2);
   expect(updateBox.y + updateBox.height).toBeLessThanOrEqual(stageBox.y + 3);
+
+  const controlBoxes = await rail.locator('button[data-panel]:visible').evaluateAll(buttons => buttons.map(button => {
+    const box = button.getBoundingClientRect();
+    return { x:box.x, y:box.y, width:box.width, height:box.height };
+  }));
+  expect(controlBoxes).toHaveLength(4);
+  expect(Math.max(...controlBoxes.map(box => box.y)) - Math.min(...controlBoxes.map(box => box.y))).toBeLessThanOrEqual(2);
+  expect(controlBoxes.every(box => box.width >= 70 && box.height >= 50)).toBe(true);
+  const railBox = await rail.boundingBox();
+  expect(railBox).not.toBeNull();
+  expect(railBox.y).toBeGreaterThanOrEqual(stageBox.y + stageBox.height - 3);
 
   await assertNoPageErrors();
 });
