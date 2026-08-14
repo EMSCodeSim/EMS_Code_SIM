@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.13.1';
+  const VERSION = '2026.08.13.3';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   if (requested !== 'horse_crush') return;
@@ -11,7 +11,9 @@
   const session = window.EMSCodeSimScenarioSession;
   const runtime = window.EMSCodeSimScenarioRuntime;
   let observer = null;
+  let openingObserver = null;
   let queued = false;
+  let heldOpeningTurn = false;
 
   function record() {
     try { return session?.sync?.() || api?.active?.() || null; }
@@ -20,6 +22,38 @@
 
   function clamp(value) {
     return Math.max(0, Math.min(100, Math.round(Number(value) || 0)));
+  }
+
+  function arrivalPending() {
+    return document.body.classList.contains('horse-arrival-pending') || Boolean($('horseArrivalDecision'));
+  }
+
+  function engineHandoffVisible() {
+    const type = String($('infoUpdateType')?.textContent || '').trim().toUpperCase();
+    return type.includes('BLS ENGINE HANDOFF');
+  }
+
+  function enforceOpeningOrder() {
+    const host = $('patientConversationTurn');
+    if (!host) return;
+    const patientMayTalk = !arrivalPending() && engineHandoffVisible();
+    if (!patientMayTalk) {
+      if (!host.hidden && String(host.textContent || '').trim()) {
+        heldOpeningTurn = true;
+        host.hidden = true;
+        try { window.speechSynthesis?.cancel?.(); } catch (_) {}
+      }
+      return;
+    }
+    if (heldOpeningTurn && String(host.textContent || '').trim()) {
+      heldOpeningTurn = false;
+      window.setTimeout(() => {
+        if (!host.isConnected || arrivalPending() || !engineHandoffVisible()) return;
+        host.hidden = false;
+        const line = String(host.querySelector('.patient-line')?.textContent || '').replace(/[“”]/g, '').trim();
+        if (line) window.EMSCodeSimPatientConversation?.speakPatient?.(line);
+      }, 900);
+    }
   }
 
   function comfortScore() {
@@ -42,9 +76,6 @@
     const angerScore = clamp(100 - (anger.anger ?? 8));
     const comfort = comfortScore();
 
-    // Satisfaction is deliberately patient-experience based. Clinical actions only
-    // matter here when they change what the patient experiences (pain, delay,
-    // explanation, trust, cooperation), not because they match a checklist.
     const score = clamp((communicationScore * .55) + (angerScore * .25) + (comfort * .20));
 
     let label = 'Patient left dissatisfied';
@@ -173,6 +204,9 @@
 
   function start() {
     installStyles();
+    openingObserver = new MutationObserver(enforceOpeningOrder);
+    openingObserver.observe(document.body, { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:['hidden','class'] });
+    enforceOpeningOrder();
     observer = new MutationObserver(schedule);
     observer.observe(document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['hidden'] });
     document.addEventListener('click', event => {
@@ -181,7 +215,7 @@
     window.addEventListener('emscodesim:scenario-updated', schedule);
     window.EMSCodeSimPatientSatisfactionGrade = Object.freeze({ version:VERSION, model:satisfactionModel });
     schedule();
-    window.addEventListener('pagehide', () => observer?.disconnect(), { once:true });
+    window.addEventListener('pagehide', () => { observer?.disconnect(); openingObserver?.disconnect(); }, { once:true });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
