@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const BUILD = '2026.08.13.8';
+  const BUILD = '2026.08.14.1';
 
   function loadOnce(attribute, src) {
     if (document.querySelector(`script[${attribute}]`)) return;
@@ -10,7 +10,21 @@
     script.src = `${src}?v=${encodeURIComponent(BUILD)}`;
     script.async = false;
     script.setAttribute(attribute, '1');
+    script.addEventListener('error', () => showLoadError('A scenario support file could not be loaded. Check your connection and try again.'));
     document.head.appendChild(script);
+  }
+
+  function showLoadError(message) {
+    if (document.getElementById('scenarioLoadRecovery')) return;
+    const panel = document.createElement('section');
+    panel.id = 'scenarioLoadRecovery';
+    panel.className = 'scenario-load-recovery';
+    panel.setAttribute('role', 'alert');
+    panel.innerHTML = `
+      <div><strong>Scenario could not finish loading</strong><p>${message}</p></div>
+      <div><button type="button" data-retry-scenario>Retry</button><a href="/vitals/scenario-launcher.html">Choose another scenario</a></div>`;
+    panel.querySelector('[data-retry-scenario]')?.addEventListener('click', () => location.reload());
+    document.body.prepend(panel);
   }
 
   function installDesktopLayoutGuard() {
@@ -88,5 +102,8 @@
   const validationErrors = defs?.validate?.()?.filter(error => String(error).startsWith(`${CASE_ID}:`)) || [];
   const ok = missing.length === 0 && validationErrors.length === 0;
   window.EMSCodeSimScenarioBootstrapStatus = Object.freeze({caseId:CASE_ID,build:BUILD,ok,missing:Object.freeze([...missing]),validationErrors:Object.freeze([...validationErrors])});
-  if (!ok) console.error('[EMSCodeSim] Horse-crush scenario definition contract failed.', {missing,validationErrors,build:BUILD});
+  if (!ok) {
+    console.error('[EMSCodeSim] Horse-crush scenario definition contract failed.', {missing,validationErrors,build:BUILD});
+    showLoadError('Required scenario information is unavailable. Your saved progress has not been erased.');
+  }
 })();
