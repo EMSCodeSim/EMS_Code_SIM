@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const BUILD = '2026.08.14.34';
+  const BUILD = '2026.08.14.35';
 
   function loadOnce(attribute, src) {
     if (document.querySelector(`script[${attribute}]`)) return;
@@ -93,9 +93,6 @@
   loadOnce('data-condition-alert-priority', '/vitals/scenario-condition-alert-priority.js');
   loadOnce('data-horse-crush-ui-fix', '/vitals/horse-crush-ui-fix.js?v=2026.08.14.5');
   loadOnce('data-horse-photo-layer-fix', '/vitals/horse-photo-layer-fix.js');
-  // Load the current router explicitly; the legacy enhancement loader uses a pinned cache key.
-  loadOnce('data-communication-router-current', '/vitals/scenario-communication-router.js?v=2026.08.14.32');
-
   const defs = window.EMSCodeSimScenarioDefinitions;
   const requiredGroups = ['CATALOG','PROFILES','PHASE_PLANS','PATIENT_CASES','CONDITION_STAGES','TREATMENT_PLANS'];
   const missing = [];
