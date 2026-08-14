@@ -662,12 +662,18 @@
 
   function launchPrimaryPhotoGuide(review = false) {
     closeSheet();
+    const guide = document.getElementById('sceneGuide');
+    const rightRail = document.querySelector('.patient-control-column');
+    const rightWorkflow = rightRail?.querySelector('.patient-entry-workflow');
+    if (guide && rightWorkflow && guide.parentElement !== rightWorkflow) {
+      rightWorkflow.appendChild(guide);
+    }
+    rightRail?.classList.add('abc-workspace-active');
     window.requestAnimationFrame(() => {
       const opened = window.EMSCodeSimSceneGuide?.startPrimary?.(review);
       if (opened === false || !window.EMSCodeSimSceneGuide?.startPrimary) {
-        const guide = document.getElementById('sceneGuide');
-        if (guide) { guide.hidden = false; guide.scrollIntoView({ behavior:'smooth', block:'center' }); }
-        toast('Initial ABC assessment opened. Refresh the page if the questions do not appear.');
+        if (guide) { guide.hidden = false; guide.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+        toast('Initial ABC assessment opened in the right assessment screen.');
       }
     });
   }
@@ -973,7 +979,7 @@
     const launch = document.createElement('button');
     launch.type = 'button';
     launch.className = 'primary-photo-launch';
-    launch.textContent = completed === 3 ? 'Review initial ABC over patient photo' : completed > 0 ? 'Continue initial ABC over patient photo' : 'Begin initial ABC over patient photo';
+    launch.textContent = completed === 3 ? 'Review initial ABC in right assessment screen' : completed > 0 ? 'Continue initial ABC in right assessment screen' : 'Begin initial ABC in right assessment screen';
     launch.addEventListener('click', event => {
       event.preventDefault();
       launchPrimaryPhotoGuide(completed === 3);
