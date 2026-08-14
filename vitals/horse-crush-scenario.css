@@ -139,3 +139,36 @@ body.horse-arrival-pending #horseArrivalDecision{display:block!important;width:1
 body.horse-arrival-pending #horseArrivalDecision .horse-parking-options{grid-template-columns:1fr!important;gap:10px!important}
 body.horse-arrival-pending #horseArrivalDecision [data-horse-parking]{display:flex!important;width:100%!important;min-height:64px!important;padding:12px 14px!important;pointer-events:auto!important;touch-action:manipulation!important;cursor:pointer!important}
 @media(max-width:979px){body.horse-arrival-pending #horseArrivalDecision{padding:14px!important}body.horse-arrival-pending #horseArrivalDecision [data-horse-parking]{min-height:58px!important}}
+
+
+/* ABC desktop placement — keep the patient photo clear and use the right clinical screen */
+@media (min-width:980px){
+  body.desktop-scenario-layout #sceneGuide{
+    position:static!important;
+    inset:auto!important;
+    left:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    width:100%!important;
+    max-width:none!important;
+    max-height:100%!important;
+    margin:0!important;
+    grid-area:workspace!important;
+    overflow:auto!important;
+    transform:none!important;
+    box-shadow:none!important;
+  }
+  body.desktop-scenario-layout .patient-stage #sceneGuide{
+    display:none!important;
+  }
+  body.desktop-scenario-layout .patient-control-column.abc-workspace-active #sceneGuide:not([hidden]){
+    display:block!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #horseCurrentAssessment{
+    grid-area:current!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #horseCurrentAssessment[data-active-assessment="abc"]{
+    border-color:#4b91ba!important;
+    box-shadow:0 0 0 1px rgba(79,179,255,.12)!important;
+  }
+}
