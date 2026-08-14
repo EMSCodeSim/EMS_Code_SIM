@@ -1091,6 +1091,24 @@
         const item = category.items.find(row => row.id === button.dataset.assessmentItem);
         if (!item) return;
         horseAssessmentActiveItem = item.id;
+        if (['airway','breathing','perfusion'].includes(item.id) && horseWorkspaceContext?.openFollowup) {
+          const abcLabel = horseWorkspaceContext.labels?.[item.id] || item.label;
+          const observation = horseWorkspaceContext.observations?.[item.id] || '';
+          sceneObservationUpdate = {
+            id:'horse-abc-active',
+            type:'NEW ASSESSMENT INFORMATION',
+            title:`${abcLabel} assessment`,
+            text:observation,
+            kind:'assessment',
+            sticky:true,
+            recordedAt:new Date().toISOString()
+          };
+          infoManuallyCollapsed = false;
+          lastInfoSignature = '';
+          renderInfoUpdate(true);
+          horseWorkspaceContext.openFollowup(item.id);
+          return;
+        }
         // Reuse existing assessment selection path if available.
         const existing = document.querySelector(`[data-assessment-key="${CSS.escape(item.id)}"], [data-assessment="${CSS.escape(item.id)}"]`);
         if (existing && existing !== button) {
