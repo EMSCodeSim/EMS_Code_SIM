@@ -23,7 +23,9 @@ test('picture-first launcher opens the public horse scenario in Assessment Mode'
   await page.locator('[data-start-mode="assessment"]').click();
   await expect(page).toHaveURL(/visual-patient\.html\?case=horse_crush&training=assessment/);
   await expect(page.locator('#patientImage')).toBeVisible();
-  await expect(page.locator('#clinicalReasoningBoard')).toBeVisible();
+  await page.getByRole('button', { name: /Assessment/ }).click();
+  await expect(page.getByRole('dialog', { name: 'Assessment' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /ABC Primary \/ ABC/ })).toBeVisible();
   await assertNoPageErrors();
 });
 
