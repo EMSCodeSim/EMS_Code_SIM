@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.34';
+  const VERSION = '2026.08.15.4';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -46,12 +46,11 @@
 
   function patientInfo(snapshot = infoSnapshot()) {
     const type = `${snapshot.type} ${snapshot.title}`.toUpperCase();
-    return /PATIENT|HISTORY ANSWER|PATIENT RESPONSE|PATIENT QUESTION|SAMPLE ANSWER|OPQRST ANSWER/.test(type)
-      || /^[“"]/u.test(snapshot.text);
+    return /PATIENT|HISTORY ANSWER|PATIENT RESPONSE|PATIENT QUESTION|SAMPLE ANSWER|OPQRST ANSWER/.test(type);
   }
 
   function partnerInfo(snapshot = infoSnapshot()) {
-    return /PARTNER|CREW MEMBER|ASSIGNED/i.test(`${snapshot.type} ${snapshot.title} ${snapshot.text}`);
+    return /PARTNER|CREW MEMBER|ASSIGNED|BLS ENGINE|FIRST[- ]ON[- ]SCENE|CREW HANDOFF/i.test(`${snapshot.type} ${snapshot.title} ${snapshot.text}`);
   }
 
   function vitalInfo(snapshot = infoSnapshot()) {
@@ -188,6 +187,11 @@
     lastTimelineSignature = signature;
     lastTimelineAt = now;
     const messages = timelineMessages();
+    const persistentSource = source === 'dispatch' || source === 'crew';
+    if (persistentSource && messages.some(message => message.source === source && normalize(message.text) === normalize(value))) {
+      renderTimeline();
+      return;
+    }
     messages.push({ id:`comm-${now}-${messages.length}`, source, text:value, at:now });
     try { sessionStorage.setItem(timelineStorageKey(), JSON.stringify(messages.slice(-80))); } catch (_) {}
     const stage = ensureStage();
