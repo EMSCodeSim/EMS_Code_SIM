@@ -2825,6 +2825,7 @@
 
   function infoElapsed(value, startedAt) { return elapsedLabel(value, startedAt); }
   function abnormalEvent(event) {
+    if (event.key === 'bls_handoff' || event.source === 'bls-handoff') return false;
     return event.status === 'abnormal' || event.normality === 'not-normal' || /critical|severe|inadequate|absent|low|high|hypox|shock|unresponsive|weak|labored|wheeze|slurred|drift|diaphoretic|pale/i.test(`${event.value || ''} ${event.details || ''}`);
   }
   function significantHistory(event) {
