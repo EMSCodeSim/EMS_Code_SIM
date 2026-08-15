@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.15.4';
+  const VERSION = '2026.08.15.5';
   const FOCUSED_EXAMS = new Set([
     'head_exam',
     'neck_back',
@@ -213,8 +213,9 @@
       const choice = item.choices[Number(choiceButton.dataset.abcInlineChoice)];
       if (!choice) return;
       const [value,label,normality] = choice;
-      const saved = saveAbcFinding(key, value, normality);
-      if (!saved) return;
+      // Acknowledge the click before the scenario event fan-out runs. Saving
+      // synchronously can trigger several render subscribers and make a valid
+      // button look frozen on slower computers.
       choices.forEach(node => {
         const selected = node === choiceButton;
         node.classList.toggle('selected', selected);
@@ -224,20 +225,26 @@
       });
       const help = inline.querySelector('.horse-question-choice-help');
       if (help) {
-        help.textContent = `Recorded: ${label}`;
+        help.textContent = `Saving: ${label}`;
         help.classList.add('recorded');
         help.setAttribute('role', 'status');
       }
-      markRecorded(button);
-      // Saving dispatches an assessment update that rebuilds this workspace.
-      // Restore the same follow-up so the selected answer remains visible.
       window.setTimeout(() => {
+        const saved = saveAbcFinding(key, value, normality);
+        if (!saved) {
+          if (help?.isConnected) help.textContent = 'Unable to save. Select the finding again.';
+          return;
+        }
+        markRecorded(button);
+        if (help?.isConnected) help.textContent = `Recorded: ${label}`;
+        // Saving dispatches an assessment update that may rebuild this workspace.
+        // Restore the same follow-up so the selected answer remains visible.
         const freshButton = document.querySelector(`#assessmentTools [data-assessment-item="${CSS.escape(key)}"]`);
         const freshInline = document.getElementById('horseAssessmentInlineQuestion');
         if (freshButton && (!freshInline || !freshInline.querySelector('[data-abc-inline-choice]'))) {
           openDesktopAbcFollowup(freshButton, key);
         }
-      }, 180);
+      }, 0);
     }));
     return true;
   }
