@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.15.4';
+  const VERSION = '2026.08.15.5';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -187,7 +187,7 @@
     lastTimelineSignature = signature;
     lastTimelineAt = now;
     const messages = timelineMessages();
-    const persistentSource = source === 'dispatch' || source === 'crew';
+    const persistentSource = ['dispatch', 'crew', 'finding', 'critical'].includes(source);
     if (persistentSource && messages.some(message => message.source === source && normalize(message.text) === normalize(value))) {
       renderTimeline();
       return;
