@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.15.3';
+  const VERSION = '2026.08.15.4';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';
@@ -422,6 +422,7 @@
     observer = new MutationObserver(mutations => {
       const relevant = mutations.some(mutation => {
         const target = mutation.target?.nodeType === 1 ? mutation.target : mutation.target?.parentElement;
+        if (target?.closest?.('#patientCommunicationStage,#assessmentFollowupHost,#horseAssessmentInlineQuestion,#horseClinicalQuestionBox,#treatmentTools')) return false;
         return Boolean(target?.closest?.('#infoUpdateWindow,#historyPanel,#treatmentPanel,#hospitalHandoffWorkspace,#patientClockStatus,#clinicalInteractionColumn,.clinical-domain-workspace'));
       });
       if (relevant) schedule();
