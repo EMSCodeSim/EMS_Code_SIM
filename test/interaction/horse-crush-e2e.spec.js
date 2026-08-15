@@ -13,12 +13,13 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Full horse workflow is protected on the desktop clinical workspace');
   const assertNoPageErrors = watchPageErrors(page);
 
-  await openScenario(page, 'horse_crush', 'learning');
+  await openScenario(page, 'horse_crush', 'assessment');
   await expect.poll(() => page.evaluate(() => window.EMSCodeSimScenarioBootstrapStatus?.ok)).toBe(true);
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimHorseCrushUiFix))).toBe(true);
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimHorsePhotoLayerFix))).toBe(true);
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimMiniSimOverlay))).toBe(true);
   await expect.poll(() => page.evaluate(() => document.getElementById('embeddedSimWorkspace')?.parentElement?.classList.contains('patient-stage') === true)).toBe(true);
+  await expect(page.locator('#emtFirstUseOrientation')).toHaveCount(0);
 
   async function expectHorsePhoto(pathname) {
     await expect.poll(() => page.evaluate(expectedPath => {
@@ -121,6 +122,7 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
   await expect(page.locator('#treatmentPanel')).toBeVisible();
   await page.locator('[data-horse-treatment-group="splinting"]').click();
   await page.locator('[data-horse-workspace-plan="manual_leg_support"]').click();
+  await expect(page.locator('#horseTreatmentWorkspaceDetail .horse-treatment-perform')).toBeVisible();
   await page.locator('#horseTreatmentWorkspaceDetail .horse-treatment-perform').click();
   await expect.poll(() => page.evaluate(() => {
     const treatments = window.EMSCodeSimPatientRecord.active()?.treatments || [];
