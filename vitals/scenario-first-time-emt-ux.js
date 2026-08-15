@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.15.1';
+  const VERSION = '2026.08.15.2';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';
@@ -207,15 +207,17 @@
     if (!panel || !tools) return;
     const groups = $$('[data-horse-treatment-group]', tools);
     if (!groups.length) return;
-    groups
-      .sort((a,b) => {
+    const orderedGroups = groups.sort((a,b) => {
         const aId = String(a.dataset.horseTreatmentGroup || '').toLowerCase();
         const bId = String(b.dataset.horseTreatmentGroup || '').toLowerCase();
         const aRank = PRIMARY_TREATMENT_ORDER.indexOf(aId);
         const bRank = PRIMARY_TREATMENT_ORDER.indexOf(bId);
         return (aRank < 0 ? 99 : aRank) - (bRank < 0 ? 99 : bRank);
-      })
-      .forEach(button => tools.appendChild(button));
+      });
+    const currentOrder = $(':scope > [data-horse-treatment-group]', tools);
+    if (orderedGroups.some((button, index) => currentOrder[index] !== button)) {
+      orderedGroups.forEach(button => tools.appendChild(button));
+    }
     groups.forEach(button => {
       const endEncounter = /transport|handoff/.test(String(button.dataset.horseTreatmentGroup || '').toLowerCase());
       const primary = primaryTreatmentGroup(button);
