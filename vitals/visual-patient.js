@@ -765,10 +765,6 @@
           toast('Finding was not saved. Try again.');
         }
       }));
-      window.requestAnimationFrame(() => {
-        questionBox.scrollIntoView?.({ block:'nearest' });
-        buttons[0]?.focus({ preventScroll:true });
-      });
     }
 
     const article = document.createElement('section');
@@ -2345,10 +2341,6 @@
         button.classList.toggle('selected', button.dataset.horseTreatmentPlan === plan.id);
       });
       renderHorseTreatmentPlanDetail(plan, detail);
-      window.requestAnimationFrame(() => {
-        detail?.scrollIntoView?.({ block:'nearest' });
-        detail?.querySelector('select,input,textarea,.horse-treatment-perform')?.focus({ preventScroll:true });
-      });
     };
     questionBox.querySelectorAll('[data-horse-treatment-plan]').forEach(button => {
       button.addEventListener('click', () => selectPlan(button.dataset.horseTreatmentPlan || ''));
@@ -2372,6 +2364,9 @@
         <button type="button" class="horse-treatment-back" id="horseTreatmentBackToGroups" aria-label="Back to treatment categories">‹ Categories</button>
         <div><small>TREATMENT</small><strong>${escapeHtml(group.label)}</strong><span>${escapeHtml(group.description || '')}</span></div>
       </div>
+      <div id="horseTreatmentWorkspaceDetail" class="horse-treatment-workspace-detail" aria-live="polite">
+        <small>Select a treatment below to review and perform it.</small>
+      </div>
       <div class="horse-treatment-workspace-actions" role="group" aria-label="${escapeHtml(group.label)} treatment options">
         ${plans.map(plan => {
           const used = horseTreatmentRecordedCount(plan) > 0;
@@ -2380,9 +2375,6 @@
             <strong>${escapeHtml(plan.label)}</strong>
           </button>`;
         }).join('')}
-      </div>
-      <div id="horseTreatmentWorkspaceDetail" class="horse-treatment-workspace-detail">
-        <small>Select a treatment above to review and perform it.</small>
       </div>`;
 
     box.querySelector('#horseTreatmentBackToGroups')?.addEventListener('click', () => {
@@ -2411,10 +2403,6 @@
         button.classList.toggle('selected', button.dataset.horseWorkspacePlan === plan.id);
       });
       renderHorseTreatmentPlanDetail(plan, detail);
-      window.requestAnimationFrame(() => {
-        detail?.scrollIntoView?.({ block:'nearest' });
-        detail?.querySelector('select,input,textarea,.horse-treatment-perform')?.focus({ preventScroll:true });
-      });
     };
 
     box.querySelectorAll('[data-horse-workspace-plan]').forEach(button => {
@@ -2446,9 +2434,6 @@
     }
 
     renderHorseTreatmentCategoryWorkspace(group.id);
-    window.requestAnimationFrame(() => {
-      $('treatmentTools')?.scrollIntoView?.({ block:'nearest' });
-    });
   }
 
   function horseCareSequenceMarkup() {
