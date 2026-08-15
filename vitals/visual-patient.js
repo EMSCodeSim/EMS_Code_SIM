@@ -4634,6 +4634,27 @@
     else if (!$('embeddedSimWorkspace')?.hidden) scheduleEmbeddedFit();
   });
 
+  if (params.get('reset') === '1') {
+    try {
+      api?.clear?.();
+      const partnerKey = session?.partnerTaskKey?.(id);
+      [
+        partnerKey,
+        partnerKey && `${partnerKey}_backup`,
+        partnerKey && `${partnerKey}_shadow`,
+        `emscodesim_scenario_${id}`,
+        `emscodesim_scenario_${id}_backup`,
+        `emscodesim_scenario_${id}_shadow`
+      ].filter(Boolean).forEach(key => localStorage.removeItem(key));
+      [...Object.keys(sessionStorage)].filter(key => key.startsWith('emscodesim:communications:')).forEach(key => sessionStorage.removeItem(key));
+      params.delete('reset');
+      const cleanQuery = params.toString();
+      history.replaceState(null, '', `${location.pathname}${cleanQuery ? `?${cleanQuery}` : ''}${location.hash}`);
+    } catch (error) {
+      console.error('Fresh scenario reset failed', error);
+    }
+  }
+
   const initialRecord = ensureRecord();
   const requestedTrainingMode = params.get('training');
   if (requestedTrainingMode === 'learning' || requestedTrainingMode === 'assessment') api?.setDocumentation?.({ trainingMode: requestedTrainingMode });
