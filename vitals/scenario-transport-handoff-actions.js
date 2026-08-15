@@ -1,6 +1,7 @@
 (() => {
   'use strict';
 
+  const VERSION = '2026.08.15.1';
   const desktop = window.matchMedia('(min-width:980px)');
   const $ = id => document.getElementById(id);
   let queued = false;
@@ -124,9 +125,9 @@
     bindSummary(host);
   }
 
-  function bindSummary(host) {
-    $('horseOpenTransport')?.addEventListener('click', openTransport);
-    $('horseOpenHandoff')?.addEventListener('click', openHandoff);
+  function bindSummary() {
+    // Endpoint clicks are handled once at the document level so re-rendering
+    // the menu cannot detach or duplicate their handlers.
   }
 
   function openTransport() {
@@ -203,7 +204,7 @@
   function openHandoff() {
     const host = ensureHost();
     const detail = $('horseEndpointDetail');
-    const card = document.querySelector('#treatmentPanel .handoff-treatment-card');
+    const card = document.querySelector('.handoff-treatment-card');
     if (!host || !detail || !card) return;
     host.dataset.mode = 'detail';
     focusEndpoint(host);
@@ -251,6 +252,15 @@
     schedule();
     desktop.addEventListener?.('change', schedule);
     document.addEventListener('click', event => {
+      const transport = event.target.closest?.('#horseOpenTransport');
+      const handoff = event.target.closest?.('#horseOpenHandoff');
+      if (transport || handoff) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (transport) openTransport();
+        else openHandoff();
+        return;
+      }
       if (event.target.closest?.('button[data-panel="treatmentPanel"]')) setTimeout(schedule, 0);
     }, true);
     window.addEventListener('emscodesim:transport-saved', schedule);
@@ -266,6 +276,8 @@
     observer.observe(document.body, { childList:true, subtree:true });
     window.addEventListener('pagehide', () => observer?.disconnect(), { once:true });
   }
+
+  window.EMSCodeSimTransportHandoff = Object.freeze({ version:VERSION, render:schedule, openTransport, openHandoff });
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
   else start();
