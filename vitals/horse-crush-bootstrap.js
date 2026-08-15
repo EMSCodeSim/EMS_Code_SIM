@@ -91,7 +91,7 @@
 
   loadOnce('data-scenario-learning-upgrade', '/vitals/scenario-learning-upgrade.js');
   loadOnce('data-condition-alert-priority', '/vitals/scenario-condition-alert-priority.js');
-  loadOnce('data-horse-crush-ui-fix', '/vitals/horse-crush-ui-fix.js?v=2026.08.15.4');
+  loadOnce('data-horse-crush-ui-fix', '/vitals/horse-crush-ui-fix.js?v=2026.08.15.5');
   loadOnce('data-horse-photo-layer-fix', '/vitals/horse-photo-layer-fix.js');
   const defs = window.EMSCodeSimScenarioDefinitions;
   const requiredGroups = ['CATALOG','PROFILES','PHASE_PLANS','PATIENT_CASES','CONDITION_STAGES','TREATMENT_PLANS'];
