@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.15.3';
+  const VERSION = '2026.08.15.4';
   const FOCUSED_EXAMS = new Set([
     'head_exam',
     'neck_back',
@@ -295,9 +295,10 @@
 
   function start() {
     refresh();
-    const observer = new MutationObserver(scheduleRefresh);
-    observer.observe(document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['hidden'] });
-    window.addEventListener('pagehide', () => observer.disconnect(), { once:true });
+    // Transport has an explicit promotion trigger. A document-wide observer
+    // rebuilt active controls whenever any panel toggled its hidden state.
+    window.setTimeout(scheduleRefresh, 250);
+    window.setTimeout(scheduleRefresh, 900);
   }
 
   window.EMSCodeSimHorseCrushUiFix = Object.freeze({
