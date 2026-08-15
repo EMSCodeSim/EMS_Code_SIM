@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.15.2';
+  const VERSION = '2026.08.15.3';
   const FOCUSED_EXAMS = new Set([
     'head_exam',
     'neck_back',
@@ -239,10 +239,6 @@
         }
       }, 180);
     }));
-    window.requestAnimationFrame(() => {
-      inline.scrollIntoView?.({ block:'nearest' });
-      choices[0]?.focus({ preventScroll:true });
-    });
     return true;
   }
 
