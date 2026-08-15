@@ -4736,7 +4736,14 @@
     infoManuallyCollapsed = false;
     setInfoCollapsed(false);
   });
-  document.querySelectorAll('.bottom-nav button').forEach(button => button.addEventListener('click', () => { hideClinicalNextActions(); openSheet(button.dataset.panel); }));
+  document.addEventListener('click', event => {
+    const button = event.target.closest?.('.bottom-nav button[data-panel]');
+    if (!button || button.hidden || button.classList.contains('desktop-domain-hidden')) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    hideClinicalNextActions();
+    openSheet(button.dataset.panel);
+  }, true);
   $('clinicalNextTreatment')?.addEventListener('click', () => {
     treatmentCategoryFocus = nextTreatmentCategoryForFinding(nextActionFinding?.key || '');
     hideClinicalNextActions();
