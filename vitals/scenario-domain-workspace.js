@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.14';
+  const VERSION = '2026.08.14.15';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -304,10 +304,21 @@
     if (!button || !desktopActive() || button.classList.contains('desktop-domain-hidden')) return;
     window.requestAnimationFrame(() => {
       const panelId = button.dataset.panel || '';
+      const panel = $(panelId);
+      if (!panel) return;
+      centerRail()?.querySelectorAll('button[data-panel]').forEach(item => {
+        const selected = item === button;
+        item.classList.toggle('active', selected);
+        item.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      });
+      document.querySelectorAll('.vp-panel').forEach(item => { item.hidden = item !== panel; });
       updateWorkspaceHeading(panelId);
       if (panelId === 'assessmentPanel') expandAssessmentChoices();
       const sheet = $('actionSheet');
-      if (sheet && !document.body.classList.contains('horse-arrival-pending')) sheet.hidden = false;
+      if (sheet && !document.body.classList.contains('horse-arrival-pending')) {
+        sheet.hidden = false;
+        document.body.classList.add('horse-tool-sheet-open');
+      }
       scheduleReconcile();
     });
   }
