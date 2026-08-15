@@ -82,8 +82,8 @@
 
   function sourceFor(snapshot = {}) {
     const value = `${snapshot.type || ''} ${snapshot.title || ''} ${snapshot.text || ''}`;
-    if (patientInfo(snapshot)) return 'patient';
     if (partnerInfo(snapshot)) return 'crew';
+    if (patientInfo(snapshot)) return 'patient';
     if (/DISPATCH|RADIO|CALL INFORMATION/i.test(value)) return 'dispatch';
     if (/ALERT|CRITICAL|DETERIORAT|WORSEN/i.test(value)) return 'critical';
     return 'finding';
@@ -315,7 +315,10 @@
     if (restoreGuard) return;
     const snapshot = infoSnapshot();
     if (!snapshot.text) return;
-    if (patientInfo(snapshot)) {
+    if (partnerInfo(snapshot)) {
+      rememberExternalInfo(snapshot);
+      pushTimeline('crew', snapshot.text);
+    } else if (patientInfo(snapshot)) {
       renderPatientLine(snapshot.text, /QUESTION/i.test(`${snapshot.type} ${snapshot.title}`) ? 'Patient asks' : 'Patient');
       restoreExternalInfo();
     } else {
@@ -415,8 +418,16 @@
     document.head.appendChild(style);
   }
 
+  function seedOpeningCommunications() {
+    if (timelineMessages().length) return;
+    const current = record() || {};
+    pushTimeline('dispatch', current.dispatch || 'Reported fall at a horse facility; a BLS engine crew is already on scene.');
+    pushTimeline('crew', 'We found the patient on the ground outside the south barn after being squeezed between two horses and falling. The scene is safe. The patient has remained alert, reports severe left-hip pain, and has not been moved.');
+  }
+
   function start() {
     installStyles();
+    seedOpeningCommunications();
     installVitalSpeechRule();
     scheduleReconcile();
     bodyObserver = new MutationObserver(mutations => {
