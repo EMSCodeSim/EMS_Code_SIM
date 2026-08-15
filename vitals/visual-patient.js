@@ -2875,7 +2875,7 @@
       kind:'visible', recordedAt:new Date(startMs + 2).toISOString()
     });
     const log = api?.listCareLog?.(current, 'all') || [];
-    log.filter(event => isInformationUpdate(event) && !event.suppressInfoUpdate && !(id === 'horse_crush' && (event.source === 'horse-rapid-abc' || event.key === 'bls_handoff')))
+    log.filter(event => isInformationUpdate(event) && !event.suppressInfoUpdate && !(id === 'horse_crush' && (event.source === 'horse-rapid-abc' || event.source === 'bls-handoff' || event.key === 'bls_handoff')))
       .forEach(event => updates.push(updateFromCareEvent(event)));
     if (id === 'horse_crush') {
       const state = horseClinicalState();
