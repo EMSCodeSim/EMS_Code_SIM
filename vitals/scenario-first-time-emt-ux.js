@@ -194,10 +194,11 @@
   }
 
   // 7: surface the small, case-relevant set first.
+  const PRIMARY_TREATMENT_ORDER = ['splinting','medications','movement','reassessment','resources'];
+
   function primaryTreatmentGroup(button) {
     const id = String(button?.dataset?.horseTreatmentGroup || '').toLowerCase();
-    const text = clean(button?.textContent).toLowerCase();
-    return /splint|support|pain|medicat|circulation|shock|resource|trauma|warm|position/.test(`${id} ${text}`);
+    return PRIMARY_TREATMENT_ORDER.includes(id);
   }
 
   function simplifyTreatmentGroups() {
@@ -206,6 +207,15 @@
     if (!panel || !tools) return;
     const groups = $$('[data-horse-treatment-group]', tools);
     if (!groups.length) return;
+    groups
+      .sort((a,b) => {
+        const aId = String(a.dataset.horseTreatmentGroup || '').toLowerCase();
+        const bId = String(b.dataset.horseTreatmentGroup || '').toLowerCase();
+        const aRank = PRIMARY_TREATMENT_ORDER.indexOf(aId);
+        const bRank = PRIMARY_TREATMENT_ORDER.indexOf(bId);
+        return (aRank < 0 ? 99 : aRank) - (bRank < 0 ? 99 : bRank);
+      })
+      .forEach(button => tools.appendChild(button));
     groups.forEach(button => {
       const endEncounter = /transport|handoff/.test(String(button.dataset.horseTreatmentGroup || '').toLowerCase());
       const primary = primaryTreatmentGroup(button);
