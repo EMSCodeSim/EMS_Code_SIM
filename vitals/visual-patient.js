@@ -765,7 +765,10 @@
           toast('Finding was not saved. Try again.');
         }
       }));
-      window.requestAnimationFrame(() => buttons[0]?.focus());
+      window.requestAnimationFrame(() => {
+        questionBox.scrollIntoView?.({ block:'nearest', behavior:'smooth' });
+        buttons[0]?.focus({ preventScroll:true });
+      });
     }
 
     const article = document.createElement('section');
@@ -2342,6 +2345,10 @@
         button.classList.toggle('selected', button.dataset.horseTreatmentPlan === plan.id);
       });
       renderHorseTreatmentPlanDetail(plan, detail);
+      window.requestAnimationFrame(() => {
+        detail?.scrollIntoView?.({ block:'nearest', behavior:'smooth' });
+        detail?.querySelector('select,input,textarea,.horse-treatment-perform')?.focus({ preventScroll:true });
+      });
     };
     questionBox.querySelectorAll('[data-horse-treatment-plan]').forEach(button => {
       button.addEventListener('click', () => selectPlan(button.dataset.horseTreatmentPlan || ''));
@@ -2404,6 +2411,10 @@
         button.classList.toggle('selected', button.dataset.horseWorkspacePlan === plan.id);
       });
       renderHorseTreatmentPlanDetail(plan, detail);
+      window.requestAnimationFrame(() => {
+        detail?.scrollIntoView?.({ block:'nearest', behavior:'smooth' });
+        detail?.querySelector('select,input,textarea,.horse-treatment-perform')?.focus({ preventScroll:true });
+      });
     };
 
     box.querySelectorAll('[data-horse-workspace-plan]').forEach(button => {
@@ -2435,6 +2446,9 @@
     }
 
     renderHorseTreatmentCategoryWorkspace(group.id);
+    window.requestAnimationFrame(() => {
+      $('treatmentTools')?.scrollIntoView?.({ block:'nearest', behavior:'smooth' });
+    });
   }
 
   function horseCareSequenceMarkup() {
