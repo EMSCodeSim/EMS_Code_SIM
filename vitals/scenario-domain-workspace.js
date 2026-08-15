@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.15';
+  const VERSION = '2026.08.15.1';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -328,7 +328,11 @@
     observer = new MutationObserver(mutations => {
       if (!desktopActive()) return;
       if ($('horseArrivalDecision')) horseArrivalSeen = true;
-      const structuralChange = mutations.some(mutation => mutation.type === 'childList');
+      const structuralChange = mutations.some(mutation => {
+        if (mutation.type !== 'childList') return false;
+        const target = mutation.target?.nodeType === 1 ? mutation.target : mutation.target?.parentElement;
+        return !target?.closest?.('#patientCommunicationStage,#assessmentFollowupHost,#horseAssessmentInlineQuestion,#horseClinicalQuestionBox,#treatmentTools');
+      });
       if (structuralChange) scheduleReconcile();
     });
     observer.observe(document.body, { childList:true, subtree:true });
