@@ -21,21 +21,23 @@ const SUPPORT_ACTION_IDS=new Set(['manual_leg_support','position_comfort','blank
 const UNSAFE_ACTION_IDS=new Set(['traction_splint','stand_pivot','force_straight']);
 function eventLedger(){
   const r=record()||{},s=runtime?.horseClinicalState?.(r)||{},docs=r.documentation||{},findings=r.findings||{};
-  const treatments=Array.isArray(r.treatments)?r.treatments:[],movement=docs.horseCrushMovement||{};
+  const treatments=Array.isArray(r.treatments)?r.treatments:[],movement=docs.horseCrushMovement||{},pre=Array.isArray(movement.pre)?movement.pre:[],post=Array.isArray(movement.post)?movement.post:[];
+  const currentMovementUnsafe=pre.includes('force_straight')||['stand_pivot','force_flat','blanket_lift'].includes(movement.method)||['traction','binder_only','straighten'].includes(movement.stabilization);
+  const currentMovementComplete=Boolean(movement.method&&movement.stabilization&&pre.length&&post.length);
   const events=[],seen=new Set();
   const add=id=>{if(seen.has(id)||!SATISFACTION_EVENTS[id])return;seen.add(id);events.push({id,...SATISFACTION_EVENTS[id]})};
   if(findings.pain||findings.opqrst||findings.pain_assessment)add('pain_assessed');
-  if(Array.isArray(movement.pre)&&(movement.pre.includes('team_brief')||movement.pre.includes('pain_plan')))add('movement_explained');
+  if(pre.includes('team_brief')||pre.includes('pain_plan'))add('movement_explained');
   const effective=treatments.filter(item=>item?.classification==='appropriate-effective'||(!item?.classification&&item?.actionId));
-  if(effective.some(item=>SUPPORT_ACTION_IDS.has(item.actionId)))add('leg_supported');
+  if(effective.some(item=>SUPPORT_ACTION_IDS.has(item.actionId))||['blankets_position','vacuum_support'].includes(movement.stabilization))add('leg_supported');
   if(effective.some(item=>item.actionId==='pain_control'))add('pain_treated');
   if(findings.distal_csm)add('distal_csm');
-  if(Array.isArray(movement.post)&&movement.post.includes('csm')&&movement.post.includes('pain_vitals'))add('post_movement_reassessment');
+  if(post.includes('csm')&&post.includes('pain_vitals'))add('post_movement_reassessment');
   if(docs.transportDecisionAt&&docs.transportPriority&&docs.destination)add('transport_explained');
   if(docs.handoffSavedAt)add('handoff_complete');
-  if(treatments.some(item=>item?.actionId==='horse_crush_movement_plan'&&['incomplete','acceptable-with-cautions'].includes(item?.classification)))add('incomplete_movement_plan');
+  if(currentMovementComplete&&!currentMovementUnsafe&&!(post.includes('csm')&&post.includes('pain_vitals')))add('incomplete_movement_plan');
   if(s.stage==='pain-escalating'||s.stage==='delayed-care')add('delayed_care');
-  if(treatments.some(item=>UNSAFE_ACTION_IDS.has(item?.actionId)||item?.classification==='contraindicated'||item?.classification==='unsafe'))add('unsafe_movement');
+  if(currentMovementUnsafe||treatments.some(item=>item?.actionId!=='horse_crush_movement_plan'&&(UNSAFE_ACTION_IDS.has(item?.actionId)||item?.classification==='contraindicated'||item?.classification==='unsafe')))add('unsafe_movement');
   return events;
 }
 function treatmentScore(){const events=eventLedger();return{score:clamp(50+events.reduce((total,event)=>total+event.points,0)),events};}
