@@ -164,7 +164,7 @@
     button.addEventListener('click', () => startFresh(selectedCase, button.value));
   });
 
-  $('randomCase').addEventListener('click', () => {
+  $('randomCase')?.addEventListener('click', () => {
     const item = cases[Math.floor(Math.random() * cases.length)];
     openCaseDialog(item);
   });
