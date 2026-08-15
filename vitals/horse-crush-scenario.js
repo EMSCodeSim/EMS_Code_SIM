@@ -156,7 +156,6 @@
     if (!has('bls_handoff')) {
       saveFinding('bls_handoff', 'Compressed between two horses, fell to the ground, no LOC, A&O ×4, severe left-hip pain, not moved.', {
         label: 'BLS engine handoff',
-        normality: 'not-normal',
         details: 'The engine crew confirms the horses are secured and the patient has not been moved.',
         source: 'bls-handoff',
         suppressInfoUpdate: true
