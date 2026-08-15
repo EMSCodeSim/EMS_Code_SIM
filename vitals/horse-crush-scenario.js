@@ -132,7 +132,6 @@
     const layer = document.getElementById('sceneClueLayer');
     if (layer) layer.hidden = false;
     document.querySelector('.patient-stage')?.classList.remove('horse-arrival-map');
-    window.setTimeout(showHandoff, 30);
   }
 
   function renderArrivalCard() {
@@ -159,7 +158,8 @@
         label: 'BLS engine handoff',
         normality: 'not-normal',
         details: 'The engine crew confirms the horses are secured and the patient has not been moved.',
-        source: 'bls-handoff'
+        source: 'bls-handoff',
+        suppressInfoUpdate: true
       });
     }
   }
