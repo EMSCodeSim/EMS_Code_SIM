@@ -159,7 +159,8 @@
     const raw = String(line.textContent || '').replace(/[“”]/g, '').trim();
     if (!raw || line.dataset.angerAdjusted === '1') return;
     const isReply = host.classList.contains('replying');
-    const adjusted = isReply ? `${angerPrefix()}${raw}${angerSuffix()}` : `${angerPrefix()}${raw}`;
+    if (isReply) return;
+    const adjusted = `${angerPrefix()}${raw}`;
     line.textContent = `“${adjusted}”`;
     line.dataset.angerAdjusted = '1';
   }
