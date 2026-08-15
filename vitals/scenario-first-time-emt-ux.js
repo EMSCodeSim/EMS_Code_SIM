@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.14.5';
+  const VERSION = '2026.08.15.1';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';
@@ -332,25 +332,11 @@
 
   // 12: one-time, non-CI first-use orientation. It is deliberately short.
   function firstUseOrientation() {
-    if (!assessmentMode || navigator.webdriver) return;
-    let seen = false;
-    try { seen = localStorage.getItem('emscodesim_horse_orientation_v1') === '1'; } catch (_) {}
-    if (seen || document.getElementById('emtFirstUseOrientation')) return;
-    const overlay = document.createElement('div');
-    overlay.id = 'emtFirstUseOrientation';
-    overlay.className = 'emt-first-use-orientation';
-    overlay.innerHTML = `
-      <div class="emt-first-use-card" role="dialog" aria-modal="true" aria-label="How to use the patient simulator">
-        <small>FIRST CALL</small>
-        <strong>Look at the patient. Talk in the center. Perform care on the right.</strong>
-        <p>Incoming scene and crew information appears at the top. Your clinical tools stay on the right.</p>
-        <button type="button">Start call</button>
-      </div>`;
-    overlay.querySelector('button').addEventListener('click', () => {
-      try { localStorage.setItem('emscodesim_horse_orientation_v1','1'); } catch (_) {}
-      overlay.remove();
-    });
-    document.body.appendChild(overlay);
+    // Do not place a modal over the clinical controls. On a fresh browser the
+    // former first-call overlay made the underlying ABC and treatment buttons
+    // look broken until it was dismissed.
+    document.getElementById('emtFirstUseOrientation')?.remove();
+    try { localStorage.setItem('emscodesim_horse_orientation_v1','1'); } catch (_) {}
   }
 
   function installStyles() {
@@ -376,6 +362,7 @@
         #historyPanel.history-question-launcher-mode .history-question-button{min-height:42px!important}
         #assessmentPanel [data-assessment-category="abc"]{font-weight:900!important}
         #assessmentPanel [data-assessment-item="airway"],#assessmentPanel [data-assessment-item="breathing"],#assessmentPanel [data-assessment-item="perfusion"]{min-height:46px!important;font-size:.86rem!important}
+        #assessmentPanel .horse-question-choice,#treatmentPanel [data-horse-treatment-group],#treatmentPanel [data-horse-workspace-plan],#treatmentPanel .horse-treatment-perform{position:relative!important;z-index:3!important;pointer-events:auto!important;touch-action:manipulation!important}
         #treatmentPanel .horse-more-treatments-toggle{width:100%;min-height:40px;margin-top:7px;border:1px dashed rgba(116,181,210,.42);border-radius:9px;background:rgba(8,30,45,.45);color:#b9d7e5;font-weight:800;cursor:pointer}
         #treatmentPanel.emt-movement-focus #treatmentTools,#treatmentPanel.emt-movement-focus #horseTreatmentWorkspaceDetail{opacity:.22;pointer-events:none}
         #treatmentPanel.emt-movement-focus #horseMovementChoices{border-color:rgba(113,211,245,.75)!important;box-shadow:0 0 0 1px rgba(113,211,245,.14),0 12px 30px rgba(0,0,0,.22)}
