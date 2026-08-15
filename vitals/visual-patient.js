@@ -766,7 +766,7 @@
         }
       }));
       window.requestAnimationFrame(() => {
-        questionBox.scrollIntoView?.({ block:'nearest', behavior:'smooth' });
+        questionBox.scrollIntoView?.({ block:'nearest' });
         buttons[0]?.focus({ preventScroll:true });
       });
     }
@@ -2346,7 +2346,7 @@
       });
       renderHorseTreatmentPlanDetail(plan, detail);
       window.requestAnimationFrame(() => {
-        detail?.scrollIntoView?.({ block:'nearest', behavior:'smooth' });
+        detail?.scrollIntoView?.({ block:'nearest' });
         detail?.querySelector('select,input,textarea,.horse-treatment-perform')?.focus({ preventScroll:true });
       });
     };
@@ -2412,7 +2412,7 @@
       });
       renderHorseTreatmentPlanDetail(plan, detail);
       window.requestAnimationFrame(() => {
-        detail?.scrollIntoView?.({ block:'nearest', behavior:'smooth' });
+        detail?.scrollIntoView?.({ block:'nearest' });
         detail?.querySelector('select,input,textarea,.horse-treatment-perform')?.focus({ preventScroll:true });
       });
     };
@@ -2447,7 +2447,7 @@
 
     renderHorseTreatmentCategoryWorkspace(group.id);
     window.requestAnimationFrame(() => {
-      $('treatmentTools')?.scrollIntoView?.({ block:'nearest', behavior:'smooth' });
+      $('treatmentTools')?.scrollIntoView?.({ block:'nearest' });
     });
   }
 
