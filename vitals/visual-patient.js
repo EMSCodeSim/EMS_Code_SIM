@@ -2173,8 +2173,8 @@
       planIds:['heat_conservation','control_bleeding','shock_care','cpr_aed']
     },
     {
-      id:'medications', label:'Medications', icon:'Rx',
-      description:'EMT medications, pain-management coordination, and medication safety checks.',
+      id:'medications', label:'Pain / medications', icon:'Rx',
+      description:'Pain-management coordination first; other EMT medications remain available for decision practice.',
       instruction:'Choose a medication only after confirming the indication, contraindications, patient allergies, local protocol, provider authorization, dose, and route.',
       planIds:['pain_control','aspirin','nitroglycerin_assist','epinephrine_auto','naloxone','oral_glucose_general','bronchodilator_general']
     },
@@ -2469,7 +2469,7 @@
 
     const menuHead = document.createElement('div');
     menuHead.className = 'horse-treatment-menu-head';
-    menuHead.innerHTML = `<small>TREATMENT</small><strong>Choose a category</strong><span>Start with care supported by your findings. Additional EMT options remain available for clinical decision practice.</span>${horseCareSequenceMarkup()}`;
+    menuHead.innerHTML = `<small>TREATMENT</small><strong>Choose a category</strong><span>Start with support, pain management, movement, and reassessment. Open More treatments only if the patient needs another intervention.</span>${horseCareSequenceMarkup()}`;
     box.appendChild(menuHead);
 
     HORSE_TREATMENT_GROUPS
