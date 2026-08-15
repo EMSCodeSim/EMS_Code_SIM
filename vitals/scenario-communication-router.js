@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.15.5';
+  const VERSION = '2026.08.15.6';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -20,6 +20,7 @@
   let lastTimelineAt = 0;
   let activeDecision = null;
   let decisionSequence = 0;
+  let infoRouteQueued = false;
 
   function record() {
     try { return session?.sync?.() || api?.active?.() || null; }
@@ -187,6 +188,15 @@
     lastTimelineSignature = signature;
     lastTimelineAt = now;
     const messages = timelineMessages();
+    const recentDuplicate = messages.slice(-12).some(message =>
+      message.source === source
+      && normalize(message.text) === normalize(value)
+      && now - Number(message.at || 0) < 15000
+    );
+    if (recentDuplicate) {
+      renderTimeline();
+      return;
+    }
     const persistentSource = ['dispatch', 'crew', 'finding', 'critical'].includes(source);
     if (persistentSource && messages.some(message => message.source === source && normalize(message.text) === normalize(value))) {
       renderTimeline();
@@ -295,20 +305,11 @@
     lastPatientSignature = signature;
     lastPatientShownAt = now;
 
-    let routed = $('routedPatientCommunication');
-    if (!routed) {
-      routed = document.createElement('section');
-      routed.id = 'routedPatientCommunication';
-      routed.className = 'routed-patient-communication';
-      stage.prepend(routed);
-    }
-    routed.innerHTML = `<header><span aria-hidden="true">👤</span><strong>${label}</strong></header><p>“${value.replace(/[“”"]/g, '')}”</p>`;
-    routed.hidden = false;
+    // Patient statements already appear in the communication timeline. The
+    // former floating copy could cover the active response controls.
+    $('routedPatientCommunication')?.remove();
     pushTimeline('patient', value);
     stage.querySelector('.patient-communication-idle')?.setAttribute('hidden','');
-    window.setTimeout(() => {
-      if (routed && normalize(routed.textContent).includes(signature.slice(0, Math.min(24, signature.length)))) routed.hidden = true;
-    }, 9000);
   }
 
   function routeInfoWindow() {
@@ -332,7 +333,14 @@
     if (!info) return;
     infoObserver?.disconnect();
     rememberExternalInfo(infoSnapshot());
-    infoObserver = new MutationObserver(routeInfoWindow);
+    infoObserver = new MutationObserver(() => {
+      if (infoRouteQueued) return;
+      infoRouteQueued = true;
+      requestAnimationFrame(() => {
+        infoRouteQueued = false;
+        routeInfoWindow();
+      });
+    });
     infoObserver.observe(info, { childList:true, subtree:true, characterData:true });
   }
 
@@ -390,10 +398,10 @@
     style.textContent = `@media(min-width:980px){
       #clinicalInteractionColumn{display:flex!important;flex-direction:column!important;position:relative!important;align-self:stretch!important;min-height:0!important;height:100%!important;overflow:hidden!important}
       #clinicalInteractionColumn>#infoUpdateWindow{display:none!important}
-      #patientCommunicationStage{position:absolute!important;inset:0!important;z-index:1!important;order:5!important;min-height:0!important;height:100%!important;display:flex!important;flex-direction:column!important;justify-content:stretch!important;gap:8px!important;padding:12px 4px 82px!important;overflow:hidden!important}
+      #patientCommunicationStage{position:absolute!important;inset:0!important;z-index:1!important;order:5!important;min-height:0!important;height:100%!important;display:grid!important;grid-template-rows:minmax(0,1fr) auto!important;gap:8px!important;padding:12px 4px 82px!important;overflow:hidden!important}
       body.desktop-scenario-layout #clinicalInteractionColumn>.bottom-nav.clinical-domain-rail{position:absolute!important;inset:auto 4px 4px 4px!important;z-index:190!important;order:99!important;margin:0!important;flex:0 0 auto!important;transform:none!important}
-      #patientCommunicationStage>.communication-timeline{flex:1 0 64%!important;min-height:64%!important;height:auto!important}
-      #patientCommunicationStage #patientConversationTurn,#patientCommunicationStage #horseClinicalQuestionBox{position:relative!important;inset:auto!important;width:100%!important;margin:0!important}
+      #patientCommunicationStage>.communication-timeline{min-height:0!important;height:auto!important;overflow:hidden!important}
+      #patientCommunicationStage #patientConversationTurn,#patientCommunicationStage #horseClinicalQuestionBox{position:relative!important;inset:auto!important;width:100%!important;max-height:42vh!important;margin:0!important;overflow:auto!important}
       .patient-communication-idle{margin:auto;text-align:center;opacity:.58;max-width:260px}.patient-communication-idle[hidden]{display:none!important}.patient-communication-idle small{font-size:.64rem;font-weight:900;letter-spacing:.09em}.patient-communication-idle p{margin:5px 0 0;font-size:.75rem;line-height:1.35}
       .routed-patient-communication{padding:11px 12px;border:1px solid #397d9c;border-radius:11px;background:#0e2b3d;display:grid;gap:6px}.routed-patient-communication[hidden]{display:none!important}.routed-patient-communication header{display:flex;gap:7px;align-items:center;font-size:.67rem;font-weight:900;letter-spacing:.08em;color:#9edfff;text-transform:uppercase}.routed-patient-communication p{margin:0;color:#fff;font-size:.93rem;line-height:1.4;font-weight:700}
       #communicationTimeline{flex:1 0 64%;min-height:64%;display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:7px;overflow:hidden}
@@ -430,11 +438,11 @@
     seedOpeningCommunications();
     installVitalSpeechRule();
     scheduleReconcile();
-    bodyObserver = new MutationObserver(mutations => {
-      const own = mutations.every(m => m.target?.closest?.('#patientCommunicationStage'));
-      if (!own) scheduleReconcile();
-    });
-    bodyObserver.observe(document.body, { childList:true, subtree:true });
+    // Watch only direct workspace structure. Timeline messages and button state
+    // changes must not start another layout pass while a user is clicking.
+    const column = $('clinicalInteractionColumn');
+    bodyObserver = new MutationObserver(scheduleReconcile);
+    if (column) bodyObserver.observe(column, { childList:true });
     window.addEventListener('emscodesim:assessment-saved', scheduleReconcile);
     window.addEventListener('emscodesim:vital-saved', scheduleReconcile);
     window.addEventListener('resize', scheduleReconcile, { passive:true });
