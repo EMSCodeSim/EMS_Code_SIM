@@ -7,21 +7,21 @@ test.beforeEach(async ({ page }) => {
   await clearSiteStorage(page);
 });
 
-test('picture-first launcher opens a patient and starts Learning Mode', async ({ page }) => {
+test('picture-first launcher opens the public horse scenario in Assessment Mode', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
   await page.goto('/vitals/scenario-launcher.html');
 
-  const asthmaCard = page.locator('[data-case="asthma"]');
-  await expect(asthmaCard).toBeVisible();
-  await asthmaCard.click();
+  const horseCard = page.locator('[data-case="horse_crush"]');
+  await expect(horseCard).toBeVisible();
+  await horseCard.click();
 
   await expect(page.locator('#caseDialog')).toBeVisible();
-  await expect(page.locator('#caseDialogTitle')).toHaveText('Respiratory Distress');
+  await expect(page.locator('#caseDialogTitle')).toHaveText('Horse-Crush Hip Injury');
   await expect(page.locator('#modeSelectionPanel')).toBeVisible();
   await expect.poll(() => page.locator('#caseDialogImage').evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
 
-  await page.locator('[data-start-mode="learning"]').click();
-  await expect(page).toHaveURL(/visual-patient\.html\?case=asthma&training=learning/);
+  await page.locator('[data-start-mode="assessment"]').click();
+  await expect(page).toHaveURL(/visual-patient\.html\?case=horse_crush&training=assessment/);
   await expect(page.locator('#patientImage')).toBeVisible();
   await expect(page.locator('#clinicalReasoningBoard')).toBeVisible();
   await assertNoPageErrors();
