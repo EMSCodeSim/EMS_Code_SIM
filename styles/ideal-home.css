@@ -1,0 +1,342 @@
+/* ============================================================
+   EMSCodeSim Ideal Homepage + Global Polish
+   Matched to the clean FireOpsSim ideal concept
+   Desktop + Mobile
+   ============================================================ */
+
+:root{
+  --ideal-bg:#f4f7fb;
+  --ideal-paper:#ffffff;
+  --ideal-ink:#0f172a;
+  --ideal-muted:#64748b;
+  --ideal-line:#e2e8f0;
+  --ideal-slate:#0b1220;
+  --ideal-slate-2:#111827;
+  --ideal-blue:#2563eb;
+  --ideal-blue-bright:#3b82f6;
+  --ideal-cyan:#06b6d4;
+  --ideal-red:#dc2626;
+  --ideal-radius:14px;
+  --ideal-radius-lg:18px;
+  --ideal-shadow:0 10px 36px rgba(15,23,42,.08);
+  --ideal-soft:0 2px 10px rgba(15,23,42,.04);
+}
+
+/* Page background */
+.home-page,
+body.home-page{
+  background:var(--ideal-bg)!important;
+  color:var(--ideal-ink)!important;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ========== HEADER ========== */
+.site-header{
+  position:sticky!important;
+  top:0!important;
+  z-index:120!important;
+  background:rgba(255,255,255,.94)!important;
+  backdrop-filter:blur(12px) saturate(1.15)!important;
+  border-bottom:none!important;
+  box-shadow:none!important;
+}
+.site-header::after{
+  content:"";
+  display:block;
+  height:3px;
+  background:var(--ideal-blue);
+  width:100%;
+}
+.main-nav,
+.site-header .main-nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  max-width:1120px;
+  margin:0 auto;
+  padding:12px 20px;
+}
+.site-header a,
+.site-header .brand,
+.site-header .nav-link{
+  color:var(--ideal-ink)!important;
+}
+.site-header .brand{
+  font-weight:800;
+  letter-spacing:-.02em;
+  font-size:1.1rem;
+}
+.site-header .nav-cta,
+.site-header a.nav-cta,
+.main-nav .primary-cta{
+  background:var(--ideal-blue)!important;
+  color:#fff!important;
+  border-radius:10px!important;
+  padding:10px 18px!important;
+  font-weight:650!important;
+  box-shadow:0 4px 14px rgba(37,99,235,.28)!important;
+}
+.site-header .nav-cta:hover{
+  background:#1d4ed8!important;
+}
+
+/* ========== HERO ========== */
+.hero-home{
+  background:var(--ideal-slate)!important;
+  color:#fff!important;
+  position:relative;
+  overflow:hidden;
+  border-bottom:0!important;
+  min-height:480px;
+}
+.hero-home-inner{
+  max-width:1120px;
+  margin:0 auto;
+  padding:3.8rem 20px 5rem;
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:2.5rem;
+  align-items:center;
+}
+.hero-copy .hero-stage-kicker,
+.hero-stage-kicker{
+  display:inline-block;
+  color:#93c5fd!important;
+  font-size:.72rem!important;
+  font-weight:700!important;
+  letter-spacing:.1em!important;
+  text-transform:uppercase!important;
+  margin:0 0 .75rem!important;
+}
+.hero-copy h1,
+.hero-home h1{
+  font-size:clamp(2.4rem,4.8vw,4rem)!important;
+  line-height:1.05!important;
+  letter-spacing:-.035em!important;
+  font-weight:800!important;
+  color:#fff!important;
+  margin:0 0 1rem!important;
+  max-width:640px;
+}
+.hero-copy h1 span{color:#93c5fd}
+.hero-copy p,
+.hero-home .hero-copy > p{
+  color:#94a3b8!important;
+  font-size:1.08rem!important;
+  line-height:1.65!important;
+  max-width:520px;
+  margin:0 0 1.6rem!important;
+}
+.hero-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.75rem;
+  margin-bottom:.8rem;
+}
+.home-btn,
+.hero-actions .home-btn{
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  min-height:48px!important;
+  padding:12px 22px!important;
+  border-radius:12px!important;
+  font-weight:650!important;
+  font-size:.95rem!important;
+  border:1px solid transparent!important;
+  transition:all .18s ease!important;
+  text-decoration:none!important;
+}
+.home-btn.primary,
+.hero-actions .home-btn.primary{
+  background:var(--ideal-blue)!important;
+  color:#fff!important;
+  box-shadow:0 6px 20px rgba(37,99,235,.35)!important;
+}
+.home-btn.primary:hover{
+  background:#1d4ed8!important;
+  transform:translateY(-1px);
+}
+.home-btn:not(.primary){
+  background:transparent!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.3)!important;
+}
+.home-btn:not(.primary):hover{
+  background:rgba(255,255,255,.08)!important;
+  border-color:rgba(255,255,255,.5)!important;
+}
+.stage-summary-line{
+  color:#64748b!important;
+  font-size:.85rem!important;
+  margin-top:.5rem!important;
+}
+
+/* Featured sim card on right of hero */
+.hero-sim-card{
+  background:rgba(255,255,255,.06)!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  border-radius:18px!important;
+  padding:1.5rem!important;
+  backdrop-filter:blur(12px);
+  box-shadow:0 20px 50px rgba(0,0,0,.25)!important;
+}
+.hero-sim-label{
+  color:#93c5fd!important;
+  font-size:.7rem!important;
+  font-weight:700!important;
+  letter-spacing:.08em!important;
+  text-transform:uppercase!important;
+}
+.hero-sim-card h2{
+  color:#fff!important;
+  font-size:1.35rem!important;
+  margin:.5rem 0 .6rem!important;
+  font-weight:750!important;
+}
+.hero-sim-card p,
+.hero-sim-card li{
+  color:#94a3b8!important;
+  font-size:.9rem!important;
+}
+.hero-sim-primary{
+  display:inline-flex!important;
+  margin-top:1rem;
+  background:var(--ideal-blue)!important;
+  color:#fff!important;
+  padding:11px 18px!important;
+  border-radius:11px!important;
+  font-weight:650!important;
+  text-decoration:none!important;
+}
+.hero-sim-secondary{
+  display:inline-block!important;
+  margin-top:.6rem;
+  color:#93c5fd!important;
+  font-weight:600!important;
+  font-size:.9rem!important;
+}
+
+/* ========== FLOATING QUICK PATH STRIP ========== */
+.ideal-quick-wrap{
+  max-width:1120px;
+  margin:-2.8rem auto 0;
+  padding:0 20px 1.5rem;
+  position:relative;
+  z-index:5;
+}
+.ideal-quick-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  background:#fff;
+  border:1px solid var(--ideal-line);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 12px 40px rgba(15,23,42,.1);
+}
+.ideal-quick-grid a{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:6px;
+  padding:1.3rem 1.1rem;
+  text-decoration:none;
+  color:inherit;
+  border-right:1px solid #f1f5f9;
+  transition:background .15s ease;
+}
+.ideal-quick-grid a:last-child{border-right:0}
+.ideal-quick-grid a:hover{background:#f8fafc}
+.ideal-quick-grid .q-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:#eff6ff;
+  display:grid;place-items:center;
+  font-size:1.15rem;
+  margin-bottom:2px;
+}
+.ideal-quick-grid strong{
+  font-size:.98rem;
+  font-weight:700;
+  color:var(--ideal-ink);
+}
+.ideal-quick-grid small{
+  color:var(--ideal-muted);
+  font-size:.8rem;
+  line-height:1.35;
+}
+
+/* ========== SECTIONS BELOW ========== */
+.career-stage-wrap,
+.start-here,
+.path-and-practice,
+.home-section,
+.trust-strip{
+  background:transparent!important;
+}
+.career-stage-panel,
+.start-here-grid > *,
+.path-cards > *,
+.tool-grid > *,
+.mobile-career-card{
+  border-radius:var(--ideal-radius)!important;
+  border-color:var(--ideal-line)!important;
+  box-shadow:var(--ideal-soft)!important;
+}
+.section-head h2,
+.start-here-head h2,
+.path-title-row h2,
+.stage-intro h2{
+  color:var(--ideal-ink)!important;
+  font-weight:800!important;
+  letter-spacing:-.025em!important;
+}
+
+/* Mobile career picker */
+.mobile-career-picker{
+  padding:1.5rem 16px!important;
+}
+.mobile-career-card{
+  background:#fff!important;
+  border:1px solid var(--ideal-line)!important;
+  border-radius:16px!important;
+  padding:1.4rem!important;
+  box-shadow:var(--ideal-shadow)!important;
+}
+.mobile-stage-primary{
+  background:var(--ideal-blue)!important;
+  color:#fff!important;
+  border-radius:11px!important;
+  font-weight:650!important;
+}
+
+/* ========== MOBILE ========== */
+@media(max-width:980px){
+  .hero-home-inner{
+    grid-template-columns:1fr;
+    padding:2.8rem 16px 4rem;
+  }
+  .hero-sim-card{order:-1;margin-bottom:.5rem}
+  .ideal-quick-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:640px){
+  .hero-copy h1,
+  .hero-home h1{font-size:2.15rem!important}
+  .hero-actions .home-btn{width:100%;justify-content:center}
+  .ideal-quick-wrap{margin-top:-1.8rem;padding:0 12px 1rem}
+  .ideal-quick-grid{grid-template-columns:1fr 1fr}
+  .ideal-quick-grid a{padding:1.1rem .9rem}
+  .main-nav{padding:10px 14px}
+  /* Keep header usable on mobile */
+  .site-header{background:rgba(255,255,255,.97)!important}
+}
+
+/* Global focus */
+:focus-visible{
+  outline:3px solid #60a5fa!important;
+  outline-offset:3px;
+}
+
+/* Soften old heavy dark body effects when ideal is loaded */
+body::before,body::after{opacity:.15!important}
