@@ -15,13 +15,27 @@
 /*.mp3
   Cache-Control: public, max-age=604800
 
+# Do not broadly cache JS/CSS. Scenario files change often; a 1-day JS cache
+# made Ctrl+Shift+R appear to do nothing after deploys.
 /*.js
-  Cache-Control: public, max-age=86400
+  Cache-Control: public, max-age=0, must-revalidate
 
 /*.css
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=0, must-revalidate
 
 # Scenario UI changes should be visible immediately after deploy
+
+/vitals/*
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/vitals/*.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/vitals/*.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/vitals/*.css
+  Cache-Control: no-cache, no-store, must-revalidate
 
 /vitals/scenario-launcher.html
   Cache-Control: no-cache, no-store, must-revalidate
@@ -41,5 +55,20 @@
 /vitals/visual-patient.css
   Cache-Control: no-cache, no-store, must-revalidate
 
+/vitals/horse-crush-bootstrap.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/vitals/horse-crush-ui-fix.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/vitals/scenario-tool-registry.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/vitals/scenario-transport-handoff-actions.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
 /vitals/scenario-interviews.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/build-info.json
   Cache-Control: no-cache, no-store, must-revalidate
