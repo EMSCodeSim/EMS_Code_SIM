@@ -40,6 +40,10 @@
   body.desktop-scenario-layout.reasoning-upgrade-active .horse-grade-workspace {
     z-index: 12;
   }
+  body.desktop-scenario-layout.reasoning-upgrade-active.hospital-handoff-open .hospital-handoff-workspace,
+  body.desktop-scenario-layout.reasoning-upgrade-active.horse-grade-open .horse-grade-workspace {
+    z-index: 120;
+  }
 
   body.desktop-scenario-layout.scene-guide-active.reasoning-upgrade-active:has(.bottom-nav button[data-panel="findingsPanel"].active) .scene-guide-photo {
     display: none !important;
