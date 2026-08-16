@@ -4160,11 +4160,25 @@
 
     if (desktop) {
       if (id === 'horse_crush') {
-        const infoWindow = $('infoUpdateWindow');
         const questionBox = $('horseClinicalQuestionBox');
         const currentAssessment = $('horseCurrentAssessment');
-        if (infoWindow && questionBox) infoWindow.insertAdjacentElement('afterend', questionBox);
-        if (questionBox && currentAssessment) questionBox.insertAdjacentElement('afterend', currentAssessment);
+        // Keep idle follow-up questions in the right clinical workspace. The
+        // center info window is owned by the communication column and must not
+        // become the parent of Primary/ABC follow-ups.
+        if (questionBox && controlColumn) {
+          const belongsInCommunication = questionBox.classList.contains('history-active')
+            || questionBox.classList.contains('treatment-active');
+          if (!belongsInCommunication && questionBox.parentElement !== controlColumn) {
+            if (currentAssessment?.parentElement === controlColumn) {
+              currentAssessment.insertAdjacentElement('beforebegin', questionBox);
+            } else {
+              controlColumn.prepend(questionBox);
+            }
+          }
+        }
+        if (questionBox && currentAssessment && questionBox.parentElement === controlColumn) {
+          questionBox.insertAdjacentElement('afterend', currentAssessment);
+        }
       }
       controlColumn.appendChild(sheet);
       controlColumn.appendChild(nav);

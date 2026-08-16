@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.15.6';
+  const VERSION = '2026.08.16.1';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -305,11 +305,25 @@
     lastPatientSignature = signature;
     lastPatientShownAt = now;
 
-    // Patient statements already appear in the communication timeline. The
-    // former floating copy could cover the active response controls.
-    $('routedPatientCommunication')?.remove();
+    // Keep a compact center copy of the patient line for History/SAMPLE answers
+    // while still mirroring into the timeline. Relative layout avoids covering
+    // the active response controls under the timeline.
+    let routed = $('routedPatientCommunication');
+    if (!routed) {
+      routed = document.createElement('section');
+      routed.id = 'routedPatientCommunication';
+      routed.className = 'routed-patient-communication';
+      const timeline = stage.querySelector('.communication-timeline, #communicationTimeline');
+      if (timeline?.parentElement === stage) timeline.insertAdjacentElement('afterend', routed);
+      else stage.prepend(routed);
+    }
+    routed.innerHTML = `<header><span aria-hidden="true">👤</span><strong>${label}</strong></header><p>“${value.replace(/[“”"]/g, '')}”</p>`;
+    routed.hidden = false;
     pushTimeline('patient', value);
     stage.querySelector('.patient-communication-idle')?.setAttribute('hidden','');
+    window.setTimeout(() => {
+      if (routed && normalize(routed.textContent).includes(signature.slice(0, Math.min(24, signature.length)))) routed.hidden = true;
+    }, 9000);
   }
 
   function routeInfoWindow() {
@@ -438,11 +452,16 @@
     seedOpeningCommunications();
     installVitalSpeechRule();
     scheduleReconcile();
-    // Watch only direct workspace structure. Timeline messages and button state
-    // changes must not start another layout pass while a user is clicking.
-    const column = $('clinicalInteractionColumn');
-    bodyObserver = new MutationObserver(scheduleReconcile);
-    if (column) bodyObserver.observe(column, { childList:true });
+    // Watch structural DOM changes, but ignore timeline feed and conversation
+    // button churn so clicks are not interrupted by another layout pass.
+    bodyObserver = new MutationObserver(mutations => {
+      const ignore = mutations.every(mutation => {
+        const target = mutation.target?.nodeType === 1 ? mutation.target : mutation.target?.parentElement;
+        return Boolean(target?.closest?.('#communicationTimeline, #patientConversationTurn, .patient-conversation-choices, .timeline-feed, .timeline-messages'));
+      });
+      if (!ignore) scheduleReconcile();
+    });
+    bodyObserver.observe(document.body, { childList:true, subtree:true });
     window.addEventListener('emscodesim:assessment-saved', scheduleReconcile);
     window.addEventListener('emscodesim:vital-saved', scheduleReconcile);
     window.addEventListener('resize', scheduleReconcile, { passive:true });
