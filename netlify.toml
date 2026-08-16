@@ -97,3 +97,13 @@
   to = "/vitals/scenario-launcher.html"
   status = 301
   force = true
+
+[[redirects]]
+  from = "/career-hub"
+  to = "/ems-career-planner.html"
+  status = 301
+
+[[redirects]]
+  from = "/career-hub.html"
+  to = "/ems-career-planner.html"
+  status = 301
