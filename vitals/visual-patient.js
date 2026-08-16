@@ -769,20 +769,20 @@
           help.classList.add('recorded');
           help.setAttribute('role', 'status');
         }
-        try {
-          if (session?.saveFinding) session.saveFinding(key, value, payload);
-          else api?.setFinding?.(key, value, payload);
-          if (help?.isConnected) help.textContent = `Recorded: ${label}`;
-          refreshFromRecord({ force:true });
-          // Assessment refresh can rebuild related workspace nodes. Re-open the
-          // answered follow-up so the recorded choice stays visible and clickable.
-          openFollowup(key);
-        } catch (error) {
-          buttons.forEach(item => { item.disabled = false; });
-          console.error(error);
-          if (help?.isConnected) help.textContent = 'Unable to save. Select the finding again.';
-          toast('Finding was not saved. Try again.');
-        }
+        // Defer the record refresh so Chromium can finish the click gesture
+        // before assessment rebuilds replace these nodes.
+        window.setTimeout(() => {
+          try {
+            if (session?.saveFinding) session.saveFinding(key, value, payload);
+            else api?.setFinding?.(key, value, payload);
+            refreshFromRecord({ force:true });
+            openFollowup(key);
+          } catch (error) {
+            console.error(error);
+            toast('Finding was not saved. Try again.');
+            openFollowup(key);
+          }
+        }, 0);
       }));
     }
 
