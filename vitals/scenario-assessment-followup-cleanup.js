@@ -69,6 +69,20 @@ function restoreSharedClinicalBox(){
  clinical.classList.remove('right-workspace-followup');
 }
 
+function parkFollowupsUnderAssessment(){
+ // Keep Assessment follow-up UI inside #assessmentPanel so panel[hidden]
+ // (and the CSS :not([hidden]) rule) fully covers it when History/Treatment
+ // is selected. Do not clear inline.hidden — returning to Assessment should
+ // restore any open follow-up.
+ const panel=$('assessmentPanel');
+ if(!panel)return;
+ const host=ensureHost();
+ if(!host)return;
+ assessmentQuestionNodes().forEach(node=>{
+   if(node.parentElement!==host)host.appendChild(node);
+ });
+}
+
 function restoreMobile(){
  const host=$('assessmentFollowupHost');
  const tools=$('assessmentTools');
@@ -87,7 +101,10 @@ function reconcile(){
  queued=false;
  restoreSharedClinicalBox();
  if(assessmentActive())moveRight();
- else restoreMobile();
+ else{
+   parkFollowupsUnderAssessment();
+   restoreMobile();
+ }
 }
 function schedule(){
  if(queued)return;
