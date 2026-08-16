@@ -15,8 +15,8 @@
 /*.mp3
   Cache-Control: public, max-age=604800
 
-# Do not broadly cache JS/CSS. Scenario files change often; a 1-day JS cache
-# made Ctrl+Shift+R appear to do nothing after deploys.
+# Do not broadly cache JS/CSS for a day. Scenario files change often; a long
+# JS cache made Ctrl+Shift+R appear to do nothing after deploys.
 /*.js
   Cache-Control: public, max-age=0, must-revalidate
 
@@ -25,50 +25,47 @@
 
 # Scenario UI changes should be visible immediately after deploy
 
-/vitals/*
-  Cache-Control: no-cache, no-store, must-revalidate
-
 /vitals/*.html
   Cache-Control: no-cache, no-store, must-revalidate
 
 /vitals/*.js
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, must-revalidate
 
 /vitals/*.css
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, must-revalidate
 
 /vitals/scenario-launcher.html
   Cache-Control: no-cache, no-store, must-revalidate
 
 /vitals/scenario-launcher.js
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, must-revalidate
 
 /vitals/scenario-launcher.css
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, must-revalidate
 
 /vitals/visual-patient.html
   Cache-Control: no-cache, no-store, must-revalidate
 
 /vitals/visual-patient.js
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, must-revalidate
 
 /vitals/visual-patient.css
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, must-revalidate
 
 /vitals/horse-crush-bootstrap.js
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, must-revalidate
 
 /vitals/horse-crush-ui-fix.js
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, must-revalidate
 
 /vitals/scenario-tool-registry.js
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, must-revalidate
 
 /vitals/scenario-transport-handoff-actions.js
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, must-revalidate
 
 /vitals/scenario-interviews.js
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: public, max-age=0, must-revalidate
 
 /build-info.json
   Cache-Control: no-cache, no-store, must-revalidate
