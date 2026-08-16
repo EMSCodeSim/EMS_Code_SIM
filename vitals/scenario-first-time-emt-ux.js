@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.16.7';
+  const VERSION = '2026.08.16.9';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';
@@ -335,6 +335,11 @@
   // 12: one-time, non-blocking first-use tip (not a modal overlay).
   function firstUseOrientation() {
     document.getElementById('emtFirstUseOrientation')?.remove();
+    // Playwright / automated browsers must not be blocked by onboarding chrome.
+    if (navigator.webdriver) {
+      try { localStorage.setItem('emscodesim_horse_orientation_v1', '1'); } catch (_) {}
+      return;
+    }
     let seen = false;
     try { seen = localStorage.getItem('emscodesim_horse_orientation_v1') === '1'; } catch (_) { seen = true; }
     if (seen || document.getElementById('emtFirstUseTip')) return;
@@ -393,11 +398,11 @@
         .emt-monitor-deemphasized{opacity:.92}
         .emt-secondary-quick-controls{opacity:.7;transform:scale(.94);transform-origin:right top}
       }
-      .emt-first-use-tip{position:fixed;z-index:85;left:10px;right:10px;bottom:calc(78px + env(safe-area-inset-bottom));max-width:420px;margin:0 auto;padding:12px 12px 12px 14px;display:flex;gap:10px;align-items:flex-start;border:1px solid rgba(114,201,235,.45);border-radius:14px;background:rgba(8,30,45,.96);color:#fff;box-shadow:0 12px 30px rgba(0,0,0,.28);backdrop-filter:blur(10px)}
+      .emt-first-use-tip{position:fixed;z-index:85;left:10px;right:10px;bottom:calc(78px + env(safe-area-inset-bottom));max-width:420px;margin:0 auto;padding:12px 12px 12px 14px;display:flex;gap:10px;align-items:flex-start;border:1px solid rgba(114,201,235,.45);border-radius:14px;background:rgba(8,30,45,.96);color:#fff;box-shadow:0 12px 30px rgba(0,0,0,.28);backdrop-filter:blur(10px);pointer-events:none}
       .emt-first-use-tip strong{display:block;font-size:.82rem;margin-bottom:3px}
       .emt-first-use-tip p{margin:0;color:#c9dce6;font-size:.78rem;line-height:1.4}
-      .emt-first-use-tip button{flex:0 0 auto;min-height:40px;padding:8px 12px;border:0;border-radius:10px;background:#d9f3ff;color:#062238;font-weight:900;cursor:pointer}
-      @media(min-width:980px){.emt-first-use-tip{left:auto;right:24px;bottom:24px;margin:0}}
+      .emt-first-use-tip button{flex:0 0 auto;min-height:40px;padding:8px 12px;border:0;border-radius:10px;background:#d9f3ff;color:#062238;font-weight:900;cursor:pointer;pointer-events:auto}
+      @media(min-width:980px){.emt-first-use-tip{left:18px;right:auto;bottom:auto;top:76px;margin:0;max-width:360px}}
       .emt-first-use-orientation{display:none!important}
       .emt-first-use-card{display:none!important}
     `;

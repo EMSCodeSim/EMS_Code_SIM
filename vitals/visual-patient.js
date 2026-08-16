@@ -1038,7 +1038,7 @@
         description:'Inspect, palpate, and assess breath sounds.',
         items:[
           { id:'chest_assessment', label:'Chest Assessment', prompt:'Inspect and palpate the chest; assess respiratory findings.' },
-          { id:'lung_sounds', label:'Breath Sounds', prompt:'Auscultate bilateral breath sounds.' }
+          { id:'breath_sounds', label:'Breath Sounds', prompt:'Auscultate bilateral breath sounds.' }
         ]
       },
       {
@@ -1127,14 +1127,27 @@
           horseWorkspaceContext.openFollowup(item.id);
           return;
         }
+        // Breath sounds launches the auscultation mini-sim over the patient.
+        if (item.id === 'breath_sounds' || item.id === 'lung_sounds') {
+          const href = '/vitals/breath-sounds-scenario.html';
+          const opened = window.EMSCodeSimMiniSimOverlay?.openOverlay?.(href, 'Breath sounds')
+            || openEmbeddedSimulator(href, 'Breath sounds');
+          if (!opened) location.href = href;
+          return;
+        }
+        // Focused physical exams from the horse scenario package.
+        if (window.EMSCodeSimHorseCrush?.performExam) {
+          const examResult = window.EMSCodeSimHorseCrush.performExam(item.id);
+          if (examResult) return;
+        }
         // Reuse existing assessment selection path if available.
         const existing = document.querySelector(`[data-assessment-key="${CSS.escape(item.id)}"], [data-assessment="${CSS.escape(item.id)}"]`);
         if (existing && existing !== button) {
           existing.click();
           return;
         }
-        // Fallback to current assessment workflow.
-        selectHorseCurrentAssessment?.(item.id);
+        // Fallback to current assessment workflow for abc/head_to_toe/focused_leg only.
+        if (['abc','head_to_toe','focused_leg'].includes(item.id)) selectHorseCurrentAssessment?.(item.id);
       });
     });
   }

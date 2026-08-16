@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.16.8';
+  const VERSION = '2026.08.16.9';
   let lastAbcCommitAt = 0;
   let lastAbcCommitToken = '';
   const FOCUSED_EXAMS = new Set([
@@ -372,6 +372,11 @@
     const key = String(button.dataset.assessmentItem || '');
     if (ABC[key]) {
       event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation?.(); openDesktopAbcFollowup(button, key); return;
+    }
+    if (SIM_ASSESSMENTS[key] || key === 'lung_sounds') {
+      event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation?.();
+      openAssessmentSim(key === 'lung_sounds' ? 'breath_sounds' : key, button);
+      return;
     }
     if (!FOCUSED_EXAMS.has(key)) return;
     const horse = window.EMSCodeSimHorseCrush;
