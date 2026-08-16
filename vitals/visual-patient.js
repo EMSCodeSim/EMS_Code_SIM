@@ -4737,6 +4737,12 @@
   $('transportScenarioQuick')?.addEventListener('click', openHorseTransportQuick);
   $('handoffScenarioQuick')?.addEventListener('click', () => openHorseHospitalHandoff(false));
   $('gradeScenarioQuick')?.addEventListener('click', openHorseCallGrade);
+  window.EMSCodeSimHorseEncounterActions = Object.freeze({
+    openTransport: openHorseTransportQuick,
+    openHandoff: (sample = false) => openHorseHospitalHandoff(Boolean(sample)),
+    openGrade: openHorseCallGrade,
+    closeHandoff: closeHorseHospitalHandoff
+  });
   $('hospitalHandoffDraft')?.addEventListener('input', event => { event.currentTarget.dataset.userEdited = 'true'; });
   if ($('recordTreatmentLink')) $('recordTreatmentLink').href = toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general');
   if ($('fullPatientRecordLink')) $('fullPatientRecordLink').href = `/vitals/patient-record.html?mode=scenario&resume=1&case=${encodeURIComponent(id)}&return=${encodeURIComponent(`/vitals/visual-patient.html?case=${id}`)}`;

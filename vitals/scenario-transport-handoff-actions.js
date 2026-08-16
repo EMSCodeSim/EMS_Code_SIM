@@ -1,11 +1,13 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.15.1';
+  const VERSION = '2026.08.16.3';
   const desktop = window.matchMedia('(min-width:980px)');
   const $ = id => document.getElementById(id);
   let queued = false;
   let observer = null;
+  let lastSignature = '';
+  let stylesInstalled = false;
 
   function horseScenario() {
     const requested = new URLSearchParams(location.search).get('case');
@@ -32,6 +34,38 @@
     return `<option value="${escapeHtml(value)}"${selected === value ? ' selected' : ''}>${escapeHtml(value)}</option>`;
   }
 
+  function installStyles() {
+    if (stylesInstalled || document.querySelector('style[data-transport-handoff-actions]')) return;
+    stylesInstalled = true;
+    const style = document.createElement('style');
+    style.dataset.transportHandoffActions = VERSION;
+    style.textContent = `
+      #horseTransportHandoffActions{margin-top:10px;padding-top:10px;border-top:1px solid rgba(91,145,171,.35);display:grid;gap:8px}
+      #horseTransportHandoffActions .horse-endpoint-actions-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+      #horseTransportHandoffActions .horse-endpoint-actions-head small{display:block;color:#8fcbe2;font-size:.65rem;font-weight:900;letter-spacing:.09em}
+      #horseTransportHandoffActions .horse-endpoint-actions-head strong{display:block;color:#fff;font-size:.98rem}
+      #horseTransportHandoffActions .horse-endpoint-actions-head span{color:#a8c2cf;font-size:.7rem;font-weight:800;white-space:nowrap}
+      #horseTransportHandoffActions .horse-endpoint-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+      #horseTransportHandoffActions .horse-endpoint-action{min-height:54px;display:grid;grid-template-columns:24px 1fr;gap:8px;align-items:center;padding:10px 11px;border:1px solid #3c6a80;border-radius:10px;background:#12384d;color:#fff;text-align:left;font:inherit;cursor:pointer;touch-action:manipulation}
+      #horseTransportHandoffActions .horse-endpoint-action strong{display:block;font-size:.8rem}
+      #horseTransportHandoffActions .horse-endpoint-action small{display:block;margin-top:2px;color:#a9c6d4;font-size:.62rem;line-height:1.25}
+      #horseTransportHandoffActions .horse-endpoint-action:hover,#horseTransportHandoffActions .horse-endpoint-action:focus-visible{background:#194c66;border-color:#67b9df;outline:2px solid rgba(104,201,245,.25)}
+      #horseTransportHandoffActions .horse-endpoint-action.complete{border-color:#4d9b73;background:#103a35}
+      #horseTransportHandoffActions .horse-endpoint-detail{display:grid;gap:8px;padding:10px;border:1px solid #31566d;border-radius:12px;background:#0b2231}
+      #horseTransportHandoffActions .horse-endpoint-detail[hidden]{display:none!important}
+      #horseTransportHandoffActions .horse-endpoint-detail-head{display:flex;align-items:center;gap:8px}
+      #horseTransportHandoffActions .horse-endpoint-detail-head button{min-height:34px;padding:0 10px;border:1px solid #3c6a80;border-radius:8px;background:#12384d;color:#fff;cursor:pointer}
+      #horseTransportHandoffActions .horse-endpoint-transport-form{display:grid;gap:8px}
+      #horseTransportHandoffActions .horse-endpoint-transport-form label{display:grid;gap:4px;color:#cfe3ee;font-size:.72rem;font-weight:800}
+      #horseTransportHandoffActions .horse-endpoint-transport-form select,#horseTransportHandoffActions .horse-endpoint-transport-form textarea{width:100%;min-height:38px;padding:8px 9px;border:1px solid #3c6a80;border-radius:8px;background:#0b1f2e;color:#fff;font:inherit}
+      #horseTransportHandoffActions .horse-endpoint-submit{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+      #horseTransportHandoffActions .horse-endpoint-submit button{min-height:42px;padding:0 14px;border:0;border-radius:9px;background:#d9f3ff;color:#062238;font-weight:900;cursor:pointer}
+      #horseTransportHandoffActions .horse-endpoint-submit p{margin:0;color:#7ae0b4;font-size:.72rem;font-weight:800}
+      @media(max-width:760px){#horseTransportHandoffActions .horse-endpoint-action-grid{grid-template-columns:1fr}}
+    `;
+    document.head.appendChild(style);
+  }
+
   function ensureHost() {
     if (!active()) return null;
     const tools = $('treatmentTools');
@@ -41,12 +75,13 @@
     const menuActive = tools.classList.contains('horse-treatment-group-menu');
     if (!menuActive) {
       host?.remove();
+      lastSignature = '';
       return null;
     }
     if (!host) {
       host = document.createElement('section');
       host.id = 'horseTransportHandoffActions';
-      host.className = 'horse-transport-handoff-actions';
+      host.className = 'horse-transport-handoff-actions horse-natural-encounter-end';
       host.setAttribute('aria-label', 'Transport and hospital handoff');
     }
     if (host.parentElement !== tools) tools.appendChild(host);
@@ -94,7 +129,17 @@
   }
 
   function handoffSaved(current = record()) {
-    return Boolean(current?.documentation?.handoffSavedAt);
+    return Boolean(current?.documentation?.handoffSavedAt && current?.documentation?.handoff);
+  }
+
+  function stateSignature(current = record()) {
+    const tools = $('treatmentTools');
+    return [
+      active() ? '1' : '0',
+      tools?.classList.contains('horse-treatment-group-menu') ? '1' : '0',
+      transportSaved(current) ? '1' : '0',
+      handoffSaved(current) ? '1' : '0'
+    ].join(':');
   }
 
   function summaryMarkup(current = record()) {
@@ -117,20 +162,54 @@
   }
 
   function render() {
+    installStyles();
     const host = ensureHost();
     if (!host) return;
     if (host.dataset.mode === 'detail') return;
-    const next = summaryMarkup();
-    if (host.innerHTML !== next) host.innerHTML = next;
-    bindSummary(host);
+    const signature = stateSignature();
+    // Avoid rewriting live buttons. Comparing innerHTML strings is unstable and
+    // was detaching #horseOpenTransport / #horseOpenHandoff on every mutation.
+    if (signature === lastSignature && host.querySelector('#horseOpenTransport') && host.querySelector('#horseOpenHandoff')) {
+      return;
+    }
+    lastSignature = signature;
+    host.innerHTML = summaryMarkup();
   }
 
-  function bindSummary() {
-    // Endpoint clicks are handled once at the document level so re-rendering
-    // the menu cannot detach or duplicate their handlers.
+  function openTransportViaQuickAction() {
+    const actions = window.EMSCodeSimHorseEncounterActions;
+    if (typeof actions?.openTransport === 'function') {
+      actions.openTransport();
+      // openHorseTransportQuick paints into #horseClinicalQuestionBox; promote it
+      // into the treatment workspace so the form is actually usable.
+      const promote = () => window.EMSCodeSimHorseCrushUiFix?.promoteHiddenTransportForm?.();
+      window.setTimeout(promote, 0);
+      window.requestAnimationFrame(promote);
+      return true;
+    }
+    const quick = $('transportScenarioQuick');
+    if (!quick) return false;
+    quick.click();
+    return true;
+  }
+
+  function openHandoffViaQuickAction() {
+    const actions = window.EMSCodeSimHorseEncounterActions;
+    if (typeof actions?.openHandoff === 'function') {
+      actions.openHandoff(false);
+      return true;
+    }
+    const quick = $('handoffScenarioQuick');
+    if (!quick) return false;
+    quick.click();
+    return true;
   }
 
   function openTransport() {
+    // Prefer the shared transport quick-action path, which already promotes the
+    // transport form into the right clinical workspace.
+    if (openTransportViaQuickAction()) return;
+
     const host = ensureHost();
     const detail = $('horseEndpointDetail');
     const current = record() || {};
@@ -177,31 +256,43 @@
 
     const now = new Date().toISOString();
     const api = window.EMSCodeSimPatientRecord;
-    api?.update?.(draft => {
-      draft.documentation = draft.documentation || {};
-      draft.documentation.transportDecisionAt = now;
-      draft.documentation.transportPriority = priority;
-      draft.documentation.destination = destination;
-      draft.documentation.transportNotification = notification;
-      draft.documentation.transportRationale = rationale;
-      draft.impressions = draft.impressions || {};
-      draft.impressions.primary = impression;
-      return draft;
-    });
-    api?.mergeCareLog?.([{
-      id:`transport-${Date.now()}`,
-      eventId:`transport-${Date.now()}`,
-      type:'transport', category:'transport', key:'transport_decision', label:'Transport initiated',
-      value:`${priority} to ${destination}`,
-      details:`Working impression: ${impression}${notification ? ` • ${notification}` : ''}${rationale ? ` • ${rationale}` : ''}`,
-      source:'scenario-treatment-transport', recordedAt:now
-    }]);
+    try {
+      api?.setImpressions?.({ primary: impression, action: priority, source:'scenario-treatment-transport', updatedAt: now });
+      api?.setDocumentation?.({
+        transportPriority: priority,
+        destination,
+        transportNotification: notification,
+        transportRationale: rationale,
+        transportDecisionAt: now
+      });
+      api?.setFinding?.('transport_decision', `${priority} to ${destination}`, {
+        label:'Transport decision',
+        source:'scenario-treatment-transport',
+        details: rationale || `Working impression: ${impression}`
+      });
+      api?.mergeCareLog?.([{
+        id:`transport-${Date.now()}`,
+        eventId:`transport-${Date.now()}`,
+        type:'transport', category:'transport', key:'transport_decision', label:'Transport initiated',
+        value:`${priority} to ${destination}`,
+        details:`Working impression: ${impression}${notification ? ` • ${notification}` : ''}${rationale ? ` • ${rationale}` : ''}`,
+        source:'scenario-treatment-transport', recordedAt:now
+      }]);
+    } catch (error) {
+      console.error(error);
+      if (status) status.textContent = 'Unable to save transport. Try again.';
+      return;
+    }
+    lastSignature = '';
     window.dispatchEvent(new CustomEvent('emscodesim:transport-saved', { detail:{ impression, priority, destination, notification } }));
     if (status) status.textContent = 'Transport decision recorded.';
     window.setTimeout(closeDetail, 500);
   }
 
   function openHandoff() {
+    // Open the patient-picture hospital handoff workspace — the intended UX.
+    if (openHandoffViaQuickAction()) return;
+
     const host = ensureHost();
     const detail = $('horseEndpointDetail');
     const card = document.querySelector('.handoff-treatment-card');
@@ -235,8 +326,8 @@
     }
     restoreEndpointMenu(host);
     host.dataset.mode = '';
+    lastSignature = '';
     host.innerHTML = summaryMarkup();
-    bindSummary(host);
   }
 
   function schedule() {
@@ -248,7 +339,28 @@
     });
   }
 
+  function startObserver() {
+    observer?.disconnect();
+    const tools = $('treatmentTools');
+    if (!tools) return;
+    observer = new MutationObserver(mutations => {
+      if (!active()) return;
+      const host = $('horseTransportHandoffActions');
+      if (host?.dataset.mode === 'detail') return;
+      const meaningful = mutations.some(mutation => {
+        if (mutation.type !== 'childList' && mutation.type !== 'attributes') return false;
+        const target = mutation.target?.nodeType === 1 ? mutation.target : mutation.target?.parentElement;
+        if (!target) return false;
+        if (target.closest?.('#horseTransportHandoffActions')) return false;
+        return target === tools || target.id === 'treatmentTools' || target.classList?.contains('horse-treatment-group-menu');
+      });
+      if (meaningful) schedule();
+    });
+    observer.observe(tools, { childList:true, attributes:true, attributeFilter:['class'] });
+  }
+
   function start() {
+    installStyles();
     schedule();
     desktop.addEventListener?.('change', schedule);
     document.addEventListener('click', event => {
@@ -261,19 +373,17 @@
         else openHandoff();
         return;
       }
-      if (event.target.closest?.('button[data-panel="treatmentPanel"]')) setTimeout(schedule, 0);
+      if (event.target.closest?.('button[data-panel="treatmentPanel"]')) {
+        setTimeout(() => { startObserver(); schedule(); }, 0);
+      }
     }, true);
-    window.addEventListener('emscodesim:transport-saved', schedule);
-    window.addEventListener('storage', schedule);
-    observer = new MutationObserver(mutations => {
-      if (!active()) return;
-      const meaningful = mutations.some(m => {
-        const target = m.target?.nodeType === 1 ? m.target : m.target?.parentElement;
-        return !target?.closest?.('#horseTransportHandoffActions');
-      });
-      if (meaningful) schedule();
-    });
-    observer.observe(document.body, { childList:true, subtree:true });
+    window.addEventListener('emscodesim:transport-saved', () => { lastSignature = ''; schedule(); });
+    window.addEventListener('emscodesim:scenario-finding-saved', () => { lastSignature = ''; schedule(); });
+    window.addEventListener('emscodesim:patient-record-updated', () => { lastSignature = ''; schedule(); });
+    window.addEventListener('storage', () => { lastSignature = ''; schedule(); });
+    startObserver();
+    window.setTimeout(() => { startObserver(); schedule(); }, 250);
+    window.setTimeout(() => { startObserver(); schedule(); }, 900);
     window.addEventListener('pagehide', () => observer?.disconnect(), { once:true });
   }
 

@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.16.2';
+  const VERSION = '2026.08.16.3';
   const FOCUSED_EXAMS = new Set([
     'head_exam',
     'neck_back',
@@ -337,7 +337,7 @@
 
   document.addEventListener('click', event => {
     if (!isDesktopHorse()) return;
-    if (!event.target.closest?.('#handoffFromProgress, #transportScenarioQuick')) return;
+    if (!event.target.closest?.('#handoffFromProgress, #transportScenarioQuick, #horseOpenTransport')) return;
     scheduleTransportPromotion();
   });
 
