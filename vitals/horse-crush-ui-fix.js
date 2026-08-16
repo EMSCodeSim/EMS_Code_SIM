@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.16.5';
+  const VERSION = '2026.08.16.6';
   let lastAbcCommitAt = 0;
   let lastAbcCommitToken = '';
   const FOCUSED_EXAMS = new Set([
@@ -222,14 +222,30 @@
     const nodes = [...document.querySelectorAll('#horseAssessmentInlineQuestion')];
     nodes.slice(1).forEach(node => node.remove());
     let inline = document.getElementById('horseAssessmentInlineQuestion');
-    if (inline) return inline;
+    if (!inline) {
+      inline = document.createElement('div');
+      inline.id = 'horseAssessmentInlineQuestion';
+      inline.className = 'horse-assessment-inline-question';
+      inline.hidden = true;
+    }
+    const panel = document.getElementById('assessmentPanel');
     const tools = document.getElementById('assessmentTools');
-    if (!tools) return null;
-    inline = document.createElement('div');
-    inline.id = 'horseAssessmentInlineQuestion';
-    inline.className = 'horse-assessment-inline-question';
-    inline.hidden = true;
-    tools.appendChild(inline);
+    let host = document.getElementById('assessmentFollowupHost');
+    if (!host && panel) {
+      host = document.createElement('section');
+      host.id = 'assessmentFollowupHost';
+      host.className = 'assessment-followup-host';
+      host.setAttribute('aria-label', 'Assessment follow-up questions');
+      if (tools?.parentElement === panel) tools.insertAdjacentElement('afterend', host);
+      else panel.appendChild(host);
+    }
+    // Prefer the dedicated follow-up host under the main assessment questions.
+    if (host) {
+      if (inline.parentElement !== host) host.appendChild(inline);
+      host.hidden = false;
+      return inline;
+    }
+    if (tools && inline.parentElement !== tools) tools.appendChild(inline);
     return inline;
   }
 
@@ -297,7 +313,11 @@
     if (!item || !inline) return false;
     const current = finding(key);
     showObservation(key);
+    // Re-assert placement under the main assessment questions after any rebuild.
+    const host = document.getElementById('assessmentFollowupHost');
+    if (host && inline.parentElement !== host) host.appendChild(inline);
     inline.hidden = false;
+    if (host) host.hidden = false;
     inline.dataset.abcKey = key;
     inline.innerHTML = `<div class="horse-question-head"><div><small>FOLLOW-UP QUESTION</small><strong>${escapeHtml(item.label)}</strong></div></div><p>${escapeHtml(item.prompt)}</p><div class="horse-question-choice-grid" role="group" aria-label="${escapeHtml(item.label)} finding choices">${item.choices.map(([value, label, normality], index) => {
       const selected = current && (current.value === value || current.finding === value);

@@ -282,10 +282,29 @@
       }
     }
 
-    // ABC and focused-assessment follow-ups belong to the right clinical workspace.
+    // ABC and focused-assessment follow-ups sit under the main assessment
+    // questions in the right clinical workspace — never above them.
     const assessmentQuestion = $('horseAssessmentInlineQuestion');
     const assessmentTools = $('assessmentTools');
-    if (assessmentQuestion && assessmentTools && !assessmentTools.contains(assessmentQuestion)) {
+    const assessmentPanel = $('assessmentPanel');
+    let followupHost = $('assessmentFollowupHost');
+    if (assessmentQuestion && assessmentPanel) {
+      if (!followupHost) {
+        followupHost = document.createElement('section');
+        followupHost.id = 'assessmentFollowupHost';
+        followupHost.className = 'assessment-followup-host';
+        followupHost.setAttribute('aria-label', 'Assessment follow-up questions');
+        if (assessmentTools?.parentElement === assessmentPanel) {
+          assessmentTools.insertAdjacentElement('afterend', followupHost);
+        } else {
+          assessmentPanel.appendChild(followupHost);
+        }
+      } else if (assessmentTools?.parentElement === assessmentPanel && followupHost.previousElementSibling !== assessmentTools) {
+        assessmentTools.insertAdjacentElement('afterend', followupHost);
+      }
+      if (assessmentQuestion.parentElement !== followupHost) followupHost.appendChild(assessmentQuestion);
+      followupHost.hidden = assessmentQuestion.hidden;
+    } else if (assessmentQuestion && assessmentTools && !assessmentTools.contains(assessmentQuestion)) {
       assessmentTools.appendChild(assessmentQuestion);
     }
 

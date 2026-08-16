@@ -1090,14 +1090,14 @@
         <button type="button" class="horse-assessment-back" id="horseAssessmentBack">‹ Assessments</button>
         <div><small>ASSESSMENT</small><strong>${escapeHtml(category.label)}</strong><span>${escapeHtml(category.description)}</span></div>
       </div>
-      <div class="horse-assessment-workspace-actions">
+      <div class="horse-assessment-workspace-actions" data-assessment-main-questions="1">
         ${category.items.map(item => `
           <button type="button" class="horse-assessment-workspace-action${completed(item.id) ? ' used' : ''}" data-assessment-item="${escapeHtml(item.id)}">
             <span>${completed(item.id) ? '✓' : '○'}</span>
             <strong>${escapeHtml(item.label)}</strong>
           </button>`).join('')}
-      </div>
-      <div id="horseAssessmentInlineQuestion" class="horse-assessment-inline-question" hidden></div>`;
+      </div>`;
+    // Follow-up questions live under the main assessment actions in #assessmentFollowupHost.
 
     box.querySelector('#horseAssessmentBack')?.addEventListener('click', () => {
       horseAssessmentActiveCategory = '';
@@ -1802,7 +1802,14 @@
     const values = {};
     for (const field of treatmentDocumentation(plan)) {
       const value = treatmentInputValue(form, field);
-      if (field.required && !value) return { ok:false, message:`Enter ${field.label.toLowerCase()} before recording this treatment.` };
+      const required = field.required || form.elements.namedItem(field.name)?.dataset?.wasRequired === '1';
+      if (required && !value) {
+        const control = form.elements.namedItem(field.name);
+        const choiceGroup = control?.parentElement?.querySelector?.('.treatment-followup-choice-group');
+        if (choiceGroup) choiceGroup.scrollIntoView({ block:'nearest' });
+        else control?.scrollIntoView?.({ block:'nearest' });
+        return { ok:false, message:`Enter ${field.label.toLowerCase()} before recording this treatment.` };
+      }
       if (value && field.acceptedPattern) {
         const pattern = new RegExp(field.acceptedPattern, 'i');
         if (!pattern.test(value)) return { ok:false, message:field.error || `${field.label} is not accepted for this scenario. Review the dose or setting and try again.` };
@@ -2298,7 +2305,7 @@
     const fields = treatmentDocumentation(plan);
     detail.innerHTML = `
       <p class="horse-treatment-summary">${escapeHtml(plan.summary || 'Perform the selected treatment and observe the patient response.')}</p>
-      <form class="horse-treatment-action-form">
+      <form class="horse-treatment-action-form" novalidate>
         ${fields.length ? `<div class="horse-treatment-detail-grid">${fields.map(treatmentFieldMarkup).join('')}</div>` : ''}
         <div class="horse-treatment-perform-row"><button class="horse-treatment-perform" type="submit">${horseTreatmentRecordedCount(plan) ? 'Perform again' : 'Perform treatment'}</button><p class="treatment-entry-error" hidden></p></div>
       </form>`;
@@ -2308,7 +2315,11 @@
       const validation = validateTreatmentDocumentation(plan, form);
       const error = form.querySelector('.treatment-entry-error');
       if (!validation.ok) {
-        if (error) { error.textContent = validation.message; error.hidden = false; }
+        if (error) {
+          error.textContent = validation.message;
+          error.hidden = false;
+          error.scrollIntoView({ block:'nearest', behavior:'smooth' });
+        }
         return;
       }
       if (error) error.hidden = true;

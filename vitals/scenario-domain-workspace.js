@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.16.1';
+  const VERSION = '2026.08.16.6';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -134,9 +134,13 @@
 
     const inlineQuestion = $('horseAssessmentInlineQuestion');
     const assessmentTools = $('assessmentTools');
+    const followupHost = $('assessmentFollowupHost');
     clearInteractionOrder(inlineQuestion);
-    if (inlineQuestion && assessmentTools && inlineQuestion.parentElement !== assessmentTools) {
-      assessmentTools.prepend(inlineQuestion);
+    // Keep follow-ups under the main assessment actions (never above them).
+    if (inlineQuestion && followupHost && inlineQuestion.parentElement !== followupHost) {
+      followupHost.appendChild(inlineQuestion);
+    } else if (inlineQuestion && assessmentTools && inlineQuestion.parentElement !== assessmentTools) {
+      assessmentTools.appendChild(inlineQuestion);
     }
 
     const arrival = $('horseArrivalDecision');

@@ -22,9 +22,15 @@ function ensureHost(){
    host.id='assessmentFollowupHost';
    host.className='assessment-followup-host';
    host.setAttribute('aria-label','Assessment follow-up questions');
-   const tools=$('assessmentTools');
-   if(tools?.parentElement===panel)panel.insertBefore(host,tools);
-   else panel.appendChild(host);
+ }
+ const tools=$('assessmentTools');
+ // Main assessment choices stay first in the right rail; follow-ups sit under them.
+ if(tools?.parentElement===panel){
+   if(host.parentElement!==panel || host.previousElementSibling!==tools){
+     tools.insertAdjacentElement('afterend', host);
+   }
+ }else if(host.parentElement!==panel){
+   panel.appendChild(host);
  }
  return host;
 }
@@ -67,7 +73,12 @@ function restoreMobile(){
  const host=$('assessmentFollowupHost');
  const tools=$('assessmentTools');
  const inline=$('horseAssessmentInlineQuestion');
- if(host&&inline&&tools&&inline.parentElement===host)tools.prepend(inline);
+ // On mobile, keep follow-ups immediately under the main assessment actions.
+ if(host&&inline&&tools&&inline.parentElement===host){
+   const actions=tools.querySelector('[data-assessment-main-questions], .horse-assessment-workspace-actions');
+   if(actions)actions.insertAdjacentElement('afterend', inline);
+   else tools.appendChild(inline);
+ }
  if(host&&!host.children.length)host.remove();
  restoreSharedClinicalBox();
 }

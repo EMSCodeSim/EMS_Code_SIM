@@ -114,12 +114,22 @@
   function enhanceSelect(select) {
     if (!select || select.dataset.choiceButtonsReady === '1') return;
     if (select.closest('.horse-transport-selection-form')) return;
-    if (!select.closest('.horse-treatment-action-form')) return;
+    const form = select.closest('.horse-treatment-action-form');
+    if (!form) return;
     const options = [...select.options].filter(option => option.value);
     if (!options.length) return;
 
+    // Native constraint validation on opacity-0 selects blocks submit with no
+    // visible feedback, which makes Perform treatment look broken.
+    form.setAttribute('novalidate', '');
     select.dataset.choiceButtonsReady = '1';
+    if (select.required) {
+      select.dataset.wasRequired = '1';
+      select.required = false;
+    }
     select.classList.add('treatment-native-select-hidden');
+    select.setAttribute('aria-hidden', 'true');
+    select.tabIndex = -1;
     const group = document.createElement('div');
     group.className = 'treatment-followup-choice-group';
     group.setAttribute('role', 'group');
@@ -139,6 +149,8 @@
         select.dispatchEvent(new Event('input', { bubbles:true }));
         select.dispatchEvent(new Event('change', { bubbles:true }));
         group.querySelectorAll('.treatment-followup-choice').forEach(item => item.classList.toggle('selected', item === button));
+        const error = form.querySelector('.treatment-entry-error');
+        if (error) error.hidden = true;
       });
       group.appendChild(button);
     });

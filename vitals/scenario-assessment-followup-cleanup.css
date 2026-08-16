@@ -1,8 +1,22 @@
 @media (min-width:980px){
+  #assessmentPanel{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:8px!important;
+  }
+  #assessmentPanel > .sub{
+    order:0;
+  }
+  #assessmentPanel > #assessmentTools{
+    order:1;
+    flex:0 0 auto;
+  }
   #assessmentPanel .assessment-followup-host{
+    order:2;
     display:grid;
     gap:8px;
-    margin:0 0 8px;
+    margin:8px 0 0;
+    flex:0 0 auto;
   }
   #assessmentPanel .assessment-followup-host[hidden]{display:none!important}
   #assessmentPanel .right-workspace-followup{
