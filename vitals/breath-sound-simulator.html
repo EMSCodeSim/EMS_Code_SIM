@@ -3,394 +3,281 @@
 <head>
 <meta charset="utf-8"/>
 <title>Breath Sound Simulator | EMSCodeSim</title>
-<link href="https://emscodesim.com/vitals/breath-sound-simulator.html" rel="canonical"/>
-<meta content="Practice EMS lung auscultation with interactive anterior/posterior chest sites, normal and adventitious breath sounds, and side-to-side comparison." name="description"/>
-<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<link rel="canonical" href="https://emscodesim.com/vitals/breath-sound-simulator.html"/>
+<meta name="description" content="Practice EMS lung auscultation on upper and lower left and right chest fields with real training audio."/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <meta name="theme-color" content="#0b1220"/>
-<link href="/styles/responsive.css" rel="stylesheet"/>
 <style>
 :root{
-  --bg:#0b1220; --panel:#111827; --card:#ffffff; --ink:#0f172a; --muted:#64748b;
-  --line:#e2e8f0; --blue:#2563eb; --blue2:#3b82f6; --cyan:#06b6d4; --ok:#16a34a; --warn:#d97706;
-  --radius:14px; --shadow:0 12px 40px rgba(0,0,0,.35);
+  --bg:#0b1220; --panel:#111827; --card:#151c2c; --ink:#e2e8f0; --muted:#94a3b8;
+  --line:rgba(148,163,184,.22); --blue:#2563eb; --blue2:#3b82f6; --green:#22c55e;
+  --radius:14px;
 }
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:#e2e8f0;-webkit-font-smoothing:antialiased;touch-action:manipulation}
-a{color:inherit}
+html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;touch-action:manipulation}
+a{color:inherit;text-decoration:none}
 
-.topbar{position:sticky;top:0;z-index:40;background:rgba(11,18,32,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08);padding:calc(env(safe-area-inset-top) + 10px) 14px 12px}
-.topbar-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:10px}
-.iconbtn{appearance:none;border:0;background:rgba(255,255,255,.06);color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px;padding:0 12px;border-radius:11px;font-weight:700;cursor:pointer}
-.iconbtn:hover{background:rgba(255,255,255,.12)}
-.topbar-title{flex:1;text-align:center;font-weight:800;font-size:1.05rem;letter-spacing:-.01em}
+.shell{max-width:820px;margin:0 auto;padding:0 16px calc(env(safe-area-inset-bottom) + 24px)}
 
-.learning-banner{max-width:720px;margin:12px auto 0;padding:0 14px}
-.breath-learning-link{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border-radius:13px;background:rgba(37,99,235,.15);border:1px solid rgba(59,130,246,.35);color:#bfdbfe;text-decoration:none;font-weight:700}
-.breath-learning-link span{display:block;font-size:.82rem;font-weight:500;color:#93c5fd;margin-top:2px}
-
-.app{max-width:720px;margin:0 auto;padding:14px 14px calc(env(safe-area-inset-bottom) + 20px);display:flex;flex-direction:column;gap:14px}
-.subtitle{margin:0;color:#94a3b8;font-size:.92rem;text-align:center}
-.card{background:var(--card);color:var(--ink);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
-
-.view-row{display:flex;flex-direction:column;gap:12px;align-items:center}
-.view-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:100%}
-.btn{appearance:none;border-radius:12px;padding:11px 14px;font-weight:700;font-size:.95rem;border:1px solid var(--line);color:var(--ink);background:#f8fafc;cursor:pointer;min-height:44px}
-.btn:active{transform:translateY(1px)}
-.btn-primary{background:var(--blue);color:#fff;border-color:transparent;box-shadow:0 6px 18px rgba(37,99,235,.35)}
+.topbar{position:sticky;top:0;z-index:30;background:rgba(11,18,32,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:calc(env(safe-area-inset-top) + 12px) 0 12px}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:820px;margin:0 auto;padding:0 16px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(145deg,#1e3a5f,#0b1220);display:grid;place-items:center;border:1px solid rgba(59,130,246,.35)}
+.brand strong{display:block;font-size:1.05rem;font-weight:800;letter-spacing:-.02em}
+.brand small{display:block;color:var(--muted);font-size:.75rem;font-weight:600}
+.top-actions{display:flex;gap:8px}
+.btn{appearance:none;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);border-radius:11px;min-height:42px;padding:0 14px;font-weight:700;font-size:.9rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:rgba(255,255,255,.08)}
+.btn-primary{background:var(--blue);border-color:transparent;color:#fff;box-shadow:0 6px 18px rgba(37,99,235,.35)}
 .btn-primary:hover{background:#1d4ed8}
-.btn-ghost{background:transparent;color:#e2e8f0;border-color:rgba(255,255,255,.2)}
-.view-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:#eff6ff;color:#1e40af;font-weight:700;font-size:.85rem}
 
-/* Anatomy stage */
-.stage{position:relative;width:min(94vw,420px);aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:linear-gradient(180deg,#e0f2fe 0%,#f8fafc 55%,#e2e8f0 100%);border:1px solid #cbd5e1;box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
-.stage svg{width:100%;height:100%;display:block}
-.hotspot{position:absolute;transform:translate(-50%,-50%);min-width:52px;min-height:52px;border-radius:999px;border:2px solid #fff;background:rgba(37,99,235,.88);color:#fff;font-weight:800;font-size:.72rem;letter-spacing:.02em;box-shadow:0 6px 16px rgba(37,99,235,.4),0 0 0 0 rgba(37,99,235,.4);cursor:pointer;display:grid;place-items:center;padding:4px;transition:transform .15s ease,box-shadow .15s ease,background .15s ease;z-index:2}
-.hotspot:hover{transform:translate(-50%,-50%) scale(1.06);background:#1d4ed8}
-.hotspot.active{background:#16a34a;box-shadow:0 0 0 10px rgba(22,163,74,.25);animation:pulse 1.2s ease infinite}
-.hotspot.neck{background:rgba(220,38,38,.9);box-shadow:0 6px 16px rgba(220,38,38,.35)}
-.hotspot.neck.active{background:#dc2626;box-shadow:0 0 0 10px rgba(220,38,38,.25)}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(22,163,74,.35)}70%{box-shadow:0 0 0 14px rgba(22,163,74,0)}100%{box-shadow:0 0 0 0 rgba(22,163,74,0)}}
-.stage-hint{position:absolute;left:10px;right:10px;bottom:10px;z-index:3;background:rgba(15,23,42,.78);color:#e2e8f0;border-radius:10px;padding:8px 10px;font-size:.78rem;text-align:center;backdrop-filter:blur(6px)}
+.learn-link{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:14px 0;padding:12px 14px;border-radius:13px;background:rgba(37,99,235,.12);border:1px solid rgba(59,130,246,.3);color:#bfdbfe;font-weight:700}
+.learn-link span{display:block;font-size:.8rem;font-weight:500;color:#93c5fd;margin-top:2px}
 
-.selectors{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
-.select-block label{display:block;font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
-.select-block select{width:100%;min-height:46px;border-radius:11px;border:1px solid var(--line);padding:0 12px;font:inherit;font-weight:650;background:#fff;color:var(--ink)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
 
-.audio-card{margin-top:4px;padding:14px;border-radius:14px;background:#f8fafc;border:1px solid var(--line)}
-.audio-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
-.audio-row strong{font-size:.95rem}
-.wave{height:36px;display:flex;align-items:flex-end;gap:3px;margin:8px 0 10px}
-.wave span{flex:1;border-radius:3px 3px 0 0;background:#bfdbfe;min-height:6px;transition:height .12s ease,background .12s ease}
-.wave.playing span{background:var(--blue);animation:bar .5s ease-in-out infinite alternate}
-.wave.playing span:nth-child(odd){animation-delay:.1s}
-.wave.playing span:nth-child(3n){animation-delay:.2s}
-@keyframes bar{from{height:8px}to{height:32px}}
-.note{min-height:1.2em;color:var(--muted);font-size:.88rem;font-weight:600}
-audio{width:100%;margin-top:6px}
+.chest-wrap{position:relative;width:100%;max-width:480px;margin:0 auto;border-radius:16px;overflow:hidden;background:#0a0f18;border:1px solid var(--line)}
+.chest-wrap img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
+.hotspot{
+  position:absolute;transform:translate(-50%,-50%);
+  width:58px;height:58px;border-radius:999px;
+  border:3px solid #fff;background:var(--blue);color:#fff;
+  font-weight:800;font-size:.85rem;letter-spacing:.02em;
+  box-shadow:0 8px 20px rgba(37,99,235,.45);
+  cursor:pointer;display:grid;place-items:center;
+  transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
+  z-index:2;
+}
+.hotspot:hover{transform:translate(-50%,-50%) scale(1.08);background:#1d4ed8}
+.hotspot.active{
+  background:var(--green);border-color:#fff;
+  box-shadow:0 0 0 8px rgba(34,197,94,.28), 0 8px 22px rgba(34,197,94,.4);
+  animation:pulse 1.4s ease-out infinite;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(34,197,94,.45), 0 8px 22px rgba(34,197,94,.4)}
+  70%{box-shadow:0 0 0 16px rgba(34,197,94,0), 0 8px 22px rgba(34,197,94,.25)}
+  100%{box-shadow:0 0 0 0 rgba(34,197,94,0), 0 8px 22px rgba(34,197,94,.25)}
+}
 
-.legend{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:4px}
-.legend span{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;color:#94a3b8;font-weight:600}
-.legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
-.legend i.lung{background:#2563eb}.legend i.neck{background:#dc2626}
+.hint{text-align:center;color:var(--muted);font-size:.85rem;margin:10px 0 0;font-weight:600}
 
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}
-.modal[aria-hidden="false"]{display:flex}
-.modal-card{background:#fff;color:var(--ink);border-radius:16px;padding:20px;max-width:420px;width:100%;box-shadow:var(--shadow)}
-.modal-card h2{margin:0 0 8px;font-size:1.2rem}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.field label{display:block;font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.field select{
+  width:100%;min-height:46px;border-radius:11px;border:1px solid var(--line);
+  background:#0b1220;color:var(--ink);padding:0 12px;font:inherit;font-weight:650;
+}
+
+.playback{margin-top:4px}
+.playback-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.playback-head strong{font-size:.95rem}
+.wave{height:44px;display:flex;align-items:center;gap:2px;padding:6px 0;margin-bottom:8px}
+.wave span{flex:1;height:8px;border-radius:2px;background:rgba(59,130,246,.25)}
+.wave.playing span{background:var(--blue2);animation:bar .45s ease-in-out infinite alternate}
+.wave.playing span:nth-child(odd){animation-delay:.08s}
+.wave.playing span:nth-child(3n){animation-delay:.16s}
+@keyframes bar{from{height:8px}to{height:36px}}
+.note{min-height:1.25em;color:var(--muted);font-size:.88rem;font-weight:600;margin-bottom:8px}
+audio{width:100%}
+
+.view-toggle{display:flex;gap:8px;justify-content:center;margin-bottom:12px}
+.view-toggle .btn.active{background:var(--blue);border-color:transparent;color:#fff}
+
+footer{text-align:center;color:#64748b;font-size:.78rem;padding:8px 0 4px}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}
+.modal.open{display:flex}
+.modal-card{background:#151c2c;border:1px solid var(--line);border-radius:16px;padding:20px;max-width:420px;width:100%}
+.modal-card h2{margin:0 0 8px;font-size:1.15rem}
 .modal-card p,.modal-card li{color:var(--muted);font-size:.92rem;line-height:1.5}
-.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.modal-actions{display:flex;justify-content:flex-end;margin-top:14px}
 
-footer{text-align:center;color:#64748b;font-size:.8rem;padding:8px 0 4px}
-
-@media(max-width:420px){
-  .hotspot{min-width:46px;min-height:46px;font-size:.68rem}
-  .selectors{grid-template-columns:1fr}
+@media(max-width:560px){
+  .controls{grid-template-columns:1fr}
+  .hotspot{width:52px;height:52px;font-size:.78rem}
+  .brand small{display:none}
 }
 </style>
 </head>
-<body data-vital-topic="breath">
-<div class="topbar" role="banner">
-  <div class="topbar-inner">
-    <button class="iconbtn" id="backBtn" aria-label="Go back" title="Back">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Back
-    </button>
-    <h1 class="topbar-title">Breath Sound Simulator</h1>
-    <button class="iconbtn" id="infoBtn" aria-label="How this works" title="Info">Info</button>
-  </div>
-</div>
-
-<div class="learning-banner">
-  <a class="breath-learning-link" href="/breath-sound-training.html">
-    <div>Breath Sound Learning Center<span>Learn sounds before you practice on the body map</span></div>
-    <b>Open →</b>
-  </a>
-</div>
-
-<div class="app" role="main">
-  <p class="subtitle">Tap a lung field · Assign left/right sounds · Rotate the body</p>
-
-  <section class="card">
-    <div class="view-row">
-      <div class="view-actions">
-        <button class="btn btn-primary" type="button" id="rotateBtn">Rotate body</button>
-        <button class="btn" type="button" id="resetBtn">Reset sounds</button>
-        <span class="view-chip" id="viewLabel">View: FRONT</span>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 14c0-2 1.5-4 3-5 1 2 2 3 3 3s2-1 3-3c1.5 1 3 3 3 5 0 3-2.5 5-6 5s-6-2-6-5z" stroke="#93c5fd" stroke-width="1.6"/><path d="M9 9c.5-2 1.5-3 3-3s2.5 1 3 3" stroke="#93c5fd" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <strong>Breath Sound Simulator</strong>
+          <small>EMS/EMT Education · Real Breath Sounds</small>
+        </div>
       </div>
-
-      <div class="stage" id="stage" aria-label="Auscultation body map">
-        <!-- SVG torso drawn per view -->
-        <svg id="torsoSvg" viewBox="0 0 300 400" role="img" aria-label="Patient torso"></svg>
-        <div id="hotspots"></div>
-        <div class="stage-hint" id="stageHint">Front view: screen-left = patient RIGHT</div>
-      </div>
-
-      <div class="legend">
-        <span><i class="lung"></i> Lung fields</span>
-        <span><i class="neck"></i> Neck (stridor)</span>
+      <div class="top-actions">
+        <button class="btn" type="button" id="backBtn">← Back</button>
+        <button class="btn btn-primary" type="button" id="infoBtn">Info</button>
       </div>
     </div>
+  </header>
 
-    <div class="selectors">
-      <div class="select-block">
-        <label for="leftSound">Left side sound</label>
-        <select id="leftSound">
-          <option value="normal">Normal vesicular</option>
-          <option value="wheeze">Wheezing</option>
-          <option value="crackles">Coarse crackles</option>
-          <option value="diminished">Diminished</option>
-          <option value="stridor" id="leftStridorOpt" disabled>Stridor (neck only)</option>
-        </select>
-      </div>
-      <div class="select-block">
-        <label for="rightSound">Right side sound</label>
-        <select id="rightSound">
-          <option value="normal">Normal vesicular</option>
-          <option value="wheeze">Wheezing</option>
-          <option value="crackles">Coarse crackles</option>
-          <option value="diminished">Diminished</option>
-          <option value="stridor" id="rightStridorOpt" disabled>Stridor (neck only)</option>
-        </select>
-      </div>
-    </div>
+  <div class="shell">
+    <a class="learn-link" href="/breath-sound-training.html">
+      <div>Breath Sound Learning Center<span>Learn the sounds before you practice</span></div>
+      <b>Open →</b>
+    </a>
 
-    <div class="audio-card">
-      <div class="audio-row">
-        <strong id="nowPlaying">Ready to auscultate</strong>
+    <section class="panel">
+      <div class="view-toggle">
+        <button class="btn active" type="button" data-view="front" id="viewFront">Front</button>
+        <button class="btn" type="button" data-view="back" id="viewBack">Back</button>
+      </div>
+
+      <div class="chest-wrap" id="chestWrap">
+        <img id="chestImg" src="/vitals/front.png" alt="Human chest — front view for auscultation"/>
+        <!-- Front: patient facing you → screen-left = patient RIGHT -->
+        <button class="hotspot" data-view="front" data-side="right" data-label="RUL" style="left:32%; top:28%;" type="button">RUL</button>
+        <button class="hotspot" data-view="front" data-side="left"  data-label="LUL" style="left:68%; top:28%;" type="button">LUL</button>
+        <button class="hotspot" data-view="front" data-side="right" data-label="RLL" style="left:34%; top:58%;" type="button">RLL</button>
+        <button class="hotspot" data-view="front" data-side="left"  data-label="LLL" style="left:66%; top:58%;" type="button">LLL</button>
+        <!-- Back: behind patient → screen-left = patient LEFT -->
+        <button class="hotspot" data-view="back" data-side="left"  data-label="LUL" style="left:32%; top:28%; display:none;" type="button">LUL</button>
+        <button class="hotspot" data-view="back" data-side="right" data-label="RUL" style="left:68%; top:28%; display:none;" type="button">RUL</button>
+        <button class="hotspot" data-view="back" data-side="left"  data-label="LLL" style="left:34%; top:58%; display:none;" type="button">LLL</button>
+        <button class="hotspot" data-view="back" data-side="right" data-label="RLL" style="left:66%; top:58%; display:none;" type="button">RLL</button>
+      </div>
+      <p class="hint" id="viewHint">Front view: screen-left = patient <strong>RIGHT</strong> · Upper &amp; lower only</p>
+    </section>
+
+    <section class="panel">
+      <div class="controls">
+        <div class="field">
+          <label for="leftSound">Left side sound</label>
+          <select id="leftSound">
+            <option value="normal">Normal vesicular</option>
+            <option value="wheeze">Wheezing</option>
+            <option value="crackles">Coarse crackles</option>
+            <option value="diminished">Diminished</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="rightSound">Right side sound</label>
+          <select id="rightSound">
+            <option value="normal">Normal vesicular</option>
+            <option value="wheeze">Wheezing</option>
+            <option value="crackles">Coarse crackles</option>
+            <option value="diminished">Diminished</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel playback">
+      <div class="playback-head">
+        <strong id="nowPlaying">Sound Playback</strong>
         <button class="btn" type="button" id="pauseBtn">Pause</button>
       </div>
       <div class="wave" id="wave" aria-hidden="true">
-        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span>
       </div>
-      <div class="note" id="note">Tap a labeled site on the body to listen.</div>
-      <audio id="breathAudio" controls preload="none">
-        <source src="" type="audio/mpeg"/>
-      </audio>
-    </div>
-  </section>
+      <div class="note" id="note">Tap RUL, LUL, RLL, or LLL on the chest to listen.</div>
+      <audio id="breathAudio" controls preload="none"></audio>
+    </section>
 
-  <footer>© 2026 EMSCodeSim · Training tool only · Follow local protocols</footer>
-</div>
+    <footer>For educational use in EMS/EMT training · Built for clinicians</footer>
+  </div>
 
-<div class="modal" id="infoModal" aria-hidden="true" role="dialog" aria-labelledby="infoTitle">
-  <div class="modal-card" tabindex="-1">
-    <h2 id="infoTitle">How to use this simulator</h2>
-    <p>Practice systematic lung auscultation the way you would on a patient.</p>
-    <ul>
-      <li>Rotate through front, right, back, and left views.</li>
-      <li>Assign different sounds to left and right lung fields.</li>
-      <li>Tap each site and listen through a full respiratory cycle.</li>
-      <li>Stridor is only available at the neck.</li>
-      <li>Compare side-to-side before you decide what you hear.</li>
-    </ul>
-    <div class="modal-actions">
-      <button class="btn btn-primary" type="button" id="modalOkBtn">Got it</button>
+  <div class="modal" id="infoModal" aria-hidden="true">
+    <div class="modal-card">
+      <h2>How to use</h2>
+      <p>Practice upper and lower lung fields only — left and right.</p>
+      <ul>
+        <li>Choose a sound for the left and right sides.</li>
+        <li>Tap RUL, LUL, RLL, or LLL on the chest image.</li>
+        <li>Switch Front / Back to compare posterior fields.</li>
+        <li>Compare side-to-side before you decide what you hear.</li>
+      </ul>
+      <div class="modal-actions"><button class="btn btn-primary" type="button" id="modalOk">Got it</button></div>
     </div>
   </div>
-</div>
 
 <script>
 (() => {
-  const views = ["front", "right", "back", "left"];
   const SOUND_FILES = {
-    normal: "Lung-NormalVesicular.mp3",
-    wheeze: "Lung-Wheezing.mp3",
-    crackles: "Lung-CoarseCrackles.mp3",
-    stridor: "Lung-InspiratoryStridor.mp3",
-    diminished: "Lung-NormalVesicular.mp3"
+    normal: "/vitals/Lung-NormalVesicular.mp3",
+    wheeze: "/vitals/Lung-Wheezing.mp3",
+    crackles: "/vitals/Lung-CoarseCrackles.mp3",
+    diminished: "/vitals/Lung-NormalVesicular.mp3"
   };
-  const SOUND_LABELS = {
+  const LABELS = {
     normal: "Normal vesicular",
     wheeze: "Wheezing",
     crackles: "Coarse crackles",
-    stridor: "Inspiratory stridor",
-    diminished: "Diminished (quieter)"
+    diminished: "Diminished"
   };
 
-  // Positions are % of stage (x,y). Front is patient-facing: screen-left = patient RIGHT.
-  const SITES = {
-    front: [
-      { id: "RUL", side: "right", region: "thorax", x: 32, y: 28, label: "RUL" },
-      { id: "LUL", side: "left",  region: "thorax", x: 68, y: 28, label: "LUL" },
-      { id: "RML", side: "right", region: "thorax", x: 30, y: 46, label: "RML" },
-      { id: "LUL2", side: "left", region: "thorax", x: 70, y: 46, label: "Lingula" },
-      { id: "RLL", side: "right", region: "thorax", x: 34, y: 66, label: "RLL" },
-      { id: "LLL", side: "left",  region: "thorax", x: 66, y: 66, label: "LLL" }
-    ],
-    back: [
-      // Behind patient: screen-left = patient LEFT
-      { id: "LUL-b", side: "left",  region: "thorax", x: 32, y: 28, label: "LUL" },
-      { id: "RUL-b", side: "right", region: "thorax", x: 68, y: 28, label: "RUL" },
-      { id: "LLL-b", side: "left",  region: "thorax", x: 34, y: 62, label: "LLL" },
-      { id: "RLL-b", side: "right", region: "thorax", x: 66, y: 62, label: "RLL" }
-    ],
-    right: [
-      { id: "Neck-R", side: "right", region: "neck", x: 50, y: 18, label: "Neck" },
-      { id: "R-ax", side: "right", region: "thorax", x: 52, y: 42, label: "R mid" },
-      { id: "R-base", side: "right", region: "thorax", x: 52, y: 68, label: "R base" }
-    ],
-    left: [
-      { id: "Neck-L", side: "left", region: "neck", x: 50, y: 18, label: "Neck" },
-      { id: "L-ax", side: "left", region: "thorax", x: 48, y: 42, label: "L mid" },
-      { id: "L-base", side: "left", region: "thorax", x: 48, y: 68, label: "L base" }
-    ]
-  };
-
-  const HINTS = {
-    front: "Front view: screen-left = patient RIGHT",
-    back: "Back view: screen-left = patient LEFT",
-    right: "Patient's right side — neck + midaxillary line",
-    left: "Patient's left side — neck + midaxillary line"
-  };
-
-  let currentViewIndex = 0;
   let sideSound = { left: "normal", right: "normal" };
+  let view = "front";
 
   const audio = document.getElementById("breathAudio");
   const note = document.getElementById("note");
   const nowPlaying = document.getElementById("nowPlaying");
   const wave = document.getElementById("wave");
-  const hotspotsEl = document.getElementById("hotspots");
-  const torsoSvg = document.getElementById("torsoSvg");
-  const viewLabel = document.getElementById("viewLabel");
-  const stageHint = document.getElementById("stageHint");
+  const chestImg = document.getElementById("chestImg");
+  const viewHint = document.getElementById("viewHint");
 
-  function drawTorso(view) {
-    // Simple anatomic silhouette that changes slightly per view
-    const frontBack = (view === "front" || view === "back");
-    if (frontBack) {
-      torsoSvg.innerHTML = `
-        <defs>
-          <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#fcd9b8"/>
-            <stop offset="100%" stop-color="#e8b992"/>
-          </linearGradient>
-          <linearGradient id="lung" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#93c5fd" stop-opacity=".55"/>
-            <stop offset="100%" stop-color="#60a5fa" stop-opacity=".25"/>
-          </linearGradient>
-        </defs>
-        <ellipse cx="150" cy="52" rx="34" ry="40" fill="url(#skin)"/>
-        <path d="M95 95 C90 130 85 160 92 210 C100 270 110 320 120 355 L180 355 C190 320 200 270 208 210 C215 160 210 130 205 95 C180 88 170 85 150 85 C130 85 120 88 95 95Z" fill="url(#skin)" stroke="#c4a484" stroke-width="2"/>
-        <ellipse cx="118" cy="185" rx="38" ry="78" fill="url(#lung)"/>
-        <ellipse cx="182" cy="185" rx="38" ry="78" fill="url(#lung)"/>
-        <path d="M150 95 L150 150" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="150" cy="100" r="6" fill="#64748b"/>
-        <text x="150" y="380" text-anchor="middle" fill="#64748b" font-size="13" font-weight="700">${view.toUpperCase()}</text>
-      `;
-    } else {
-      // Side view
-      torsoSvg.innerHTML = `
-        <defs>
-          <linearGradient id="skin2" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#fcd9b8"/>
-            <stop offset="100%" stop-color="#e8b992"/>
-          </linearGradient>
-        </defs>
-        <ellipse cx="160" cy="55" rx="28" ry="36" fill="url(#skin2)"/>
-        <path d="M130 90 C125 140 120 190 125 250 C130 300 140 340 150 360 L190 360 C200 330 210 290 212 240 C214 180 205 130 200 95 C175 88 155 88 130 90Z" fill="url(#skin2)" stroke="#c4a484" stroke-width="2"/>
-        <ellipse cx="165" cy="190" rx="28" ry="70" fill="#93c5fd" fill-opacity=".4"/>
-        <text x="150" y="385" text-anchor="middle" fill="#64748b" font-size="13" font-weight="700">${view.toUpperCase()} SIDE</text>
-      `;
-    }
-  }
-
-  function renderHotspots(view) {
-    hotspotsEl.innerHTML = "";
-    (SITES[view] || []).forEach(site => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "hotspot" + (site.region === "neck" ? " neck" : "");
-      btn.style.left = site.x + "%";
-      btn.style.top = site.y + "%";
-      btn.textContent = site.label;
-      btn.dataset.side = site.side;
-      btn.dataset.region = site.region;
-      btn.dataset.label = site.label;
-      btn.setAttribute("aria-label", `Auscultate ${site.label}`);
-      btn.addEventListener("click", () => play(site.side, site.region, site.label, btn));
-      hotspotsEl.appendChild(btn);
+  function setView(next) {
+    view = next;
+    document.querySelectorAll(".view-toggle .btn").forEach(b => {
+      b.classList.toggle("active", b.dataset.view === view);
     });
+    chestImg.src = view === "front" ? "/vitals/front.png" : "/vitals/back.png";
+    chestImg.alt = view === "front" ? "Human chest — front view" : "Human chest — back view";
+    document.querySelectorAll(".hotspot").forEach(h => {
+      h.style.display = h.dataset.view === view ? "grid" : "none";
+      h.classList.remove("active");
+    });
+    viewHint.innerHTML = view === "front"
+      ? 'Front view: screen-left = patient <strong>RIGHT</strong> · Upper &amp; lower only'
+      : 'Back view: screen-left = patient <strong>LEFT</strong> · Upper &amp; lower only';
   }
 
-  function setStridorAvailability(side, enabled) {
-    const opt = document.getElementById(side + "StridorOpt");
-    const select = document.getElementById(side + "Sound");
-    if (!opt || !select) return;
-    opt.disabled = !enabled;
-    if (!enabled && select.value === "stridor") {
-      select.value = "normal";
-      sideSound[side] = "normal";
-      note.textContent = "Stridor is only available at the neck. Reverted to normal.";
-    }
-  }
-
-  function play(side, region, label, btn) {
-    document.querySelectorAll(".hotspot").forEach(b => b.classList.remove("active"));
+  function play(side, label, btn) {
+    document.querySelectorAll(".hotspot").forEach(h => h.classList.remove("active"));
     if (btn) btn.classList.add("active");
 
-    const isNeck = region === "neck";
-    setStridorAvailability("left", isNeck && side === "left");
-    setStridorAvailability("right", isNeck && side === "right");
+    const type = sideSound[side] || "normal";
+    const file = SOUND_FILES[type];
+    nowPlaying.textContent = `${label} · ${side.toUpperCase()} · ${LABELS[type]}`;
+    note.textContent = `Listening at ${label} (${side} lung) — ${LABELS[type]}`;
 
-    let chosen = sideSound[side];
-    if (chosen === "stridor" && !isNeck) {
-      chosen = "normal";
-      note.textContent = "Stridor is only available when listening at the neck.";
-    } else {
-      note.textContent = `${label} · ${side.toUpperCase()} · ${SOUND_LABELS[chosen] || chosen}`;
+    if (!audio.src.endsWith(file.split("/").pop())) {
+      audio.src = file;
     }
-
-    nowPlaying.textContent = `Listening: ${SOUND_LABELS[chosen] || chosen}`;
-    const file = SOUND_FILES[chosen] || SOUND_FILES.normal;
-    const abs = file.startsWith("http") || file.startsWith("/") ? file : file;
-    // Prefer /vitals/ path if relative
-    const src = abs.includes("/") ? abs : `/vitals/${abs}`;
-
-    if (!audio.src.endsWith(abs) && !audio.src.endsWith(src)) {
-      audio.src = src;
-    }
-    audio.volume = chosen === "diminished" ? 0.28 : 1;
+    audio.volume = type === "diminished" ? 0.28 : 1;
     wave.classList.add("playing");
     audio.play().catch(() => {
-      note.textContent = "Tap play on the audio control if autoplay is blocked.";
+      note.textContent = "Use the audio play button if autoplay is blocked.";
       wave.classList.remove("playing");
     });
   }
 
-  function showView(index) {
-    currentViewIndex = index;
-    const view = views[currentViewIndex];
-    viewLabel.textContent = "View: " + view.toUpperCase();
-    stageHint.textContent = HINTS[view];
-    drawTorso(view);
-    renderHotspots(view);
-    setStridorAvailability("left", false);
-    setStridorAvailability("right", false);
-    document.querySelectorAll(".hotspot").forEach(b => b.classList.remove("active"));
-  }
+  document.querySelectorAll(".hotspot").forEach(btn => {
+    btn.addEventListener("click", () => play(btn.dataset.side, btn.dataset.label, btn));
+  });
 
-  // Controls
-  document.getElementById("rotateBtn").addEventListener("click", () => {
-    showView((currentViewIndex + 1) % views.length);
-  });
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    sideSound = { left: "normal", right: "normal" };
-    document.getElementById("leftSound").value = "normal";
-    document.getElementById("rightSound").value = "normal";
-    note.textContent = "Sounds reset to normal vesicular on both sides.";
-    nowPlaying.textContent = "Ready to auscultate";
-    audio.pause();
-    wave.classList.remove("playing");
-  });
   document.getElementById("leftSound").addEventListener("change", e => {
     sideSound.left = e.target.value;
-    note.textContent = "Left side set to " + (SOUND_LABELS[e.target.value] || e.target.value);
+    note.textContent = "Left side set to " + LABELS[e.target.value];
   });
   document.getElementById("rightSound").addEventListener("change", e => {
     sideSound.right = e.target.value;
-    note.textContent = "Right side set to " + (SOUND_LABELS[e.target.value] || e.target.value);
+    note.textContent = "Right side set to " + LABELS[e.target.value];
   });
+
+  document.getElementById("viewFront").addEventListener("click", () => setView("front"));
+  document.getElementById("viewBack").addEventListener("click", () => setView("back"));
+
   document.getElementById("pauseBtn").addEventListener("click", () => {
     audio.pause();
     wave.classList.remove("playing");
@@ -399,39 +286,29 @@ footer{text-align:center;color:#64748b;font-size:.8rem;padding:8px 0 4px}
   audio.addEventListener("pause", () => wave.classList.remove("playing"));
   audio.addEventListener("ended", () => wave.classList.remove("playing"));
 
-  // Modal + back
-  const infoModal = document.getElementById("infoModal");
-  const openModal = () => infoModal.setAttribute("aria-hidden", "false");
-  const closeModal = () => infoModal.setAttribute("aria-hidden", "true");
-  document.getElementById("infoBtn").addEventListener("click", openModal);
-  document.getElementById("modalOkBtn").addEventListener("click", closeModal);
-  infoModal.addEventListener("click", e => { if (e.target === infoModal) closeModal(); });
   document.getElementById("backBtn").addEventListener("click", () => {
     if (history.length > 1) history.back();
     else location.href = "/breath-sound-training.html";
   });
-  window.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
 
-  // Scenario runtime hook (optional)
+  const modal = document.getElementById("infoModal");
+  document.getElementById("infoBtn").addEventListener("click", () => modal.classList.add("open"));
+  document.getElementById("modalOk").addEventListener("click", () => modal.classList.remove("open"));
+  modal.addEventListener("click", e => { if (e.target === modal) modal.classList.remove("open"); });
+
+  // Optional scenario hook
   try {
     const rt = window.EMSCodeSimScenarioRuntime;
     if (rt?.active?.()) {
       const type = rt.vital("breathSoundType", "normal");
       sideSound = { left: type, right: type };
-      document.querySelectorAll(".selectors").forEach(el => el.hidden = true);
-      note.textContent = "Auscultate several locations, then record what you hear.";
+      document.querySelector(".controls")?.setAttribute("hidden", "");
+      note.textContent = "Auscultate upper and lower fields on both sides, then record findings.";
     }
   } catch (_) {}
 
-  showView(0);
+  setView("front");
 })();
 </script>
-<script src="/vitals/patient-record.js"></script>
-<script src="/vitals/scenario-definitions.js?v=1"></script>
-<script src="/vitals/scenario-runtime.js?v=2"></script>
-<script src="/vitals/scenario-status.js"></script>
-<script src="/vitals/scenario-flow.js"></script>
-<script src="/vitals/scenario-vital-capture.js"></script>
-<script defer src="/vitals/app-vitals-learning.js"></script>
 </body>
 </html>
