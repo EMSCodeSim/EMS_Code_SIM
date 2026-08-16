@@ -774,13 +774,9 @@
           else api?.setFinding?.(key, value, payload);
           if (help?.isConnected) help.textContent = `Recorded: ${label}`;
           refreshFromRecord({ force:true });
-          // Keep the answered follow-up visible; do not clear it before the
-          // learner can confirm the recorded choice.
-          if (questionBox.isConnected) {
-            questionBox.hidden = false;
-            questionBox.classList.add('active');
-            questionBox.dataset.abcKey = key;
-          }
+          // Assessment refresh can rebuild related workspace nodes. Re-open the
+          // answered follow-up so the recorded choice stays visible and clickable.
+          openFollowup(key);
         } catch (error) {
           buttons.forEach(item => { item.disabled = false; });
           console.error(error);
