@@ -2,7 +2,9 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.15.5';
+  const VERSION = '2026.08.16.4';
+  let lastAbcCommitAt = 0;
+  let lastAbcCommitToken = '';
   const FOCUSED_EXAMS = new Set([
     'head_exam',
     'neck_back',
@@ -88,6 +90,15 @@
       .horse-assessment-deep-button strong{display:block;font-size:.78rem}.horse-assessment-deep-button small{display:block;margin-top:2px;color:#a9c6d4;font-size:.64rem;line-height:1.25}
       .horse-assessment-deep-button:hover,.horse-assessment-deep-button:focus-visible{background:#194c66;border-color:#67b9df}
       .horse-assessment-deep-button.used{border-color:#4d9b73;background:#103a35}
+      #horseAssessmentInlineQuestion,#assessmentFollowupHost,#horseClinicalQuestionBox.treatment-active,#horseClinicalQuestionBox.active{
+        position:relative!important;z-index:6!important;pointer-events:auto!important
+      }
+      #horseAssessmentInlineQuestion .horse-question-choice,#horseClinicalQuestionBox .horse-question-choice,#assessmentFollowupHost .horse-question-choice{
+        position:relative!important;z-index:7!important;pointer-events:auto!important;touch-action:manipulation!important;cursor:pointer!important
+      }
+      #horseAssessmentInlineQuestion .horse-question-choice *,#horseClinicalQuestionBox .horse-question-choice *,#assessmentFollowupHost .horse-question-choice *{
+        pointer-events:none!important
+      }
       @media(max-width:760px){.horse-assessment-group-grid{grid-template-columns:1fr!important}}
     `;
     document.head.appendChild(style);
@@ -197,60 +208,128 @@
     return window.EMSCodeSimPatientRecord?.getFinding?.(key) || null;
   }
 
+  function paintAbcChoiceSelection(inline, selectedButton) {
+    [...(inline?.querySelectorAll('[data-abc-inline-choice]') || [])].forEach(node => {
+      const selected = node === selectedButton;
+      node.classList.toggle('selected', selected);
+      node.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      const marker = node.querySelector('span');
+      if (marker) marker.textContent = selected ? '✓' : '○';
+    });
+  }
+
+  function ensureInlineQuestion() {
+    const nodes = [...document.querySelectorAll('#horseAssessmentInlineQuestion')];
+    nodes.slice(1).forEach(node => node.remove());
+    let inline = document.getElementById('horseAssessmentInlineQuestion');
+    if (inline) return inline;
+    const tools = document.getElementById('assessmentTools');
+    if (!tools) return null;
+    inline = document.createElement('div');
+    inline.id = 'horseAssessmentInlineQuestion';
+    inline.className = 'horse-assessment-inline-question';
+    inline.hidden = true;
+    tools.appendChild(inline);
+    return inline;
+  }
+
+  function restoreAbcFollowup(key) {
+    const freshButton = document.querySelector(`#assessmentTools [data-assessment-item="${CSS.escape(key)}"]`);
+    if (!freshButton) return;
+    // Always re-paint after save. Assessment rebuilds can leave a blank duplicate
+    // #horseAssessmentInlineQuestion while the answered UI was destroyed.
+    openDesktopAbcFollowup(freshButton, key);
+  }
+
+  function commitAbcInlineChoice(choiceButton) {
+    const inline = choiceButton.closest?.('#horseAssessmentInlineQuestion');
+    const key = String(
+      choiceButton.getAttribute('data-abc-key') ||
+      inline?.dataset?.abcKey ||
+      ''
+    ).trim();
+    const item = ABC[key];
+    if (!item) return false;
+    const choice = item.choices[Number(choiceButton.getAttribute('data-abc-inline-choice'))];
+    if (!choice) return false;
+    const [value, label, normality] = choice;
+    const commitToken = `${key}::${value}`;
+    const now = Date.now();
+    if (commitToken === lastAbcCommitToken && now - lastAbcCommitAt < 450) return true;
+    lastAbcCommitToken = commitToken;
+    lastAbcCommitAt = now;
+
+    // Optimistic UI first so Chromium/WebKit taps never feel dead.
+    if (inline?.isConnected) paintAbcChoiceSelection(inline, choiceButton);
+    const help = inline?.querySelector?.('.horse-question-choice-help');
+    if (help?.isConnected) {
+      help.textContent = `Saving: ${label}`;
+      help.classList.add('recorded');
+      help.setAttribute('role', 'status');
+    }
+
+    // Finish the current pointer/click event before assessment rebuilds mutate
+    // the DOM. Chromium can drop mid-event work when the event target is
+    // destroyed during a synchronous saveFinding → refreshFromRecord cycle.
+    window.setTimeout(() => {
+      let saved = null;
+      try {
+        saved = saveAbcFinding(key, value, normality);
+      } catch (error) {
+        console.error(error);
+      }
+      const sourceButton = document.querySelector(`#assessmentTools [data-assessment-item="${CSS.escape(key)}"]`);
+      if (!saved) {
+        restoreAbcFollowup(key);
+        const freshHelp = document.querySelector('#horseAssessmentInlineQuestion .horse-question-choice-help');
+        if (freshHelp) freshHelp.textContent = 'Unable to save. Select the finding again.';
+        return;
+      }
+      if (sourceButton) markRecorded(sourceButton);
+      restoreAbcFollowup(key);
+    }, 0);
+    return true;
+  }
+
   function openDesktopAbcFollowup(button, key) {
     const item = ABC[key];
-    const inline = document.getElementById('horseAssessmentInlineQuestion');
+    const inline = ensureInlineQuestion();
     if (!item || !inline) return false;
     const current = finding(key);
     showObservation(key);
     inline.hidden = false;
+    inline.dataset.abcKey = key;
     inline.innerHTML = `<div class="horse-question-head"><div><small>FOLLOW-UP QUESTION</small><strong>${escapeHtml(item.label)}</strong></div></div><p>${escapeHtml(item.prompt)}</p><div class="horse-question-choice-grid" role="group" aria-label="${escapeHtml(item.label)} finding choices">${item.choices.map(([value, label, normality], index) => {
       const selected = current && (current.value === value || current.finding === value);
-      return `<button type="button" class="horse-question-choice${selected ? ' selected' : ''}" data-abc-inline-choice="${index}" data-normality="${normality}" aria-pressed="${selected ? 'true' : 'false'}"><span>${selected ? '✓' : '○'}</span><strong>${escapeHtml(label)}</strong></button>`;
+      return `<button type="button" class="horse-question-choice${selected ? ' selected' : ''}" data-abc-inline-choice="${index}" data-abc-key="${escapeHtml(key)}" data-normality="${normality}" aria-pressed="${selected ? 'true' : 'false'}"><span>${selected ? '✓' : '○'}</span><strong>${escapeHtml(label)}</strong></button>`;
     }).join('')}</div><p class="horse-question-choice-help${current ? ' recorded' : ''}"${current ? ' role="status"' : ''}>${current ? `Recorded: ${escapeHtml(current.value || current.finding || '')}` : 'Select one finding to record it.'}</p>`;
-    const choices = [...inline.querySelectorAll('[data-abc-inline-choice]')];
-    choices.forEach(choiceButton => choiceButton.addEventListener('click', () => {
-      const choice = item.choices[Number(choiceButton.dataset.abcInlineChoice)];
-      if (!choice) return;
-      const [value,label,normality] = choice;
-      // Acknowledge the click before the scenario event fan-out runs. Saving
-      // synchronously can trigger several render subscribers and make a valid
-      // button look frozen on slower computers.
-      choices.forEach(node => {
-        const selected = node === choiceButton;
-        node.classList.toggle('selected', selected);
-        node.setAttribute('aria-pressed', selected ? 'true' : 'false');
-        const marker = node.querySelector('span');
-        if (marker) marker.textContent = selected ? '✓' : '○';
-      });
-      const help = inline.querySelector('.horse-question-choice-help');
-      if (help) {
-        help.textContent = `Saving: ${label}`;
-        help.classList.add('recorded');
-        help.setAttribute('role', 'status');
-      }
-      window.setTimeout(() => {
-        const saved = saveAbcFinding(key, value, normality);
-        if (!saved) {
-          if (help?.isConnected) help.textContent = 'Unable to save. Select the finding again.';
-          return;
-        }
-        markRecorded(button);
-        if (help?.isConnected) help.textContent = `Recorded: ${label}`;
-        // Saving dispatches an assessment update that may rebuild this workspace.
-        // Restore the same follow-up so the selected answer remains visible.
-        const freshButton = document.querySelector(`#assessmentTools [data-assessment-item="${CSS.escape(key)}"]`);
-        const freshInline = document.getElementById('horseAssessmentInlineQuestion');
-        if (freshButton && (!freshInline || !freshInline.querySelector('[data-abc-inline-choice]'))) {
-          openDesktopAbcFollowup(freshButton, key);
-        }
-      }, 0);
-    }));
+    window.requestAnimationFrame(() => {
+      inline.scrollIntoView?.({ block:'nearest', behavior:'smooth' });
+      inline.querySelector('[data-abc-inline-choice]')?.focus?.({ preventScroll:true });
+    });
     return true;
   }
 
+  function handleAbcChoiceEvent(event) {
+    if (!isHorseScenario()) return false;
+    // Ignore non-primary mouse buttons; allow touch/pen (button === -1/0).
+    if (event.type.startsWith('pointer') && typeof event.button === 'number' && event.button > 0) return false;
+    const abcChoice = event.target?.closest?.('[data-abc-inline-choice]');
+    if (!abcChoice?.closest?.('#horseAssessmentInlineQuestion')) return false;
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof event.stopImmediatePropagation === 'function') event.stopImmediatePropagation();
+    commitAbcInlineChoice(abcChoice);
+    return true;
+  }
+
+  // pointerup covers Chrome/Edge/Safari taps more reliably than click alone when
+  // a parent scroller or overlay is competing for the gesture.
+  document.addEventListener('pointerup', handleAbcChoiceEvent, true);
   document.addEventListener('click', event => {
+    if (handleAbcChoiceEvent(event)) return;
     if (!isHorseScenario()) return;
+
     const deep = event.target.closest?.('[data-horse-deep-key]');
     if (deep) {
       event.preventDefault();
@@ -263,6 +342,10 @@
       }
       return;
     }
+
+    // Follow-up choices live inside #assessmentTools; never treat them as a
+    // fresh Airway/Breathing/Circulation open action.
+    if (event.target.closest?.('#horseAssessmentInlineQuestion')) return;
 
     const button = event.target.closest?.('#assessmentTools [data-assessment-item]');
     if (!button) return;
@@ -279,7 +362,7 @@
 
   document.addEventListener('click', event => {
     if (!isDesktopHorse()) return;
-    if (!event.target.closest?.('#handoffFromProgress, #transportScenarioQuick')) return;
+    if (!event.target.closest?.('#handoffFromProgress, #transportScenarioQuick, #horseOpenTransport')) return;
     scheduleTransportPromotion();
   });
 

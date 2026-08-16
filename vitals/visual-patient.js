@@ -726,6 +726,7 @@
       const current = api?.getFinding?.(key, record());
       questionBox.hidden = false;
       questionBox.classList.add('active');
+      questionBox.dataset.abcKey = key;
       questionBox.innerHTML = `
         <div class="horse-question-head">
           <div><small>FOLLOW-UP QUESTION</small><strong>${escapeHtml(labels[key])}</strong></div>
@@ -734,15 +735,17 @@
         <div class="horse-question-choice-grid" role="group" aria-label="${escapeHtml(labels[key])} finding choices">
           ${choices[key].map(([value,label,normality], index) => {
             const selected = current && (current.value === value || current.finding === value);
-            return `<button type="button" class="horse-question-choice${selected ? ' selected' : ''}" data-abc-choice="${index}" data-normality="${normality}"><span>${selected ? '✓' : '○'}</span><strong>${escapeHtml(label)}</strong></button>`;
+            return `<button type="button" class="horse-question-choice${selected ? ' selected' : ''}" data-abc-choice="${index}" data-normality="${normality}" aria-pressed="${selected ? 'true' : 'false'}"><span>${selected ? '✓' : '○'}</span><strong>${escapeHtml(label)}</strong></button>`;
           }).join('')}
         </div>
         <p class="horse-question-choice-help">Select one finding to record it.</p>`;
       const buttons = [...questionBox.querySelectorAll('[data-abc-choice]')];
-      buttons.forEach(button => button.addEventListener('click', () => {
+      buttons.forEach(button => button.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
         const choice = choices[key][Number(button.dataset.abcChoice)];
         if (!choice) return;
-        const [value,,normality] = choice;
+        const [value, label, normality] = choice;
         const payload = {
           source:'horse-rapid-abc',
           label:labels[key],
@@ -753,17 +756,33 @@
           reviewAtDebrief:true,
           suppressInfoUpdate:true
         };
-        buttons.forEach(item => { item.disabled = true; item.classList.toggle('selected', item === button); });
-        try {
-          if (session?.saveFinding) session.saveFinding(key, value, payload);
-          else api?.setFinding?.(key, value, payload);
-          refreshFromRecord({ force:true });
-          resetQuestionBox();
-        } catch (error) {
-          buttons.forEach(item => { item.disabled = false; });
-          console.error(error);
-          toast('Finding was not saved. Try again.');
+        buttons.forEach(item => {
+          const selected = item === button;
+          item.classList.toggle('selected', selected);
+          item.setAttribute('aria-pressed', selected ? 'true' : 'false');
+          const marker = item.querySelector('span');
+          if (marker) marker.textContent = selected ? '✓' : '○';
+        });
+        const help = questionBox.querySelector('.horse-question-choice-help');
+        if (help) {
+          help.textContent = `Saving: ${label}`;
+          help.classList.add('recorded');
+          help.setAttribute('role', 'status');
         }
+        // Defer the record refresh so Chromium can finish the click gesture
+        // before assessment rebuilds replace these nodes.
+        window.setTimeout(() => {
+          try {
+            if (session?.saveFinding) session.saveFinding(key, value, payload);
+            else api?.setFinding?.(key, value, payload);
+            refreshFromRecord({ force:true });
+            openFollowup(key);
+          } catch (error) {
+            console.error(error);
+            toast('Finding was not saved. Try again.');
+            openFollowup(key);
+          }
+        }, 0);
       }));
     }
 
@@ -4718,6 +4737,12 @@
   $('transportScenarioQuick')?.addEventListener('click', openHorseTransportQuick);
   $('handoffScenarioQuick')?.addEventListener('click', () => openHorseHospitalHandoff(false));
   $('gradeScenarioQuick')?.addEventListener('click', openHorseCallGrade);
+  window.EMSCodeSimHorseEncounterActions = Object.freeze({
+    openTransport: openHorseTransportQuick,
+    openHandoff: (sample = false) => openHorseHospitalHandoff(Boolean(sample)),
+    openGrade: openHorseCallGrade,
+    closeHandoff: closeHorseHospitalHandoff
+  });
   $('hospitalHandoffDraft')?.addEventListener('input', event => { event.currentTarget.dataset.userEdited = 'true'; });
   if ($('recordTreatmentLink')) $('recordTreatmentLink').href = toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general');
   if ($('fullPatientRecordLink')) $('fullPatientRecordLink').href = `/vitals/patient-record.html?mode=scenario&resume=1&case=${encodeURIComponent(id)}&return=${encodeURIComponent(`/vitals/visual-patient.html?case=${id}`)}`;
