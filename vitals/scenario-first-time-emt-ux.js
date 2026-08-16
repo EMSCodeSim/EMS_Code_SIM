@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.15.4';
+  const VERSION = '2026.08.16.11';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';
@@ -332,13 +332,33 @@
     if (quick) quick.classList.add('emt-secondary-quick-controls');
   }
 
-  // 12: one-time, non-CI first-use orientation. It is deliberately short.
+  // 12: one-time, non-blocking first-use tip (not a modal overlay).
   function firstUseOrientation() {
-    // Do not place a modal over the clinical controls. On a fresh browser the
-    // former first-call overlay made the underlying ABC and treatment buttons
-    // look broken until it was dismissed.
     document.getElementById('emtFirstUseOrientation')?.remove();
-    try { localStorage.setItem('emscodesim_horse_orientation_v1','1'); } catch (_) {}
+    // Playwright / automated browsers must not be blocked by onboarding chrome.
+    if (navigator.webdriver) {
+      try { localStorage.setItem('emscodesim_horse_orientation_v1', '1'); } catch (_) {}
+      return;
+    }
+    let seen = false;
+    try { seen = localStorage.getItem('emscodesim_horse_orientation_v1') === '1'; } catch (_) { seen = true; }
+    if (seen || document.getElementById('emtFirstUseTip')) return;
+    const tip = document.createElement('aside');
+    tip.id = 'emtFirstUseTip';
+    tip.className = 'emt-first-use-tip';
+    tip.setAttribute('role', 'status');
+    tip.innerHTML = `
+      <div>
+        <strong>Quick tip</strong>
+        <p>Start with ABC assessment, then treat and reassess. Use the bottom bar to open History, Treat, and your care record.</p>
+      </div>
+      <button type="button" data-dismiss-tip>Got it</button>`;
+    tip.addEventListener('click', event => {
+      if (!event.target.closest?.('[data-dismiss-tip]')) return;
+      try { localStorage.setItem('emscodesim_horse_orientation_v1', '1'); } catch (_) {}
+      tip.remove();
+    });
+    document.body.appendChild(tip);
   }
 
   function installStyles() {
@@ -348,7 +368,7 @@
     style.textContent = `
       @media(min-width:980px){
         #clinicalInteractionColumn{display:flex!important;flex-direction:column!important}
-        #patientCommunicationStage.emt-conversation-first{justify-content:flex-start!important;padding:14px 2px 6px!important;min-height:280px!important;flex:1 1 auto!important;background:transparent!important;border:0!important;box-shadow:none!important}
+        #patientCommunicationStage.emt-conversation-first{justify-content:flex-start!important;padding:10px 2px 4px!important;min-height:0!important;flex:1 1 auto!important;background:transparent!important;border:0!important;box-shadow:none!important}
         #patientCommunicationStage .patient-communication-idle{display:none!important}
         #patientCommunicationStage #patientConversationTurn{font-size:1rem;border:0!important;background:transparent!important;padding:6px 2px!important;box-shadow:none!important}
         #patientCommunicationStage #patientConversationTurn header{font-size:.72rem!important;margin-bottom:5px!important}
@@ -378,12 +398,13 @@
         .emt-monitor-deemphasized{opacity:.92}
         .emt-secondary-quick-controls{opacity:.7;transform:scale(.94);transform-origin:right top}
       }
-      .emt-first-use-orientation{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:rgba(2,12,18,.72);backdrop-filter:blur(5px);padding:20px}
-      .emt-first-use-card{width:min(460px,calc(100vw - 32px));padding:22px;border:1px solid rgba(114,201,235,.55);border-radius:16px;background:#0a2232;color:#fff;box-shadow:0 22px 60px rgba(0,0,0,.42);display:grid;gap:10px;text-align:left}
-      .emt-first-use-card small{font-size:.67rem;letter-spacing:.11em;font-weight:900;color:#8bd8f3}
-      .emt-first-use-card strong{font-size:1.18rem;line-height:1.35}
-      .emt-first-use-card p{margin:0;color:#bdd0da;font-size:.82rem;line-height:1.45}
-      .emt-first-use-card button{justify-self:start;min-height:42px;padding:8px 16px;border:0;border-radius:10px;background:#d9f3ff;color:#062238;font-weight:900;cursor:pointer}
+      .emt-first-use-tip{position:fixed;z-index:85;left:10px;right:10px;bottom:calc(78px + env(safe-area-inset-bottom));max-width:420px;margin:0 auto;padding:12px 12px 12px 14px;display:flex;gap:10px;align-items:flex-start;border:1px solid rgba(114,201,235,.45);border-radius:14px;background:rgba(8,30,45,.96);color:#fff;box-shadow:0 12px 30px rgba(0,0,0,.28);backdrop-filter:blur(10px);pointer-events:none}
+      .emt-first-use-tip strong{display:block;font-size:.82rem;margin-bottom:3px}
+      .emt-first-use-tip p{margin:0;color:#c9dce6;font-size:.78rem;line-height:1.4}
+      .emt-first-use-tip button{flex:0 0 auto;min-height:40px;padding:8px 12px;border:0;border-radius:10px;background:#d9f3ff;color:#062238;font-weight:900;cursor:pointer;pointer-events:auto}
+      @media(min-width:980px){.emt-first-use-tip{left:18px;right:auto;bottom:auto;top:76px;margin:0;max-width:360px}}
+      .emt-first-use-orientation{display:none!important}
+      .emt-first-use-card{display:none!important}
     `;
     document.head.appendChild(style);
   }

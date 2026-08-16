@@ -15,7 +15,11 @@
   }
   function getChoice(){try{return localStorage.getItem(consentKey);}catch(e){return null;}}
   function saveChoice(value){try{localStorage.setItem(consentKey,value);}catch(e){} }
-  function removeBanner(){const b=document.getElementById('privacyBanner');if(b)b.remove();}
+  function removeBanner(){
+    const b=document.getElementById('privacyBanner');
+    if(b)b.remove();
+    document.body.classList.remove('has-privacy-banner');
+  }
   function choose(value){saveChoice(value);removeBanner();if(value==='allow')loadAnalytics();window.dispatchEvent(new CustomEvent('emscodesim:privacy-choice',{detail:value}));}
   function isClinicalTrainingSurface(){
     const path=String(window.location.pathname||'').toLowerCase();
@@ -25,8 +29,9 @@
     if(isClinicalTrainingSurface())return;
     if(document.getElementById('privacyBanner'))return;
     const banner=document.createElement('aside');banner.id='privacyBanner';banner.className='privacy-banner';banner.setAttribute('aria-label','Analytics privacy choice');
-    banner.innerHTML='<strong>Help improve EMSCodeSim</strong><p>EMSCodeSim uses optional Google Analytics to understand which free guides and training tools are useful. Progress data stays on this device.</p><div class="privacy-actions"><button class="allow" type="button" data-choice="allow">Allow analytics</button><button class="decline" type="button" data-choice="decline">Not now</button><a href="/privacy.html">Privacy details</a></div>';
+    banner.innerHTML='<strong>Help improve EMSCodeSim</strong><p>Optional analytics help us see which free guides and tools are useful. Progress stays on this device.</p><div class="privacy-actions"><button class="allow" type="button" data-choice="allow">Allow analytics</button><button class="decline" type="button" data-choice="decline">Not now</button><a href="/privacy.html">Privacy details</a></div>';
     banner.addEventListener('click',function(e){const button=e.target.closest('[data-choice]');if(button)choose(button.dataset.choice);});
+    document.body.classList.add('has-privacy-banner');
     document.body.appendChild(banner);
   }
   window.EMSCodeSimPrivacy={reset:function(){saveChoice('');showBanner();},choice:getChoice,allow:function(){choose('allow');},decline:function(){choose('decline');}};
