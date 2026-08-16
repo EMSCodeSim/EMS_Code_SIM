@@ -1,9 +1,20 @@
 (() => {
 'use strict';
-const VERSION='2026.08.15.2',params=new URLSearchParams(location.search),requested=String(params.get('case')||'').replace(/-/g,'_').toLowerCase();if(requested!=='horse_crush')return;
+const VERSION='2026.08.16.7',params=new URLSearchParams(location.search),requested=String(params.get('case')||'').replace(/-/g,'_').toLowerCase();if(requested!=='horse_crush')return;
 const $=id=>document.getElementById(id),api=window.EMSCodeSimPatientRecord,session=window.EMSCodeSimScenarioSession,runtime=window.EMSCodeSimScenarioRuntime;let observer=null,queued=false;
 const record=()=>{try{return session?.sync?.()||api?.active?.()||null}catch(_){return null}};const clamp=v=>Math.max(0,Math.min(100,Math.round(Number(v)||0)));
-function comfortScore(){const s=runtime?.horseClinicalState?.(record());if(!s)return55;if(s.stage==='relieved')return100;if(s.stage==='pain-improved')return90;if(s.stage==='supported')return82;if(s.stage==='stabilized')return78;if(s.stage==='pain-escalating')return35;if(s.stage==='delayed-care')return20;if(s.stage==='worse')return8;return s.painScore>=9?30:s.painScore<=5?82:55;}
+function comfortScore(){
+  const s=runtime?.horseClinicalState?.(record());
+  if(!s) return 55;
+  if(s.stage==='relieved') return 100;
+  if(s.stage==='pain-improved') return 90;
+  if(s.stage==='supported') return 82;
+  if(s.stage==='stabilized') return 78;
+  if(s.stage==='pain-escalating') return 35;
+  if(s.stage==='delayed-care') return 20;
+  if(s.stage==='worse') return 8;
+  return s.painScore>=9?30:s.painScore<=5?82:55;
+}
 const SATISFACTION_EVENTS=Object.freeze({
   pain_assessed:{label:'Acknowledged and assessed Linda’s pain',points:4},
   movement_explained:{label:'Explained the movement plan before moving Linda',points:4},
