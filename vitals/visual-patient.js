@@ -726,6 +726,7 @@
       const current = api?.getFinding?.(key, record());
       questionBox.hidden = false;
       questionBox.classList.add('active');
+      questionBox.dataset.abcKey = key;
       questionBox.innerHTML = `
         <div class="horse-question-head">
           <div><small>FOLLOW-UP QUESTION</small><strong>${escapeHtml(labels[key])}</strong></div>
@@ -734,15 +735,17 @@
         <div class="horse-question-choice-grid" role="group" aria-label="${escapeHtml(labels[key])} finding choices">
           ${choices[key].map(([value,label,normality], index) => {
             const selected = current && (current.value === value || current.finding === value);
-            return `<button type="button" class="horse-question-choice${selected ? ' selected' : ''}" data-abc-choice="${index}" data-normality="${normality}"><span>${selected ? '✓' : '○'}</span><strong>${escapeHtml(label)}</strong></button>`;
+            return `<button type="button" class="horse-question-choice${selected ? ' selected' : ''}" data-abc-choice="${index}" data-normality="${normality}" aria-pressed="${selected ? 'true' : 'false'}"><span>${selected ? '✓' : '○'}</span><strong>${escapeHtml(label)}</strong></button>`;
           }).join('')}
         </div>
         <p class="horse-question-choice-help">Select one finding to record it.</p>`;
       const buttons = [...questionBox.querySelectorAll('[data-abc-choice]')];
-      buttons.forEach(button => button.addEventListener('click', () => {
+      buttons.forEach(button => button.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
         const choice = choices[key][Number(button.dataset.abcChoice)];
         if (!choice) return;
-        const [value,,normality] = choice;
+        const [value, label, normality] = choice;
         const payload = {
           source:'horse-rapid-abc',
           label:labels[key],
@@ -753,15 +756,35 @@
           reviewAtDebrief:true,
           suppressInfoUpdate:true
         };
-        buttons.forEach(item => { item.disabled = true; item.classList.toggle('selected', item === button); });
+        buttons.forEach(item => {
+          const selected = item === button;
+          item.classList.toggle('selected', selected);
+          item.setAttribute('aria-pressed', selected ? 'true' : 'false');
+          const marker = item.querySelector('span');
+          if (marker) marker.textContent = selected ? '✓' : '○';
+        });
+        const help = questionBox.querySelector('.horse-question-choice-help');
+        if (help) {
+          help.textContent = `Saving: ${label}`;
+          help.classList.add('recorded');
+          help.setAttribute('role', 'status');
+        }
         try {
           if (session?.saveFinding) session.saveFinding(key, value, payload);
           else api?.setFinding?.(key, value, payload);
+          if (help?.isConnected) help.textContent = `Recorded: ${label}`;
           refreshFromRecord({ force:true });
-          resetQuestionBox();
+          // Keep the answered follow-up visible; do not clear it before the
+          // learner can confirm the recorded choice.
+          if (questionBox.isConnected) {
+            questionBox.hidden = false;
+            questionBox.classList.add('active');
+            questionBox.dataset.abcKey = key;
+          }
         } catch (error) {
           buttons.forEach(item => { item.disabled = false; });
           console.error(error);
+          if (help?.isConnected) help.textContent = 'Unable to save. Select the finding again.';
           toast('Finding was not saved. Try again.');
         }
       }));

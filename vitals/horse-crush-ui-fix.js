@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.15.5';
+  const VERSION = '2026.08.16.2';
   const FOCUSED_EXAMS = new Set([
     'head_exam',
     'neck_back',
@@ -197,60 +197,114 @@
     return window.EMSCodeSimPatientRecord?.getFinding?.(key) || null;
   }
 
+  function paintAbcChoiceSelection(inline, selectedButton) {
+    [...(inline?.querySelectorAll('[data-abc-inline-choice]') || [])].forEach(node => {
+      const selected = node === selectedButton;
+      node.classList.toggle('selected', selected);
+      node.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      const marker = node.querySelector('span');
+      if (marker) marker.textContent = selected ? '✓' : '○';
+    });
+  }
+
+  function ensureInlineQuestion() {
+    const nodes = [...document.querySelectorAll('#horseAssessmentInlineQuestion')];
+    nodes.slice(1).forEach(node => node.remove());
+    let inline = document.getElementById('horseAssessmentInlineQuestion');
+    if (inline) return inline;
+    const tools = document.getElementById('assessmentTools');
+    if (!tools) return null;
+    inline = document.createElement('div');
+    inline.id = 'horseAssessmentInlineQuestion';
+    inline.className = 'horse-assessment-inline-question';
+    inline.hidden = true;
+    tools.appendChild(inline);
+    return inline;
+  }
+
+  function restoreAbcFollowup(key) {
+    const freshButton = document.querySelector(`#assessmentTools [data-assessment-item="${CSS.escape(key)}"]`);
+    if (!freshButton) return;
+    // Always re-paint after save. Assessment rebuilds can leave a blank duplicate
+    // #horseAssessmentInlineQuestion while the answered UI was destroyed.
+    openDesktopAbcFollowup(freshButton, key);
+  }
+
+  function commitAbcInlineChoice(choiceButton) {
+    const inline = choiceButton.closest?.('#horseAssessmentInlineQuestion');
+    const key = String(
+      choiceButton.getAttribute('data-abc-key') ||
+      inline?.dataset?.abcKey ||
+      ''
+    ).trim();
+    const item = ABC[key];
+    if (!item) return false;
+    const choice = item.choices[Number(choiceButton.dataset.abcInlineChoice)];
+    if (!choice) return false;
+    const [value, label, normality] = choice;
+    const sourceButton = document.querySelector(`#assessmentTools [data-assessment-item="${CSS.escape(key)}"]`);
+
+    // Optimistic UI first so the tap never feels dead while subscribers rebuild.
+    if (inline) paintAbcChoiceSelection(inline, choiceButton);
+    const help = inline?.querySelector?.('.horse-question-choice-help');
+    if (help) {
+      help.textContent = `Saving: ${label}`;
+      help.classList.add('recorded');
+      help.setAttribute('role', 'status');
+    }
+
+    let saved = null;
+    try {
+      // Save synchronously. Deferring the write allowed assessment rebuilds to
+      // wipe the follow-up before the finding was committed, so taps looked dead.
+      saved = saveAbcFinding(key, value, normality);
+    } catch (error) {
+      console.error(error);
+    }
+
+    if (!saved) {
+      if (help?.isConnected) help.textContent = 'Unable to save. Select the finding again.';
+      return false;
+    }
+
+    if (sourceButton) markRecorded(sourceButton);
+    if (help?.isConnected) help.textContent = `Recorded: ${label}`;
+    window.setTimeout(() => restoreAbcFollowup(key), 0);
+    return true;
+  }
+
   function openDesktopAbcFollowup(button, key) {
     const item = ABC[key];
-    const inline = document.getElementById('horseAssessmentInlineQuestion');
+    const inline = ensureInlineQuestion();
     if (!item || !inline) return false;
     const current = finding(key);
     showObservation(key);
     inline.hidden = false;
+    inline.dataset.abcKey = key;
     inline.innerHTML = `<div class="horse-question-head"><div><small>FOLLOW-UP QUESTION</small><strong>${escapeHtml(item.label)}</strong></div></div><p>${escapeHtml(item.prompt)}</p><div class="horse-question-choice-grid" role="group" aria-label="${escapeHtml(item.label)} finding choices">${item.choices.map(([value, label, normality], index) => {
       const selected = current && (current.value === value || current.finding === value);
-      return `<button type="button" class="horse-question-choice${selected ? ' selected' : ''}" data-abc-inline-choice="${index}" data-normality="${normality}" aria-pressed="${selected ? 'true' : 'false'}"><span>${selected ? '✓' : '○'}</span><strong>${escapeHtml(label)}</strong></button>`;
+      return `<button type="button" class="horse-question-choice${selected ? ' selected' : ''}" data-abc-inline-choice="${index}" data-abc-key="${escapeHtml(key)}" data-normality="${normality}" aria-pressed="${selected ? 'true' : 'false'}"><span>${selected ? '✓' : '○'}</span><strong>${escapeHtml(label)}</strong></button>`;
     }).join('')}</div><p class="horse-question-choice-help${current ? ' recorded' : ''}"${current ? ' role="status"' : ''}>${current ? `Recorded: ${escapeHtml(current.value || current.finding || '')}` : 'Select one finding to record it.'}</p>`;
-    const choices = [...inline.querySelectorAll('[data-abc-inline-choice]')];
-    choices.forEach(choiceButton => choiceButton.addEventListener('click', () => {
-      const choice = item.choices[Number(choiceButton.dataset.abcInlineChoice)];
-      if (!choice) return;
-      const [value,label,normality] = choice;
-      // Acknowledge the click before the scenario event fan-out runs. Saving
-      // synchronously can trigger several render subscribers and make a valid
-      // button look frozen on slower computers.
-      choices.forEach(node => {
-        const selected = node === choiceButton;
-        node.classList.toggle('selected', selected);
-        node.setAttribute('aria-pressed', selected ? 'true' : 'false');
-        const marker = node.querySelector('span');
-        if (marker) marker.textContent = selected ? '✓' : '○';
-      });
-      const help = inline.querySelector('.horse-question-choice-help');
-      if (help) {
-        help.textContent = `Saving: ${label}`;
-        help.classList.add('recorded');
-        help.setAttribute('role', 'status');
-      }
-      window.setTimeout(() => {
-        const saved = saveAbcFinding(key, value, normality);
-        if (!saved) {
-          if (help?.isConnected) help.textContent = 'Unable to save. Select the finding again.';
-          return;
-        }
-        markRecorded(button);
-        if (help?.isConnected) help.textContent = `Recorded: ${label}`;
-        // Saving dispatches an assessment update that may rebuild this workspace.
-        // Restore the same follow-up so the selected answer remains visible.
-        const freshButton = document.querySelector(`#assessmentTools [data-assessment-item="${CSS.escape(key)}"]`);
-        const freshInline = document.getElementById('horseAssessmentInlineQuestion');
-        if (freshButton && (!freshInline || !freshInline.querySelector('[data-abc-inline-choice]'))) {
-          openDesktopAbcFollowup(freshButton, key);
-        }
-      }, 0);
-    }));
+    window.requestAnimationFrame(() => {
+      inline.scrollIntoView?.({ block:'nearest', behavior:'smooth' });
+      inline.querySelector('[data-abc-inline-choice]')?.focus?.({ preventScroll:true });
+    });
     return true;
   }
 
   document.addEventListener('click', event => {
     if (!isHorseScenario()) return;
+
+    // Delegated follow-up handler stays alive across assessment rebuilds.
+    const abcChoice = event.target.closest?.('[data-abc-inline-choice]');
+    if (abcChoice?.closest?.('#horseAssessmentInlineQuestion')) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation?.();
+      commitAbcInlineChoice(abcChoice);
+      return;
+    }
+
     const deep = event.target.closest?.('[data-horse-deep-key]');
     if (deep) {
       event.preventDefault();
@@ -263,6 +317,10 @@
       }
       return;
     }
+
+    // Follow-up choices live inside #assessmentTools; never treat them as a
+    // fresh Airway/Breathing/Circulation open action.
+    if (event.target.closest?.('#horseAssessmentInlineQuestion')) return;
 
     const button = event.target.closest?.('#assessmentTools [data-assessment-item]');
     if (!button) return;
