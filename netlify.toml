@@ -20,49 +20,68 @@
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
 
-# Scenario code is deliberately revalidated on every navigation. The simulator
-# is split across several cooperating files, so serving a stale definition or
-# runtime beside a newer patient page can break only one scenario while the
-# rest of the site still appears healthy.
+# Scenario code must never stick in browser or CDN caches across deploys.
+# Ctrl+Shift+R still fails if an older ?v= URL remains pinned in HTML, so HTML
+# script versions are bumped separately; these headers are the backstop.
+[[headers]]
+  for = "/vitals/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
 [[headers]]
   for = "/vitals/*.js"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
   for = "/vitals/*.css"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
   for = "/vitals/scenario-learning-upgrade.js"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
   for = "/vitals/horse-crush-bootstrap.js"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/vitals/horse-crush-ui-fix.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/vitals/scenario-tool-registry.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/vitals/scenario-transport-handoff-actions.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
   for = "/vitals/scenario-launcher.js"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
   for = "/vitals/scenario-learning-upgrade.css"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
   for = "/vitals/horse-crush-scenario.css"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
   for = "/vitals/mobile-simulator-upgrade.css"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[redirects]]
   from = "/vitals/assessment-workspace.html"

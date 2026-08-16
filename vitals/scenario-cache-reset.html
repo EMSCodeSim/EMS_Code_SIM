@@ -1,3 +1,163 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Refresh Scenario Files | EMSCodeSim</title><style>body{font-family:system-ui,sans-serif;background:#eef3f6;margin:0;padding:24px;color:#173042}.card{max-width:650px;margin:10vh auto;background:white;padding:28px;border-radius:18px;box-shadow:0 12px 36px #17304222}a{display:inline-block;background:#0b6477;color:white;text-decoration:none;padding:12px 16px;border-radius:10px}#status{font-weight:700}</style></head><body><main class="card"><h1>Refreshing scenario files</h1><p id="status">Clearing the older cached scenario pages…</p><p><a id="continue" href="/vitals/scenario-launcher.html?ui=1100" hidden>Open scenarios</a></p></main><script>
-(async()=>{const status=document.getElementById('status'),link=document.getElementById('continue');try{if('caches'in window){const keys=await caches.keys();await Promise.all(keys.map(k=>caches.delete(k)));}if('serviceWorker'in navigator){const regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.filter(r=>r.active&&r.active.scriptURL.includes('offline-reference-sw.js')).map(r=>r.update()));await navigator.serviceWorker.register('/offline-reference-sw.js',{updateViaCache:'none'});}status.textContent='The old scenario cache has been cleared. Open the scenario launcher below.';}catch(e){status.textContent='Refresh completed as far as this browser allows. Open the scenario launcher below.';}link.hidden=false;})();
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <title>EMS Code SIM — Force Reload</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1220;
+      --fg: #e8eef8;
+      --muted: #9db0c9;
+      --accent: #5cc8ff;
+      --ok: #3dd68c;
+      --warn: #ffb020;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font: 16px/1.5 system-ui, sans-serif;
+      color: var(--fg);
+      background:
+        radial-gradient(ellipse at 20% 0%, rgba(92, 200, 255, 0.12), transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(61, 214, 140, 0.08), transparent 45%),
+        var(--bg);
+    }
+    main {
+      width: min(520px, 100%);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.35rem;
+      letter-spacing: 0.02em;
+    }
+    p { margin: 0 0 12px; color: var(--muted); }
+    #status {
+      margin: 16px 0;
+      padding: 12px 14px;
+      border: 1px solid rgba(157, 176, 201, 0.25);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+    }
+    #status.ok { border-color: rgba(61, 214, 140, 0.45); color: var(--ok); }
+    #status.warn { border-color: rgba(255, 176, 32, 0.45); color: var(--warn); }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    a, button {
+      appearance: none;
+      border: 1px solid rgba(92, 200, 255, 0.45);
+      border-radius: 999px;
+      background: rgba(92, 200, 255, 0.12);
+      color: var(--accent);
+      padding: 10px 16px;
+      font: inherit;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    a.primary, button.primary {
+      background: rgba(92, 200, 255, 0.28);
+      color: #fff;
+      border-color: rgba(92, 200, 255, 0.7);
+    }
+    .hint {
+      margin-top: 18px;
+      font-size: 0.92rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Force reload clinical scripts</h1>
+    <p>
+      Hard refresh (Ctrl+Shift+R) reloads the HTML page, but browsers can still keep
+      older <code>/vitals/*.js</code> files. This page clears cached copies and service workers,
+      then reopens the horse-crush scenario with a fresh build stamp.
+    </p>
+    <div id="status" class="warn">Clearing caches…</div>
+    <div class="actions">
+      <a class="primary" id="openScenario" href="/vitals/visual-patient.html?scenario=horse-crush&amp;v=2026.08.16.5">Open horse-crush scenario</a>
+      <button type="button" id="runAgain">Clear again</button>
+    </div>
+    <p class="hint">
+      After clearing, confirm the page shows build <strong>2026.08.16.5</strong>
+      (or newer) and that Airway follow-ups / Transport / Hospital handoff respond on first press.
+    </p>
+  </main>
+  <script>
+    (function () {
+      var statusEl = document.getElementById('status');
+      var openBtn = document.getElementById('openScenario');
+      var againBtn = document.getElementById('runAgain');
+      var BUILD = '2026.08.16.5';
+      var TARGET =
+        '/vitals/visual-patient.html?scenario=horse-crush&v=' +
+        encodeURIComponent(BUILD) +
+        '&cacheBust=' +
+        Date.now();
+
+      openBtn.href = TARGET;
+
+      function setStatus(text, ok) {
+        statusEl.textContent = text;
+        statusEl.className = ok ? 'ok' : 'warn';
+      }
+
+      async function clearAll() {
+        var notes = [];
+        try {
+          if (window.caches && typeof caches.keys === 'function') {
+            var keys = await caches.keys();
+            await Promise.all(keys.map(function (key) { return caches.delete(key); }));
+            notes.push('Cache Storage: cleared ' + keys.length + ' bucket(s).');
+          } else {
+            notes.push('Cache Storage: unavailable in this browser.');
+          }
+        } catch (err) {
+          notes.push('Cache Storage: ' + (err && err.message ? err.message : String(err)));
+        }
+
+        try {
+          if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+            var regs = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(regs.map(function (reg) { return reg.unregister(); }));
+            notes.push('Service workers: unregistered ' + regs.length + '.');
+          } else {
+            notes.push('Service workers: unavailable.');
+          }
+        } catch (err) {
+          notes.push('Service workers: ' + (err && err.message ? err.message : String(err)));
+        }
+
+        notes.push('Next open URL uses build ' + BUILD + '.');
+        setStatus(notes.join('\n'), true);
+      }
+
+      againBtn.addEventListener('click', function () {
+        setStatus('Clearing caches…', false);
+        clearAll();
+      });
+
+      clearAll().then(function () {
+        // Auto-continue into the scenario after a short beat so the clear finishes.
+        window.setTimeout(function () {
+          window.location.replace(TARGET);
+        }, 700);
+      });
+    })();
+  </script>
+</body>
+</html>
