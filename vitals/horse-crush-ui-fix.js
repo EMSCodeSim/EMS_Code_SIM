@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.16.6';
+  const VERSION = '2026.08.16.7';
   let lastAbcCommitAt = 0;
   let lastAbcCommitToken = '';
   const FOCUSED_EXAMS = new Set([
