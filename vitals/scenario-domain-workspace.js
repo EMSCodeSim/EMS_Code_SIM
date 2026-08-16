@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.15.1';
+  const VERSION = '2026.08.16.1';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -115,16 +115,28 @@
     if (nav.parentElement !== column) column.appendChild(nav);
     setInteractionOrder(nav, 99);
 
+    // Idle Primary/ABC follow-ups belong in the right clinical workspace.
+    // History/Treatment questions are placed into the center communication
+    // stage by the communication router when those modes are active.
     const question = $('horseClinicalQuestionBox');
-    if (question) {
-      if (question.parentElement !== column) column.appendChild(question);
-      setInteractionOrder(question, 2);
+    clearInteractionOrder(question);
+    const rightField = document.querySelector('.patient-control-column');
+    const belongsInCommunication = question?.classList.contains('history-active')
+      || question?.classList.contains('treatment-active');
+    if (question && rightField && !belongsInCommunication && question.parentElement !== rightField) {
+      const currentAssessment = $('horseCurrentAssessment');
+      if (currentAssessment?.parentElement === rightField) {
+        currentAssessment.insertAdjacentElement('beforebegin', question);
+      } else {
+        rightField.prepend(question);
+      }
     }
 
     const inlineQuestion = $('horseAssessmentInlineQuestion');
-    if (inlineQuestion) {
-      if (inlineQuestion.parentElement !== column) column.appendChild(inlineQuestion);
-      setInteractionOrder(inlineQuestion, 3);
+    const assessmentTools = $('assessmentTools');
+    clearInteractionOrder(inlineQuestion);
+    if (inlineQuestion && assessmentTools && inlineQuestion.parentElement !== assessmentTools) {
+      assessmentTools.prepend(inlineQuestion);
     }
 
     const arrival = $('horseArrivalDecision');
