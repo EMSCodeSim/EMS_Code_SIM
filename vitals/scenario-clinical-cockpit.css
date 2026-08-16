@@ -167,7 +167,7 @@
     width:100%!important;
     max-width:none!important;
     max-height:none!important;
-    min-height:180px!important;
+    min-height:0!important;
     margin:0!important;
     overflow:auto!important;
     border-radius:13px!important;
@@ -184,7 +184,7 @@
   body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #patientCommunicationStage{
     order:5!important;
     flex:1 1 48%!important;
-    min-height:190px!important;
+    min-height:0!important;
     justify-content:flex-start!important;
     overflow:auto!important;
     scrollbar-gutter:stable!important;

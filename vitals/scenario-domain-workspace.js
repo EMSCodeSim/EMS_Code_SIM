@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.16.9';
+  const VERSION = '2026.08.16.10';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -42,6 +42,13 @@
       cockpit.href = `/vitals/scenario-clinical-cockpit.css?v=${encodeURIComponent(VERSION)}`;
       cockpit.dataset.clinicalCockpitCss = VERSION;
       document.head.appendChild(cockpit);
+    }
+    if (!document.querySelector('link[data-single-screen-css]')) {
+      const single = document.createElement('link');
+      single.rel = 'stylesheet';
+      single.href = `/vitals/scenario-single-screen.css?v=${encodeURIComponent(VERSION)}`;
+      single.dataset.singleScreenCss = VERSION;
+      document.head.appendChild(single);
     }
   }
 

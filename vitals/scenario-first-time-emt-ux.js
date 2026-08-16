@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.16.9';
+  const VERSION = '2026.08.16.10';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';
@@ -368,7 +368,7 @@
     style.textContent = `
       @media(min-width:980px){
         #clinicalInteractionColumn{display:flex!important;flex-direction:column!important}
-        #patientCommunicationStage.emt-conversation-first{justify-content:flex-start!important;padding:14px 2px 6px!important;min-height:280px!important;flex:1 1 auto!important;background:transparent!important;border:0!important;box-shadow:none!important}
+        #patientCommunicationStage.emt-conversation-first{justify-content:flex-start!important;padding:10px 2px 4px!important;min-height:0!important;flex:1 1 auto!important;background:transparent!important;border:0!important;box-shadow:none!important}
         #patientCommunicationStage .patient-communication-idle{display:none!important}
         #patientCommunicationStage #patientConversationTurn{font-size:1rem;border:0!important;background:transparent!important;padding:6px 2px!important;box-shadow:none!important}
         #patientCommunicationStage #patientConversationTurn header{font-size:.72rem!important;margin-bottom:5px!important}
