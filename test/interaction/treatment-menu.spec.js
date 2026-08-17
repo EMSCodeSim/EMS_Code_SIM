@@ -23,17 +23,20 @@ test('desktop treatment categories stay clickable and More treatments does not s
     const endpoint = document.getElementById('horseTransportHandoffActions');
     const choice = document.querySelector('.horse-treatment-group-choice[data-horse-treatment-group="splinting"]');
     const tools = document.getElementById('treatmentTools');
-    if (!more || !choice || !tools) return false;
-    const kids = [...tools.children].map(node => node.id || node.className);
+    if (!more || !choice || !tools || !endpoint) return false;
+    const kids = [...tools.children];
+    const moreIndex = kids.indexOf(more);
+    const choiceIndex = kids.findIndex(node => node.matches?.('.horse-treatment-group-choice'));
+    const endpointIndex = kids.indexOf(endpoint);
     const moreBox = more.getBoundingClientRect();
     const choiceBox = choice.getBoundingClientRect();
-    const endpointBox = endpoint?.getBoundingClientRect();
-    const moreIndex = kids.findIndex(id => id === 'horseMoreTreatmentsToggle');
-    const choiceIndex = [...tools.children].findIndex(node => node.matches?.('.horse-treatment-group-choice'));
+    const endpointBox = endpoint.getBoundingClientRect();
     return moreBox.height <= 56
+      && endpointBox.height <= 140
       && moreIndex > choiceIndex
+      && endpointIndex > moreIndex
       && choiceBox.bottom <= moreBox.top + 1
-      && (!endpoint || moreBox.bottom <= endpointBox.top + 2);
+      && moreBox.bottom <= endpointBox.top + 2;
   })).toBe(true);
 
   await page.locator('.horse-treatment-group-choice[data-horse-treatment-group="splinting"]').click();

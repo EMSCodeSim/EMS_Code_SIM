@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.17.6';
+  const VERSION = '2026.08.17.7';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';

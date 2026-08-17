@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.08.17.6';
+  const PATIENT_WORKSPACE_BUILD = '2026.08.17.7';
 
   // The patient page has several independent layout layers that can move the same
   // nodes during startup. A stale insertBefore reference should never crash the
@@ -19,7 +19,7 @@
         return nativeInsertBefore.call(this, newNode, referenceNode);
       }
     });
-    window.EMSCodeSimDomInsertionGuard = Object.freeze({ version:'2026.08.17.6', active:true });
+    window.EMSCodeSimDomInsertionGuard = Object.freeze({ version:'2026.08.17.7', active:true });
   }
 
   const assessmentTools = [

@@ -40,15 +40,15 @@
     const style = document.createElement('style');
     style.dataset.transportHandoffActions = VERSION;
     style.textContent = `
-      #horseTransportHandoffActions{margin-top:10px;padding-top:10px;border-top:1px solid rgba(91,145,171,.35);display:grid;gap:8px}
-      #horseTransportHandoffActions .horse-endpoint-actions-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-      #horseTransportHandoffActions .horse-endpoint-actions-head small{display:block;color:#8fcbe2;font-size:.65rem;font-weight:900;letter-spacing:.09em}
-      #horseTransportHandoffActions .horse-endpoint-actions-head strong{display:block;color:#fff;font-size:.98rem}
-      #horseTransportHandoffActions .horse-endpoint-actions-head span{color:#a8c2cf;font-size:.7rem;font-weight:800;white-space:nowrap}
-      #horseTransportHandoffActions .horse-endpoint-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-      #horseTransportHandoffActions .horse-endpoint-action{min-height:54px;display:grid;grid-template-columns:24px 1fr;gap:8px;align-items:center;padding:10px 11px;border:1px solid #3c6a80;border-radius:10px;background:#12384d;color:#fff;text-align:left;font:inherit;cursor:pointer;touch-action:manipulation}
-      #horseTransportHandoffActions .horse-endpoint-action strong{display:block;font-size:.8rem}
-      #horseTransportHandoffActions .horse-endpoint-action small{display:block;margin-top:2px;color:#a9c6d4;font-size:.62rem;line-height:1.25}
+      #horseTransportHandoffActions{margin-top:8px;padding-top:8px;border-top:1px solid rgba(91,145,171,.35);display:grid;gap:6px}
+      #horseTransportHandoffActions .horse-endpoint-actions-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
+      #horseTransportHandoffActions .horse-endpoint-actions-head small{display:block;color:#8fcbe2;font-size:.58rem;font-weight:900;letter-spacing:.09em}
+      #horseTransportHandoffActions .horse-endpoint-actions-head strong{display:block;color:#fff;font-size:.78rem;line-height:1.2}
+      #horseTransportHandoffActions .horse-endpoint-actions-head span{color:#a8c2cf;font-size:.62rem;font-weight:800;white-space:nowrap}
+      #horseTransportHandoffActions .horse-endpoint-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+      #horseTransportHandoffActions .horse-endpoint-action{min-height:42px;display:grid;grid-template-columns:20px 1fr;gap:6px;align-items:center;padding:7px 8px;border:1px solid #3c6a80;border-radius:9px;background:#12384d;color:#fff;text-align:left;font:inherit;cursor:pointer;touch-action:manipulation}
+      #horseTransportHandoffActions .horse-endpoint-action strong{display:block;font-size:.7rem}
+      #horseTransportHandoffActions .horse-endpoint-action small{display:none}
       #horseTransportHandoffActions .horse-endpoint-action:hover,#horseTransportHandoffActions .horse-endpoint-action:focus-visible{background:#194c66;border-color:#67b9df;outline:2px solid rgba(104,201,245,.25)}
       #horseTransportHandoffActions .horse-endpoint-action.complete{border-color:#4d9b73;background:#103a35}
       #horseTransportHandoffActions .horse-endpoint-detail{display:grid;gap:8px;padding:10px;border:1px solid #31566d;border-radius:12px;background:#0b2231}
@@ -61,6 +61,12 @@
       #horseTransportHandoffActions .horse-endpoint-submit{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
       #horseTransportHandoffActions .horse-endpoint-submit button{min-height:42px;padding:0 14px;border:0;border-radius:9px;background:#d9f3ff;color:#062238;font-weight:900;cursor:pointer}
       #horseTransportHandoffActions .horse-endpoint-submit p{margin:0;color:#7ae0b4;font-size:.72rem;font-weight:800}
+      @media(min-width:980px){
+        #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions{grid-column:1/-1!important;order:40}
+        #treatmentTools.horse-treatment-group-menu > #horseMoreTreatmentsToggle{grid-column:1/-1!important;order:30;max-height:44px}
+        #treatmentTools.horse-treatment-group-menu > .horse-treatment-menu-head{order:0}
+        #treatmentTools.horse-treatment-group-menu > .horse-treatment-group-choice{order:10}
+      }
       @media(max-width:760px){#horseTransportHandoffActions .horse-endpoint-action-grid{grid-template-columns:1fr}}
     `;
     document.head.appendChild(style);
@@ -85,6 +91,8 @@
       host.setAttribute('aria-label', 'Transport and hospital handoff');
     }
     if (host.parentElement !== tools) tools.appendChild(host);
+    // Keep transport/handoff pinned under categories + More treatments.
+    else if (tools.lastElementChild !== host) tools.appendChild(host);
     return host;
   }
 
@@ -152,10 +160,10 @@
       </div>
       <div class="horse-endpoint-action-grid">
         <button type="button" id="horseOpenTransport" class="horse-endpoint-action${transported ? ' complete' : ''}">
-          <span aria-hidden="true">${transported ? '✓' : '🚑'}</span><strong>${transported ? 'Review transport' : 'Transport patient'}</strong><small>Impression, urgency, destination</small>
+          <span aria-hidden="true">${transported ? '✓' : '🚑'}</span><strong>${transported ? 'Review transport' : 'Transport patient'}</strong>
         </button>
         <button type="button" id="horseOpenHandoff" class="horse-endpoint-action${handedOff ? ' complete' : ''}">
-          <span aria-hidden="true">${handedOff ? '✓' : 'H'}</span><strong>${handedOff ? 'Review handoff' : 'Hospital handoff'}</strong><small>Give report from your documented findings</small>
+          <span aria-hidden="true">${handedOff ? '✓' : 'H'}</span><strong>${handedOff ? 'Review handoff' : 'Hospital handoff'}</strong>
         </button>
       </div>
       <div id="horseEndpointDetail" class="horse-endpoint-detail" hidden></div>`;
