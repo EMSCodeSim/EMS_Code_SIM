@@ -85,7 +85,8 @@ body.ems-embedded-mini-sim .sv-eyes{gap:12px!important}
 body.ems-embedded-mini-sim .sv-eye{width:82px!important;height:54px!important}
 body.ems-embedded-mini-sim .sv-iris{width:36px!important;height:36px!important}
 body.ems-embedded-mini-sim .sv-skin-swatch{width:110px!important;height:78px!important}
-body.ems-embedded-mini-sim .sv-chest{transform:scale(.70)!important}
+body.ems-embedded-mini-sim .sv-chest{transform:none!important}
+body.ems-embedded-mini-sim .sv-ausc-stage{width:min(100%,250px)!important}
 body.ems-embedded-mini-sim #gauge-container{width:min(35vh,245px,38vw)!important;height:min(35vh,245px,38vw)!important}
 
 /* Practice-style legacy pages become compact split layouts. */

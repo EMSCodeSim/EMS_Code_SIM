@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.17.5';
+  const VERSION = '2026.08.17.8';
   let lastAbcCommitAt = 0;
   let lastAbcCommitToken = '';
   const FOCUSED_EXAMS = new Set([
@@ -19,7 +19,8 @@
   const SIM_ASSESSMENTS = {
     pupils: { label:'Eyes & pupils', url:'/vitals/pupil-scenario.html' },
     mental_status: { label:'Mental status / AVPU', url:'/vitals/avpu-scenario.html' },
-    breath_sounds: { label:'Breath sounds', url:'/vitals/breath-sounds-scenario.html' }
+    breath_sounds: { label:'Breath sounds', url:'/vitals/breath-sounds-scenario.html' },
+    lung_sounds: { label:'Breath sounds', url:'/vitals/breath-sounds-scenario.html' }
   };
 
   const ABC = {
@@ -372,6 +373,13 @@
     const key = String(button.dataset.assessmentItem || '');
     if (ABC[key]) {
       event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation?.(); openDesktopAbcFollowup(button, key); return;
+    }
+    if (SIM_ASSESSMENTS[key]) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation?.();
+      openAssessmentSim(key, button);
+      return;
     }
     if (!FOCUSED_EXAMS.has(key)) return;
     const horse = window.EMSCodeSimHorseCrush;

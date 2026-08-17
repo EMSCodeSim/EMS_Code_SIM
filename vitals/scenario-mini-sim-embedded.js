@@ -117,8 +117,10 @@
   if (sim === 'breath-sounds') {
     document.querySelectorAll('.sv-point').forEach(point => point.addEventListener('click', () => {
       markObserved();
-      const heard = document.querySelectorAll('.sv-point.done').length;
-      if (heard >= 4) unlockDocument();
+      const countText = document.getElementById('listenCount')?.textContent || '';
+      const heard = Number((countText.match(/(\d+)\s+of\s+4/) || [])[1] || 0);
+      const done = document.querySelectorAll('.sv-point.done').length;
+      if (heard >= 4 || done >= 4) unlockDocument();
     }));
   }
 

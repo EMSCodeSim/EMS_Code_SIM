@@ -1082,7 +1082,10 @@
 
     horseAssessmentActiveCategory = category.id;
     const current = record() || {};
-    const completed = key => Boolean(api?.getFinding?.(key, current));
+    const completed = key => Boolean(
+      api?.getFinding?.(key, current) ||
+      (key === 'lung_sounds' && api?.getFinding?.('breath_sounds', current))
+    );
 
     box.className = 'assessment-list horse-assessment-category-workspace';
     box.innerHTML = `
@@ -1125,6 +1128,13 @@
           lastInfoSignature = '';
           renderInfoUpdate(true);
           horseWorkspaceContext.openFollowup(item.id);
+          return;
+        }
+        if (item.id === 'lung_sounds' || item.id === 'breath_sounds') {
+          const href = '/vitals/breath-sounds-scenario.html';
+          if (!openEmbeddedSimulator(href, 'Breath sounds')) {
+            window.EMSCodeSimMiniSimOverlay?.openOverlay?.(href, 'Breath sounds');
+          }
           return;
         }
         // Reuse existing assessment selection path if available.

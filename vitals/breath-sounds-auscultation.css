@@ -1,0 +1,211 @@
+/* Shared anatomical breath-sound auscultation stage */
+
+.sv-ausc{
+  width:min(100%,420px);
+  display:grid;
+  gap:8px;
+  justify-items:center;
+}
+.sv-ausc-toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  justify-content:center;
+  width:100%;
+}
+.sv-ausc-toolbar button{
+  min-height:34px;
+  padding:0 12px;
+  border:1px solid #3c6a80;
+  border-radius:999px;
+  background:#12384d;
+  color:#d7eef8;
+  font:inherit;
+  font-size:.72rem;
+  font-weight:850;
+  cursor:pointer;
+}
+.sv-ausc-toolbar button.active{
+  background:#d9f3ff;
+  color:#062238;
+  border-color:#d9f3ff;
+}
+.sv-ausc-stage{
+  position:relative;
+  width:min(100%,340px);
+  aspect-ratio:320/410;
+  border-radius:22px;
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse at 50% 18%,#1a4a63 0 18%,transparent 52%),
+    linear-gradient(180deg,#07131f,#0b2231 58%,#081824);
+  border:1px solid #31566d;
+  box-shadow:inset 0 0 40px rgba(0,0,0,.35),0 16px 32px rgba(0,0,0,.28);
+}
+.sv-ausc-stage svg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
+}
+.sv-ausc[data-view="front"] .art-back,
+.sv-ausc[data-view="back"] .art-front{display:none}
+.sv-ausc-stage.breathing .sv-torso-body{
+  transform-origin:50% 62%;
+  animation:svAuscBreathe 3.4s ease-in-out infinite;
+}
+.sv-ausc-stage.listening .lung-active{
+  filter:url(#lungGlow);
+  opacity:1;
+}
+@keyframes svAuscBreathe{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.018,1.028)}
+}
+
+.sv-point{
+  position:absolute;
+  width:46px;
+  height:46px;
+  transform:translate(-50%,-50%);
+  border:2px solid rgba(255,255,255,.92);
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#4db7e4,#0b6a96 62%);
+  color:#fff;
+  font-size:.62rem;
+  font-weight:900;
+  letter-spacing:.02em;
+  cursor:pointer;
+  box-shadow:0 0 0 5px rgba(77,183,228,.18),0 8px 16px rgba(0,0,0,.35);
+  z-index:3;
+  touch-action:manipulation;
+}
+.sv-point small{display:block;font-size:.48rem;font-weight:800;opacity:.86;letter-spacing:.04em}
+.sv-point:hover,.sv-point:focus-visible{
+  transform:translate(-50%,-50%) scale(1.08);
+  outline:2px solid rgba(157,228,255,.55);
+  outline-offset:3px;
+}
+.sv-point.done{
+  background:radial-gradient(circle at 35% 30%,#7ae0b4,#157a4f 62%);
+  box-shadow:0 0 0 5px rgba(74,201,142,.22),0 8px 16px rgba(0,0,0,.35);
+}
+.sv-point.active{
+  animation:svAuscPulse 1.2s ease-out infinite;
+}
+.sv-ausc[data-view="front"] .sv-point[data-view="back"],
+.sv-ausc[data-view="back"] .sv-point[data-view="front"]{display:none}
+
+/* Front: screen-left = patient RIGHT. Back: screen-left = patient LEFT. */
+.sv-ausc[data-view="front"] .sv-point[data-site="ru"]{left:33%;top:31%}
+.sv-ausc[data-view="front"] .sv-point[data-site="lu"]{left:67%;top:31%}
+.sv-ausc[data-view="front"] .sv-point[data-site="rl"]{left:35%;top:58%}
+.sv-ausc[data-view="front"] .sv-point[data-site="ll"]{left:65%;top:58%}
+.sv-ausc[data-view="back"] .sv-point[data-site="lu"]{left:33%;top:30%}
+.sv-ausc[data-view="back"] .sv-point[data-site="ru"]{left:67%;top:30%}
+.sv-ausc[data-view="back"] .sv-point[data-site="ll"]{left:35%;top:58%}
+.sv-ausc[data-view="back"] .sv-point[data-site="rl"]{left:65%;top:58%}
+
+@keyframes svAuscPulse{
+  0%{box-shadow:0 0 0 0 rgba(122,224,180,.45),0 8px 16px rgba(0,0,0,.35)}
+  70%{box-shadow:0 0 0 14px rgba(122,224,180,0),0 8px 16px rgba(0,0,0,.25)}
+  100%{box-shadow:0 0 0 0 rgba(122,224,180,0),0 8px 16px rgba(0,0,0,.25)}
+}
+
+.sv-steth{
+  position:absolute;
+  width:54px;
+  height:54px;
+  margin:-27px 0 0 -27px;
+  border-radius:50%;
+  border:3px solid #cfe8f4;
+  background:radial-gradient(circle at 50% 42%,#f4fbff 0 18%,#8fb4c6 19% 46%,#23485a 47% 100%);
+  box-shadow:0 0 0 6px rgba(15,40,55,.45),0 10px 18px rgba(0,0,0,.4);
+  pointer-events:none;
+  opacity:0;
+  z-index:4;
+  transition:left .18s ease, top .18s ease, opacity .18s ease;
+}
+.sv-steth:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:-18px;
+  width:10px;
+  height:22px;
+  transform:translateX(-50%);
+  border-radius:6px 6px 0 0;
+  background:#9ec4d4;
+}
+.sv-ausc-stage.listening .sv-steth{opacity:1}
+
+.sv-ausc-wave{
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:38px;
+  height:36px;
+  display:flex;
+  align-items:flex-end;
+  gap:2px;
+  padding:6px 8px;
+  border-radius:10px;
+  background:rgba(6,18,28,.72);
+  border:1px solid rgba(91,145,171,.35);
+  opacity:0;
+  z-index:5;
+  pointer-events:none;
+}
+.sv-ausc-stage.listening .sv-ausc-wave{opacity:1}
+.sv-ausc-wave i{
+  flex:1;
+  height:18%;
+  border-radius:2px;
+  background:#4db7e4;
+}
+.sv-ausc-stage.listening .sv-ausc-wave i{animation:svAuscBar .42s ease-in-out infinite alternate}
+.sv-ausc-stage.listening .sv-ausc-wave i:nth-child(odd){animation-delay:.05s}
+.sv-ausc-stage.listening .sv-ausc-wave i:nth-child(3n){animation-delay:.12s}
+.sv-ausc-stage.listening[data-sound="wheeze"] .sv-ausc-wave i{background:#f0c36b;animation-duration:.22s}
+.sv-ausc-stage.listening[data-sound="crackles"] .sv-ausc-wave i{background:#f3a07a;animation-duration:.16s}
+.sv-ausc-stage.listening[data-sound="stridor"] .sv-ausc-wave i{background:#ef8aa0;animation-duration:.18s}
+.sv-ausc-stage.listening[data-sound="diminished"] .sv-ausc-wave i{background:#7aa3b6;animation-duration:.7s;height:10%}
+@keyframes svAuscBar{from{height:14%}to{height:92%}}
+
+.sv-listen-count{
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:8px;
+  z-index:5;
+  text-align:center;
+  color:#e7f6ff;
+  background:rgba(7,20,31,.78);
+  border:1px solid rgba(91,145,171,.35);
+  border-radius:999px;
+  padding:5px 8px;
+  font-size:.68rem;
+  font-weight:850;
+}
+.sv-ausc-hint{
+  margin:0;
+  text-align:center;
+  color:#8fb4c6;
+  font-size:.72rem;
+  font-weight:700;
+  line-height:1.35;
+}
+.sv-ausc-now{
+  min-height:1.2em;
+  margin:0;
+  text-align:center;
+  color:#d7eef8;
+  font-size:.78rem;
+  font-weight:800;
+}
+
+body.ems-embedded-mini-sim .sv-ausc{width:100%}
+body.ems-embedded-mini-sim .sv-ausc-stage{width:min(100%,300px)}
+body.ems-embedded-mini-sim .sv-chest{transform:none}
+body.ems-embedded-mini-sim .sv-point{width:42px;height:42px;font-size:.58rem}

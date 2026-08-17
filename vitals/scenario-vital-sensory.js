@@ -73,7 +73,9 @@ function enhanceAvpu(){
 }
 function enhanceLungs(){
  once('sensoryLungs',()=>{
-   const chest=q('.sv-chest');if(!chest)return;const scope=document.createElement('div');scope.className='sensory-scope';scope.textContent='●';chest.appendChild(scope);const bars=document.createElement('div');bars.className='sensory-sound-bars';bars.innerHTML='<i></i>'.repeat(16);chest.appendChild(bars);
+   const chest=q('.sv-ausc-stage')||q('.sv-chest');if(!chest)return;
+   if(q('.sv-steth')||q('.sv-ausc-wave'))return;
+   const scope=document.createElement('div');scope.className='sensory-scope';scope.textContent='●';chest.appendChild(scope);const bars=document.createElement('div');bars.className='sensory-sound-bars';bars.innerHTML='<i></i>'.repeat(16);chest.appendChild(bars);
    qa('.sv-point').forEach(btn=>btn.addEventListener('click',()=>{const cr=chest.getBoundingClientRect(),br=btn.getBoundingClientRect();scope.style.left=`${br.left-cr.left+br.width/2}px`;scope.style.top=`${br.top-cr.top+br.height/2}px`;bars.classList.add('playing');setTimeout(()=>bars.classList.remove('playing'),2600)}));
  });
 }
