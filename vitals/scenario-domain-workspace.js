@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.16.8';
+  const VERSION = '2026.08.17.5';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -42,6 +42,25 @@
       cockpit.href = `/vitals/scenario-clinical-cockpit.css?v=${encodeURIComponent(VERSION)}`;
       cockpit.dataset.clinicalCockpitCss = VERSION;
       document.head.appendChild(cockpit);
+    }
+    // Runtime guard: Assessment must never remain painted while another domain owns the rail.
+    if (!document.getElementById('emsDomainExclusivePanels')) {
+      const style = document.createElement('style');
+      style.id = 'emsDomainExclusivePanels';
+      style.textContent = `
+        body.desktop-scenario-layout.domain-assessment-suppressed #assessmentPanel,
+        body.desktop-scenario-layout.domain-assessment-suppressed #assessmentTools,
+        body.desktop-scenario-layout.domain-assessment-suppressed .horse-assessment-drill-choice,
+        body.desktop-scenario-layout.domain-assessment-suppressed .horse-assessment-drill-menu,
+        body.desktop-scenario-layout.domain-assessment-suppressed .horse-assessment-workspace-action,
+        body.desktop-scenario-layout.domain-assessment-suppressed .horse-assessment-workspace-head,
+        body.desktop-scenario-layout.domain-assessment-suppressed #assessmentFollowupHost {
+          display: none !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+        }
+      `;
+      document.head.appendChild(style);
     }
   }
 
@@ -257,6 +276,85 @@
     });
   }
 
+  function ensureAssessmentParking() {
+    let park = document.getElementById('emsAssessmentPanelParking');
+    if (!park) {
+      park = document.createElement('div');
+      park.id = 'emsAssessmentPanelParking';
+      park.hidden = true;
+      park.setAttribute('aria-hidden', 'true');
+      park.style.cssText = 'display:none!important;position:fixed;left:-10000px;top:0;width:0;height:0;overflow:hidden;pointer-events:none;';
+      document.body.appendChild(park);
+    }
+    return park;
+  }
+
+  function parkAssessmentPanel() {
+    const assessment = $('assessmentPanel');
+    const sheet = $('actionSheet');
+    if (!assessment) return;
+    assessment.hidden = true;
+    assessment.style.setProperty('display', 'none', 'important');
+    assessment.setAttribute('inert', '');
+    assessment.setAttribute('aria-hidden', 'true');
+    const park = ensureAssessmentParking();
+    if (assessment.parentElement !== park) park.appendChild(assessment);
+    // If tools somehow escaped the panel, pull them back into the parked panel.
+    const tools = $('assessmentTools');
+    if (tools && tools.parentElement !== assessment && !assessment.contains(tools)) {
+      assessment.appendChild(tools);
+    }
+    if (sheet && sheet.contains(assessment)) {
+      // Should not happen after append to park; keep as safety.
+      park.appendChild(assessment);
+    }
+  }
+
+  function restoreAssessmentPanel() {
+    const assessment = $('assessmentPanel');
+    const sheet = $('actionSheet');
+    if (!assessment || !sheet) return;
+    const history = $('historyPanel');
+    const treatment = $('treatmentPanel');
+    const findings = $('findingsPanel');
+    const before = history || treatment || findings || null;
+    if (assessment.parentElement !== sheet) {
+      if (before && before.parentElement === sheet) sheet.insertBefore(assessment, before);
+      else sheet.appendChild(assessment);
+    }
+    assessment.hidden = false;
+    assessment.style.removeProperty('display');
+    assessment.removeAttribute('inert');
+    assessment.setAttribute('aria-hidden', 'false');
+  }
+
+  function showOnlyDomainPanel(panelId) {
+    const panel = $(panelId);
+    if (!panel) return false;
+
+    if (panelId === 'assessmentPanel') restoreAssessmentPanel();
+    else parkAssessmentPanel();
+
+    document.querySelectorAll('.vp-panel').forEach(item => {
+      const active = item.id === panelId;
+      item.hidden = !active;
+      if (active) {
+        item.style.removeProperty('display');
+        item.removeAttribute('inert');
+        item.setAttribute('aria-hidden', 'false');
+      } else if (item.id === 'assessmentPanel') {
+        item.style.setProperty('display', 'none', 'important');
+        item.setAttribute('inert', '');
+        item.setAttribute('aria-hidden', 'true');
+      }
+    });
+    document.body.setAttribute('data-active-domain', panelId);
+    document.body.classList.toggle('domain-assessment-active', panelId === 'assessmentPanel');
+    document.body.classList.toggle('domain-assessment-suppressed', panelId !== 'assessmentPanel');
+    updateWorkspaceHeading(panelId);
+    return true;
+  }
+
   function openDefaultDomainWhenReady() {
     if (!desktopActive()) return;
     if (document.body.classList.contains('horse-arrival-pending') || $('horseArrivalDecision')) return;
@@ -266,12 +364,14 @@
     if (document.body.classList.contains('horse-current-emt-call') && !activeId) {
       if (sheet) sheet.hidden = true;
       document.body.classList.remove('horse-tool-sheet-open');
+      document.body.removeAttribute('data-active-domain');
+      document.body.classList.remove('domain-assessment-active', 'domain-assessment-suppressed');
       return;
     }
 
     if (activeId) {
       if (sheet) sheet.hidden = false;
-      updateWorkspaceHeading(activeId);
+      showOnlyDomainPanel(activeId);
       if (activeId === 'assessmentPanel') expandAssessmentChoices();
       return;
     }
@@ -327,8 +427,7 @@
         item.classList.toggle('active', selected);
         item.setAttribute('aria-pressed', selected ? 'true' : 'false');
       });
-      document.querySelectorAll('.vp-panel').forEach(item => { item.hidden = item !== panel; });
-      updateWorkspaceHeading(panelId);
+      showOnlyDomainPanel(panelId);
       if (panelId === 'assessmentPanel') expandAssessmentChoices();
       const sheet = $('actionSheet');
       if (sheet && !document.body.classList.contains('horse-arrival-pending')) {
@@ -374,6 +473,7 @@
 
   window.EMSCodeSimDomainWorkspace = Object.freeze({
     version: VERSION,
+    showOnlyDomainPanel,
     reconcile: scheduleReconcile,
     activePanelId,
     rightWorkspaceReady,

@@ -160,7 +160,7 @@
     border-radius:15px!important;
   }
   body.desktop-scenario-layout.clinical-domain-workspace-v2 .action-sheet[hidden]{
-    display:flex!important;
+    display:none!important;
   }
   body.desktop-scenario-layout.clinical-domain-workspace-v2.horse-arrival-pending .action-sheet{
     display:none!important;

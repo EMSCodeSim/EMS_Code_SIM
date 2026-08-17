@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const VERSION='2026.08.16.8',params=new URLSearchParams(location.search),requested=String(params.get('case')||'').replace(/-/g,'_').toLowerCase();if(requested!=='horse_crush')return;
+const VERSION='2026.08.17.5',params=new URLSearchParams(location.search),requested=String(params.get('case')||'').replace(/-/g,'_').toLowerCase();if(requested!=='horse_crush')return;
 const $=id=>document.getElementById(id),api=window.EMSCodeSimPatientRecord,session=window.EMSCodeSimScenarioSession,runtime=window.EMSCodeSimScenarioRuntime;let observer=null,queued=false;
 const record=()=>{try{return session?.sync?.()||api?.active?.()||null}catch(_){return null}};const clamp=v=>Math.max(0,Math.min(100,Math.round(Number(v)||0)));
 function comfortScore(){

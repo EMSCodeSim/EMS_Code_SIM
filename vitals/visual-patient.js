@@ -4122,6 +4122,26 @@
     refreshFromRecord();
     document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
+    if (desktopWorkspace()) {
+      // visual-patient owns the click (stopImmediatePropagation); this is the
+      // authoritative desktop path that must clear Assessment from the right rail.
+      if (window.EMSCodeSimDomainWorkspace?.showOnlyDomainPanel) {
+        window.EMSCodeSimDomainWorkspace.showOnlyDomainPanel(panelId);
+      } else {
+        document.body.setAttribute('data-active-domain', panelId);
+        document.body.classList.toggle('domain-assessment-active', panelId === 'assessmentPanel');
+        document.body.classList.toggle('domain-assessment-suppressed', panelId !== 'assessmentPanel');
+        const assessment = $('assessmentPanel');
+        if (assessment && panelId !== 'assessmentPanel') {
+          assessment.hidden = true;
+          assessment.style.setProperty('display', 'none', 'important');
+          assessment.setAttribute('inert', '');
+        }
+      }
+    } else {
+      document.body.removeAttribute('data-active-domain');
+      document.body.classList.remove('domain-assessment-active', 'domain-assessment-suppressed');
+    }
     $('sheetTitle').textContent = { vitalsPanel: 'Vitals', assessmentPanel: 'Assessment', historyPanel: 'Patient history', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
     $('actionSheet').hidden = false;
     if (desktopWorkspace()) {

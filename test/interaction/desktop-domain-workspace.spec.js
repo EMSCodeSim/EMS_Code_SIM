@@ -93,6 +93,8 @@ test('desktop center interaction column owns patient communication while right w
   // Vitals: selecting the center control populates the right field with every measurable vital.
   await rail.locator('button[data-panel="vitalsPanel"]').click();
   await expect(page.locator('#vitalsPanel')).toBeVisible();
+  await expect(page.locator('#assessmentPanel')).toBeHidden();
+  await expect(page.locator('.horse-assessment-drill-choice:visible')).toHaveCount(0);
   const vitalRows = page.locator('#vitalTools .compact-vital-row');
   await expect(vitalRows).toHaveCount(6);
   for (const label of ['Blood pressure', 'Pulse', 'Respiratory rate', 'SpO₂', 'Blood glucose', 'Temperature']) {
@@ -127,6 +129,24 @@ test('desktop center interaction column owns patient communication while right w
   await rail.locator('button[data-panel="historyPanel"]').click();
   await expect(page.locator('#historyPanel')).toBeVisible();
   await expect(page.locator('#historyCategoryList')).toBeVisible();
+  await expect(page.locator('#assessmentPanel')).toBeHidden();
+  await expect(page.locator('.horse-assessment-drill-choice:visible')).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => {
+    const panel = document.getElementById('assessmentPanel');
+    const tools = document.getElementById('assessmentTools');
+    const sheet = document.getElementById('actionSheet');
+    const park = document.getElementById('emsAssessmentPanelParking');
+    return Boolean(
+      document.body.getAttribute('data-active-domain') === 'historyPanel'
+      && document.body.classList.contains('domain-assessment-suppressed')
+      && panel?.hidden
+      && getComputedStyle(panel).display === 'none'
+      && panel?.parentElement === park
+      && !sheet?.contains(panel)
+      && (!tools || getComputedStyle(tools).display === 'none' || tools.getBoundingClientRect().height === 0)
+      && !(document.querySelector('.patient-control-column')?.innerText || '').includes('Choose an assessment category')
+    );
+  })).toBe(true);
 
   // Every SAMPLE answer is patient communication: it must be visible in the center,
   // not trapped only inside the right-side History workspace.
@@ -148,6 +168,8 @@ test('desktop center interaction column owns patient communication while right w
   await rail.locator('button[data-panel="treatmentPanel"]').click();
   await expect(page.locator('#treatmentPanel')).toBeVisible();
   await expect(page.locator('#treatmentTools')).toBeVisible();
+  await expect(page.locator('#assessmentPanel')).toBeHidden();
+  await expect(page.locator('.horse-assessment-drill-choice:visible')).toHaveCount(0);
 
   // Desktop uses the available width: patient -> larger interaction column -> right workspace.
   const rightBox = await rightField.boundingBox();
