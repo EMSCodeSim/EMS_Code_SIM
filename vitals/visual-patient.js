@@ -3845,8 +3845,17 @@
     if (workspace) workspace.hidden = false;
     document.body.classList.add('horse-grade-open');
     renderHorseCallGrade();
-    const grade = buildHorseCallGrade(record() || {});
-    api?.setDocumentation?.({ scenarioGrade:grade.score, scenarioGradeLabel:grade.label, gradeViewedAt:new Date().toISOString(), updatedAt:new Date().toISOString() });
+    const satisfaction = window.EMSCodeSimPatientSatisfactionGrade?.model?.();
+    const grade = satisfaction && Number.isFinite(satisfaction.score)
+      ? { score:satisfaction.score, label:satisfaction.label }
+      : buildHorseCallGrade(record() || {});
+    api?.setDocumentation?.({
+      scenarioGrade:grade.score,
+      scenarioGradeLabel:grade.label,
+      gradeCriterion: satisfaction ? 'patient_satisfaction' : 'clinical_call_review',
+      gradeViewedAt:new Date().toISOString(),
+      updatedAt:new Date().toISOString()
+    });
   }
 
   function closeHorseCallGrade() {
@@ -3950,9 +3959,16 @@
     };
     const handoffSaved = Boolean(current?.documentation?.handoffSavedAt && current?.documentation?.handoff);
     const gradeButton = $('gradeScenarioFromPatient');
-    if (gradeButton) gradeButton.hidden = id !== 'horse_crush' || !handoffSaved;
+    if (gradeButton) {
+      gradeButton.hidden = id !== 'horse_crush';
+      gradeButton.textContent = handoffSaved ? 'Final grade' : 'Grade / Help';
+    }
     const button = $('completeScenarioFromPatient');
-    button.textContent = id === 'horse_crush' && handoffSaved ? 'Grade call' : (evaluation.essentialComplete ? 'Open debrief' : 'Check completion');
+    if (id === 'horse_crush') {
+      button.textContent = handoffSaved ? 'Open final grade' : (evaluation.essentialComplete ? 'Open debrief' : 'Check completion');
+    } else {
+      button.textContent = evaluation.essentialComplete ? 'Open debrief' : 'Check completion';
+    }
     button.dataset.ready = evaluation.essentialComplete ? 'true' : 'false';
   }
 

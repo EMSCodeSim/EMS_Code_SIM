@@ -68,10 +68,38 @@ test('horse-crush scenario grading opens after handoff without runtime errors', 
   await expect(page.locator('body')).toHaveClass(/horse-grade-open/);
 
   await expect.poll(() => page.evaluate(() => {
+    const workspace = document.getElementById('horseGradeWorkspace');
+    const style = workspace ? getComputedStyle(workspace) : null;
+    const rect = workspace?.getBoundingClientRect();
+    return Boolean(
+      workspace
+      && style
+      && (style.position === 'fixed' || style.position === 'absolute')
+      && Number.parseFloat(style.zIndex || '0') >= 14
+      && rect
+      && rect.height > 400
+      && rect.width > 700
+    );
+  })).toBe(true);
+
+  await expect.poll(() => page.evaluate(() => {
     const model = window.EMSCodeSimPatientSatisfactionGrade.model();
     const scoreText = document.getElementById('horseGradeScore')?.textContent || '';
     const reveal = document.getElementById('horsePatientSatisfactionReveal');
-    return Boolean(model && Number.isFinite(model.score) && /\d+/.test(scoreText) && reveal && /Linda/i.test(reveal.innerText || ''));
+    const categories = document.getElementById('horseGradeCategories');
+    const strengths = document.getElementById('horseGradeStrengths');
+    return Boolean(
+      model
+      && Number.isFinite(model.score)
+      && /\d+/.test(scoreText)
+      && reveal
+      && /Linda/i.test(reveal.innerText || '')
+      && categories
+      && !categories.hidden
+      && categories.children.length > 0
+      && strengths
+      && !strengths.hidden
+    );
   })).toBe(true);
 
   await expect.poll(() => page.evaluate(() => {
