@@ -29,6 +29,7 @@ assert(visualHtml.includes('id="horseGradeModeLabel"') && visualHtml.includes('i
 assert(css.includes('.horse-grade-workspace') && css.includes('.horse-grade-layout'), 'Horse grade workspace must have overlay styles.');
 assert(/\.horse-grade-workspace[\s\S]*position:\s*absolute/.test(css), 'Grade overlay must cover the patient stage.');
 assert(css.includes('body.horse-grade-open .horse-grade-workspace') && css.includes('position:fixed'), 'Production grade review must open as a fixed workspace overlay.');
+assert(encounterValidation.includes("#horseGradeWorkspace .horse-grade-feedback"), 'Encounter debrief must prefer the grade feedback panel as its host.');
 assert(encounterValidation.includes('#horseGradeWorkspace'), 'Encounter debrief must attach to the live horse grade workspace.');
 assert(deploymentPolicy.includes("'vitals/assessment-workspace.html'"), 'Retired assessment workspace must remain excluded by deployment policy.');
 assert(!fs.existsSync(path.join(root, 'vitals/assessment-workspace.html')), 'Competing assessment workspace page must stay removed from source.');
