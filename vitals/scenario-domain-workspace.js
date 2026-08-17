@@ -43,6 +43,25 @@
       cockpit.dataset.clinicalCockpitCss = VERSION;
       document.head.appendChild(cockpit);
     }
+    // Runtime guard: Assessment must never remain painted while another domain owns the rail.
+    if (!document.getElementById('emsDomainExclusivePanels')) {
+      const style = document.createElement('style');
+      style.id = 'emsDomainExclusivePanels';
+      style.textContent = `
+        body.desktop-scenario-layout.domain-assessment-suppressed #assessmentPanel,
+        body.desktop-scenario-layout.domain-assessment-suppressed #assessmentTools,
+        body.desktop-scenario-layout.domain-assessment-suppressed .horse-assessment-drill-choice,
+        body.desktop-scenario-layout.domain-assessment-suppressed .horse-assessment-drill-menu,
+        body.desktop-scenario-layout.domain-assessment-suppressed .horse-assessment-workspace-action,
+        body.desktop-scenario-layout.domain-assessment-suppressed .horse-assessment-workspace-head,
+        body.desktop-scenario-layout.domain-assessment-suppressed #assessmentFollowupHost {
+          display: none !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
   }
 
   function centerRail() {
@@ -261,16 +280,23 @@
     const panel = $(panelId);
     if (!panel) return false;
     document.querySelectorAll('.vp-panel').forEach(item => {
-      item.hidden = item !== panel;
+      const active = item === panel;
+      item.hidden = !active;
+      if (active) {
+        item.style.removeProperty('display');
+        item.removeAttribute('inert');
+        item.setAttribute('aria-hidden', 'false');
+      } else if (item.id === 'assessmentPanel') {
+        // Inline !important beats leftover stylesheet rules like
+        // `#assessmentPanel { display:flex !important }` that ignore [hidden].
+        item.style.setProperty('display', 'none', 'important');
+        item.setAttribute('inert', '');
+        item.setAttribute('aria-hidden', 'true');
+      }
     });
-    // Keep Assessment choices out of the right rail whenever another domain owns it.
-    if (panelId !== 'assessmentPanel') {
-      const assessment = $('assessmentPanel');
-      if (assessment) assessment.hidden = true;
-      document.body.setAttribute('data-active-domain', panelId);
-    } else {
-      document.body.setAttribute('data-active-domain', 'assessmentPanel');
-    }
+    document.body.setAttribute('data-active-domain', panelId);
+    document.body.classList.toggle('domain-assessment-active', panelId === 'assessmentPanel');
+    document.body.classList.toggle('domain-assessment-suppressed', panelId !== 'assessmentPanel');
     updateWorkspaceHeading(panelId);
     return true;
   }
@@ -285,6 +311,7 @@
       if (sheet) sheet.hidden = true;
       document.body.classList.remove('horse-tool-sheet-open');
       document.body.removeAttribute('data-active-domain');
+      document.body.classList.remove('domain-assessment-active', 'domain-assessment-suppressed');
       return;
     }
 
