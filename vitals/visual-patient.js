@@ -2442,7 +2442,7 @@
   }
 
   function selectHorseTreatmentGroup(groupId, options = {}) {
-    if (id !== 'horse_crush' || !desktopWorkspace()) return;
+    if (id !== 'horse_crush') return;
     const group = HORSE_TREATMENT_GROUPS.find(item => item.id === groupId);
     if (!group) return;
     if (horseTreatmentActiveGroup !== group.id) horseTreatmentActivePlan = '';
@@ -2463,7 +2463,11 @@
       renderInfoUpdate(true);
     }
 
-    renderHorseTreatmentCategoryWorkspace(group.id);
+    if (desktopWorkspace()) renderHorseTreatmentCategoryWorkspace(group.id);
+    else {
+      horseTreatmentActiveGroup = group.id;
+      buildHorseTreatmentsMobile();
+    }
   }
 
   function horseCareSequenceMarkup() {
@@ -2524,9 +2528,9 @@
       box.dataset.horseTreatmentGroupDelegate = '1';
       box.addEventListener('click', event => {
         const button = event.target.closest?.('[data-horse-treatment-group]');
-        if (!button || !box.contains(button) || button.hidden) return;
+        if (!button || !box.contains(button) || button.hidden || button.disabled) return;
         const groupId = button.dataset.horseTreatmentGroup || '';
-        if (!groupId || horseTreatmentActiveGroup === groupId) return;
+        if (!groupId) return;
         selectHorseTreatmentGroup(groupId);
       });
     }
@@ -4172,10 +4176,8 @@
       }
       buildHistory();
     } else if (panelId === 'treatmentPanel' && id === 'horse_crush') {
-      if (desktopWorkspace()) {
-        horseTreatmentActiveGroup = '';
-        horseTreatmentActivePlan = '';
-      }
+      // Keep an already-open category workspace. Rebuilding the menu here made
+      // category clicks look dead when another helper re-opened Treatment.
       buildTreatments();
       if (desktopWorkspace()) horseWorkspaceContext?.resetQuestionBox?.();
       showHorsePainReminderIfNeeded();
@@ -4862,6 +4864,16 @@
     event.stopImmediatePropagation();
     hideClinicalNextActions();
     openSheet(button.dataset.panel);
+  }, true);
+  document.addEventListener('click', event => {
+    if (id !== 'horse_crush') return;
+    const button = event.target.closest?.('#treatmentTools.horse-treatment-group-menu [data-horse-treatment-group]');
+    if (!button || button.hidden || button.disabled) return;
+    const groupId = button.dataset.horseTreatmentGroup || '';
+    if (!groupId) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    selectHorseTreatmentGroup(groupId);
   }, true);
   $('clinicalNextTreatment')?.addEventListener('click', () => {
     treatmentCategoryFocus = nextTreatmentCategoryForFinding(nextActionFinding?.key || '');

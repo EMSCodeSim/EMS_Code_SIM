@@ -2400,6 +2400,10 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     grid-template-columns:repeat(2,minmax(0,1fr));
     gap:6px!important;
     align-content:start;
+    align-items:start;
+    position:relative;
+    z-index:4;
+    pointer-events:auto;
   }
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-menu-head{
     grid-column:1/-1;
@@ -2426,6 +2430,12 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     color:#fff;
     text-align:left;
     cursor:pointer;
+    position:relative;
+    z-index:5;
+    pointer-events:auto;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice[hidden]{
+    display:none!important;
   }
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice:hover,
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice:focus-visible{
@@ -2977,6 +2987,9 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     color:#fff!important;
     box-shadow:none!important;
     transition:border-color .12s ease,background .12s ease,transform .12s ease!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice[hidden]{
+    display:none!important;
   }
 
   body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-drill-choice:hover,
