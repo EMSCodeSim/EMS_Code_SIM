@@ -1,8 +1,18 @@
 @media (min-width:980px){
-  #assessmentPanel{
+  /* Only layout when Assessment is the active domain. display:flex!important
+     must not override .vp-panel[hidden]{display:none} or Assessment choices
+     stay visible under Vitals/History/Treatment. */
+  #assessmentPanel:not([hidden]){
     display:flex!important;
     flex-direction:column!important;
     gap:8px!important;
+  }
+  #assessmentPanel[hidden],
+  #vitalsPanel[hidden],
+  #historyPanel[hidden],
+  #treatmentPanel[hidden],
+  #findingsPanel[hidden]{
+    display:none!important;
   }
   #assessmentPanel > .sub{
     order:0;
