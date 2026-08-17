@@ -126,6 +126,9 @@
     overscroll-behavior:contain!important;
     padding-bottom:10px!important;
   }
+  body.horse-current-emt-call.desktop-scenario-layout #actionSheet .vp-panel[hidden]{
+    display:none!important;
+  }
   body.horse-current-emt-call.desktop-scenario-layout #assessmentTools,
   body.horse-current-emt-call.desktop-scenario-layout #historyCategoryList,
   body.horse-current-emt-call.desktop-scenario-layout #treatmentTools{

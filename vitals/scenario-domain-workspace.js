@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.16.8';
+  const VERSION = '2026.08.17.1';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -327,7 +327,13 @@
         item.classList.toggle('active', selected);
         item.setAttribute('aria-pressed', selected ? 'true' : 'false');
       });
-      document.querySelectorAll('.vp-panel').forEach(item => { item.hidden = item !== panel; });
+      // Exclusive domain swap: only the selected panel stays visible so
+      // Assessment choices never remain painted under Vitals/History/Treatment.
+      document.querySelectorAll('.vp-panel').forEach(item => {
+        const selected = item === panel;
+        item.hidden = !selected;
+        if (!selected) item.removeAttribute('data-domain-workspace-active');
+      });
       updateWorkspaceHeading(panelId);
       if (panelId === 'assessmentPanel') expandAssessmentChoices();
       const sheet = $('actionSheet');

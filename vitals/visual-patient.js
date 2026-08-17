@@ -4120,7 +4120,13 @@
   function openSheet(panelId) {
     evaluatePatientCondition(panelId === 'treatmentPanel' ? 'treatment-review' : 'patient-tool-open');
     refreshFromRecord();
-    document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
+    // Keep clinical domains mutually exclusive so Assessment options are fully
+    // replaced by Vitals/History/Treatment instead of stacking on screen.
+    document.querySelectorAll('.vp-panel').forEach(panel => {
+      const selected = panel.id === panelId;
+      panel.hidden = !selected;
+      if (!selected) delete panel.dataset.domainWorkspaceActive;
+    });
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
     $('sheetTitle').textContent = { vitalsPanel: 'Vitals', assessmentPanel: 'Assessment', historyPanel: 'Patient history', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
     $('actionSheet').hidden = false;
