@@ -4122,6 +4122,12 @@
     refreshFromRecord();
     document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
+    if (desktopWorkspace()) {
+      document.body.setAttribute('data-active-domain', panelId);
+      window.EMSCodeSimDomainWorkspace?.showOnlyDomainPanel?.(panelId);
+    } else {
+      document.body.removeAttribute('data-active-domain');
+    }
     $('sheetTitle').textContent = { vitalsPanel: 'Vitals', assessmentPanel: 'Assessment', historyPanel: 'Patient history', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
     $('actionSheet').hidden = false;
     if (desktopWorkspace()) {

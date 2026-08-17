@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.17.2';
+  const VERSION = '2026.08.17.3';
   const desktop = window.matchMedia('(min-width:980px)');
   const $ = id => document.getElementById(id);
   let queued = false;

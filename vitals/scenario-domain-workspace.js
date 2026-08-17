@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.17.2';
+  const VERSION = '2026.08.17.3';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -257,6 +257,24 @@
     });
   }
 
+  function showOnlyDomainPanel(panelId) {
+    const panel = $(panelId);
+    if (!panel) return false;
+    document.querySelectorAll('.vp-panel').forEach(item => {
+      item.hidden = item !== panel;
+    });
+    // Keep Assessment choices out of the right rail whenever another domain owns it.
+    if (panelId !== 'assessmentPanel') {
+      const assessment = $('assessmentPanel');
+      if (assessment) assessment.hidden = true;
+      document.body.setAttribute('data-active-domain', panelId);
+    } else {
+      document.body.setAttribute('data-active-domain', 'assessmentPanel');
+    }
+    updateWorkspaceHeading(panelId);
+    return true;
+  }
+
   function openDefaultDomainWhenReady() {
     if (!desktopActive()) return;
     if (document.body.classList.contains('horse-arrival-pending') || $('horseArrivalDecision')) return;
@@ -266,12 +284,13 @@
     if (document.body.classList.contains('horse-current-emt-call') && !activeId) {
       if (sheet) sheet.hidden = true;
       document.body.classList.remove('horse-tool-sheet-open');
+      document.body.removeAttribute('data-active-domain');
       return;
     }
 
     if (activeId) {
       if (sheet) sheet.hidden = false;
-      updateWorkspaceHeading(activeId);
+      showOnlyDomainPanel(activeId);
       if (activeId === 'assessmentPanel') expandAssessmentChoices();
       return;
     }
@@ -327,8 +346,7 @@
         item.classList.toggle('active', selected);
         item.setAttribute('aria-pressed', selected ? 'true' : 'false');
       });
-      document.querySelectorAll('.vp-panel').forEach(item => { item.hidden = item !== panel; });
-      updateWorkspaceHeading(panelId);
+      showOnlyDomainPanel(panelId);
       if (panelId === 'assessmentPanel') expandAssessmentChoices();
       const sheet = $('actionSheet');
       if (sheet && !document.body.classList.contains('horse-arrival-pending')) {
@@ -374,6 +392,7 @@
 
   window.EMSCodeSimDomainWorkspace = Object.freeze({
     version: VERSION,
+    showOnlyDomainPanel,
     reconcile: scheduleReconcile,
     activePanelId,
     rightWorkspaceReady,

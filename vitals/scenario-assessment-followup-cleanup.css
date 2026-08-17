@@ -9,6 +9,25 @@
   #assessmentPanel[hidden]{
     display:none!important;
   }
+  /* Belt-and-suspenders: when another clinical domain owns the right rail,
+     Assessment category/options must not remain visible there. */
+  body.desktop-scenario-layout[data-active-domain="vitalsPanel"] #assessmentPanel,
+  body.desktop-scenario-layout[data-active-domain="historyPanel"] #assessmentPanel,
+  body.desktop-scenario-layout[data-active-domain="treatmentPanel"] #assessmentPanel,
+  body.desktop-scenario-layout[data-active-domain="findingsPanel"] #assessmentPanel{
+    display:none!important;
+  }
+  body.desktop-scenario-layout[data-active-domain="vitalsPanel"] #assessmentTools,
+  body.desktop-scenario-layout[data-active-domain="historyPanel"] #assessmentTools,
+  body.desktop-scenario-layout[data-active-domain="treatmentPanel"] #assessmentTools,
+  body.desktop-scenario-layout[data-active-domain="findingsPanel"] #assessmentTools,
+  body.desktop-scenario-layout[data-active-domain="vitalsPanel"] .horse-assessment-drill-choice,
+  body.desktop-scenario-layout[data-active-domain="historyPanel"] .horse-assessment-drill-choice,
+  body.desktop-scenario-layout[data-active-domain="treatmentPanel"] .horse-assessment-drill-choice,
+  body.desktop-scenario-layout[data-active-domain="findingsPanel"] .horse-assessment-drill-choice{
+    display:none!important;
+  }
+
   #assessmentPanel > .sub{
     order:0;
   }
