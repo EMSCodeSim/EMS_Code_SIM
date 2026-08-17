@@ -2408,14 +2408,31 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-menu-head{
     grid-column:1/-1;
   }
-  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > #horseMoreTreatmentsToggle,
-  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions{
-    grid-column:1/-1!important;
-    align-self:start;
-  }
   body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > #horseMoreTreatmentsToggle{
-    min-height:40px;
-    max-height:44px;
+    grid-column:1/2!important;
+    order:30;
+    align-self:start;
+    min-height:32px!important;
+    max-height:34px!important;
+    margin:0!important;
+    padding:0 8px!important;
+    font-size:.7rem!important;
+    overflow:hidden;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions{
+    grid-column:2/3!important;
+    order:30;
+    align-self:start;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    max-height:34px;
+    overflow:hidden;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions[data-mode="detail"]{
+    grid-column:1/-1!important;
+    max-height:none;
+    overflow:auto;
   }
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice{
     display:grid!important;

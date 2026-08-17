@@ -36,13 +36,14 @@ test('desktop treatment categories stay clickable and More treatments does not s
     const hitX = Math.round(choiceBox.left + choiceBox.width / 2);
     const hitY = Math.round(choiceBox.top + choiceBox.height / 2);
     const top = document.elementFromPoint(hitX, hitY);
+    const footerTop = Math.min(moreBox.top, endpointBox.top);
     return {
-      ok: moreBox.height <= 56
-        && endpointBox.height <= 160
+      ok: moreBox.height <= 40
+        && endpointBox.height <= 40
         && moreIndex > choiceIndex
-        && endpointIndex > moreIndex
-        && choiceBox.bottom <= moreBox.top + 2
-        && moreBox.bottom <= endpointBox.top + 4
+        && endpointIndex > choiceIndex
+        && choiceBox.bottom <= footerTop + 2
+        && Math.abs(moreBox.top - endpointBox.top) <= 8
         && Boolean(top?.closest?.('[data-horse-treatment-group="splinting"]')),
       top: top?.id || top?.className || top?.tagName || null
     };

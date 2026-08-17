@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.17.10';
+  const VERSION = '2026.08.17.11';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';
@@ -379,34 +379,40 @@
         #treatmentPanel .horse-treatment-group-choice[hidden]{display:none!important}
         #treatmentPanel .horse-more-treatments-toggle{
           width:100%;
-          min-height:40px;
-          max-height:44px;
-          margin-top:2px;
+          min-height:32px!important;
+          max-height:34px!important;
+          margin:0;
+          padding:0 8px;
           border:1px dashed rgba(116,181,210,.42);
-          border-radius:9px;
+          border-radius:8px;
           background:rgba(8,30,45,.45);
           color:#b9d7e5;
+          font-size:.7rem;
           font-weight:800;
           cursor:pointer;
           align-self:start;
         }
-        #treatmentTools.horse-treatment-group-menu > .horse-treatment-menu-head{order:0}
+        #treatmentTools.horse-treatment-group-menu > .horse-treatment-menu-head{order:0;grid-column:1/-1}
         #treatmentTools.horse-treatment-group-menu > .horse-treatment-group-choice{order:10}
         #treatmentTools.horse-treatment-group-menu > #horseMoreTreatmentsToggle{
-          grid-column:1/-1!important;
+          grid-column:1/2!important;
           order:30;
+          min-height:32px!important;
+          max-height:34px!important;
         }
         #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions{
-          grid-column:1/-1!important;
-          order:40;
+          grid-column:2/3!important;
+          order:30;
+          margin:0!important;
+          padding:0!important;
+          border:0!important;
+          max-height:34px;
+          overflow:hidden;
         }
+        #treatmentPanel .horse-natural-encounter-end{margin:0!important;padding:0!important;border:0!important}
+        #treatmentPanel .horse-natural-end-heading,#treatmentPanel .horse-endpoint-actions-head{display:none!important}
         #treatmentPanel.emt-movement-focus #treatmentTools,#treatmentPanel.emt-movement-focus #horseTreatmentWorkspaceDetail{opacity:.22;pointer-events:none}
         #treatmentPanel.emt-movement-focus #horseMovementChoices{border-color:rgba(113,211,245,.75)!important;box-shadow:0 0 0 1px rgba(113,211,245,.14),0 12px 30px rgba(0,0,0,.22)}
-        #treatmentPanel .horse-natural-encounter-end{margin-top:10px!important;padding-top:10px!important;border-top:1px solid rgba(91,145,171,.35)}
-        #treatmentPanel .horse-natural-end-heading{display:grid;gap:2px;margin-bottom:8px}
-        #treatmentPanel .horse-natural-end-heading small{font-size:.65rem;font-weight:900;letter-spacing:.09em;color:#8fcbe2}
-        #treatmentPanel .horse-natural-end-heading strong{font-size:.98rem;color:#fff}
-        #treatmentPanel .horse-natural-end-heading span{font-size:.7rem;line-height:1.35;color:#a8c2cf}
         #infoUpdateWindow[data-first-time-label="scene-crew"]{border-color:rgba(99,160,190,.4)!important}
         #infoUpdateWindow[data-first-time-label="scene-crew"] #infoUpdateText{font-size:.79rem!important;line-height:1.4!important}
         .emt-monitor-deemphasized{opacity:.92}
