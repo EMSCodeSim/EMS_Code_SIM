@@ -388,9 +388,15 @@
           cursor:pointer;
           align-self:start;
         }
-        #treatmentTools.horse-treatment-group-menu > #horseMoreTreatmentsToggle,
+        #treatmentTools.horse-treatment-group-menu > .horse-treatment-menu-head{order:0}
+        #treatmentTools.horse-treatment-group-menu > .horse-treatment-group-choice{order:10}
+        #treatmentTools.horse-treatment-group-menu > #horseMoreTreatmentsToggle{
+          grid-column:1/-1!important;
+          order:30;
+        }
         #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions{
           grid-column:1/-1!important;
+          order:40;
         }
         #treatmentPanel.emt-movement-focus #treatmentTools,#treatmentPanel.emt-movement-focus #horseTreatmentWorkspaceDetail{opacity:.22;pointer-events:none}
         #treatmentPanel.emt-movement-focus #horseMovementChoices{border-color:rgba(113,211,245,.75)!important;box-shadow:0 0 0 1px rgba(113,211,245,.14),0 12px 30px rgba(0,0,0,.22)}
