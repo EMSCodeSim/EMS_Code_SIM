@@ -129,7 +129,7 @@ const registry = read('vitals/scenario-tool-registry.js');
 includesAll(registry, [
   '/vitals/visual-patient.html', 'scene_size_up',
   '/vitals/visual-airway-assessment.html', '/vitals/respiratory-assessment-visual.html', '/vitals/distal-csm-assessment.html',
-  '/vitals/avpu-scenario.html', '/vitals/pupil-scenario.html', '/vitals/visual-neuro-stroke-assessment.html',
+  '/vitals/avpu-scenario.html', '/vitals/pupil.html', '/vitals/visual-neuro-stroke-assessment.html',
   '/vitals/gcs.html', '/vitals/breath-sounds-scenario.html',
   '/vitals/skin-scenario.html', '/vitals/abdomen-pelvis-visual.html', '/vitals/visual-trauma-body-exam.html',
   '/vitals/pain-opqrst.html', '/vitals/sample-history.html', '/vitals/pediatric-assessment-triangle.html', '/vitals/nines.html'

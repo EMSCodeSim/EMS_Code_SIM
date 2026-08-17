@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.17.8';
+  const VERSION = '2026.08.17.9';
   let lastAbcCommitAt = 0;
   let lastAbcCommitToken = '';
   const FOCUSED_EXAMS = new Set([
@@ -17,7 +17,7 @@
   ]);
 
   const SIM_ASSESSMENTS = {
-    pupils: { label:'Eyes & pupils', url:'/vitals/pupil-scenario.html' },
+    pupils: { label:'Pupils / PERL', url:'/vitals/pupil.html' },
     mental_status: { label:'Mental status / AVPU', url:'/vitals/avpu-scenario.html' },
     breath_sounds: { label:'Breath sounds', url:'/vitals/breath-sounds-scenario.html' },
     lung_sounds: { label:'Breath sounds', url:'/vitals/breath-sounds-scenario.html' }

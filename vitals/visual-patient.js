@@ -1069,6 +1069,7 @@
         description:'Neurologic and skin findings.',
         items:[
           { id:'neuro', label:'Neurologic', prompt:'Assess mental status and neurologic function.' },
+          { id:'pupils', label:'Pupils / PERL', prompt:'Assess pupils, light response, and tracking.' },
           { id:'skin', label:'Skin', prompt:'Assess skin color, temperature, and condition.' }
         ]
       }
@@ -1084,7 +1085,8 @@
     const current = record() || {};
     const completed = key => Boolean(
       api?.getFinding?.(key, current) ||
-      (key === 'lung_sounds' && api?.getFinding?.('breath_sounds', current))
+      (key === 'lung_sounds' && api?.getFinding?.('breath_sounds', current)) ||
+      (key === 'neuro' && (api?.getFinding?.('mental_status', current) || api?.getFinding?.('pupils', current)))
     );
 
     box.className = 'assessment-list horse-assessment-category-workspace';
@@ -1134,6 +1136,13 @@
           const href = '/vitals/breath-sounds-scenario.html';
           if (!openEmbeddedSimulator(href, 'Breath sounds')) {
             window.EMSCodeSimMiniSimOverlay?.openOverlay?.(href, 'Breath sounds');
+          }
+          return;
+        }
+        if (item.id === 'pupils') {
+          const href = '/vitals/pupil.html';
+          if (!openEmbeddedSimulator(href, 'Pupils / PERL')) {
+            window.EMSCodeSimMiniSimOverlay?.openOverlay?.(href, 'Pupils / PERL');
           }
           return;
         }

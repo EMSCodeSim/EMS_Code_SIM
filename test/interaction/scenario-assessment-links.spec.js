@@ -89,7 +89,7 @@ test('skin comparison, complete assessment tools, and assessment return paths re
   await expect(page.locator('#assessmentTools')).toContainText('Patent; patient speaking');
   await expect(page.locator('#assessmentTools')).toContainText('Glasgow Coma Scale');
   await expect(page.locator('#assessmentTools')).toContainText('Rule of Nines');
-  await expect(page.locator('#assessmentTools')).toContainText('Pupils, light, and gaze');
+  await expect(page.locator('#assessmentTools')).toContainText('Pupils / PERL');
   await expect(page.locator('#assessmentTools')).toContainText('More assessments');
   expect(await page.locator('#assessmentTools button, #assessmentTools a').count()).toBeGreaterThanOrEqual(8);
 
