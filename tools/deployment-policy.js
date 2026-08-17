@@ -17,7 +17,13 @@ const RETIRED_FILES = Object.freeze([
   'scenarios/chest_pain_002/ems_database_part1.json',
   'scenarios/chest_pain_002/ems_database_part2.json',
   'scenarios/chest_pain_002/ems_database_part3.json',
-  'scenarios/chest_pain_002/patient.txt'
+  'scenarios/chest_pain_002/patient.txt',
+  'styles/assessment-workspace.css',
+  'styles/assessment-workspace.html',
+  'styles/assessment-workspace.js',
+  'vitals/assessment-workspace.css',
+  'vitals/assessment-workspace.html',
+  'vitals/assessment-workspace.js'
 ]);
 
 const RETIRED_DIRECTORIES = Object.freeze([

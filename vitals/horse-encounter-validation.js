@@ -130,11 +130,23 @@
     return {positives:[...new Set(positives)],misses:[...new Set(misses)],sequence:[...new Set(sequence)]};
   }
 
-  function gradeHost(){return $('#horseGradePanel, #gradePanel, #scenarioGrade, .grade-results, .scenario-grade, [data-grade-results]')}
+  function gradeHost(){
+    return $('#horseGradeWorkspace .horse-grade-feedback')
+      || $('#horseGradeWorkspace .horse-grade-summary')
+      || $('#horseGradeWorkspace')
+      || $('#horseGradePanel, #gradePanel, #scenarioGrade, .grade-results, .scenario-grade, [data-grade-results]');
+  }
   function renderDebrief(){
     const host=gradeHost();if(!host)return;
     const model=debriefModel();let section=$('#horseEncounterDebrief',host);
-    if(!section){section=document.createElement('section');section.id='horseEncounterDebrief';section.className='horse-encounter-debrief';host.appendChild(section)}
+    if(!section){
+      section=document.createElement('section');
+      section.id='horseEncounterDebrief';
+      section.className='horse-encounter-debrief';
+      const actions=host.querySelector?.('.horse-grade-actions');
+      if(actions)host.insertBefore(section,actions);
+      else host.appendChild(section);
+    }
     const block=(title,cls,rows,empty)=>`<div class="${cls}"><h3>${title}</h3>${rows.length?`<ul>${rows.map(row=>`<li>${row}</li>`).join('')}</ul>`:`<p>${empty}</p>`}</div>`;
     const html=`<div class="horse-debrief-title"><span>ENCOUNTER DEBRIEF</span><h2>Clinical decisions and sequence</h2></div>${block('What you did well','well',model.positives,'No completed strengths are available yet.')}${block('Missed / incomplete','missed',model.misses,'No major required elements are missing.')}${block('Sequence opportunities','sequence',model.sequence,'No major sequencing concerns identified.')}<p class="horse-debrief-note">Use this review to improve the next attempt. Local protocols and medical direction always control patient care.</p>`;
     if(section.innerHTML!==html)section.innerHTML=html;

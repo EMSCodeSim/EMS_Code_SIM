@@ -67,5 +67,14 @@
 /vitals/scenario-interviews.js
   Cache-Control: public, max-age=0, must-revalidate
 
+/vitals/scenario-patient-satisfaction-grade.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/vitals/horse-encounter-validation.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/vitals/scenario-learning-workspace-fixes.css
+  Cache-Control: public, max-age=0, must-revalidate
+
 /build-info.json
   Cache-Control: no-cache, no-store, must-revalidate

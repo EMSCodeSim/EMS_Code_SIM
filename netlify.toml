@@ -64,6 +64,21 @@
     Cache-Control = "public, max-age=0, must-revalidate"
 
 [[headers]]
+  for = "/vitals/scenario-patient-satisfaction-grade.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/vitals/horse-encounter-validation.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/vitals/scenario-learning-workspace-fixes.css"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
   for = "/vitals/scenario-launcher.js"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
