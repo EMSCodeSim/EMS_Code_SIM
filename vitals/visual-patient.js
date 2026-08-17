@@ -2518,6 +2518,18 @@
         button.addEventListener('click', () => selectHorseTreatmentGroup(group.id));
         box.appendChild(button);
       });
+
+    // Delegated backup: survives DOM reordering by first-time / endpoint polishers.
+    if (!box.dataset.horseTreatmentGroupDelegate) {
+      box.dataset.horseTreatmentGroupDelegate = '1';
+      box.addEventListener('click', event => {
+        const button = event.target.closest?.('[data-horse-treatment-group]');
+        if (!button || !box.contains(button) || button.hidden) return;
+        const groupId = button.dataset.horseTreatmentGroup || '';
+        if (!groupId || horseTreatmentActiveGroup === groupId) return;
+        selectHorseTreatmentGroup(groupId);
+      });
+    }
   }
 
   function buildHorseTreatmentsMobile() {

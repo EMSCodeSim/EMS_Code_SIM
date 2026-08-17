@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.15.4';
+  const VERSION = '2026.08.17.6';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';
@@ -207,17 +207,7 @@
     if (!panel || !tools) return;
     const groups = $$('[data-horse-treatment-group]', tools);
     if (!groups.length) return;
-    const orderedGroups = groups.sort((a,b) => {
-        const aId = String(a.dataset.horseTreatmentGroup || '').toLowerCase();
-        const bId = String(b.dataset.horseTreatmentGroup || '').toLowerCase();
-        const aRank = PRIMARY_TREATMENT_ORDER.indexOf(aId);
-        const bRank = PRIMARY_TREATMENT_ORDER.indexOf(bId);
-        return (aRank < 0 ? 99 : aRank) - (bRank < 0 ? 99 : bRank);
-      });
-    const currentOrder = $(':scope > [data-horse-treatment-group]', tools);
-    if (orderedGroups.some((button, index) => currentOrder[index] !== button)) {
-      orderedGroups.forEach(button => tools.appendChild(button));
-    }
+
     groups.forEach(button => {
       const endEncounter = /transport|handoff/.test(String(button.dataset.horseTreatmentGroup || '').toLowerCase());
       const primary = primaryTreatmentGroup(button);
@@ -226,6 +216,7 @@
       if (!primary && !endEncounter) button.hidden = !extraTreatmentsShown;
       if (endEncounter) button.hidden = true;
     });
+
     let more = document.getElementById('horseMoreTreatmentsToggle');
     if (!more) {
       more = document.createElement('button');
@@ -236,9 +227,28 @@
         extraTreatmentsShown = !extraTreatmentsShown;
         simplifyTreatmentGroups();
       });
-      tools.appendChild(more);
     }
     more.textContent = extraTreatmentsShown ? 'Show fewer treatments' : 'More treatments…';
+
+    // Stable order: head, primary/extra groups, more-toggle, endpoint host.
+    // Never leave More treatments beside End of Encounter in the 2-col grid —
+    // that stretched it into a tall dead click zone and pushed categories down.
+    const head = tools.querySelector(':scope > .horse-treatment-menu-head');
+    const endpoint = document.getElementById('horseTransportHandoffActions');
+    const orderedGroups = groups.slice().sort((a, b) => {
+      const aId = String(a.dataset.horseTreatmentGroup || '').toLowerCase();
+      const bId = String(b.dataset.horseTreatmentGroup || '').toLowerCase();
+      const aRank = PRIMARY_TREATMENT_ORDER.indexOf(aId);
+      const bRank = PRIMARY_TREATMENT_ORDER.indexOf(bId);
+      return (aRank < 0 ? 99 : aRank) - (bRank < 0 ? 99 : bRank);
+    });
+    const sequence = [
+      head,
+      ...orderedGroups,
+      more,
+      endpoint
+    ].filter(Boolean);
+    sequence.forEach(node => tools.appendChild(node));
   }
 
   function treatmentReadyForMovement() {
@@ -365,7 +375,23 @@
         #assessmentPanel [data-assessment-category="abc"]{font-weight:900!important}
         #assessmentPanel [data-assessment-item="airway"],#assessmentPanel [data-assessment-item="breathing"],#assessmentPanel [data-assessment-item="perfusion"]{min-height:46px!important;font-size:.86rem!important}
         #assessmentPanel .horse-question-choice,#treatmentPanel [data-horse-treatment-group],#treatmentPanel [data-horse-workspace-plan],#treatmentPanel .horse-treatment-perform{position:relative!important;z-index:3!important;pointer-events:auto!important;touch-action:manipulation!important}
-        #treatmentPanel .horse-more-treatments-toggle{width:100%;min-height:40px;margin-top:7px;border:1px dashed rgba(116,181,210,.42);border-radius:9px;background:rgba(8,30,45,.45);color:#b9d7e5;font-weight:800;cursor:pointer}
+        #treatmentPanel .horse-more-treatments-toggle{
+          width:100%;
+          min-height:40px;
+          max-height:44px;
+          margin-top:2px;
+          border:1px dashed rgba(116,181,210,.42);
+          border-radius:9px;
+          background:rgba(8,30,45,.45);
+          color:#b9d7e5;
+          font-weight:800;
+          cursor:pointer;
+          align-self:start;
+        }
+        #treatmentTools.horse-treatment-group-menu > #horseMoreTreatmentsToggle,
+        #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions{
+          grid-column:1/-1!important;
+        }
         #treatmentPanel.emt-movement-focus #treatmentTools,#treatmentPanel.emt-movement-focus #horseTreatmentWorkspaceDetail{opacity:.22;pointer-events:none}
         #treatmentPanel.emt-movement-focus #horseMovementChoices{border-color:rgba(113,211,245,.75)!important;box-shadow:0 0 0 1px rgba(113,211,245,.14),0 12px 30px rgba(0,0,0,.22)}
         #treatmentPanel .horse-natural-encounter-end{margin-top:10px!important;padding-top:10px!important;border-top:1px solid rgba(91,145,171,.35)}
