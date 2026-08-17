@@ -38,6 +38,7 @@ assert(followupCleanup.includes('#assessmentPanel:not([hidden])') && followupCle
 assert(followupCleanup.includes('data-active-domain="historyPanel"') && followupCleanup.includes('data-active-domain="treatmentPanel"'), 'Assessment options must stay hidden while History/Treatment own the right rail.');
 assert(domainWorkspace.includes('showOnlyDomainPanel') && domainWorkspace.includes("data-active-domain"), 'Domain workspace must exclusively show the selected clinical panel.');
 assert(domainWorkspace.includes('domain-assessment-suppressed') && domainWorkspace.includes("setProperty('display', 'none', 'important')"), 'Assessment suppression must force display:none important when another domain is active.');
+assert(domainWorkspace.includes('emsAssessmentPanelParking') && domainWorkspace.includes('parkAssessmentPanel'), 'Inactive Assessment panel must be parked outside the action sheet so it cannot push History down.');
 assert(domainWorkspaceCss.includes('.action-sheet[hidden]') && /action-sheet\[hidden\][\s\S]*?display:\s*none/.test(domainWorkspaceCss), 'Hidden desktop action sheet must stay display:none.');
 assert(deploymentPolicy.includes("'vitals/assessment-workspace.html'"), 'Retired assessment workspace must remain excluded by deployment policy.');
 assert(!fs.existsSync(path.join(root, 'vitals/assessment-workspace.html')), 'Competing assessment workspace page must stay removed from source.');

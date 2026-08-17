@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.17.3';
+  const VERSION = '2026.08.17.5';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -276,19 +276,73 @@
     });
   }
 
+  function ensureAssessmentParking() {
+    let park = document.getElementById('emsAssessmentPanelParking');
+    if (!park) {
+      park = document.createElement('div');
+      park.id = 'emsAssessmentPanelParking';
+      park.hidden = true;
+      park.setAttribute('aria-hidden', 'true');
+      park.style.cssText = 'display:none!important;position:fixed;left:-10000px;top:0;width:0;height:0;overflow:hidden;pointer-events:none;';
+      document.body.appendChild(park);
+    }
+    return park;
+  }
+
+  function parkAssessmentPanel() {
+    const assessment = $('assessmentPanel');
+    const sheet = $('actionSheet');
+    if (!assessment) return;
+    assessment.hidden = true;
+    assessment.style.setProperty('display', 'none', 'important');
+    assessment.setAttribute('inert', '');
+    assessment.setAttribute('aria-hidden', 'true');
+    const park = ensureAssessmentParking();
+    if (assessment.parentElement !== park) park.appendChild(assessment);
+    // If tools somehow escaped the panel, pull them back into the parked panel.
+    const tools = $('assessmentTools');
+    if (tools && tools.parentElement !== assessment && !assessment.contains(tools)) {
+      assessment.appendChild(tools);
+    }
+    if (sheet && sheet.contains(assessment)) {
+      // Should not happen after append to park; keep as safety.
+      park.appendChild(assessment);
+    }
+  }
+
+  function restoreAssessmentPanel() {
+    const assessment = $('assessmentPanel');
+    const sheet = $('actionSheet');
+    if (!assessment || !sheet) return;
+    const history = $('historyPanel');
+    const treatment = $('treatmentPanel');
+    const findings = $('findingsPanel');
+    const before = history || treatment || findings || null;
+    if (assessment.parentElement !== sheet) {
+      if (before && before.parentElement === sheet) sheet.insertBefore(assessment, before);
+      else sheet.appendChild(assessment);
+    }
+    assessment.hidden = false;
+    assessment.style.removeProperty('display');
+    assessment.removeAttribute('inert');
+    assessment.setAttribute('aria-hidden', 'false');
+  }
+
   function showOnlyDomainPanel(panelId) {
     const panel = $(panelId);
     if (!panel) return false;
+
+    if (panelId === 'assessmentPanel') restoreAssessmentPanel();
+    else parkAssessmentPanel();
+
     document.querySelectorAll('.vp-panel').forEach(item => {
-      const active = item === panel;
+      const active = item.id === panelId;
       item.hidden = !active;
       if (active) {
         item.style.removeProperty('display');
         item.removeAttribute('inert');
         item.setAttribute('aria-hidden', 'false');
       } else if (item.id === 'assessmentPanel') {
-        // Inline !important beats leftover stylesheet rules like
-        // `#assessmentPanel { display:flex !important }` that ignore [hidden].
         item.style.setProperty('display', 'none', 'important');
         item.setAttribute('inert', '');
         item.setAttribute('aria-hidden', 'true');

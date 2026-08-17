@@ -134,11 +134,17 @@ test('desktop center interaction column owns patient communication while right w
   await expect.poll(() => page.evaluate(() => {
     const panel = document.getElementById('assessmentPanel');
     const tools = document.getElementById('assessmentTools');
+    const sheet = document.getElementById('actionSheet');
+    const park = document.getElementById('emsAssessmentPanelParking');
     return Boolean(
       document.body.getAttribute('data-active-domain') === 'historyPanel'
+      && document.body.classList.contains('domain-assessment-suppressed')
       && panel?.hidden
       && getComputedStyle(panel).display === 'none'
+      && panel?.parentElement === park
+      && !sheet?.contains(panel)
       && (!tools || getComputedStyle(tools).display === 'none' || tools.getBoundingClientRect().height === 0)
+      && !(document.querySelector('.patient-control-column')?.innerText || '').includes('Choose an assessment category')
     );
   })).toBe(true);
 
