@@ -1,8 +1,13 @@
 @media (min-width:980px){
-  #assessmentPanel{
+  /* Only apply flex when the panel is the active domain. display:flex!important
+     otherwise overrides [hidden] and keeps Assessment stacked over History/Treatment. */
+  #assessmentPanel:not([hidden]){
     display:flex!important;
     flex-direction:column!important;
     gap:8px!important;
+  }
+  #assessmentPanel[hidden]{
+    display:none!important;
   }
   #assessmentPanel > .sub{
     order:0;

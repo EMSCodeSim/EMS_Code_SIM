@@ -13,6 +13,8 @@ const visualPatient = read('vitals/visual-patient.js');
 const visualHtml = read('vitals/visual-patient.html');
 const css = read('vitals/visual-patient.css');
 const encounterValidation = read('vitals/horse-encounter-validation.js');
+const followupCleanup = read('vitals/scenario-assessment-followup-cleanup.css');
+const domainWorkspaceCss = read('vitals/scenario-domain-workspace.css');
 const deploymentPolicy = read('tools/deployment-policy.js');
 const headers = read('_headers');
 const netlify = read('netlify.toml');
@@ -31,6 +33,8 @@ assert(/\.horse-grade-workspace[\s\S]*position:\s*absolute/.test(css), 'Grade ov
 assert(css.includes('body.horse-grade-open .horse-grade-workspace') && css.includes('position:fixed'), 'Production grade review must open as a fixed workspace overlay.');
 assert(encounterValidation.includes("#horseGradeWorkspace .horse-grade-feedback"), 'Encounter debrief must prefer the grade feedback panel as its host.');
 assert(encounterValidation.includes('#horseGradeWorkspace'), 'Encounter debrief must attach to the live horse grade workspace.');
+assert(followupCleanup.includes('#assessmentPanel:not([hidden])') && followupCleanup.includes('#assessmentPanel[hidden]'), 'Assessment panel flex layout must not override [hidden] or it blocks History/Treatment.');
+assert(domainWorkspaceCss.includes('.action-sheet[hidden]') && /action-sheet\[hidden\][\s\S]*?display:\s*none/.test(domainWorkspaceCss), 'Hidden desktop action sheet must stay display:none.');
 assert(deploymentPolicy.includes("'vitals/assessment-workspace.html'"), 'Retired assessment workspace must remain excluded by deployment policy.');
 assert(!fs.existsSync(path.join(root, 'vitals/assessment-workspace.html')), 'Competing assessment workspace page must stay removed from source.');
 assert(headers.includes('/vitals/scenario-patient-satisfaction-grade.js'), 'Satisfaction grade script must be revalidated by CDN headers.');
