@@ -190,7 +190,7 @@
     overlay = document.createElement('div');
     overlay.id = 'horseIntroOverlay';
     overlay.innerHTML = `
-      <video id="horseIntroVideo" muted playsinline controls poster="${INTRO_POSTER}">
+      <video id="horseIntroVideo" muted autoplay playsinline preload="auto" controls poster="${INTRO_POSTER}">
         <source src="${INTRO_VIDEO}" type="video/mp4">
       </video>
       <button type="button" id="horseIntroSkip">Skip</button>`;
@@ -221,8 +221,11 @@
     overlay.hidden = false;
     overlay.removeAttribute('hidden');
     const video = overlay.querySelector('video');
-    const play = video?.play?.();
-    if (play && typeof play.catch === 'function') play.catch(() => {});
+    if (video) {
+      try { video.currentTime = 0; } catch { /* ignore until metadata is ready */ }
+      const play = video.play();
+      if (play && typeof play.catch === 'function') play.catch(() => {});
+    }
   }
 
   function revealPatientImage() {

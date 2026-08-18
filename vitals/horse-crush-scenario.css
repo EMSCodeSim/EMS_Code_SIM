@@ -46,6 +46,14 @@
   letter-spacing:.04em;
   cursor:pointer;
 }
+body.horse-intro-playing #infoUpdateWindow{
+  visibility:hidden;
+  pointer-events:none;
+}
+body.horse-intro-playing #dispatch,
+body.horse-intro-playing #scene{
+  visibility:hidden;
+}
 
 .horse-assessment-section{margin-top:14px}
 .horse-assessment-section .assessment-section-title em{font-style:normal;font-weight:800;color:#0f766e}
