@@ -1192,9 +1192,22 @@ body.horse-grade-open #clinicalInteractionColumn,
 body.hospital-handoff-open .clinical-interaction-column,
 body.horse-grade-open .clinical-interaction-column,
 body.hospital-handoff-open #infoUpdateWindow,
-body.horse-grade-open #infoUpdateWindow{
+body.horse-grade-open #infoUpdateWindow,
+body.hospital-handoff-open #actionSheet,
+body.hospital-handoff-open #actionSheet.action-sheet,
+body.hospital-handoff-open #actionSheet:not([hidden]),
+body.horse-grade-open #actionSheet,
+body.horse-grade-open #actionSheet.action-sheet,
+body.horse-grade-open #actionSheet:not([hidden]),
+body.hospital-handoff-open #treatmentPanel,
+body.horse-grade-open #treatmentPanel{
+  display:none !important;
   visibility:hidden !important;
   pointer-events:none !important;
+}
+body.hospital-handoff-open .scenario-hero-layout,
+body.horse-grade-open .scenario-hero-layout{
+  grid-template-columns:minmax(0,1fr) !important;
 }
 @media(min-width:961px){
   body.hospital-handoff-open.desktop-scenario-layout .hospital-handoff-workspace,
@@ -3199,6 +3212,18 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
 #actionSheet[hidden]{display:none!important;}
 @media(min-width:961px){
   body.desktop-scenario-layout:not(.sim-workspace-open) .patient-stage>img#patientImage{display:block!important;visibility:visible!important;opacity:1!important;}
+  body.hospital-handoff-open.desktop-scenario-layout .patient-control-column,
+  body.horse-grade-open.desktop-scenario-layout .patient-control-column,
+  body.hospital-handoff-open.desktop-scenario-layout #actionSheet,
+  body.hospital-handoff-open.desktop-scenario-layout #actionSheet:not([hidden]),
+  body.horse-grade-open.desktop-scenario-layout #actionSheet,
+  body.horse-grade-open.desktop-scenario-layout #actionSheet:not([hidden]),
+  body.hospital-handoff-open.desktop-scenario-layout #treatmentPanel,
+  body.horse-grade-open.desktop-scenario-layout #treatmentPanel{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
 }
 
 

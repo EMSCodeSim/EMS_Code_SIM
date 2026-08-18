@@ -574,9 +574,53 @@
   }
 
   // New case
+  function scenarioRuntime() {
+    try { return window.parent?.EMSCodeSimScenarioRuntime || window.EMSCodeSimScenarioRuntime; }
+    catch (_) { return window.EMSCodeSimScenarioRuntime; }
+  }
+
+  function scenarioMode() {
+    const params = new URLSearchParams(location.search);
+    return params.get('mode') === 'scenario' || params.get('embedded') === '1';
+  }
+
+  function trackingCaseFromVitals(gazeId, trackingId) {
+    if (gazeId === 'left-deviation') return TRACK_CASES.find(item => item.id === 'conj_left');
+    if (gazeId === 'right-deviation') return TRACK_CASES.find(item => item.id === 'conj_right');
+    if (gazeId === 'disconjugate') return TRACK_CASES.find(item => item.id === 'disconj');
+    if (trackingId === 'impaired') return TRACK_CASES.find(item => item.id === 'limit_right');
+    return TRACK_CASES.find(item => item.id === 'normal');
+  }
+
+  function applyScenarioCase() {
+    const rt = scenarioRuntime();
+    if (!scenarioMode() && !rt?.active?.()) return false;
+    const raw = String(rt?.vital?.('pupils', 'Equal; both reactive to light; gaze midline; tracking smooth') || '');
+    const equal = String(rt?.vital?.('pupil_equal', /equal/i.test(raw) && !/unequal/i.test(raw))) !== 'false';
+    const leftReactive = String(rt?.vital?.('pupil_left_reactive', !/left[^.;]*(fixed|nonreactive)/i.test(raw))) !== 'false';
+    const rightReactive = String(rt?.vital?.('pupil_right_reactive', !/right[^.;]*(fixed|nonreactive)/i.test(raw))) !== 'false';
+    const gazeId = String(rt?.vital?.('pupil_gaze', /left deviation/i.test(raw) ? 'left-deviation' : /right deviation/i.test(raw) ? 'right-deviation' : /disconjugate/i.test(raw) ? 'disconjugate' : 'midline'));
+    const trackingId = String(rt?.vital?.('pupil_tracking', /impaired|does not track|not tracking/i.test(raw) ? 'impaired' : /not testable/i.test(raw) ? 'not-testable' : 'smooth'));
+    const leftMm = Number(rt?.vital?.('pupil_left_mm', 3));
+    const rightMm = Number(rt?.vital?.('pupil_right_mm', equal ? 3 : 6));
+    const leftRatio = Math.round(ratioFromMm(Number.isFinite(leftMm) ? leftMm : 3));
+    const rightRatio = Math.round(ratioFromMm(Number.isFinite(rightMm) ? rightMm : 3));
+    casePupils = {
+      L: { ratio: leftRatio, react: leftReactive ? 'normal' : 'none' },
+      R: { ratio: equal ? leftRatio : rightRatio, react: rightReactive ? 'normal' : 'none' }
+    };
+    caseTracking = trackingCaseFromVitals(gazeId, trackingId) || TRACK_CASES[0];
+    document.body.dataset.perlScenario = '1';
+    btnNewCase.hidden = true;
+    btnGrade.textContent = 'Record pupil finding';
+    return true;
+  }
+
   function newCase(){
-    casePupils = rand(PUPIL_CASES);
-    caseTracking = rand(TRACK_CASES);
+    if (!applyScenarioCase()) {
+      casePupils = rand(PUPIL_CASES);
+      caseTracking = rand(TRACK_CASES);
+    }
     eyePos.L = eyePos.R = 0; gaze.value = 0;
 
     // Apply

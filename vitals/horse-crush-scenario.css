@@ -237,3 +237,50 @@ body :is(button,a,select,input,textarea):focus-visible{outline:3px solid #8ccfff
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+/* Hospital handoff / grade: hide the right Treatment window so it cannot cover the report.
+   The action sheet is a higher stacking context than the overlay inside .patient-stage. */
+body.hospital-handoff-open #actionSheet,
+body.hospital-handoff-open #actionSheet.action-sheet,
+body.hospital-handoff-open #actionSheet:not([hidden]),
+body.hospital-handoff-open.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet,
+body.hospital-handoff-open.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet:not([hidden]),
+body.hospital-handoff-open.desktop-scenario-layout.clinical-domain-workspace-v2 #actionSheet.action-sheet,
+body.hospital-handoff-open.desktop-scenario-layout.clinical-domain-workspace-v2 #actionSheet.action-sheet:not([hidden]),
+body.horse-grade-open #actionSheet,
+body.horse-grade-open #actionSheet.action-sheet,
+body.horse-grade-open #actionSheet:not([hidden]),
+body.horse-grade-open.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet,
+body.horse-grade-open.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet:not([hidden]),
+body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 #actionSheet.action-sheet,
+body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 #actionSheet.action-sheet:not([hidden]),
+body.hospital-handoff-open .patient-control-column,
+body.horse-grade-open .patient-control-column,
+body.hospital-handoff-open #treatmentPanel,
+body.hospital-handoff-open #treatmentPanel.treatment-panel,
+body.horse-grade-open #treatmentPanel,
+body.horse-grade-open #treatmentPanel.treatment-panel,
+body.hospital-handoff-open .bottom-nav,
+body.horse-grade-open .bottom-nav{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+body.hospital-handoff-open .scenario-hero-layout,
+body.hospital-handoff-open.horse-current-emt-call.desktop-scenario-layout .scenario-hero-layout,
+body.hospital-handoff-open.desktop-scenario-layout.clinical-domain-workspace-v2 .scenario-hero-layout,
+body.horse-grade-open .scenario-hero-layout,
+body.horse-grade-open.horse-current-emt-call.desktop-scenario-layout .scenario-hero-layout,
+body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 .scenario-hero-layout{
+  grid-template-columns:minmax(0,1fr)!important;
+}
+@media(min-width:961px){
+  body.hospital-handoff-open .hospital-handoff-workspace,
+  body.hospital-handoff-open.desktop-scenario-layout .hospital-handoff-workspace,
+  body.horse-grade-open .horse-grade-workspace,
+  body.horse-grade-open.desktop-scenario-layout .horse-grade-workspace{
+    position:fixed!important;
+    z-index:200!important;
+    inset:72px 12px 12px 12px!important;
+  }
+}

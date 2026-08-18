@@ -78,6 +78,9 @@ assert(horseScenarioCss.includes('grid-template-rows:auto auto auto minmax(0,1fr
 assert(horseUiFix.includes('relocateReasoningBoard') && horseUiFix.includes("document.getElementById('findingsPanel')"), 'The detailed horse reasoning board must live inside the Record panel instead of consuming permanent desktop workspace height');
 assert(horseUiFix.includes("event.target.closest?.('#assessmentTools [data-assessment-item]')"), 'Horse assessment routing fix must intercept desktop assessment-item clicks');
 assert(horseUiFix.includes('openDesktopAbcFollowup(button, key)'), 'Horse assessment routing fix must route ABC item clicks to the visible desktop follow-up workspace');
+assert(horseUiFix.includes("lung_sounds:") && horseUiFix.includes("openAssessmentSim(key, button)"), 'Horse Chest Breath Sounds button must open the breath-sounds mini sim');
+assert(horseUiFix.includes("Pupils / PERL") && horseUiFix.includes('/vitals/pupil.html'), 'Horse Pupils / PERL button must open the site PERL simulator');
+assert(embeddedMiniSim.includes("pathname !== '/vitals/pupil.html'") || embeddedMiniSim.includes("installPerlAdapter"), 'Embedded mini sims must adapt the PERL pupil trainer');
 assert(horseUiFix.includes('window.EMSCodeSimScenarioSession.saveFinding(key, value, payload, CASE_ID)'), 'Horse desktop ABC findings must save through the shared scenario session');
 assert(horseUiFix.includes('horse.performExam(key)'), 'Horse assessment routing fix must route focused assessment items to the horse exam engine');
 assert(horseUiFix.includes('promoteHiddenTransportForm') && horseUiFix.includes('form.horse-transport-selection-form'), 'Horse desktop transport form must be promoted out of the retired hidden question box');
@@ -100,6 +103,7 @@ assert(embeddedMiniSim.includes('ems-discovery-locked'), 'Embedded vital sims mu
 assert(embeddedMiniSim.includes("setFlow(3)"), 'Embedded mini sims must advance to Document only after discovery');
 assert(embeddedMiniSim.includes("['pulse','respirations','spo2','bgl','temperature']"), 'Shared discovery gate must cover all device vital simulators');
 assert(embeddedMiniSim.includes("sim === 'pupils'") && embeddedMiniSim.includes("sim === 'skin'") && embeddedMiniSim.includes("sim === 'mental-status'") && embeddedMiniSim.includes("sim === 'breath-sounds'"), 'Shared discovery gate must cover observation-based vital mini sims');
+assert(read('vitals/breath-sounds-auscultation.js').includes('stageMarkup') && read('vitals/breath-sounds-scenario.html').includes('breath-sounds-auscultation.js'), 'Breath-sounds scenario must load the rebuilt anatomical auscultation stage');
 assert(visualAssessmentSuite.includes('function interpret(config={})'), 'Visual assessment suite must require learner interpretation before saving findings');
 assert(visualAssessmentSuite.includes('reviewAtDebrief:true'), 'Visual assessment grading data must remain hidden until debrief');
 

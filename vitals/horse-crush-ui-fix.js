@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.17.11';
+  const VERSION = '2026.08.17.13';
   let lastAbcCommitAt = 0;
   let lastAbcCommitToken = '';
   const FOCUSED_EXAMS = new Set([
@@ -17,9 +17,10 @@
   ]);
 
   const SIM_ASSESSMENTS = {
-    pupils: { label:'Eyes & pupils', url:'/vitals/pupil-scenario.html' },
+    pupils: { label:'Pupils / PERL', url:'/vitals/pupil.html' },
     mental_status: { label:'Mental status / AVPU', url:'/vitals/avpu-scenario.html' },
-    breath_sounds: { label:'Breath sounds', url:'/vitals/breath-sounds-scenario.html' }
+    breath_sounds: { label:'Breath sounds', url:'/vitals/breath-sounds-scenario.html' },
+    lung_sounds: { label:'Breath sounds', url:'/vitals/breath-sounds-scenario.html' }
   };
 
   const ABC = {
@@ -150,6 +151,7 @@
 
   function showPromotedTreatmentPanel(title = 'Transport') {
     if (!isDesktopHorse()) return false;
+    if (document.body.classList.contains('hospital-handoff-open') || document.body.classList.contains('horse-grade-open')) return false;
     const sheet = document.getElementById('actionSheet');
     const panel = document.getElementById('treatmentPanel');
     if (!sheet || !panel) return false;
@@ -372,6 +374,13 @@
     const key = String(button.dataset.assessmentItem || '');
     if (ABC[key]) {
       event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation?.(); openDesktopAbcFollowup(button, key); return;
+    }
+    if (SIM_ASSESSMENTS[key]) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation?.();
+      openAssessmentSim(key, button);
+      return;
     }
     if (!FOCUSED_EXAMS.has(key)) return;
     const horse = window.EMSCodeSimHorseCrush;

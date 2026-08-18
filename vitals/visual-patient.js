@@ -1069,6 +1069,7 @@
         description:'Neurologic and skin findings.',
         items:[
           { id:'neuro', label:'Neurologic', prompt:'Assess mental status and neurologic function.' },
+          { id:'pupils', label:'Pupils / PERL', prompt:'Assess pupils, light response, and tracking.' },
           { id:'skin', label:'Skin', prompt:'Assess skin color, temperature, and condition.' }
         ]
       }
@@ -1082,7 +1083,11 @@
 
     horseAssessmentActiveCategory = category.id;
     const current = record() || {};
-    const completed = key => Boolean(api?.getFinding?.(key, current));
+    const completed = key => Boolean(
+      api?.getFinding?.(key, current) ||
+      (key === 'lung_sounds' && api?.getFinding?.('breath_sounds', current)) ||
+      (key === 'neuro' && (api?.getFinding?.('mental_status', current) || api?.getFinding?.('pupils', current)))
+    );
 
     box.className = 'assessment-list horse-assessment-category-workspace';
     box.innerHTML = `
@@ -1125,6 +1130,20 @@
           lastInfoSignature = '';
           renderInfoUpdate(true);
           horseWorkspaceContext.openFollowup(item.id);
+          return;
+        }
+        if (item.id === 'lung_sounds' || item.id === 'breath_sounds') {
+          const href = '/vitals/breath-sounds-scenario.html';
+          if (!openEmbeddedSimulator(href, 'Breath sounds')) {
+            window.EMSCodeSimMiniSimOverlay?.openOverlay?.(href, 'Breath sounds');
+          }
+          return;
+        }
+        if (item.id === 'pupils') {
+          const href = '/vitals/pupil.html';
+          if (!openEmbeddedSimulator(href, 'Pupils / PERL')) {
+            window.EMSCodeSimMiniSimOverlay?.openOverlay?.(href, 'Pupils / PERL');
+          }
           return;
         }
         // Reuse existing assessment selection path if available.
@@ -3530,6 +3549,12 @@
     ].filter(Boolean).join(' ');
   }
 
+  function hideHorseClinicalRightRail() {
+    const sheet = $('actionSheet');
+    if (sheet) sheet.hidden = true;
+    document.body.classList.remove('horse-tool-sheet-open');
+  }
+
   function openHorseHospitalHandoff(showSample = false) {
     if (id !== 'horse_crush') return;
     closeEmbeddedSimulator({ refresh:false });
@@ -3538,6 +3563,7 @@
     const workspace = $('hospitalHandoffWorkspace');
     if (workspace) workspace.hidden = false;
     document.body.classList.add('hospital-handoff-open');
+    hideHorseClinicalRightRail();
     renderHorseHospitalHandoff();
     sceneObservationUpdate = {
       id:`horse-hospital-handoff-${Date.now()}`,
@@ -3860,6 +3886,7 @@
     const workspace = $('horseGradeWorkspace');
     if (workspace) workspace.hidden = false;
     document.body.classList.add('horse-grade-open');
+    hideHorseClinicalRightRail();
     renderHorseCallGrade();
     const satisfaction = window.EMSCodeSimPatientSatisfactionGrade?.model?.();
     const grade = satisfaction && Number.isFinite(satisfaction.score)

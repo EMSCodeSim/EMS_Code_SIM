@@ -117,8 +117,10 @@
   if (sim === 'breath-sounds') {
     document.querySelectorAll('.sv-point').forEach(point => point.addEventListener('click', () => {
       markObserved();
-      const heard = document.querySelectorAll('.sv-point.done').length;
-      if (heard >= 4) unlockDocument();
+      const countText = document.getElementById('listenCount')?.textContent || '';
+      const heard = Number((countText.match(/(\d+)\s+of\s+4/) || [])[1] || 0);
+      const done = document.querySelectorAll('.sv-point.done').length;
+      if (heard >= 4 || done >= 4) unlockDocument();
     }));
   }
 
@@ -277,8 +279,64 @@
     }
   }
 
+  function installPerlAdapter() {
+    if (pathname !== '/vitals/pupil.html') return;
+    const lightLeft = document.getElementById('btnLightL');
+    const lightRight = document.getElementById('btnLightR');
+    const gaze = document.getElementById('gaze');
+    const grade = document.getElementById('btnGrade');
+    const perl = document.getElementById('perl');
+    const sizeL = document.getElementById('sizeL');
+    const sizeR = document.getElementById('sizeR');
+    const reactL = document.getElementById('reactL');
+    const reactR = document.getElementById('reactR');
+    const trackL = document.getElementById('trackL');
+    const trackR = document.getElementById('trackR');
+    if (!lightLeft || !lightRight || !grade || !perl) return;
+
+    const assessed = new Set();
+    function note(part) {
+      assessed.add(part);
+      markObserved();
+      if (assessed.size >= 3) {
+        unlocked = true;
+        setFlow(3);
+      }
+    }
+    lightLeft.addEventListener('click', () => note('left'));
+    lightRight.addEventListener('click', () => note('right'));
+    gaze?.addEventListener('input', () => note('track'));
+    gaze?.addEventListener('change', () => note('track'));
+
+    grade.addEventListener('click', () => {
+      window.setTimeout(() => {
+        if (!perl.value || assessed.size < 3) return;
+        const mmL = parseFloat(document.getElementById('mmL')?.textContent) || 0;
+        const mmR = parseFloat(document.getElementById('mmR')?.textContent) || 0;
+        const equal = Math.abs(mmL - mmR) < 1;
+        const leftReactive = reactL?.value !== 'Non-reactive';
+        const rightReactive = reactR?.value !== 'Non-reactive';
+        const perlYes = perl.value === 'Yes';
+        const learnerPerl = perlYes && equal && leftReactive && rightReactive ? 'PERL' : (perl.value === 'No' ? 'Pupils not fully PERL' : 'PERL not documented');
+        const learner = `${learnerPerl}; size L ${sizeL?.value || '—'} / R ${sizeR?.value || '—'}; reaction L ${reactL?.value || '—'} / R ${reactR?.value || '—'}; tracking L ${trackL?.value || '—'} / R ${trackR?.value || '—'}`;
+        const expected = String(parentRuntimeVital('pupils', 'Pupils equal, round, and reactive to light; gaze midline; tracking smooth'));
+        const expectedPerl = /unequal|fixed|nonreactive|non-reactive/i.test(expected) ? 'No' : 'Yes';
+        saveLegacyFinding('pupils', 'Pupils / PERL', learner, {
+          expectedFinding: expected,
+          accurate: perl.value === expectedPerl,
+          correct: perl.value === expectedPerl,
+          equal,
+          leftReactive,
+          rightReactive,
+          perl: perl.value
+        });
+      }, 0);
+    });
+  }
+
   installGcsAdapter();
   installNinesAdapter();
+  installPerlAdapter();
   installIntegratedPracticeFlow();
 
   document.addEventListener('click', event => {

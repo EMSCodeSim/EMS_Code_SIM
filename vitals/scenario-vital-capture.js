@@ -1,6 +1,7 @@
 (()=>{'use strict';
 const rt=window.EMSCodeSimScenarioRuntime,api=window.EMSCodeSimPatientRecord;
 if(!rt?.active?.()||!api?.active?.())return;
+if(new URLSearchParams(location.search).get('embedded')==='1')return;
 const path=location.pathname.split('/').pop();
 const defs={
  'bp.html':{key:'blood_pressure',label:'Blood pressure',delay:24,ready:['#submitBtn'],success:()=>document.querySelector('#result')?.classList.contains('ok'),prompt:'Use the cuff and sounds, enter systolic and diastolic, then check your reading.'},

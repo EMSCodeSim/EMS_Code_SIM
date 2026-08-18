@@ -34,7 +34,9 @@ body.ems-embedded-mini-sim .sv-stopwatch{transform:scale(.88)}
 body.ems-embedded-mini-sim .sv-eyes{gap:18px!important}.ems-embedded-mini-sim .sv-eye{width:96px!important;height:64px!important}.ems-embedded-mini-sim .sv-iris{width:42px!important;height:42px!important}
 body.ems-embedded-mini-sim .sv-skin-swatch{width:130px!important;height:100px!important;border-radius:22px!important}
 body.ems-embedded-mini-sim .sv-observation{gap:4px!important}.ems-embedded-mini-sim .sv-observation p{padding:6px 8px!important;font-size:.68rem!important}
-body.ems-embedded-mini-sim .sv-chest{transform:scale(.82);transform-origin:center}
+body.ems-embedded-mini-sim .sv-chest{transform:none}
+body.ems-embedded-mini-sim .sv-ausc{width:100%}
+body.ems-embedded-mini-sim .sv-ausc-stage{width:min(100%,300px);max-height:min(52vh,360px)}
 body.ems-embedded-mini-sim .va-shell{width:100%!important;max-width:none!important;min-height:100%!important;margin:0!important;padding:8px!important;display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(250px,.75fr)!important;gap:8px!important;align-items:stretch!important}
 body.ems-embedded-mini-sim .va-stage{margin:0!important;min-height:0!important;align-self:stretch!important}
 body.ems-embedded-mini-sim .va-card{margin:0!important;border-radius:14px!important;box-shadow:none!important}
@@ -61,7 +63,11 @@ body.ems-embedded-mini-sim #practicePanel textarea{min-height:64px!important;max
 body.ems-embedded-mini-sim #practicePanel .complete-btn,body.ems-embedded-mini-sim #practicePanel #newCase,body.ems-embedded-mini-sim #practicePanel #tryAnother{display:none!important}
 body.ems-embedded-mini-sim #patientRecordSaveNotice{display:none!important}
 
-/* GCS becomes a compact patient-specific observe-and-score panel. */
+body.ems-embedded-mini-sim[data-vital-topic="pupils"]>header{display:none!important}
+body.ems-embedded-mini-sim[data-vital-topic="pupils"] .wrap{width:100%!important;max-width:none!important;margin:0!important;padding:8px!important;gap:8px!important}
+body.ems-embedded-mini-sim[data-vital-topic="pupils"] .card{margin:0!important;box-shadow:none!important}
+body.ems-embedded-mini-sim[data-vital-topic="pupils"] #btnNewCase{display:none!important}
+body.ems-embedded-mini-sim[data-vital-topic="pupils"] .svgwrap{aspect-ratio:5/3!important;min-height:120px!important}
 body.ems-embedded-mini-sim[data-vital-topic="gcs"]>header{display:none!important}
 body.ems-embedded-mini-sim[data-vital-topic="gcs"] main{width:100%!important;max-width:none!important;margin:0!important;padding:8px!important;display:grid!important;grid-template-columns:minmax(0,1.15fr) minmax(250px,.85fr)!important;gap:8px!important;align-items:start!important}
 body.ems-embedded-mini-sim[data-vital-topic="gcs"] main>.card{margin:0!important;padding:9px!important;border-radius:12px!important;box-shadow:none!important}

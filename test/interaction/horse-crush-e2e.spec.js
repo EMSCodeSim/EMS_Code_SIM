@@ -153,6 +153,34 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
   await page.locator('#handoffFromProgress').click();
   await expect(page.locator('#scenarioControlDialog')).toBeHidden();
   await expect(page.locator('#hospitalHandoffWorkspace')).toBeVisible();
+  await expect(page.locator('body')).toHaveClass(/hospital-handoff-open/);
+  await expect.poll(() => page.evaluate(() => {
+    const sheet = document.getElementById('actionSheet');
+    const treatment = document.getElementById('treatmentPanel');
+    const draft = document.getElementById('hospitalHandoffDraft');
+    const sample = document.getElementById('sampleHospitalHandoffPanel') || document.getElementById('sampleHospitalHandoffText');
+    if (!sheet || !treatment || !draft) return { ok:false, reason:'missing' };
+    const hidden = el => {
+      const style = getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      return el.hidden || style.display === 'none' || style.visibility === 'hidden' || box.width < 2 || box.height < 2;
+    };
+    const overlap = (a, b) => {
+      const aBox = a.getBoundingClientRect();
+      const bBox = b.getBoundingClientRect();
+      const width = Math.max(0, Math.min(aBox.right, bBox.right) - Math.max(aBox.left, bBox.left));
+      const height = Math.max(0, Math.min(aBox.bottom, bBox.bottom) - Math.max(aBox.top, bBox.top));
+      return width * height;
+    };
+    return {
+      ok: hidden(sheet)
+        && hidden(treatment)
+        && overlap(sheet, draft) === 0
+        && (!sample || overlap(sheet, sample) === 0),
+      sheetHidden: hidden(sheet),
+      treatmentHidden: hidden(treatment)
+    };
+  })).toMatchObject({ ok: true });
 
   await page.locator('#hospitalHandoffDraft').fill(
     '64-year-old alert patient compressed between two horses and knocked to the ground. Severe left hip pain with the leg held flexed. Airway, breathing, and perfusion are intact. Pelvis/hip and injured leg were assessed with distal CSM intact. The leg was manually supported in the position of comfort. Prompt trauma transport was selected.'
