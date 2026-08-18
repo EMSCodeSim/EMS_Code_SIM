@@ -334,9 +334,90 @@
     });
   }
 
+  function installSkinAdapter() {
+    if (pathname !== '/vitals/skin.html') return;
+    const crtBtn = document.getElementById('crtBtn');
+    const btnFlush = document.getElementById('btnFlush');
+    const btnPale = document.getElementById('btnPale');
+    const btnCyan = document.getElementById('btnCyan');
+    const btnJaund = document.getElementById('btnJaund');
+    const moistDry = document.getElementById('moistDry');
+    const moistNorm = document.getElementById('moistNormal');
+    const moistWet = document.getElementById('moistWet');
+    const tempDisplay = document.getElementById('tempDisplay');
+    if (!crtBtn) return;
+
+    const assessed = new Set();
+    let recordBtn = null;
+
+    function colorLabel() {
+      if (btnPale?.getAttribute('aria-pressed') === 'true') return 'pale';
+      if (btnFlush?.getAttribute('aria-pressed') === 'true') return 'flushed';
+      if (btnCyan?.getAttribute('aria-pressed') === 'true') return 'cyanotic';
+      if (btnJaund?.getAttribute('aria-pressed') === 'true') return 'jaundiced';
+      return 'pink';
+    }
+
+    function moistureLabel() {
+      if (moistDry?.getAttribute('aria-pressed') === 'true') return 'dry';
+      if (moistWet?.getAttribute('aria-pressed') === 'true') return 'wet';
+      return 'normal moisture';
+    }
+
+    function tempLabel() {
+      const value = parseFloat(String(tempDisplay?.textContent || ''));
+      if (!Number.isFinite(value)) return 'warm';
+      if (value <= 96) return 'cool';
+      if (value >= 100.4) return 'hot';
+      return 'warm';
+    }
+
+    function buildFinding() {
+      return `${colorLabel()}, ${tempLabel()}, ${moistureLabel()}; cap refill assessed`;
+    }
+
+    function ensureRecordButton() {
+      if (recordBtn) return recordBtn;
+      recordBtn = document.createElement('button');
+      recordBtn.type = 'button';
+      recordBtn.className = 'btn ems-skin-record-finding';
+      recordBtn.textContent = 'Record skin finding';
+      recordBtn.addEventListener('click', () => {
+        if (assessed.size < 3) return;
+        const expected = String(parentRuntimeVital('skin', 'Warm, pink, and dry'));
+        const learner = buildFinding();
+        const accurate = /warm|pink|dry/i.test(learner) && /warm|pink|dry/i.test(expected);
+        saveLegacyFinding('skin', 'Skin signs', learner, {
+          expectedFinding: expected,
+          accurate,
+          correct: accurate
+        });
+      });
+      document.querySelector('.under-skin')?.appendChild(recordBtn);
+      return recordBtn;
+    }
+
+    function note(part) {
+      assessed.add(part);
+      markObserved();
+      if (assessed.size >= 3) {
+        unlocked = true;
+        setFlow(3);
+        ensureRecordButton();
+      }
+    }
+
+    crtBtn.addEventListener('click', () => note('crt'));
+    [btnFlush, btnPale, btnCyan, btnJaund].forEach(btn => btn?.addEventListener('click', () => note('color')));
+    [moistDry, moistNorm, moistWet].forEach(btn => btn?.addEventListener('click', () => note('moisture')));
+    document.getElementById('tempMinus')?.addEventListener('click', () => note('temp'));
+    document.getElementById('tempPlus')?.addEventListener('click', () => note('temp'));
+  }
+
   installGcsAdapter();
   installNinesAdapter();
   installPerlAdapter();
+  installSkinAdapter();
   installIntegratedPracticeFlow();
 
   document.addEventListener('click', event => {
