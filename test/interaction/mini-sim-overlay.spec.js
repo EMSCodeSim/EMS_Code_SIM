@@ -87,7 +87,7 @@ const MINI_SIMS = [
   { href: '/vitals/respiratory-rate-scenario.html', title: 'Respiratory rate', document: '#rrInput, #submitBtn', perform: '#startMeasure' },
   { href: '/vitals/pulse-ox-scenario.html', title: 'SpO₂', document: '#spo2Input, #submitBtn', perform: '#placeProbe' },
   { href: '/vitals/breath-sounds-scenario.html', title: 'Breath sounds', document: '#soundInput, #submitBtn', perform: '.sv-point' },
-  { href: '/vitals/bgl-scenario.html', title: 'Blood glucose', document: '#bglInput, #submitBtn', perform: '.sv-step, #startMeasure, button' },
+  { href: '/vitals/bgl-scenario.html', title: 'Blood glucose', document: '#bglInput, #submitBtn', perform: '.sv-step' },
   { href: '/vitals/temperature-scenario.html', title: 'Temperature', document: '#tempInput, #submitBtn', perform: '#measureTemp, button' },
   { href: '/vitals/pupil.html', title: 'Pupils / PERL', document: '#perl, #btnGrade', perform: '#btnLightL, #btnLightR' },
   { href: '/vitals/skin.html', title: 'Skin signs', document: '#crtBtn, #btnPale, #moistDry', perform: '#crtBtn' },
