@@ -32,12 +32,16 @@ async function expectPatientReturned(page) {
   await expect.poll(() => image.evaluate(node => node.complete && node.naturalWidth > 0 && node.naturalHeight > 0)).toBe(true);
 }
 
-test('device and visual assessment mini sims discover, document, save, and close over the patient', async ({ page }) => {
+test('device and visual assessment mini sims discover, document, save, and close over the patient', async ({ page }, testInfo) => {
   const assertNoPageErrors = watchPageErrors(page);
   await openScenario(page, 'horse_crush', 'learning');
 
   // Device family: obtain a real pulse-ox display, then manually enter what was read.
   await openMiniSim(page, '/vitals/pulse-ox-scenario.html', 'SpO₂');
+  if (testInfo.project.name === 'mobile-chromium') {
+    await expect(page.locator('#actionSheet')).toBeHidden();
+    await expect(page.locator('#sheetBackdrop')).toBeHidden();
+  }
   const device = page.frameLocator('#embeddedSimFrame');
   await expect(device.locator('body')).toHaveClass(/ems-embedded-mini-sim/);
   await expect(device.locator('#answerCard')).toHaveClass(/ems-discovery-locked/);
