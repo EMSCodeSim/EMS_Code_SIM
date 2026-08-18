@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.08.18.32';
+  const PATIENT_WORKSPACE_BUILD = '2026.08.18.33';
 
   // The patient page has several independent layout layers that can move the same
   // nodes during startup. A stale insertBefore reference should never crash the
@@ -28,7 +28,7 @@
     { category: 'Primary assessment', key: 'breathing', label: 'Breathing assessment', description: 'Judge rate, depth, effort, chest rise, speech, and adequacy.', url: '/vitals/respiratory-assessment-visual.html' },
     { category: 'Primary assessment', key: 'perfusion', label: 'Circulation and perfusion', description: 'Assess pulse quality, major bleeding, skin, and capillary refill.', url: '/vitals/distal-csm-assessment.html' },
     { category: 'Neurologic', key: 'mental_status', label: 'Mental status / AVPU', description: 'Assess alertness and response to voice or pain.', url: '/vitals/avpu-scenario.html' },
-    { category: 'Neurologic', key: 'pupils', label: 'Pupils / PERL', description: 'Assess equality, response to light, gaze position, and tracking.', url: '/vitals/pupil-scenario.html' },
+    { category: 'Neurologic', key: 'pupils', label: 'Pupils / PERL', description: 'Assess equality, response to light, gaze position, and tracking.', url: '/vitals/pupil.html' },
     { category: 'Neurologic', key: 'motor_sensory', label: 'Motor, sensory, and stroke findings', description: 'Compare facial movement, speech, strength, drift, and sensation.', url: '/vitals/visual-neuro-stroke-assessment.html' },
     { category: 'Neurologic', key: 'gcs', label: 'Glasgow Coma Scale', description: 'Score eye, verbal, and motor responses.', url: '/vitals/gcs.html' },
     { category: 'Respiratory', key: 'breath_sounds', label: 'Breath sounds', description: 'Auscultate and compare all lung fields.', url: '/vitals/breath-sounds-scenario.html' },
@@ -51,7 +51,7 @@
     { key: 'breath_sounds', label: 'Breath sounds', description: 'Auscultate all lung fields.', url: '/vitals/breath-sounds-scenario.html', delay: 22 },
     { key: 'blood_glucose', label: 'Blood glucose', description: 'Complete a glucometer check.', url: '/vitals/bgl-scenario.html', delay: 28 },
     { key: 'temperature', label: 'Temperature', description: 'Obtain and interpret temperature.', url: '/vitals/temperature-scenario.html', delay: 18 },
-    { key: 'pupils', label: 'Pupils / PERL', description: 'Assess PERL, gaze, and tracking.', url: '/vitals/pupil-scenario.html', delay: 12 },
+    { key: 'pupils', label: 'Pupils / PERL', description: 'Assess PERL, gaze, and tracking.', url: '/vitals/pupil.html', delay: 12 },
     { key: 'skin', label: 'Skin signs', description: 'Assess color, temperature, and moisture.', url: '/vitals/skin-scenario.html', delay: 10 },
     { key: 'mental_status', label: 'Mental status', description: 'Assess AVPU and patient response.', url: '/vitals/avpu-scenario.html', delay: 8 }
   ];

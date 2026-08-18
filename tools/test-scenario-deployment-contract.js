@@ -79,7 +79,7 @@ assert(horseUiFix.includes('relocateReasoningBoard') && horseUiFix.includes("doc
 assert(horseUiFix.includes("event.target.closest?.('#assessmentTools [data-assessment-item]')"), 'Horse assessment routing fix must intercept desktop assessment-item clicks');
 assert(horseUiFix.includes('openDesktopAbcFollowup(button, key)'), 'Horse assessment routing fix must route ABC item clicks to the visible desktop follow-up workspace');
 assert(horseUiFix.includes("lung_sounds:") && horseUiFix.includes("openAssessmentSim(key, button)"), 'Horse Chest Breath Sounds button must open the breath-sounds mini sim');
-assert(horseUiFix.includes("Pupils / PERL") && horseUiFix.includes('/vitals/pupil-scenario.html'), 'Horse Pupils / PERL button must open the scenario pupil simulator');
+assert(horseUiFix.includes("Pupils / PERL") && horseUiFix.includes('/vitals/pupil.html'), 'Horse Pupils / PERL button must open the site PERL pupil trainer');
 assert(embeddedMiniSim.includes("pathname !== '/vitals/pupil.html'") || embeddedMiniSim.includes("installPerlAdapter"), 'Embedded mini sims must adapt the PERL pupil trainer');
 assert(horseUiFix.includes('window.EMSCodeSimScenarioSession.saveFinding(key, value, payload, CASE_ID)'), 'Horse desktop ABC findings must save through the shared scenario session');
 assert(horseUiFix.includes('horse.performExam(key)'), 'Horse assessment routing fix must route focused assessment items to the horse exam engine');

@@ -1155,7 +1155,7 @@
           return;
         }
         if (item.id === 'pupils') {
-          const href = '/vitals/pupil-scenario.html';
+          const href = '/vitals/pupil.html';
           if (!openEmbeddedSimulator(href, 'Pupils / PERL')) {
             window.EMSCodeSimMiniSimOverlay?.openOverlay?.(href, 'Pupils / PERL');
           }
