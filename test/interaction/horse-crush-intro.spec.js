@@ -21,7 +21,7 @@ test('horse-crush opens with incident video, then dispatch, then the patient pho
   await expect(page.locator('#infoUpdateType')).toHaveText('DISPATCH');
   await expect(page.locator('#infoUpdateText')).toContainText('Reported fall at a horse facility; a BLS engine crew is already on scene.');
 
-  await expect(page.locator('#horseIntroOverlay')).toBeHidden({ timeout: 8000 });
+  await expect(page.locator('#horseIntroOverlay')).toHaveCount(0, { timeout: 8000 });
   await expect.poll(() => page.evaluate(() => {
     const image = document.getElementById('patientImage');
     if (!image) return '';

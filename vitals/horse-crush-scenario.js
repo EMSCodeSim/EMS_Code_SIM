@@ -166,13 +166,8 @@
   function hideIntroOverlay() {
     const overlay = document.getElementById('horseIntroOverlay');
     const video = overlay?.querySelector('video');
-    if (video) {
-      video.pause();
-    }
-    if (overlay) {
-      overlay.hidden = true;
-      overlay.setAttribute('hidden', '');
-    }
+    if (video) video.pause();
+    overlay?.remove();
   }
 
   function finishIntroVideo() {

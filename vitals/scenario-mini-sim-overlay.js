@@ -1,12 +1,12 @@
 (() => {
   'use strict';
 
-  const OVERLAY_VERSION = '2026.08.18.3';
+  const OVERLAY_VERSION = '2026.08.18.5';
   const registry = window.EMSCodeSimToolRegistry;
   const toolPaths = new Set([
     ...(registry?.vitalTools || []).map(tool => tool.url),
     ...(registry?.assessmentTools || []).map(tool => tool.url)
-  ].filter(Boolean));
+  ].filter(Boolean).filter(path => path !== '/vitals/visual-patient.html'));
 
   const $ = id => document.getElementById(id);
   const workspace = () => $('embeddedSimWorkspace');
