@@ -8,7 +8,7 @@
 
   if (!document.querySelector('script[data-ems-mini-sim-audio-boost]')) {
     const audioBoost = document.createElement('script');
-    audioBoost.src = '/vitals/scenario-mini-sim-audio-boost.js?v=2026.08.18.23';
+    audioBoost.src = '/vitals/scenario-mini-sim-audio-boost.js?v=2026.08.18.26';
     audioBoost.dataset.emsMiniSimAudioBoost = '1';
     audioBoost.async = false;
     document.body.appendChild(audioBoost);
@@ -130,6 +130,16 @@
       const done = document.querySelectorAll('.sv-point.done').length;
       if (heard >= 4 || done >= 4) unlockDocument();
     }));
+  }
+  if (sim === 'skin') {
+    const done = new Set();
+    ['#inspectSkin','#touchSkin','#moistureSkin'].forEach(selector => {
+      document.querySelector(selector)?.addEventListener('click', () => {
+        done.add(selector);
+        markObserved();
+        if (done.size >= 3) unlockDocument();
+      });
+    });
   }
 
   // Visual assessment-suite pages create their own interpretation panel only
@@ -433,7 +443,7 @@
   }, true);
 
   window.EMSCodeSimEmbeddedMiniSim = Object.freeze({
-    version: '2026.08.18.23',
+    version: '2026.08.18.26',
     unlockDocument,
     markObserved,
     setFlow,
