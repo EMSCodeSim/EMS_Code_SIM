@@ -11,7 +11,7 @@ This document defines which EMSCodeSim assessment and vital-sign tools are canon
 | Breathing / chest | `/vitals/respiratory-assessment-visual.html` |
 | Circulation / distal CSM | `/vitals/distal-csm-assessment.html` |
 | Mental status / AVPU | `/vitals/avpu-scenario.html` |
-| Pupils | `/vitals/pupil-scenario.html` |
+| Pupils | `/vitals/pupil.html` |
 | Motor / sensory / stroke | `/vitals/visual-neuro-stroke-assessment.html` |
 | GCS | `/vitals/gcs.html` |
 | Breath sounds | `/vitals/breath-sounds-scenario.html` |

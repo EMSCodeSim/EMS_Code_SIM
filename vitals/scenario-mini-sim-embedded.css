@@ -111,6 +111,8 @@ body.ems-embedded-mini-sim[data-vital-topic="pupils"] .wrap>.card:nth-child(2)>.
   display:grid!important;
   gap:5px!important;
   min-height:0!important;
+  flex:1 1 auto!important;
+  overflow:auto!important;
 }
 body.ems-embedded-mini-sim[data-vital-topic="pupils"] .wrap>.card:nth-child(2) .panel:first-of-type{
   display:grid!important;
@@ -139,8 +141,8 @@ body.ems-embedded-mini-sim[data-vital-topic="pupils"] .svgwrap{
   aspect-ratio:240/170!important;
   width:100%!important;
   height:auto!important;
-  max-height:min(30vh,168px)!important;
-  min-height:92px!important;
+  max-height:min(22vh,128px)!important;
+  min-height:72px!important;
   align-self:start!important;
 }
 body.ems-embedded-mini-sim[data-vital-topic="pupils"] .svgwrap svg{
@@ -168,6 +170,9 @@ body.ems-embedded-mini-sim[data-vital-topic="pupils"] .line.warn strong{font-siz
 body.ems-embedded-mini-sim[data-vital-topic="pupils"] select{
   padding:5px 6px!important;
   font-size:.68rem!important;
+  position:relative!important;
+  z-index:4!important;
+  pointer-events:auto!important;
 }
 body.ems-embedded-mini-sim[data-vital-topic="pupils"] .wrap>.card:nth-child(2) .panel:last-of-type{
   grid-template-columns:repeat(2,minmax(0,1fr))!important;

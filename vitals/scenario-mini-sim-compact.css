@@ -181,6 +181,26 @@ html[data-ems-mini-sim="embedded"] body[data-scenario-vital] #answerCard{
   overflow:auto!important;
   align-self:stretch!important;
 }
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital] #simCard{
+  position:relative!important;
+  z-index:1!important;
+  min-width:0!important;
+  overflow:hidden!important;
+}
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital] #answerCard{
+  position:relative!important;
+  z-index:6!important;
+  isolation:isolate!important;
+  overflow:auto!important;
+}
+html[data-ems-mini-sim="embedded"] #answerCard input,
+html[data-ems-mini-sim="embedded"] #answerCard select,
+html[data-ems-mini-sim="embedded"] #answerCard .sv-choice,
+html[data-ems-mini-sim="embedded"] #answerCard button{
+  position:relative!important;
+  z-index:7!important;
+  pointer-events:auto!important;
+}
 html[data-ems-mini-sim="embedded"] body[data-scenario-vital] #simCard:not([hidden]){
   display:flex!important;
   flex-direction:column!important;
@@ -197,7 +217,8 @@ html[data-ems-mini-sim="embedded"] body[data-scenario-vital] .sv-stage{
   min-width:0!important;
   min-height:180px!important;
   height:auto!important;
-  overflow:visible!important;
+  max-height:100%!important;
+  overflow:hidden!important;
   place-items:center!important;
 }
 html[data-ems-mini-sim="embedded"] body[data-scenario-vital="pulse"] .sv-heart,

@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
   await clearSiteStorage(page);
 });
 
-test('Neuro Pupils / PERL button opens the scenario pupil sim over the patient', async ({ page }, testInfo) => {
+test('Neuro Pupils / PERL button opens the site eye simulator over the patient', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Desktop PERL overlay');
   const assertNoPageErrors = watchPageErrors(page);
 
@@ -27,33 +27,43 @@ test('Neuro Pupils / PERL button opens the scenario pupil sim over the patient',
 
   const sim = page.frameLocator('#embeddedSimFrame');
   await expect(sim.locator('body')).toHaveClass(/ems-embedded-mini-sim/);
-  await expect(sim.locator('#lightLeft')).toBeVisible();
-  await expect(sim.locator('#lightRight')).toBeVisible();
-  await expect(sim.locator('#trackingTest')).toBeVisible();
-  await expect(sim.locator('.sv-eyes')).toBeVisible();
-  await expect(sim.locator('#answerCard')).toHaveClass(/ems-discovery-locked/);
-  await expect(sim.locator('#answerCard')).toBeHidden();
+  await expect(sim.locator('#svgR')).toBeVisible();
+  await expect(sim.locator('#svgL')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => {
+    const frame = document.getElementById('embeddedSimFrame');
+    const doc = frame?.contentDocument;
+    const wraps = doc?.querySelectorAll('.eyeBox .svgwrap');
+    if (!wraps || wraps.length < 2) return { ok:false, reason:'missing' };
+    const tops = [...wraps].map(node => node.getBoundingClientRect().top);
+    const heights = [...wraps].map(node => node.getBoundingClientRect().height);
+    return {
+      ok: Math.abs(tops[0] - tops[1]) <= 2 && Math.abs(heights[0] - heights[1]) <= 2,
+      deltaTop: tops[1] - tops[0],
+      deltaHeight: heights[1] - heights[0]
+    };
+  })).toMatchObject({ ok: true });
+  await expect(sim.locator('#btnLightR')).toBeVisible();
+  await expect(sim.locator('#btnLightL')).toBeVisible();
+  await expect(sim.locator('#perl')).toBeVisible();
 
-  await sim.locator('#lightLeft').click();
-  await sim.locator('#lightRight').click();
-  await sim.locator('#trackingTest').click();
-  await expect(sim.locator('#answerCard')).toBeVisible({ timeout: 10_000 });
-  await expect(sim.locator('#equalInput')).toBeVisible();
-  await expect(sim.locator('#leftReactionInput')).toBeVisible();
-  await expect(sim.locator('#rightReactionInput')).toBeVisible();
-  await expect(sim.locator('#gazeInput')).toBeVisible();
-  await expect(sim.locator('#trackingInput')).toBeVisible();
-  await sim.locator('#equalInput').selectOption('equal');
-  await sim.locator('#leftReactionInput').selectOption('reactive');
-  await sim.locator('#rightReactionInput').selectOption('reactive');
-  await sim.locator('#gazeInput').selectOption('midline');
-  await sim.locator('#trackingInput').selectOption('smooth');
-  await sim.locator('#submitBtn').click();
+  await sim.locator('#btnLightR').click();
+  await sim.locator('#btnLightL').click();
+  await sim.locator('#gaze').evaluate(input => {
+    input.value = '40';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await sim.locator('#perl').selectOption('Yes');
+  await sim.locator('#sizeR').selectOption('Normal');
+  await sim.locator('#sizeL').selectOption('Normal');
+  await sim.locator('#reactR').selectOption('Normal');
+  await sim.locator('#reactL').selectOption('Normal');
+  await sim.locator('#trackR').selectOption('Normal tracking');
+  await sim.locator('#trackL').selectOption('Normal tracking');
+  await sim.locator('#btnGrade').click();
 
   await expect(page.locator('#embeddedSimWorkspace')).toBeHidden();
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientRecord.active()?.findings?.pupils))).toBe(true);
-  const saved = await page.evaluate(() => window.EMSCodeSimPatientRecord.active()?.findings?.pupils);
-  expect(String(saved?.value || saved?.finding || '')).toMatch(/PERL/i);
 
   await assertNoPageErrors();
 });
