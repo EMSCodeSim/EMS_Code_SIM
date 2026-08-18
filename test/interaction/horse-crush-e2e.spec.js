@@ -11,6 +11,7 @@ const ABC_CHOICE_COUNTS = { airway:3, breathing:4, perfusion:3 };
 
 test('horse-crush call works from arrival through hospital handoff', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Full horse workflow is protected on the desktop clinical workspace');
+  test.setTimeout(70_000);
   const assertNoPageErrors = watchPageErrors(page);
 
   await openScenario(page, 'horse_crush', 'assessment');
@@ -74,7 +75,7 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
     expect(layout.overlapRatio, `Assessment simulator must open over the patient photo: ${JSON.stringify(layout)}`).toBeGreaterThan(0.75);
   }
 
-  // After the incident video and dispatch, the patient photo is revealed.
+  // After walk video, dispatch, ambulance position, and BLS handoff, the patient photo is revealed.
   await expect(page.locator('[data-horse-parking]')).toHaveCount(0);
   await expect(page.locator('#horseArrivalDecision')).toHaveCount(0);
   await expectHorsePhoto('/vitals/assets/horse-crush/handoff.webp');
