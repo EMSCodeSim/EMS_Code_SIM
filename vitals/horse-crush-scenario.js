@@ -5,11 +5,12 @@
   const ASSET = '/vitals/assets/horse-crush/';
   const DISPATCH_TEXT = window.EMSCodeSimScenarioDefinitions?.CATALOG?.horse_crush?.dispatch
     || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.';
-  const INTRO_BUILD = '2026.08.18.13';
+  const INTRO_BUILD = '2026.08.18.14';
   const INTRO_VIDEO = `${ASSET}incident-calm-walk.mp4?v=${INTRO_BUILD}`;
   const INTRO_POSTER = `${ASSET}incident-calm-walk.jpg`;
   const INTRO_PLAY_WAIT_MS = 400;
   const INTRO_PLAY_RETRY_MS = 1200;
+  const HANDOFF_PHOTO = `${ASSET}handoff.webp`;
   const BLS_HANDOFF_TEXT = '“She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented ×4 and complains of left-hip pain. We have not moved her.”';
   let introTimer = 0;
   let introPlayTimers = [];
@@ -259,6 +260,11 @@
     introPlayTimers.push(window.setTimeout(() => syncIntroPlayButton(video), 900));
   }
 
+  function dispatchDwellMs() {
+    const words = String(DISPATCH_TEXT).trim().split(/\s+/).filter(Boolean).length;
+    return Math.max(12000, Math.round((words / 2.3) * 1000) + 4000);
+  }
+
   function finishIntroVideo() {
     const phase = document.body.dataset.horseIntro;
     if (phase === 'dispatch' || phase === 'arrived') return;
@@ -267,9 +273,10 @@
     showDispatch();
     window.clearTimeout(introTimer);
     introTimer = window.setTimeout(() => {
+      if (document.body.dataset.horseIntro !== 'dispatch') return;
       markIntroComplete();
       renderArrivalCard();
-    }, 3500);
+    }, dispatchDwellMs());
   }
 
   function ensureIntroOverlay() {
@@ -321,7 +328,7 @@
   }
 
   function revealPatientImage() {
-    setMainPatientImage(`${ASSET}patient-initial.webp`, 'Alert patient lying on dirt outside the south barn with the left knee flexed');
+    setMainPatientImage(HANDOFF_PHOTO, 'BLS engine crew giving handoff beside the patient outside the south barn');
     const controls = document.getElementById('patientPhaseControls');
     if (controls) controls.hidden = false;
     const layer = document.getElementById('sceneClueLayer');

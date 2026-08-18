@@ -77,7 +77,7 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
   // After the incident video and dispatch, the patient photo is revealed.
   await expect(page.locator('[data-horse-parking]')).toHaveCount(0);
   await expect(page.locator('#horseArrivalDecision')).toHaveCount(0);
-  await expectHorsePhoto('/vitals/assets/horse-crush/patient-initial.webp');
+  await expectHorsePhoto('/vitals/assets/horse-crush/handoff.webp');
   await expectSimulatorOverPatientPhoto();
 
   // Visible desktop ABC workflow.
