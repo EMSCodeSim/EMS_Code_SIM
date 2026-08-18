@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.08.17.15';
+  const PATIENT_WORKSPACE_BUILD = '2026.08.18.4';
 
   // The patient page has several independent layout layers that can move the same
   // nodes during startup. A stale insertBefore reference should never crash the
@@ -70,6 +70,7 @@
     if (returnTo) query.set('return', returnTo);
     if (options.returnLabel) query.set('returnLabel', options.returnLabel);
     if (options.context) query.set('context', options.context);
+    if (options.key) query.set('key', options.key);
     return `${path}?${query.toString()}`;
   }
 

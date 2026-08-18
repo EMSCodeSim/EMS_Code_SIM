@@ -104,13 +104,13 @@
     });
   }
 
-  if (sim === 'pupils') unlockAfterClicks(['#lightLeft','#lightRight','#trackingTest'], 3);
-  if (sim === 'skin') unlockAfterClicks(['#inspectSkin','#touchSkin','#moistureSkin'], 3);
   if (sim === 'mental-status') {
+    const done = new Set();
     ['#observeBtn','#voiceBtn','#painBtn'].forEach(selector => {
       document.querySelector(selector)?.addEventListener('click', () => {
+        done.add(selector);
         markObserved();
-        unlockDocument();
+        if (done.size >= 3) unlockDocument();
       });
     });
   }
@@ -425,7 +425,7 @@
   }, true);
 
   window.EMSCodeSimEmbeddedMiniSim = Object.freeze({
-    version: '2026.08.18.3',
+    version: '2026.08.18.4',
     unlockDocument,
     markObserved,
     setFlow,

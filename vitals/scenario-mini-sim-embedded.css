@@ -1,6 +1,7 @@
 html[data-ems-mini-sim="embedded"],html[data-ems-mini-sim="embedded"] body{width:100%!important;height:100%!important;min-height:100%!important;margin:0!important;overflow:auto!important;background:#eaf2f6!important}
 body.ems-embedded-mini-sim{overscroll-behavior:contain}
 body.ems-embedded-mini-sim .sv-topbar,body.ems-embedded-mini-sim .topbar,body.ems-embedded-mini-sim .va-head,body.ems-embedded-mini-sim .sv-context-nav,body.ems-embedded-mini-sim #scenarioReturnPaths,body.ems-embedded-mini-sim .sv-patient,body.ems-embedded-mini-sim #patientStrip,body.ems-embedded-mini-sim #emsScenarioStatus{display:none!important}
+body.ems-embedded-mini-sim>header.topbar,body.ems-embedded-mini-sim>.scenario-only-note{display:none!important}
 body.ems-embedded-mini-sim .ems-mini-flow{position:sticky;top:0;z-index:60;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:6px 8px;background:rgba(7,19,31,.97);border-bottom:1px solid #31566d;color:#dcecf5;box-shadow:0 5px 16px rgba(0,0,0,.18)}
 body.ems-embedded-mini-sim .ems-mini-flow span{display:flex;align-items:center;justify-content:center;gap:5px;min-height:27px;border:1px solid #31566d;border-radius:8px;background:#10283a;font-size:.64rem;font-weight:850}
 body.ems-embedded-mini-sim .ems-mini-flow span::before{content:attr(data-step);display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#274b62;color:#fff;font-size:.58rem}
