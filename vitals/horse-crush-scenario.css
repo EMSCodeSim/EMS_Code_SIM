@@ -33,7 +33,10 @@
   pointer-events:auto;
 }
 body.horse-intro-playing .patient-stage>#patientImage,
-body.horse-intro-playing.desktop-scenario-layout .patient-stage>img#patientImage{
+body.horse-intro-playing.desktop-scenario-layout .patient-stage>img#patientImage,
+body[data-horse-intro="video"] .patient-stage>#patientImage,
+body[data-horse-intro="dispatch"] .patient-stage>#patientImage,
+body[data-horse-intro="dispatch"].desktop-scenario-layout .patient-stage>img#patientImage{
   visibility:hidden !important;
 }
 #horseIntroPlay{
