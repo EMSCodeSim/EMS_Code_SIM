@@ -10,6 +10,7 @@
     const audioBoost = document.createElement('script');
     audioBoost.src = '/vitals/scenario-mini-sim-audio-boost.js?v=2026.08.18.23';
     audioBoost.dataset.emsMiniSimAudioBoost = '1';
+    audioBoost.async = false;
     document.body.appendChild(audioBoost);
   }
 
