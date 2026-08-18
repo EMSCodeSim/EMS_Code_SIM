@@ -1,59 +1,108 @@
 (() => {
   'use strict';
-  const ID = 'horse_crush';
-  const defs = window.EMSCodeSimScenarioDefinitions;
-  if (!defs) return;
 
-  // This compatibility layer makes the scenario work even when a browser or CDN
-  // serves an older cached scenario-definitions.js file.
-  defs.CATALOG[ID] ||= {
-    id: ID,
-    title: 'Horse-Crush Hip Injury',
-    patient: '64-year-old adult',
-    scene: 'Horse facility • outside south barn',
-    dispatch: 'Reported fall at a horse facility. A BLS engine crew is already on scene.',
-    goal: 'Assess before moving, protect the injured leg, plan packaging, manage pain, and reassess.'
-  };
-  defs.PROFILES[ID] ||= {
-    patient: '64-year-old adult',
-    dispatch: 'Reported fall at a horse facility. A BLS engine crew is already on scene.',
-    scene: 'Outside the south barn on packed dirt',
-    vitals: {
-      blood_pressure: '130/90', systolic: 130, diastolic: 90,
-      pulse: 75, respirations: 16, spo2: 98,
-      temperature: '98.4°F', avpu: 'A', mental_status: 'A&O x4',
-      skin: 'Warm, pink, dry', pupils: 'Pupils equal and reactive',
-      breath_sounds: 'Clear and equal bilaterally', breath_sound_type: 'normal'
-    },
-    sample: {
-      title: 'Horse-Crush Hip Injury',
-      description: 'A 64-year-old was compressed between two horses and fell to the dirt.',
-      finding: 'Significant blunt mechanism with isolated severe left-hip pain',
-      detail: 'S: Severe left-hip pain, worse with movement; denies head, neck, back, chest, or abdominal pain. A: Obtain from patient. M: Obtain from patient, including anticoagulants. P: Obtain from patient. L: Obtain from patient. E: Compressed between two horses and fell from standing; no loss of consciousness.',
-      normality: 'not-normal', priority: 'events', action: 'trauma-assessment'
-    },
-    caseIndex: { airway: 0, breathing: 0, sample: 0, chest: 0, perfusion: 0, trauma: 0, abdominal: 0, motor_sensory: 0, pat: 0 }
-  };
-  defs.PHASE_PLANS[ID] ||= {
-    requiredFindings: ['arrival_parking','airway','breathing','perfusion','mental_status','blood_pressure','pulse','respirations','spo2','neck_back','chest_assessment','abdominal_assessment','pelvis_hip','left_leg','distal_csm','pain'],
-    appropriateFindings: ['pupils','skin','sample','trauma_assessment'],
-    optionalFindings: ['blood_glucose','temperature','breath_sounds'],
-    notIndicatedFindings: ['pediatric_assessment_triangle','rule_of_nines']
-  };
-  defs.PATIENT_CASES[ID] ||= {
-    title: 'Horse-Crush Hip Injury',
-    visible: 'Alert patient supine on dirt outside the south barn with the left knee flexed',
-    image: '/vitals/assets/horse-crush/patient-initial.webp',
-    imageMode: 'horse-crush',
-    sceneClues: ['BLS engine crew already on scene','Patient remains on the ground','Left leg held flexed in a position of comfort'],
-    recommended: ['airway','breathing','perfusion','mental_status','neck_back','chest_assessment','abdominal_assessment','pelvis_hip','left_leg','distal_csm','blood_pressure','pulse','respirations','spo2','pain','sample'],
-    primary: {
-      airway: { initial: 'Patient is speaking; confirm patency', action: 'Assess', urgent: false },
-      breathing: { initial: 'Breathing visible; confirm adequacy', action: 'Assess', urgent: false },
-      perfusion: { initial: 'No major external bleeding visible', action: 'Assess', urgent: false }
-    },
-    treatments: ['Manual support of injured leg','Protocol-directed pain management','Coordinated scoop transfer in position of comfort','Padding and serial distal CSM reassessment']
-  };
-  defs.CONDITION_STAGES[ID] ||= [];
-  defs.TREATMENT_PLANS[ID] ||= [];
+  const CASE_ID = 'horse_crush';
+  const BUILD = '2026.08.17.7';
+
+  function loadOnce(attribute, src) {
+    if (document.querySelector(`script[${attribute}]`)) return;
+    const script = document.createElement('script');
+    script.src = `${src}?v=${encodeURIComponent(BUILD)}`;
+    script.async = false;
+    script.setAttribute(attribute, '1');
+    script.addEventListener('error', () => showLoadError('A scenario support file could not be loaded. Check your connection and try again.'));
+    document.head.appendChild(script);
+  }
+
+  function showLoadError(message) {
+    if (document.getElementById('scenarioLoadRecovery')) return;
+    const panel = document.createElement('section');
+    panel.id = 'scenarioLoadRecovery';
+    panel.className = 'scenario-load-recovery';
+    panel.setAttribute('role', 'alert');
+    panel.innerHTML = `
+      <div><strong>Scenario could not finish loading</strong><p>${message}</p></div>
+      <div><button type="button" data-retry-scenario>Retry</button><a href="/vitals/scenario-launcher.html">Choose another scenario</a></div>`;
+    panel.querySelector('[data-retry-scenario]')?.addEventListener('click', () => location.reload());
+    document.body.prepend(panel);
+  }
+
+  function installDesktopLayoutGuard() {
+    if (document.querySelector('style[data-horse-desktop-layout-guard]')) return;
+    const style = document.createElement('style');
+    style.dataset.horseDesktopLayoutGuard = '1';
+    style.textContent = `
+      @media (min-width: 961px) {
+        body.horse-current-emt-call.desktop-scenario-layout .patient-control-column {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 7px !important;
+          min-height: 0 !important;
+          height: 100% !important;
+          overflow: hidden !important;
+        }
+        body.horse-current-emt-call.desktop-scenario-layout #infoUpdateWindow,
+        body.horse-current-emt-call.desktop-scenario-layout #reasoningDiscoveryCue,
+        body.horse-current-emt-call.desktop-scenario-layout .bottom-nav {
+          flex: 0 0 auto !important;
+        }
+        body.horse-current-emt-call.desktop-scenario-layout #reasoningDiscoveryCue {
+          position: static !important;
+          inset: auto !important;
+          width: 100% !important;
+          margin: 0 !important;
+          z-index: auto !important;
+        }
+        body.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet {
+          flex: 1 1 0 !important;
+          width: 100% !important;
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: none !important;
+          overflow: hidden !important;
+        }
+        body.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet:not([hidden]) {
+          display: grid !important;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function clearScenarioControlOverlay() {
+    const dialog = document.getElementById('scenarioControlDialog');
+    const backdrop = document.getElementById('scenarioControlBackdrop');
+    if (dialog) dialog.hidden = true;
+    if (backdrop) backdrop.hidden = true;
+  }
+
+  function installScenarioTransitionGuard() {
+    document.addEventListener('click', event => {
+      const params = new URLSearchParams(location.search);
+      if (params.get('case') !== CASE_ID) return;
+      if (!event.target.closest?.('#handoffFromProgress, #transportScenarioQuick')) return;
+      window.setTimeout(clearScenarioControlOverlay, 0);
+      window.requestAnimationFrame(clearScenarioControlOverlay);
+    });
+  }
+
+  installDesktopLayoutGuard();
+  installScenarioTransitionGuard();
+
+  loadOnce('data-scenario-learning-upgrade', '/vitals/scenario-learning-upgrade.js');
+  loadOnce('data-condition-alert-priority', '/vitals/scenario-condition-alert-priority.js');
+  loadOnce('data-horse-crush-ui-fix', '/vitals/horse-crush-ui-fix.js');
+  loadOnce('data-horse-photo-layer-fix', '/vitals/horse-photo-layer-fix.js');
+  const defs = window.EMSCodeSimScenarioDefinitions;
+  const requiredGroups = ['CATALOG','PROFILES','PHASE_PLANS','PATIENT_CASES','CONDITION_STAGES','TREATMENT_PLANS'];
+  const missing = [];
+  if (!defs) missing.push('EMSCodeSimScenarioDefinitions');
+  else requiredGroups.forEach(group => { if (!defs[group]?.[CASE_ID]) missing.push(`${group}.${CASE_ID}`); });
+  const validationErrors = defs?.validate?.()?.filter(error => String(error).startsWith(`${CASE_ID}:`)) || [];
+  const ok = missing.length === 0 && validationErrors.length === 0;
+  window.EMSCodeSimScenarioBootstrapStatus = Object.freeze({caseId:CASE_ID,build:BUILD,ok,missing:Object.freeze([...missing]),validationErrors:Object.freeze([...validationErrors])});
+  if (!ok) {
+    console.error('[EMSCodeSim] Horse-crush scenario definition contract failed.', {missing,validationErrors,build:BUILD});
+    showLoadError('Required scenario information is unavailable. Your saved progress has not been erased.');
+  }
 })();
