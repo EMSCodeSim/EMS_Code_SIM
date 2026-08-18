@@ -1,13 +1,20 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.17.14';
+  const VERSION = '2026.08.17.15';
   const desktop = window.matchMedia('(min-width:980px)');
   const $ = id => document.getElementById(id);
+  function eventNode(event) {
+    const target = event?.target;
+    if (!target) return null;
+    return target.nodeType === 1 ? target : target.parentElement;
+  }
   let queued = false;
   let observer = null;
   let lastSignature = '';
   let stylesInstalled = false;
+  let lastEndpointActivate = 0;
+  let lastEndpointAction = '';
 
   function horseScenario() {
     const requested = new URLSearchParams(location.search).get('case');
@@ -40,10 +47,12 @@
     const style = document.createElement('style');
     style.dataset.transportHandoffActions = VERSION;
     style.textContent = `
-      #horseTransportHandoffActions{margin:0;padding:0;border:0;display:grid;gap:4px}
+      #horseTransportHandoffActions{margin:0;padding:0;border:0;display:grid;gap:4px;position:relative;z-index:8;overflow:visible;pointer-events:auto}
       #horseTransportHandoffActions .horse-endpoint-actions-head{display:none}
-      #horseTransportHandoffActions .horse-endpoint-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
-      #horseTransportHandoffActions .horse-endpoint-action{min-height:32px;max-height:34px;display:grid;grid-template-columns:16px 1fr;gap:5px;align-items:center;padding:4px 8px;border:1px solid #3c6a80;border-radius:8px;background:#12384d;color:#fff;text-align:left;font:inherit;cursor:pointer;touch-action:manipulation}
+      #horseTransportHandoffActions .horse-endpoint-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;position:relative;z-index:9;pointer-events:auto}
+      #horseTransportHandoffActions .horse-endpoint-action{position:relative;z-index:9;min-height:32px;max-height:34px;display:grid;grid-template-columns:16px 1fr;gap:5px;align-items:center;padding:4px 8px;border:1px solid #3c6a80;border-radius:8px;background:#12384d;color:#fff;text-align:left;font:inherit;cursor:pointer;touch-action:manipulation;pointer-events:auto}
+      #horseTransportHandoffActions .horse-endpoint-action::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:auto}
+      #horseTransportHandoffActions .horse-endpoint-action > *{position:relative;z-index:0;pointer-events:none}
       #horseTransportHandoffActions .horse-endpoint-action strong{display:block;font-size:.68rem;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       #horseTransportHandoffActions .horse-endpoint-action small{display:none}
       #horseTransportHandoffActions .horse-endpoint-action:hover,#horseTransportHandoffActions .horse-endpoint-action:focus-visible{background:#194c66;border-color:#67b9df;outline:2px solid rgba(104,201,245,.25)}
@@ -65,7 +74,7 @@
           grid-column:1/2!important;order:30;align-self:start;min-height:32px!important;max-height:34px!important;overflow:hidden
         }
         #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions{
-          grid-column:2/3!important;order:30;align-self:start;margin:0!important;padding:0!important;border:0!important;max-height:34px;overflow:hidden
+          grid-column:2/3!important;order:30;align-self:start;margin:0!important;padding:0!important;border:0!important;max-height:34px;overflow:visible;z-index:8
         }
         #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions[data-mode="detail"]{
           grid-column:1/-1!important;order:20;max-height:none;overflow:auto
@@ -159,10 +168,10 @@
     const handedOff = handoffSaved(current);
     return `
       <div class="horse-endpoint-action-grid">
-        <button type="button" id="horseOpenTransport" class="horse-endpoint-action${transported ? ' complete' : ''}">
+        <button type="button" id="horseOpenTransport" class="horse-endpoint-action${transported ? ' complete' : ''}" data-horse-endpoint="transport">
           <span aria-hidden="true">${transported ? '✓' : '🚑'}</span><strong>${transported ? 'Review transport' : 'Transport'}</strong>
         </button>
-        <button type="button" id="horseOpenHandoff" class="horse-endpoint-action${handedOff ? ' complete' : ''}">
+        <button type="button" id="horseOpenHandoff" class="horse-endpoint-action${handedOff ? ' complete' : ''}" data-horse-endpoint="handoff">
           <span aria-hidden="true">${handedOff ? '✓' : 'H'}</span><strong>${handedOff ? 'Review handoff' : 'Handoff'}</strong>
         </button>
       </div>
@@ -182,17 +191,45 @@
     }
     lastSignature = signature;
     host.innerHTML = summaryMarkup();
+    bindEndpointButtons(host);
+  }
+
+  function bindEndpointButtons(host) {
+    const transport = host?.querySelector('#horseOpenTransport');
+    const handoff = host?.querySelector('#horseOpenHandoff');
+    const onActivate = event => activateEndpointFromEvent(event);
+    transport?.addEventListener('pointerup', onActivate);
+    transport?.addEventListener('click', onActivate);
+    handoff?.addEventListener('pointerup', onActivate);
+    handoff?.addEventListener('click', onActivate);
+  }
+
+  function activateEndpointFromEvent(event) {
+    const node = eventNode(event);
+    const transport = node?.closest?.('#horseOpenTransport, [data-horse-endpoint="transport"]');
+    const handoff = node?.closest?.('#horseOpenHandoff, [data-horse-endpoint="handoff"]');
+    if (!transport && !handoff) return false;
+    if (event.type === 'pointerup' && event.button) return false;
+    const action = transport ? 'transport' : 'handoff';
+    const now = Date.now();
+    if (action === lastEndpointAction && now - lastEndpointActivate < 400) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return true;
+    }
+    lastEndpointActivate = now;
+    lastEndpointAction = action;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if (transport) openTransport();
+    else openHandoff();
+    return true;
   }
 
   function openTransportViaQuickAction() {
     const actions = window.EMSCodeSimHorseEncounterActions;
     if (typeof actions?.openTransport === 'function') {
       actions.openTransport();
-      // openHorseTransportQuick paints into #horseClinicalQuestionBox; promote it
-      // into the treatment workspace so the form is actually usable.
-      const promote = () => window.EMSCodeSimHorseCrushUiFix?.promoteHiddenTransportForm?.();
-      window.setTimeout(promote, 0);
-      window.requestAnimationFrame(promote);
       return true;
     }
     const quick = $('transportScenarioQuick');
@@ -214,8 +251,8 @@
   }
 
   function openTransport() {
-    // Prefer the shared transport quick-action path, which already promotes the
-    // transport form into the right clinical workspace.
+    // Keep Transport inside the visible Treatment workspace. Do not hide the
+    // action sheet or rely on promoting a form out of the hidden question box.
     if (openTransportViaQuickAction()) return;
 
     const host = ensureHost();
@@ -336,6 +373,7 @@
     host.dataset.mode = '';
     lastSignature = '';
     host.innerHTML = summaryMarkup();
+    bindEndpointButtons(host);
   }
 
   function schedule() {
@@ -371,17 +409,13 @@
     installStyles();
     schedule();
     desktop.addEventListener?.('change', schedule);
+    document.addEventListener('pointerup', event => {
+      if (event.button) return;
+      activateEndpointFromEvent(event);
+    }, true);
     document.addEventListener('click', event => {
-      const transport = event.target.closest?.('#horseOpenTransport');
-      const handoff = event.target.closest?.('#horseOpenHandoff');
-      if (transport || handoff) {
-        event.preventDefault();
-        event.stopPropagation();
-        if (transport) openTransport();
-        else openHandoff();
-        return;
-      }
-      if (event.target.closest?.('button[data-panel="treatmentPanel"]')) {
+      if (activateEndpointFromEvent(event)) return;
+      if (eventNode(event)?.closest?.('button[data-panel="treatmentPanel"]')) {
         setTimeout(() => { startObserver(); schedule(); }, 0);
       }
     }, true);

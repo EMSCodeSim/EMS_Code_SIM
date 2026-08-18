@@ -3971,20 +3971,9 @@
 
   function openHorseTransportQuick() {
     if (id !== 'horse_crush') return;
-    if (!desktopWorkspace()) {
-      horseTreatmentActiveGroup = 'transport';
-      horseTreatmentActivePlan = '__horse_transport__';
-      openSheet('treatmentPanel');
-      return;
-    }
     closeEmbeddedSimulator({ refresh:false });
     closeHorseHospitalHandoff();
     closeHorseCallGrade();
-    if ($('actionSheet')) $('actionSheet').hidden = true;
-    document.body.classList.remove('horse-tool-sheet-open');
-    document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
-    horseTreatmentActiveGroup = 'transport';
-    horseTreatmentActivePlan = '__horse_transport__';
     const group = HORSE_TREATMENT_GROUPS.find(item => item.id === 'transport');
     sceneObservationUpdate = {
       id:`horse-top-transport-${Date.now()}`, type:'TRANSPORT', title:'Transport decision',
@@ -3993,7 +3982,13 @@
     };
     lastInfoSignature = '';
     renderInfoUpdate(true);
-    renderHorseTreatmentSelectionBox('transport');
+    horseTreatmentActiveGroup = 'transport';
+    horseTreatmentActivePlan = '__horse_transport__';
+    openSheet('treatmentPanel');
+    // openSheet() can rebuild the category menu; force the transport form after it returns.
+    horseTreatmentActiveGroup = 'transport';
+    horseTreatmentActivePlan = '__horse_transport__';
+    if (desktopWorkspace()) renderHorseTreatmentCategoryWorkspace('transport');
   }
 
   function renderProgress() {
@@ -4918,7 +4913,9 @@
   document.addEventListener('pointerup', event => {
     if (id !== 'horse_crush' || event.button) return;
     if (activateHorseTreatmentGroupFromEvent(event)) return;
-    const planButton = eventElement(event)?.closest?.('[data-horse-workspace-plan]');
+    const origin = eventElement(event);
+    if (origin?.closest?.('#horseOpenTransport, #horseOpenHandoff, [data-horse-endpoint]')) return;
+    const planButton = origin?.closest?.('[data-horse-workspace-plan]');
     if (!planButton || planButton.hidden || planButton.disabled) return;
     if (!planButton.closest('#treatmentTools.horse-treatment-category-workspace')) return;
     if (horseTreatmentActivePlan === (planButton.dataset.horseWorkspacePlan || '')) return;

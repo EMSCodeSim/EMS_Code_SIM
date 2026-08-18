@@ -322,11 +322,33 @@ body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 .scen
     z-index:2!important;
     pointer-events:auto!important;
   }
-  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>#horseMoreTreatmentsToggle,
-  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>#horseTransportHandoffActions{
-    height:34px!important;
-    max-height:34px!important;
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>#horseMoreTreatmentsToggle{
+    z-index:7!important;
     overflow:hidden!important;
-    z-index:1!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>#horseTransportHandoffActions{
+    height:auto!important;
+    max-height:34px!important;
+    overflow:visible!important;
+    z-index:8!important;
+    pointer-events:auto!important;
+    position:relative!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #horseOpenTransport,
+  body.horse-current-emt-call.desktop-scenario-layout #horseOpenHandoff,
+  body.horse-current-emt-call.desktop-scenario-layout .horse-endpoint-action{
+    position:relative!important;
+    z-index:9!important;
+    pointer-events:auto!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-endpoint-action > *{
+    pointer-events:none!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-endpoint-action::after{
+    content:""!important;
+    position:absolute!important;
+    inset:0!important;
+    z-index:2!important;
+    pointer-events:auto!important;
   }
 }

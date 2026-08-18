@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.17.14';
+  const VERSION = '2026.08.17.15';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';
@@ -414,7 +414,8 @@
           padding:0!important;
           border:0!important;
           max-height:34px;
-          overflow:hidden;
+          overflow:visible!important;
+          z-index:8!important;
         }
         #treatmentPanel .horse-natural-encounter-end{margin:0!important;padding:0!important;border:0!important}
         #treatmentPanel .horse-natural-end-heading,#treatmentPanel .horse-endpoint-actions-head{display:none!important}
