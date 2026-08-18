@@ -45,6 +45,19 @@ test('horse-crush plays the walk video, then dispatch, ambulance position, and h
   await expect(page.locator('#infoUpdateText')).toContainText(RADIO_DISPATCH);
   await expect(page.locator('#dispatch')).toContainText('Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road');
   await expect(page.locator('#horseIntroOverlay')).toHaveCount(0, { timeout: 8000 });
+  await expect.poll(() => page.evaluate(() => {
+    const image = document.getElementById('patientImage');
+    if (!image) return '';
+    try { return new URL(image.src, location.href).pathname; } catch { return ''; }
+  })).toBe('/vitals/assets/horse-crush/ambulance-enroute.webp');
+  await expect(page.locator('#patientImage')).toBeVisible();
+  await expect.poll(() => page.locator('#patientImage').evaluate(image => {
+    const style = getComputedStyle(image);
+    return image.naturalWidth > 0
+      && style.visibility !== 'hidden'
+      && style.display !== 'none'
+      && Number(style.opacity || 1) > 0;
+  })).toBe(true);
   await expect(page.locator('#infoUpdateType')).not.toHaveText('PATIENT');
   await expect(page.locator('#infoUpdateType')).not.toHaveText('BLS ENGINE HANDOFF');
 
