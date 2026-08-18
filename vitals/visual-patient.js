@@ -51,6 +51,11 @@
   const interviewEngine = window.EMSCodeSimScenarioInterviews;
   const interview = interviewEngine?.get?.(id) || { responder:'Patient', communication:'Patient interview available.', opening:'Select a question to begin.', fallback:'The patient cannot provide that information.', categories:[], questions:[], sampleRequired:[], opqrstRequired:[] };
   const $ = value => document.getElementById(value);
+  const eventElement = event => {
+    const target = event?.target;
+    if (!target) return null;
+    return target.nodeType === 1 ? target : target.parentElement;
+  };
   const MEASURABLE_TOOL_KEYS = new Set(['blood_pressure','pulse','respirations','spo2','blood_glucose','temperature']);
   const PRIMARY_KEYS = new Set(['scene_size_up','airway','breathing','perfusion']);
   let activeFocus = null;
@@ -2460,6 +2465,19 @@
     if (horseTreatmentActivePlan) choosePlan(horseTreatmentActivePlan);
   }
 
+  function activateHorseTreatmentGroupFromEvent(event) {
+    if (id !== 'horse_crush') return false;
+    const button = eventElement(event)?.closest?.('[data-horse-treatment-group]');
+    if (!button || button.hidden || button.disabled) return false;
+    if (!button.closest('#treatmentTools.horse-treatment-group-menu')) return false;
+    const groupId = button.dataset.horseTreatmentGroup || '';
+    if (!groupId) return false;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    selectHorseTreatmentGroup(groupId);
+    return true;
+  }
+
   function selectHorseTreatmentGroup(groupId, options = {}) {
     if (id !== 'horse_crush') return;
     const group = HORSE_TREATMENT_GROUPS.find(item => item.id === groupId);
@@ -2538,20 +2556,23 @@
           <span class="horse-treatment-group-icon" aria-hidden="true">${escapeHtml(group.icon)}</span>
           <span><strong>${escapeHtml(group.label)}</strong><small>${escapeHtml(group.description)}</small></span>
           <em>${completed ? `${completed}/${plans.length}` : `${plans.length}`}</em>`;
-        button.addEventListener('click', () => selectHorseTreatmentGroup(group.id));
         box.appendChild(button);
       });
 
-    // Delegated backup: survives DOM reordering by first-time / endpoint polishers.
+    // Delegated backup: survives DOM reordering and Chromium hit-target quirks.
     if (!box.dataset.horseTreatmentGroupDelegate) {
       box.dataset.horseTreatmentGroupDelegate = '1';
-      box.addEventListener('click', event => {
-        const button = event.target.closest?.('[data-horse-treatment-group]');
+      const activateGroup = event => {
+        const button = eventElement(event)?.closest?.('[data-horse-treatment-group]');
         if (!button || !box.contains(button) || button.hidden || button.disabled) return;
         const groupId = button.dataset.horseTreatmentGroup || '';
         if (!groupId) return;
+        event.preventDefault();
+        event.stopPropagation();
         selectHorseTreatmentGroup(groupId);
-      });
+      };
+      box.addEventListener('pointerup', activateGroup);
+      box.addEventListener('click', activateGroup);
     }
   }
 
@@ -4885,22 +4906,29 @@
     setInfoCollapsed(false);
   });
   document.addEventListener('click', event => {
-    const button = event.target.closest?.('.bottom-nav button[data-panel]');
+    const origin = eventElement(event);
+    const button = origin?.closest?.('.bottom-nav button[data-panel]');
     if (!button || button.hidden || button.classList.contains('desktop-domain-hidden')) return;
+    if (origin?.closest?.('#treatmentTools, #assessmentTools, #historyCategoryList, #vitalTools')) return;
     event.preventDefault();
     event.stopImmediatePropagation();
     hideClinicalNextActions();
     openSheet(button.dataset.panel);
   }, true);
-  document.addEventListener('click', event => {
-    if (id !== 'horse_crush') return;
-    const button = event.target.closest?.('#treatmentTools.horse-treatment-group-menu [data-horse-treatment-group]');
-    if (!button || button.hidden || button.disabled) return;
-    const groupId = button.dataset.horseTreatmentGroup || '';
-    if (!groupId) return;
+  document.addEventListener('pointerup', event => {
+    if (id !== 'horse_crush' || event.button) return;
+    if (activateHorseTreatmentGroupFromEvent(event)) return;
+    const planButton = eventElement(event)?.closest?.('[data-horse-workspace-plan]');
+    if (!planButton || planButton.hidden || planButton.disabled) return;
+    if (!planButton.closest('#treatmentTools.horse-treatment-category-workspace')) return;
+    if (horseTreatmentActivePlan === (planButton.dataset.horseWorkspacePlan || '')) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    selectHorseTreatmentGroup(groupId);
+    planButton.click();
+  }, true);
+  document.addEventListener('click', event => {
+    if (id !== 'horse_crush') return;
+    activateHorseTreatmentGroupFromEvent(event);
   }, true);
   $('clinicalNextTreatment')?.addEventListener('click', () => {
     treatmentCategoryFocus = nextTreatmentCategoryForFinding(nextActionFinding?.key || '');

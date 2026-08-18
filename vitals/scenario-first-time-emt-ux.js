@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.17.13';
+  const VERSION = '2026.08.17.14';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';
@@ -375,8 +375,15 @@
         #historyPanel.history-question-launcher-mode .history-question-button{min-height:42px!important}
         #assessmentPanel [data-assessment-category="abc"]{font-weight:900!important}
         #assessmentPanel [data-assessment-item="airway"],#assessmentPanel [data-assessment-item="breathing"],#assessmentPanel [data-assessment-item="perfusion"]{min-height:46px!important;font-size:.86rem!important}
+        #treatmentTools.horse-treatment-group-menu{
+          grid-auto-rows:min-content!important;
+          align-items:start!important;
+          align-content:start!important;
+        }
+        #treatmentTools.horse-treatment-group-menu > *{align-self:start!important;min-height:0!important}
         #assessmentPanel .horse-question-choice,#treatmentPanel [data-horse-treatment-group],#treatmentPanel [data-horse-workspace-plan],#treatmentPanel .horse-treatment-perform{position:relative!important;z-index:5!important;pointer-events:auto!important;touch-action:manipulation!important}
-        #treatmentPanel .horse-treatment-group-choice[hidden]{display:none!important}
+        #treatmentPanel .horse-treatment-group-choice[hidden]{display:none!important;pointer-events:none!important}
+        #treatmentPanel .horse-treatment-group-choice::after,#treatmentPanel [data-horse-workspace-plan]::after,#treatmentPanel .horse-treatment-perform::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:auto}
         #treatmentPanel .horse-more-treatments-toggle{
           width:100%;
           min-height:32px!important;

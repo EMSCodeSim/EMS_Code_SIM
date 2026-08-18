@@ -33,10 +33,24 @@ test('desktop treatment categories stay clickable and More treatments does not s
     const moreBox = more.getBoundingClientRect();
     const choiceBox = choice.getBoundingClientRect();
     const endpointBox = endpoint.getBoundingClientRect();
-    const hitX = Math.round(choiceBox.left + choiceBox.width / 2);
-    const hitY = Math.round(choiceBox.top + choiceBox.height / 2);
+    const label = choice.querySelector('strong') || choice;
+    const labelBox = label.getBoundingClientRect();
+    const hitX = Math.round(labelBox.left + labelBox.width / 2);
+    const hitY = Math.round(labelBox.top + labelBox.height / 2);
     const top = document.elementFromPoint(hitX, hitY);
     const footerTop = Math.min(moreBox.top, endpointBox.top);
+    const overlap = (a, b) => {
+      const width = Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left));
+      const height = Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+      return width * height;
+    };
+    const visibleChoices = [...tools.querySelectorAll('.horse-treatment-group-choice:not([hidden])')];
+    const allHits = visibleChoices.every(node => {
+      const box = node.getBoundingClientRect();
+      const x = Math.round(box.left + box.width / 2);
+      const y = Math.round(box.top + box.height / 2);
+      return Boolean(document.elementFromPoint(x, y)?.closest?.(`[data-horse-treatment-group="${node.dataset.horseTreatmentGroup}"]`));
+    });
     return {
       ok: moreBox.height <= 40
         && endpointBox.height <= 40
@@ -44,12 +58,17 @@ test('desktop treatment categories stay clickable and More treatments does not s
         && endpointIndex > choiceIndex
         && choiceBox.bottom <= footerTop + 2
         && Math.abs(moreBox.top - endpointBox.top) <= 8
+        && overlap(moreBox, choiceBox) === 0
+        && overlap(endpointBox, choiceBox) === 0
+        && allHits
         && Boolean(top?.closest?.('[data-horse-treatment-group="splinting"]')),
       top: top?.id || top?.className || top?.tagName || null
     };
   })).toMatchObject({ ok: true });
 
-  await splinting.click();
+  const labelBox = await splinting.locator('strong').boundingBox();
+  expect(labelBox).toBeTruthy();
+  await page.mouse.click(labelBox.x + labelBox.width / 2, labelBox.y + labelBox.height / 2);
   await expect(page.locator('#horseTreatmentBackToGroups')).toBeVisible();
   await expect(page.locator('#treatmentTools')).toContainText('Select a treatment below');
   await expect(page.locator('#treatmentTools')).toContainText('Splinting / stabilization');

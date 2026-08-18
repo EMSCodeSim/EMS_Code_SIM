@@ -93,7 +93,7 @@
     display:flex!important;
     flex-direction:column!important;
     gap:8px!important;
-    contain:layout paint!important;
+    contain:style!important;
     isolation:isolate!important;
     z-index:1!important;
   }

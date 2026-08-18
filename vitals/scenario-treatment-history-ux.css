@@ -89,11 +89,6 @@
   #treatmentPanel .treatment-entry-error[hidden]{
     display:none!important;
   }
-  #treatmentPanel .horse-treatment-group-choice *,
-  #treatmentPanel .horse-treatment-workspace-action *,
-  #treatmentPanel .horse-treatment-perform *{
-    pointer-events:none!important;
-  }
   #treatmentPanel .horse-treatment-group-choice,
   #treatmentPanel .horse-treatment-workspace-action,
   #treatmentPanel .horse-treatment-perform,
@@ -102,6 +97,15 @@
     touch-action:manipulation!important;
     position:relative!important;
     z-index:3!important;
+  }
+  #treatmentPanel .horse-treatment-group-choice::after,
+  #treatmentPanel .horse-treatment-workspace-action::after,
+  #treatmentPanel .horse-treatment-perform::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:2;
+    pointer-events:auto;
   }
 
   #horseMovementChoices {

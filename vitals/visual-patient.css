@@ -2407,16 +2407,23 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     font-size:.61rem;
   }
 
-  /* Full category list initially. */
+  /* Full category list initially.
+     Chrome hit-tests the stretched grid area; Firefox uses the content box.
+     Keep every tile min-content so footer cells cannot swallow category clicks. */
   body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu{
     display:grid!important;
     grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-auto-rows:min-content!important;
     gap:6px!important;
-    align-content:start;
-    align-items:start;
+    align-content:start!important;
+    align-items:start!important;
     position:relative;
     z-index:4;
     pointer-events:auto;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>*{
+    align-self:start!important;
+    min-height:0!important;
   }
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-menu-head{
     grid-column:1/-1;
@@ -2461,7 +2468,15 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     text-align:left;
     cursor:pointer;
     position:relative;
-    z-index:5;
+    z-index:6;
+    pointer-events:auto;
+    isolation:isolate;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:1;
     pointer-events:auto;
   }
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice[hidden]{

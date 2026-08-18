@@ -304,7 +304,7 @@
     flex-direction:column!important;
     gap:0!important;
     border-radius:18px!important;
-    contain:layout paint!important;
+    contain:style!important;
     isolation:isolate!important;
   }
 

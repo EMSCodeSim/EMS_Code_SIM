@@ -284,3 +284,49 @@ body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 .scen
     inset:72px 12px 12px 12px!important;
   }
 }
+
+/* Chrome vs Firefox Treatment clicks: Chromium hit-tests stretched grid areas
+   and can click through label text. Keep tiles min-content with a full hit layer. */
+@media(min-width:961px){
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-auto-rows:min-content!important;
+    align-items:start!important;
+    align-content:start!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>*{
+    align-self:start!important;
+    min-height:0!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>.horse-treatment-group-choice[hidden],
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>.horse-case-extra-treatment[hidden]{
+    display:none!important;
+    pointer-events:none!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice,
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-workspace-action,
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-perform{
+    position:relative!important;
+    z-index:6!important;
+    pointer-events:auto!important;
+    touch-action:manipulation!important;
+    cursor:pointer!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice::after,
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-workspace-action::after,
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-perform::after{
+    content:""!important;
+    position:absolute!important;
+    inset:0!important;
+    z-index:2!important;
+    pointer-events:auto!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>#horseMoreTreatmentsToggle,
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>#horseTransportHandoffActions{
+    height:34px!important;
+    max-height:34px!important;
+    overflow:hidden!important;
+    z-index:1!important;
+  }
+}
