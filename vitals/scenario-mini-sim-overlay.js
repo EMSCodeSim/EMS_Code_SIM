@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const OVERLAY_VERSION = '2026.08.18.9';
+  const OVERLAY_VERSION = '2026.08.18.10';
   const registry = window.EMSCodeSimToolRegistry;
   const toolPaths = new Set([
     ...(registry?.vitalTools || []).map(tool => tool.url),
@@ -133,6 +133,7 @@
     if (titleNode) titleNode.textContent = title;
     node.hidden = false;
     document.body.classList.add('sim-workspace-open');
+    window.dispatchEvent(new CustomEvent('emscodesim:embedded-sim-opened'));
     iframe.src = url.toString();
     return true;
   }

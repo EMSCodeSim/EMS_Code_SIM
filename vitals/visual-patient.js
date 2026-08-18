@@ -4590,6 +4590,8 @@
 
   let embeddedRecordSignature = '';
   let embeddedCompletionTimer = 0;
+  let embeddedCloseTimer = 0;
+  let embeddedOpenGeneration = 0;
 
   function embeddedRecordCompletionSignature() {
     try {
@@ -4602,22 +4604,39 @@
     } catch (_) { return ''; }
   }
 
-  function armEmbeddedCompletionWatcher() {
+  function cancelEmbeddedAutoClose() {
     clearInterval(embeddedCompletionTimer);
+    embeddedCompletionTimer = 0;
+    window.clearTimeout(embeddedCloseTimer);
+    embeddedCloseTimer = 0;
+  }
+
+  function queueEmbeddedAutoClose(delay = 180) {
+    const generation = embeddedOpenGeneration;
+    window.clearTimeout(embeddedCloseTimer);
+    embeddedCloseTimer = window.setTimeout(() => {
+      embeddedCloseTimer = 0;
+      if (generation !== embeddedOpenGeneration) return;
+      closeEmbeddedSimulator({ refresh:true });
+      toast('Assessment saved');
+    }, delay);
+  }
+
+  function armEmbeddedCompletionWatcher() {
+    cancelEmbeddedAutoClose();
     embeddedRecordSignature = embeddedRecordCompletionSignature();
     embeddedCompletionTimer = window.setInterval(() => {
       const workspace = $('embeddedSimWorkspace');
       if (!workspace || workspace.hidden) {
         clearInterval(embeddedCompletionTimer);
+        embeddedCompletionTimer = 0;
         return;
       }
       const next = embeddedRecordCompletionSignature();
       if (next && embeddedRecordSignature && next !== embeddedRecordSignature) {
         clearInterval(embeddedCompletionTimer);
-        window.setTimeout(() => {
-          closeEmbeddedSimulator({refresh:true});
-          toast('Assessment saved');
-        }, 180);
+        embeddedCompletionTimer = 0;
+        queueEmbeddedAutoClose(180);
       }
       embeddedRecordSignature = next || embeddedRecordSignature;
     }, 350);
@@ -4633,10 +4652,14 @@
     closeEmbeddedSimulator({refresh:true});
     toast(data.label ? `${data.label} saved` : 'Assessment saved');
   }
+  window.addEventListener('emscodesim:embedded-sim-opened', () => {
+    embeddedOpenGeneration += 1;
+    cancelEmbeddedAutoClose();
+  });
   window.addEventListener('message', handleEmbeddedSimulatorComplete);
 
   function closeEmbeddedSimulator(options = {}) {
-    clearInterval(embeddedCompletionTimer);
+    cancelEmbeddedAutoClose();
     const workspace = $('embeddedSimWorkspace');
     const frame = $('embeddedSimFrame');
     if (!workspace || workspace.hidden) return;
@@ -4669,6 +4692,8 @@
     url.searchParams.set('return', `/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&embeddedReturn=1`);
     const titleNode = $('embeddedSimTitle');
     if (titleNode) titleNode.textContent = title;
+    embeddedOpenGeneration += 1;
+    cancelEmbeddedAutoClose();
     workspace.hidden = false;
     document.body.classList.add('sim-workspace-open');
     embeddedRecordSignature = embeddedRecordCompletionSignature();
@@ -4782,11 +4807,14 @@
         if (!control) return;
         const label = String(control.textContent || control.value || '').trim().toLowerCase();
         if (!/(save|record|submit|complete|document|done|use result|return to patient)/.test(label)) return;
-        window.setTimeout(() => {
+        const generation = embeddedOpenGeneration;
+        window.clearTimeout(embeddedCloseTimer);
+        embeddedCloseTimer = window.setTimeout(() => {
+          embeddedCloseTimer = 0;
+          if (generation !== embeddedOpenGeneration) return;
           const next = embeddedRecordCompletionSignature();
           if (next && embeddedRecordSignature && next !== embeddedRecordSignature) {
-            clearInterval(embeddedCompletionTimer);
-            closeEmbeddedSimulator({refresh:true});
+            closeEmbeddedSimulator({ refresh:true });
             toast('Assessment saved');
           }
         }, 220);
