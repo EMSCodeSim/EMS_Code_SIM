@@ -204,7 +204,7 @@
       const saved = record()?.documentation?.horseCrushMovement || {};
       return { src: movementImage(saved.method, saved.stabilization), alt: 'Injured left knee padded in the position of comfort for movement' };
     }
-    if (['airway', 'breathing', 'perfusion', 'abc', 'head_to_toe', 'mental_status', 'aaox4', 'neuro'].includes(key)) {
+    if (['airway', 'breathing', 'perfusion', 'abc', 'head_to_toe', 'mental_status', 'aaox4', 'neuro', 'pain', 'pain_scale'].includes(key)) {
       return { src: PATIENT_PHOTO, alt: 'Alert patient lying on dirt outside the south barn with the left knee flexed' };
     }
     if (key === 'focused_leg') {
@@ -805,6 +805,89 @@
     return { domain, ...state };
   }
 
+  const PAIN_FINDING_KEY = 'pain';
+
+  function painScaleTruth() {
+    const state = window.EMSCodeSimScenarioRuntime?.horseClinicalState?.(record()) || {};
+    const score = Number.isFinite(Number(state.painScore)) ? Number(state.painScore) : 8;
+    const unsafe = Boolean(state.unsafeMovement || state.stage === 'worse');
+    let quote = '“Eight. My left hip. Please don’t straighten my leg.”';
+    let details = 'Severe left-hip pain 8/10 at rest, sharp, worse with movement. The patient guards and will not straighten the left knee.';
+    if (unsafe) {
+      quote = '“That’s a ten — stop.”';
+      details = 'Left hip pain increased to 10/10 after painful or unsafe movement. The patient refuses further movement of the left leg.';
+    } else if (state.stage === 'supported') {
+      quote = '“Maybe a six or seven if you don’t move it.”';
+      details = `Left hip pain currently ${score}/10 at rest with the leg supported. Movement still increases pain. The patient will not straighten the left knee.`;
+    } else if (state.stage === 'pain-improved' || state.stage === 'relieved') {
+      quote = `“About a ${score} now if you keep it still. Don’t straighten it.”`;
+      details = `Left hip pain currently ${score}/10 at rest after support and pain treatment. Movement still increases pain. The patient will not straighten the left knee.`;
+    } else if (state.stage === 'pain-escalating' || state.stage === 'delayed-care') {
+      quote = `“It’s a ${score} now. Left hip. Please don’t move my leg.”`;
+      details = `Severe left-hip pain ${score}/10 at rest and rising while the injury remains untreated. Worse with movement; the patient will not straighten the left knee.`;
+    }
+    return {
+      score,
+      location: 'left hip',
+      quality: 'sharp',
+      quote,
+      details,
+      stage: state.stage || 'baseline',
+      prompt: 'On a scale of 0 to 10, with 10 the worst pain you can imagine, what is your pain right now?'
+    };
+  }
+
+  function painScaleState() {
+    const truth = painScaleTruth();
+    const saved = record()?.findings?.[PAIN_FINDING_KEY];
+    return {
+      key: PAIN_FINDING_KEY,
+      ...truth,
+      saved: Boolean(saved),
+      savedValue: saved?.value || saved?.finding || '',
+      savedScore: Number.isFinite(Number(saved?.score)) ? Number(saved.score) : null
+    };
+  }
+
+  function startPainScale() {
+    if (!isActive()) return null;
+    if (document.body.dataset.horseIntro && document.body.dataset.horseIntro !== 'arrived') return null;
+    noteLearnerAssessment(PAIN_FINDING_KEY);
+    return painScaleState();
+  }
+
+  function documentPainScale(options = {}) {
+    if (!isActive()) return null;
+    if (document.body.dataset.horseIntro && document.body.dataset.horseIntro !== 'arrived') return null;
+    const truth = painScaleTruth();
+    const documented = Number.isFinite(Number(options.score)) ? Number(options.score) : truth.score;
+    const location = String(options.location || truth.location || 'left hip').trim() || 'left hip';
+    const quality = String(options.quality || truth.quality || 'sharp').trim() || 'sharp';
+    const existing = record()?.findings?.[PAIN_FINDING_KEY];
+    const value = `${documented}/10 ${location}`;
+    saveFinding(PAIN_FINDING_KEY, value, {
+      label: 'Pain scale',
+      normality: 'not-normal',
+      details: truth.details,
+      source: 'horse-crush-pain-scale',
+      score: documented,
+      location,
+      quality,
+      expectedScore: truth.score,
+      accurate: documented === truth.score,
+      isReassessment: Boolean(existing)
+    });
+    window.EMSCodeSimPatientInfo?.showSceneObservation?.({
+      id: 'horse-pain-scale',
+      type: 'NEW ASSESSMENT INFORMATION',
+      title: 'Pain scale',
+      text: truth.quote,
+      kind: 'assessment',
+      sticky: true
+    });
+    return { ...painScaleState(), documented, quote: truth.quote };
+  }
+
   function performExam(key) {
     if (!isActive()) return null;
     const baseItem = EXAMS.find(exam => exam.key === key);
@@ -875,6 +958,14 @@
       aaoxButton.innerHTML = `<span>${aaoxSaved ? '✓' : '○'}</span><div><strong>AAOx4 / Orientation</strong><small>${aaoxSaved ? 'Recorded — reassess' : 'Assess alertness and orientation'}</small></div>`;
       aaoxButton.addEventListener('click', () => window.EMSCodeSimHorseWorkspace?.openAaox4?.());
       grid.appendChild(aaoxButton);
+      const painSaved = has(PAIN_FINDING_KEY);
+      const painButton = document.createElement('button');
+      painButton.type = 'button';
+      painButton.className = `horse-exam-button${painSaved ? ' complete' : ''}`;
+      painButton.dataset.assessmentItem = PAIN_FINDING_KEY;
+      painButton.innerHTML = `<span>${painSaved ? '✓' : '○'}</span><div><strong>Pain scale</strong><small>${painSaved ? 'Recorded — reassess' : 'Ask 0–10 left-hip pain'}</small></div>`;
+      painButton.addEventListener('click', () => window.EMSCodeSimHorseWorkspace?.openPainScale?.());
+      grid.appendChild(painButton);
     } else {
       section.classList.add('horse-assessment-selector');
       section.innerHTML = `
@@ -1098,7 +1189,10 @@
     introAllowsPatientSpeech,
     startAaox4,
     assessAaox4Domain,
-    aaox4State
+    aaox4State,
+    startPainScale,
+    documentPainScale,
+    painScaleState
   });
 
   function introAllowsPatientSpeech() {
