@@ -2447,7 +2447,10 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     padding:0!important;
     border:0!important;
     max-height:34px;
-    overflow:hidden;
+    overflow:visible!important;
+    z-index:8!important;
+    pointer-events:auto!important;
+    position:relative!important;
   }
   body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions[data-mode="detail"]{
     grid-column:1/-1!important;

@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.17.14';
+  const VERSION = '2026.08.17.15';
   let lastAbcCommitAt = 0;
   let lastAbcCommitToken = '';
   const FOCUSED_EXAMS = new Set([
@@ -391,7 +391,8 @@
 
   document.addEventListener('click', event => {
     if (!isDesktopHorse()) return;
-    if (!event.target.closest?.('#handoffFromProgress, #transportScenarioQuick, #horseOpenTransport')) return;
+    const origin = event.target?.nodeType === 1 ? event.target : event.target?.parentElement;
+    if (!origin?.closest?.('#handoffFromProgress, #transportScenarioQuick, #horseOpenTransport')) return;
     scheduleTransportPromotion();
   });
 

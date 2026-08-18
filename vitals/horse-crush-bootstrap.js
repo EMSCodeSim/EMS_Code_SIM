@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const BUILD = '2026.08.17.14';
+  const BUILD = '2026.08.17.15';
 
   function loadOnce(attribute, src) {
     if (document.querySelector(`script[${attribute}]`)) return;
@@ -115,7 +115,8 @@
     document.addEventListener('click', event => {
       const params = new URLSearchParams(location.search);
       if (params.get('case') !== CASE_ID) return;
-      if (!event.target.closest?.('#handoffFromProgress, #transportScenarioQuick')) return;
+      const origin = event.target?.nodeType === 1 ? event.target : event.target?.parentElement;
+      if (!origin?.closest?.('#handoffFromProgress, #transportScenarioQuick, #horseOpenTransport, #horseOpenHandoff')) return;
       window.setTimeout(clearScenarioControlOverlay, 0);
       window.requestAnimationFrame(clearScenarioControlOverlay);
     });
