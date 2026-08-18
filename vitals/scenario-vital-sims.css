@@ -197,3 +197,25 @@ button,input,select{font:inherit}.sv-topbar{position:sticky;top:0;z-index:20;pad
  .sv-point.done{animation:svDonePulse .28s ease-out}
  @keyframes svDonePulse{from{transform:scale(.94)}to{transform:scale(1)}}
 }
+
+/* Overlay iframe: pin the document to the iframe pane. Height:auto plus
+   overflow:hidden collapses the body to the 40px flow bar and clips the
+   stage, which the learner sees as a blank white card. */
+html[data-ems-mini-sim="embedded"],
+html[data-ems-mini-sim="embedded"] body{
+  height:100%!important;
+  max-height:100%!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital] .sv-main{
+  height:auto!important;
+  max-height:none!important;
+  min-height:0!important;
+}
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital] #simCard,
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital] #answerCard{
+  grid-row:1!important;
+  grid-row-start:1!important;
+  grid-row-end:2!important;
+}
