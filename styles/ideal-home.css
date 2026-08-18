@@ -1081,7 +1081,18 @@ body.home-page{
   }
   .home-page .mobile-menu{display:block}
   .home-page .header-cta{margin-left:auto}
-}
+  .home-page .nav-wrap{
+    padding-top:max(8px, env(safe-area-inset-top));
+    padding-left:max(16px, env(safe-area-inset-left));
+    padding-right:max(16px, env(safe-area-inset-right));
+  }
+  .home-page .mobile-menu{
+    min-height:44px;
+    font-size:16px;
+  }
+  .home-page .header-cta{min-height:44px}
+  .home-page select,
+  .home-page .mobile-stage-select{font-size:16px}
   .home-page .hero-home-inner{
     grid-template-columns:1fr;
     gap:24px;
@@ -1095,7 +1106,7 @@ body.home-page{
 @media (max-width:768px){
   .home-page .nav-wrap{
     min-height:64px;
-    padding:8px 16px;
+    padding:max(8px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left));
     gap:8px;
   }
   .home-page .brand{font-size:1.02rem}
@@ -1202,6 +1213,7 @@ body.home-page{
     column-gap:8px;
     align-items:center;
     min-height:72px;
+    min-width:0;
     padding:12px;
     border:1px solid var(--ideal-line);
     border-radius:12px;

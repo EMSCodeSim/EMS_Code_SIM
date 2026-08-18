@@ -341,3 +341,127 @@ dialog, .modal-card, .panel[role="dialog"] {
     scroll-behavior: auto !important;
   }
 }
+
+/* ===== MOBILE-ONLY (do not affect desktop) =====
+   Desktop layout at ≥961px stays as authored. These overrides
+   only tighten phones and small tablets. */
+@media (max-width: 960px) {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  .site-header {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .nav-wrap {
+    min-height: 56px;
+    padding-top: max(8px, env(safe-area-inset-top));
+    padding-bottom: 8px;
+    gap: 10px;
+  }
+
+  .mobile-menu {
+    min-height: 44px;
+    min-width: 108px;
+    font-size: 16px;
+    padding: 8px 12px;
+  }
+
+  .brand img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .btn, .btn-primary, .btn-outline, .btn-blue, .home-btn,
+  .hero-actions .btn, .cta .btn {
+    min-height: 44px;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  select, textarea {
+    font-size: 16px;
+  }
+
+  .hero-inner,
+  .page-hero-inner,
+  .hero-home-inner {
+    min-width: 0;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .hero-actions .btn,
+  .hero-actions .home-btn,
+  .hero-actions a {
+    min-height: 48px;
+  }
+
+  .quick-grid,
+  .tool-grid,
+  .card-grid,
+  .resource-grid,
+  .journey-grid,
+  .feature-grid,
+  .path-cards,
+  .start-here-grid {
+    min-width: 0;
+  }
+
+  .site-footer .footer-inner,
+  .footer-grid,
+  .footer-bottom {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+
+  img, video, iframe {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  .hero-actions .btn,
+  .hero-actions .home-btn,
+  .hero-actions a {
+    width: 100%;
+  }
+
+  .journey-grid,
+  .tool-grid,
+  .card-grid,
+  .resource-grid,
+  .feature-grid,
+  .stats,
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .section,
+  .page-hero-inner,
+  .content-layout {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cta .btn {
+    width: 100%;
+  }
+}
+

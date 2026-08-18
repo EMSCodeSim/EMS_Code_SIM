@@ -48,15 +48,26 @@ test('homepage header and hero stay readable and keep one primary action', async
     await page.setViewportSize({ width: 1200, height: 800 });
     await expect(page.locator('.main-nav')).toBeVisible();
     await expect(page.locator('.mobile-menu-wrap')).toBeHidden();
+    const heroCols = await page.locator('.hero-home-inner').evaluate(el => getComputedStyle(el).gridTemplateColumns);
+    expect(heroCols.trim()).not.toBe('1fr');
+    expect(heroCols.split(/\s+/).filter(Boolean).length).toBeGreaterThanOrEqual(2);
     await page.locator('.stage-button[data-stage="pre"]').click();
     await expect(page.locator('.stage-button[data-stage="pre"]')).toHaveClass(/active/);
     await expect(page.locator('#heroPrimary')).toBeVisible();
     await expect(page.locator('#heroSecondary')).toBeVisible();
     await expect(page.locator('#heroPractice')).toBeHidden();
   } else {
+    await page.setViewportSize({ width: 390, height: 844 });
     await expect(page.locator('.mobile-menu-wrap')).toBeVisible();
+    await expect(page.locator('.header-cta')).toBeVisible();
     await expect(page.locator('.mobile-career-picker')).toBeVisible();
     await expect(page.locator('#mobileStageSelect')).toBeVisible();
+    const headerCta = await page.locator('.header-cta').boundingBox();
+    const mobileMenu = await page.locator('.mobile-menu').boundingBox();
+    expect(headerCta?.height || 0).toBeGreaterThanOrEqual(44);
+    expect(mobileMenu?.height || 0).toBeGreaterThanOrEqual(44);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+    expect(overflow, 'horizontal scroll at 390px').toBe(false);
   }
 
   await assertNoPageErrors();
