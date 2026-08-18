@@ -2992,7 +2992,7 @@
         text:'“She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented ×4 and complains of left-hip pain. We have not moved her.”',
         kind:'partner',
         sticky:true,
-        recordedAt:new Date(startMs + 3).toISOString()
+        recordedAt:new Date(startMs + 8).toISOString()
       });
     }
     updates.push({
@@ -3000,7 +3000,7 @@
       kind:'visible', recordedAt:new Date(startMs + 2).toISOString()
     });
     const log = api?.listCareLog?.(current, 'all') || [];
-    log.filter(event => isInformationUpdate(event) && !event.suppressInfoUpdate && !(id === 'horse_crush' && (event.source === 'horse-rapid-abc' || event.source === 'bls-handoff' || event.key === 'bls_handoff')))
+    log.filter(event => isInformationUpdate(event) && !event.suppressInfoUpdate && !(id === 'horse_crush' && (event.source === 'horse-rapid-abc' || event.source === 'bls-handoff' || event.source === 'scenario-start' || event.key === 'bls_handoff' || event.key === 'arrival_parking')))
       .forEach(event => updates.push(updateFromCareEvent(event)));
     if (id === 'horse_crush') {
       const state = horseClinicalState();
