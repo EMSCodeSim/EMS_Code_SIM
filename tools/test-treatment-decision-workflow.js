@@ -8,6 +8,7 @@ assert(!html.includes('id="transportPanel"'), 'Standalone transport panel must b
 assert(html.includes('id="treatmentPanel"'), 'Treatment panel missing');
 assert(js.includes('buildTransportTreatmentCard'), 'Transport treatment workflow missing');
 assert(js.includes('transportPriorityOptions'), 'Emergent/non-emergent transport choices missing');
+assert(js.includes("value=\"Emergent\"") && js.includes("value=\"Non-emergent\""), 'Horse-crush transport must offer Emergent and Non-emergent buttons');
 assert(js.includes('validateTreatmentDocumentation'), 'Treatment detail validation missing');
 assert(js.includes('treatment-entry-form'), 'Treatment entry form missing');
 assert(definitions.includes("name:'dose'"), 'Dose-required medication metadata missing');

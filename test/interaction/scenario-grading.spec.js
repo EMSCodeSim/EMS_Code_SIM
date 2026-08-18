@@ -50,12 +50,12 @@ test('horse-crush scenario grading opens after handoff without runtime errors', 
       recordedAt: now
     });
     api.setDocumentation({
-      transportPriority: 'Prompt trauma transport',
+      transportPriority: 'Emergent',
       destination: 'Trauma center',
       transportRationale: 'Significant horse-compression mechanism with severe hip pain',
       transportDecisionAt: now,
       transportNotification: 'Trauma activation',
-      handoff: '64-year-old compressed between horses with severe left hip pain. Airway, breathing, and perfusion intact. Distal CSM intact. Leg supported and pain treated. Prompt trauma transport to trauma center with BP, pulse, respirations, and SpO2 documented.',
+      handoff: '64-year-old compressed between horses with severe left hip pain. Airway, breathing, and perfusion intact. Distal CSM intact. Leg supported and pain treated. Emergent transport with BP, pulse, respirations, and SpO2 documented.',
       handoffSavedAt: now
     });
   });

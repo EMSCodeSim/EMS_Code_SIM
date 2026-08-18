@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.18.17';
+  const VERSION = '2026.08.18.25';
   let lastAbcCommitAt = 0;
   let lastAbcCommitToken = '';
   const FOCUSED_EXAMS = new Set([
@@ -177,7 +177,7 @@
     if (form.closest('#treatmentTools')) return showPromotedTreatmentPanel('Transport');
     const detail = form.closest('#horseTreatmentDetail') || form.parentElement;
     tools.className = 'treatment-list horse-treatment-category-workspace horse-promoted-transport-workspace';
-    tools.innerHTML = `<div class="horse-treatment-workspace-head"><div><small>TRANSPORT</small><strong>Transport decision</strong><span>Choose working impression, urgency, destination, and notification from the findings you gathered.</span></div></div><div id="horsePromotedTransportHost" class="horse-treatment-workspace-detail"></div>`;
+    tools.innerHTML = `<div class="horse-treatment-workspace-head"><div><small>TRANSPORT</small><strong>Transport decision</strong><span>Choose Emergent or Non-emergent from the findings you gathered.</span></div></div><div id="horsePromotedTransportHost" class="horse-treatment-workspace-detail"></div>`;
     const host = document.getElementById('horsePromotedTransportHost');
     if (!host) return false;
     if (detail && detail !== hiddenQuestion) host.appendChild(detail); else host.appendChild(form);

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.17.15';
+  const VERSION = '2026.08.18.25';
   const desktop = window.matchMedia('(min-width:980px)');
   const $ = id => document.getElementById(id);
   function eventNode(event) {
@@ -62,11 +62,11 @@
       #horseTransportHandoffActions .horse-endpoint-detail-head{display:flex;align-items:center;gap:8px}
       #horseTransportHandoffActions .horse-endpoint-detail-head button{min-height:34px;padding:0 10px;border:1px solid #3c6a80;border-radius:8px;background:#12384d;color:#fff;cursor:pointer}
       #horseTransportHandoffActions .horse-endpoint-transport-form{display:grid;gap:8px}
-      #horseTransportHandoffActions .horse-endpoint-transport-form label{display:grid;gap:4px;color:#cfe3ee;font-size:.72rem;font-weight:800}
-      #horseTransportHandoffActions .horse-endpoint-transport-form select,#horseTransportHandoffActions .horse-endpoint-transport-form textarea{width:100%;min-height:38px;padding:8px 9px;border:1px solid #3c6a80;border-radius:8px;background:#0b1f2e;color:#fff;font:inherit}
-      #horseTransportHandoffActions .horse-endpoint-submit{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-      #horseTransportHandoffActions .horse-endpoint-submit button{min-height:42px;padding:0 14px;border:0;border-radius:9px;background:#d9f3ff;color:#062238;font-weight:900;cursor:pointer}
-      #horseTransportHandoffActions .horse-endpoint-submit p{margin:0;color:#7ae0b4;font-size:.72rem;font-weight:800}
+      #horseTransportHandoffActions .horse-endpoint-transport-form .horse-transport-prompt{margin:0;color:#cfe3ee;font-size:.72rem;font-weight:800}
+      #horseTransportHandoffActions .horse-endpoint-transport-form .horse-transport-urgency-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+      #horseTransportHandoffActions .horse-endpoint-transport-form .horse-transport-urgency{min-height:46px;border:1px solid #3c6a80;border-radius:10px;background:#12384d;color:#fff;font:inherit;font-weight:900;cursor:pointer}
+      #horseTransportHandoffActions .horse-endpoint-transport-form .horse-transport-urgency.selected{border-color:#4d9b73;background:#17664f}
+      #horseTransportHandoffActions .horse-endpoint-transport-form p{margin:0;color:#7ae0b4;font-size:.72rem;font-weight:800}
       @media(min-width:980px){
         #treatmentTools.horse-treatment-group-menu > .horse-treatment-menu-head{grid-column:1/-1;order:0}
         #treatmentTools.horse-treatment-group-menu > .horse-treatment-group-choice{order:10}
@@ -263,21 +263,18 @@
     focusEndpoint(host);
     showEndpointDetail(host, detail);
     const d = current.documentation || {};
-    const impression = current.impressions?.primary || '';
-    const priorities = ['Non-emergent transport','Prompt trauma transport','Emergent trauma transport'];
-    const destinations = ['Closest appropriate emergency department','Trauma center'];
-    const impressions = ['Significant blunt hip/pelvic-region injury','Isolated soft-tissue hip injury','Occult proximal femur or acetabular injury'];
-    const notifications = ['No specialty activation','Trauma activation'];
+    const selected = /non[- ]?emergent/i.test(String(d.transportPriority || '')) ? 'Non-emergent'
+      : /emergent|prompt/i.test(String(d.transportPriority || '')) ? 'Emergent' : '';
 
     detail.innerHTML = `
       <div class="horse-endpoint-detail-head"><button type="button" id="horseEndpointBack">‹ Back</button><div><small>TRANSPORT</small><strong>Transport decision</strong></div></div>
       <form id="horseEndpointTransportForm" class="horse-endpoint-transport-form">
-        <label>Working impression<select name="impression" required><option value="">Choose impression</option>${impressions.map(v => option(v, impression)).join('')}</select></label>
-        <label>Transport urgency<select name="priority" required><option value="">Choose urgency</option>${priorities.map(v => option(v, d.transportPriority || '')).join('')}</select></label>
-        <label>Destination<select name="destination" required><option value="">Choose destination</option>${destinations.map(v => option(v, d.destination || '')).join('')}</select></label>
-        <label>Notification<select name="notification"><option value="">Choose notification</option>${notifications.map(v => option(v, d.transportNotification || '')).join('')}</select></label>
-        <label class="wide">Reason for decision<textarea name="rationale" rows="2" placeholder="Optional clinical reasoning">${escapeHtml(d.transportRationale || '')}</textarea></label>
-        <div class="wide horse-endpoint-submit"><button type="submit">${transportSaved(current) ? 'Update transport decision' : 'Initiate transport'}</button><p id="horseEndpointTransportStatus" aria-live="polite"></p></div>
+        <p class="horse-transport-prompt">Choose transport urgency.</p>
+        <div class="horse-transport-urgency-choices" role="group" aria-label="Transport urgency">
+          <button type="submit" class="horse-transport-urgency${selected === 'Emergent' ? ' selected' : ''}" name="priority" value="Emergent">Emergent</button>
+          <button type="submit" class="horse-transport-urgency${selected === 'Non-emergent' ? ' selected' : ''}" name="priority" value="Non-emergent">Non-emergent</button>
+        </div>
+        <p id="horseEndpointTransportStatus" aria-live="polite"></p>
       </form>`;
 
     $('horseEndpointBack')?.addEventListener('click', closeDetail);
@@ -287,40 +284,33 @@
   function saveTransport(event) {
     event.preventDefault();
     const form = event.currentTarget;
-    const data = new FormData(form);
-    const impression = String(data.get('impression') || '').trim();
-    const priority = String(data.get('priority') || '').trim();
-    const destination = String(data.get('destination') || '').trim();
-    const notification = String(data.get('notification') || '').trim();
-    const rationale = String(data.get('rationale') || '').trim();
+    const data = new FormData(form, event.submitter);
+    const priority = String(event.submitter?.value || data.get('priority') || '').trim();
     const status = $('horseEndpointTransportStatus');
-    if (!impression || !priority || !destination) {
-      if (status) status.textContent = 'Choose an impression, urgency, and destination.';
+    if (!priority) {
+      if (status) status.textContent = 'Choose Emergent or Non-emergent.';
       return;
     }
 
     const now = new Date().toISOString();
     const api = window.EMSCodeSimPatientRecord;
     try {
-      api?.setImpressions?.({ primary: impression, action: priority, source:'scenario-treatment-transport', updatedAt: now });
+      api?.setImpressions?.({ action: priority, source:'scenario-treatment-transport', updatedAt: now });
       api?.setDocumentation?.({
         transportPriority: priority,
-        destination,
-        transportNotification: notification,
-        transportRationale: rationale,
         transportDecisionAt: now
       });
-      api?.setFinding?.('transport_decision', `${priority} to ${destination}`, {
+      api?.setFinding?.('transport_decision', priority, {
         label:'Transport decision',
         source:'scenario-treatment-transport',
-        details: rationale || `Working impression: ${impression}`
+        details: priority
       });
       api?.mergeCareLog?.([{
         id:`transport-${Date.now()}`,
         eventId:`transport-${Date.now()}`,
         type:'transport', category:'transport', key:'transport_decision', label:'Transport initiated',
-        value:`${priority} to ${destination}`,
-        details:`Working impression: ${impression}${notification ? ` • ${notification}` : ''}${rationale ? ` • ${rationale}` : ''}`,
+        value:priority,
+        details:priority,
         source:'scenario-treatment-transport', recordedAt:now
       }]);
     } catch (error) {
@@ -329,7 +319,7 @@
       return;
     }
     lastSignature = '';
-    window.dispatchEvent(new CustomEvent('emscodesim:transport-saved', { detail:{ impression, priority, destination, notification } }));
+    window.dispatchEvent(new CustomEvent('emscodesim:transport-saved', { detail:{ priority } }));
     if (status) status.textContent = 'Transport decision recorded.';
     window.setTimeout(closeDetail, 500);
   }

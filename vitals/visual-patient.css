@@ -438,6 +438,13 @@ body{margin:0;background:#07131f;color:var(--text);font-family:Inter,system-ui,-
 .treatment-entry-error,.transport-entry-error{margin:0!important;padding:9px 10px;border:1px solid #c45e5e;border-radius:9px;background:#3b1717;color:#ffd0d0!important;font-size:.72rem!important}
 .treatment-entry-error[hidden],.transport-entry-error[hidden]{display:none}
 .transport-treatment-card{margin:0;background:#10283a}
+.horse-transport-prompt{margin:0 0 8px;color:#cfe3ee;font-size:.78rem;font-weight:750}
+.horse-transport-urgency-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.horse-transport-urgency{
+  min-height:48px;border:1px solid #3c6a80;border-radius:12px;background:#12384d;color:#fff;font:inherit;font-weight:900;cursor:pointer
+}
+.horse-transport-urgency:hover,.horse-transport-urgency:focus-visible{border-color:#67b9df;background:#194c66}
+.horse-transport-urgency.selected{border-color:#4d9b73;background:#17664f}
 .handoff-treatment-card{margin-top:12px}
 @media(max-width:430px){.bottom-nav{grid-template-columns:repeat(4,minmax(0,1fr))}.treatment-form-actions{grid-template-columns:1fr}}
 /* Clinical workspace, progressive treatment disclosure, and decision timeline */
@@ -1412,6 +1419,7 @@ body.horse-grade-open .scenario-hero-layout{
 .hospital-handoff-actions .secondary{background:#173f5a;color:#fff;border:1px solid #39789e}
 .horse-grade-actions .primary-action,
 .hospital-handoff-actions .primary-action{background:#d9f3ff;color:#062238}
+.hospital-handoff-actions .handoff-grade-button{background:#7ae0b4;color:#062238}
 .hospital-handoff-draft-label{color:#cfe3ee;font-size:.72rem;font-weight:800}
 #hospitalHandoffDraft{
   width:100%;
@@ -1974,7 +1982,14 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     min-height:34px;border:1px solid #2e8f72;border-radius:9px;background:#17664f;color:#fff;padding:6px 11px;font-weight:900;cursor:pointer
   }
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-perform-row p{margin:0;color:#ffb7b7;font-size:.61rem}
-  body.horse-current-emt-call.desktop-scenario-layout .horse-transport-selection-form .horse-treatment-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-transport-prompt{margin:0;color:#cfe3ee;font-size:.72rem;font-weight:800}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-transport-urgency-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-transport-urgency{
+    min-height:48px;border:1px solid #3c6a80;border-radius:12px;background:#12384d;color:#fff;font:inherit;font-weight:900;cursor:pointer
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-transport-urgency:hover,
+  body.horse-current-emt-call.desktop-scenario-layout .horse-transport-urgency:focus-visible{border-color:#67b9df;background:#194c66}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-transport-urgency.selected{border-color:#4d9b73;background:#17664f}
 }
 
 

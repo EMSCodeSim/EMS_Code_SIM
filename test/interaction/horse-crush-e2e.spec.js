@@ -143,12 +143,7 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
 
   const transportForm = page.locator('form.horse-transport-selection-form');
   await expect(transportForm).toBeVisible();
-  await transportForm.locator('select[name="impression"]').selectOption({ index: 1 });
-  await transportForm.locator('select[name="priority"]').selectOption({ label: 'Prompt trauma transport' });
-  await transportForm.locator('select[name="destination"]').selectOption({ index: 1 });
-  await transportForm.locator('select[name="notification"]').selectOption({ label: 'No specialty activation' });
-  await transportForm.locator('textarea[name="rationale"]').fill('Significant horse-compression mechanism with severe hip pain and inability to safely bear weight.');
-  await transportForm.locator('.horse-treatment-perform').click();
+  await transportForm.locator('button[name="priority"][value="Emergent"]').click();
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientRecord.active()?.documentation?.transportDecisionAt))).toBe(true);
   await expectHorsePhoto('/vitals/assets/horse-crush/transport-ambulance.webp');
 
@@ -188,13 +183,19 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
   })).toMatchObject({ ok: true });
 
   await page.locator('#hospitalHandoffDraft').fill(
-    '64-year-old alert patient compressed between two horses and knocked to the ground. Severe left hip pain with the leg held flexed. Airway, breathing, and perfusion are intact. Pelvis/hip and injured leg were assessed with distal CSM intact. The leg was manually supported in the position of comfort. Prompt trauma transport was selected.'
+    '64-year-old alert patient compressed between two horses and knocked to the ground. Severe left hip pain with the leg held flexed. Airway, breathing, and perfusion are intact. Pelvis/hip and injured leg were assessed with distal CSM intact. The leg was manually supported in the position of comfort. Emergent transport was selected.'
   );
+  await expect(page.locator('#openHorseCallGrade')).toBeVisible();
   await page.locator('#saveHospitalHandoff').click();
   await expect.poll(() => page.evaluate(() => {
     const documentation = window.EMSCodeSimPatientRecord.active()?.documentation || {};
     return Boolean(documentation.handoffSavedAt && documentation.handoff);
   })).toBe(true);
+
+  await expect(page.locator('#openHorseCallGrade')).toBeVisible();
+  await page.locator('#openHorseCallGrade').click();
+  await expect(page.locator('#horseGradeWorkspace')).toBeVisible();
+  await expect(page.locator('body')).toHaveClass(/horse-grade-open/);
 
   await assertNoPageErrors();
 });
