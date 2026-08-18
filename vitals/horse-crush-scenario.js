@@ -936,7 +936,7 @@
       if (key && !INTRO_FINDING_KEYS.has(key) && document.body.dataset.horseIntro === 'arrived') {
         noteLearnerAssessment(key);
       }
-      if (event.detail?.key === 'transport_decision' || event.detail?.category === 'transport') {
+      if (key === 'transport_decision' || event.detail?.category === 'transport' || event.detail?.category === 'transport_decision') {
         noteLearnerAssessment('transport');
       }
     });

@@ -3427,6 +3427,7 @@
     ]);
     refreshFromRecord();
     if (id === 'horse_crush') {
+      window.EMSCodeSimHorseCrush?.noteLearnerAssessment?.('transport');
       sceneObservationUpdate = {
         id:`horse-transport-handoff-ready-${Date.now()}`,
         type:'TRANSPORT',
