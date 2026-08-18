@@ -2400,9 +2400,39 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     grid-template-columns:repeat(2,minmax(0,1fr));
     gap:6px!important;
     align-content:start;
+    align-items:start;
+    position:relative;
+    z-index:4;
+    pointer-events:auto;
   }
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-menu-head{
     grid-column:1/-1;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > #horseMoreTreatmentsToggle{
+    grid-column:1/2!important;
+    order:30;
+    align-self:start;
+    min-height:32px!important;
+    max-height:34px!important;
+    margin:0!important;
+    padding:0 8px!important;
+    font-size:.7rem!important;
+    overflow:hidden;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions{
+    grid-column:2/3!important;
+    order:30;
+    align-self:start;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    max-height:34px;
+    overflow:hidden;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions[data-mode="detail"]{
+    grid-column:1/-1!important;
+    max-height:none;
+    overflow:auto;
   }
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice{
     display:grid!important;
@@ -2417,6 +2447,12 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     color:#fff;
     text-align:left;
     cursor:pointer;
+    position:relative;
+    z-index:5;
+    pointer-events:auto;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice[hidden]{
+    display:none!important;
   }
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice:hover,
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice:focus-visible{
@@ -2968,6 +3004,9 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     color:#fff!important;
     box-shadow:none!important;
     transition:border-color .12s ease,background .12s ease,transform .12s ease!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice[hidden]{
+    display:none!important;
   }
 
   body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-drill-choice:hover,

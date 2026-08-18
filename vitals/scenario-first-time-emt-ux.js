@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.15.4';
+  const VERSION = '2026.08.17.12';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const assessmentMode = String(params.get('training') || '').toLowerCase() === 'assessment';
@@ -205,19 +205,10 @@
     const panel = document.getElementById('treatmentPanel');
     const tools = document.getElementById('treatmentTools');
     if (!panel || !tools) return;
+    if (!tools.classList.contains('horse-treatment-group-menu')) return;
     const groups = $$('[data-horse-treatment-group]', tools);
     if (!groups.length) return;
-    const orderedGroups = groups.sort((a,b) => {
-        const aId = String(a.dataset.horseTreatmentGroup || '').toLowerCase();
-        const bId = String(b.dataset.horseTreatmentGroup || '').toLowerCase();
-        const aRank = PRIMARY_TREATMENT_ORDER.indexOf(aId);
-        const bRank = PRIMARY_TREATMENT_ORDER.indexOf(bId);
-        return (aRank < 0 ? 99 : aRank) - (bRank < 0 ? 99 : bRank);
-      });
-    const currentOrder = $(':scope > [data-horse-treatment-group]', tools);
-    if (orderedGroups.some((button, index) => currentOrder[index] !== button)) {
-      orderedGroups.forEach(button => tools.appendChild(button));
-    }
+
     groups.forEach(button => {
       const endEncounter = /transport|handoff/.test(String(button.dataset.horseTreatmentGroup || '').toLowerCase());
       const primary = primaryTreatmentGroup(button);
@@ -226,6 +217,7 @@
       if (!primary && !endEncounter) button.hidden = !extraTreatmentsShown;
       if (endEncounter) button.hidden = true;
     });
+
     let more = document.getElementById('horseMoreTreatmentsToggle');
     if (!more) {
       more = document.createElement('button');
@@ -236,9 +228,28 @@
         extraTreatmentsShown = !extraTreatmentsShown;
         simplifyTreatmentGroups();
       });
-      tools.appendChild(more);
     }
     more.textContent = extraTreatmentsShown ? 'Show fewer treatments' : 'More treatments…';
+
+    // Stable order: head, primary/extra groups, more-toggle, endpoint host.
+    // Never leave More treatments beside End of Encounter in the 2-col grid —
+    // that stretched it into a tall dead click zone and pushed categories down.
+    const head = tools.querySelector(':scope > .horse-treatment-menu-head');
+    const endpoint = document.getElementById('horseTransportHandoffActions');
+    const orderedGroups = groups.slice().sort((a, b) => {
+      const aId = String(a.dataset.horseTreatmentGroup || '').toLowerCase();
+      const bId = String(b.dataset.horseTreatmentGroup || '').toLowerCase();
+      const aRank = PRIMARY_TREATMENT_ORDER.indexOf(aId);
+      const bRank = PRIMARY_TREATMENT_ORDER.indexOf(bId);
+      return (aRank < 0 ? 99 : aRank) - (bRank < 0 ? 99 : bRank);
+    });
+    const sequence = [
+      head,
+      ...orderedGroups,
+      more,
+      endpoint
+    ].filter(Boolean);
+    sequence.forEach(node => tools.appendChild(node));
   }
 
   function treatmentReadyForMovement() {
@@ -364,15 +375,44 @@
         #historyPanel.history-question-launcher-mode .history-question-button{min-height:42px!important}
         #assessmentPanel [data-assessment-category="abc"]{font-weight:900!important}
         #assessmentPanel [data-assessment-item="airway"],#assessmentPanel [data-assessment-item="breathing"],#assessmentPanel [data-assessment-item="perfusion"]{min-height:46px!important;font-size:.86rem!important}
-        #assessmentPanel .horse-question-choice,#treatmentPanel [data-horse-treatment-group],#treatmentPanel [data-horse-workspace-plan],#treatmentPanel .horse-treatment-perform{position:relative!important;z-index:3!important;pointer-events:auto!important;touch-action:manipulation!important}
-        #treatmentPanel .horse-more-treatments-toggle{width:100%;min-height:40px;margin-top:7px;border:1px dashed rgba(116,181,210,.42);border-radius:9px;background:rgba(8,30,45,.45);color:#b9d7e5;font-weight:800;cursor:pointer}
+        #assessmentPanel .horse-question-choice,#treatmentPanel [data-horse-treatment-group],#treatmentPanel [data-horse-workspace-plan],#treatmentPanel .horse-treatment-perform{position:relative!important;z-index:5!important;pointer-events:auto!important;touch-action:manipulation!important}
+        #treatmentPanel .horse-treatment-group-choice[hidden]{display:none!important}
+        #treatmentPanel .horse-more-treatments-toggle{
+          width:100%;
+          min-height:32px!important;
+          max-height:34px!important;
+          margin:0;
+          padding:0 8px;
+          border:1px dashed rgba(116,181,210,.42);
+          border-radius:8px;
+          background:rgba(8,30,45,.45);
+          color:#b9d7e5;
+          font-size:.7rem;
+          font-weight:800;
+          cursor:pointer;
+          align-self:start;
+        }
+        #treatmentTools.horse-treatment-group-menu > .horse-treatment-menu-head{order:0;grid-column:1/-1}
+        #treatmentTools.horse-treatment-group-menu > .horse-treatment-group-choice{order:10}
+        #treatmentTools.horse-treatment-group-menu > #horseMoreTreatmentsToggle{
+          grid-column:1/2!important;
+          order:30;
+          min-height:32px!important;
+          max-height:34px!important;
+        }
+        #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions{
+          grid-column:2/3!important;
+          order:30;
+          margin:0!important;
+          padding:0!important;
+          border:0!important;
+          max-height:34px;
+          overflow:hidden;
+        }
+        #treatmentPanel .horse-natural-encounter-end{margin:0!important;padding:0!important;border:0!important}
+        #treatmentPanel .horse-natural-end-heading,#treatmentPanel .horse-endpoint-actions-head{display:none!important}
         #treatmentPanel.emt-movement-focus #treatmentTools,#treatmentPanel.emt-movement-focus #horseTreatmentWorkspaceDetail{opacity:.22;pointer-events:none}
         #treatmentPanel.emt-movement-focus #horseMovementChoices{border-color:rgba(113,211,245,.75)!important;box-shadow:0 0 0 1px rgba(113,211,245,.14),0 12px 30px rgba(0,0,0,.22)}
-        #treatmentPanel .horse-natural-encounter-end{margin-top:10px!important;padding-top:10px!important;border-top:1px solid rgba(91,145,171,.35)}
-        #treatmentPanel .horse-natural-end-heading{display:grid;gap:2px;margin-bottom:8px}
-        #treatmentPanel .horse-natural-end-heading small{font-size:.65rem;font-weight:900;letter-spacing:.09em;color:#8fcbe2}
-        #treatmentPanel .horse-natural-end-heading strong{font-size:.98rem;color:#fff}
-        #treatmentPanel .horse-natural-end-heading span{font-size:.7rem;line-height:1.35;color:#a8c2cf}
         #infoUpdateWindow[data-first-time-label="scene-crew"]{border-color:rgba(99,160,190,.4)!important}
         #infoUpdateWindow[data-first-time-label="scene-crew"] #infoUpdateText{font-size:.79rem!important;line-height:1.4!important}
         .emt-monitor-deemphasized{opacity:.92}

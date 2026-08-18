@@ -6,9 +6,9 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Visual Patient Scenario | EMSCodeSim</title>
   <link rel="icon" href="/favicon.png">
-  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2306">
-  <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2200">
-  <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2212">
+  <link rel="stylesheet" href="/vitals/visual-patient.css?v=2026.08.17.7">
+  <link rel="stylesheet" href="/vitals/scenario-guided-start.css?v=2026.08.17.7">
+  <link rel="stylesheet" href="/vitals/horse-crush-scenario.css?v=2026.08.17.7">
 </head>
 <body>
   <main class="vp-shell">
@@ -19,7 +19,7 @@
         <h1 id="caseTitle">Visual Patient</h1>
         <p id="scene"></p>
       </div>
-      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small id="patientClockStatus" class="patient-clock-status">Patient clock • severe pain</small><small class="scenario-build-stamp-dark">DESKTOP CLINICAL 2.306</small></div>
+      <div class="vp-timer"><span id="modeBadge">Learning Mode</span><strong id="timer">00:00</strong><small id="patientClockStatus" class="patient-clock-status">Patient clock • severe pain</small><small id="scenarioBuildStamp" class="scenario-build-stamp-dark">DESKTOP CLINICAL 2026.08.17.7</small></div>
     </header>
 
     <div class="scenario-quick-controls" aria-label="Scenario end and reset controls">
@@ -68,29 +68,51 @@
         </section>
         <section id="horseGradeWorkspace" class="horse-grade-workspace" hidden aria-label="Scenario grading and call review">
           <header class="horse-grade-header">
-            <div><small>CALL REVIEW</small><strong>Horse-crush scenario grade</strong><span>Overall review of assessment, decisions, treatment, reassessment, transport, and handoff</span></div>
+            <div>
+              <small id="horseGradeModeLabel">CALL REVIEW</small>
+              <strong id="horseGradeHeaderTitle">Horse-crush scenario grade</strong>
+              <span id="horseGradeHeaderSubtitle">Overall review of assessment, decisions, treatment, reassessment, transport, and handoff</span>
+            </div>
             <button id="closeHorseCallGrade" type="button">Return to patient</button>
           </header>
           <div class="horse-grade-layout">
             <section class="horse-grade-summary" aria-labelledby="horseGradeTitle">
               <div class="horse-grade-score-wrap">
                 <div id="horseGradeScore" class="horse-grade-score" aria-label="Overall scenario score"><strong>0</strong><span>/100</span></div>
-                <div><small>OVERALL PERFORMANCE</small><h2 id="horseGradeTitle">Call review</h2><p id="horseGradeLabel">Complete the call to receive a grade.</p></div>
+                <div>
+                  <small>OVERALL PERFORMANCE</small>
+                  <h2 id="horseGradeTitle">Call review</h2>
+                  <p id="horseGradeLabel">Complete the call to receive a grade.</p>
+                </div>
               </div>
               <div id="horseGradeOutcome" class="horse-grade-outcome"></div>
-              <div id="horseGradeCategories" class="horse-grade-categories"></div>
+              <div id="horseClinicalCoachingHead" class="horse-clinical-coaching-head">
+                <small>CLINICAL CARE REVIEW</small>
+                <strong>Coaching breakdown</strong>
+                <p>Category scores below are coaching feedback for the next attempt.</p>
+              </div>
+              <div id="horseGradeCategories" class="horse-grade-categories" aria-label="Clinical care coaching categories"></div>
             </section>
             <section class="horse-grade-feedback">
               <div class="horse-grade-feedback-grid">
-                <article class="horse-grade-feedback-card strengths"><div><small>WHAT WENT WELL</small><strong>Strong decisions</strong></div><ul id="horseGradeStrengths"></ul></article>
-                <article class="horse-grade-feedback-card improve"><div><small>IMPROVE NEXT TIME</small><strong>Priority suggestions</strong></div><ul id="horseGradeImprovements"></ul></article>
+                <article class="horse-grade-feedback-card strengths">
+                  <div><small>WHAT WENT WELL</small><strong>Strong decisions</strong></div>
+                  <ul id="horseGradeStrengths"></ul>
+                </article>
+                <article class="horse-grade-feedback-card improve">
+                  <div><small id="horseGradeImproveLabel">IMPROVE NEXT TIME</small><strong id="horseGradeImproveTitle">Priority suggestions</strong></div>
+                  <ul id="horseGradeImprovements"></ul>
+                </article>
               </div>
               <article class="horse-grade-treatment-review">
-                <div class="horse-grade-section-head"><div><small>TREATMENT REVIEW</small><strong>What your care did to the patient</strong></div><span id="horseGradeTreatmentStatus"></span></div>
+                <div class="horse-grade-section-head">
+                  <div><small>TREATMENT REVIEW</small><strong>What your care did to the patient</strong></div>
+                  <span id="horseGradeTreatmentStatus"></span>
+                </div>
                 <div id="horseGradeTreatmentList" class="horse-grade-treatment-list"></div>
               </article>
               <article class="horse-grade-next-call">
-                <small>NEXT-CALL FOCUS</small>
+                <small id="horseGradeNextLabel">NEXT-CALL FOCUS</small>
                 <strong id="horseGradeNextFocus">Finish the call to receive a focused recommendation.</strong>
                 <p id="horseGradeNarrative"></p>
               </article>
@@ -104,9 +126,17 @@
       </section>
 
       <aside class="patient-control-column" aria-label="Scenario information and controls">
-        <aside id="infoUpdateWindow" class="info-update-window info-dispatch" aria-live="polite" aria-label="Scenario information updates">
+        <aside id="infoUpdateWindow" class="info-update-window communication-workspace info-dispatch" role="log" aria-live="polite" aria-atomic="true" aria-relevant="additions text" aria-label="Scenario communications">
+          <div class="communication-workspace-head">
+            <div><small>COMMUNICATIONS</small><strong>Scene information</strong></div>
+            <div class="communication-source-key" aria-label="Communication sources">
+              <span><i aria-hidden="true">📟</i>Dispatch</span>
+              <span><i aria-hidden="true">👥</i>On-scene crew</span>
+              <span><i aria-hidden="true">👤</i>Patient</span>
+            </div>
+          </div>
           <div class="info-update-head">
-            <span id="infoUpdateType">DISPATCH</span>
+            <div class="info-update-source"><span id="infoUpdateIcon" class="info-update-source-icon source-dispatch" aria-hidden="true">📟</span><span id="infoUpdateType">DISPATCH</span></div>
             <div class="info-update-head-actions">
               <div class="info-update-voice-controls" role="group" aria-label="Patient update voice controls">
                 <button id="infoUpdateVoiceToggle" class="info-update-voice-button is-on" type="button" aria-pressed="true" aria-label="Turn automatic patient update voice off" title="Turn Auto Voice off"><span aria-hidden="true">🔊</span><span class="info-voice-label">Auto</span></button>
@@ -117,10 +147,15 @@
           </div>
           <strong id="infoUpdateTitle">Dispatch information</strong>
           <p id="infoUpdateText">Review the dispatch and patient picture before beginning care.</p>
+          <div id="infoUpdateQuickReplies" class="info-update-quick-replies" hidden>
+            <small>YOUR RESPONSE</small>
+            <div id="infoUpdateQuickReplyButtons" class="info-update-quick-reply-buttons"></div>
+            <p id="infoUpdateQuickReplyStatus" hidden></p>
+          </div>
           <div class="info-update-controls">
-            <button id="infoUpdatePrevious" type="button" aria-label="Previous information update">‹</button>
+            <button id="infoUpdatePrevious" type="button" aria-label="Previous communication">‹</button>
             <span id="infoUpdateCount">1 of 1</span>
-            <button id="infoUpdateNext" type="button" aria-label="Next information update">›</button>
+            <button id="infoUpdateNext" type="button" aria-label="Next communication">›</button>
           </div>
         </aside>
         <section id="horseClinicalQuestionBox" class="horse-clinical-question-box" aria-live="polite" aria-label="Current clinical follow-up question">
@@ -203,14 +238,9 @@
     </header>
     <div id="desktopMonitorVitalGrid" class="desktop-monitor-grid" aria-label="Available vital signs"></div>
 
-    <section class="desktop-monitor-status" aria-label="Patient status">
-      <header><span>PATIENT STATUS</span><small>Known information</small></header>
-      <div id="desktopPatientStatusGrid" class="desktop-status-grid">
-        <div><small>AVPU</small><strong id="desktopStatusAvpu">—</strong></div>
-        <div><small>GCS</small><strong id="desktopStatusGcs">—</strong></div>
-        <div><small>SKIN</small><strong id="desktopStatusSkin">—</strong></div>
-        <div><small>PAIN</small><strong id="desktopStatusPain">—</strong></div>
-      </div>
+    <section class="desktop-monitor-status" aria-label="Quick assessment mini simulators">
+      <header><span>QUICK ASSESSMENTS</span><small>Click to perform or assign</small></header>
+      <div id="desktopQuickAssessmentGrid" class="desktop-status-grid desktop-quick-assessment-grid"></div>
     </section>
 
     <section class="desktop-monitor-concerns" aria-label="Active patient concerns">
@@ -230,15 +260,15 @@
     </section>
 
     <section id="desktopVitalAction" class="desktop-vital-action" hidden aria-live="polite">
-      <div><small>SELECTED VITAL</small><strong id="desktopVitalActionTitle">Blood pressure</strong></div>
-      <p id="desktopVitalActionCopy">Choose who will obtain this vital.</p>
+      <div><small>SELECTED MINI SIM</small><strong id="desktopVitalActionTitle">Blood pressure</strong></div>
+      <p id="desktopVitalActionCopy">Choose who will perform this assessment.</p>
       <div class="desktop-vital-action-buttons">
         <button id="desktopVitalTake" type="button">Take myself</button>
         <button id="desktopVitalPartner" type="button">Assign to partner</button>
         <button id="desktopVitalCancel" type="button" class="ghost">Cancel</button>
       </div>
     </section>
-    <footer class="desktop-monitor-foot"><span id="desktopMonitorDue">No reassessment due</span><small>Click any vital to obtain or assign it</small></footer>
+    <footer class="desktop-monitor-foot"><span id="desktopMonitorDue">No reassessment due</span><small>Click any tile to open its mini sim or assign it</small></footer>
   </aside>
 
   <nav class="bottom-nav" aria-label="Scenario controls">
@@ -383,7 +413,11 @@
       <summary><span><b>Scenario progress</b><small id="scenarioProgressSummary">Review clinical phases</small></span><i aria-hidden="true">⌄</i></summary>
       <div id="scenarioPhaseList" class="scenario-phase-list"></div>
       <div id="scenarioCompletionMessage" class="scenario-completion-message" hidden></div>
-      <div class="scenario-progress-actions"><a id="handoffFromProgress" href="/vitals/pcr-handoff.html">PCR and handoff</a><button id="gradeScenarioFromPatient" type="button" hidden>Grade call</button><button id="completeScenarioFromPatient" type="button">Check completion</button></div>
+      <div class="scenario-progress-actions">
+        <a id="handoffFromProgress" href="/vitals/pcr-handoff.html">PCR and handoff</a>
+        <button id="gradeScenarioFromPatient" type="button" hidden>Grade / Help</button>
+        <button id="completeScenarioFromPatient" type="button">Check completion</button>
+      </div>
     </details>
     <button id="saveAndExitScenario" class="scenario-control-option end" type="button">
       <strong>End scenario</strong><span>Stop the call and return to scenario selection. Current progress remains available to resume.</span>
@@ -395,16 +429,16 @@
   </section>
 
   <div id="toast" class="toast" hidden aria-live="polite"></div>
-  <script src="/vitals/patient-record.js?v=2200"></script>
-  <script src="/vitals/scenario-definitions.js?v=2219"></script>
-  <script src="/vitals/scenario-interviews.js?v=2224"></script>
-  <script src="/vitals/scenario-session.js?v=2200"></script>
-  <script src="/vitals/scenario-runtime.js?v=2223"></script>
-  <script src="/vitals/scenario-tool-registry.js?v=2200"></script>
-  <script src="/vitals/scenario-phase-model.js?v=2200"></script>
-  <script src="/vitals/horse-crush-bootstrap.js?v=2223"></script>
-  <script src="/vitals/horse-crush-scenario.js?v=2219"></script>
-  <script src="/vitals/visual-patient.js?v=2306"></script>
-  <script src="/vitals/scenario-guided-start.js?v=2202"></script>
+  <script src="/vitals/patient-record.js?v=2026.08.17.7"></script>
+  <script src="/vitals/scenario-definitions.js?v=2026.08.17.7"></script>
+  <script src="/vitals/scenario-interviews.js?v=2026.08.17.7"></script>
+  <script src="/vitals/scenario-session.js?v=2026.08.17.7"></script>
+  <script src="/vitals/scenario-runtime.js?v=2026.08.17.7"></script>
+  <script src="/vitals/scenario-tool-registry.js?v=2026.08.17.7"></script>
+  <script src="/vitals/scenario-phase-model.js?v=2026.08.17.7"></script>
+  <script src="/vitals/horse-crush-bootstrap.js?v=2026.08.17.7"></script>
+  <script src="/vitals/horse-crush-scenario.js?v=2026.08.17.7"></script>
+  <script src="/vitals/visual-patient.js?v=2026.08.17.7"></script>
+  <script src="/vitals/scenario-guided-start.js?v=2026.08.17.7"></script>
 </body>
 </html>

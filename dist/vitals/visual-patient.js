@@ -91,6 +91,8 @@
   let horseCurrentAssessment = 'abc';
   let horseAssessmentCollapsed = false;
   let horseHistoryActiveGroup = '';
+  let horseAssessmentActiveCategory = '';
+  let horseAssessmentActiveItem = '';
   let horseTreatmentActiveGroup = '';
   let horseTreatmentActivePlan = '';
   let horseHandoffOpen = false;
@@ -172,12 +174,14 @@
 
   function setPatientImage(image, path) {
     if (!image) return;
+    const requested = path;
+    image.classList.remove('image-fallback');
     image.onerror = () => {
       image.onerror = null;
       image.src = id === 'pediatric' ? '/vitals/assets/scenario-patient-pediatric-v3.png' : '/vitals/assets/scenario-patient-adult-v3.png';
       image.classList.add('image-fallback');
     };
-    image.src = path;
+    image.src = requested;
     image.hidden = false;
   }
 
@@ -658,12 +662,18 @@
 
   function launchPrimaryPhotoGuide(review = false) {
     closeSheet();
+    const guide = document.getElementById('sceneGuide');
+    const rightRail = document.querySelector('.patient-control-column');
+    const rightWorkflow = rightRail?.querySelector('.patient-entry-workflow');
+    if (guide && rightWorkflow && guide.parentElement !== rightWorkflow) {
+      rightWorkflow.appendChild(guide);
+    }
+    rightRail?.classList.add('abc-workspace-active');
     window.requestAnimationFrame(() => {
       const opened = window.EMSCodeSimSceneGuide?.startPrimary?.(review);
       if (opened === false || !window.EMSCodeSimSceneGuide?.startPrimary) {
-        const guide = document.getElementById('sceneGuide');
-        if (guide) { guide.hidden = false; guide.scrollIntoView({ behavior:'smooth', block:'center' }); }
-        toast('Initial ABC assessment opened. Refresh the page if the questions do not appear.');
+        if (guide) { guide.hidden = false; guide.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+        toast('Initial ABC assessment opened in the right assessment screen.');
       }
     });
   }
@@ -702,6 +712,7 @@
     const questionBox = $('horseClinicalQuestionBox');
     function resetQuestionBox() {
       if (!questionBox) return;
+      questionBox.hidden = true;
       questionBox.classList.remove('active','history-active','treatment-active');
       const activeLabel = horseCurrentAssessment === 'abc' ? 'Select Airway, Breathing, or Circulation.' : 'Perform an exam segment. Any follow-up question will appear here.';
       questionBox.innerHTML = `
@@ -713,49 +724,66 @@
     function openFollowup(key) {
       if (!questionBox) return;
       const current = api?.getFinding?.(key, record());
+      questionBox.hidden = false;
       questionBox.classList.add('active');
+      questionBox.dataset.abcKey = key;
       questionBox.innerHTML = `
         <div class="horse-question-head">
           <div><small>FOLLOW-UP QUESTION</small><strong>${escapeHtml(labels[key])}</strong></div>
         </div>
         <p>${escapeHtml(prompts[key])}</p>
-        <div class="horse-question-answer-row">
-          <label><span>Your finding</span><select aria-label="${escapeHtml(labels[key])} finding">
-            <option value="">Choose your finding</option>
-            ${choices[key].map(([value,label,normality]) => `<option value="${escapeHtml(value)}" data-normality="${normality}" ${current && (current.value === value || current.finding === value) ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('')}
-          </select></label>
-          <button type="button" class="horse-question-save" disabled>Record</button>
-        </div>`;
-      const select = questionBox.querySelector('select');
-      const save = questionBox.querySelector('.horse-question-save');
-      const sync = () => { if (save) save.disabled = !select?.value; };
-      select?.addEventListener('change', sync);
-      sync();
-      save?.addEventListener('click', () => {
-        if (!select?.value) return;
-        const option = select.selectedOptions[0];
-        const normality = option?.dataset?.normality || '';
+        <div class="horse-question-choice-grid" role="group" aria-label="${escapeHtml(labels[key])} finding choices">
+          ${choices[key].map(([value,label,normality], index) => {
+            const selected = current && (current.value === value || current.finding === value);
+            return `<button type="button" class="horse-question-choice${selected ? ' selected' : ''}" data-abc-choice="${index}" data-normality="${normality}" aria-pressed="${selected ? 'true' : 'false'}"><span>${selected ? '✓' : '○'}</span><strong>${escapeHtml(label)}</strong></button>`;
+          }).join('')}
+        </div>
+        <p class="horse-question-choice-help">Select one finding to record it.</p>`;
+      const buttons = [...questionBox.querySelectorAll('[data-abc-choice]')];
+      buttons.forEach(button => button.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        const choice = choices[key][Number(button.dataset.abcChoice)];
+        if (!choice) return;
+        const [value, label, normality] = choice;
         const payload = {
           source:'horse-rapid-abc',
           label:labels[key],
-          finding:select.value,
+          finding:value,
           normality,
           status:normality === 'normal' ? 'normal' : normality === 'not-normal' ? 'abnormal' : 'uncertain',
           rapidAssessment:true,
           reviewAtDebrief:true,
           suppressInfoUpdate:true
         };
-        try {
-          if (session?.saveFinding) session.saveFinding(key, select.value, payload);
-          else api?.setFinding?.(key, select.value, payload);
-          refreshFromRecord({ force:true });
-          resetQuestionBox();
-        } catch (error) {
-          console.error(error);
-          toast('Finding was not saved. Try again.');
+        buttons.forEach(item => {
+          const selected = item === button;
+          item.classList.toggle('selected', selected);
+          item.setAttribute('aria-pressed', selected ? 'true' : 'false');
+          const marker = item.querySelector('span');
+          if (marker) marker.textContent = selected ? '✓' : '○';
+        });
+        const help = questionBox.querySelector('.horse-question-choice-help');
+        if (help) {
+          help.textContent = `Saving: ${label}`;
+          help.classList.add('recorded');
+          help.setAttribute('role', 'status');
         }
-      });
-      window.requestAnimationFrame(() => select?.focus());
+        // Defer the record refresh so Chromium can finish the click gesture
+        // before assessment rebuilds replace these nodes.
+        window.setTimeout(() => {
+          try {
+            if (session?.saveFinding) session.saveFinding(key, value, payload);
+            else api?.setFinding?.(key, value, payload);
+            refreshFromRecord({ force:true });
+            openFollowup(key);
+          } catch (error) {
+            console.error(error);
+            toast('Finding was not saved. Try again.');
+            openFollowup(key);
+          }
+        }, 0);
+      }));
     }
 
     const article = document.createElement('section');
@@ -969,7 +997,7 @@
     const launch = document.createElement('button');
     launch.type = 'button';
     launch.className = 'primary-photo-launch';
-    launch.textContent = completed === 3 ? 'Review initial ABC over patient photo' : completed > 0 ? 'Continue initial ABC over patient photo' : 'Begin initial ABC over patient photo';
+    launch.textContent = completed === 3 ? 'Review initial ABC in right assessment screen' : completed > 0 ? 'Continue initial ABC in right assessment screen' : 'Begin initial ABC in right assessment screen';
     launch.addEventListener('click', event => {
       event.preventDefault();
       launchPrimaryPhotoGuide(completed === 3);
@@ -978,8 +1006,197 @@
     box.appendChild(article);
   }
 
+
+
+  function horseAssessmentCategoryDefinitions() {
+    return [
+      {
+        id:'abc',
+        icon:'ABC',
+        label:'Primary / ABC',
+        description:'Airway, breathing, circulation, immediate threats.',
+        items:[
+          { id:'airway', label:'Airway', prompt:'Assess the airway.' },
+          { id:'breathing', label:'Breathing', prompt:'Assess breathing adequacy.' },
+          { id:'perfusion', label:'Circulation', prompt:'Assess pulse, perfusion, and major bleeding.' }
+        ]
+      },
+      {
+        id:'head_neck',
+        icon:'H/N',
+        label:'Head / Neck',
+        description:'Head, face, neck, cervical spine.',
+        items:[
+          { id:'head_exam', label:'Head / Face', prompt:'Inspect and palpate the head and face.' },
+          { id:'neck_back', label:'Neck / C-spine', prompt:'Assess the neck and cervical spine.' }
+        ]
+      },
+      {
+        id:'chest',
+        icon:'CHEST',
+        label:'Chest',
+        description:'Inspect, palpate, and assess breath sounds.',
+        items:[
+          { id:'chest_assessment', label:'Chest Assessment', prompt:'Inspect and palpate the chest; assess respiratory findings.' },
+          { id:'lung_sounds', label:'Breath Sounds', prompt:'Auscultate bilateral breath sounds.' }
+        ]
+      },
+      {
+        id:'abdomen_pelvis',
+        icon:'A/P',
+        label:'Abdomen / Pelvis',
+        description:'Abdominal and pelvic assessment.',
+        items:[
+          { id:'abdominal_assessment', label:'Abdomen', prompt:'Inspect and palpate the abdomen.' },
+          { id:'pelvis_hip', label:'Pelvis / Hip', prompt:'Assess the pelvis and painful hip.' }
+        ]
+      },
+      {
+        id:'extremities',
+        icon:'EXT',
+        label:'Extremities',
+        description:'Upper and lower extremity injury assessment.',
+        items:[
+          { id:'upper_extremities', label:'Upper Extremities', prompt:'Assess both upper extremities.' },
+          { id:'left_leg', label:'Injured Leg', prompt:'Assess the painful/injured leg.' },
+          { id:'distal_csm', label:'Distal CSM', prompt:'Assess distal circulation, sensation, and movement.' }
+        ]
+      },
+      {
+        id:'neuro_skin',
+        icon:'N/S',
+        label:'Neuro / Skin',
+        description:'Neurologic and skin findings.',
+        items:[
+          { id:'neuro', label:'Neurologic', prompt:'Assess mental status and neurologic function.' },
+          { id:'skin', label:'Skin', prompt:'Assess skin color, temperature, and condition.' }
+        ]
+      }
+    ];
+  }
+
+  function renderHorseAssessmentCategoryWorkspace(categoryId) {
+    const box = $('assessmentTools');
+    const category = horseAssessmentCategoryDefinitions().find(item => item.id === categoryId);
+    if (!box || !category) return;
+
+    horseAssessmentActiveCategory = category.id;
+    const current = record() || {};
+    const completed = key => Boolean(api?.getFinding?.(key, current));
+
+    box.className = 'assessment-list horse-assessment-category-workspace';
+    box.innerHTML = `
+      <div class="horse-assessment-workspace-head">
+        <button type="button" class="horse-assessment-back" id="horseAssessmentBack">‹ Assessments</button>
+        <div><small>ASSESSMENT</small><strong>${escapeHtml(category.label)}</strong><span>${escapeHtml(category.description)}</span></div>
+      </div>
+      <div class="horse-assessment-workspace-actions" data-assessment-main-questions="1">
+        ${category.items.map(item => `
+          <button type="button" class="horse-assessment-workspace-action${completed(item.id) ? ' used' : ''}" data-assessment-item="${escapeHtml(item.id)}">
+            <span>${completed(item.id) ? '✓' : '○'}</span>
+            <strong>${escapeHtml(item.label)}</strong>
+          </button>`).join('')}
+      </div>`;
+    // Follow-up questions live under the main assessment actions in #assessmentFollowupHost.
+
+    box.querySelector('#horseAssessmentBack')?.addEventListener('click', () => {
+      horseAssessmentActiveCategory = '';
+      buildHorseAssessmentChooserDesktop();
+    });
+
+    box.querySelectorAll('[data-assessment-item]').forEach(button => {
+      button.addEventListener('click', () => {
+        const item = category.items.find(row => row.id === button.dataset.assessmentItem);
+        if (!item) return;
+        horseAssessmentActiveItem = item.id;
+        if (['airway','breathing','perfusion'].includes(item.id) && horseWorkspaceContext?.openFollowup) {
+          const abcLabel = horseWorkspaceContext.labels?.[item.id] || item.label;
+          const observation = horseWorkspaceContext.observations?.[item.id] || '';
+          sceneObservationUpdate = {
+            id:'horse-abc-active',
+            type:'NEW ASSESSMENT INFORMATION',
+            title:`${abcLabel} assessment`,
+            text:observation,
+            kind:'assessment',
+            sticky:true,
+            recordedAt:new Date().toISOString()
+          };
+          infoManuallyCollapsed = false;
+          lastInfoSignature = '';
+          renderInfoUpdate(true);
+          horseWorkspaceContext.openFollowup(item.id);
+          return;
+        }
+        // Reuse existing assessment selection path if available.
+        const existing = document.querySelector(`[data-assessment-key="${CSS.escape(item.id)}"], [data-assessment="${CSS.escape(item.id)}"]`);
+        if (existing && existing !== button) {
+          existing.click();
+          return;
+        }
+        // Fallback to current assessment workflow.
+        selectHorseCurrentAssessment?.(item.id);
+      });
+    });
+  }
+
+  function renderHorseAssessmentInlineFollowup(title, bodyHtml, onBack) {
+    const box = $('assessmentTools');
+    if (!box || !desktopWorkspace()) return false;
+    box.className = 'assessment-list horse-assessment-followup-workspace';
+    box.innerHTML = `
+      <div class="horse-assessment-workspace-head">
+        <button type="button" class="horse-assessment-back" id="horseAssessmentFollowupBack">‹ Back</button>
+        <div><small>FOLLOW-UP</small><strong>${escapeHtml(title || 'Assessment question')}</strong></div>
+      </div>
+      <div class="horse-assessment-followup-body">${bodyHtml || ''}</div>`;
+    box.querySelector('#horseAssessmentFollowupBack')?.addEventListener('click', () => {
+      if (typeof onBack === 'function') onBack();
+      else if (horseAssessmentActiveCategory) renderHorseAssessmentCategoryWorkspace(horseAssessmentActiveCategory);
+      else buildHorseAssessmentChooserDesktop();
+    });
+    return true;
+  }
+
+  function buildHorseAssessmentChooserDesktop() {
+    const box = $('assessmentTools');
+    if (!box) return;
+    if (horseAssessmentActiveCategory) {
+      renderHorseAssessmentCategoryWorkspace(horseAssessmentActiveCategory);
+      return;
+    }
+    const current = record() || {};
+    const completed = key => Boolean(api?.getFinding?.(key, current));
+    const categories = horseAssessmentCategoryDefinitions();
+
+    box.className = 'assessment-list horse-assessment-drill-menu';
+    box.innerHTML = `
+      <div class="horse-drill-menu-head">
+        <small>ASSESSMENT</small>
+        <strong>Choose an assessment category</strong>
+        <span>Select a category. Its available assessments will replace this menu.</span>
+      </div>
+      <div class="horse-assessment-drill-grid">
+        ${categories.map(category => {
+          const done = category.items.filter(item => completed(item.id)).length;
+          return `<button type="button" class="horse-assessment-drill-choice" data-assessment-category="${escapeHtml(category.id)}">
+            <span class="horse-assessment-drill-icon">${escapeHtml(category.icon)}</span>
+            <span><strong>${escapeHtml(category.label)}</strong><small>${escapeHtml(category.description)}</small></span>
+            <em>${done}/${category.items.length}</em>
+          </button>`;
+        }).join('')}
+      </div>`;
+
+    box.querySelectorAll('[data-assessment-category]').forEach(button => {
+      button.addEventListener('click', () => renderHorseAssessmentCategoryWorkspace(button.dataset.assessmentCategory || 'abc'));
+    });
+  }
+
   function buildAssessments() {
     const box = $('assessmentTools');
+    if (id === 'horse_crush' && desktopWorkspace()) {
+      buildHorseAssessmentChooserDesktop();
+      return;
+    }
     const openCategories = detailsState(box, 'data-assessment-category');
     const openSections = detailsState(box, 'data-assessment-section');
     const existingFocus = box?.querySelector('.assessment-focus-control select')?.value;
@@ -1255,16 +1472,11 @@
 
   function renderHorseHistoryQuestionBox(groupId = horseHistoryActiveGroup) {
     if (id !== 'horse_crush' || !desktopWorkspace()) return;
-    const questionBox = $('horseClinicalQuestionBox');
-    if (!questionBox) return;
+    const host = $('historyCategoryList');
+    if (!host) return;
     const group = HORSE_HISTORY_GROUPS.find(item => item.id === groupId);
     if (!group) {
-      questionBox.classList.remove('active','history-active','treatment-active');
-      questionBox.innerHTML = `
-        <div class="horse-question-placeholder">
-          <small>HISTORY QUESTIONS</small>
-          <strong>Select a history group on the left. All available questions for that group will stay open here.</strong>
-        </div>`;
+      buildHorseHistoryDesktop();
       return;
     }
 
@@ -1272,27 +1484,42 @@
     const asked = new Set(askedInterviewQuestions(current).map(question => question.id));
     const questions = horseHistoryGroupQuestions(group);
     const askedCount = questions.filter(question => asked.has(question.id)).length;
-    questionBox.classList.remove('treatment-active');
-    questionBox.classList.add('active','history-active');
-    questionBox.innerHTML = `
-      <div class="horse-question-head horse-history-question-head">
-        <div><small>ASK THE PATIENT</small><strong>${escapeHtml(group.label)}</strong></div>
-        <span>${askedCount}/${questions.length} asked</span>
+
+    host.className = 'history-category-list horse-history-drill-workspace';
+    host.innerHTML = `
+      <div class="horse-history-drill-head">
+        <button type="button" class="horse-history-back" id="horseHistoryBack">‹ History</button>
+        <div><small>ASK THE PATIENT</small><strong>${escapeHtml(group.label)}</strong><span>${askedCount}/${questions.length} asked</span></div>
       </div>
-      <div class="horse-history-question-grid" role="group" aria-label="${escapeHtml(group.label)} questions">
+      <div class="horse-history-drill-questions" role="group" aria-label="${escapeHtml(group.label)} questions">
         ${questions.map(question => `
-          <button type="button" class="horse-history-question-button${asked.has(question.id) ? ' asked' : ''}" data-history-question="${escapeHtml(question.id)}">
+          <button type="button" class="horse-history-drill-question${asked.has(question.id) ? ' asked' : ''}" data-history-question="${escapeHtml(question.id)}">
             <span>${asked.has(question.id) ? '✓' : 'Ask'}</span>
             <strong>${escapeHtml(question.prompt || question.label)}</strong>
           </button>`).join('')}
-      </div>
-      <small class="horse-history-question-hint">Click any question to ask it. This question set stays open until you select another history group.</small>`;
+      </div>`;
 
-    questionBox.querySelectorAll('[data-history-question]').forEach(button => {
+    host.querySelector('#horseHistoryBack')?.addEventListener('click', () => {
+      horseHistoryActiveGroup = '';
+      buildHorseHistoryDesktop();
+      sceneObservationUpdate = {
+        id:`horse-history-menu-${Date.now()}`,
+        type:'HISTORY',
+        title:'Patient history',
+        text:'Choose the type of history you want to obtain.',
+        kind:'history',
+        recordedAt:new Date().toISOString()
+      };
+      lastInfoSignature = '';
+      renderInfoUpdate(true);
+    });
+
+    host.querySelectorAll('[data-history-question]').forEach(button => {
       button.addEventListener('click', () => {
         const question = questions.find(item => item.id === button.dataset.historyQuestion);
         if (!question) return;
         askInterviewQuestion(question);
+        window.setTimeout(() => renderHorseHistoryQuestionBox(group.id), 40);
       });
     });
   }
@@ -1304,12 +1531,11 @@
     horseHistoryActiveGroup = group.id;
     if (options.updateInfo !== false) {
       sceneObservationUpdate = {
-        id:`horse-history-group-${group.id}`,
+        id:`horse-history-group-${group.id}-${Date.now()}`,
         type:'HISTORY',
-        title:`${group.label} questions`,
+        title:group.label,
         text:group.instruction,
         kind:'history',
-        sticky:true,
         recordedAt:new Date().toISOString()
       };
       infoManuallyCollapsed = false;
@@ -1317,14 +1543,32 @@
       renderInfoUpdate(true);
     }
     renderHorseHistoryQuestionBox(group.id);
-    document.querySelectorAll('#historyCategoryList .horse-history-group').forEach(details => {
-      const selected = details.dataset.historyGroup === group.id;
-      details.classList.toggle('selected', selected);
-      details.open = selected;
-      const note = details.querySelector('.horse-history-group-preview small');
-      if (note) note.textContent = selected
-        ? 'Questions are open in the right-side Patient Question panel. Ask as many as you need; this section remains selected.'
-        : 'Select this section to load all of its questions into the right-side Patient Question panel.';
+  }
+
+  function renderHorseCustomHistoryWorkspace() {
+    const host = $('historyCategoryList');
+    if (!host) return;
+    host.className = 'history-category-list horse-history-drill-workspace';
+    host.innerHTML = `
+      <div class="horse-history-drill-head">
+        <button type="button" class="horse-history-back" id="horseHistoryCustomBack">‹ History</button>
+        <div><small>HISTORY</small><strong>Ask your own question</strong><span>Use a focused EMS interview question.</span></div>
+      </div>
+      <div class="horse-history-custom-workspace">
+        <textarea id="horseHistoryCustomText" rows="3" maxlength="240" placeholder="Example: Do you take any blood thinners?"></textarea>
+        <button id="horseHistoryCustomAsk" type="button">Ask patient</button>
+      </div>`;
+    host.querySelector('#horseHistoryCustomBack')?.addEventListener('click', () => {
+      horseHistoryActiveGroup = '';
+      buildHorseHistoryDesktop();
+    });
+    host.querySelector('#horseHistoryCustomAsk')?.addEventListener('click', () => {
+      const source = host.querySelector('#horseHistoryCustomText');
+      const shared = $('historyCustomInput');
+      if (!source?.value.trim()) return;
+      if (shared) shared.value = source.value.trim();
+      $('askHistoryCustom')?.click();
+      source.value = '';
     });
   }
 
@@ -1333,49 +1577,45 @@
     if (!host) return;
     const current = record() || {};
     const asked = new Set(askedInterviewQuestions(current).map(question => question.id));
-    if (!HORSE_HISTORY_GROUPS.some(group => group.id === horseHistoryActiveGroup)) {
-      horseHistoryActiveGroup = 'patient_info';
-    }
     $('historyResponderLabel').textContent = String(interview.responder || 'Patient').toUpperCase();
-    $('historyCommunicationStatus').textContent = 'Choose a history group. Every question in that group stays available on the right until you choose another group.';
+    $('historyCommunicationStatus').textContent = 'Choose a history type. The selected question set will replace this menu.';
     $('historyAskedCount').textContent = `${asked.size} asked`;
-    host.innerHTML = '';
 
-    HORSE_HISTORY_GROUPS.forEach(group => {
-      const questions = horseHistoryGroupQuestions(group);
-      const complete = questions.filter(question => asked.has(question.id)).length;
-      const details = document.createElement('details');
-      details.className = `history-question-category horse-history-group${horseHistoryActiveGroup === group.id ? ' selected' : ''}`;
-      details.dataset.historyGroup = group.id;
-      details.open = horseHistoryActiveGroup === group.id;
-      details.innerHTML = `
-        <summary>
-          <span class="history-category-icon" aria-hidden="true">${escapeHtml(group.icon)}</span>
-          <span><strong>${escapeHtml(group.label)}</strong><small>${escapeHtml(group.description)}</small></span>
-          <em>${complete}/${questions.length}</em>
-        </summary>
-        <div class="horse-history-group-preview">
-          <small>${horseHistoryActiveGroup === group.id ? 'Questions are open in the right-side Patient Question panel. Ask as many as you need; this section remains selected.' : 'Select this section to load all of its questions into the right-side Patient Question panel.'}</small>
-        </div>`;
-      const summary = details.querySelector('summary');
-      summary?.addEventListener('click', event => {
-        event.preventDefault();
-        if (horseHistoryActiveGroup === group.id) {
-          details.open = true;
-          return;
-        }
-        selectHorseHistoryGroup(group.id);
-      });
-      host.appendChild(details);
-    });
+    if (horseHistoryActiveGroup && HORSE_HISTORY_GROUPS.some(group => group.id === horseHistoryActiveGroup)) {
+      renderHorseHistoryQuestionBox(horseHistoryActiveGroup);
+      return;
+    }
 
-    document.querySelectorAll('#historyCategoryList .horse-history-group').forEach(details => {
-      const selected = details.dataset.historyGroup === horseHistoryActiveGroup;
-      details.classList.toggle('selected', selected);
-      details.open = selected;
+    host.className = 'history-category-list horse-history-drill-menu';
+    host.innerHTML = `
+      <div class="horse-drill-menu-head">
+        <small>HISTORY</small>
+        <strong>What do you want to ask about?</strong>
+        <span>Select a category. Its questions will replace this menu.</span>
+      </div>
+      <div class="horse-history-drill-grid">
+        ${HORSE_HISTORY_GROUPS.map(group => {
+          const questions = horseHistoryGroupQuestions(group);
+          const complete = questions.filter(question => asked.has(question.id)).length;
+          return `<button type="button" class="horse-history-drill-choice" data-history-group="${escapeHtml(group.id)}">
+            <span class="history-category-icon">${escapeHtml(group.icon)}</span>
+            <span><strong>${escapeHtml(group.label)}</strong><small>${escapeHtml(group.description)}</small></span>
+            <em>${complete}/${questions.length}</em>
+          </button>`;
+        }).join('')}
+        <button type="button" class="horse-history-drill-choice horse-history-custom-choice" data-history-custom="true">
+          <span class="history-category-icon">?</span>
+          <span><strong>Ask your own question</strong><small>Enter a natural patient-interview question.</small></span>
+          <em>Open</em>
+        </button>
+      </div>`;
+
+    host.querySelectorAll('[data-history-group]').forEach(button => {
+      button.addEventListener('click', () => selectHorseHistoryGroup(button.dataset.historyGroup || ''));
     });
+    host.querySelector('[data-history-custom]')?.addEventListener('click', renderHorseCustomHistoryWorkspace);
     renderKnownHistory();
-    renderHorseHistoryQuestionBox(horseHistoryActiveGroup);
+
   }
 
   function buildHistory() {
@@ -1534,8 +1774,23 @@
 
   function treatmentAlreadyRecorded(plan) { return treatmentCount(plan) > 0; }
 
+  function isMedicationTreatment(plan) {
+    return treatmentCategory(plan) === 'medications'
+      || /aspirin|nitro|epinephrine|naloxone|glucose|bronchodilator|medication|pain_control/i.test(`${plan?.id || ''} ${plan?.label || ''}`);
+  }
+
   function treatmentDocumentation(plan) {
-    return Array.isArray(plan.documentation) ? plan.documentation : [];
+    const fields = Array.isArray(plan.documentation) ? [...plan.documentation] : [];
+    if (!isMedicationTreatment(plan)) return fields;
+
+    const names = new Set(fields.map(field => field.name));
+    const safetyFields = [
+      { name:'indication', label:'Clinical indication', required:true, placeholder:'Why is this medication indicated?' },
+      { name:'protocolCheck', label:'Protocol / medical-direction authorization', type:'select', required:true, options:['Confirmed for this patient and provider level','Not confirmed'] },
+      { name:'contraindicationCheck', label:'Contraindication screen', type:'select', required:true, options:['No contraindication identified','Possible or confirmed contraindication'] }
+    ];
+    safetyFields.forEach(field => { if (!names.has(field.name)) fields.unshift(field); });
+    return fields;
   }
 
   function treatmentInputValue(form, field) {
@@ -1547,7 +1802,14 @@
     const values = {};
     for (const field of treatmentDocumentation(plan)) {
       const value = treatmentInputValue(form, field);
-      if (field.required && !value) return { ok:false, message:`Enter ${field.label.toLowerCase()} before recording this treatment.` };
+      const required = field.required || form.elements.namedItem(field.name)?.dataset?.wasRequired === '1';
+      if (required && !value) {
+        const control = form.elements.namedItem(field.name);
+        const choiceGroup = control?.parentElement?.querySelector?.('.treatment-followup-choice-group');
+        if (choiceGroup) choiceGroup.scrollIntoView({ block:'nearest' });
+        else control?.scrollIntoView?.({ block:'nearest' });
+        return { ok:false, message:`Enter ${field.label.toLowerCase()} before recording this treatment.` };
+      }
       if (value && field.acceptedPattern) {
         const pattern = new RegExp(field.acceptedPattern, 'i');
         if (!pattern.test(value)) return { ok:false, message:field.error || `${field.label} is not accepted for this scenario. Review the dose or setting and try again.` };
@@ -1570,6 +1832,30 @@
   const HORSE_CSM_BASELINE_REQUIRED_IDS = new Set([
     'splint','scoop_position_comfort','vacuum_mattress','board_transfer'
   ]);
+  const HORSE_EXCLUSIVE_MOVEMENT_IDS = new Set([
+    'scoop_position_comfort','vacuum_mattress','board_transfer','stand_pivot'
+  ]);
+  const HORSE_EXCLUSIVE_ALS_IDS = new Set([
+    'request_als_scene','arrange_als_intercept','transport_without_als_wait','continue_bls_care'
+  ]);
+
+  function horseTreatmentConflict(plan, current = record() || {}) {
+    if (id !== 'horse_crush' || !plan?.id) return null;
+    const prior = (current.treatments || []).map(item => item?.actionId).filter(Boolean);
+    const firstPrior = set => prior.find(actionId => set.has(actionId) && actionId !== plan.id);
+    if (HORSE_EXCLUSIVE_MOVEMENT_IDS.has(plan.id)) {
+      const previous = firstPrior(HORSE_EXCLUSIVE_MOVEMENT_IDS);
+      if (previous) return `A different transfer method was already committed (${previous.replace(/_/g, ' ')}). Reassess and explicitly revise the plan instead of performing two incompatible transfers.`;
+    }
+    if (HORSE_EXCLUSIVE_ALS_IDS.has(plan.id)) {
+      const previous = firstPrior(HORSE_EXCLUSIVE_ALS_IDS);
+      if (previous) return `An ALS/transport strategy was already selected (${previous.replace(/_/g, ' ')}). Choose one operational plan or document why the plan changed.`;
+    }
+    const supported = prior.some(actionId => ['position_comfort','blanket_support','splint'].includes(actionId));
+    if (plan.id === 'force_straight' && supported) return 'The leg was already supported in its tolerated flexed position. Forcing it straight contradicts that plan and worsens pain.';
+    if (plan.id === 'traction_splint' && prior.some(actionId => ['splint','blanket_support','scoop_position_comfort','vacuum_mattress'].includes(actionId))) return 'A non-traction stabilization and packaging plan is already in progress. Traction for isolated hip pain conflicts with the documented injury pattern.';
+    return null;
+  }
 
   function horseClinicalState() {
     return id === 'horse_crush' ? runtime?.horseClinicalState?.(record()) || null : null;
@@ -1585,6 +1871,18 @@
     if (classification === 'unnecessary' && /oxygen|airway|bvm|cpap/i.test(plan.id || '')) {
       return '“I’m breathing fine. It’s my hip that really hurts.” The intervention does not meaningfully change the current complaint.';
     }
+    if (classification === 'unnecessary') {
+      const medicationFeedback = {
+        aspirin:'Aspirin is not indicated because the presentation does not suggest acute coronary syndrome.',
+        nitroglycerin_assist:'Nitroglycerin is not indicated: there is no ischemic chest-pain presentation or applicable medication-assistance indication.',
+        epinephrine_auto:'Epinephrine is not indicated because there are no findings of anaphylaxis.',
+        naloxone:'Naloxone is not indicated because there is no opioid-associated respiratory depression.',
+        oral_glucose_general:'Oral glucose is not indicated because hypoglycemia has not been demonstrated and mental status is intact.',
+        bronchodilator_general:'A bronchodilator is not indicated because there is no bronchospasm, wheezing, or respiratory distress.'
+      };
+      if (medicationFeedback[plan.id]) return medicationFeedback[plan.id];
+    }
+    if (classification === 'conflicting') return fallback || 'The new action conflicts with a treatment or movement plan already performed. Reassess and document a deliberate change in plan.';
     if (classification === 'premature') return 'The patient has no meaningful change. Gather the missing assessment information and reconsider the treatment.';
     if (classification === 'unnecessary') return fallback || 'The treatment does not change the patient’s current condition.';
     return fallback || state?.patientText || 'Reassess the patient after the intervention.';
@@ -1714,6 +2012,18 @@
     } else if (!plan.outcomeClass && decision.code === 'not-indicated') {
       classification = 'unnecessary';
       response = 'The intervention does not address a current abnormal finding and produces no meaningful improvement.';
+    }
+
+    if (isMedicationTreatment(plan)
+        && (documentation.protocolCheck === 'Not confirmed'
+          || documentation.contraindicationCheck === 'Possible or confirmed contraindication')) {
+      classification = 'contraindicated';
+      response = 'Medication administration should stop until protocol authorization is confirmed and the possible contraindication is resolved.';
+    }
+    const conflict = horseTreatmentConflict(plan, current);
+    if (conflict) {
+      classification = 'conflicting';
+      response = conflict;
     }
     const documentationText = treatmentDocumentationText(plan, documentation);
     const treatment = {
@@ -1846,6 +2156,10 @@
     return article;
   }
 
+  const HORSE_NON_INDICATED_MEDICATION_IDS = new Set([
+    'aspirin','nitroglycerin_assist','epinephrine_auto','naloxone','oral_glucose_general','bronchodilator_general'
+  ]);
+
   const HORSE_TREATMENT_GROUPS = [
     {
       id:'splinting', label:'Splinting / stabilization', icon:'S',
@@ -1858,6 +2172,12 @@
       description:'Crew coordination, lift method, transfer device, and positioning.',
       instruction:'Choose a movement or packaging action. Consider the patient’s position of comfort and the findings you obtained before moving her.',
       planIds:['request_help','scoop_position_comfort','vacuum_mattress','board_transfer','stand_pivot','force_straight']
+    },
+    {
+      id:'resources', label:'ALS / operational plan', icon:'ALS',
+      description:'Choose whether ALS comes to the scene, intercepts, or BLS transports without waiting.',
+      instruction:'Commit to one operational strategy after considering stability, pain, response time, access, transport time, and whether waiting delays definitive care.',
+      planIds:['request_als_scene','arrange_als_intercept','transport_without_als_wait','continue_bls_care']
     },
     {
       id:'airway', label:'Airway', icon:'A',
@@ -1878,10 +2198,10 @@
       planIds:['heat_conservation','control_bleeding','shock_care','cpr_aed']
     },
     {
-      id:'pain', label:'Pain / comfort', icon:'P',
-      description:'Positioning, support, and protocol-appropriate pain management.',
-      instruction:'Choose how you want to address pain and comfort before or during movement.',
-      planIds:['pain_control']
+      id:'medications', label:'Pain / medications', icon:'Rx',
+      description:'Pain-management coordination first; other EMT medications remain available for decision practice.',
+      instruction:'Choose a medication only after confirming the indication, contraindications, patient allergies, local protocol, provider authorization, dose, and route.',
+      planIds:['pain_control','aspirin','nitroglycerin_assist','epinephrine_auto','naloxone','oral_glucose_general','bronchodilator_general']
     },
     {
       id:'transport', label:'Transport', icon:'T',
@@ -1907,7 +2227,13 @@
     const unique = new Map();
     (TREATMENT_PLANS[id] || []).forEach(plan => unique.set(plan.id, plan));
     EMT_TREATMENT_LIBRARY.forEach(plan => {
-      if (!unique.has(plan.id)) unique.set(plan.id, { ...plan, category:plan.category || treatmentCategory(plan) });
+      if (unique.has(plan.id)) return;
+      const normalized = { ...plan, category:plan.category || treatmentCategory(plan) };
+      if (id === 'horse_crush' && HORSE_NON_INDICATED_MEDICATION_IDS.has(plan.id)) {
+        normalized.outcomeClass = 'unnecessary';
+        normalized.response = 'This medication has no indication in the current isolated hip-injury presentation and produces no clinical improvement.';
+      }
+      unique.set(plan.id, normalized);
     });
     return [...unique.values()];
   }
@@ -1979,7 +2305,7 @@
     const fields = treatmentDocumentation(plan);
     detail.innerHTML = `
       <p class="horse-treatment-summary">${escapeHtml(plan.summary || 'Perform the selected treatment and observe the patient response.')}</p>
-      <form class="horse-treatment-action-form">
+      <form class="horse-treatment-action-form" novalidate>
         ${fields.length ? `<div class="horse-treatment-detail-grid">${fields.map(treatmentFieldMarkup).join('')}</div>` : ''}
         <div class="horse-treatment-perform-row"><button class="horse-treatment-perform" type="submit">${horseTreatmentRecordedCount(plan) ? 'Perform again' : 'Perform treatment'}</button><p class="treatment-entry-error" hidden></p></div>
       </form>`;
@@ -1989,7 +2315,11 @@
       const validation = validateTreatmentDocumentation(plan, form);
       const error = form.querySelector('.treatment-entry-error');
       if (!validation.ok) {
-        if (error) { error.textContent = validation.message; error.hidden = false; }
+        if (error) {
+          error.textContent = validation.message;
+          error.hidden = false;
+          error.scrollIntoView({ block:'nearest', behavior:'smooth' });
+        }
         return;
       }
       if (error) error.hidden = true;
@@ -2064,6 +2394,9 @@
         <button type="button" class="horse-treatment-back" id="horseTreatmentBackToGroups" aria-label="Back to treatment categories">‹ Categories</button>
         <div><small>TREATMENT</small><strong>${escapeHtml(group.label)}</strong><span>${escapeHtml(group.description || '')}</span></div>
       </div>
+      <div id="horseTreatmentWorkspaceDetail" class="horse-treatment-workspace-detail" aria-live="polite">
+        <small>Select a treatment below to review and perform it.</small>
+      </div>
       <div class="horse-treatment-workspace-actions" role="group" aria-label="${escapeHtml(group.label)} treatment options">
         ${plans.map(plan => {
           const used = horseTreatmentRecordedCount(plan) > 0;
@@ -2072,9 +2405,6 @@
             <strong>${escapeHtml(plan.label)}</strong>
           </button>`;
         }).join('')}
-      </div>
-      <div id="horseTreatmentWorkspaceDetail" class="horse-treatment-workspace-detail">
-        <small>Select a treatment above to review and perform it.</small>
       </div>`;
 
     box.querySelector('#horseTreatmentBackToGroups')?.addEventListener('click', () => {
@@ -2136,6 +2466,24 @@
     renderHorseTreatmentCategoryWorkspace(group.id);
   }
 
+  function horseCareSequenceMarkup() {
+    const current = record() || {};
+    const events = [
+      ...(current.treatments || []).map(item => ({
+        time:item.recordedAt || item.createdAt || current.updatedAt,
+        label:item.name || item.treatment || 'Treatment',
+        tone:item.classification || 'recorded'
+      })),
+      ...(current.reassessments || []).map(item => ({
+        time:item.recordedAt || item.createdAt || current.updatedAt,
+        label:item.label || item.name || 'Reassessment',
+        tone:'reassessment'
+      }))
+    ].filter(item => item.label).sort((a,b) => new Date(a.time || 0) - new Date(b.time || 0)).slice(-5);
+    if (!events.length) return '<div class="horse-care-sequence empty"><small>CARE SEQUENCE</small><span>No treatment or reassessment recorded yet.</span></div>';
+    return `<div class="horse-care-sequence"><small>CARE SEQUENCE</small>${events.map(item => `<span><time>${escapeHtml(formatClock(item.time) || '--:--')}</time><strong>${escapeHtml(item.label)}</strong></span>`).join('')}</div>`;
+  }
+
   function buildHorseTreatmentsDesktop() {
     const box = $('treatmentTools');
     if (!box) return;
@@ -2150,7 +2498,7 @@
 
     const menuHead = document.createElement('div');
     menuHead.className = 'horse-treatment-menu-head';
-    menuHead.innerHTML = `<small>TREATMENT</small><strong>Choose a category</strong><span>Select the type of care you want to provide.</span>`;
+    menuHead.innerHTML = `<small>TREATMENT</small><strong>Choose a category</strong><span>Start with support, pain management, movement, and reassessment. Open More treatments only if the patient needs another intervention.</span>${horseCareSequenceMarkup()}`;
     box.appendChild(menuHead);
 
     HORSE_TREATMENT_GROUPS
@@ -2170,6 +2518,18 @@
         button.addEventListener('click', () => selectHorseTreatmentGroup(group.id));
         box.appendChild(button);
       });
+
+    // Delegated backup: survives DOM reordering by first-time / endpoint polishers.
+    if (!box.dataset.horseTreatmentGroupDelegate) {
+      box.dataset.horseTreatmentGroupDelegate = '1';
+      box.addEventListener('click', event => {
+        const button = event.target.closest?.('[data-horse-treatment-group]');
+        if (!button || !box.contains(button) || button.hidden) return;
+        const groupId = button.dataset.horseTreatmentGroup || '';
+        if (!groupId || horseTreatmentActiveGroup === groupId) return;
+        selectHorseTreatmentGroup(groupId);
+      });
+    }
   }
 
   function buildHorseTreatmentsMobile() {
@@ -2319,7 +2679,7 @@
     if (kind === 'history') return { key:'history', label:'HISTORY', icon:'💬', spoken:false };
     if (kind === 'treatment') return { key:'treatment', label:'TREATMENT', icon:'✚', spoken:false };
     if (kind === 'transport') return { key:'transport', label:'TRANSPORT', icon:'🚑', spoken:false };
-    if (kind === 'partner') return { key:'partner', label:'PARTNER', icon:'👥', spoken:false };
+    if (kind === 'partner') return { key:'partner', label:'ON-SCENE CREW', icon:'👥', spoken:false };
     if (kind === 'alert') return { key:'alert', label:'ALERT', icon:'⚠', spoken:false };
     if (kind === 'dispatch') return { key:'dispatch', label:'DISPATCH', icon:'📟', spoken:false };
     return { key:'information', label:'INFORMATION', icon:'ℹ', spoken:false };
@@ -2506,6 +2866,7 @@
 
   function infoElapsed(value, startedAt) { return elapsedLabel(value, startedAt); }
   function abnormalEvent(event) {
+    if (event.key === 'bls_handoff' || event.source === 'bls-handoff') return false;
     return event.status === 'abnormal' || event.normality === 'not-normal' || /critical|severe|inadequate|absent|low|high|hypox|shock|unresponsive|weak|labored|wheeze|slurred|drift|diaphoretic|pale/i.test(`${event.value || ''} ${event.details || ''}`);
   }
   function significantHistory(event) {
@@ -2536,12 +2897,27 @@
   }
   function buildInfoUpdates(current) {
     const startedAt = current?.startedAt || new Date().toISOString();
+    const startMs = new Date(startedAt).getTime();
     const updates = [
-      { id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information', text: current?.dispatch || scenario.title, kind: 'dispatch', recordedAt: startedAt },
-      { id: 'visible', type: 'VISIBLE CONDITION', title: 'First patient view', text: scenario.visible, kind: 'visible', recordedAt: new Date(new Date(startedAt).getTime() + 1).toISOString() }
+      { id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information', text: current?.dispatch || scenario.title, kind: 'dispatch', recordedAt: startedAt }
     ];
+    if (id === 'horse_crush') {
+      updates.push({
+        id:'first-on-scene-handoff',
+        type:'FIRST-ON-SCENE CREW',
+        title:'Engine crew handoff',
+        text:'We found the patient on the ground outside the south barn after being squeezed between two horses and falling. The scene is safe. The patient has remained alert, reports severe left-hip pain, and has not been moved.',
+        kind:'partner',
+        sticky:true,
+        recordedAt:new Date(startMs + 1).toISOString()
+      });
+    }
+    updates.push({
+      id:'visible', type:'VISIBLE CONDITION', title:'First patient view', text:scenario.visible,
+      kind:'visible', recordedAt:new Date(startMs + 2).toISOString()
+    });
     const log = api?.listCareLog?.(current, 'all') || [];
-    log.filter(event => isInformationUpdate(event) && !event.suppressInfoUpdate && !(id === 'horse_crush' && event.source === 'horse-rapid-abc'))
+    log.filter(event => isInformationUpdate(event) && !event.suppressInfoUpdate && !(id === 'horse_crush' && (event.source === 'horse-rapid-abc' || event.source === 'bls-handoff' || event.key === 'bls_handoff')))
       .forEach(event => updates.push(updateFromCareEvent(event)));
     if (id === 'horse_crush') {
       const state = horseClinicalState();
@@ -2584,9 +2960,19 @@
   function scheduleInfoCollapse(item, isNew) {
     clearTimeout(infoAutoCollapseTimer);
     if (!item || !isNew) return;
+    if (desktopWorkspace()) {
+      infoManuallyCollapsed = false;
+      setInfoCollapsed(false);
+      return;
+    }
     if (item.sticky || infoVoiceRole(item) === 'patient') {
       infoManuallyCollapsed = false;
       setInfoCollapsed(false);
+      if (id === 'horse_crush' && desktopWorkspace()) {
+        infoAutoCollapseTimer = window.setTimeout(() => {
+          setInfoCollapsed(true, { markViewed:false });
+        }, infoVoiceRole(item) === 'patient' ? 7000 : 5500);
+      }
       return;
     }
     if (item.kind === 'alert') {
@@ -2623,7 +3009,7 @@
     const collapsed = $('infoUpdateWindow').dataset.collapsed === 'true';
     const voiceRole = infoVoiceRole(item);
     const presentation = infoPresentation(item);
-    $('infoUpdateWindow').className = `info-update-window info-${item.kind || 'assessment'} info-source-${presentation.key} voice-${voiceRole}${collapsed ? ' is-collapsed' : ''}`;
+    $('infoUpdateWindow').className = `info-update-window communication-workspace info-${item.kind || 'assessment'} info-source-${presentation.key} voice-${voiceRole}${collapsed ? ' is-collapsed' : ''}`;
     const sourceIcon = $('infoUpdateIcon');
     if (sourceIcon) {
       sourceIcon.textContent = presentation.icon;
@@ -3348,8 +3734,10 @@
     else if (['supported','pain-improved'].includes(state?.stage)) treatmentScore += 1;
 
     const harmful = treatments.filter(item => item?.classification === 'contraindicated');
+    const conflicting = treatments.filter(item => item?.classification === 'conflicting');
     const unnecessary = treatments.filter(item => item?.classification === 'unnecessary');
     treatmentScore -= harmful.length * 6;
+    treatmentScore -= conflicting.length * 3;
     treatmentScore -= unnecessary.length;
     treatmentScore -= csmBaselineMisses * 3;
     treatmentScore = Math.max(0, Math.min(25, treatmentScore));
@@ -3365,6 +3753,7 @@
     else improvements.push('Repeat distal CSM after every major movement or stabilization step; this is a critical reassessment in this scenario.');
     if (csmBaselineMisses) critical.push('A splinting/packaging step occurred before baseline distal CSM was documented. Obtain circulation, sensation, and movement before the move whenever feasible, then repeat it afterward so you can identify a treatment-related change.');
     harmful.forEach(item => critical.push(`${item.name || item.treatment || 'A treatment'} was contraindicated and increased the patient’s pain. Stop the maneuver, return to the tolerated position, and reassess.`));
+    conflicting.forEach(item => improvements.push(`${item.name || item.treatment || 'A treatment'} conflicted with an earlier care plan. Commit to one coherent strategy or document a deliberate change after reassessment.`));
     unnecessary.forEach(item => improvements.push(`${item.name || item.treatment || 'A treatment'} was not indicated by the findings and added care without meaningful benefit.`));
 
     // 6. Transport and hospital handoff — 15 points.
@@ -3422,6 +3811,7 @@
       'defensible':['Reasonable with caution','review'],
       'unnecessary':['Not indicated','unnecessary'],
       'contraindicated':['Harmful choice','harmful'],
+      'conflicting':['Conflicting plan','review'],
       'premature':['Too early','review'],
       'transport-choice-review':['Review transport choice','review']
     };
@@ -3467,8 +3857,17 @@
     if (workspace) workspace.hidden = false;
     document.body.classList.add('horse-grade-open');
     renderHorseCallGrade();
-    const grade = buildHorseCallGrade(record() || {});
-    api?.setDocumentation?.({ scenarioGrade:grade.score, scenarioGradeLabel:grade.label, gradeViewedAt:new Date().toISOString(), updatedAt:new Date().toISOString() });
+    const satisfaction = window.EMSCodeSimPatientSatisfactionGrade?.model?.();
+    const grade = satisfaction && Number.isFinite(satisfaction.score)
+      ? { score:satisfaction.score, label:satisfaction.label }
+      : buildHorseCallGrade(record() || {});
+    api?.setDocumentation?.({
+      scenarioGrade:grade.score,
+      scenarioGradeLabel:grade.label,
+      gradeCriterion: satisfaction ? 'patient_satisfaction' : 'clinical_call_review',
+      gradeViewedAt:new Date().toISOString(),
+      updatedAt:new Date().toISOString()
+    });
   }
 
   function closeHorseCallGrade() {
@@ -3572,9 +3971,16 @@
     };
     const handoffSaved = Boolean(current?.documentation?.handoffSavedAt && current?.documentation?.handoff);
     const gradeButton = $('gradeScenarioFromPatient');
-    if (gradeButton) gradeButton.hidden = id !== 'horse_crush' || !handoffSaved;
+    if (gradeButton) {
+      gradeButton.hidden = id !== 'horse_crush';
+      gradeButton.textContent = handoffSaved ? 'Final grade' : 'Grade / Help';
+    }
     const button = $('completeScenarioFromPatient');
-    button.textContent = id === 'horse_crush' && handoffSaved ? 'Grade call' : (evaluation.essentialComplete ? 'Open debrief' : 'Check completion');
+    if (id === 'horse_crush') {
+      button.textContent = handoffSaved ? 'Open final grade' : (evaluation.essentialComplete ? 'Open debrief' : 'Check completion');
+    } else {
+      button.textContent = evaluation.essentialComplete ? 'Open debrief' : 'Check completion';
+    }
     button.dataset.ready = evaluation.essentialComplete ? 'true' : 'false';
   }
 
@@ -3728,6 +4134,26 @@
     refreshFromRecord();
     document.querySelectorAll('.vp-panel').forEach(panel => { panel.hidden = panel.id !== panelId; });
     document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.toggle('active', button.dataset.panel === panelId));
+    if (desktopWorkspace()) {
+      // visual-patient owns the click (stopImmediatePropagation); this is the
+      // authoritative desktop path that must clear Assessment from the right rail.
+      if (window.EMSCodeSimDomainWorkspace?.showOnlyDomainPanel) {
+        window.EMSCodeSimDomainWorkspace.showOnlyDomainPanel(panelId);
+      } else {
+        document.body.setAttribute('data-active-domain', panelId);
+        document.body.classList.toggle('domain-assessment-active', panelId === 'assessmentPanel');
+        document.body.classList.toggle('domain-assessment-suppressed', panelId !== 'assessmentPanel');
+        const assessment = $('assessmentPanel');
+        if (assessment && panelId !== 'assessmentPanel') {
+          assessment.hidden = true;
+          assessment.style.setProperty('display', 'none', 'important');
+          assessment.setAttribute('inert', '');
+        }
+      }
+    } else {
+      document.body.removeAttribute('data-active-domain');
+      document.body.classList.remove('domain-assessment-active', 'domain-assessment-suppressed');
+    }
     $('sheetTitle').textContent = { vitalsPanel: 'Vitals', assessmentPanel: 'Assessment', historyPanel: 'Patient history', treatmentPanel: 'Treatment', findingsPanel: 'Patient care log' }[panelId];
     $('actionSheet').hidden = false;
     if (desktopWorkspace()) {
@@ -3742,7 +4168,7 @@
     if (panelId === 'historyPanel') {
       if (id === 'horse_crush' && desktopWorkspace()) {
         horseTreatmentActiveGroup = '';
-        if (!horseHistoryActiveGroup) horseHistoryActiveGroup = 'patient_info';
+        horseHistoryActiveGroup = '';
       }
       buildHistory();
     } else if (panelId === 'treatmentPanel' && id === 'horse_crush') {
@@ -3812,11 +4238,25 @@
 
     if (desktop) {
       if (id === 'horse_crush') {
-        const infoWindow = $('infoUpdateWindow');
         const questionBox = $('horseClinicalQuestionBox');
         const currentAssessment = $('horseCurrentAssessment');
-        if (infoWindow && questionBox) infoWindow.insertAdjacentElement('afterend', questionBox);
-        if (questionBox && currentAssessment) questionBox.insertAdjacentElement('afterend', currentAssessment);
+        // Keep idle follow-up questions in the right clinical workspace. The
+        // center info window is owned by the communication column and must not
+        // become the parent of Primary/ABC follow-ups.
+        if (questionBox && controlColumn) {
+          const belongsInCommunication = questionBox.classList.contains('history-active')
+            || questionBox.classList.contains('treatment-active');
+          if (!belongsInCommunication && questionBox.parentElement !== controlColumn) {
+            if (currentAssessment?.parentElement === controlColumn) {
+              currentAssessment.insertAdjacentElement('beforebegin', questionBox);
+            } else {
+              controlColumn.prepend(questionBox);
+            }
+          }
+        }
+        if (questionBox && currentAssessment && questionBox.parentElement === controlColumn) {
+          questionBox.insertAdjacentElement('afterend', currentAssessment);
+        }
       }
       controlColumn.appendChild(sheet);
       controlColumn.appendChild(nav);
@@ -3874,7 +4314,16 @@
 
   let desktopSelectedVitalKey = '';
   let desktopLastLatestId = '';
-  const DESKTOP_VITAL_LABELS = { blood_pressure:'NIBP', pulse:'HR', respirations:'RR', spo2:'SpO₂', blood_glucose:'BGL', temperature:'TEMP' };
+  const DESKTOP_VITAL_LABELS = {
+    blood_pressure:'NIBP', pulse:'HR', respirations:'RR', spo2:'SpO₂',
+    blood_glucose:'BGL', temperature:'TEMP', breath_sounds:'LUNGS',
+    pupils:'PUPILS', skin:'SKIN', mental_status:'AVPU', gcs:'GCS', pain:'PAIN', breathing:'BREATH', distal_csm:'CSM', motor_sensory:'NEURO', abdominal_assessment:'ABD/PELV', trauma_assessment:'TRAUMA'
+  };
+  const DESKTOP_MONITOR_PRIMARY_KEYS = ['blood_pressure','pulse','respirations','spo2','blood_glucose','temperature'];
+  const DESKTOP_MONITOR_QUICK_KEYS = [
+    'breath_sounds','breathing','skin','pupils','mental_status','gcs',
+    'distal_csm','motor_sensory','abdominal_assessment','trauma_assessment','pain'
+  ];
 
   function desktopMonitorEventText(event) {
     return String(event?.value || event?.finding || event?.details || event?.description || event?.response || '').trim();
@@ -3884,34 +4333,48 @@
     if (!$('desktopPatientMonitor')) return;
     const current = record() || {};
     const findings = current.findings || {};
-    const tools = (registry?.vitalTools || []).filter(tool => MEASURABLE_TOOL_KEYS.has(tool.key));
+
+    const allMonitorTools = [...(registry?.vitalTools || []), ...(registry?.assessmentTools || [])]
+      .filter((tool, index, list) => tool?.key && list.findIndex(row => row.key === tool.key) === index);
+
+    const toolForKey = key => allMonitorTools.find(tool => tool.key === key);
+    const renderMonitorTile = (tool, compact = false) => {
+      if (!tool) return null;
+      const finding = api?.getFinding?.(tool.key, current) || findings[tool.key] || null;
+      const state = assessmentState(tool.key);
+      const task = partnerTaskFor(tool.key);
+      const activeTask = ['active','pending','queued'].includes(task?.status);
+      const rawValue = finding ? (finding.value || finding.finding || finding.description || valueFor(tool.key)) : '—';
+      const value = String(rawValue || '—');
+      const tile = document.createElement('button');
+      tile.type = 'button';
+      tile.className = `desktop-monitor-vital desktop-monitor-launcher${compact ? ' compact' : ''}${state.code === 'reassessment-due' ? ' is-due' : ''}`;
+      tile.dataset.vitalKey = tool.key;
+      const helper = activeTask
+        ? (task.status === 'queued' ? 'Partner queued' : `Partner · ${secondsRemaining(task)} sec`)
+        : finding ? 'Tap to reassess' : 'Tap to open mini sim';
+      tile.innerHTML = `<small>${escapeHtml(DESKTOP_VITAL_LABELS[tool.key] || tool.label)}</small><strong title="${escapeHtml(value)}">${escapeHtml(value)}</strong><span>${escapeHtml(helper)}</span>`;
+      tile.addEventListener('click', () => openDesktopVitalAction(tool));
+      return tile;
+    };
+
     const host = $('desktopMonitorVitalGrid');
     if (host) {
       host.innerHTML = '';
-      tools.forEach(tool => {
-        const finding = api?.getFinding?.(tool.key, current) || findings[tool.key] || null;
-        const state = assessmentState(tool.key);
-        const task = partnerTaskFor(tool.key);
-        const activeTask = ['active','pending','queued'].includes(task?.status);
-        const value = finding ? (finding.value || finding.finding || valueFor(tool.key)) : '—';
-        const tile = document.createElement('button');
-        tile.type = 'button';
-        tile.className = `desktop-monitor-vital${state.code === 'reassessment-due' ? ' is-due' : ''}`;
-        tile.dataset.vitalKey = tool.key;
-        tile.innerHTML = `<small>${escapeHtml(DESKTOP_VITAL_LABELS[tool.key] || tool.label)}</small><strong>${escapeHtml(value)}</strong><span>${escapeHtml(activeTask ? (task.status === 'queued' ? 'Partner queued' : `Partner · ${secondsRemaining(task)} sec`) : finding ? 'Tap to reassess' : 'Tap to obtain')}</span>`;
-        tile.addEventListener('click', () => openDesktopVitalAction(tool));
-        host.appendChild(tile);
+      DESKTOP_MONITOR_PRIMARY_KEYS.forEach(key => {
+        const tile = renderMonitorTile(toolForKey(key));
+        if (tile) host.appendChild(tile);
       });
     }
 
-    const statusValue = key => {
-      const f = api?.getFinding?.(key, current) || findings[key];
-      return f ? (f.value || f.finding || f.description || 'Recorded') : '—';
-    };
-    if ($('desktopStatusAvpu')) $('desktopStatusAvpu').textContent = statusValue('mental_status') !== '—' ? statusValue('mental_status') : statusValue('avpu');
-    if ($('desktopStatusGcs')) $('desktopStatusGcs').textContent = statusValue('gcs');
-    if ($('desktopStatusSkin')) $('desktopStatusSkin').textContent = statusValue('skin');
-    if ($('desktopStatusPain')) $('desktopStatusPain').textContent = statusValue('pain');
+    const quickHost = $('desktopQuickAssessmentGrid');
+    if (quickHost) {
+      quickHost.innerHTML = '';
+      DESKTOP_MONITOR_QUICK_KEYS.forEach(key => {
+        const tile = renderMonitorTile(toolForKey(key), true);
+        if (tile) quickHost.appendChild(tile);
+      });
+    }
 
     const careLog = (api?.listCareLog?.(current, 'all') || current.careLog || []).filter(usefulLogEvent);
     const discoveredConcerns = careLog.filter(event => {
@@ -3950,7 +4413,7 @@
       }
     }
 
-    const dueTools = tools.filter(tool => assessmentState(tool.key).code === 'reassessment-due');
+    const dueTools = allMonitorTools.filter(tool => [...DESKTOP_MONITOR_PRIMARY_KEYS, ...DESKTOP_MONITOR_QUICK_KEYS].includes(tool.key) && assessmentState(tool.key).code === 'reassessment-due');
     if ($('desktopMonitorDue')) {
       $('desktopMonitorDue').textContent = dueTools.length ? `↻ RECHECK: ${dueTools.map(tool => DESKTOP_VITAL_LABELS[tool.key] || tool.label).join(' · ')}` : 'No reassessment due';
       $('desktopMonitorDue').classList.toggle('is-due', Boolean(dueTools.length));
@@ -3962,15 +4425,21 @@
     const current = record() || {};
     const finding = api?.getFinding?.(tool.key, current) || current.findings?.[tool.key] || null;
     if ($('desktopVitalActionTitle')) $('desktopVitalActionTitle').textContent = tool.label;
-    if ($('desktopVitalActionCopy')) $('desktopVitalActionCopy').textContent = finding ? 'Repeat this vital yourself or assign the reassessment to your partner.' : 'Choose who will obtain this vital.';
-    if ($('desktopVitalTake')) $('desktopVitalTake').textContent = finding ? 'Reassess myself' : 'Take myself';
+    const isPrimaryVital = DESKTOP_MONITOR_PRIMARY_KEYS.includes(tool.key);
+    if ($('desktopVitalActionCopy')) $('desktopVitalActionCopy').textContent = finding
+      ? `Repeat this ${isPrimaryVital ? 'vital' : 'assessment'} yourself or assign the reassessment to your partner.`
+      : `Choose who will perform this ${isPrimaryVital ? 'vital' : 'assessment'}.`;
+    if ($('desktopVitalTake')) $('desktopVitalTake').textContent = finding ? 'Reassess myself' : 'Do it myself';
     if ($('desktopVitalPartner')) $('desktopVitalPartner').textContent = finding ? 'Partner reassess' : 'Assign to partner';
     if ($('desktopVitalAction')) $('desktopVitalAction').hidden = false;
   }
 
   function closeDesktopVitalAction() { desktopSelectedVitalKey = ''; if ($('desktopVitalAction')) $('desktopVitalAction').hidden = true; }
 
-  function desktopSelectedVitalTool() { return (registry?.vitalTools || []).find(tool => tool.key === desktopSelectedVitalKey); }
+  function desktopSelectedVitalTool() {
+    return [...(registry?.vitalTools || []), ...(registry?.assessmentTools || [])]
+      .find(tool => tool.key === desktopSelectedVitalKey);
+  }
 
   function refreshFromRecord(options = {}) {
     const force = options === true || options.force === true;
@@ -4036,7 +4505,56 @@
     return matching?.label || anchor?.textContent?.trim() || 'Assessment simulator';
   }
 
+
+  let embeddedRecordSignature = '';
+  let embeddedCompletionTimer = 0;
+
+  function embeddedRecordCompletionSignature() {
+    try {
+      const current = record() || {};
+      return JSON.stringify({
+        findings:current.findings || {},
+        vitals:current.vitals || {},
+        updatedAt:current.updatedAt || current.lastUpdated || ''
+      });
+    } catch (_) { return ''; }
+  }
+
+  function armEmbeddedCompletionWatcher() {
+    clearInterval(embeddedCompletionTimer);
+    embeddedRecordSignature = embeddedRecordCompletionSignature();
+    embeddedCompletionTimer = window.setInterval(() => {
+      const workspace = $('embeddedSimWorkspace');
+      if (!workspace || workspace.hidden) {
+        clearInterval(embeddedCompletionTimer);
+        return;
+      }
+      const next = embeddedRecordCompletionSignature();
+      if (next && embeddedRecordSignature && next !== embeddedRecordSignature) {
+        clearInterval(embeddedCompletionTimer);
+        window.setTimeout(() => {
+          closeEmbeddedSimulator({refresh:true});
+          toast('Assessment saved');
+        }, 180);
+      }
+      embeddedRecordSignature = next || embeddedRecordSignature;
+    }, 350);
+  }
+
+  function handleEmbeddedSimulatorComplete(event) {
+    const data = event?.data;
+    if (!data || typeof data !== 'object') return;
+    if (!['ems-sim-complete','ems-assessment-saved','ems-vital-saved'].includes(data.type)) return;
+    const frame = $('embeddedSimFrame');
+    if (frame?.contentWindow && event.source !== frame.contentWindow) return;
+    clearInterval(embeddedCompletionTimer);
+    closeEmbeddedSimulator({refresh:true});
+    toast(data.label ? `${data.label} saved` : 'Assessment saved');
+  }
+  window.addEventListener('message', handleEmbeddedSimulatorComplete);
+
   function closeEmbeddedSimulator(options = {}) {
+    clearInterval(embeddedCompletionTimer);
     const workspace = $('embeddedSimWorkspace');
     const frame = $('embeddedSimFrame');
     if (!workspace || workspace.hidden) return;
@@ -4057,6 +4575,10 @@
     try { url = new URL(href, location.href); } catch { return false; }
     if (url.origin !== location.origin || !embeddedSimPaths.has(url.pathname)) return false;
     url.searchParams.set('embedded', '1');
+    url.searchParams.set('autosaveclose', '1');
+    url.searchParams.set('case', id);
+    url.searchParams.set('mode', 'scenario');
+    url.searchParams.set('training', trainingMode());
     url.searchParams.set('return', `/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&embeddedReturn=1`);
     const titleNode = $('embeddedSimTitle');
     if (titleNode) titleNode.textContent = title;
@@ -4081,12 +4603,119 @@
   }, true);
 
   $('closeEmbeddedSim')?.addEventListener('click', () => closeEmbeddedSimulator());
+  function fitEmbeddedSimulatorToPane() {
+    const frame = $('embeddedSimFrame');
+    if (!frame || frame.src === 'about:blank' || !desktopScenarioMode()) return;
+    try {
+      const doc = frame.contentDocument;
+      if (!doc) return;
+      const root = doc.documentElement;
+      const body = doc.body;
+      if (!root || !body) return;
+
+      root.dataset.emsEmbeddedFit = 'true';
+
+      let style = doc.getElementById('emsEmbeddedAutoFitStyle');
+      if (!style) {
+        style = doc.createElement('style');
+        style.id = 'emsEmbeddedAutoFitStyle';
+        style.textContent = `
+          html[data-ems-embedded-fit="true"]{
+            width:100%!important;height:100%!important;min-height:100%!important;
+            overflow:hidden!important;background:#07131f!important;
+          }
+          html[data-ems-embedded-fit="true"] body{
+            width:100%!important;height:100%!important;min-height:100%!important;
+            margin:0!important;max-width:none!important;transform:none!important;
+            zoom:1!important;position:relative!important;left:0!important;top:0!important;
+            overflow:auto!important;background:#07131f!important;
+          }
+          html[data-ems-embedded-fit="true"] .sv-main{
+            width:100%!important;max-width:none!important;
+            min-height:calc(100vh - 52px)!important;margin:0!important;
+            padding:9px 10px 12px!important;gap:9px!important;
+          }
+          html[data-ems-embedded-fit="true"] .sv-topbar{
+            padding-top:6px!important;padding-bottom:7px!important;
+          }
+          html[data-ems-embedded-fit="true"] .sv-card{
+            width:100%!important;max-width:none!important;padding:11px!important;
+          }
+          html[data-ems-embedded-fit="true"] .sv-stage{
+            width:100%!important;min-height:clamp(260px,46vh,430px)!important;padding:10px!important;
+          }
+          html[data-ems-embedded-fit="true"] .va-shell{
+            width:100%!important;max-width:none!important;min-height:100%!important;
+            margin:0!important;padding:8px!important;
+          }
+          html[data-ems-embedded-fit="true"] .va-stage{
+            min-height:calc(100vh - 90px)!important;
+          }
+          html[data-ems-embedded-fit="true"] main,
+          html[data-ems-embedded-fit="true"] .app,
+          html[data-ems-embedded-fit="true"] .wrap,
+          html[data-ems-embedded-fit="true"] .container,
+          html[data-ems-embedded-fit="true"] .page,
+          html[data-ems-embedded-fit="true"] .sim-shell,
+          html[data-ems-embedded-fit="true"] .learning-shell{
+            max-width:none!important;
+          }
+        `;
+        doc.head?.appendChild(style);
+      }
+
+      body.style.transform = 'none';
+      body.style.zoom = '1';
+      body.style.width = '100%';
+      body.style.height = '100%';
+      body.style.left = '0';
+      body.style.top = '0';
+      body.style.position = 'relative';
+      body.dataset.emsFitScale = '1.000';
+      body.dataset.emsFitMode = 'full-photo-area';
+    } catch (_) {}
+  }
+
+  function installEmbeddedSaveBridge() {
+    const frame = $('embeddedSimFrame');
+    try {
+      const win = frame?.contentWindow;
+      const doc = frame?.contentDocument;
+      if (!win || !doc || win.__emsSaveBridgeInstalled) return;
+      win.__emsSaveBridgeInstalled = true;
+
+      // Generic save/record/submit controls: after the sim's own handler runs,
+      // allow record watcher to detect the change. If the sim explicitly marks
+      // completion, close immediately.
+      doc.addEventListener('click', event => {
+        const control = event.target?.closest?.('button,input[type="submit"],[role="button"]');
+        if (!control) return;
+        const label = String(control.textContent || control.value || '').trim().toLowerCase();
+        if (!/(save|record|submit|complete|document|done|use result|return to patient)/.test(label)) return;
+        window.setTimeout(() => {
+          const next = embeddedRecordCompletionSignature();
+          if (next && embeddedRecordSignature && next !== embeddedRecordSignature) {
+            clearInterval(embeddedCompletionTimer);
+            closeEmbeddedSimulator({refresh:true});
+            toast('Assessment saved');
+          }
+        }, 220);
+      }, true);
+    } catch (_) {}
+  }
+
+  function scheduleEmbeddedFit() {
+    window.clearTimeout(window.__emsEmbeddedFitTimer);
+    window.__emsEmbeddedFitTimer = window.setTimeout(fitEmbeddedSimulatorToPane, 60);
+  }
+
   $('embeddedSimFrame')?.addEventListener('load', () => {
     const frame = $('embeddedSimFrame');
     if (!frame || frame.src === 'about:blank') return;
     try {
       const current = frame.contentWindow?.location;
       if (current?.pathname === '/vitals/visual-patient.html') closeEmbeddedSimulator();
+      else scheduleEmbeddedFit();
     } catch (_) {
       // All embedded tools are same-origin; ignore transient navigation access errors.
     }
@@ -4094,7 +4723,29 @@
 
   window.addEventListener('resize', () => {
     if (!desktopScenarioMode()) closeEmbeddedSimulator({ refresh:false });
+    else if (!$('embeddedSimWorkspace')?.hidden) scheduleEmbeddedFit();
   });
+
+  if (params.get('reset') === '1') {
+    try {
+      api?.clear?.();
+      const partnerKey = session?.partnerTaskKey?.(id);
+      [
+        partnerKey,
+        partnerKey && `${partnerKey}_backup`,
+        partnerKey && `${partnerKey}_shadow`,
+        `emscodesim_scenario_${id}`,
+        `emscodesim_scenario_${id}_backup`,
+        `emscodesim_scenario_${id}_shadow`
+      ].filter(Boolean).forEach(key => localStorage.removeItem(key));
+      [...Object.keys(sessionStorage)].filter(key => key.startsWith('emscodesim:communications:')).forEach(key => sessionStorage.removeItem(key));
+      params.delete('reset');
+      const cleanQuery = params.toString();
+      history.replaceState(null, '', `${location.pathname}${cleanQuery ? `?${cleanQuery}` : ''}${location.hash}`);
+    } catch (error) {
+      console.error('Fresh scenario reset failed', error);
+    }
+  }
 
   const initialRecord = ensureRecord();
   const requestedTrainingMode = params.get('training');
@@ -4145,6 +4796,12 @@
   $('transportScenarioQuick')?.addEventListener('click', openHorseTransportQuick);
   $('handoffScenarioQuick')?.addEventListener('click', () => openHorseHospitalHandoff(false));
   $('gradeScenarioQuick')?.addEventListener('click', openHorseCallGrade);
+  window.EMSCodeSimHorseEncounterActions = Object.freeze({
+    openTransport: openHorseTransportQuick,
+    openHandoff: (sample = false) => openHorseHospitalHandoff(Boolean(sample)),
+    openGrade: openHorseCallGrade,
+    closeHandoff: closeHorseHospitalHandoff
+  });
   $('hospitalHandoffDraft')?.addEventListener('input', event => { event.currentTarget.dataset.userEdited = 'true'; });
   if ($('recordTreatmentLink')) $('recordTreatmentLink').href = toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general');
   if ($('fullPatientRecordLink')) $('fullPatientRecordLink').href = `/vitals/patient-record.html?mode=scenario&resume=1&case=${encodeURIComponent(id)}&return=${encodeURIComponent(`/vitals/visual-patient.html?case=${id}`)}`;
@@ -4198,7 +4855,14 @@
     infoManuallyCollapsed = false;
     setInfoCollapsed(false);
   });
-  document.querySelectorAll('.bottom-nav button').forEach(button => button.addEventListener('click', () => { hideClinicalNextActions(); openSheet(button.dataset.panel); }));
+  document.addEventListener('click', event => {
+    const button = event.target.closest?.('.bottom-nav button[data-panel]');
+    if (!button || button.hidden || button.classList.contains('desktop-domain-hidden')) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    hideClinicalNextActions();
+    openSheet(button.dataset.panel);
+  }, true);
   $('clinicalNextTreatment')?.addEventListener('click', () => {
     treatmentCategoryFocus = nextTreatmentCategoryForFinding(nextActionFinding?.key || '');
     hideClinicalNextActions();
@@ -4217,7 +4881,13 @@
   });
   $('desktopVitalPartner')?.addEventListener('click', () => {
     const tool = desktopSelectedVitalTool(); if (!tool) return;
-    try { session?.assignPartnerTask?.({ key:tool.key, label:tool.label, value:valueFor(tool.key), delaySeconds:tool.delay || 12 }, id); closeDesktopVitalAction(); renderSignatures.vitals=''; refreshFromRecord(); toast(`${tool.label} assigned to partner`); }
+    try {
+      const current = record() || {};
+      const existing = api?.getFinding?.(tool.key, current) || current.findings?.[tool.key];
+      const partnerValue = valueFor(tool.key) || existing?.value || existing?.finding || existing?.description || 'Recorded';
+      session?.assignPartnerTask?.({ key:tool.key, label:tool.label, value:partnerValue, delaySeconds:tool.delay || 12 }, id);
+      closeDesktopVitalAction(); renderSignatures.vitals=''; refreshFromRecord(); toast(`${tool.label} assigned to partner`);
+    }
     catch(error){ console.error(error); toast('Partner task could not be assigned.'); }
   });
   $('desktopVitalCancel')?.addEventListener('click', closeDesktopVitalAction);
@@ -4261,6 +4931,19 @@
   window.addEventListener('emscodesim:scenario-finding-saved', refreshFromRecord);
   window.addEventListener('emscodesim:partner-task-updated', () => { refreshFromRecord(); updatePartnerTasks(); });
   window.addEventListener('emscodesim:partner-task-completed', () => { refreshFromRecord(); renderInfoUpdate(true); updatePartnerTasks(); });
+  function resetScenarioVisualOverlaysOnStartup() {
+    const workspace = $('embeddedSimWorkspace');
+    const frame = $('embeddedSimFrame');
+    if (workspace) workspace.hidden = true;
+    if (frame) frame.src = 'about:blank';
+    document.body.classList.remove('sim-workspace-open');
+    ['hospitalHandoffWorkspace','horseGradeWorkspace','desktopVitalAction','assessmentFocus','scenarioControlDialog','clinicalNextActions'].forEach(key => {
+      const node = $(key); if (node) node.hidden = true;
+    });
+    const image = $('patientImage');
+    if (image) { image.hidden = false; image.style.removeProperty('display'); image.style.removeProperty('visibility'); image.style.removeProperty('opacity'); }
+  }
+  resetScenarioVisualOverlaysOnStartup();
   desktopWorkspaceQuery.addEventListener('change', configureDesktopWorkspace);
   configureDesktopWorkspace();
   window.addEventListener('pageshow', () => {
