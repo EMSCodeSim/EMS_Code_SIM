@@ -3,6 +3,12 @@
 
   const CASE_ID = 'horse_crush';
   const ASSET = '/vitals/assets/horse-crush/';
+  const DISPATCH_TEXT = 'Reported fall at a horse facility; a BLS engine crew is already on scene.';
+  const INTRO_VIDEO = `${ASSET}incident-calm-walk.mp4`;
+  const INTRO_POSTER = `${ASSET}incident-calm-walk.jpg`;
+  const BLS_HANDOFF_TEXT = '“She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented ×4 and complains of left-hip pain. We have not moved her.”';
+  let introTimer = 0;
+  let introFinished = false;
   const EXAMS = [
     {
       key: 'head_exam',
@@ -114,6 +120,38 @@
     }
   }
 
+  function introStorageKey() {
+    return `emscodesim:horse-intro:${record()?.startedAt || record()?.id || 'pending'}`;
+  }
+
+  function setIntroPhase(phase) {
+    document.body.dataset.horseIntro = phase;
+    document.body.classList.toggle('horse-intro-playing', phase === 'video');
+    window.dispatchEvent(new CustomEvent('emscodesim:patient-record-updated'));
+  }
+
+  function hasCompletedIntro() {
+    if (introFinished || has('arrival_parking')) return true;
+    try { return sessionStorage.getItem(introStorageKey()) === '1'; } catch { return false; }
+  }
+
+  function markIntroComplete() {
+    introFinished = true;
+    try { sessionStorage.setItem(introStorageKey(), '1'); } catch { /* ignore quota */ }
+  }
+
+  function showDispatch() {
+    const type = document.getElementById('infoUpdateType');
+    const title = document.getElementById('infoUpdateTitle');
+    const text = document.getElementById('infoUpdateText');
+    const time = document.getElementById('infoUpdateTime');
+    if (type) type.textContent = 'DISPATCH';
+    if (title) title.textContent = 'Dispatch information';
+    if (text) text.textContent = DISPATCH_TEXT;
+    if (time) time.textContent = '00:00';
+    setIntroPhase('dispatch');
+  }
+
   function showHandoff() {
     const type = document.getElementById('infoUpdateType');
     const title = document.getElementById('infoUpdateTitle');
@@ -121,8 +159,70 @@
     const time = document.getElementById('infoUpdateTime');
     if (type) type.textContent = 'BLS ENGINE HANDOFF';
     if (title) title.textContent = 'Patient has not been moved';
-    if (text) text.textContent = '“She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented ×4 and complains of left-hip pain. We have not moved her.”';
+    if (text) text.textContent = BLS_HANDOFF_TEXT;
     if (time) time.textContent = 'ARRIVAL';
+  }
+
+  function hideIntroOverlay() {
+    const overlay = document.getElementById('horseIntroOverlay');
+    const video = overlay?.querySelector('video');
+    if (video) video.pause();
+    overlay?.remove();
+  }
+
+  function finishIntroVideo() {
+    const phase = document.body.dataset.horseIntro;
+    if (phase === 'dispatch' || phase === 'arrived') return;
+    hideIntroOverlay();
+    showDispatch();
+    window.clearTimeout(introTimer);
+    introTimer = window.setTimeout(() => {
+      markIntroComplete();
+      renderArrivalCard();
+    }, 1000);
+  }
+
+  function ensureIntroOverlay() {
+    const stage = document.querySelector('.patient-stage');
+    if (!stage) return null;
+    let overlay = document.getElementById('horseIntroOverlay');
+    if (overlay) return overlay;
+    overlay = document.createElement('div');
+    overlay.id = 'horseIntroOverlay';
+    overlay.innerHTML = `
+      <video id="horseIntroVideo" muted playsinline controls poster="${INTRO_POSTER}">
+        <source src="${INTRO_VIDEO}" type="video/mp4">
+      </video>
+      <button type="button" id="horseIntroSkip">Skip</button>`;
+    stage.appendChild(overlay);
+    overlay.querySelector('#horseIntroSkip')?.addEventListener('click', finishIntroVideo);
+    overlay.querySelector('video')?.addEventListener('ended', finishIntroVideo);
+    return overlay;
+  }
+
+  function playIncidentIntro() {
+    if (!isActive()) return;
+    if (hasCompletedIntro()) {
+      setIntroPhase('arrived');
+      hideIntroOverlay();
+      renderArrivalCard();
+      return;
+    }
+    const phase = document.body.dataset.horseIntro;
+    if (phase === 'dispatch') return;
+    if (phase === 'video' && document.getElementById('horseIntroOverlay')) return;
+    document.body.classList.add('horse-intro-playing');
+    setIntroPhase('video');
+    const overlay = ensureIntroOverlay();
+    if (!overlay) {
+      finishIntroVideo();
+      return;
+    }
+    overlay.hidden = false;
+    overlay.removeAttribute('hidden');
+    const video = overlay.querySelector('video');
+    const play = video?.play?.();
+    if (play && typeof play.catch === 'function') play.catch(() => {});
   }
 
   function revealPatientImage() {
@@ -138,7 +238,9 @@
     if (!isActive()) return;
 
     document.getElementById('horseArrivalDecision')?.remove();
-    document.body.classList.remove('horse-arrival-pending');
+    document.body.classList.remove('horse-arrival-pending', 'horse-intro-playing');
+    setIntroPhase('arrived');
+    hideIntroOverlay();
     revealPatientImage();
 
     if (!has('arrival_parking')) {
@@ -162,6 +264,7 @@
         suppressInfoUpdate: true
       });
     }
+    showHandoff();
   }
 
   function maybeSaveCompleteTraumaExam() {
@@ -423,19 +526,27 @@
 
   function init() {
     if (!isActive()) return;
-    renderArrivalCard();
+    playIncidentIntro();
     window.addEventListener('emscodesim:scenario-finding-saved', event => {
-      if (event.detail?.caseId === CASE_ID && ['arrival_parking','bls_handoff'].includes(event.detail?.category)) window.setTimeout(renderArrivalCard, 20);
+      if (event.detail?.caseId !== CASE_ID) return;
+      if (['arrival_parking','bls_handoff'].includes(event.detail?.category) && hasCompletedIntro()) {
+        window.setTimeout(renderArrivalCard, 20);
+      }
+      if (event.detail?.key === 'transport_decision' || event.detail?.category === 'transport') {
+        setMainPatientImage(`${ASSET}transport-ambulance.webp`, 'Patient on a level stretcher with the left knee padded at about 45 degrees');
+      }
     });
-    window.addEventListener('pageshow', () => window.setTimeout(renderArrivalCard, 20));
+    window.addEventListener('pageshow', () => window.setTimeout(playIncidentIntro, 20));
   }
 
   window.EMSCodeSimHorseCrush = Object.freeze({
     EXAMS,
     init,
+    playIncidentIntro,
     renderArrivalCard,
     renderAssessmentSection,
     renderMovementSection,
-    performExam
+    performExam,
+    movementImage
   });
 })();

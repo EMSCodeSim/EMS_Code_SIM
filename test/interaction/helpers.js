@@ -21,12 +21,25 @@ function watchPageErrors(page) {
   };
 }
 
+async function completeHorseIntroIfPresent(page) {
+  const skip = page.locator('#horseIntroSkip');
+  try {
+    await skip.waitFor({ state: 'visible', timeout: 2500 });
+  } catch {
+    return;
+  }
+  await skip.click();
+  await expect(page.locator('#horseIntroOverlay')).toHaveCount(0, { timeout: 8000 });
+  await expect(page.locator('#infoUpdateType')).toHaveText(/BLS ENGINE HANDOFF/, { timeout: 8000 });
+}
+
 async function openScenario(page, caseId = 'asthma', mode = 'learning') {
   const selectedMode = mode === 'assessment' ? 'assessment' : 'learning';
   await page.goto(`/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}&training=${selectedMode}&reset=1`);
   await expect(page).toHaveURL(new RegExp(`/vitals/visual-patient\\.html\\?case=${caseId}`));
+  if (caseId === 'horse_crush') await completeHorseIntroIfPresent(page);
   await expect(page.locator('#patientImage')).toBeVisible();
   await expect.poll(() => page.locator('#patientImage').evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
 }
 
-module.exports = { clearSiteStorage, watchPageErrors, openScenario };
+module.exports = { clearSiteStorage, watchPageErrors, openScenario, completeHorseIntroIfPresent };

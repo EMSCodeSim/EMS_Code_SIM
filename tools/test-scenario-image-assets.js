@@ -63,10 +63,11 @@ const horseAssets = [
   'exam-pelvis.webp',
   'exam-leg.webp',
   'movement-blankets.webp',
-  'movement-scoop.webp'
+  'movement-scoop.webp',
+  'incident-calm-walk.jpg'
 ];
 for (const filename of horseAssets) {
-  if (!horseScenario.includes(filename)) {
+  if (filename.endsWith('.webp') && !horseScenario.includes(filename)) {
     throw new Error(`Horse scenario no longer references required photo: ${filename}`);
   }
   const filePath = path.join(root, 'vitals/assets/horse-crush', filename);
@@ -76,6 +77,13 @@ for (const filename of horseAssets) {
   if (fs.statSync(filePath).size === 0) {
     throw new Error(`Horse scenario photo is empty: /vitals/assets/horse-crush/${filename}`);
   }
+}
+const introVideo = path.join(root, 'vitals/assets/horse-crush/incident-calm-walk.mp4');
+if (!fs.existsSync(introVideo) || fs.statSync(introVideo).size === 0) {
+  throw new Error('Horse scenario intro video is missing: /vitals/assets/horse-crush/incident-calm-walk.mp4');
+}
+if (!horseScenario.includes('playIncidentIntro') || !horseScenario.includes('incident-calm-walk.mp4')) {
+  throw new Error('Horse scenario must play the incident intro video before revealing the patient');
 }
 
 console.log(`Scenario image asset check passed for ${urls.size} configured images across ${sources.length} scenario sources plus ${horseAssets.length} horse-crush photos.`);

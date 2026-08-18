@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const OVERLAY_VERSION = '2026.08.18.4';
+  const OVERLAY_VERSION = '2026.08.18.5';
   const registry = window.EMSCodeSimToolRegistry;
   const toolPaths = new Set([
     ...(registry?.vitalTools || []).map(tool => tool.url),

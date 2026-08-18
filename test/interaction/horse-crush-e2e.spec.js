@@ -74,7 +74,7 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
     expect(layout.overlapRatio, `Assessment simulator must open over the patient photo: ${JSON.stringify(layout)}`).toBeGreaterThan(0.75);
   }
 
-  // The retired map and parking gate stay removed; begin directly with the patient.
+  // After the incident video and dispatch, the patient photo is revealed.
   await expect(page.locator('[data-horse-parking]')).toHaveCount(0);
   await expect(page.locator('#horseArrivalDecision')).toHaveCount(0);
   await expectHorsePhoto('/vitals/assets/horse-crush/patient-initial.webp');
