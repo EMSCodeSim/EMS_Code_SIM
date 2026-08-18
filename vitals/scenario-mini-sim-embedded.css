@@ -1,6 +1,6 @@
 html[data-ems-mini-sim="embedded"],html[data-ems-mini-sim="embedded"] body{width:100%!important;height:100%!important;min-height:100%!important;margin:0!important;overflow:auto!important;background:#eaf2f6!important}
 body.ems-embedded-mini-sim{overscroll-behavior:contain}
-body.ems-embedded-mini-sim .sv-topbar,body.ems-embedded-mini-sim .topbar,body.ems-embedded-mini-sim .va-head,body.ems-embedded-mini-sim .sv-context-nav,body.ems-embedded-mini-sim #scenarioReturnPaths,body.ems-embedded-mini-sim .sv-patient,body.ems-embedded-mini-sim #patientStrip{display:none!important}
+body.ems-embedded-mini-sim .sv-topbar,body.ems-embedded-mini-sim .topbar,body.ems-embedded-mini-sim .va-head,body.ems-embedded-mini-sim .sv-context-nav,body.ems-embedded-mini-sim #scenarioReturnPaths,body.ems-embedded-mini-sim .sv-patient,body.ems-embedded-mini-sim #patientStrip,body.ems-embedded-mini-sim #emsScenarioStatus{display:none!important}
 body.ems-embedded-mini-sim .ems-mini-flow{position:sticky;top:0;z-index:60;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:6px 8px;background:rgba(7,19,31,.97);border-bottom:1px solid #31566d;color:#dcecf5;box-shadow:0 5px 16px rgba(0,0,0,.18)}
 body.ems-embedded-mini-sim .ems-mini-flow span{display:flex;align-items:center;justify-content:center;gap:5px;min-height:27px;border:1px solid #31566d;border-radius:8px;background:#10283a;font-size:.64rem;font-weight:850}
 body.ems-embedded-mini-sim .ems-mini-flow span::before{content:attr(data-step);display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#274b62;color:#fff;font-size:.58rem}
@@ -77,7 +77,7 @@ body.ems-embedded-mini-sim[data-vital-topic="pupils"] .wrap{
   padding:6px!important;
   gap:6px!important;
   display:grid!important;
-  grid-template-columns:minmax(84px,.38fr) minmax(0,1.62fr)!important;
+  grid-template-columns:1fr!important;
   grid-template-rows:minmax(0,1fr)!important;
   overflow:hidden!important;
   align-items:stretch!important;
@@ -95,24 +95,9 @@ body.ems-embedded-mini-sim[data-vital-topic="pupils"] .card h2{
   line-height:1.2!important;
 }
 body.ems-embedded-mini-sim[data-vital-topic="pupils"] .card .body{padding:6px!important}
-body.ems-embedded-mini-sim[data-vital-topic="pupils"] .wrap>.card:first-child{
-  grid-column:1!important;
-  grid-row:1!important;
-}
-body.ems-embedded-mini-sim[data-vital-topic="pupils"] .wrap>.card:first-child .line{
-  display:none!important;
-}
-body.ems-embedded-mini-sim[data-vital-topic="pupils"] .wrap>.card:first-child .chart{
-  gap:4px!important;
-  align-items:flex-end!important;
-  justify-content:center!important;
-}
-body.ems-embedded-mini-sim[data-vital-topic="pupils"] .wrap>.card:first-child .tick{
-  gap:2px!important;
-  font-size:.58rem!important;
-}
+body.ems-embedded-mini-sim[data-vital-topic="pupils"] .wrap>.card:first-child{display:none!important}
 body.ems-embedded-mini-sim[data-vital-topic="pupils"] .wrap>.card:nth-child(2){
-  grid-column:2!important;
+  grid-column:1!important;
   grid-row:1!important;
   display:flex!important;
   flex-direction:column!important;
@@ -149,7 +134,7 @@ body.ems-embedded-mini-sim[data-vital-topic="pupils"] .svgwrap{
   aspect-ratio:240/170!important;
   width:100%!important;
   height:auto!important;
-  max-height:min(24vh,138px)!important;
+  max-height:min(30vh,168px)!important;
   min-height:92px!important;
   align-self:start!important;
 }
@@ -281,7 +266,7 @@ body.ems-embedded-mini-sim:has(#adultSVG) .quiz{grid-column:2!important;grid-row
  body.ems-embedded-mini-sim .sv-main,body.ems-embedded-mini-sim .va-shell,body.ems-embedded-mini-sim[data-vital-topic="gcs"] main,body.ems-embedded-mini-sim:has(#adultSVG) .wrap{grid-template-columns:1fr!important;grid-template-rows:auto auto!important;overflow:auto!important}
  body.ems-embedded-mini-sim #simCard,body.ems-embedded-mini-sim #answerCard,body.ems-embedded-mini-sim .va-stage,body.ems-embedded-mini-sim .va-result,body.ems-embedded-mini-sim[data-vital-topic="gcs"] main>.card:nth-child(2),body.ems-embedded-mini-sim[data-vital-topic="gcs"] main>.card:nth-child(3),body.ems-embedded-mini-sim:has(#adultSVG) .results,body.ems-embedded-mini-sim:has(#adultSVG) .board,body.ems-embedded-mini-sim:has(#adultSVG) .controls,body.ems-embedded-mini-sim:has(#adultSVG) .quiz{grid-column:1!important;grid-row:auto!important}
  body.ems-embedded-mini-sim[data-vital-topic="pupils"] .wrap{height:auto!important;grid-template-columns:1fr!important;overflow:auto!important}
- body.ems-embedded-mini-sim[data-vital-topic="pupils"] .wrap>.card:first-child,body.ems-embedded-mini-sim[data-vital-topic="pupils"] .wrap>.card:nth-child(2){grid-column:1!important;grid-row:auto!important}
+ body.ems-embedded-mini-sim[data-vital-topic="pupils"] .wrap>.card:nth-child(2){grid-column:1!important;grid-row:auto!important}
  body.ems-embedded-mini-sim[data-vital-topic="skin"] .card.stage{grid-template-columns:1fr!important;grid-template-rows:auto auto!important}
  body.ems-embedded-mini-sim[data-vital-topic="skin"]{--skin-size:min(100%,min(42vw,210px))!important}
  body.ems-embedded-mini-sim .sv-stage{min-height:180px!important}
