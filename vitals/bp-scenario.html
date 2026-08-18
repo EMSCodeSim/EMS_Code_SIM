@@ -699,7 +699,8 @@
       function evaluateMeasurementProgress() {
         const inflatedHighEnough = peakPressure >= systolic + REQUIRED_OVERINFLATION;
         const releasedLowEnough = currentPressure <= Math.max(0, diastolic - REQUIRED_BELOW_DIASTOLIC);
-        if (inflatedHighEnough && heardAnyBeat && releasedLowEnough) {
+        const crossedKorotkoffRange = peakPressure >= systolic && currentPressure <= diastolic;
+        if (inflatedHighEnough && releasedLowEnough && (heardAnyBeat || crossedKorotkoffRange)) {
           setMeasurementComplete();
         }
       }
@@ -756,6 +757,8 @@
         evaluateMeasurementProgress();
 
         if (currentPressure <= 0 && !measurementComplete) {
+          evaluateMeasurementProgress();
+          if (measurementComplete) return;
           releasing = false;
           stopHeartbeat();
           elements.releaseBtn.textContent = 'Release';
