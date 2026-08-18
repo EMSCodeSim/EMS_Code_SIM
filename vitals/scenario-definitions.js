@@ -32,8 +32,8 @@
     },
     horse_crush: {
       id: 'horse_crush', title: 'Horse-Crush Hip Injury', patient: '64-year-old adult',
-      dispatch: 'Reported fall at a horse facility; a BLS engine crew is already on scene.',
-      scene: 'Outside the south barn; scene reported safe; patient remains on the ground',
+      dispatch: 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.',
+      scene: '5541 E Snow Bird Road; outside the south barn; scene reported safe; patient remains on the ground',
       goal: 'Perform a deliberate trauma assessment, protect the injured leg, plan movement, treat pain, and reassess.'
     }
   });
@@ -151,8 +151,8 @@
     },
     horse_crush: {
       patient: '64-year-old adult',
-      dispatch: 'Reported fall at a horse facility; a BLS engine crew is already on scene.',
-      scene: 'Outside the south barn; scene reported safe; patient remains on the ground',
+      dispatch: 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.',
+      scene: '5541 E Snow Bird Road; outside the south barn; scene reported safe; patient remains on the ground',
       vitals: {
         blood_pressure: '130/90', systolic: 130, diastolic: 90, pulse: 75, respirations: 16, spo2: 98,
         blood_glucose: 104, temperature: '98.6°F', avpu: 'A', mental_status: 'A&O x4',

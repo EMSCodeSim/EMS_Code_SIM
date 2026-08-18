@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.16.1';
+  const VERSION = '2026.08.18.7';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -218,6 +218,7 @@
 
   function restoreExternalInfo() {
     if (restoreGuard) return;
+    if (document.body.dataset.horseIntro === 'video') return;
     const typeNode = $('infoUpdateType');
     const titleNode = $('infoUpdateTitle');
     const textNode = $('infoUpdateText');
@@ -347,6 +348,7 @@
 
   function routeInfoWindow() {
     if (restoreGuard) return;
+    if (document.body.dataset.horseIntro === 'video') return;
     const snapshot = infoSnapshot();
     if (!snapshot.text) return;
     if (partnerInfo(snapshot)) {
@@ -459,16 +461,27 @@
     document.head.appendChild(style);
   }
 
+  function horseDispatchText() {
+    return clean(record()?.dispatch)
+      || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.';
+  }
+
   function seedOpeningCommunications() {
-    if (timelineMessages().length) return;
-    const current = record() || {};
-    pushTimeline('dispatch', current.dispatch || 'Reported fall at a horse facility; a BLS engine crew is already on scene.');
-    pushTimeline('crew', 'We found the patient on the ground outside the south barn after being squeezed between two horses and falling. The scene is safe. The patient has remained alert, reports severe left-hip pain, and has not been moved.');
+    const phase = document.body.dataset.horseIntro || 'video';
+    if (phase === 'video') return;
+    const messages = timelineMessages();
+    if (!messages.some(message => message.source === 'dispatch')) {
+      pushTimeline('dispatch', horseDispatchText());
+    }
+    if (phase === 'arrived' && !messages.some(message => message.source === 'crew')) {
+      pushTimeline('crew', 'We found the patient on the ground outside the south barn after being squeezed between two horses and falling. The scene is safe. The patient has remained alert, reports severe left-hip pain, and has not been moved.');
+    }
   }
 
   function start() {
     installStyles();
     seedOpeningCommunications();
+    window.addEventListener('emscodesim:patient-record-updated', seedOpeningCommunications);
     installVitalSpeechRule();
     scheduleReconcile();
     // Watch structural DOM changes, but ignore timeline feed and conversation
