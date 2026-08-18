@@ -29,6 +29,19 @@ test('Neuro Pupils / PERL button opens the site eye simulator over the patient',
   await expect(sim.locator('body')).toHaveClass(/ems-embedded-mini-sim/);
   await expect(sim.locator('#svgR')).toBeVisible();
   await expect(sim.locator('#svgL')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => {
+    const frame = document.getElementById('embeddedSimFrame');
+    const doc = frame?.contentDocument;
+    const wraps = doc?.querySelectorAll('.eyeBox .svgwrap');
+    if (!wraps || wraps.length < 2) return { ok:false, reason:'missing' };
+    const tops = [...wraps].map(node => node.getBoundingClientRect().top);
+    const heights = [...wraps].map(node => node.getBoundingClientRect().height);
+    return {
+      ok: Math.abs(tops[0] - tops[1]) <= 2 && Math.abs(heights[0] - heights[1]) <= 2,
+      deltaTop: tops[1] - tops[0],
+      deltaHeight: heights[1] - heights[0]
+    };
+  })).toMatchObject({ ok: true });
   await expect(sim.locator('#btnLightR')).toBeVisible();
   await expect(sim.locator('#btnLightL')).toBeVisible();
   await expect(sim.locator('#perl')).toBeVisible();
