@@ -4615,15 +4615,24 @@
   let embeddedCompletionTimer = 0;
   let embeddedCloseTimer = 0;
   let embeddedOpenGeneration = 0;
+  let embeddedOpenedKey = '';
 
-  function embeddedRecordCompletionSignature() {
+  function embeddedSimKeyFromFrame() {
     try {
-      const current = record() || {};
-      return JSON.stringify({
-        findings:current.findings || {},
-        vitals:current.vitals || {},
-        updatedAt:current.updatedAt || current.lastUpdated || ''
-      });
+      const path = $('embeddedSimFrame')?.contentWindow?.location?.pathname || '';
+      const matching = [...(registry?.vitalTools || []), ...(registry?.assessmentTools || [])]
+        .find(item => item.url === path);
+      return matching?.key || embeddedOpenedKey || '';
+    } catch (_) {
+      return embeddedOpenedKey || '';
+    }
+  }
+
+  function embeddedWatchedFindingSignature(key = embeddedSimKeyFromFrame()) {
+    if (!key) return '';
+    try {
+      const finding = (record() || {}).findings?.[key];
+      return JSON.stringify(finding || null);
     } catch (_) { return ''; }
   }
 
@@ -4648,8 +4657,12 @@
   function armEmbeddedCompletionWatcher() {
     cancelEmbeddedAutoClose();
     const generation = embeddedOpenGeneration;
+    const watchedKey = embeddedSimKeyFromFrame();
     const armedAt = Date.now();
-    embeddedRecordSignature = embeddedRecordCompletionSignature();
+    // Only watch the finding this mini-sim is supposed to write. Partner tasks,
+    // the patient clock, and other vitals must not close a long cuff check.
+    if (!watchedKey) return;
+    embeddedRecordSignature = embeddedWatchedFindingSignature(watchedKey);
     embeddedCompletionTimer = window.setInterval(() => {
       if (generation !== embeddedOpenGeneration) {
         clearInterval(embeddedCompletionTimer);
@@ -4662,13 +4675,12 @@
         embeddedCompletionTimer = 0;
         return;
       }
-      const next = embeddedRecordCompletionSignature();
-      // A previous sim's delayed record refresh must not look like this sim saving.
+      const next = embeddedWatchedFindingSignature(watchedKey);
       if (Date.now() - armedAt < 450) {
         embeddedRecordSignature = next || embeddedRecordSignature;
         return;
       }
-      if (next && embeddedRecordSignature && next !== embeddedRecordSignature) {
+      if (next && next !== 'null' && next !== embeddedRecordSignature) {
         clearInterval(embeddedCompletionTimer);
         embeddedCompletionTimer = 0;
         queueEmbeddedAutoClose(180);
@@ -4740,10 +4752,11 @@
     const titleNode = $('embeddedSimTitle');
     if (titleNode) titleNode.textContent = title;
     embeddedOpenGeneration += 1;
+    embeddedOpenedKey = toolKey || embeddedToolKey(null, url) || '';
     cancelEmbeddedAutoClose();
     workspace.hidden = false;
     document.body.classList.add('sim-workspace-open');
-    embeddedRecordSignature = embeddedRecordCompletionSignature();
+    embeddedRecordSignature = embeddedWatchedFindingSignature(embeddedOpenedKey);
     frame.src = url.toString();
     armEmbeddedCompletionWatcher();
     return true;
@@ -4859,8 +4872,8 @@
         embeddedCloseTimer = window.setTimeout(() => {
           embeddedCloseTimer = 0;
           if (generation !== embeddedOpenGeneration) return;
-          const next = embeddedRecordCompletionSignature();
-          if (next && embeddedRecordSignature && next !== embeddedRecordSignature) {
+          const next = embeddedWatchedFindingSignature();
+          if (next && next !== 'null' && next !== embeddedRecordSignature) {
             closeEmbeddedSimulator({ refresh:true, generation });
             toast('Assessment saved');
           }

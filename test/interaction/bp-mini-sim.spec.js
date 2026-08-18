@@ -24,5 +24,21 @@ test('Blood pressure scenario opens in the overlay with discovery-locked documen
   await expect(sim.locator('#submitBtn')).toBeDisabled();
   await expect(sim.locator('#gauge-container')).toBeVisible();
 
+  await sim.locator('#pumpBtn').click();
+  const unrelatedSaveAt = Date.now();
+  await page.evaluate(() => {
+    window.EMSCodeSimPatientRecord.setFinding('pulse', '80/min', {
+      label: 'Pulse',
+      source: 'test-unrelated-vital',
+      locked: true
+    });
+  });
+  await expect.poll(() => page.evaluate(started => {
+    const workspace = document.getElementById('embeddedSimWorkspace');
+    return Boolean(workspace && !workspace.hidden && Date.now() - started >= 800);
+  }, unrelatedSaveAt)).toBe(true);
+  await expect(sim.locator('#submitBtn')).toBeDisabled();
+  await expect(sim.locator('.bp-scenario-answer')).toHaveClass(/ems-discovery-locked/);
+
   await assertNoPageErrors();
 });
