@@ -5,10 +5,11 @@
   const ASSET = '/vitals/assets/horse-crush/';
   const DISPATCH_TEXT = window.EMSCodeSimScenarioDefinitions?.CATALOG?.horse_crush?.dispatch
     || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.';
-  const INTRO_VIDEO = `${ASSET}incident-calm-walk.mp4`;
+  const INTRO_BUILD = '2026.08.18.13';
+  const INTRO_VIDEO = `${ASSET}incident-calm-walk.mp4?v=${INTRO_BUILD}`;
   const INTRO_POSTER = `${ASSET}incident-calm-walk.jpg`;
-  const INTRO_PLAY_WAIT_MS = 1800;
-  const INTRO_PLAY_RETRY_MS = 2500;
+  const INTRO_PLAY_WAIT_MS = 400;
+  const INTRO_PLAY_RETRY_MS = 1200;
   const BLS_HANDOFF_TEXT = '“She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented ×4 and complains of left-hip pain. We have not moved her.”';
   let introTimer = 0;
   let introPlayTimers = [];
@@ -128,15 +129,29 @@
     return `emscodesim:horse-intro:${record()?.startedAt || record()?.id || 'pending'}`;
   }
 
+  function resetRequested() {
+    return new URLSearchParams(location.search).get('reset') === '1';
+  }
+
+  function clearIntroCompletion() {
+    introFinished = false;
+    try {
+      Object.keys(sessionStorage)
+        .filter(key => key.startsWith('emscodesim:horse-intro:'))
+        .forEach(key => sessionStorage.removeItem(key));
+    } catch { /* ignore quota */ }
+  }
+
+  function hasCompletedIntro() {
+    if (introFinished) return true;
+    if (resetRequested()) return false;
+    try { return sessionStorage.getItem(introStorageKey()) === '1'; } catch { return false; }
+  }
+
   function setIntroPhase(phase) {
     document.body.dataset.horseIntro = phase;
     document.body.classList.toggle('horse-intro-playing', phase === 'video');
     window.dispatchEvent(new CustomEvent('emscodesim:patient-record-updated'));
-  }
-
-  function hasCompletedIntro() {
-    if (introFinished || has('arrival_parking')) return true;
-    try { return sessionStorage.getItem(introStorageKey()) === '1'; } catch { return false; }
   }
 
   function markIntroComplete() {
@@ -184,15 +199,19 @@
     if (!video) return video;
     video.muted = true;
     video.defaultMuted = true;
+    video.volume = 0;
     video.autoplay = true;
     video.playsInline = true;
+    video.controls = false;
     video.preload = 'auto';
     video.loop = false;
+    video.disablePictureInPicture = true;
     video.setAttribute('muted', '');
     video.setAttribute('autoplay', '');
     video.setAttribute('playsinline', '');
     video.setAttribute('webkit-playsinline', '');
     video.setAttribute('preload', 'auto');
+    video.removeAttribute('controls');
     if ((video.getAttribute('src') || '') !== INTRO_VIDEO) video.setAttribute('src', INTRO_VIDEO);
     if (video.poster !== INTRO_POSTER) video.poster = INTRO_POSTER;
     return video;
@@ -204,6 +223,13 @@
       && document.getElementById('horseIntroVideo') === video;
   }
 
+  function syncIntroPlayButton(video) {
+    const playButton = document.getElementById('horseIntroPlay');
+    if (!playButton) return;
+    const show = introVideoStillActive(video) && (video.paused || video.ended);
+    playButton.hidden = !show;
+  }
+
   function playIntroVideoWhenReady(video) {
     if (!video) return;
     clearIntroPlayTimers();
@@ -212,9 +238,15 @@
       if (!introVideoStillActive(video)) return;
       configureIntroVideo(video);
       const play = video.play();
-      if (play && typeof play.catch === 'function') play.catch(() => {});
+      if (play && typeof play.then === 'function') {
+        play.then(() => syncIntroPlayButton(video)).catch(() => syncIntroPlayButton(video));
+      } else {
+        syncIntroPlayButton(video);
+      }
     };
-    if (video.readyState >= 3) {
+    video.addEventListener('playing', () => syncIntroPlayButton(video));
+    video.addEventListener('pause', () => syncIntroPlayButton(video));
+    if (video.readyState >= 2) {
       attemptPlay();
     } else {
       video.addEventListener('canplay', attemptPlay, { once:true });
@@ -224,6 +256,7 @@
     introPlayTimers.push(window.setTimeout(() => {
       if (introVideoStillActive(video) && video.paused) attemptPlay();
     }, INTRO_PLAY_RETRY_MS));
+    introPlayTimers.push(window.setTimeout(() => syncIntroPlayButton(video), 900));
   }
 
   function finishIntroVideo() {
@@ -247,12 +280,17 @@
     overlay = document.createElement('div');
     overlay.id = 'horseIntroOverlay';
     overlay.innerHTML = `
-      <video id="horseIntroVideo" class="intro-video" muted autoplay playsinline webkit-playsinline preload="auto" controls poster="${INTRO_POSTER}" src="${INTRO_VIDEO}">
+      <video id="horseIntroVideo" class="intro-video" muted autoplay playsinline webkit-playsinline preload="auto" poster="${INTRO_POSTER}" src="${INTRO_VIDEO}">
         <source src="${INTRO_VIDEO}" type="video/mp4">
       </video>
+      <button type="button" id="horseIntroPlay" hidden>Play scene</button>
       <button type="button" id="horseIntroSkip">Skip</button>`;
     stage.appendChild(overlay);
     overlay.querySelector('#horseIntroSkip')?.addEventListener('click', finishIntroVideo);
+    overlay.querySelector('#horseIntroPlay')?.addEventListener('click', event => {
+      event.preventDefault();
+      playIntroVideoWhenReady(overlay.querySelector('#horseIntroVideo'));
+    });
     const video = configureIntroVideo(overlay.querySelector('#horseIntroVideo'));
     try { video?.load(); } catch { /* ignore */ }
     video?.addEventListener('ended', finishIntroVideo);
@@ -261,6 +299,7 @@
 
   function playIncidentIntro() {
     if (!isActive()) return;
+    if (resetRequested()) clearIntroCompletion();
     if (hasCompletedIntro()) {
       setIntroPhase('arrived');
       hideIntroOverlay();
@@ -584,6 +623,12 @@
     if (!isActive()) return;
     playIncidentIntro();
     window.setTimeout(playIncidentIntro, 400);
+    const unlockIntro = () => {
+      if (document.body.dataset.horseIntro === 'video') playIncidentIntro();
+    };
+    ['pointerdown', 'keydown', 'touchstart'].forEach(type => {
+      document.addEventListener(type, unlockIntro, { capture:true });
+    });
     window.addEventListener('emscodesim:scenario-finding-saved', event => {
       if (event.detail?.caseId !== CASE_ID) return;
       if (['arrival_parking','bls_handoff'].includes(event.detail?.category) && hasCompletedIntro()) {
