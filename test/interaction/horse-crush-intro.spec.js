@@ -18,8 +18,14 @@ test('horse-crush plays the full intro video before dispatch, then shows the pat
   await expect(page.locator('#horseIntroOverlay')).toBeVisible();
   await expect(page.locator('#horseIntroVideo')).toBeVisible();
   await expect(page.locator('#horseIntroSkip')).toBeVisible();
+  await expect.poll(() => page.locator('#horseIntroVideo').evaluate(video => video.tagName)).toBe('VIDEO');
+  await expect.poll(() => page.locator('#horseIntroVideo').evaluate(video => {
+    const src = video.currentSrc || video.getAttribute('src') || '';
+    return src.includes('incident-calm-walk.mp4');
+  })).toBe(true);
   await expect.poll(() => page.locator('#horseIntroVideo').evaluate(video => video.readyState)).toBeGreaterThan(0);
   await expect.poll(() => page.locator('#horseIntroVideo').evaluate(video => video.paused)).toBe(false);
+  await expect.poll(() => page.locator('#horseIntroVideo').evaluate(video => video.currentTime)).toBeGreaterThan(0);
 
   await expect(page.locator('#infoUpdateType')).toHaveText('');
   await expect(page.locator('#infoUpdateText')).not.toContainText('Medic 181');

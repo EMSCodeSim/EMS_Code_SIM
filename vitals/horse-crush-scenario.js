@@ -7,8 +7,11 @@
     || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.';
   const INTRO_VIDEO = `${ASSET}incident-calm-walk.mp4`;
   const INTRO_POSTER = `${ASSET}incident-calm-walk.jpg`;
+  const INTRO_PLAY_WAIT_MS = 1800;
+  const INTRO_PLAY_RETRY_MS = 2500;
   const BLS_HANDOFF_TEXT = '“She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented ×4 and complains of left-hip pain. We have not moved her.”';
   let introTimer = 0;
+  let introPlayTimers = [];
   let introFinished = false;
   const EXAMS = [
     {
@@ -164,11 +167,63 @@
     if (time) time.textContent = 'ARRIVAL';
   }
 
+  function clearIntroPlayTimers() {
+    introPlayTimers.forEach(id => window.clearTimeout(id));
+    introPlayTimers = [];
+  }
+
   function hideIntroOverlay() {
+    clearIntroPlayTimers();
     const overlay = document.getElementById('horseIntroOverlay');
     const video = overlay?.querySelector('video');
     if (video) video.pause();
     overlay?.remove();
+  }
+
+  function configureIntroVideo(video) {
+    if (!video) return video;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.preload = 'auto';
+    video.loop = false;
+    video.setAttribute('muted', '');
+    video.setAttribute('autoplay', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    video.setAttribute('preload', 'auto');
+    if ((video.getAttribute('src') || '') !== INTRO_VIDEO) video.setAttribute('src', INTRO_VIDEO);
+    if (video.poster !== INTRO_POSTER) video.poster = INTRO_POSTER;
+    return video;
+  }
+
+  function introVideoStillActive(video) {
+    return Boolean(video)
+      && document.body.dataset.horseIntro === 'video'
+      && document.getElementById('horseIntroVideo') === video;
+  }
+
+  function playIntroVideoWhenReady(video) {
+    if (!video) return;
+    clearIntroPlayTimers();
+    configureIntroVideo(video);
+    const attemptPlay = () => {
+      if (!introVideoStillActive(video)) return;
+      configureIntroVideo(video);
+      const play = video.play();
+      if (play && typeof play.catch === 'function') play.catch(() => {});
+    };
+    if (video.readyState >= 3) {
+      attemptPlay();
+    } else {
+      video.addEventListener('canplay', attemptPlay, { once:true });
+      video.addEventListener('loadeddata', attemptPlay, { once:true });
+      introPlayTimers.push(window.setTimeout(attemptPlay, INTRO_PLAY_WAIT_MS));
+    }
+    introPlayTimers.push(window.setTimeout(() => {
+      if (introVideoStillActive(video) && video.paused) attemptPlay();
+    }, INTRO_PLAY_RETRY_MS));
   }
 
   function finishIntroVideo() {
@@ -192,13 +247,15 @@
     overlay = document.createElement('div');
     overlay.id = 'horseIntroOverlay';
     overlay.innerHTML = `
-      <video id="horseIntroVideo" muted autoplay playsinline preload="auto" controls poster="${INTRO_POSTER}">
+      <video id="horseIntroVideo" class="intro-video" muted autoplay playsinline webkit-playsinline preload="auto" controls poster="${INTRO_POSTER}" src="${INTRO_VIDEO}">
         <source src="${INTRO_VIDEO}" type="video/mp4">
       </video>
       <button type="button" id="horseIntroSkip">Skip</button>`;
     stage.appendChild(overlay);
     overlay.querySelector('#horseIntroSkip')?.addEventListener('click', finishIntroVideo);
-    overlay.querySelector('video')?.addEventListener('ended', finishIntroVideo);
+    const video = configureIntroVideo(overlay.querySelector('#horseIntroVideo'));
+    try { video?.load(); } catch { /* ignore */ }
+    video?.addEventListener('ended', finishIntroVideo);
     return overlay;
   }
 
@@ -212,7 +269,6 @@
     }
     const phase = document.body.dataset.horseIntro;
     if (phase === 'dispatch' || phase === 'arrived') return;
-    if (phase === 'video' && document.getElementById('horseIntroOverlay')) return;
     document.body.classList.add('horse-intro-playing');
     setIntroPhase('video');
     const overlay = ensureIntroOverlay();
@@ -222,12 +278,7 @@
     }
     overlay.hidden = false;
     overlay.removeAttribute('hidden');
-    const video = overlay.querySelector('video');
-    if (video) {
-      try { video.currentTime = 0; } catch { /* ignore until metadata is ready */ }
-      const play = video.play();
-      if (play && typeof play.catch === 'function') play.catch(() => {});
-    }
+    playIntroVideoWhenReady(overlay.querySelector('#horseIntroVideo'));
   }
 
   function revealPatientImage() {
@@ -532,6 +583,7 @@
   function init() {
     if (!isActive()) return;
     playIncidentIntro();
+    window.setTimeout(playIncidentIntro, 400);
     window.addEventListener('emscodesim:scenario-finding-saved', event => {
       if (event.detail?.caseId !== CASE_ID) return;
       if (['arrival_parking','bls_handoff'].includes(event.detail?.category) && hasCompletedIntro()) {
@@ -542,6 +594,11 @@
       }
     });
     window.addEventListener('pageshow', () => window.setTimeout(playIncidentIntro, 20));
+    document.addEventListener('click', event => {
+      const origin = event.target?.nodeType === 1 ? event.target : event.target?.parentElement;
+      if (!origin?.closest?.('#resetScenarioQuick, #resetAndRestartScenario')) return;
+      window.setTimeout(playIncidentIntro, 600);
+    });
   }
 
   window.EMSCodeSimHorseCrush = Object.freeze({
