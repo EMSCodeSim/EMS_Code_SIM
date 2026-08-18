@@ -16,9 +16,17 @@ test('horse-crush opens with incident video, then dispatch, then the patient pho
   await expect(page.locator('#horseIntroVideo')).toBeVisible();
   await expect(page.locator('#horseIntroSkip')).toBeVisible();
   await expect.poll(() => page.locator('#horseIntroVideo').evaluate(video => video.readyState)).toBeGreaterThan(0);
+  await expect.poll(() => page.locator('#horseIntroVideo').evaluate(video => video.paused)).toBe(false);
+  await expect(page.locator('#infoUpdateType')).toHaveText('');
+  await expect(page.locator('#infoUpdateText')).not.toContainText('Reported fall at a horse facility');
+  await expect(page.locator('#dispatch')).toHaveText('');
+  await expect(page.locator('#dispatch')).not.toContainText('Reported fall at a horse facility');
 
-  await page.locator('#horseIntroSkip').click();
-  await expect(page.locator('#infoUpdateType')).toHaveText('DISPATCH');
+  await page.locator('#horseIntroVideo').evaluate(video => new Promise(resolve => {
+    if (video.ended) { resolve(); return; }
+    video.addEventListener('ended', () => resolve(), { once:true });
+  }));
+  await expect(page.locator('#infoUpdateType')).toHaveText('DISPATCH', { timeout: 10000 });
   await expect(page.locator('#infoUpdateText')).toContainText('Reported fall at a horse facility; a BLS engine crew is already on scene.');
 
   await expect(page.locator('#horseIntroOverlay')).toHaveCount(0, { timeout: 8000 });

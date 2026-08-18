@@ -2951,9 +2951,9 @@
   function buildInfoUpdates(current) {
     const startedAt = current?.startedAt || new Date().toISOString();
     const startMs = new Date(startedAt).getTime();
-    const horseIntroPhase = id === 'horse_crush' ? (document.body.dataset.horseIntro || 'arrived') : '';
+    const horseIntroPhase = id === 'horse_crush' ? (document.body.dataset.horseIntro || 'video') : '';
     if (horseIntroPhase === 'video') {
-      return [{ id:'horse-enroute', type:'EN ROUTE', title:'Responding', text:'You are responding to the horse facility.', kind:'dispatch', recordedAt: startedAt }];
+      return [];
     }
     if (horseIntroPhase === 'dispatch') {
       return [{
@@ -3068,7 +3068,15 @@
     infoUpdateIndex = Math.max(0, Math.min(infoUpdateIndex, infoUpdates.length - 1));
     lastInfoSignature = signature;
     const item = infoUpdates[infoUpdateIndex];
-    if (!item || !$('infoUpdateWindow')) return;
+    if (!item || !$('infoUpdateWindow')) {
+      if (!item && $('infoUpdateWindow') && id === 'horse_crush' && document.body.dataset.horseIntro === 'video') {
+        $('infoUpdateType').textContent = '';
+        $('infoUpdateTitle').textContent = '';
+        $('infoUpdateText').textContent = '';
+        if ($('infoUpdateCount')) $('infoUpdateCount').textContent = '';
+      }
+      return;
+    }
     const isNew = forceLatest || changed || item.id !== lastInfoItemId;
     const collapsed = $('infoUpdateWindow').dataset.collapsed === 'true';
     const voiceRole = infoVoiceRole(item);
@@ -4546,8 +4554,9 @@
       renderProgress();
       renderSignatures.progress = signatures.progress;
     }
-    $('dispatch').textContent = current.dispatch || scenario.title;
-    $('scene').textContent = current.scene || '';
+    const horseIntroVideo = id === 'horse_crush' && document.body.dataset.horseIntro === 'video';
+    $('dispatch').textContent = horseIntroVideo ? '' : (current.dispatch || scenario.title);
+    $('scene').textContent = horseIntroVideo ? '' : (current.scene || '');
     renderInfoUpdate();
     if (horseHandoffOpen) renderHorseHospitalHandoff();
     if (horseGradeOpen) renderHorseCallGrade();
