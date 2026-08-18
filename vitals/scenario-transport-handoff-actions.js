@@ -14,6 +14,7 @@
   let lastSignature = '';
   let stylesInstalled = false;
   let lastEndpointActivate = 0;
+  let lastEndpointAction = '';
 
   function horseScenario() {
     const requested = new URLSearchParams(location.search).get('case');
@@ -167,10 +168,10 @@
     const handedOff = handoffSaved(current);
     return `
       <div class="horse-endpoint-action-grid">
-        <button type="button" id="horseOpenTransport" class="horse-endpoint-action${transported ? ' complete' : ''}">
+        <button type="button" id="horseOpenTransport" class="horse-endpoint-action${transported ? ' complete' : ''}" data-horse-endpoint="transport">
           <span aria-hidden="true">${transported ? '✓' : '🚑'}</span><strong>${transported ? 'Review transport' : 'Transport'}</strong>
         </button>
-        <button type="button" id="horseOpenHandoff" class="horse-endpoint-action${handedOff ? ' complete' : ''}">
+        <button type="button" id="horseOpenHandoff" class="horse-endpoint-action${handedOff ? ' complete' : ''}" data-horse-endpoint="handoff">
           <span aria-hidden="true">${handedOff ? '✓' : 'H'}</span><strong>${handedOff ? 'Review handoff' : 'Handoff'}</strong>
         </button>
       </div>
@@ -205,15 +206,21 @@
 
   function activateEndpointFromEvent(event) {
     const node = eventNode(event);
-    const transport = node?.closest?.('#horseOpenTransport');
-    const handoff = node?.closest?.('#horseOpenHandoff');
+    const transport = node?.closest?.('#horseOpenTransport, [data-horse-endpoint="transport"]');
+    const handoff = node?.closest?.('#horseOpenHandoff, [data-horse-endpoint="handoff"]');
     if (!transport && !handoff) return false;
     if (event.type === 'pointerup' && event.button) return false;
+    const action = transport ? 'transport' : 'handoff';
+    const now = Date.now();
+    if (action === lastEndpointAction && now - lastEndpointActivate < 400) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return true;
+    }
+    lastEndpointActivate = now;
+    lastEndpointAction = action;
     event.preventDefault();
     event.stopImmediatePropagation();
-    const now = Date.now();
-    if (now - lastEndpointActivate < 400) return true;
-    lastEndpointActivate = now;
     if (transport) openTransport();
     else openHandoff();
     return true;

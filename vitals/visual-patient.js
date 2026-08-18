@@ -3974,8 +3974,6 @@
     closeEmbeddedSimulator({ refresh:false });
     closeHorseHospitalHandoff();
     closeHorseCallGrade();
-    horseTreatmentActiveGroup = 'transport';
-    horseTreatmentActivePlan = '__horse_transport__';
     const group = HORSE_TREATMENT_GROUPS.find(item => item.id === 'transport');
     sceneObservationUpdate = {
       id:`horse-top-transport-${Date.now()}`, type:'TRANSPORT', title:'Transport decision',
@@ -3984,7 +3982,13 @@
     };
     lastInfoSignature = '';
     renderInfoUpdate(true);
+    horseTreatmentActiveGroup = 'transport';
+    horseTreatmentActivePlan = '__horse_transport__';
     openSheet('treatmentPanel');
+    // openSheet() can rebuild the category menu; force the transport form after it returns.
+    horseTreatmentActiveGroup = 'transport';
+    horseTreatmentActivePlan = '__horse_transport__';
+    if (desktopWorkspace()) renderHorseTreatmentCategoryWorkspace('transport');
   }
 
   function renderProgress() {
@@ -4910,7 +4914,7 @@
     if (id !== 'horse_crush' || event.button) return;
     if (activateHorseTreatmentGroupFromEvent(event)) return;
     const origin = eventElement(event);
-    if (origin?.closest?.('#horseOpenTransport, #horseOpenHandoff')) return;
+    if (origin?.closest?.('#horseOpenTransport, #horseOpenHandoff, [data-horse-endpoint]')) return;
     const planButton = origin?.closest?.('[data-horse-workspace-plan]');
     if (!planButton || planButton.hidden || planButton.disabled) return;
     if (!planButton.closest('#treatmentTools.horse-treatment-category-workspace')) return;
