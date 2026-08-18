@@ -4,93 +4,103 @@
   if (window.__emsMiniSimAudioBoostInstalled) return;
   window.__emsMiniSimAudioBoostInstalled = true;
 
-  const sim = document.body?.dataset?.scenarioVital || '';
-  const isPulse = sim === 'pulse' || location.pathname.endsWith('/pulse-scenario.html');
-  const isBp = location.pathname.endsWith('/bp-scenario.html');
-  if (!isPulse && !isBp) return;
-
+  const BOOST = 2.4;
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextClass) return;
+  const boostedMedia = new WeakSet();
 
-  let ctx = null;
-
-  function ensureContext() {
-    if (!ctx || ctx.state === 'closed') ctx = new AudioContextClass();
-    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+  function decorateContext(ctx) {
+    if (!ctx || ctx.__emsAudioBoosted || typeof ctx.createGain !== 'function') return ctx;
+    try {
+      const master = ctx.createGain();
+      master.gain.value = BOOST;
+      const compressor = ctx.createDynamicsCompressor();
+      compressor.threshold.value = -16;
+      compressor.knee.value = 16;
+      compressor.ratio.value = 2.8;
+      compressor.attack.value = 0.003;
+      compressor.release.value = 0.16;
+      master.connect(compressor);
+      compressor.connect(ctx.destination);
+      ctx.__emsMasterGain = master;
+      ctx.__emsCompressor = compressor;
+      ctx.__emsAudioBoosted = true;
+    } catch (_) { /* Fake or restricted AudioContext */ }
     return ctx;
   }
 
-  function transient(parts, duration = 0.15) {
-    const audio = ensureContext();
-    if (!audio || audio.state === 'closed') return;
-    const master = audio.createGain();
-    master.gain.setValueAtTime(0.0001, audio.currentTime);
-    master.gain.exponentialRampToValueAtTime(0.34, audio.currentTime + 0.006);
-    master.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + duration);
-    master.connect(audio.destination);
-
-    parts.forEach(({ frequency, level, type = 'sine' }) => {
-      const osc = audio.createOscillator();
-      const gain = audio.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(frequency, audio.currentTime);
-      gain.gain.value = level;
-      osc.connect(gain).connect(master);
-      osc.start();
-      osc.stop(audio.currentTime + duration + 0.02);
-    });
+  if (AudioContextClass && !AudioContextClass.__emsBoostWrapped) {
+    const Orig = AudioContextClass;
+    function WrappedAudioContext(...args) {
+      const ctx = new Orig(...args);
+      decorateContext(ctx);
+      return ctx;
+    }
+    WrappedAudioContext.prototype = Orig.prototype;
+    Object.setPrototypeOf(WrappedAudioContext, Orig);
+    WrappedAudioContext.__emsBoostWrapped = true;
+    window.AudioContext = WrappedAudioContext;
+    if (window.webkitAudioContext) window.webkitAudioContext = WrappedAudioContext;
   }
 
-  function playPulseBoost() {
-    transient([
-      { frequency: 72, level: 1.0 },
-      { frequency: 138, level: 0.28 }
-    ], 0.16);
+  const nativeConnect = AudioNode.prototype.connect;
+  if (nativeConnect && !AudioNode.prototype.__emsBoostConnect) {
+    AudioNode.prototype.connect = function connectBoosted(dest, ...rest) {
+      const ctx = this.context;
+      if (
+        ctx?.__emsMasterGain
+        && dest === ctx.destination
+        && this !== ctx.__emsMasterGain
+        && this !== ctx.__emsCompressor
+      ) {
+        return nativeConnect.call(this, ctx.__emsMasterGain, ...rest);
+      }
+      return nativeConnect.call(this, dest, ...rest);
+    };
+    AudioNode.prototype.__emsBoostConnect = true;
   }
 
-  function playBpBoost() {
-    transient([
-      { frequency: 86, level: 1.0 },
-      { frequency: 172, level: 0.34 }
-    ], 0.13);
+  function boostMediaElement(media) {
+    if (!media || boostedMedia.has(media) || !AudioContextClass) return;
+    try {
+      const ctx = decorateContext(new AudioContextClass());
+      if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+      if (typeof ctx.createMediaElementSource !== 'function') return;
+      const source = ctx.createMediaElementSource(media);
+      source.connect(ctx.__emsMasterGain || ctx.destination);
+      boostedMedia.add(media);
+      if (typeof media.volume === 'number' && media.volume <= 0) media.volume = 1;
+    } catch (_) {
+      try { media.volume = Math.min(1, Math.max(Number(media.volume) || 0, 0.95)); } catch { /* ignore */ }
+    }
   }
 
-  function watchPulse() {
-    const heart = document.getElementById('heart');
-    if (!heart) return false;
-    let wasBeat = heart.classList.contains('beat');
-    new MutationObserver(() => {
-      const beat = heart.classList.contains('beat');
-      if (beat && !wasBeat) playPulseBoost();
-      wasBeat = beat;
-    }).observe(heart, { attributes: true, attributeFilter: ['class'] });
-    return true;
+  const NativeAudio = window.Audio;
+  if (typeof NativeAudio === 'function' && !NativeAudio.__emsBoostWrapped) {
+    function BoostedAudio(...args) {
+      const audio = new NativeAudio(...args);
+      audio.addEventListener('play', () => boostMediaElement(audio), { once: true });
+      return audio;
+    }
+    BoostedAudio.prototype = NativeAudio.prototype;
+    Object.setPrototypeOf(BoostedAudio, NativeAudio);
+    BoostedAudio.__emsBoostWrapped = true;
+    window.Audio = BoostedAudio;
   }
 
-  function watchBp() {
-    const gauge = document.getElementById('gauge-container');
-    if (!gauge) return false;
-    let wasBeat = gauge.classList.contains('korotkoff-beat');
-    new MutationObserver(() => {
-      const beat = gauge.classList.contains('korotkoff-beat');
-      if (beat && !wasBeat) playBpBoost();
-      wasBeat = beat;
-    }).observe(gauge, { attributes: true, attributeFilter: ['class'] });
-    return true;
-  }
+  document.addEventListener('play', event => {
+    if (event.target instanceof HTMLMediaElement) boostMediaElement(event.target);
+  }, true);
 
-  function install() {
-    document.addEventListener('pointerdown', ensureContext, { once: true, passive: true });
-    document.addEventListener('keydown', ensureContext, { once: true });
-    if (isPulse && watchPulse()) return;
-    if (isBp && watchBp()) return;
-    window.setTimeout(install, 80);
-  }
+  document.addEventListener('pointerdown', () => {
+    if (!AudioContextClass) return;
+    try {
+      const ctx = decorateContext(new AudioContextClass());
+      ctx.resume?.().catch(() => {});
+    } catch (_) { /* ignore */ }
+  }, { once: true, passive: true });
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, { once: true });
-  else install();
-
-  window.addEventListener('pagehide', () => {
-    try { ctx?.close?.(); } catch (_) {}
-  }, { once: true });
+  window.EMSCodeSimMiniSimAudioBoost = Object.freeze({
+    version: '2026.08.18.23',
+    boost: BOOST
+  });
 })();

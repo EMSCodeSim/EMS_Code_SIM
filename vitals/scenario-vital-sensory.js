@@ -1,9 +1,9 @@
 (()=>{
 'use strict';
 const sim=document.body.dataset.scenarioVital||'', $=id=>document.getElementById(id), q=s=>document.querySelector(s), qa=s=>[...document.querySelectorAll(s)];
-function tone(freq=440,d=.08,vol=.035,type='sine'){try{const C=window.AudioContext||window.webkitAudioContext,c=new C,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=freq;g.gain.value=vol;o.connect(g);g.connect(c.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+d);o.stop(c.currentTime+d+.02);o.onended=()=>c.close().catch(()=>{})}catch(_){}}
-function click(){tone(780,.035,.018,'square')}
-function beep(){tone(940,.09,.035,'sine')}
+function tone(freq=440,d=.08,vol=.16,type='sine'){try{const C=window.AudioContext||window.webkitAudioContext,c=new C,o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=freq;g.gain.value=vol;o.connect(g);g.connect(c.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+d);o.stop(c.currentTime+d+.02);o.onended=()=>c.close().catch(()=>{})}catch(_){}}
+function click(){tone(780,.035,.09,'square')}
+function beep(){tone(940,.09,.16,'sine')}
 function pulse(){try{navigator.vibrate?.(24)}catch(_){}}
 function once(id,fn){if(document.documentElement.dataset[id])return;document.documentElement.dataset[id]='1';fn()}
 
@@ -29,7 +29,7 @@ function enhanceSpo2(){
   const finger=document.createElement('div');finger.className='sensory-ox-finger';finger.innerHTML='<div class="finger"></div><div class="clip">SpO₂</div>';m.before(finger);
   const canvas=document.createElement('canvas');canvas.className='sensory-pleth';canvas.width=520;canvas.height=100;m.appendChild(canvas);
   const ctx=canvas.getContext('2d');let phase=0,last=0;
-  function draw(ts){const stable=!$('wave')?.hidden,w=canvas.width,h=canvas.height;ctx.fillStyle='#061717';ctx.fillRect(0,0,w,h);ctx.strokeStyle=stable?'#52f0a9':'#436c61';ctx.lineWidth=3;ctx.beginPath();for(let x=0;x<w;x++){const p=((x/w)*6+phase)%1;let y=.52;if(p<.1)y=.52-p/.1*.32;else if(p<.18)y=.2+(p-.1)/.08*.48;else if(p<.31)y=.68-(p-.18)/.13*.23;else y=.45+Math.sin(p*8)*.025;x?ctx.lineTo(x,y*h):ctx.moveTo(x,y*h)}ctx.stroke();phase=(phase+.009)%1;if(stable&&ts-last>760){last=ts;tone(820,.05,.018)}requestAnimationFrame(draw)}requestAnimationFrame(draw);
+  function draw(ts){const stable=!$('wave')?.hidden,w=canvas.width,h=canvas.height;ctx.fillStyle='#061717';ctx.fillRect(0,0,w,h);ctx.strokeStyle=stable?'#52f0a9':'#436c61';ctx.lineWidth=3;ctx.beginPath();for(let x=0;x<w;x++){const p=((x/w)*6+phase)%1;let y=.52;if(p<.1)y=.52-p/.1*.32;else if(p<.18)y=.2+(p-.1)/.08*.48;else if(p<.31)y=.68-(p-.18)/.13*.23;else y=.45+Math.sin(p*8)*.025;x?ctx.lineTo(x,y*h):ctx.moveTo(x,y*h)}ctx.stroke();phase=(phase+.009)%1;if(stable&&ts-last>760){last=ts;tone(820,.05,.09)}requestAnimationFrame(draw)}requestAnimationFrame(draw);
   $('placeProbe')?.addEventListener('click',()=>{finger.classList.add('on');click()});
  });
 }
@@ -37,7 +37,7 @@ function enhanceBgl(){
  const stage=$('stage');if(!stage)return;
  once('sensoryBgl',()=>{
   stage.classList.add('sensory-bgl-stage');const visual=document.createElement('div');visual.className='sensory-bgl-hand';visual.innerHTML='<div class="finger"></div><div class="drop"></div><div class="strip"></div>';stage.prepend(visual);
-  qa('.sv-step').forEach(b=>b.addEventListener('click',()=>{const i=Number(b.dataset.step);click();if(i===0)visual.classList.add('strip-in');if(i===1)visual.classList.add('clean');if(i===2){visual.classList.add('lance');tone(180,.04,.014,'square')}if(i===3)visual.classList.add('sample')}));
+  qa('.sv-step').forEach(b=>b.addEventListener('click',()=>{const i=Number(b.dataset.step);click();if(i===0)visual.classList.add('strip-in');if(i===1)visual.classList.add('clean');if(i===2){visual.classList.add('lance');tone(180,.04,.08,'square')}if(i===3)visual.classList.add('sample')}));
   const screen=$('deviceScreen');if(screen)new MutationObserver(()=>{if(/^\d+$/.test(screen.textContent.trim()))beep()}).observe(screen,{childList:true,characterData:true,subtree:true});
  });
 }

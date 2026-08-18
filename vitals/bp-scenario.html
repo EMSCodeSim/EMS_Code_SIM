@@ -644,7 +644,7 @@
           const envelope = Math.exp(-28 * time);
           const lowThump = Math.sin(2 * Math.PI * 88 * time);
           const upperClick = Math.sin(2 * Math.PI * 176 * time) * 0.32;
-          channel[index] = (lowThump + upperClick) * envelope * 0.7;
+          channel[index] = (lowThump + upperClick) * envelope;
         }
       }
 
@@ -653,7 +653,14 @@
         elements.gaugeContainer?.classList?.remove('korotkoff-beat'); void elements.gaugeContainer?.offsetWidth; elements.gaugeContainer?.classList?.add('korotkoff-beat');
         const source = audioContext.createBufferSource();
         source.buffer = beatBuffer;
-        source.connect(audioContext.destination);
+        if (typeof audioContext.createGain === 'function') {
+          const gain = audioContext.createGain();
+          gain.gain.value = 1.45;
+          source.connect(gain);
+          gain.connect(audioContext.destination);
+        } else {
+          source.connect(audioContext.destination);
+        }
         source.start();
         heardAnyBeat = true;
       }

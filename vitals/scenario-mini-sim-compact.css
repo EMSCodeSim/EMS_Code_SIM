@@ -133,3 +133,13 @@ body.ems-embedded-mini-sim:has(#adultSVG) .quiz{padding:5px!important}
   body.ems-embedded-mini-sim .sv-monitor{max-width:230px!important}
   body.ems-embedded-mini-sim #gauge-container{width:min(30vh,210px)!important;height:min(30vh,210px)!important}
 }
+
+body.ems-embedded-mini-sim #submitBtn,
+body.ems-embedded-mini-sim .va-interpret-save,
+body.ems-embedded-mini-sim #btnGrade,
+body.ems-embedded-mini-sim .ems-skin-record-finding,
+body.ems-embedded-mini-sim #showResults{
+  position:sticky;
+  bottom:4px;
+  z-index:8;
+}

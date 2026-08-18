@@ -6,6 +6,13 @@
   body.dataset.emsMiniSimEnhanced = '1';
   body.classList.add('ems-embedded-mini-sim');
 
+  if (!document.querySelector('script[data-ems-mini-sim-audio-boost]')) {
+    const audioBoost = document.createElement('script');
+    audioBoost.src = '/vitals/scenario-mini-sim-audio-boost.js?v=2026.08.18.23';
+    audioBoost.dataset.emsMiniSimAudioBoost = '1';
+    document.body.appendChild(audioBoost);
+  }
+
   const params = new URLSearchParams(location.search);
   const caseId = params.get('case') || '';
   const pathname = location.pathname;
@@ -425,7 +432,7 @@
   }, true);
 
   window.EMSCodeSimEmbeddedMiniSim = Object.freeze({
-    version: '2026.08.18.11',
+    version: '2026.08.18.23',
     unlockDocument,
     markObserved,
     setFlow,
