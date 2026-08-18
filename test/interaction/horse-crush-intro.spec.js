@@ -11,6 +11,7 @@ test.beforeEach(async ({ page }) => {
 
 test('horse-crush plays the full intro video before dispatch, then shows the patient photo', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Intro sequence is verified on the desktop patient stage');
+  test.setTimeout(70_000);
   const assertNoPageErrors = watchPageErrors(page);
 
   await page.goto('/vitals/visual-patient.html?case=horse_crush&training=assessment&reset=1');
@@ -41,14 +42,16 @@ test('horse-crush plays the full intro video before dispatch, then shows the pat
   await expect(page.locator('#infoUpdateType')).toHaveText('DISPATCH', { timeout: 10000 });
   await expect(page.locator('#infoUpdateText')).toContainText(RADIO_DISPATCH);
   await expect(page.locator('#dispatch')).toContainText('Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road');
-
   await expect(page.locator('#horseIntroOverlay')).toHaveCount(0, { timeout: 8000 });
+
+  const dispatchStarted = Date.now();
+  await expect(page.locator('#infoUpdateType')).toHaveText('BLS ENGINE HANDOFF', { timeout: 20000 });
+  expect(Date.now() - dispatchStarted).toBeGreaterThanOrEqual(10000);
   await expect.poll(() => page.evaluate(() => {
     const image = document.getElementById('patientImage');
     if (!image) return '';
     try { return new URL(image.src, location.href).pathname; } catch { return ''; }
-  })).toBe('/vitals/assets/horse-crush/patient-initial.webp');
-  await expect(page.locator('#infoUpdateType')).toHaveText('BLS ENGINE HANDOFF');
+  })).toBe('/vitals/assets/horse-crush/handoff.webp');
   await expect(page.locator('#infoUpdateText')).toContainText('She was smashed between two horses');
 
   await page.evaluate(() => window.EMSCodeSimHorseCrush.performExam('neck_back'));

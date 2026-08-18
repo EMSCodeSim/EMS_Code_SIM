@@ -64,6 +64,7 @@ const horseAssets = [
   'exam-leg.webp',
   'movement-blankets.webp',
   'movement-scoop.webp',
+  'handoff.webp',
   'incident-calm-walk.jpg'
 ];
 for (const filename of horseAssets) {
