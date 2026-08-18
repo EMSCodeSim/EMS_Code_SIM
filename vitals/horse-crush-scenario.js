@@ -5,7 +5,7 @@
   const ASSET = '/vitals/assets/horse-crush/';
   const DISPATCH_TEXT = window.EMSCodeSimScenarioDefinitions?.CATALOG?.horse_crush?.dispatch
     || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.';
-  const INTRO_BUILD = '2026.08.18.15';
+  const INTRO_BUILD = '2026.08.18.16';
   const INTRO_VIDEO = `${ASSET}incident-calm-walk.mp4?v=${INTRO_BUILD}`;
   const INTRO_PLAY_WAIT_MS = 250;
   const INTRO_PLAY_RETRY_MS = 800;
@@ -13,6 +13,43 @@
   const PARKING_TEXT = 'The ambulance is positioned near the south barn apron, facing out, with the driveway and exit path open.';
   const HANDOFF_PHOTO = `${ASSET}handoff.webp`;
   const BLS_HANDOFF_TEXT = '“She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented ×4 and complains of left-hip pain. We have not moved her.”';
+  const BLS_FOLLOWUPS = [
+    {
+      id: 'bls_q_loc',
+      question: 'Was there any loss of consciousness?',
+      answer: 'No. She was awake the whole time and remembers being pressed between the horses and falling.',
+      findingKey: 'bls_followup_loc',
+      label: 'BLS follow-up: LOC'
+    },
+    {
+      id: 'bls_q_moved',
+      question: 'Has she been moved at all?',
+      answer: 'No. We found her in this position and have not moved her. Left knee is still flexed.',
+      findingKey: 'bls_followup_moved',
+      label: 'BLS follow-up: movement'
+    },
+    {
+      id: 'bls_q_horses',
+      question: 'Are the horses secured?',
+      answer: 'Yes. Both horses are secured. Scene is safe for patient care.',
+      findingKey: 'bls_followup_scene',
+      label: 'BLS follow-up: scene safety'
+    },
+    {
+      id: 'bls_q_other_injury',
+      question: 'Any other injuries you noticed?',
+      answer: 'Nothing obvious. She is guarding the left hip and will not straighten that leg. Distal pulse was present.',
+      findingKey: 'bls_followup_injuries',
+      label: 'BLS follow-up: other injuries'
+    },
+    {
+      id: 'bls_q_vitals',
+      question: 'Did you get a set of vitals?',
+      answer: 'Only a quick check — alert, talking, not in respiratory distress. We deferred a full set so we would not move the leg.',
+      findingKey: 'bls_followup_vitals',
+      label: 'BLS follow-up: vitals'
+    }
+  ];
   let introTimer = 0;
   let introPlayTimers = [];
   let introFinished = false;
@@ -217,6 +254,77 @@
     if (time) time.textContent = 'ARRIVAL';
   }
 
+  function blsFollowupHost() {
+    let host = document.getElementById('horseBlsFollowups');
+    if (host) return host;
+    const stage = document.getElementById('patientCommunicationStage');
+    const panel = stage || document.getElementById('infoUpdateWindow');
+    if (!panel) return null;
+    host = document.createElement('div');
+    host.id = 'horseBlsFollowups';
+    host.className = 'horse-bls-followups';
+    host.innerHTML = `
+      <div class="horse-bls-followups-head">
+        <small>BLS CREW</small>
+        <strong>Follow-up questions</strong>
+        <span>Clarify the handoff before you start your exam</span>
+      </div>
+      <div id="horseBlsFollowupButtons" class="horse-bls-followup-buttons"></div>
+      <p id="horseBlsFollowupAnswer" class="horse-bls-followup-answer" hidden aria-live="polite"></p>`;
+    const timeline = stage?.querySelector('.communication-timeline, #communicationTimeline');
+    if (timeline) timeline.insertAdjacentElement('afterend', host);
+    else panel.appendChild(host);
+    return host;
+  }
+
+  function renderBlsFollowups() {
+    if (document.body.dataset.horseIntro !== 'arrived') return;
+    const host = blsFollowupHost();
+    if (!host) return;
+    host.hidden = false;
+    const buttons = host.querySelector('#horseBlsFollowupButtons');
+    const answerEl = host.querySelector('#horseBlsFollowupAnswer');
+    if (!buttons) return;
+    buttons.innerHTML = '';
+    BLS_FOLLOWUPS.forEach(item => {
+      const asked = has(item.findingKey);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `horse-bls-followup-btn${asked ? ' is-asked' : ''}`;
+      button.textContent = item.question;
+      button.disabled = asked;
+      button.addEventListener('click', () => askBlsFollowup(item));
+      buttons.appendChild(button);
+    });
+    if (answerEl && !answerEl.textContent) answerEl.hidden = true;
+  }
+
+  function askBlsFollowup(item) {
+    if (!item || has(item.findingKey)) return;
+    saveFinding(item.findingKey, item.answer, {
+      label: item.label,
+      normality: 'normal',
+      details: item.question,
+      source: 'bls-followup',
+      suppressInfoUpdate: true
+    });
+    const type = document.getElementById('infoUpdateType');
+    const title = document.getElementById('infoUpdateTitle');
+    const text = document.getElementById('infoUpdateText');
+    const time = document.getElementById('infoUpdateTime');
+    if (type) type.textContent = 'BLS ENGINE CREW';
+    if (title) title.textContent = item.question;
+    if (text) text.textContent = item.answer;
+    if (time) time.textContent = 'FOLLOW-UP';
+    window.EMSCodeSimCommunicationRouter?.push?.('crew', item.answer);
+    const answerEl = document.getElementById('horseBlsFollowupAnswer');
+    if (answerEl) {
+      answerEl.hidden = false;
+      answerEl.textContent = item.answer;
+    }
+    renderBlsFollowups();
+  }
+
   function clearIntroPlayTimers() {
     introPlayTimers.forEach(id => window.clearTimeout(id));
     introPlayTimers = [];
@@ -299,7 +407,11 @@
       configureIntroVideo(video);
       const play = video.play();
       if (play && typeof play.then === 'function') {
-        play.then(() => markIntroPlaybackStarted(video)).catch(() => syncIntroPlayButton(video));
+        play.then(() => markIntroPlaybackStarted(video)).catch(() => {
+          const playButton = document.getElementById('horseIntroPlay');
+          if (playButton) playButton.hidden = false;
+          syncIntroPlayButton(video);
+        });
       } else {
         markIntroPlaybackStarted(video);
       }
@@ -307,6 +419,13 @@
     video.addEventListener('playing', () => markIntroPlaybackStarted(video));
     video.addEventListener('timeupdate', () => markIntroPlaybackStarted(video));
     video.addEventListener('pause', () => syncIntroPlayButton(video));
+    video.addEventListener('error', () => {
+      const playButton = document.getElementById('horseIntroPlay');
+      if (playButton) {
+        playButton.hidden = false;
+        playButton.textContent = 'Video failed — tap to retry';
+      }
+    });
     if (video.readyState >= 2) {
       attemptPlay();
     } else {
@@ -317,7 +436,10 @@
     introPlayTimers.push(window.setTimeout(() => {
       if (introVideoStillActive(video) && video.paused) attemptPlay();
     }, INTRO_PLAY_RETRY_MS));
-    introPlayTimers.push(window.setTimeout(() => syncIntroPlayButton(video), 500));
+    introPlayTimers.push(window.setTimeout(() => {
+      if (introVideoStillActive(video) && video.paused) attemptPlay();
+    }, 2000));
+    introPlayTimers.push(window.setTimeout(() => syncIntroPlayButton(video), 400));
   }
 
   function dispatchDwellMs() {
@@ -452,6 +574,7 @@
       });
     }
     showHandoff();
+    renderBlsFollowups();
   }
 
   function maybeSaveCompleteTraumaExam() {
@@ -716,7 +839,10 @@
     playIncidentIntro();
     window.setTimeout(playIncidentIntro, 400);
     const unlockIntro = () => {
-      if (document.body.dataset.horseIntro === 'video') playIncidentIntro();
+      if (document.body.dataset.horseIntro !== 'video') return;
+      const video = document.getElementById('horseIntroVideo');
+      if (video && video.paused) playIntroVideoWhenReady(video);
+      else playIncidentIntro();
     };
     ['pointerdown', 'keydown', 'touchstart'].forEach(type => {
       document.addEventListener(type, unlockIntro, { capture:true });

@@ -207,7 +207,7 @@
     horse_crush: {
       requiredFindings: ['arrival_parking'],
       appropriateFindings: ['airway','breathing','perfusion','mental_status','blood_pressure','pulse','respirations','spo2','neck_back','chest_assessment','abdominal_assessment','pelvis_hip','left_leg','distal_csm','pain','pupils','skin','sample','trauma_assessment'],
-      optionalFindings: ['blood_glucose','temperature','breath_sounds','motor_sensory'],
+      optionalFindings: ['blood_glucose','temperature','breath_sounds','motor_sensory','bls_followup_loc','bls_followup_moved','bls_followup_scene','bls_followup_injuries','bls_followup_vitals'],
       notIndicatedFindings: ['pediatric_assessment_triangle','rule_of_nines']
     }
   });

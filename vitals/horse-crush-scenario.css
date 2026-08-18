@@ -96,6 +96,43 @@ body.horse-intro-locked #treatmentPanel{
   letter-spacing:.04em;
   cursor:pointer;
 }
+.horse-bls-followups{
+  margin:8px 4px 0;
+  padding:10px 12px;
+  border:1px solid #31566d;
+  border-radius:10px;
+  background:#0d2a3c;
+}
+.horse-bls-followups[hidden]{display:none!important}
+.horse-bls-followups-head{
+  display:grid;
+  gap:2px;
+  margin-bottom:8px;
+  color:#a8dbf2;
+}
+.horse-bls-followups-head small{
+  font-size:.64rem;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.horse-bls-followups-head strong{font-size:.78rem;color:#fff}
+.horse-bls-followups-head span{font-size:.68rem;color:#8faeba}
+.horse-bls-followup-buttons{display:flex;flex-wrap:wrap;gap:6px}
+.horse-bls-followup-btn{
+  border:1px solid #39708c;
+  background:#12384d;
+  color:#fff;
+  border-radius:999px;
+  padding:6px 10px;
+  font:inherit;
+  font-size:.78rem;
+  cursor:pointer;
+}
+.horse-bls-followup-btn:hover:not(:disabled){border-color:#78d1f7;background:#194b64}
+.horse-bls-followup-btn.is-asked,
+.horse-bls-followup-btn:disabled{opacity:.55;cursor:default}
+.horse-bls-followup-answer{margin:8px 0 0;color:#e8f3f9;font-size:.82rem;line-height:1.35}
+body.horse-intro-locked #horseBlsFollowups{display:none!important}
 body.horse-intro-playing #infoUpdateWindow,
 body.horse-intro-playing #communicationTimeline{
   visibility:hidden;

@@ -72,6 +72,11 @@ test('horse-crush plays the walk video, then dispatch, ambulance position, and h
   })).toBe('/vitals/assets/horse-crush/handoff.webp');
   await expect(page.locator('#infoUpdateText')).toContainText('She was smashed between two horses');
   await expect(page.locator('#infoUpdateType')).not.toHaveText('PATIENT');
+  await expect(page.locator('#horseBlsFollowups')).toBeVisible();
+  await expect(page.locator('#horseBlsFollowupButtons button')).toHaveCount(5);
+  await page.locator('#horseBlsFollowupButtons button').first().click();
+  await expect(page.locator('#horseBlsFollowupAnswer')).toContainText('awake the whole time');
+  await expect(page.locator('#infoUpdateType')).not.toHaveText('PATIENT');
 
   await page.evaluate(() => window.EMSCodeSimHorseCrush.performExam('neck_back'));
   await expect.poll(() => page.evaluate(() => new URL(document.getElementById('patientImage').src, location.href).pathname)).toBe('/vitals/assets/horse-crush/exam-neck-back.webp');
