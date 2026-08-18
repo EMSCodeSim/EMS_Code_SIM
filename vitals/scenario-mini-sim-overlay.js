@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const OVERLAY_VERSION = '2026.08.18.29';
+  const OVERLAY_VERSION = '2026.08.18.30';
   const registry = window.EMSCodeSimToolRegistry;
   const toolPaths = new Set([
     ...(registry?.vitalTools || []).map(tool => tool.url),
@@ -71,6 +71,11 @@
       body.sim-workspace-open .patient-stage:after{display:none!important}
       @media(max-width:979px){
         body.sim-workspace-open .patient-stage{height:min(72dvh,650px)!important;min-height:430px!important;max-height:650px!important}
+        body.sim-workspace-open #actionSheet,
+        body.sim-workspace-open #sheetBackdrop{
+          display:none!important;
+          pointer-events:none!important;
+        }
         #embeddedSimWorkspace.embedded-sim-workspace{inset:6px!important;border-radius:16px!important;box-shadow:0 14px 44px rgba(0,0,0,.55)!important}
         #embeddedSimWorkspace .embedded-sim-header{min-height:44px!important;padding:6px 8px!important}
       }

@@ -664,6 +664,9 @@
   }
 
   function openAssessmentToolsWithoutStartingExam() {
+    // Desktop keeps Assessment beside BLS follow-ups. Mobile `openSheet` is a
+    // full-screen modal and would cover the patient photo and mini-sim overlay.
+    if (!window.matchMedia?.('(min-width: 980px)')?.matches) return;
     try { window.EMSCodeSimHorseWorkspace?.openSheet?.('assessmentPanel'); }
     catch (_) { /* sheet helpers load with the patient workspace */ }
   }
