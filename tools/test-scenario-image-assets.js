@@ -78,12 +78,13 @@ for (const filename of horseAssets) {
     throw new Error(`Horse scenario photo is empty: /vitals/assets/horse-crush/${filename}`);
   }
 }
-const introVideo = path.join(root, 'vitals/assets/horse-crush/calm_walk.mp4');
+const introVideoName = 'grok-video-c075593f-4ca1-4531-a603-2152e5874082 (1).mp4';
+const introVideo = path.join(root, 'vitals/assets/horse-crush', introVideoName);
 if (!fs.existsSync(introVideo) || fs.statSync(introVideo).size === 0) {
-  throw new Error('Horse scenario intro video is missing: /vitals/assets/horse-crush/calm_walk.mp4');
+  throw new Error(`Horse scenario intro video is missing: /vitals/assets/horse-crush/${introVideoName}`);
 }
-if (!horseScenario.includes('playIncidentIntro') || !horseScenario.includes('calm_walk.mp4')) {
-  throw new Error('Horse scenario must play the calm walk intro video before revealing the patient');
+if (!horseScenario.includes('playIncidentIntro') || !horseScenario.includes('grok-video-c075593f')) {
+  throw new Error('Horse scenario must play the grok walk intro video before revealing the patient');
 }
 const introBytes = fs.readFileSync(introVideo);
 let boxOffset = 0;
