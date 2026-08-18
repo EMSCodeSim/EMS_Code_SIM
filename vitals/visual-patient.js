@@ -2718,7 +2718,10 @@
     const type = String(item.type || '').toUpperCase();
     const kind = String(item.kind || '').toLowerCase();
     const text = String(item.text || '').trim();
-    if (kind === 'patient_dialogue' || kind === 'patient_response' || /PATIENT RESPONSE|^PATIENT$|HISTORY ANSWER/.test(type) || /^[“"]/u.test(text)) return 'patient';
+    if (kind === 'dispatch' || kind === 'partner' || kind === 'visible' || kind === 'observation' || kind === 'arrival') return 'silent';
+    if (/DISPATCH|BLS ENGINE|HANDOFF|AMBULANCE POSITION|SCENE ARRIVAL|ON-SCENE CREW/.test(type)) return 'silent';
+    if (kind === 'patient_dialogue' || kind === 'patient_response' || /PATIENT RESPONSE|^PATIENT$|HISTORY ANSWER/.test(type)) return 'patient';
+    if (/^[“"]/u.test(text)) return 'patient';
     return 'silent';
   }
 
@@ -2732,9 +2735,13 @@
     if (kind === 'history') return { key:'history', label:'HISTORY', icon:'💬', spoken:false };
     if (kind === 'treatment') return { key:'treatment', label:'TREATMENT', icon:'✚', spoken:false };
     if (kind === 'transport') return { key:'transport', label:'TRANSPORT', icon:'🚑', spoken:false };
-    if (kind === 'partner') return { key:'partner', label:'ON-SCENE CREW', icon:'👥', spoken:false };
+    if (kind === 'partner') {
+      const label = /HANDOFF/.test(type) ? (item.type || 'BLS ENGINE HANDOFF') : 'ON-SCENE CREW';
+      return { key:'partner', label, icon:'👥', spoken:false };
+    }
     if (kind === 'alert') return { key:'alert', label:'ALERT', icon:'⚠', spoken:false };
     if (kind === 'dispatch') return { key:'dispatch', label:'DISPATCH', icon:'📟', spoken:false };
+    if (kind === 'arrival' || /AMBULANCE POSITION|SCENE ARRIVAL/.test(type)) return { key:'information', label:'AMBULANCE POSITION', icon:'🚑', spoken:false };
     return { key:'information', label:'INFORMATION', icon:'ℹ', spoken:false };
   }
 
@@ -2869,6 +2876,7 @@
     if (!replay && !infoVoiceAuto) return false;
     const role = infoVoiceRole(item);
     if (role !== 'patient') return false;
+    if (id === 'horse_crush' && document.body.dataset.horseIntro !== 'arrived') return false;
     let text = cleanInfoSpeechText(item.text);
     if (role === 'patient') {
       const quoted = String(item.text || '').match(/[“"]([^”"]+)[”"]/u);
@@ -2962,6 +2970,17 @@
         kind: 'dispatch', recordedAt: startedAt
       }];
     }
+    if (horseIntroPhase === 'parking') {
+      return [{
+        id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information',
+        text: current?.dispatch || scenario.dispatch || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.',
+        kind: 'dispatch', recordedAt: startedAt
+      }, {
+        id: 'ambulance-position', type: 'AMBULANCE POSITION', title: 'Scene arrival',
+        text: 'The ambulance is positioned near the south barn apron, facing out, with the driveway and exit path open.',
+        kind: 'arrival', recordedAt: new Date(startMs + 1).toISOString()
+      }];
+    }
     const updates = [
       { id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information', text: current?.dispatch || scenario.title, kind: 'dispatch', recordedAt: startedAt }
     ];
@@ -2989,7 +3008,7 @@
       const painEvent = [...log]
         .filter(event => painKeys.has(event.key))
         .sort((a,b) => new Date(b.recordedAt || 0).getTime() - new Date(a.recordedAt || 0).getTime())[0];
-      if (painEvent && state?.stage === 'baseline') {
+      if (painEvent && state?.stage === 'baseline' && horseIntroPhase === 'arrived') {
         const t = new Date(painEvent.recordedAt || startedAt).getTime();
         updates.push({
           id:'horse-pain-request', type:'PATIENT', title:'Patient request', text:state.patientText,

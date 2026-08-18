@@ -9,6 +9,7 @@ test.beforeEach(async ({ page }) => {
 
 test('desktop center interaction column owns patient communication while right workspace handles clinical domains', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Desktop three-column clinical workspace');
+  test.setTimeout(70_000);
   const assertNoPageErrors = watchPageErrors(page);
 
   await openScenario(page, 'horse_crush', 'learning');

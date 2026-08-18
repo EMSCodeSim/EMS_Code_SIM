@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.18.8';
+  const VERSION = '2026.08.18.15';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   const $ = id => document.getElementById(id);
@@ -47,6 +47,7 @@
 
   function patientInfo(snapshot = infoSnapshot()) {
     const type = `${snapshot.type} ${snapshot.title}`.toUpperCase();
+    if (/DISPATCH|BLS ENGINE|HANDOFF|AMBULANCE POSITION|SCENE ARRIVAL|ON-SCENE CREW/.test(type)) return false;
     return /PATIENT|HISTORY ANSWER|PATIENT RESPONSE|PATIENT QUESTION|SAMPLE ANSWER|OPQRST ANSWER/.test(type);
   }
 
@@ -351,6 +352,7 @@
     if (document.body.dataset.horseIntro === 'video') return;
     const snapshot = infoSnapshot();
     if (!snapshot.text) return;
+    if (['dispatch', 'parking'].includes(document.body.dataset.horseIntro) && patientInfo(snapshot)) return;
     if (partnerInfo(snapshot)) {
       rememberExternalInfo(snapshot);
       pushTimeline('crew', snapshot.text);
