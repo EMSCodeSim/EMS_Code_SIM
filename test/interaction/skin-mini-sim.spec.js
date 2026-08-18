@@ -28,8 +28,8 @@ test('Neuro / Skin button opens the skin simulator over the patient', async ({ p
   const sim = page.frameLocator('#embeddedSimFrame');
   await expect(sim.locator('body')).toHaveClass(/ems-embedded-mini-sim/);
   await expect(sim.locator('.sv-skin-compare')).toBeVisible();
-  await expect(sim.locator('text=Normal reference')).toBeVisible();
-  await expect(sim.locator('text=Patient sample')).toBeVisible();
+  await expect(sim.locator('.sv-skin-compare')).toContainText('Normal reference');
+  await expect(sim.locator('.sv-skin-compare')).toContainText('Patient sample');
   await expect(sim.locator('#inspectSkin')).toBeVisible();
   await expect(sim.locator('#touchSkin')).toBeVisible();
   await expect(sim.locator('#moistureSkin')).toBeVisible();
