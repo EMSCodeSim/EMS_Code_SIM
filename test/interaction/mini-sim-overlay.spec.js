@@ -88,7 +88,7 @@ const MINI_SIMS = [
   { href: '/vitals/pulse-ox-scenario.html', title: 'SpO₂', document: '#spo2Input, #submitBtn', perform: '#placeProbe' },
   { href: '/vitals/breath-sounds-scenario.html', title: 'Breath sounds', document: '#soundInput, #submitBtn', perform: '.sv-point' },
   { href: '/vitals/bgl-scenario.html', title: 'Blood glucose', document: '#bglInput, #submitBtn', perform: '.sv-step' },
-  { href: '/vitals/temperature-scenario.html', title: 'Temperature', document: '#tempInput, #submitBtn', perform: '#measureTemp, button' },
+  { href: '/vitals/temperature-scenario.html', title: 'Temperature', document: '#tempInput, #submitBtn', perform: '#measureTemp' },
   { href: '/vitals/pupil.html', title: 'Pupils / PERL', document: '#perl, #btnGrade', perform: '#btnLightL, #btnLightR' },
   { href: '/vitals/skin.html', title: 'Skin signs', document: '#crtBtn, #btnPale, #moistDry', perform: '#crtBtn' },
   { href: '/vitals/avpu-scenario.html', title: 'Mental status / AVPU', document: '#avpuChoices, #submitBtn', perform: '#observeBtn' },
@@ -122,7 +122,7 @@ test('every mini sim fits the patient window, boosts audio, and keeps a finding 
       const doc = document.getElementById('embeddedSimFrame')?.contentDocument;
       return Boolean(doc?.querySelector('link[data-ems-mini-sim-compact]') && doc.querySelector('script[data-ems-mini-sim-audio-boost]'));
     }), sim.href).toBe(true);
-    await expect(frame.locator(sim.perform).first(), `${sim.href} perform control`).toBeVisible({ timeout: 15_000 });
+    await expect(frame.locator(sim.perform).locator('visible=true').first(), `${sim.href} perform control`).toBeVisible({ timeout: 15_000 });
     await expect(frame.locator(sim.document).first(), `${sim.href} finding entry`).toBeAttached({ timeout: 15_000 });
 
     await expect.poll(() => page.evaluate(() => {
