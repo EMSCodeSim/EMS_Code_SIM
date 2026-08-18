@@ -3549,6 +3549,12 @@
     ].filter(Boolean).join(' ');
   }
 
+  function hideHorseClinicalRightRail() {
+    const sheet = $('actionSheet');
+    if (sheet) sheet.hidden = true;
+    document.body.classList.remove('horse-tool-sheet-open');
+  }
+
   function openHorseHospitalHandoff(showSample = false) {
     if (id !== 'horse_crush') return;
     closeEmbeddedSimulator({ refresh:false });
@@ -3557,6 +3563,7 @@
     const workspace = $('hospitalHandoffWorkspace');
     if (workspace) workspace.hidden = false;
     document.body.classList.add('hospital-handoff-open');
+    hideHorseClinicalRightRail();
     renderHorseHospitalHandoff();
     sceneObservationUpdate = {
       id:`horse-hospital-handoff-${Date.now()}`,
@@ -3879,6 +3886,7 @@
     const workspace = $('horseGradeWorkspace');
     if (workspace) workspace.hidden = false;
     document.body.classList.add('horse-grade-open');
+    hideHorseClinicalRightRail();
     renderHorseCallGrade();
     const satisfaction = window.EMSCodeSimPatientSatisfactionGrade?.model?.();
     const grade = satisfaction && Number.isFinite(satisfaction.score)

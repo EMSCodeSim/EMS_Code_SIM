@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.17.12';
+  const VERSION = '2026.08.17.13';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -55,6 +55,22 @@
         body.desktop-scenario-layout.domain-assessment-suppressed .horse-assessment-workspace-action,
         body.desktop-scenario-layout.domain-assessment-suppressed .horse-assessment-workspace-head,
         body.desktop-scenario-layout.domain-assessment-suppressed #assessmentFollowupHost {
+          display: none !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+        }
+        body.hospital-handoff-open #actionSheet,
+        body.hospital-handoff-open #actionSheet.action-sheet,
+        body.hospital-handoff-open #actionSheet:not([hidden]),
+        body.horse-grade-open #actionSheet,
+        body.horse-grade-open #actionSheet.action-sheet,
+        body.horse-grade-open #actionSheet:not([hidden]),
+        body.hospital-handoff-open .patient-control-column,
+        body.horse-grade-open .patient-control-column,
+        body.hospital-handoff-open #treatmentPanel,
+        body.horse-grade-open #treatmentPanel,
+        body.hospital-handoff-open .bottom-nav,
+        body.horse-grade-open .bottom-nav {
           display: none !important;
           visibility: hidden !important;
           pointer-events: none !important;
@@ -355,11 +371,27 @@
     return true;
   }
 
+  function overlayOccupiesPatientStage() {
+    return document.body.classList.contains('hospital-handoff-open')
+      || document.body.classList.contains('horse-grade-open');
+  }
+
+  function hideSheetForOverlay() {
+    const sheet = $('actionSheet');
+    if (sheet) sheet.hidden = true;
+    document.body.classList.remove('horse-tool-sheet-open');
+  }
+
   function openDefaultDomainWhenReady() {
     if (!desktopActive()) return;
     if (document.body.classList.contains('horse-arrival-pending') || $('horseArrivalDecision')) return;
     const sheet = $('actionSheet');
     const activeId = activePanelId();
+
+    if (overlayOccupiesPatientStage()) {
+      hideSheetForOverlay();
+      return;
+    }
 
     if (document.body.classList.contains('horse-current-emt-call') && !activeId) {
       if (sheet) sheet.hidden = true;
@@ -418,6 +450,7 @@
   function handleDomainClick(event) {
     const button = event.target.closest?.('.bottom-nav button[data-panel]');
     if (!button || !desktopActive() || button.classList.contains('desktop-domain-hidden')) return;
+    if (overlayOccupiesPatientStage()) return;
     window.requestAnimationFrame(() => {
       const panelId = button.dataset.panel || '';
       const panel = $(panelId);

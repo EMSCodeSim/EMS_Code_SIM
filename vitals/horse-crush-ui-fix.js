@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.17.12';
+  const VERSION = '2026.08.17.13';
   let lastAbcCommitAt = 0;
   let lastAbcCommitToken = '';
   const FOCUSED_EXAMS = new Set([
@@ -151,6 +151,7 @@
 
   function showPromotedTreatmentPanel(title = 'Transport') {
     if (!isDesktopHorse()) return false;
+    if (document.body.classList.contains('hospital-handoff-open') || document.body.classList.contains('horse-grade-open')) return false;
     const sheet = document.getElementById('actionSheet');
     const panel = document.getElementById('treatmentPanel');
     if (!sheet || !panel) return false;
