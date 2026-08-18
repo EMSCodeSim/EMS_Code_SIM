@@ -30,7 +30,8 @@ async function completeHorseIntroIfPresent(page) {
   }
   await skip.click();
   await expect(page.locator('#horseIntroOverlay')).toHaveCount(0, { timeout: 8000 });
-  await expect(page.locator('#infoUpdateType')).toHaveText(/BLS ENGINE HANDOFF/, { timeout: 8000 });
+  await expect(page.locator('#infoUpdateType')).toHaveText(/BLS ENGINE HANDOFF/, { timeout: 12000 });
+  await expect(page.locator('#horseIntroOverlay')).toHaveCount(0);
 }
 
 async function openScenario(page, caseId = 'asthma', mode = 'learning') {

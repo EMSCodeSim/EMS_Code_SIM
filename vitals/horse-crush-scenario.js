@@ -174,6 +174,7 @@
   function finishIntroVideo() {
     const phase = document.body.dataset.horseIntro;
     if (phase === 'dispatch' || phase === 'arrived') return;
+    setIntroPhase('dispatch');
     hideIntroOverlay();
     showDispatch();
     window.clearTimeout(introTimer);
@@ -210,7 +211,7 @@
       return;
     }
     const phase = document.body.dataset.horseIntro;
-    if (phase === 'dispatch') return;
+    if (phase === 'dispatch' || phase === 'arrived') return;
     if (phase === 'video' && document.getElementById('horseIntroOverlay')) return;
     document.body.classList.add('horse-intro-playing');
     setIntroPhase('video');

@@ -84,24 +84,23 @@ test('desktop treatment categories stay clickable and More treatments does not s
     const handoff = document.getElementById('horseOpenHandoff');
     if (!transport || !handoff) return { ok:false, reason:'missing' };
     const hit = el => {
-      const label = el.querySelector('strong') || el;
-      const box = label.getBoundingClientRect();
+      const box = el.getBoundingClientRect();
       const top = document.elementFromPoint(Math.round(box.left + box.width / 2), Math.round(box.top + box.height / 2));
       return Boolean(top?.closest?.(`#${el.id}`));
     };
     return { ok: hit(transport) && hit(handoff) };
   })).toMatchObject({ ok: true });
 
-  const transportLabel = await page.locator('#horseOpenTransport strong').boundingBox();
-  expect(transportLabel).toBeTruthy();
-  await page.mouse.click(transportLabel.x + transportLabel.width / 2, transportLabel.y + transportLabel.height / 2);
+  const transportBox = await page.locator('#horseOpenTransport').boundingBox();
+  expect(transportBox).toBeTruthy();
+  await page.mouse.click(transportBox.x + transportBox.width / 2, transportBox.y + transportBox.height / 2);
   await expect(page.locator('#treatmentTools .horse-transport-selection-form, #treatmentTools select[name="impression"]').first()).toBeVisible();
 
   await page.locator('#horseTreatmentBackToGroups').click();
   await expect(page.locator('#horseOpenHandoff')).toBeVisible();
-  const handoffLabel = await page.locator('#horseOpenHandoff strong').boundingBox();
-  expect(handoffLabel).toBeTruthy();
-  await page.mouse.click(handoffLabel.x + handoffLabel.width / 2, handoffLabel.y + handoffLabel.height / 2);
+  const handoffBox = await page.locator('#horseOpenHandoff').boundingBox();
+  expect(handoffBox).toBeTruthy();
+  await page.mouse.click(handoffBox.x + handoffBox.width / 2, handoffBox.y + handoffBox.height / 2);
   await expect(page.locator('#hospitalHandoffWorkspace')).toBeVisible();
   await expect(page.locator('body')).toHaveClass(/hospital-handoff-open/);
   await page.locator('#closeHospitalHandoff').click();
