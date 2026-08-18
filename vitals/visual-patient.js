@@ -57,6 +57,7 @@
     return target.nodeType === 1 ? target : target.parentElement;
   };
   const MEASURABLE_TOOL_KEYS = new Set(['blood_pressure','pulse','respirations','spo2','blood_glucose','temperature']);
+  const VITALS_PANEL_KEYS = new Set([...MEASURABLE_TOOL_KEYS, 'breath_sounds']);
   const PRIMARY_KEYS = new Set(['scene_size_up','airway','breathing','perfusion']);
   let activeFocus = null;
   let findingFilter = 'all';
@@ -296,7 +297,7 @@
   function buildVitals() {
     const box = $('vitalTools');
     box.innerHTML = '';
-    const tools = (registry?.vitalTools || []).filter(tool => MEASURABLE_TOOL_KEYS.has(tool.key));
+    const tools = (registry?.vitalTools || []).filter(tool => VITALS_PANEL_KEYS.has(tool.key));
     if (id === 'horse_crush') {
       appendToolGroup(box, 'Vital and bedside tools', 'Choose the measurements that fit the call. Nothing here is required simply because it appears in the menu.', tools, 'horse-free-flow');
       return;
@@ -1150,7 +1151,7 @@
           return;
         }
         if (item.id === 'pupils') {
-          const href = '/vitals/pupil.html';
+          const href = '/vitals/pupil-scenario.html';
           if (!openEmbeddedSimulator(href, 'Pupils / PERL')) {
             window.EMSCodeSimMiniSimOverlay?.openOverlay?.(href, 'Pupils / PERL');
           }
@@ -4379,10 +4380,20 @@
       document.body.style.overflow = '';
       desktopWorkspaceReady = true;
       if (id === 'horse_crush') {
-        sheet.hidden = true;
-        document.body.classList.remove('horse-tool-sheet-open');
-        document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
-        configureHorseCurrentAssessmentWorkspace();
+        const arrived = document.body.dataset.horseIntro === 'arrived';
+        const overlayOpen = document.body.classList.contains('hospital-handoff-open')
+          || document.body.classList.contains('horse-grade-open');
+        if (!arrived || overlayOpen) {
+          sheet.hidden = true;
+          document.body.classList.remove('horse-tool-sheet-open');
+          document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
+          configureHorseCurrentAssessmentWorkspace();
+        } else {
+          const activePanel = document.querySelector('.bottom-nav button.active')?.dataset.panel
+            || document.body.getAttribute('data-active-domain')
+            || 'assessmentPanel';
+          openSheet(activePanel);
+        }
       } else {
         sheet.hidden = false;
         const activePanel = [...document.querySelectorAll('.vp-panel')].find(panel => !panel.hidden)?.id || 'assessmentPanel';
@@ -4411,7 +4422,7 @@
     const findings = current.findings || {};
     const customAssessmentKeys = id === 'horse_crush' ? ['arrival_parking','bls_handoff','neck_back','pelvis_hip','left_leg','distal_csm','movement_plan'] : [];
     const assessmentKeys = [...new Set([...(registry?.assessmentTools || []).map(tool => tool.key), ...customAssessmentKeys])];
-    const vitalKeys = (registry?.vitalTools || []).filter(tool => MEASURABLE_TOOL_KEYS.has(tool.key)).map(tool => tool.key);
+    const vitalKeys = (registry?.vitalTools || []).filter(tool => VITALS_PANEL_KEYS.has(tool.key)).map(tool => tool.key);
     const partnerTasks = session?.readPartnerTasks?.(id) || {};
     const select = keys => Object.fromEntries(keys.map(key => [key, findings[key] || null]));
     const selectedTasks = keys => Object.fromEntries(keys.map(key => [key, partnerTasks[key] || null]));
@@ -4977,7 +4988,8 @@
     if (returnButtonLabel) returnButtonLabel.textContent = 'Current assessment';
     window.EMSCodeSimHorseWorkspace = Object.freeze({
       selectAssessment: selectHorseCurrentAssessment,
-      showCurrent: closeSheet
+      showCurrent: closeSheet,
+      openSheet
     });
   }
   if ($('modeBadge')) $('modeBadge').textContent = assessmentMode() ? 'Assessment Mode' : 'Learning Mode';

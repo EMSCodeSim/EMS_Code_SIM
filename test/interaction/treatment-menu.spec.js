@@ -79,6 +79,7 @@ test('desktop treatment categories stay clickable and More treatments does not s
   await page.locator('#horseTreatmentBackToGroups').click();
   await expect(page.locator('#horseOpenTransport')).toBeVisible();
   await expect(page.locator('#horseOpenHandoff')).toBeVisible();
+  await expect(page.locator('#horseOpenGrade')).toBeVisible();
   await page.locator('#horseOpenTransport').scrollIntoViewIfNeeded();
   await page.locator('#horseOpenHandoff').scrollIntoViewIfNeeded();
   await expect.poll(() => page.evaluate(() => {
@@ -112,6 +113,13 @@ test('desktop treatment categories stay clickable and More treatments does not s
   await expect(page.locator('body')).toHaveClass(/hospital-handoff-open/);
   await page.locator('#closeHospitalHandoff').click();
   await expect(page.locator('#hospitalHandoffWorkspace')).toBeHidden();
+
+  await expect(page.locator('#horseOpenGrade')).toBeVisible();
+  const gradeBox = await page.locator('#horseOpenGrade').boundingBox();
+  expect(gradeBox).toBeTruthy();
+  await page.mouse.click(gradeBox.x + gradeBox.width / 2, gradeBox.y + gradeBox.height / 2);
+  await expect(page.locator('#horseGradeWorkspace')).toBeVisible();
+  await expect(page.locator('body')).toHaveClass(/horse-grade-open/);
 
   await assertNoPageErrors();
 });

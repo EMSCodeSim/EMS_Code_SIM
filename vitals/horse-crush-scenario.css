@@ -473,6 +473,7 @@ body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 .scen
   }
   body.horse-current-emt-call.desktop-scenario-layout #horseOpenTransport,
   body.horse-current-emt-call.desktop-scenario-layout #horseOpenHandoff,
+  body.horse-current-emt-call.desktop-scenario-layout #horseOpenGrade,
   body.horse-current-emt-call.desktop-scenario-layout .horse-endpoint-action{
     position:relative!important;
     z-index:9!important;

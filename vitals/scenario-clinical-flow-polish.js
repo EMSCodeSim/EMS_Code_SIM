@@ -1,6 +1,6 @@
 (()=>{
 'use strict';
-const VERSION='2026.08.14.16';
+const VERSION='2026.08.18.28';
 const params=new URLSearchParams(location.search);
 const requested=(params.get('case')||'').toLowerCase();
 const api=window.EMSCodeSimPatientRecord;
@@ -17,6 +17,7 @@ function conversationAllowed(){
  if(document.body.classList.contains('sim-workspace-open'))return false;
  if($('horseGradeWorkspace')&&!$('horseGradeWorkspace').hidden)return false;
  if(current.documentation?.handoffSavedAt)return false;
+ if(window.EMSCodeSimHorseCrush?.introAllowsPatientSpeech&&!window.EMSCodeSimHorseCrush.introAllowsPatientSpeech())return false;
  const turn=$('patientConversationTurn');
  return !turn||turn.hidden;
 }

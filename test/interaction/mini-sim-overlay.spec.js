@@ -88,6 +88,7 @@ const STAGE_VISUALS = {
   '/vitals/bgl-scenario.html': '.sv-device',
   '/vitals/temperature-scenario.html': '.sv-device',
   '/vitals/breath-sounds-scenario.html': '.sv-ausc-stage, .sv-point',
+  '/vitals/pupil-scenario.html': '.sv-eyes, .sv-pupil-assessment',
   '/vitals/skin-scenario.html': '.sv-skin-compare, #patientSwatch'
 };
 
@@ -99,7 +100,7 @@ const MINI_SIMS = [
   { href: '/vitals/breath-sounds-scenario.html', title: 'Breath sounds', document: '#soundInput, #submitBtn', perform: '.sv-point' },
   { href: '/vitals/bgl-scenario.html', title: 'Blood glucose', document: '#bglInput, #submitBtn', perform: '.sv-step' },
   { href: '/vitals/temperature-scenario.html', title: 'Temperature', document: '#tempInput, #submitBtn', perform: '#measureTemp' },
-  { href: '/vitals/pupil.html', title: 'Pupils / PERL', document: '#perl, #btnGrade', perform: '#btnLightL, #btnLightR' },
+  { href: '/vitals/pupil-scenario.html', title: 'Pupils / PERL', document: '#equalInput, #submitBtn', perform: '#lightLeft' },
   { href: '/vitals/skin-scenario.html', title: 'Skin signs', document: '#colorInput, #submitBtn', perform: '#inspectSkin' },
   { href: '/vitals/avpu-scenario.html', title: 'Mental status / AVPU', document: '#avpuChoices, #submitBtn', perform: '#observeBtn' },
   { href: '/vitals/gcs.html', title: 'Glasgow Coma Scale', document: '#selE, #selV, #selM, #showResults', perform: '#btnEyes' },

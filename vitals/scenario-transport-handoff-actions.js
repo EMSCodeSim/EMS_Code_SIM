@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.18.25';
+  const VERSION = '2026.08.18.28';
   const desktop = window.matchMedia('(min-width:980px)');
   const $ = id => document.getElementById(id);
   function eventNode(event) {
@@ -49,7 +49,7 @@
     style.textContent = `
       #horseTransportHandoffActions{margin:0;padding:0;border:0;display:grid;gap:4px;position:relative;z-index:8;overflow:visible;pointer-events:auto}
       #horseTransportHandoffActions .horse-endpoint-actions-head{display:none}
-      #horseTransportHandoffActions .horse-endpoint-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;position:relative;z-index:9;pointer-events:auto}
+      #horseTransportHandoffActions .horse-endpoint-action-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;position:relative;z-index:9;pointer-events:auto}
       #horseTransportHandoffActions .horse-endpoint-action{position:relative;z-index:9;min-height:32px;max-height:34px;display:grid;grid-template-columns:16px 1fr;gap:5px;align-items:center;padding:4px 8px;border:1px solid #3c6a80;border-radius:8px;background:#12384d;color:#fff;text-align:left;font:inherit;cursor:pointer;touch-action:manipulation;pointer-events:auto}
       #horseTransportHandoffActions .horse-endpoint-action::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:auto}
       #horseTransportHandoffActions .horse-endpoint-action > *{position:relative;z-index:0;pointer-events:none}
@@ -101,7 +101,7 @@
       host = document.createElement('section');
       host.id = 'horseTransportHandoffActions';
       host.className = 'horse-transport-handoff-actions horse-natural-encounter-end';
-      host.setAttribute('aria-label', 'Transport and hospital handoff');
+      host.setAttribute('aria-label', 'Transport, hospital handoff, and grade');
     }
     if (host.parentElement !== tools) tools.appendChild(host);
     // Keep transport/handoff pinned under categories + More treatments.
@@ -174,6 +174,9 @@
         <button type="button" id="horseOpenHandoff" class="horse-endpoint-action${handedOff ? ' complete' : ''}" data-horse-endpoint="handoff">
           <span aria-hidden="true">${handedOff ? '✓' : 'H'}</span><strong>${handedOff ? 'Review handoff' : 'Handoff'}</strong>
         </button>
+        <button type="button" id="horseOpenGrade" class="horse-endpoint-action" data-horse-endpoint="grade">
+          <span aria-hidden="true">✓</span><strong>Grade</strong>
+        </button>
       </div>
       <div id="horseEndpointDetail" class="horse-endpoint-detail" hidden></div>`;
   }
@@ -186,7 +189,7 @@
     const signature = stateSignature();
     // Avoid rewriting live buttons. Comparing innerHTML strings is unstable and
     // was detaching #horseOpenTransport / #horseOpenHandoff on every mutation.
-    if (signature === lastSignature && host.querySelector('#horseOpenTransport') && host.querySelector('#horseOpenHandoff')) {
+    if (signature === lastSignature && host.querySelector('#horseOpenTransport') && host.querySelector('#horseOpenHandoff') && host.querySelector('#horseOpenGrade')) {
       return;
     }
     lastSignature = signature;
@@ -197,20 +200,24 @@
   function bindEndpointButtons(host) {
     const transport = host?.querySelector('#horseOpenTransport');
     const handoff = host?.querySelector('#horseOpenHandoff');
+    const grade = host?.querySelector('#horseOpenGrade');
     const onActivate = event => activateEndpointFromEvent(event);
     transport?.addEventListener('pointerup', onActivate);
     transport?.addEventListener('click', onActivate);
     handoff?.addEventListener('pointerup', onActivate);
     handoff?.addEventListener('click', onActivate);
+    grade?.addEventListener('pointerup', onActivate);
+    grade?.addEventListener('click', onActivate);
   }
 
   function activateEndpointFromEvent(event) {
     const node = eventNode(event);
     const transport = node?.closest?.('#horseOpenTransport, [data-horse-endpoint="transport"]');
     const handoff = node?.closest?.('#horseOpenHandoff, [data-horse-endpoint="handoff"]');
-    if (!transport && !handoff) return false;
+    const grade = node?.closest?.('#horseOpenGrade, [data-horse-endpoint="grade"]');
+    if (!transport && !handoff && !grade) return false;
     if (event.type === 'pointerup' && event.button) return false;
-    const action = transport ? 'transport' : 'handoff';
+    const action = transport ? 'transport' : handoff ? 'handoff' : 'grade';
     const now = Date.now();
     if (action === lastEndpointAction && now - lastEndpointActivate < 400) {
       event.preventDefault();
@@ -222,7 +229,8 @@
     event.preventDefault();
     event.stopImmediatePropagation();
     if (transport) openTransport();
-    else openHandoff();
+    else if (handoff) openHandoff();
+    else openGrade();
     return true;
   }
 
@@ -349,6 +357,16 @@
     $('horseEndpointBack')?.addEventListener('click', closeDetail);
   }
 
+  function openGrade() {
+    const actions = window.EMSCodeSimHorseEncounterActions;
+    if (typeof actions?.openGrade === 'function') {
+      actions.openGrade();
+      return;
+    }
+    $('gradeScenarioFromPatient')?.click();
+    $('openHorseCallGrade')?.click();
+  }
+
   function closeDetail() {
     const host = $('horseTransportHandoffActions');
     if (!host) return;
@@ -419,7 +437,7 @@
     window.addEventListener('pagehide', () => observer?.disconnect(), { once:true });
   }
 
-  window.EMSCodeSimTransportHandoff = Object.freeze({ version:VERSION, render:schedule, openTransport, openHandoff });
+  window.EMSCodeSimTransportHandoff = Object.freeze({ version:VERSION, render:schedule, openTransport, openHandoff, openGrade });
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
   else start();
