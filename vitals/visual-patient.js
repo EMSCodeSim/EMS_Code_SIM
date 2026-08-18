@@ -2958,7 +2958,7 @@
     if (horseIntroPhase === 'dispatch') {
       return [{
         id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information',
-        text: current?.dispatch || 'Reported fall at a horse facility; a BLS engine crew is already on scene.',
+        text: current?.dispatch || scenario.dispatch || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.',
         kind: 'dispatch', recordedAt: startedAt
       }];
     }

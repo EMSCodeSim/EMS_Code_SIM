@@ -46,7 +46,8 @@
   letter-spacing:.04em;
   cursor:pointer;
 }
-body.horse-intro-playing #infoUpdateWindow{
+body.horse-intro-playing #infoUpdateWindow,
+body.horse-intro-playing #communicationTimeline{
   visibility:hidden;
   pointer-events:none;
 }

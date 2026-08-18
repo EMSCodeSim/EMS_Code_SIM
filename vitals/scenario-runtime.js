@@ -129,7 +129,7 @@
     const v = state?.vitals || {};
     const common = {
       title: currentRecord.title || 'Horse-Crush Hip Injury',
-      description: currentRecord.dispatch || 'Reported fall at a horse facility; a BLS engine crew is already on scene.',
+      description: currentRecord.dispatch || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.',
       context: currentRecord.dispatch || '',
       age: currentRecord.patient || '64-year-old adult',
       complaint: currentRecord.title || 'Horse-Crush Hip Injury'
