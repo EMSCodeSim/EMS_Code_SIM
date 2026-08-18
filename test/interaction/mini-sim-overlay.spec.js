@@ -146,10 +146,15 @@ test('every mini sim fits the patient window, boosts audio, and keeps a finding 
         if (!visual || !stage) return { ok:false, reason:'missing' };
         const visualBox = visual.getBoundingClientRect();
         const stageBox = stage.getBoundingClientRect();
+        const viewH = doc.documentElement?.clientHeight || 0;
+        const inView = visualBox.bottom > 8 && visualBox.top < viewH - 8;
         return {
-          ok: visualBox.height >= 40 && stageBox.height >= 80,
+          ok: visualBox.height >= 40 && visualBox.width >= 80 && stageBox.height >= 80 && inView,
           visualHeight: visualBox.height,
-          stageHeight: stageBox.height
+          visualWidth: visualBox.width,
+          visualTop: visualBox.top,
+          stageHeight: stageBox.height,
+          viewH
         };
       }, visualSel.split(',')[0].trim()), sim.href).toMatchObject({ ok: true });
     }

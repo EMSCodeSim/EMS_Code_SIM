@@ -28,6 +28,20 @@ test('Chest Breath Sounds button opens the rebuilt anatomical mini sim over the 
   const sim = page.frameLocator('#embeddedSimFrame');
   await expect(sim.locator('body')).toHaveClass(/ems-embedded-mini-sim/);
   await expect(sim.locator('.sv-ausc-stage')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => {
+    const doc = document.getElementById('embeddedSimFrame')?.contentDocument;
+    const visual = doc?.querySelector('.sv-ausc-stage');
+    if (!visual) return { ok:false, reason:'missing' };
+    const box = visual.getBoundingClientRect();
+    const viewH = doc.documentElement?.clientHeight || 0;
+    return {
+      ok: box.width >= 120 && box.height >= 120 && box.top < viewH - 8 && box.bottom > 8,
+      width: box.width,
+      height: box.height,
+      top: box.top,
+      viewH
+    };
+  })).toMatchObject({ ok: true });
   await expect(sim.locator('.sv-ausc-stage svg')).toBeVisible();
   await expect(sim.locator('.sv-point[data-view="front"]')).toHaveCount(4);
 

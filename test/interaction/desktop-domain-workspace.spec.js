@@ -110,6 +110,21 @@ test('desktop center interaction column owns patient communication while right w
 
   const device = page.frameLocator('#embeddedSimFrame');
   await expect(device.locator('body')).toHaveClass(/ems-embedded-mini-sim/);
+  await expect(device.locator('.sv-monitor')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => {
+    const doc = document.getElementById('embeddedSimFrame')?.contentDocument;
+    const visual = doc?.querySelector('.sv-monitor');
+    if (!visual) return { ok:false, reason:'missing' };
+    const box = visual.getBoundingClientRect();
+    const viewH = doc.documentElement?.clientHeight || 0;
+    return {
+      ok: box.width >= 120 && box.height >= 80 && box.top < viewH - 8 && box.bottom > 8,
+      width: box.width,
+      height: box.height,
+      top: box.top,
+      viewH
+    };
+  })).toMatchObject({ ok: true });
   await device.locator('#placeProbe').click();
   await expect(device.locator('#submitBtn')).toBeEnabled({ timeout: 8000 });
   const displayedSpo2 = (await device.locator('#monitorValue').textContent())?.trim();

@@ -8,7 +8,7 @@
 
   if (!document.querySelector('script[data-ems-mini-sim-audio-boost]')) {
     const audioBoost = document.createElement('script');
-    audioBoost.src = '/vitals/scenario-mini-sim-audio-boost.js?v=2026.08.18.28';
+    audioBoost.src = '/vitals/scenario-mini-sim-audio-boost.js?v=2026.08.18.29';
     audioBoost.dataset.emsMiniSimAudioBoost = '1';
     audioBoost.async = false;
     document.body.appendChild(audioBoost);
@@ -453,7 +453,7 @@
   }, true);
 
   window.EMSCodeSimEmbeddedMiniSim = Object.freeze({
-    version: '2026.08.18.28',
+    version: '2026.08.18.29',
     unlockDocument,
     markObserved,
     setFlow,

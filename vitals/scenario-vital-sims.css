@@ -32,7 +32,7 @@ button,input,select{font:inherit}.sv-topbar{position:sticky;top:0;z-index:20;pad
 .sv-stopwatch-hub{position:absolute;left:50%;top:50%;width:14px;height:14px;border-radius:50%;background:#173b46;transform:translate(-50%,-50%);z-index:2}
 .sv-stopwatch-digital{position:absolute;left:50%;bottom:23%;transform:translateX(-50%);min-width:74px;padding:4px 7px;border-radius:8px;background:#eef6f8;color:#173b46;text-align:center;font-weight:900;font-variant-numeric:tabular-nums}
 .sv-pulse-note{margin:8px 0 0;color:var(--sv-muted);font-size:.8rem;line-height:1.35}
-@media(min-width:760px){
+@media(min-width:760px) and (min-height:680px){
   body[data-scenario-vital="pulse"]{height:100dvh;overflow:hidden}
   body[data-scenario-vital="pulse"] .sv-topbar{position:relative;padding-top:7px;padding-bottom:7px}
   body[data-scenario-vital="pulse"] .sv-main{width:min(100%,900px);height:calc(100dvh - 58px);min-height:0;padding:8px 14px;display:grid;grid-template-columns:1.15fr .85fr;grid-template-rows:auto auto minmax(0,1fr);gap:8px;overflow:hidden}
@@ -69,7 +69,7 @@ button,input,select{font:inherit}.sv-topbar{position:sticky;top:0;z-index:20;pad
 .sv-resp-diaphragm{position:absolute;left:28px;right:28px;bottom:20px;height:18px;border-bottom:3px solid #ffffff7a;border-radius:0 0 50% 50%}
 .sv-resp-effort{position:absolute;left:10px;right:10px;bottom:8px;z-index:2;text-align:center;font-size:.78rem;font-weight:850;color:#075985;background:#f5fbfcdc;padding:4px 7px;border-radius:8px}
 .sv-resp-watch{width:min(30dvh,190px)}
-@media(min-width:760px){
+@media(min-width:760px) and (min-height:680px){
  body[data-scenario-vital="respirations"]{height:100dvh;overflow:hidden}
  body[data-scenario-vital="respirations"] .sv-topbar{position:relative;padding-top:7px;padding-bottom:7px}
  body[data-scenario-vital="respirations"] .sv-main{width:min(100%,980px);height:calc(100dvh - 58px);min-height:0;padding:8px 14px;display:grid;grid-template-columns:1.2fr .8fr;grid-template-rows:auto auto minmax(0,1fr);gap:8px;overflow:hidden}
@@ -90,7 +90,7 @@ button,input,select{font:inherit}.sv-topbar{position:sticky;top:0;z-index:20;pad
 @media(max-width:759px){.sv-resp-stage{grid-template-columns:1fr}.sv-resp-patient{height:235px}.sv-resp-watch{width:155px}}
 
 /* ALL OTHER CORE VITALS DESKTOP 2.218 */
-@media(min-width:760px){
+@media(min-width:760px) and (min-height:680px){
   body[data-scenario-vital="spo2"],
   body[data-scenario-vital="bgl"],
   body[data-scenario-vital="temperature"],
