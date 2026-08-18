@@ -78,7 +78,7 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
   // After walk video, dispatch, ambulance position, and BLS handoff, the patient photo is revealed.
   await expect(page.locator('[data-horse-parking]')).toHaveCount(0);
   await expect(page.locator('#horseArrivalDecision')).toHaveCount(0);
-  await expectHorsePhoto('/vitals/assets/horse-crush/handoff.webp');
+  await expectHorsePhoto('/vitals/assets/horse-crush/Rd9Hp.jpg');
   await expect(page.locator('#horseBlsFollowups')).toBeVisible();
   await expectSimulatorOverPatientPhoto();
 
