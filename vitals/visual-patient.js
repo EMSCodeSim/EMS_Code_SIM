@@ -4617,15 +4617,22 @@
     embeddedCloseTimer = window.setTimeout(() => {
       embeddedCloseTimer = 0;
       if (generation !== embeddedOpenGeneration) return;
-      closeEmbeddedSimulator({ refresh:true });
+      closeEmbeddedSimulator({ refresh:true, generation });
       toast('Assessment saved');
     }, delay);
   }
 
   function armEmbeddedCompletionWatcher() {
     cancelEmbeddedAutoClose();
+    const generation = embeddedOpenGeneration;
+    const armedAt = Date.now();
     embeddedRecordSignature = embeddedRecordCompletionSignature();
     embeddedCompletionTimer = window.setInterval(() => {
+      if (generation !== embeddedOpenGeneration) {
+        clearInterval(embeddedCompletionTimer);
+        embeddedCompletionTimer = 0;
+        return;
+      }
       const workspace = $('embeddedSimWorkspace');
       if (!workspace || workspace.hidden) {
         clearInterval(embeddedCompletionTimer);
@@ -4633,6 +4640,11 @@
         return;
       }
       const next = embeddedRecordCompletionSignature();
+      // A previous sim's delayed record refresh must not look like this sim saving.
+      if (Date.now() - armedAt < 450) {
+        embeddedRecordSignature = next || embeddedRecordSignature;
+        return;
+      }
       if (next && embeddedRecordSignature && next !== embeddedRecordSignature) {
         clearInterval(embeddedCompletionTimer);
         embeddedCompletionTimer = 0;
@@ -4648,8 +4660,10 @@
     if (!['ems-sim-complete','ems-assessment-saved','ems-vital-saved'].includes(data.type)) return;
     const frame = $('embeddedSimFrame');
     if (frame?.contentWindow && event.source !== frame.contentWindow) return;
+    const generation = embeddedOpenGeneration;
     clearInterval(embeddedCompletionTimer);
-    closeEmbeddedSimulator({refresh:true});
+    if (generation !== embeddedOpenGeneration) return;
+    closeEmbeddedSimulator({refresh:true, generation});
     toast(data.label ? `${data.label} saved` : 'Assessment saved');
   }
   window.addEventListener('emscodesim:embedded-sim-opened', () => {
@@ -4659,15 +4673,25 @@
   window.addEventListener('message', handleEmbeddedSimulatorComplete);
 
   function closeEmbeddedSimulator(options = {}) {
+    const generation = Number.isInteger(options.generation) ? options.generation : embeddedOpenGeneration;
     cancelEmbeddedAutoClose();
+    if (generation !== embeddedOpenGeneration) return;
     const workspace = $('embeddedSimWorkspace');
     const frame = $('embeddedSimFrame');
     if (!workspace || workspace.hidden) return;
     workspace.hidden = true;
     document.body.classList.remove('sim-workspace-open');
+    if (generation !== embeddedOpenGeneration) {
+      workspace.hidden = false;
+      document.body.classList.add('sim-workspace-open');
+      return;
+    }
     if (frame) frame.src = 'about:blank';
     if (options.refresh !== false) {
-      window.setTimeout(() => refreshFromRecord({ force:true }), 40);
+      window.setTimeout(() => {
+        if (generation !== embeddedOpenGeneration) return;
+        refreshFromRecord({ force:true });
+      }, 40);
     }
   }
 
@@ -4814,7 +4838,7 @@
           if (generation !== embeddedOpenGeneration) return;
           const next = embeddedRecordCompletionSignature();
           if (next && embeddedRecordSignature && next !== embeddedRecordSignature) {
-            closeEmbeddedSimulator({ refresh:true });
+            closeEmbeddedSimulator({ refresh:true, generation });
             toast('Assessment saved');
           }
         }, 220);
@@ -4830,10 +4854,13 @@
   $('embeddedSimFrame')?.addEventListener('load', () => {
     const frame = $('embeddedSimFrame');
     if (!frame || frame.src === 'about:blank') return;
+    const generation = embeddedOpenGeneration;
     try {
       const current = frame.contentWindow?.location;
-      if (current?.pathname === '/vitals/visual-patient.html') closeEmbeddedSimulator();
-      else {
+      if (generation !== embeddedOpenGeneration) return;
+      if (current?.pathname === '/vitals/visual-patient.html') {
+        closeEmbeddedSimulator({ generation });
+      } else {
         installEmbeddedSaveBridge();
         armEmbeddedCompletionWatcher();
         scheduleEmbeddedFit();
