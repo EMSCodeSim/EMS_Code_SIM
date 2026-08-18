@@ -32,7 +32,8 @@ async function completeHorseIntroIfPresent(page) {
   await expect(page.locator('#horseIntroOverlay')).toHaveCount(0, { timeout: 8000 });
   await expect(page.locator('#infoUpdateType')).toHaveText(/DISPATCH/, { timeout: 8000 });
   await expect(page.locator('#infoUpdateType')).toHaveText(/AMBULANCE POSITION/, { timeout: 20000 });
-  await expect(page.locator('#infoUpdateType')).toHaveText(/BLS ENGINE HANDOFF/, { timeout: 15000 });
+  await expect.poll(() => page.evaluate(() => document.body.dataset.horseIntro), { timeout: 15000 }).toBe('arrived');
+  await expect(page.locator('#infoUpdateType')).toHaveText(/BLS ENGINE HANDOFF/, { timeout: 8000 });
   await expect(page.locator('#horseIntroOverlay')).toHaveCount(0);
 }
 
