@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.17.15';
+  const VERSION = '2026.08.18.17';
   let lastAbcCommitAt = 0;
   let lastAbcCommitToken = '';
   const FOCUSED_EXAMS = new Set([
@@ -314,6 +314,7 @@
     const item = ABC[key];
     const inline = ensureInlineQuestion();
     if (!item || !inline) return false;
+    window.EMSCodeSimHorseCrush?.noteLearnerAssessment?.(key);
     const current = finding(key);
     showObservation(key);
     // Re-assert placement under the main assessment questions after any rebuild.
@@ -374,7 +375,9 @@
     if (!button) return;
     const key = String(button.dataset.assessmentItem || '');
     if (ABC[key]) {
-      event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation?.(); openDesktopAbcFollowup(button, key); return;
+      event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation?.();
+      window.EMSCodeSimHorseCrush?.noteLearnerAssessment?.(key);
+      openDesktopAbcFollowup(button, key); return;
     }
     if (SIM_ASSESSMENTS[key]) {
       event.preventDefault();

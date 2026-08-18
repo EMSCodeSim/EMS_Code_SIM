@@ -103,7 +103,8 @@ body.horse-intro-locked #treatmentPanel{
   border-radius:10px;
   background:#0d2a3c;
 }
-.horse-bls-followups[hidden]{display:none!important}
+.horse-bls-followups[hidden],
+body.horse-bls-followups-dismissed #horseBlsFollowups{display:none!important}
 .horse-bls-followups-head{
   display:grid;
   gap:2px;

@@ -5,13 +5,16 @@
   const ASSET = '/vitals/assets/horse-crush/';
   const DISPATCH_TEXT = window.EMSCodeSimScenarioDefinitions?.CATALOG?.horse_crush?.dispatch
     || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.';
-  const INTRO_BUILD = '2026.08.18.16';
+  const INTRO_BUILD = '2026.08.18.17';
   const INTRO_VIDEO = `${ASSET}incident-calm-walk.mp4?v=${INTRO_BUILD}`;
   const INTRO_PLAY_WAIT_MS = 250;
   const INTRO_PLAY_RETRY_MS = 800;
   const PARKING_PHOTO = `${ASSET}map-arrival.webp`;
   const PARKING_TEXT = 'The ambulance is positioned near the south barn apron, facing out, with the driveway and exit path open.';
   const HANDOFF_PHOTO = `${ASSET}handoff.webp`;
+  const PATIENT_PHOTO = `${ASSET}patient-initial.webp`;
+  const MOVEMENT_PHOTO = `${ASSET}movement-scoop.webp`;
+  const TRANSPORT_PHOTO = `${ASSET}transport-ambulance.webp`;
   const BLS_HANDOFF_TEXT = '“She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented ×4 and complains of left-hip pain. We have not moved her.”';
   const BLS_FOLLOWUPS = [
     {
@@ -55,6 +58,12 @@
   let introFinished = false;
   let introSkipRequested = false;
   let introPlaybackStarted = false;
+  let blsFollowupsDismissed = false;
+  const INTRO_FINDING_KEYS = new Set([
+    'arrival_parking', 'bls_handoff',
+    'bls_followup_loc', 'bls_followup_moved', 'bls_followup_scene',
+    'bls_followup_injuries', 'bls_followup_vitals'
+  ]);
   const EXAMS = [
     {
       key: 'head_exam',
@@ -166,6 +175,58 @@
     }
   }
 
+  function learnerAssessmentStarted() {
+    const findings = record()?.findings || {};
+    return Object.keys(findings).some(key => !INTRO_FINDING_KEYS.has(key));
+  }
+
+  function hideBlsFollowups() {
+    blsFollowupsDismissed = true;
+    document.body.classList.add('horse-bls-followups-dismissed');
+    const host = document.getElementById('horseBlsFollowups');
+    if (host) host.hidden = true;
+  }
+
+  function currentPatientPhotoPath() {
+    const image = document.getElementById('patientImage');
+    const src = image?.getAttribute('src') || image?.src || '';
+    try { return new URL(src, location.href).pathname; } catch { return src; }
+  }
+
+  function photoForAssessment(key) {
+    if (!key) return null;
+    if (key === 'transport' || key === 'transport_decision') {
+      return { src: TRANSPORT_PHOTO, alt: 'Patient on a level stretcher with the left knee padded at about 45 degrees' };
+    }
+    if (key === 'movement' || key === 'movement_plan' || key === 'leg_stabilization' || key === 'movement_method') {
+      const saved = record()?.documentation?.horseCrushMovement || {};
+      return { src: movementImage(saved.method, saved.stabilization), alt: 'Injured left knee padded in the position of comfort for movement' };
+    }
+    if (['airway', 'breathing', 'perfusion', 'abc', 'head_to_toe'].includes(key)) {
+      return { src: PATIENT_PHOTO, alt: 'Alert patient lying on dirt outside the south barn with the left knee flexed' };
+    }
+    if (key === 'focused_leg') {
+      const exam = EXAMS.find(item => item.key === 'left_leg');
+      return { src: exam.image, alt: `${exam.label} on the same patient outside the south barn` };
+    }
+    const exam = EXAMS.find(item => item.key === key);
+    if (exam) return { src: exam.image, alt: `${exam.label} on the same patient outside the south barn` };
+    return null;
+  }
+
+  function noteLearnerAssessment(key) {
+    if (document.body.dataset.horseIntro && document.body.dataset.horseIntro !== 'arrived') return;
+    hideBlsFollowups();
+    let photo = photoForAssessment(key);
+    if (!photo) {
+      const path = currentPatientPhotoPath();
+      if (path.includes('handoff.webp') || path.includes('map-arrival.webp')) {
+        photo = { src: PATIENT_PHOTO, alt: 'Alert patient lying on dirt outside the south barn with the left knee flexed' };
+      }
+    }
+    if (photo?.src) setMainPatientImage(photo.src, photo.alt);
+  }
+
   function introStorageKey() {
     return `emscodesim:horse-intro:${record()?.startedAt || record()?.id || 'pending'}`;
   }
@@ -176,6 +237,8 @@
 
   function clearIntroCompletion() {
     introFinished = false;
+    blsFollowupsDismissed = false;
+    document.body.classList.remove('horse-bls-followups-dismissed');
     try {
       Object.keys(sessionStorage)
         .filter(key => key.startsWith('emscodesim:horse-intro:'))
@@ -278,7 +341,15 @@
   }
 
   function renderBlsFollowups() {
-    if (document.body.dataset.horseIntro !== 'arrived') return;
+    if (document.body.dataset.horseIntro !== 'arrived') {
+      const host = document.getElementById('horseBlsFollowups');
+      if (host) host.hidden = true;
+      return;
+    }
+    if (blsFollowupsDismissed || learnerAssessmentStarted()) {
+      hideBlsFollowups();
+      return;
+    }
     const host = blsFollowupHost();
     if (!host) return;
     host.hidden = false;
@@ -522,6 +593,8 @@
     if (phase === 'dispatch' || phase === 'parking' || phase === 'arrived') return;
     introSkipRequested = false;
     introPlaybackStarted = false;
+    blsFollowupsDismissed = false;
+    document.body.classList.remove('horse-bls-followups-dismissed');
     document.body.classList.add('horse-intro-playing');
     setIntroPhase('video');
     const overlay = ensureIntroOverlay();
@@ -550,7 +623,6 @@
     document.body.classList.remove('horse-arrival-pending', 'horse-intro-playing');
     setIntroPhase('arrived');
     hideIntroOverlay();
-    revealPatientImage();
 
     if (!has('arrival_parking')) {
       saveFinding('arrival_parking', 'Ambulance positioned safely near the south barn', {
@@ -573,6 +645,13 @@
         suppressInfoUpdate: true
       });
     }
+
+    if (blsFollowupsDismissed || learnerAssessmentStarted()) {
+      hideBlsFollowups();
+      return;
+    }
+
+    revealPatientImage();
     showHandoff();
     renderBlsFollowups();
   }
@@ -622,7 +701,7 @@
     const baseItem = EXAMS.find(exam => exam.key === key);
     if (!baseItem) return null;
     const item = examForCurrentState(baseItem);
-    setMainPatientImage(item.image, `${item.label} on the same patient outside the south barn`);
+    noteLearnerAssessment(item.key);
     const saved = record()?.findings?.[item.key];
     if (!saved) {
       saveFinding(item.key, item.finding, {
@@ -827,6 +906,7 @@
         ? 'Movement plan recorded. Detailed scoring and rationale will be reviewed during the debrief.'
         : `${evaluation.label}: ${evaluation.feedback}`;
       image.src = movementImage(data.method, data.stabilization);
+      noteLearnerAssessment('movement_plan');
     });
 
     const firstCategory = container.querySelector('.treatment-category');
@@ -849,19 +929,42 @@
     });
     window.addEventListener('emscodesim:scenario-finding-saved', event => {
       if (event.detail?.caseId !== CASE_ID) return;
-      if (['arrival_parking','bls_handoff'].includes(event.detail?.category) && hasCompletedIntro()) {
+      const key = event.detail?.key || event.detail?.category;
+      if (['arrival_parking','bls_handoff'].includes(event.detail?.category) && hasCompletedIntro() && !blsFollowupsDismissed && !learnerAssessmentStarted()) {
         window.setTimeout(renderArrivalCard, 20);
       }
-      if (event.detail?.key === 'transport_decision' || event.detail?.category === 'transport') {
-        setMainPatientImage(`${ASSET}transport-ambulance.webp`, 'Patient on a level stretcher with the left knee padded at about 45 degrees');
+      if (key && !INTRO_FINDING_KEYS.has(key) && document.body.dataset.horseIntro === 'arrived') {
+        noteLearnerAssessment(key);
+      }
+      if (key === 'transport_decision' || event.detail?.category === 'transport' || event.detail?.category === 'transport_decision') {
+        noteLearnerAssessment('transport');
       }
     });
-    window.addEventListener('pageshow', () => window.setTimeout(playIncidentIntro, 20));
+    window.addEventListener('emscodesim:transport-saved', () => {
+      if (!isActive()) return;
+      noteLearnerAssessment('transport');
+    });
     document.addEventListener('click', event => {
       const origin = event.target?.nodeType === 1 ? event.target : event.target?.parentElement;
-      if (!origin?.closest?.('#resetScenarioQuick, #resetAndRestartScenario')) return;
-      window.setTimeout(playIncidentIntro, 600);
-    });
+      if (origin?.closest?.('#resetScenarioQuick, #resetAndRestartScenario')) {
+        window.setTimeout(playIncidentIntro, 600);
+        return;
+      }
+      if (document.body.dataset.horseIntro !== 'arrived') return;
+      if (origin?.closest?.('#horseBlsFollowups')) return;
+      const startedAssessment = origin?.closest?.([
+        '[data-panel="assessmentPanel"]',
+        '[data-panel="vitalsPanel"]',
+        '[data-panel="treatmentPanel"]',
+        '[data-horse-assessment]',
+        '[data-assessment-item]',
+        '[data-assessment-category]',
+        '.horse-current-exam-button',
+        '.horse-exam-button',
+        '#horseCurrentAssessment'
+      ].join(', '));
+      if (startedAssessment) noteLearnerAssessment();
+    }, true);
   }
 
   window.EMSCodeSimHorseCrush = Object.freeze({
@@ -873,6 +976,8 @@
     renderMovementSection,
     performExam,
     movementImage,
+    noteLearnerAssessment,
+    hideBlsFollowups,
     introAllowsPatientSpeech() { return document.body.dataset.horseIntro === 'arrived'; }
   });
 })();

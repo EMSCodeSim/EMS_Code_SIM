@@ -79,11 +79,14 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
   await expect(page.locator('[data-horse-parking]')).toHaveCount(0);
   await expect(page.locator('#horseArrivalDecision')).toHaveCount(0);
   await expectHorsePhoto('/vitals/assets/horse-crush/handoff.webp');
+  await expect(page.locator('#horseBlsFollowups')).toBeVisible();
   await expectSimulatorOverPatientPhoto();
 
   // Visible desktop ABC workflow.
   await page.locator('.bottom-nav button[data-panel="assessmentPanel"]').click();
   await expect(page.locator('#assessmentPanel')).toBeVisible();
+  await expect(page.locator('#horseBlsFollowups')).toBeHidden();
+  await expectHorsePhoto('/vitals/assets/horse-crush/patient-initial.webp');
   await page.locator('[data-assessment-category="abc"]').click();
 
   async function recordAbc(key) {
@@ -147,6 +150,7 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
   await transportForm.locator('textarea[name="rationale"]').fill('Significant horse-compression mechanism with severe hip pain and inability to safely bear weight.');
   await transportForm.locator('.horse-treatment-perform').click();
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimPatientRecord.active()?.documentation?.transportDecisionAt))).toBe(true);
+  await expectHorsePhoto('/vitals/assets/horse-crush/transport-ambulance.webp');
 
   // The next progress/handoff action must open the visible hospital workspace.
   await page.locator('#scenarioMenuButton').click();

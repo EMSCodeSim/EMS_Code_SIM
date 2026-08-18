@@ -886,6 +886,7 @@
       const label = isAbc ? abcLabels[key] : (exam?.label || labelFor(key));
       button.innerHTML = `<span>${finding ? '✓' : '○'}</span><div><strong>${escapeHtml(label)}</strong><small>${finding ? 'Recorded — click to reassess/review' : 'Perform exam'}</small></div>`;
       button.addEventListener('click', () => {
+        window.EMSCodeSimHorseCrush?.noteLearnerAssessment?.(key);
         if (isAbc) {
           sceneObservationUpdate = {
             id:`horse-abc-active`,
@@ -913,6 +914,7 @@
     const allowed = new Set(['abc','head_to_toe','focused_leg']);
     horseCurrentAssessment = allowed.has(type) ? type : 'abc';
     horseAssessmentCollapsed = false;
+    window.EMSCodeSimHorseCrush?.noteLearnerAssessment?.(horseCurrentAssessment);
     configureHorseCurrentAssessmentWorkspace();
     horseWorkspaceContext?.resetQuestionBox?.();
     if (desktopWorkspace()) closeSheet();
@@ -1122,6 +1124,7 @@
         if (!item) return;
         horseAssessmentActiveItem = item.id;
         if (['airway','breathing','perfusion'].includes(item.id) && horseWorkspaceContext?.openFollowup) {
+          window.EMSCodeSimHorseCrush?.noteLearnerAssessment?.(item.id);
           const abcLabel = horseWorkspaceContext.labels?.[item.id] || item.label;
           const observation = horseWorkspaceContext.observations?.[item.id] || '';
           sceneObservationUpdate = {
@@ -3424,6 +3427,7 @@
     ]);
     refreshFromRecord();
     if (id === 'horse_crush') {
+      window.EMSCodeSimHorseCrush?.noteLearnerAssessment?.('transport');
       sceneObservationUpdate = {
         id:`horse-transport-handoff-ready-${Date.now()}`,
         type:'TRANSPORT',
