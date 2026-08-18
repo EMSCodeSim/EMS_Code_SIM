@@ -2949,18 +2949,29 @@
   function buildInfoUpdates(current) {
     const startedAt = current?.startedAt || new Date().toISOString();
     const startMs = new Date(startedAt).getTime();
+    const horseIntroPhase = id === 'horse_crush' ? (document.body.dataset.horseIntro || 'arrived') : '';
+    if (horseIntroPhase === 'video') {
+      return [{ id:'horse-enroute', type:'EN ROUTE', title:'Responding', text:'You are responding to the horse facility.', kind:'dispatch', recordedAt: startedAt }];
+    }
+    if (horseIntroPhase === 'dispatch') {
+      return [{
+        id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information',
+        text: current?.dispatch || 'Reported fall at a horse facility; a BLS engine crew is already on scene.',
+        kind: 'dispatch', recordedAt: startedAt
+      }];
+    }
     const updates = [
       { id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information', text: current?.dispatch || scenario.title, kind: 'dispatch', recordedAt: startedAt }
     ];
     if (id === 'horse_crush') {
       updates.push({
         id:'first-on-scene-handoff',
-        type:'FIRST-ON-SCENE CREW',
-        title:'Engine crew handoff',
-        text:'We found the patient on the ground outside the south barn after being squeezed between two horses and falling. The scene is safe. The patient has remained alert, reports severe left-hip pain, and has not been moved.',
+        type:'BLS ENGINE HANDOFF',
+        title:'Patient has not been moved',
+        text:'“She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented ×4 and complains of left-hip pain. We have not moved her.”',
         kind:'partner',
         sticky:true,
-        recordedAt:new Date(startMs + 1).toISOString()
+        recordedAt:new Date(startMs + 3).toISOString()
       });
     }
     updates.push({
@@ -4859,8 +4870,8 @@
   if ($('fullPatientRecordLink')) $('fullPatientRecordLink').href = `/vitals/patient-record.html?mode=scenario&resume=1&case=${encodeURIComponent(id)}&return=${encodeURIComponent(`/vitals/visual-patient.html?case=${id}`)}`;
   $('guidedSampleLink').href = toolUrl('/vitals/sample-history.html', 'Patient', 'sample');
   $('guidedOpqrstLink').href = toolUrl('/vitals/pain-opqrst.html', 'Patient', 'pain');
-  refreshFromRecord();
   window.EMSCodeSimHorseCrush?.init?.();
+  refreshFromRecord();
 
   document.querySelectorAll('[data-log-filter]').forEach(button => button.addEventListener('click', () => {
     findingFilter = button.dataset.logFilter || 'all';
