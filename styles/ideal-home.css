@@ -1068,10 +1068,20 @@ body.home-page{
 }
 
 @media (max-width:980px){
-  .home-page .main-nav{display:none}
+  .home-page .main-nav{display:none !important}
   .home-page .mobile-menu-wrap{display:flex}
+  .home-page .mobile-menu-wrap > span{
+    position:absolute;
+    width:1px;
+    height:1px;
+    overflow:hidden;
+    clip:rect(0 0 0 0);
+    clip-path:inset(50%);
+    white-space:nowrap;
+  }
   .home-page .mobile-menu{display:block}
   .home-page .header-cta{margin-left:auto}
+}
   .home-page .hero-home-inner{
     grid-template-columns:1fr;
     gap:24px;
@@ -1244,11 +1254,22 @@ body.home-page{
   }
 }
 
-@media (max-width:375px){
-  .home-page .header-cta{padding:10px 12px;font-size:.88rem}
-  .home-page .mobile-menu-wrap > span{display:none}
-  .home-page .mobile-menu{min-width:88px;padding:8px 8px}
-  .home-page .brand{font-size:.98rem}
+@media (max-width:520px){
+  .home-page .nav-wrap{
+    flex-wrap:wrap;
+    row-gap:8px;
+  }
+  .home-page .header-cta{
+    order:3;
+    flex:1 1 100%;
+    margin-left:0;
+    min-height:48px;
+  }
+  .home-page .mobile-menu-wrap{margin-left:auto}
+  .home-page .hero-copy,
+  .home-page .hero-home-inner,
+  .home-page .hero-sim-card{min-width:0}
+  .home-page .hero-copy h1{overflow-wrap:anywhere}
   .home-page .mobile-stage-actions{grid-template-columns:1fr}
 }
 
