@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const BUILD = '2026.08.18.8';
+  const BUILD = '2026.08.18.9';
 
   function loadOnce(attribute, src) {
     if (document.querySelector(`script[${attribute}]`)) return;
@@ -70,6 +70,9 @@
           grid-auto-rows: min-content !important;
           align-items: start !important;
           align-content: start !important;
+          min-height: 0 !important;
+          height: 100% !important;
+          overflow: auto !important;
         }
         body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > * {
           align-self: start !important;

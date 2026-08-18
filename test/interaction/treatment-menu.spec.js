@@ -79,6 +79,8 @@ test('desktop treatment categories stay clickable and More treatments does not s
   await page.locator('#horseTreatmentBackToGroups').click();
   await expect(page.locator('#horseOpenTransport')).toBeVisible();
   await expect(page.locator('#horseOpenHandoff')).toBeVisible();
+  await page.locator('#horseOpenTransport').scrollIntoViewIfNeeded();
+  await page.locator('#horseOpenHandoff').scrollIntoViewIfNeeded();
   await expect.poll(() => page.evaluate(() => {
     const transport = document.getElementById('horseOpenTransport');
     const handoff = document.getElementById('horseOpenHandoff');
@@ -86,9 +88,14 @@ test('desktop treatment categories stay clickable and More treatments does not s
     const hit = el => {
       const box = el.getBoundingClientRect();
       const top = document.elementFromPoint(Math.round(box.left + box.width / 2), Math.round(box.top + box.height / 2));
-      return Boolean(top?.closest?.(`#${el.id}`));
+      return {
+        ok: Boolean(top?.closest?.(`#${el.id}`)),
+        cover: top?.id || top?.className || top?.tagName || null
+      };
     };
-    return { ok: hit(transport) && hit(handoff) };
+    const transportHit = hit(transport);
+    const handoffHit = hit(handoff);
+    return { ok: transportHit.ok && handoffHit.ok, transportCover: transportHit.cover, handoffCover: handoffHit.cover };
   })).toMatchObject({ ok: true });
 
   const transportBox = await page.locator('#horseOpenTransport').boundingBox();

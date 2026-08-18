@@ -336,6 +336,9 @@ body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 .scen
     grid-auto-rows:min-content!important;
     align-items:start!important;
     align-content:start!important;
+    min-height:0!important;
+    height:100%!important;
+    overflow:auto!important;
   }
   body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>*{
     align-self:start!important;
@@ -365,16 +368,21 @@ body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 .scen
     pointer-events:auto!important;
   }
   body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>#horseMoreTreatmentsToggle{
-    z-index:7!important;
+    position:sticky!important;
+    bottom:0!important;
+    z-index:30!important;
     overflow:hidden!important;
+    background:#0b1d2c!important;
   }
   body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>#horseTransportHandoffActions{
+    position:sticky!important;
+    bottom:0!important;
     height:auto!important;
     max-height:34px!important;
     overflow:visible!important;
-    z-index:8!important;
+    z-index:31!important;
     pointer-events:auto!important;
-    position:relative!important;
+    background:#0b1d2c!important;
   }
   body.horse-current-emt-call.desktop-scenario-layout #horseOpenTransport,
   body.horse-current-emt-call.desktop-scenario-layout #horseOpenHandoff,
