@@ -940,7 +940,10 @@
         noteLearnerAssessment('transport');
       }
     });
-    window.addEventListener('pageshow', () => window.setTimeout(playIncidentIntro, 20));
+    window.addEventListener('emscodesim:transport-saved', () => {
+      if (!isActive()) return;
+      noteLearnerAssessment('transport');
+    });
     document.addEventListener('click', event => {
       const origin = event.target?.nodeType === 1 ? event.target : event.target?.parentElement;
       if (origin?.closest?.('#resetScenarioQuick, #resetAndRestartScenario')) {
