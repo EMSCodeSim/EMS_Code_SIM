@@ -41,7 +41,7 @@
 
   function start() {
     if (!isHorseScenario()) return;
-    if (document.body.classList.contains('horse-intro-playing') || document.body.dataset.horseIntro === 'video') return;
+    if (document.body.classList.contains('horse-intro-playing') || ['video', 'dispatch', 'parking'].includes(document.body.dataset.horseIntro)) return;
     revealPatientImage();
     window.setTimeout(sync, 0);
     window.setTimeout(sync, 100);

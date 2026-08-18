@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.15.2';
+  const VERSION = '2026.08.18.15';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').trim().toLowerCase();
   const api = window.EMSCodeSimPatientRecord;
@@ -342,6 +342,9 @@
     const grade = $('horseGradeWorkspace');
     if (grade && !grade.hidden) return false;
     if (current.documentation?.handoffSavedAt) return false;
+    const phase = document.body.dataset.horseIntro;
+    if (phase && phase !== 'arrived') return false;
+    if (!current.findings?.bls_handoff) return false;
     return true;
   }
 
@@ -376,6 +379,7 @@
   function infoRole() {
     const type = String($('infoUpdateType')?.textContent || '').trim().toUpperCase();
     const text = String($('infoUpdateText')?.textContent || '').trim();
+    if (/DISPATCH|BLS ENGINE|HANDOFF|AMBULANCE POSITION|SCENE ARRIVAL|ON-SCENE CREW/.test(type)) return 'narrator';
     if (/PATIENT|HISTORY ANSWER/.test(type) || /^[“"]/u.test(text)) return 'patient';
     if (/PARTNER/.test(type)) return 'partner';
     return 'narrator';

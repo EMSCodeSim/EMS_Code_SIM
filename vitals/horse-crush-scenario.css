@@ -39,15 +39,22 @@ body[data-horse-intro="dispatch"] .patient-stage>#patientImage,
 body[data-horse-intro="dispatch"].desktop-scenario-layout .patient-stage>img#patientImage{
   visibility:hidden !important;
 }
+body.horse-intro-locked .patient-control-column,
+body.horse-intro-locked .bottom-nav,
+body.horse-intro-locked #actionSheet,
+body.horse-intro-locked #assessmentPanel,
+body.horse-intro-locked #treatmentPanel{
+  pointer-events:none;
+}
 #horseIntroPlay{
   position:absolute;
   left:50%;
-  bottom:18px;
+  bottom:28px;
   transform:translateX(-50%);
   z-index:10;
   border:0;
   border-radius:999px;
-  padding:10px 18px;
+  padding:12px 20px;
   background:#0f766e;
   color:#fff;
   font:inherit;
@@ -55,6 +62,25 @@ body[data-horse-intro="dispatch"].desktop-scenario-layout .patient-stage>img#pat
   cursor:pointer;
 }
 #horseIntroPlay[hidden]{display:none!important}
+#horseIntroProgress{
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:10px;
+  height:6px;
+  z-index:8;
+  border-radius:999px;
+  background:rgba(255,255,255,.22);
+  overflow:hidden;
+  pointer-events:none;
+}
+#horseIntroProgress[hidden]{display:none!important}
+#horseIntroProgress>i{
+  display:block;
+  height:100%;
+  width:0;
+  background:#5eead4;
+}
 #horseIntroSkip{
   position:absolute;
   top:12px;

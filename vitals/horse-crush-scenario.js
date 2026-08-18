@@ -5,16 +5,19 @@
   const ASSET = '/vitals/assets/horse-crush/';
   const DISPATCH_TEXT = window.EMSCodeSimScenarioDefinitions?.CATALOG?.horse_crush?.dispatch
     || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.';
-  const INTRO_BUILD = '2026.08.18.14';
+  const INTRO_BUILD = '2026.08.18.15';
   const INTRO_VIDEO = `${ASSET}incident-calm-walk.mp4?v=${INTRO_BUILD}`;
-  const INTRO_POSTER = `${ASSET}incident-calm-walk.jpg`;
-  const INTRO_PLAY_WAIT_MS = 400;
-  const INTRO_PLAY_RETRY_MS = 1200;
+  const INTRO_PLAY_WAIT_MS = 250;
+  const INTRO_PLAY_RETRY_MS = 800;
+  const PARKING_PHOTO = `${ASSET}map-arrival.webp`;
+  const PARKING_TEXT = 'The ambulance is positioned near the south barn apron, facing out, with the driveway and exit path open.';
   const HANDOFF_PHOTO = `${ASSET}handoff.webp`;
   const BLS_HANDOFF_TEXT = '“She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented ×4 and complains of left-hip pain. We have not moved her.”';
   let introTimer = 0;
   let introPlayTimers = [];
   let introFinished = false;
+  let introSkipRequested = false;
+  let introPlaybackStarted = false;
   const EXAMS = [
     {
       key: 'head_exam',
@@ -149,9 +152,15 @@
     try { return sessionStorage.getItem(introStorageKey()) === '1'; } catch { return false; }
   }
 
+  function introLocked() {
+    const phase = document.body.dataset.horseIntro;
+    return phase === 'video' || phase === 'dispatch' || phase === 'parking';
+  }
+
   function setIntroPhase(phase) {
     document.body.dataset.horseIntro = phase;
     document.body.classList.toggle('horse-intro-playing', phase === 'video');
+    document.body.classList.toggle('horse-intro-locked', introLocked());
     window.dispatchEvent(new CustomEvent('emscodesim:patient-record-updated'));
   }
 
@@ -170,6 +179,31 @@
     if (text) text.textContent = DISPATCH_TEXT;
     if (time) time.textContent = '00:00';
     setIntroPhase('dispatch');
+  }
+
+  function showParking() {
+    const type = document.getElementById('infoUpdateType');
+    const title = document.getElementById('infoUpdateTitle');
+    const text = document.getElementById('infoUpdateText');
+    const time = document.getElementById('infoUpdateTime');
+    if (type) type.textContent = 'AMBULANCE POSITION';
+    if (title) title.textContent = 'Scene arrival';
+    if (text) text.textContent = PARKING_TEXT;
+    if (time) time.textContent = 'ARRIVAL';
+    setIntroPhase('parking');
+    setMainPatientImage(PARKING_PHOTO, 'Aerial view of the horse facility showing ambulance access to the south barn and patient location');
+    document.querySelector('.patient-stage')?.classList.add('horse-arrival-map');
+    if (!has('arrival_parking')) {
+      saveFinding('arrival_parking', 'Ambulance positioned safely near the south barn', {
+        label: 'Scene arrival',
+        selected: 'scenario_start',
+        decisionClass: 'appropriate',
+        normality: 'normal',
+        details: PARKING_TEXT,
+        source: 'scenario-start',
+        suppressInfoUpdate: true
+      });
+    }
   }
 
   function showHandoff() {
@@ -192,7 +226,9 @@
     clearIntroPlayTimers();
     const overlay = document.getElementById('horseIntroOverlay');
     const video = overlay?.querySelector('video');
-    if (video) video.pause();
+    if (video) {
+      video.pause();
+    }
     overlay?.remove();
   }
 
@@ -213,8 +249,9 @@
     video.setAttribute('webkit-playsinline', '');
     video.setAttribute('preload', 'auto');
     video.removeAttribute('controls');
+    video.removeAttribute('poster');
+    video.poster = '';
     if ((video.getAttribute('src') || '') !== INTRO_VIDEO) video.setAttribute('src', INTRO_VIDEO);
-    if (video.poster !== INTRO_POSTER) video.poster = INTRO_POSTER;
     return video;
   }
 
@@ -231,6 +268,28 @@
     playButton.hidden = !show;
   }
 
+  function syncIntroProgress(video) {
+    const bar = document.getElementById('horseIntroProgress');
+    const fill = bar?.querySelector('i');
+    if (!bar || !fill || !video) return;
+    const duration = Number(video.duration);
+    if (!Number.isFinite(duration) || duration <= 0) {
+      bar.hidden = true;
+      return;
+    }
+    bar.hidden = false;
+    fill.style.width = `${Math.max(0, Math.min(100, (video.currentTime / duration) * 100))}%`;
+  }
+
+  function markIntroPlaybackStarted(video) {
+    if (!introVideoStillActive(video)) return;
+    if (video.currentTime > 0.05 || (video.readyState >= 2 && !video.paused)) {
+      introPlaybackStarted = true;
+    }
+    syncIntroPlayButton(video);
+    syncIntroProgress(video);
+  }
+
   function playIntroVideoWhenReady(video) {
     if (!video) return;
     clearIntroPlayTimers();
@@ -240,12 +299,13 @@
       configureIntroVideo(video);
       const play = video.play();
       if (play && typeof play.then === 'function') {
-        play.then(() => syncIntroPlayButton(video)).catch(() => syncIntroPlayButton(video));
+        play.then(() => markIntroPlaybackStarted(video)).catch(() => syncIntroPlayButton(video));
       } else {
-        syncIntroPlayButton(video);
+        markIntroPlaybackStarted(video);
       }
     };
-    video.addEventListener('playing', () => syncIntroPlayButton(video));
+    video.addEventListener('playing', () => markIntroPlaybackStarted(video));
+    video.addEventListener('timeupdate', () => markIntroPlaybackStarted(video));
     video.addEventListener('pause', () => syncIntroPlayButton(video));
     if (video.readyState >= 2) {
       attemptPlay();
@@ -257,7 +317,7 @@
     introPlayTimers.push(window.setTimeout(() => {
       if (introVideoStillActive(video) && video.paused) attemptPlay();
     }, INTRO_PLAY_RETRY_MS));
-    introPlayTimers.push(window.setTimeout(() => syncIntroPlayButton(video), 900));
+    introPlayTimers.push(window.setTimeout(() => syncIntroPlayButton(video), 500));
   }
 
   function dispatchDwellMs() {
@@ -265,18 +325,40 @@
     return Math.max(12000, Math.round((words / 2.3) * 1000) + 4000);
   }
 
-  function finishIntroVideo() {
+  function parkingDwellMs() {
+    return 7000;
+  }
+
+  function continueAfterDispatch() {
+    if (document.body.dataset.horseIntro !== 'dispatch') return;
+    showParking();
+    window.clearTimeout(introTimer);
+    introTimer = window.setTimeout(() => {
+      if (document.body.dataset.horseIntro !== 'parking') return;
+      markIntroComplete();
+      renderArrivalCard();
+    }, parkingDwellMs());
+  }
+
+  function finishIntroVideo(event) {
     const phase = document.body.dataset.horseIntro;
-    if (phase === 'dispatch' || phase === 'arrived') return;
+    if (phase === 'dispatch' || phase === 'parking' || phase === 'arrived') return;
+    const video = document.getElementById('horseIntroVideo');
+    const endedWithoutPlay = event?.type === 'ended' && !introSkipRequested && !introPlaybackStarted;
+    if (endedWithoutPlay && (Number(video?.currentTime) || 0) < 0.2) {
+      syncIntroPlayButton(video);
+      return;
+    }
     setIntroPhase('dispatch');
     hideIntroOverlay();
     showDispatch();
     window.clearTimeout(introTimer);
-    introTimer = window.setTimeout(() => {
-      if (document.body.dataset.horseIntro !== 'dispatch') return;
-      markIntroComplete();
-      renderArrivalCard();
-    }, dispatchDwellMs());
+    introTimer = window.setTimeout(continueAfterDispatch, dispatchDwellMs());
+  }
+
+  function skipIntroVideo() {
+    introSkipRequested = true;
+    finishIntroVideo({ type:'skip' });
   }
 
   function ensureIntroOverlay() {
@@ -287,13 +369,14 @@
     overlay = document.createElement('div');
     overlay.id = 'horseIntroOverlay';
     overlay.innerHTML = `
-      <video id="horseIntroVideo" class="intro-video" muted autoplay playsinline webkit-playsinline preload="auto" poster="${INTRO_POSTER}" src="${INTRO_VIDEO}">
+      <video id="horseIntroVideo" class="intro-video" muted autoplay playsinline webkit-playsinline preload="auto" src="${INTRO_VIDEO}">
         <source src="${INTRO_VIDEO}" type="video/mp4">
       </video>
-      <button type="button" id="horseIntroPlay" hidden>Play scene</button>
+      <div id="horseIntroProgress" hidden><i></i></div>
+      <button type="button" id="horseIntroPlay" hidden>Play walking scene</button>
       <button type="button" id="horseIntroSkip">Skip</button>`;
     stage.appendChild(overlay);
-    overlay.querySelector('#horseIntroSkip')?.addEventListener('click', finishIntroVideo);
+    overlay.querySelector('#horseIntroSkip')?.addEventListener('click', skipIntroVideo);
     overlay.querySelector('#horseIntroPlay')?.addEventListener('click', event => {
       event.preventDefault();
       playIntroVideoWhenReady(overlay.querySelector('#horseIntroVideo'));
@@ -314,12 +397,14 @@
       return;
     }
     const phase = document.body.dataset.horseIntro;
-    if (phase === 'dispatch' || phase === 'arrived') return;
+    if (phase === 'dispatch' || phase === 'parking' || phase === 'arrived') return;
+    introSkipRequested = false;
+    introPlaybackStarted = false;
     document.body.classList.add('horse-intro-playing');
     setIntroPhase('video');
     const overlay = ensureIntroOverlay();
     if (!overlay) {
-      finishIntroVideo();
+      skipIntroVideo();
       return;
     }
     overlay.hidden = false;
@@ -351,7 +436,7 @@
         selected: 'scenario_start',
         decisionClass: 'appropriate',
         normality: 'normal',
-        details: 'The ambulance is positioned for patient access with the driveway and exit path clear.',
+        details: PARKING_TEXT,
         source: 'scenario-start',
         suppressInfoUpdate: true
       });
@@ -661,6 +746,7 @@
     renderAssessmentSection,
     renderMovementSection,
     performExam,
-    movementImage
+    movementImage,
+    introAllowsPatientSpeech() { return document.body.dataset.horseIntro === 'arrived'; }
   });
 })();

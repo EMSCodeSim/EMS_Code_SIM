@@ -31,7 +31,8 @@ async function completeHorseIntroIfPresent(page) {
   await skip.click();
   await expect(page.locator('#horseIntroOverlay')).toHaveCount(0, { timeout: 8000 });
   await expect(page.locator('#infoUpdateType')).toHaveText(/DISPATCH/, { timeout: 8000 });
-  await expect(page.locator('#infoUpdateType')).toHaveText(/BLS ENGINE HANDOFF/, { timeout: 20000 });
+  await expect(page.locator('#infoUpdateType')).toHaveText(/AMBULANCE POSITION/, { timeout: 20000 });
+  await expect(page.locator('#infoUpdateType')).toHaveText(/BLS ENGINE HANDOFF/, { timeout: 15000 });
   await expect(page.locator('#horseIntroOverlay')).toHaveCount(0);
 }
 

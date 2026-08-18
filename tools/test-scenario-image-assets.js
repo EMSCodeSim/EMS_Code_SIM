@@ -51,8 +51,6 @@ for (const required of [
 // Horse-crush focused exams use template-built asset URLs, so the generic
 // literal-URL scan above cannot see them. Validate every photo still used by
 // the scenario explicitly and require the runtime to reference each one.
-// The former map-arrival.webp photo is intentionally excluded because the
-// parking/arrival decision was removed from the scenario flow.
 const horseScenarioPath = path.join(root, 'vitals/horse-crush-scenario.js');
 const horseScenario = fs.readFileSync(horseScenarioPath, 'utf8');
 const horseAssets = [
@@ -65,6 +63,7 @@ const horseAssets = [
   'movement-blankets.webp',
   'movement-scoop.webp',
   'handoff.webp',
+  'map-arrival.webp',
   'incident-calm-walk.jpg'
 ];
 for (const filename of horseAssets) {
