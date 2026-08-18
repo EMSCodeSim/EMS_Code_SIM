@@ -653,12 +653,19 @@
 
     if (blsFollowupsDismissed || learnerAssessmentStarted()) {
       hideBlsFollowups();
+      openAssessmentToolsWithoutStartingExam();
       return;
     }
 
     revealPatientImage();
     showHandoff();
     renderBlsFollowups();
+    openAssessmentToolsWithoutStartingExam();
+  }
+
+  function openAssessmentToolsWithoutStartingExam() {
+    try { window.EMSCodeSimHorseWorkspace?.openSheet?.('assessmentPanel'); }
+    catch (_) { /* sheet helpers load with the patient workspace */ }
   }
 
   function maybeSaveCompleteTraumaExam() {
@@ -983,6 +990,13 @@
     movementImage,
     noteLearnerAssessment,
     hideBlsFollowups,
-    introAllowsPatientSpeech() { return document.body.dataset.horseIntro === 'arrived'; }
+    introAllowsPatientSpeech
   });
+
+  function introAllowsPatientSpeech() {
+    if (document.body.dataset.horseIntro !== 'arrived') return false;
+    if (blsFollowupsDismissed || document.body.classList.contains('horse-bls-followups-dismissed')) return true;
+    if (learnerAssessmentStarted()) return true;
+    return false;
+  }
 })();

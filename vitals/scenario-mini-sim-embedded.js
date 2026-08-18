@@ -8,7 +8,7 @@
 
   if (!document.querySelector('script[data-ems-mini-sim-audio-boost]')) {
     const audioBoost = document.createElement('script');
-    audioBoost.src = '/vitals/scenario-mini-sim-audio-boost.js?v=2026.08.18.26';
+    audioBoost.src = '/vitals/scenario-mini-sim-audio-boost.js?v=2026.08.18.28';
     audioBoost.dataset.emsMiniSimAudioBoost = '1';
     audioBoost.async = false;
     document.body.appendChild(audioBoost);
@@ -134,6 +134,16 @@
   if (sim === 'skin') {
     const done = new Set();
     ['#inspectSkin','#touchSkin','#moistureSkin'].forEach(selector => {
+      document.querySelector(selector)?.addEventListener('click', () => {
+        done.add(selector);
+        markObserved();
+        if (done.size >= 3) unlockDocument();
+      });
+    });
+  }
+  if (sim === 'pupils') {
+    const done = new Set();
+    ['#lightLeft','#lightRight','#trackingTest'].forEach(selector => {
       document.querySelector(selector)?.addEventListener('click', () => {
         done.add(selector);
         markObserved();
@@ -443,7 +453,7 @@
   }, true);
 
   window.EMSCodeSimEmbeddedMiniSim = Object.freeze({
-    version: '2026.08.18.26',
+    version: '2026.08.18.28',
     unlockDocument,
     markObserved,
     setFlow,

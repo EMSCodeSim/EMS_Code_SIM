@@ -87,6 +87,9 @@ test('horse-crush plays the walk video, then dispatch, ambulance position, and h
   await expect(page.locator('#infoUpdateType')).not.toHaveText('PATIENT');
   await expect(page.locator('#horseBlsFollowups')).toBeVisible();
   await expect(page.locator('#horseBlsFollowupButtons button')).toHaveCount(5);
+  await expect(page.locator('#assessmentPanel')).toBeVisible();
+  await expect(page.locator('.horse-assessment-drill-choice[data-assessment-category="abc"]')).toBeVisible();
+  await expect(page.locator('#patientConversationTurn:visible')).toHaveCount(0);
   await page.locator('#horseBlsFollowupButtons button').first().click();
   await expect(page.locator('#horseBlsFollowupAnswer')).toContainText('awake the whole time');
   await expect(page.locator('#infoUpdateType')).not.toHaveText('PATIENT');

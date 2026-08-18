@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.18.15';
+  const VERSION = '2026.08.18.28';
   const params = new URLSearchParams(location.search);
   const requested = String(params.get('case') || '').trim().toLowerCase();
   const api = window.EMSCodeSimPatientRecord;
@@ -345,6 +345,8 @@
     const phase = document.body.dataset.horseIntro;
     if (phase && phase !== 'arrived') return false;
     if (!current.findings?.bls_handoff) return false;
+    if (typeof window.EMSCodeSimHorseCrush?.introAllowsPatientSpeech === 'function'
+      && !window.EMSCodeSimHorseCrush.introAllowsPatientSpeech()) return false;
     return true;
   }
 

@@ -97,8 +97,8 @@ test('desktop center interaction column owns patient communication while right w
   await expect(page.locator('#assessmentPanel')).toBeHidden();
   await expect(page.locator('.horse-assessment-drill-choice:visible')).toHaveCount(0);
   const vitalRows = page.locator('#vitalTools .compact-vital-row');
-  await expect(vitalRows).toHaveCount(6);
-  for (const label of ['Blood pressure', 'Pulse', 'Respiratory rate', 'SpO₂', 'Blood glucose', 'Temperature']) {
+  await expect(vitalRows).toHaveCount(7);
+  for (const label of ['Blood pressure', 'Pulse', 'Respiratory rate', 'SpO₂', 'Blood glucose', 'Temperature', 'Breath sounds']) {
     await expect(page.locator('#vitalTools .compact-vital-row', { hasText: label })).toBeVisible();
   }
 

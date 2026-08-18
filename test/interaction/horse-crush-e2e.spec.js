@@ -80,9 +80,12 @@ test('horse-crush call works from arrival through hospital handoff', async ({ pa
   await expect(page.locator('#horseArrivalDecision')).toHaveCount(0);
   await expectHorsePhoto('/vitals/assets/horse-crush/Rd9Hp.jpg');
   await expect(page.locator('#horseBlsFollowups')).toBeVisible();
+  await expect(page.locator('#assessmentPanel')).toBeVisible();
+  await expect(page.locator('.horse-assessment-drill-choice[data-assessment-category="abc"]')).toBeVisible();
+  await expect(page.locator('#patientConversationTurn:visible')).toHaveCount(0);
   await expectSimulatorOverPatientPhoto();
 
-  // Visible desktop ABC workflow.
+  // Visible desktop ABC workflow. Re-selecting Assessment starts the exam and dismisses BLS follow-ups.
   await page.locator('.bottom-nav button[data-panel="assessmentPanel"]').click();
   await expect(page.locator('#assessmentPanel')).toBeVisible();
   await expect(page.locator('#horseBlsFollowups')).toBeHidden();

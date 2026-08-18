@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.17.15';
+  const VERSION = '2026.08.18.28';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -394,6 +394,19 @@
     }
 
     if (document.body.classList.contains('horse-current-emt-call') && !activeId) {
+      const arrived = document.body.dataset.horseIntro === 'arrived';
+      if (arrived && !overlayOccupiesPatientStage()) {
+        if (typeof window.EMSCodeSimHorseWorkspace?.openSheet === 'function') {
+          window.EMSCodeSimHorseWorkspace.openSheet('assessmentPanel');
+        } else if (sheet) {
+          sheet.hidden = false;
+          document.body.classList.add('horse-tool-sheet-open');
+          showOnlyDomainPanel('assessmentPanel');
+          domainButton('assessmentPanel')?.classList.add('active');
+          expandAssessmentChoices();
+        }
+        return;
+      }
       if (sheet) sheet.hidden = true;
       document.body.classList.remove('horse-tool-sheet-open');
       document.body.removeAttribute('data-active-domain');
