@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const OVERLAY_VERSION = '2026.08.18.30';
+  const OVERLAY_VERSION = '2026.08.18.31';
   const registry = window.EMSCodeSimToolRegistry;
   const toolPaths = new Set([
     ...(registry?.vitalTools || []).map(tool => tool.url),
@@ -145,6 +145,23 @@
     return true;
   }
 
+  function lockIframeViewport(doc) {
+    const html = doc.documentElement;
+    const body = doc.body;
+    if (!html || !body) return;
+    const lock = (node, prop, value) => node.style.setProperty(prop, value, 'important');
+    lock(html, 'height', '100%');
+    lock(html, 'max-height', '100%');
+    lock(html, 'min-height', '0');
+    lock(html, 'overflow', 'hidden');
+    lock(body, 'height', '100%');
+    lock(body, 'max-height', '100%');
+    lock(body, 'min-height', '0');
+    lock(body, 'overflow', 'hidden');
+    lock(body, 'display', 'flex');
+    lock(body, 'flex-direction', 'column');
+  }
+
   function injectChildExperience() {
     const iframe = frame();
     if (!iframe || iframe.src === 'about:blank') return;
@@ -153,6 +170,7 @@
       if (!doc?.head || !doc.body) return;
       doc.documentElement.dataset.emsMiniSim = 'embedded';
       doc.body.classList.add('ems-embedded-mini-sim');
+      lockIframeViewport(doc);
       if (!doc.querySelector('link[data-ems-mini-sim-css]')) {
         const link = doc.createElement('link');
         link.rel = 'stylesheet';

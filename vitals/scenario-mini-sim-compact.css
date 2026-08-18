@@ -115,10 +115,11 @@ body.ems-embedded-mini-sim:has(#adultSVG) .results{padding:4px!important}
 body.ems-embedded-mini-sim:has(#adultSVG) .controls,
 body.ems-embedded-mini-sim:has(#adultSVG) .quiz{padding:5px!important}
 
-/* Wide mini-sim frames should remain side-by-side; only narrow frames stack. */
+/* Wide mini-sim frames should remain side-by-side; only narrow frames stack.
+   Do not switch html/body to height:auto here. Percentage height + overflow
+   hidden then collapses the iframe body to the 40px flow bar and the learner
+   sees a blank white card. */
 @media (max-width:620px){
-  html[data-ems-mini-sim="embedded"],html[data-ems-mini-sim="embedded"] body,
-  body.ems-embedded-mini-sim{overflow:auto!important;height:auto!important;min-height:100%!important}
   body.ems-embedded-mini-sim .sv-main,
   body.ems-embedded-mini-sim .va-shell,
   body.ems-embedded-mini-sim[data-vital-topic="gcs"] main,
@@ -148,6 +149,8 @@ body.ems-embedded-mini-sim #showResults{
 /* Full-page 100dvh vital layouts park #simCard on grid-row 3. The overlay
    then switches .sv-main to a one-row grid, so the stage falls below the
    iframe and the learner sees a blank white card. Keep the card on row 1. */
+html[data-ems-mini-sim="embedded"],
+html[data-ems-mini-sim="embedded"] body,
 html[data-ems-mini-sim="embedded"] body[data-scenario-vital]{
   height:100%!important;
   max-height:100%!important;

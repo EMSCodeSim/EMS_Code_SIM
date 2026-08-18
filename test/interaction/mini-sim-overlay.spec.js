@@ -25,6 +25,36 @@ async function openMiniSim(page, href, title) {
   })).toBeGreaterThan(0.75);
 }
 
+async function stageLayout(page, selector) {
+  return page.evaluate(sel => {
+    const iframe = document.getElementById('embeddedSimFrame');
+    const doc = iframe?.contentDocument;
+    const body = doc?.body;
+    const visual = sel ? doc?.querySelector(sel) : doc?.querySelector('.sv-stage, .va-stage, .sv-monitor');
+    if (!iframe || !body || !visual) return { ok:false, reason:'missing' };
+    const vis = visual.getBoundingClientRect();
+    const bodyBox = body.getBoundingClientRect();
+    const viewH = iframe.clientHeight || 0;
+    const overlap = Math.min(vis.bottom, bodyBox.bottom, viewH) - Math.max(vis.top, bodyBox.top, 0);
+    return {
+      ok: vis.height >= 40 && vis.width >= 80 && overlap >= 40 && bodyBox.height >= viewH * 0.7,
+      overlap,
+      bodyH: bodyBox.height,
+      viewH,
+      visH: vis.height,
+      visTop: vis.top
+    };
+  }, selector);
+}
+
+async function expectStageStaysVisible(page, selector, label = selector) {
+  await expect.poll(() => page.evaluate(() => Boolean(
+    document.getElementById('embeddedSimFrame')?.contentDocument?.querySelector('link[data-ems-mini-sim-compact]')
+  )), label).toBe(true);
+  await page.waitForTimeout(450);
+  await expect.poll(() => stageLayout(page, selector), label).toMatchObject({ ok: true });
+}
+
 async function expectPatientReturned(page) {
   await expect(page.locator('#embeddedSimWorkspace')).toBeHidden();
   const image = page.locator('#patientImage');
@@ -46,6 +76,7 @@ test('device and visual assessment mini sims discover, document, save, and close
   await expect(device.locator('body')).toHaveClass(/ems-embedded-mini-sim/);
   await expect(device.locator('#answerCard')).toHaveClass(/ems-discovery-locked/);
   await expect(device.locator('#answerCard')).toBeHidden();
+  await expectStageStaysVisible(page, '.sv-monitor', 'SpO₂ monitor stays in the iframe');
 
   await device.locator('#placeProbe').click();
   await expect(device.locator('#submitBtn')).toBeEnabled({ timeout: 8000 });
@@ -143,24 +174,7 @@ test('every mini sim fits the patient window, boosts audio, and keeps a finding 
     const visualSel = STAGE_VISUALS[sim.href];
     if (visualSel) {
       await expect(frame.locator(visualSel).first(), `${sim.href} stage visual`).toBeVisible({ timeout: 15_000 });
-      await expect.poll(() => page.evaluate(sel => {
-        const doc = document.getElementById('embeddedSimFrame')?.contentDocument;
-        const visual = doc?.querySelector(sel);
-        const stage = doc?.querySelector('.sv-stage');
-        if (!visual || !stage) return { ok:false, reason:'missing' };
-        const visualBox = visual.getBoundingClientRect();
-        const stageBox = stage.getBoundingClientRect();
-        const viewH = doc.documentElement?.clientHeight || 0;
-        const inView = visualBox.bottom > 8 && visualBox.top < viewH - 8;
-        return {
-          ok: visualBox.height >= 40 && visualBox.width >= 80 && stageBox.height >= 80 && inView,
-          visualHeight: visualBox.height,
-          visualWidth: visualBox.width,
-          visualTop: visualBox.top,
-          stageHeight: stageBox.height,
-          viewH
-        };
-      }, visualSel.split(',')[0].trim()), sim.href).toMatchObject({ ok: true });
+      await expectStageStaysVisible(page, visualSel.split(',')[0].trim(), `${sim.href} stage stays painted`);
     }
 
     await expect.poll(() => page.evaluate(() => {
