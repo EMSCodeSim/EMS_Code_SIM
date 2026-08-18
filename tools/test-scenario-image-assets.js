@@ -85,5 +85,20 @@ if (!fs.existsSync(introVideo) || fs.statSync(introVideo).size === 0) {
 if (!horseScenario.includes('playIncidentIntro') || !horseScenario.includes('incident-calm-walk.mp4')) {
   throw new Error('Horse scenario must play the incident intro video before revealing the patient');
 }
+const introBytes = fs.readFileSync(introVideo);
+let boxOffset = 0;
+let moovAt = -1;
+let mdatAt = -1;
+while (boxOffset + 8 <= introBytes.length) {
+  const size = introBytes.readUInt32BE(boxOffset);
+  const type = introBytes.slice(boxOffset + 4, boxOffset + 8).toString('latin1');
+  if (size < 8) break;
+  if (type === 'moov') moovAt = boxOffset;
+  if (type === 'mdat') mdatAt = boxOffset;
+  boxOffset += size;
+}
+if (moovAt < 0 || (mdatAt >= 0 && moovAt > mdatAt)) {
+  throw new Error('Horse scenario intro video must be fast-start (moov before mdat) so browsers can autoplay it');
+}
 
 console.log(`Scenario image asset check passed for ${urls.size} configured images across ${sources.length} scenario sources plus ${horseAssets.length} horse-crush photos.`);

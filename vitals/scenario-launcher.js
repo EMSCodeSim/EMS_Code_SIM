@@ -16,8 +16,13 @@
     return mode === 'assessment' ? 'assessment' : 'learning';
   }
 
-  function patientHome(caseId, mode = 'learning') {
-    return `/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}&training=${encodeURIComponent(trainingMode(mode))}`;
+  function patientHome(caseId, mode = 'learning', options = {}) {
+    const params = new URLSearchParams({
+      case: caseId,
+      training: trainingMode(mode)
+    });
+    if (options.reset) params.set('reset', '1');
+    return `/vitals/visual-patient.html?${params}`;
   }
 
   function savedMode(record = activeRecord) {
@@ -135,7 +140,7 @@
     api?.create?.(item);
     session?.sync?.(item.id);
     api?.setDocumentation?.({ trainingMode: trainingMode(mode), trainingModeSetAt: new Date().toISOString() });
-    location.href = patientHome(item.id, mode);
+    location.href = patientHome(item.id, mode, { reset:true });
   }
 
   $('continueSavedScenario').addEventListener('click', () => {

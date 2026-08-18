@@ -15,6 +15,9 @@
 /*.mp3
   Cache-Control: public, max-age=604800
 
+/vitals/assets/*.mp4
+  Cache-Control: public, max-age=0, must-revalidate
+
 # Do not broadly cache JS/CSS for a day. Scenario files change often; a long
 # JS cache made Ctrl+Shift+R appear to do nothing after deploys.
 /*.js
