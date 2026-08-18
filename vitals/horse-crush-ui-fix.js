@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.18.28';
+  const VERSION = '2026.08.18.32';
   let lastAbcCommitAt = 0;
   let lastAbcCommitToken = '';
   const FOCUSED_EXAMS = new Set([
@@ -379,6 +379,11 @@
       window.EMSCodeSimHorseCrush?.noteLearnerAssessment?.(key);
       openDesktopAbcFollowup(button, key); return;
     }
+    if (key === 'mental_status' || key === 'aaox4' || key === 'neuro') {
+      event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation?.();
+      window.EMSCodeSimHorseWorkspace?.openAaox4?.();
+      return;
+    }
     if (SIM_ASSESSMENTS[key]) {
       event.preventDefault();
       event.stopPropagation();
@@ -419,8 +424,18 @@
 
   function start() {
     refresh();
-    // Transport has an explicit promotion trigger. A document-wide observer
-    // rebuilt active controls whenever any panel toggled its hidden state.
+    document.addEventListener('click', event => {
+      if (!isHorseScenario()) return;
+      const anchor = event.target.closest?.('a[href]');
+      if (!anchor) return;
+      let url;
+      try { url = new URL(anchor.href, location.href); } catch { return; }
+      if (!url.pathname.endsWith('/vitals/avpu-scenario.html')) return;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation?.();
+      window.EMSCodeSimHorseWorkspace?.openAaox4?.();
+    }, true);
     window.setTimeout(scheduleRefresh, 250);
     window.setTimeout(scheduleRefresh, 900);
   }

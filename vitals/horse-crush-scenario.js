@@ -204,7 +204,7 @@
       const saved = record()?.documentation?.horseCrushMovement || {};
       return { src: movementImage(saved.method, saved.stabilization), alt: 'Injured left knee padded in the position of comfort for movement' };
     }
-    if (['airway', 'breathing', 'perfusion', 'abc', 'head_to_toe'].includes(key)) {
+    if (['airway', 'breathing', 'perfusion', 'abc', 'head_to_toe', 'mental_status', 'aaox4', 'neuro'].includes(key)) {
       return { src: PATIENT_PHOTO, alt: 'Alert patient lying on dirt outside the south barn with the left knee flexed' };
     }
     if (key === 'focused_leg') {
@@ -711,6 +711,100 @@
     return item;
   }
 
+  const AAOX4_FINDING_KEY = 'mental_status';
+  const AAOX4_VALUE = 'Alert and oriented ×4';
+  const AAOX4_DOMAINS = [
+    {
+      id: 'alert',
+      label: 'Alert',
+      prompt: 'Is she alert? Watch whether her eyes are open and she responds to your voice.',
+      action: 'Observe / call to patient',
+      response: 'Eyes open. She tracks you and answers promptly.'
+    },
+    {
+      id: 'person',
+      label: 'Person',
+      prompt: 'Ask her name.',
+      action: 'Ask name',
+      response: '“I’m Linda.”'
+    },
+    {
+      id: 'place',
+      label: 'Place',
+      prompt: 'Ask where she is.',
+      action: 'Ask place',
+      response: '“I’m at the barn… outside the south barn.”'
+    },
+    {
+      id: 'time',
+      label: 'Time',
+      prompt: 'Ask the day, date, or time of day.',
+      action: 'Ask time',
+      response: '“It’s Tuesday afternoon.”'
+    },
+    {
+      id: 'event',
+      label: 'Event',
+      prompt: 'Ask what happened.',
+      action: 'Ask event',
+      response: '“I was walking my horse and another one spooked and pinned me. I fell. I didn’t black out.”'
+    }
+  ];
+  let aaox4Checked = new Set();
+
+  function aaox4State() {
+    const saved = record()?.findings?.[AAOX4_FINDING_KEY];
+    return {
+      key: AAOX4_FINDING_KEY,
+      value: AAOX4_VALUE,
+      domains: AAOX4_DOMAINS,
+      checked: [...aaox4Checked],
+      complete: AAOX4_DOMAINS.every(item => aaox4Checked.has(item.id)),
+      saved: Boolean(saved),
+      savedValue: saved?.value || saved?.finding || ''
+    };
+  }
+
+  function saveAaox4Finding() {
+    const existing = record()?.findings?.[AAOX4_FINDING_KEY];
+    saveFinding(AAOX4_FINDING_KEY, AAOX4_VALUE, {
+      label: 'Mental status / AAOx4',
+      normality: 'normal',
+      details: 'Alert. Oriented to person, place, time, and event. No loss of consciousness.',
+      source: 'horse-crush-aaox4',
+      aaox4: true,
+      isReassessment: Boolean(existing)
+    });
+  }
+
+  function startAaox4(options = {}) {
+    if (!isActive()) return null;
+    if (document.body.dataset.horseIntro && document.body.dataset.horseIntro !== 'arrived') return null;
+    if (options.reset !== false) aaox4Checked = new Set();
+    noteLearnerAssessment(AAOX4_FINDING_KEY);
+    return aaox4State();
+  }
+
+  function assessAaox4Domain(id) {
+    if (!isActive()) return null;
+    if (document.body.dataset.horseIntro && document.body.dataset.horseIntro !== 'arrived') return null;
+    const domain = AAOX4_DOMAINS.find(item => item.id === id);
+    if (!domain) return null;
+    if (!aaox4Checked.size) noteLearnerAssessment(AAOX4_FINDING_KEY);
+    aaox4Checked.add(id);
+    window.EMSCodeSimPatientInfo?.showSceneObservation?.({
+      id: `horse-aaox4-${domain.id}`,
+      type: 'NEW ASSESSMENT INFORMATION',
+      title: `AAOx4 · ${domain.label}`,
+      text: domain.response,
+      kind: 'assessment',
+      sticky: true
+    });
+    const state = aaox4State();
+    if (state.complete) saveAaox4Finding();
+    return { domain, ...state };
+  }
+
   function performExam(key) {
     if (!isActive()) return null;
     const baseItem = EXAMS.find(exam => exam.key === key);
@@ -773,6 +867,14 @@
         button.addEventListener('click', () => performExam(item.key));
         grid.appendChild(button);
       });
+      const aaoxSaved = has(AAOX4_FINDING_KEY);
+      const aaoxButton = document.createElement('button');
+      aaoxButton.type = 'button';
+      aaoxButton.className = `horse-exam-button${aaoxSaved ? ' complete' : ''}`;
+      aaoxButton.dataset.assessmentItem = AAOX4_FINDING_KEY;
+      aaoxButton.innerHTML = `<span>${aaoxSaved ? '✓' : '○'}</span><div><strong>AAOx4 / Orientation</strong><small>${aaoxSaved ? 'Recorded — reassess' : 'Assess alertness and orientation'}</small></div>`;
+      aaoxButton.addEventListener('click', () => window.EMSCodeSimHorseWorkspace?.openAaox4?.());
+      grid.appendChild(aaoxButton);
     } else {
       section.classList.add('horse-assessment-selector');
       section.innerHTML = `
@@ -993,7 +1095,10 @@
     movementImage,
     noteLearnerAssessment,
     hideBlsFollowups,
-    introAllowsPatientSpeech
+    introAllowsPatientSpeech,
+    startAaox4,
+    assessAaox4Domain,
+    aaox4State
   });
 
   function introAllowsPatientSpeech() {

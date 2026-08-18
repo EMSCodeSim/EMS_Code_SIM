@@ -1078,7 +1078,7 @@
         label:'Neuro / Skin',
         description:'Neurologic and skin findings.',
         items:[
-          { id:'neuro', label:'Neurologic', prompt:'Assess mental status and neurologic function.' },
+          { id:'mental_status', label:'AAOx4 / Orientation', prompt:'Assess alertness and orientation to person, place, time, and event.' },
           { id:'pupils', label:'Pupils / PERL', prompt:'Assess pupils, light response, and tracking.' },
           { id:'skin', label:'Skin', prompt:'Assess skin color, temperature, and condition.' }
         ]
@@ -1096,7 +1096,7 @@
     const completed = key => Boolean(
       api?.getFinding?.(key, current) ||
       (key === 'lung_sounds' && api?.getFinding?.('breath_sounds', current)) ||
-      (key === 'neuro' && (api?.getFinding?.('mental_status', current) || api?.getFinding?.('pupils', current)))
+      (key === 'neuro' && api?.getFinding?.('mental_status', current))
     );
 
     box.className = 'assessment-list horse-assessment-category-workspace';
@@ -1143,6 +1143,10 @@
           horseWorkspaceContext.openFollowup(item.id);
           return;
         }
+        if (item.id === 'mental_status' || item.id === 'aaox4' || item.id === 'neuro') {
+          openHorseAaox4Tool();
+          return;
+        }
         if (item.id === 'lung_sounds' || item.id === 'breath_sounds') {
           const href = '/vitals/breath-sounds-scenario.html';
           if (!openEmbeddedSimulator(href, 'Breath sounds')) {
@@ -1176,6 +1180,72 @@
     });
   }
 
+  function openHorseAaox4Tool(options) {
+    options = options || {};
+    if (id !== 'horse_crush') return false;
+    horseAssessmentActiveCategory = horseAssessmentActiveCategory || 'neuro_skin';
+    horseAssessmentActiveItem = 'mental_status';
+    const started = window.EMSCodeSimHorseCrush?.startAaox4?.({ reset: options.reset !== false });
+    if (!started) {
+      toast('Finish arrival and BLS handoff before assessing orientation.');
+      return false;
+    }
+    if (!desktopWorkspace()) openSheet('assessmentPanel');
+    renderHorseAaox4Workspace();
+    return true;
+  }
+
+  function renderHorseAaox4Workspace() {
+    const box = $('assessmentTools');
+    const horse = window.EMSCodeSimHorseCrush;
+    if (!box || !horse?.aaox4State) return false;
+    const state = horse.aaox4State();
+    const lastId = state.checked[state.checked.length - 1];
+    const lastDomain = state.domains.find(item => item.id === lastId);
+    box.className = 'assessment-list horse-assessment-followup-workspace horse-aaox4-workspace';
+    box.innerHTML = `
+      <div class="horse-assessment-workspace-head">
+        <button type="button" class="horse-assessment-back" id="horseAaox4Back">‹ Neuro / Skin</button>
+        <div>
+          <small>NEURO</small>
+          <strong>AAOx4 / Mental status orientation</strong>
+          <span>Check alertness, then person, place, time, and event.</span>
+        </div>
+      </div>
+      <div class="horse-aaox4-steps" role="group" aria-label="AAOx4 domains">
+        ${state.domains.map(domain => {
+          const done = state.checked.includes(domain.id);
+          return `<button type="button" class="horse-assessment-workspace-action${done ? ' used' : ''}" data-aaox4-domain="${escapeHtml(domain.id)}">
+            <span>${done ? '✓' : '○'}</span>
+            <div><strong>${escapeHtml(domain.label)}</strong><small>${escapeHtml(domain.action)}</small></div>
+          </button>`;
+        }).join('')}
+      </div>
+      <div class="horse-aaox4-live" id="horseAaox4Live">
+        ${lastDomain ? `<blockquote class="horse-aaox4-quote">${escapeHtml(lastDomain.response)}</blockquote>` : '<p>Select a domain. The patient will answer as you go.</p>'}
+        ${state.complete ? '<p class="horse-aaox4-result">Finding saved: Alert and oriented ×4. Person, place, time, and event are intact. No LOC.</p>' : ''}
+      </div>`;
+    box.querySelector('#horseAaox4Back')?.addEventListener('click', () => {
+      horseAssessmentActiveItem = '';
+      if (desktopWorkspace()) renderHorseAssessmentCategoryWorkspace('neuro_skin');
+      else {
+        horseAssessmentActiveCategory = '';
+        buildAssessments();
+      }
+    });
+    box.querySelectorAll('[data-aaox4-domain]').forEach(button => {
+      button.addEventListener('click', () => {
+        const result = horse.assessAaox4Domain(button.dataset.aaox4Domain);
+        if (!result) {
+          toast('Finish arrival and BLS handoff before assessing orientation.');
+          return;
+        }
+        renderHorseAaox4Workspace();
+      });
+    });
+    return true;
+  }
+
   function renderHorseAssessmentInlineFollowup(title, bodyHtml, onBack) {
     const box = $('assessmentTools');
     if (!box || !desktopWorkspace()) return false;
@@ -1197,6 +1267,10 @@
   function buildHorseAssessmentChooserDesktop() {
     const box = $('assessmentTools');
     if (!box) return;
+    if (horseAssessmentActiveItem === 'mental_status' || horseAssessmentActiveItem === 'aaox4') {
+      renderHorseAaox4Workspace();
+      return;
+    }
     if (horseAssessmentActiveCategory) {
       renderHorseAssessmentCategoryWorkspace(horseAssessmentActiveCategory);
       return;
@@ -1230,6 +1304,10 @@
 
   function buildAssessments() {
     const box = $('assessmentTools');
+    if (id === 'horse_crush' && (horseAssessmentActiveItem === 'mental_status' || horseAssessmentActiveItem === 'aaox4')) {
+      renderHorseAaox4Workspace();
+      return;
+    }
     if (id === 'horse_crush' && desktopWorkspace()) {
       buildHorseAssessmentChooserDesktop();
       return;
@@ -4443,7 +4521,7 @@
   const DESKTOP_VITAL_LABELS = {
     blood_pressure:'NIBP', pulse:'HR', respirations:'RR', spo2:'SpO₂',
     blood_glucose:'BGL', temperature:'TEMP', breath_sounds:'LUNGS',
-    pupils:'PUPILS', skin:'SKIN', mental_status:'AVPU', gcs:'GCS', pain:'PAIN', breathing:'BREATH', distal_csm:'CSM', motor_sensory:'NEURO', abdominal_assessment:'ABD/PELV', trauma_assessment:'TRAUMA'
+    pupils:'PUPILS', skin:'SKIN', mental_status: id === 'horse_crush' ? 'AAO×4' : 'AVPU', gcs:'GCS', pain:'PAIN', breathing:'BREATH', distal_csm:'CSM', motor_sensory:'NEURO', abdominal_assessment:'ABD/PELV', trauma_assessment:'TRAUMA'
   };
   const DESKTOP_MONITOR_PRIMARY_KEYS = ['blood_pressure','pulse','respirations','spo2','blood_glucose','temperature'];
   const DESKTOP_MONITOR_QUICK_KEYS = [
@@ -4761,6 +4839,9 @@
   }
 
   function openEmbeddedSimulator(href, title = 'Assessment simulator', toolKey = '') {
+    if (id === 'horse_crush' && (toolKey === 'mental_status' || /avpu-scenario\.html(?:\?|$)/.test(String(href || '')))) {
+      return openHorseAaox4Tool();
+    }
     if (!desktopScenarioMode()) return false;
     const workspace = $('embeddedSimWorkspace');
     const frame = $('embeddedSimFrame');
@@ -4989,7 +5070,8 @@
     window.EMSCodeSimHorseWorkspace = Object.freeze({
       selectAssessment: selectHorseCurrentAssessment,
       showCurrent: closeSheet,
-      openSheet
+      openSheet,
+      openAaox4: openHorseAaox4Tool
     });
   }
   if ($('modeBadge')) $('modeBadge').textContent = assessmentMode() ? 'Assessment Mode' : 'Learning Mode';
