@@ -207,13 +207,15 @@
     }
   }
 
-  function toolUrl(url, returnLabel = 'Patient', context = '') {
+  function toolUrl(url, returnLabel = 'Patient', context = '', key = '') {
+    const registryKey = key || context;
     return registry?.buildUrl?.(url, {
       caseId: id,
       returnTo: `/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}`,
       training: trainingMode(),
       returnLabel,
-      context
+      context: context || registryKey,
+      key: registryKey
     }) || url;
   }
 
@@ -4545,16 +4547,24 @@
   const embeddedSimPaths = new Set([
     ...(registry?.vitalTools || []).map(tool => tool.url),
     ...(registry?.assessmentTools || []).map(tool => tool.url)
-  ].filter(Boolean));
+  ].filter(Boolean).filter(path => path !== '/vitals/visual-patient.html'));
 
   function desktopScenarioMode() {
     return window.matchMedia?.('(min-width: 980px)')?.matches === true;
   }
 
   function embeddedToolTitle(anchor, url) {
+    const datasetKey = anchor?.dataset?.assessmentKey || anchor?.dataset?.toolKey || '';
     const matching = [...(registry?.vitalTools || []), ...(registry?.assessmentTools || [])]
-      .find(tool => tool.url === url.pathname);
+      .find(item => item.key === datasetKey || item.url === url.pathname);
     return matching?.label || anchor?.textContent?.trim() || 'Assessment simulator';
+  }
+
+  function embeddedToolKey(anchor, url) {
+    const datasetKey = anchor?.dataset?.assessmentKey || anchor?.dataset?.toolKey || '';
+    const matching = [...(registry?.vitalTools || []), ...(registry?.assessmentTools || [])]
+      .find(item => item.key === datasetKey || item.url === url.pathname);
+    return matching?.key || datasetKey || '';
   }
 
 
@@ -4618,7 +4628,7 @@
     }
   }
 
-  function openEmbeddedSimulator(href, title = 'Assessment simulator') {
+  function openEmbeddedSimulator(href, title = 'Assessment simulator', toolKey = '') {
     if (!desktopScenarioMode()) return false;
     const workspace = $('embeddedSimWorkspace');
     const frame = $('embeddedSimFrame');
@@ -4628,15 +4638,22 @@
     if (url.origin !== location.origin || !embeddedSimPaths.has(url.pathname)) return false;
     url.searchParams.set('embedded', '1');
     url.searchParams.set('autosaveclose', '1');
+    url.searchParams.set('resume', '1');
     url.searchParams.set('case', id);
     url.searchParams.set('mode', 'scenario');
     url.searchParams.set('training', trainingMode());
+    if (toolKey && !url.searchParams.get('key') && !url.searchParams.get('context')) {
+      url.searchParams.set('key', toolKey);
+      url.searchParams.set('context', toolKey);
+    }
     url.searchParams.set('return', `/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&embeddedReturn=1`);
     const titleNode = $('embeddedSimTitle');
     if (titleNode) titleNode.textContent = title;
     workspace.hidden = false;
     document.body.classList.add('sim-workspace-open');
+    embeddedRecordSignature = embeddedRecordCompletionSignature();
     frame.src = url.toString();
+    armEmbeddedCompletionWatcher();
     return true;
   }
 
@@ -4648,7 +4665,7 @@
     let url;
     try { url = new URL(anchor.href, location.href); } catch { return; }
     if (!embeddedSimPaths.has(url.pathname)) return;
-    if (openEmbeddedSimulator(url.toString(), embeddedToolTitle(anchor, url))) {
+    if (openEmbeddedSimulator(url.toString(), embeddedToolTitle(anchor, url), embeddedToolKey(anchor, url))) {
       event.preventDefault();
       event.stopPropagation();
     }
@@ -4664,6 +4681,7 @@
       const root = doc.documentElement;
       const body = doc.body;
       if (!root || !body) return;
+      if (body.classList.contains('ems-embedded-mini-sim')) return;
 
       root.dataset.emsEmbeddedFit = 'true';
 
@@ -4767,7 +4785,11 @@
     try {
       const current = frame.contentWindow?.location;
       if (current?.pathname === '/vitals/visual-patient.html') closeEmbeddedSimulator();
-      else scheduleEmbeddedFit();
+      else {
+        installEmbeddedSaveBridge();
+        armEmbeddedCompletionWatcher();
+        scheduleEmbeddedFit();
+      }
     } catch (_) {
       // All embedded tools are same-origin; ignore transient navigation access errors.
     }
@@ -4948,7 +4970,7 @@
     const tool = desktopSelectedVitalTool(); if (!tool) return;
     const current = record() || {}; const finding = api?.getFinding?.(tool.key, current) || current.findings?.[tool.key];
     let href = toolUrl(tool.url); if (finding) { const u = new URL(href, location.origin); u.searchParams.set('reassess','1'); href = `${u.pathname}${u.search}${u.hash}`; }
-    closeDesktopVitalAction(); if (!openEmbeddedSimulator(href, `${tool.label}${finding ? ' reassessment' : ''}`)) location.href = href;
+    closeDesktopVitalAction(); if (!openEmbeddedSimulator(href, `${tool.label}${finding ? ' reassessment' : ''}`, tool.key)) location.href = href;
   });
   $('desktopVitalPartner')?.addEventListener('click', () => {
     const tool = desktopSelectedVitalTool(); if (!tool) return;

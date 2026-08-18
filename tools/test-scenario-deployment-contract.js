@@ -102,7 +102,7 @@ assert(horsePhotoFix.includes("version: '2.0'"), 'Horse patient-layer compatibil
 assert(embeddedMiniSim.includes('ems-discovery-locked'), 'Embedded vital sims must hide documentation until the measurement is completed');
 assert(embeddedMiniSim.includes("setFlow(3)"), 'Embedded mini sims must advance to Document only after discovery');
 assert(embeddedMiniSim.includes("['pulse','respirations','spo2','bgl','temperature']"), 'Shared discovery gate must cover all device vital simulators');
-assert(embeddedMiniSim.includes("sim === 'pupils'") && embeddedMiniSim.includes("sim === 'skin'") && embeddedMiniSim.includes("sim === 'mental-status'") && embeddedMiniSim.includes("sim === 'breath-sounds'"), 'Shared discovery gate must cover observation-based vital mini sims');
+assert(embeddedMiniSim.includes('installPerlAdapter') && embeddedMiniSim.includes('installSkinAdapter') && embeddedMiniSim.includes("sim === 'mental-status'") && embeddedMiniSim.includes("sim === 'breath-sounds'"), 'Embedded mini sims must wire pupils/skin pathname adapters and observation-based discovery gates');
 assert(read('vitals/breath-sounds-auscultation.js').includes('stageMarkup') && read('vitals/breath-sounds-scenario.html').includes('breath-sounds-auscultation.js'), 'Breath-sounds scenario must load the rebuilt anatomical auscultation stage');
 assert(visualAssessmentSuite.includes('function interpret(config={})'), 'Visual assessment suite must require learner interpretation before saving findings');
 assert(visualAssessmentSuite.includes('reviewAtDebrief:true'), 'Visual assessment grading data must remain hidden until debrief');
