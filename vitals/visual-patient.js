@@ -1157,7 +1157,7 @@
           return;
         }
         if (item.id === 'skin') {
-          const href = '/vitals/skin.html';
+          const href = '/vitals/skin-scenario.html';
           if (!openEmbeddedSimulator(href, 'Skin signs')) {
             window.EMSCodeSimMiniSimOverlay?.openOverlay?.(href, 'Skin signs');
           }

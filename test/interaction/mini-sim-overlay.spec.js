@@ -81,6 +81,16 @@ test('device and visual assessment mini sims discover, document, save, and close
   await assertNoPageErrors();
 });
 
+const STAGE_VISUALS = {
+  '/vitals/pulse-scenario.html': '#heart, .sv-heart',
+  '/vitals/respiratory-rate-scenario.html': '.sv-resp-patient',
+  '/vitals/pulse-ox-scenario.html': '.sv-monitor, #monitorValue',
+  '/vitals/bgl-scenario.html': '.sv-device',
+  '/vitals/temperature-scenario.html': '.sv-device',
+  '/vitals/breath-sounds-scenario.html': '.sv-ausc-stage, .sv-point',
+  '/vitals/skin-scenario.html': '.sv-skin-compare, #patientSwatch'
+};
+
 const MINI_SIMS = [
   { href: '/vitals/bp-scenario.html', title: 'Blood pressure', document: '#sysInput, #diaInput, #submitBtn', perform: '#pumpBtn' },
   { href: '/vitals/pulse-scenario.html', title: 'Pulse', document: '#pulseInput, #submitBtn', perform: '#startMeasure' },
@@ -90,7 +100,7 @@ const MINI_SIMS = [
   { href: '/vitals/bgl-scenario.html', title: 'Blood glucose', document: '#bglInput, #submitBtn', perform: '.sv-step' },
   { href: '/vitals/temperature-scenario.html', title: 'Temperature', document: '#tempInput, #submitBtn', perform: '#measureTemp' },
   { href: '/vitals/pupil.html', title: 'Pupils / PERL', document: '#perl, #btnGrade', perform: '#btnLightL, #btnLightR' },
-  { href: '/vitals/skin.html', title: 'Skin signs', document: '#crtBtn, #btnPale, #moistDry', perform: '#crtBtn' },
+  { href: '/vitals/skin-scenario.html', title: 'Skin signs', document: '#colorInput, #submitBtn', perform: '#inspectSkin' },
   { href: '/vitals/avpu-scenario.html', title: 'Mental status / AVPU', document: '#avpuChoices, #submitBtn', perform: '#observeBtn' },
   { href: '/vitals/gcs.html', title: 'Glasgow Coma Scale', document: '#selE, #selV, #selM, #showResults', perform: '#btnEyes' },
   { href: '/vitals/visual-airway-assessment.html', title: 'Airway assessment', document: '[data-a]', perform: '[data-a]' },
@@ -124,6 +134,24 @@ test('every mini sim fits the patient window, boosts audio, and keeps a finding 
     }), sim.href).toBe(true);
     await expect(frame.locator(sim.perform).locator('visible=true').first(), `${sim.href} perform control`).toBeVisible({ timeout: 15_000 });
     await expect(frame.locator(sim.document).first(), `${sim.href} finding entry`).toBeAttached({ timeout: 15_000 });
+
+    const visualSel = STAGE_VISUALS[sim.href];
+    if (visualSel) {
+      await expect(frame.locator(visualSel).first(), `${sim.href} stage visual`).toBeVisible({ timeout: 15_000 });
+      await expect.poll(() => page.evaluate(sel => {
+        const doc = document.getElementById('embeddedSimFrame')?.contentDocument;
+        const visual = doc?.querySelector(sel);
+        const stage = doc?.querySelector('.sv-stage');
+        if (!visual || !stage) return { ok:false, reason:'missing' };
+        const visualBox = visual.getBoundingClientRect();
+        const stageBox = stage.getBoundingClientRect();
+        return {
+          ok: visualBox.height >= 40 && stageBox.height >= 80,
+          visualHeight: visualBox.height,
+          stageHeight: stageBox.height
+        };
+      }, visualSel.split(',')[0].trim()), sim.href).toMatchObject({ ok: true });
+    }
 
     await expect.poll(() => page.evaluate(() => {
       const workspace = document.getElementById('embeddedSimWorkspace');

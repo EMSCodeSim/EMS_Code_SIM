@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.08.18.25';
+  const PATIENT_WORKSPACE_BUILD = '2026.08.18.26';
 
   // The patient page has several independent layout layers that can move the same
   // nodes during startup. A stale insertBefore reference should never crash the
@@ -34,7 +34,7 @@
     { category: 'Respiratory', key: 'breath_sounds', label: 'Breath sounds', description: 'Auscultate and compare all lung fields.', url: '/vitals/breath-sounds-scenario.html' },
     { category: 'Respiratory', key: 'chest_assessment', label: 'Chest assessment', description: 'Inspect and palpate chest movement, tenderness, and injury.', url: '/vitals/respiratory-assessment-visual.html' },
     { category: 'Focused examination', key: 'distal_csm', label: 'Distal CSM & capillary refill', description: 'Check distal pulse, sensation, movement, and capillary refill.', url: '/vitals/distal-csm-assessment.html' },
-    { category: 'Focused examination', key: 'skin', label: 'Skin signs', description: 'Compare color, temperature, and moisture.', url: '/vitals/skin.html' },
+    { category: 'Focused examination', key: 'skin', label: 'Skin signs', description: 'Compare color, temperature, and moisture.', url: '/vitals/skin-scenario.html' },
     { category: 'Focused examination', key: 'abdominal_assessment', label: 'Abdominal assessment', description: 'Assess tenderness, guarding, rigidity, and distention.', url: '/vitals/abdomen-pelvis-visual.html' },
     { category: 'Focused examination', key: 'trauma_assessment', label: 'Rapid trauma assessment', description: 'Perform a systematic head-to-toe trauma examination.', url: '/vitals/visual-trauma-body-exam.html' },
     { category: 'Focused examination', key: 'pain', label: 'Pain / OPQRST', description: 'Characterize symptoms and pain using OPQRST.', url: '/vitals/pain-opqrst.html' },
@@ -52,7 +52,7 @@
     { key: 'blood_glucose', label: 'Blood glucose', description: 'Complete a glucometer check.', url: '/vitals/bgl-scenario.html', delay: 28 },
     { key: 'temperature', label: 'Temperature', description: 'Obtain and interpret temperature.', url: '/vitals/temperature-scenario.html', delay: 18 },
     { key: 'pupils', label: 'Pupils / PERL', description: 'Assess PERL, gaze, and tracking.', url: '/vitals/pupil.html', delay: 12 },
-    { key: 'skin', label: 'Skin signs', description: 'Assess color, temperature, and moisture.', url: '/vitals/skin.html', delay: 10 },
+    { key: 'skin', label: 'Skin signs', description: 'Assess color, temperature, and moisture.', url: '/vitals/skin-scenario.html', delay: 10 },
     { key: 'mental_status', label: 'Mental status', description: 'Assess AVPU and patient response.', url: '/vitals/avpu-scenario.html', delay: 8 }
   ];
 

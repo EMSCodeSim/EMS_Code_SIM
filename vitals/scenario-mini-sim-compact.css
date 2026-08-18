@@ -57,7 +57,8 @@ body.ems-embedded-mini-sim .va-result{
   overscroll-behavior:contain!important;
 }
 body.ems-embedded-mini-sim .sv-stage{
-  min-height:120px!important;
+  min-height:140px!important;
+  overflow:auto!important;
   padding:5px!important;
 }
 body.ems-embedded-mini-sim .sv-instruction{margin-bottom:4px!important;font-size:.68rem!important;line-height:1.22!important}
@@ -142,4 +143,85 @@ body.ems-embedded-mini-sim #showResults{
   position:sticky;
   bottom:4px;
   z-index:8;
+}
+
+/* Full-page 100dvh vital layouts collapse to a blank white card inside the
+   patient-photo iframe. Keep the stage, actions, and finding form visible. */
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital]{
+  height:100%!important;
+  max-height:100%!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital] .sv-main{
+  width:100%!important;
+  max-width:none!important;
+  height:auto!important;
+  max-height:none!important;
+  min-height:0!important;
+  flex:1 1 0!important;
+  overflow:auto!important;
+}
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital] #simCard,
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital] #answerCard{
+  min-height:0!important;
+  overflow:auto!important;
+}
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital] #simCard:not([hidden]){
+  display:flex!important;
+  flex-direction:column!important;
+}
+html[data-ems-mini-sim="embedded"] #simCard[hidden],
+html[data-ems-mini-sim="embedded"] #answerCard[hidden],
+html[data-ems-mini-sim="embedded"] #scenarioError[hidden]{
+  display:none!important;
+}
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital] .sv-stage{
+  min-height:160px!important;
+  overflow:visible!important;
+}
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital="pulse"] .sv-heart,
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital="respirations"] .sv-resp-patient,
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital="spo2"] .sv-monitor,
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital="bgl"] .sv-device,
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital="temperature"] .sv-device,
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital="breath-sounds"] .sv-ausc-stage,
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital="skin"] .sv-skin-compare{
+  visibility:visible!important;
+  opacity:1!important;
+}
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital="pulse"] .sv-heart{
+  display:grid!important;
+  width:82px!important;
+  height:82px!important;
+  min-width:82px!important;
+  min-height:82px!important;
+}
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital="respirations"] .sv-resp-patient{
+  display:block!important;
+  width:min(100%,220px)!important;
+  height:200px!important;
+  min-height:180px!important;
+}
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital="spo2"] .sv-monitor,
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital="bgl"] .sv-device,
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital="temperature"] .sv-device{
+  display:block!important;
+  min-height:90px!important;
+}
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital="skin"] .sv-skin-compare{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important;
+}
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital="skin"] .sv-skin-swatch{
+  width:min(100%,118px)!important;
+  height:84px!important;
+}
+html[data-ems-mini-sim="embedded"] body[data-scenario-vital="breath-sounds"] .sv-ausc-stage{
+  display:block!important;
+  width:min(100%,280px)!important;
+  min-height:180px!important;
+  max-height:min(48vh,300px)!important;
+  aspect-ratio:320/410;
 }

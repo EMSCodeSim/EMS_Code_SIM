@@ -1469,7 +1469,7 @@ body.horse-grade-open .patient-stage>img#patientImage{opacity:.18!important;filt
 .embedded-sim-header small{color:#8ccfff;font-size:.58rem;font-weight:900;letter-spacing:.08em}
 .embedded-sim-header strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.82rem}
 .embedded-sim-header button{flex:0 0 auto;min-height:34px;border:1px solid #39789e;border-radius:9px;padding:6px 10px;background:#173f5a;color:#fff;font-size:.7rem;font-weight:900;cursor:pointer}
-.embedded-sim-workspace iframe{display:block;flex:1 1 auto;width:100%;min-height:0;border:0;background:#fff}
+.embedded-sim-workspace iframe{display:block;flex:1 1 auto;width:100%;min-height:0;border:0;background:#e8f1f6}
 body.sim-workspace-open .patient-stage:after,body.sim-workspace-open .scene-clue-layer{display:none!important}
 @media(max-width:979px){.embedded-sim-workspace{display:none!important}}
 
