@@ -133,7 +133,7 @@
       const left = site.startsWith('l');
       audio?.pause?.();
       audio = new Audio(file);
-      audio.volume = type === 'diminished' && left ? 0.22 : 0.92;
+      audio.volume = type === 'diminished' && left ? 0.45 : 1;
       host.querySelectorAll('.sv-point.active').forEach(node => node.classList.remove('active'));
       button.classList.add('active', 'done');
       heard.add(site);

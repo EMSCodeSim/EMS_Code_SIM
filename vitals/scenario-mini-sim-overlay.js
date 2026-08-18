@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const OVERLAY_VERSION = '2026.08.18.11';
+  const OVERLAY_VERSION = '2026.08.18.23';
   const registry = window.EMSCodeSimToolRegistry;
   const toolPaths = new Set([
     ...(registry?.vitalTools || []).map(tool => tool.url),
@@ -34,7 +34,7 @@
       .patient-stage{isolation:isolate}
       #embeddedSimWorkspace.embedded-sim-workspace{
         position:absolute!important;
-        inset:clamp(12px,2.4vw,24px)!important;
+        inset:0!important;
         z-index:90!important;
         width:auto!important;
         height:auto!important;
@@ -45,10 +45,10 @@
         overflow:hidden!important;
         display:flex!important;
         flex-direction:column!important;
-        border:1px solid rgba(154,214,247,.48)!important;
-        border-radius:22px!important;
+        border:0!important;
+        border-radius:inherit!important;
         background:#07131f!important;
-        box-shadow:0 24px 70px rgba(0,0,0,.58),0 0 0 999px rgba(3,12,20,.28)!important;
+        box-shadow:none!important;
         transform:none!important;
       }
       #embeddedSimWorkspace.embedded-sim-workspace[hidden]{display:none!important}
@@ -155,16 +155,25 @@
         link.dataset.emsMiniSimCss = '1';
         doc.head.appendChild(link);
       }
+      if (!doc.querySelector('link[data-ems-mini-sim-compact]')) {
+        const compact = doc.createElement('link');
+        compact.rel = 'stylesheet';
+        compact.href = `/vitals/scenario-mini-sim-compact.css?v=${encodeURIComponent(OVERLAY_VERSION)}`;
+        compact.dataset.emsMiniSimCompact = '1';
+        doc.head.appendChild(compact);
+      }
       if (!doc.querySelector('script[data-ems-mini-sim-js]')) {
         const script = doc.createElement('script');
         script.src = `/vitals/scenario-mini-sim-embedded.js?v=${encodeURIComponent(OVERLAY_VERSION)}`;
         script.dataset.emsMiniSimJs = '1';
+        script.async = false;
         doc.body.appendChild(script);
       }
       if (!doc.querySelector('script[data-ems-mini-sim-audio-boost]')) {
         const audioBoost = doc.createElement('script');
         audioBoost.src = `/vitals/scenario-mini-sim-audio-boost.js?v=${encodeURIComponent(OVERLAY_VERSION)}`;
         audioBoost.dataset.emsMiniSimAudioBoost = '1';
+        audioBoost.async = false;
         doc.body.appendChild(audioBoost);
       }
     } catch (_) {
@@ -197,6 +206,7 @@
       ensureWorkspaceOverPatient();
       window.setTimeout(injectChildExperience, 0);
       window.setTimeout(injectChildExperience, 90);
+      window.setTimeout(injectChildExperience, 250);
     });
 
     const observer = new MutationObserver(() => {

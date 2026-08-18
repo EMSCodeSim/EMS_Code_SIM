@@ -80,3 +80,84 @@ test('device and visual assessment mini sims discover, document, save, and close
 
   await assertNoPageErrors();
 });
+
+const MINI_SIMS = [
+  { href: '/vitals/bp-scenario.html', title: 'Blood pressure', document: '#sysInput, #diaInput, #submitBtn', perform: '#pumpBtn' },
+  { href: '/vitals/pulse-scenario.html', title: 'Pulse', document: '#pulseInput, #submitBtn', perform: '#startMeasure' },
+  { href: '/vitals/respiratory-rate-scenario.html', title: 'Respiratory rate', document: '#rrInput, #submitBtn', perform: '#startMeasure' },
+  { href: '/vitals/pulse-ox-scenario.html', title: 'SpO₂', document: '#spo2Input, #submitBtn', perform: '#placeProbe' },
+  { href: '/vitals/breath-sounds-scenario.html', title: 'Breath sounds', document: '#soundInput, #submitBtn', perform: '.sv-point' },
+  { href: '/vitals/bgl-scenario.html', title: 'Blood glucose', document: '#bglInput, #submitBtn', perform: '.sv-step' },
+  { href: '/vitals/temperature-scenario.html', title: 'Temperature', document: '#tempInput, #submitBtn', perform: '#measureTemp' },
+  { href: '/vitals/pupil.html', title: 'Pupils / PERL', document: '#perl, #btnGrade', perform: '#btnLightL, #btnLightR' },
+  { href: '/vitals/skin.html', title: 'Skin signs', document: '#crtBtn, #btnPale, #moistDry', perform: '#crtBtn' },
+  { href: '/vitals/avpu-scenario.html', title: 'Mental status / AVPU', document: '#avpuChoices, #submitBtn', perform: '#observeBtn' },
+  { href: '/vitals/gcs.html', title: 'Glasgow Coma Scale', document: '#selE, #selV, #selM, #showResults', perform: '#btnEyes' },
+  { href: '/vitals/visual-airway-assessment.html', title: 'Airway assessment', document: '[data-a]', perform: '[data-a]' },
+  { href: '/vitals/respiratory-assessment-visual.html', title: 'Breathing assessment', document: '.va-btn, .lung-field', perform: '.va-btn' },
+  { href: '/vitals/distal-csm-assessment.html', title: 'Circulation and perfusion', document: '[data-step]', perform: '[data-step]' },
+  { href: '/vitals/visual-neuro-stroke-assessment.html', title: 'Motor, sensory, and stroke findings', document: '[data-n]', perform: '[data-n]' },
+  { href: '/vitals/abdomen-pelvis-visual.html', title: 'Abdominal assessment', document: '[data-step], [data-q]', perform: '[data-step]' },
+  { href: '/vitals/visual-trauma-body-exam.html', title: 'Rapid trauma assessment', document: '[data-r], #finish', perform: '[data-r]' },
+  { href: '/vitals/pain-opqrst.html', title: 'Pain / OPQRST', document: '#practicePanel input, #practicePanel select, #practicePanel textarea, #practicePanel button', perform: '#practicePanel' },
+  { href: '/vitals/sample-history.html', title: 'SAMPLE history', document: '#practicePanel input, #practicePanel select, #practicePanel textarea, #practicePanel button', perform: '#practicePanel' },
+  { href: '/vitals/pediatric-assessment-triangle.html', title: 'Pediatric Assessment Triangle', document: '#practicePanel input, #practicePanel select, #practicePanel textarea, #practicePanel button', perform: '#practicePanel' },
+  { href: '/vitals/nines.html', title: 'Rule of Nines', document: '#answerVal, #submitBtn', perform: '#submitBtn' }
+];
+
+test('every mini sim fits the patient window, boosts audio, and keeps a finding entry path', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium', 'Catalog fit is verified on the desktop overlay');
+  test.setTimeout(180_000);
+  const assertNoPageErrors = watchPageErrors(page);
+  await openScenario(page, 'horse_crush', 'learning');
+  await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimMiniSimOverlay))).toBe(true);
+
+  for (const sim of MINI_SIMS) {
+    const opened = await page.evaluate(({ href, title }) => window.EMSCodeSimMiniSimOverlay.openOverlay(href, title), sim);
+    expect(opened, sim.href).toBe(true);
+    await expect(page.locator('#embeddedSimWorkspace'), sim.href).toBeVisible();
+    const frame = page.frameLocator('#embeddedSimFrame');
+    await expect(frame.locator('body'), sim.href).toHaveClass(/ems-embedded-mini-sim/, { timeout: 15_000 });
+    await expect.poll(() => page.evaluate(() => {
+      const doc = document.getElementById('embeddedSimFrame')?.contentDocument;
+      return Boolean(doc?.querySelector('link[data-ems-mini-sim-compact]') && doc.querySelector('script[data-ems-mini-sim-audio-boost]'));
+    }), sim.href).toBe(true);
+    await expect(frame.locator(sim.perform).locator('visible=true').first(), `${sim.href} perform control`).toBeVisible({ timeout: 15_000 });
+    await expect(frame.locator(sim.document).first(), `${sim.href} finding entry`).toBeAttached({ timeout: 15_000 });
+
+    await expect.poll(() => page.evaluate(() => {
+      const workspace = document.getElementById('embeddedSimWorkspace');
+      const stage = document.querySelector('.patient-stage');
+      const iframe = document.getElementById('embeddedSimFrame');
+      if (!workspace || !stage || !iframe) return { ok:false, reason:'missing' };
+      const ws = workspace.getBoundingClientRect();
+      const st = stage.getBoundingClientRect();
+      const doc = iframe.contentDocument;
+      const width = doc?.documentElement?.clientWidth || 0;
+      const scrollWidth = Math.max(doc?.documentElement?.scrollWidth || 0, doc?.body?.scrollWidth || 0);
+      return {
+        ok: true,
+        contained: ws.left >= st.left - 2 && ws.top >= st.top - 2 && ws.right <= st.right + 2 && ws.bottom <= st.bottom + 2,
+        overflowX: scrollWidth - width,
+        audioBoost: Boolean(doc?.querySelector('script[data-ems-mini-sim-audio-boost]')),
+        compactCss: Boolean(doc?.querySelector('link[data-ems-mini-sim-compact]'))
+      };
+    }), { timeout: 15_000 }).toEqual(expect.objectContaining({
+      ok: true,
+      contained: true,
+      audioBoost: true,
+      compactCss: true
+    }));
+    await expect.poll(() => page.evaluate(() => {
+      const doc = document.getElementById('embeddedSimFrame')?.contentDocument;
+      const width = doc?.documentElement?.clientWidth || 0;
+      const scrollWidth = Math.max(doc?.documentElement?.scrollWidth || 0, doc?.body?.scrollWidth || 0);
+      return scrollWidth - width;
+    }), { timeout: 15_000 }).toBeLessThanOrEqual(24);
+
+    await page.locator('#closeEmbeddedSim').click();
+    await expect(page.locator('#embeddedSimWorkspace'), sim.href).toBeHidden();
+  }
+
+  await assertNoPageErrors();
+});
