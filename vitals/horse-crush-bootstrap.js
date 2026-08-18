@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const BUILD = '2026.08.17.13';
+  const BUILD = '2026.08.17.14';
 
   function loadOnce(attribute, src) {
     if (document.querySelector(`script[${attribute}]`)) return;
@@ -63,6 +63,21 @@
         }
         body.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet:not([hidden]) {
           display: grid !important;
+        }
+        body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu {
+          display: grid !important;
+          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          grid-auto-rows: min-content !important;
+          align-items: start !important;
+          align-content: start !important;
+        }
+        body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > * {
+          align-self: start !important;
+          min-height: 0 !important;
+        }
+        body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice[hidden] {
+          display: none !important;
+          pointer-events: none !important;
         }
       }
       body.hospital-handoff-open #actionSheet,

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.08.17.13';
+  const VERSION = '2026.08.17.14';
   const desktopQuery = window.matchMedia('(min-width:980px)');
   let reconcileQueued = false;
   let observer = null;
@@ -448,9 +448,11 @@
   }
 
   function handleDomainClick(event) {
-    const button = event.target.closest?.('.bottom-nav button[data-panel]');
+    const origin = event.target?.nodeType === 1 ? event.target : event.target?.parentElement;
+    const button = origin?.closest?.('.bottom-nav button[data-panel]');
     if (!button || !desktopActive() || button.classList.contains('desktop-domain-hidden')) return;
     if (overlayOccupiesPatientStage()) return;
+    if (origin?.closest?.('#treatmentTools, #assessmentTools, #historyCategoryList, #vitalTools')) return;
     window.requestAnimationFrame(() => {
       const panelId = button.dataset.panel || '';
       const panel = $(panelId);
