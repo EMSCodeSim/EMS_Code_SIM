@@ -26,7 +26,8 @@ assert(gradeJs.includes('showClinicalCoaching'), 'Satisfaction grade must keep c
 assert(!gradeJs.includes('function hideClinical'), 'Satisfaction grade must not hide the clinical coaching panels.');
 assert(registry.includes('scenario-patient-satisfaction-grade.js'), 'Patient workspace must load the satisfaction grading script.');
 assert(visualPatient.includes('function buildHorseCallGrade') && visualPatient.includes('function openHorseCallGrade'), 'Clinical horse call grade helpers must remain available.');
-assert(visualHtml.includes('id="horseGradeWorkspace"') && visualHtml.includes('id="openHorseCallGrade"'), 'Grade workspace and Grade call control must remain in the patient page.');
+assert(visualHtml.includes('id="horseGradeWorkspace"') && visualHtml.includes('id="openHorseCallGrade"') && visualHtml.includes('handoff-grade-button'), 'Grade workspace and Grade control must remain in the patient page.');
+assert(!/id="openHorseCallGrade"[^>]*\bhidden\b/.test(visualHtml), 'Handoff Grade button must be visible on the hospital handoff form.');
 assert(visualHtml.includes('id="gradeScenarioFromPatient"'), 'Progress panel grade control must remain available.');
 assert(visualHtml.includes('id="horseGradeModeLabel"') && visualHtml.includes('id="horseGradeHeaderTitle"') && visualHtml.includes('id="horseClinicalCoachingHead"'), 'Grade workspace must expose mode/header/coaching hooks for the UI.');
 assert(css.includes('.horse-grade-workspace') && css.includes('.horse-grade-layout'), 'Horse grade workspace must have overlay styles.');

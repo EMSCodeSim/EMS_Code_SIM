@@ -101,7 +101,7 @@ test('desktop treatment categories stay clickable and More treatments does not s
   const transportBox = await page.locator('#horseOpenTransport').boundingBox();
   expect(transportBox).toBeTruthy();
   await page.mouse.click(transportBox.x + transportBox.width / 2, transportBox.y + transportBox.height / 2);
-  await expect(page.locator('#treatmentTools .horse-transport-selection-form, #treatmentTools select[name="impression"]').first()).toBeVisible();
+  await expect(page.locator('#treatmentTools .horse-transport-selection-form, #treatmentTools button[name="priority"]').first()).toBeVisible();
 
   await page.locator('#horseTreatmentBackToGroups').click();
   await expect(page.locator('#horseOpenHandoff')).toBeVisible();

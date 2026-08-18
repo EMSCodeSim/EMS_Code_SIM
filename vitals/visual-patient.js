@@ -74,7 +74,7 @@
     hypoglycemia: { impressions:['Symptomatic hypoglycemia','Acute stroke','Medication overdose'], priorities:['Routine transport after improvement','Prompt transport / ALS intercept','No transport needed'], destinations:['Closest appropriate emergency department','Stroke-capable center','Trauma center'], bestPriority:'Prompt transport / ALS intercept', bestDestination:'Closest appropriate emergency department' },
     trauma: { impressions:['Blunt multisystem trauma with shock','Isolated chest-wall pain','Minor collision without injury'], priorities:['Routine transport','Emergent trauma transport','Remain on scene for complete history'], destinations:['Trauma center','Closest emergency department','Stroke-capable center'], bestPriority:'Emergent trauma transport', bestDestination:'Trauma center' },
     pediatric: { impressions:['Pediatric respiratory distress','Simple febrile illness','Foreign-body airway obstruction'], priorities:['Routine transport','Prompt pediatric transport','Emergent transport / ALS intercept'], destinations:['Pediatric-capable emergency department','Closest appropriate emergency department'], bestPriority:'Prompt pediatric transport', bestDestination:'Pediatric-capable emergency department' },
-    horse_crush: { impressions:['Significant blunt hip/pelvic-region injury','Isolated soft-tissue hip injury','Occult proximal femur or acetabular injury'], priorities:['Non-emergent transport','Prompt trauma transport','Emergent trauma transport'], destinations:['Closest appropriate emergency department','Trauma center'], bestPriority:'Prompt trauma transport', bestDestination:'Closest appropriate emergency department' }
+    horse_crush: { impressions:['Significant blunt hip/pelvic-region injury','Isolated soft-tissue hip injury','Occult proximal femur or acetabular injury'], priorities:['Emergent','Non-emergent'], destinations:['Closest appropriate emergency department','Trauma center'], bestPriority:'Emergent', bestDestination:'Closest appropriate emergency department' }
   };
 
   let partnerInterval = 0;
@@ -2241,8 +2241,8 @@
     },
     {
       id:'transport', label:'Transport', icon:'T',
-      description:'Working impression, urgency, destination, and notification.',
-      instruction:'Make the transport decision from the information you have gathered. Select the transport option below to set urgency and destination.',
+      description:'Emergent or non-emergent transport.',
+      instruction:'Choose Emergent or Non-emergent from the findings you gathered.',
       special:'transport'
     },
     {
@@ -2276,7 +2276,7 @@
 
   function horseTreatmentGroupPlans(group) {
     if (!group) return [];
-    if (group.special === 'transport') return [{ id:'__horse_transport__', label:'Initiate transport', summary:'Choose working impression, transport urgency, destination, and specialty notification.' }];
+    if (group.special === 'transport') return [{ id:'__horse_transport__', label:'Initiate transport', summary:'Choose Emergent or Non-emergent.' }];
     if (group.special === 'handoff') return [{ id:'__horse_handoff__', label:'Begin hospital handoff', summary:'Open the field-note handoff workspace in the patient-picture area and give report from what you documented.' }];
     const pool = horseTreatmentPlanPool();
     if (group.planIds) {
@@ -2295,17 +2295,15 @@
 
   function horseTransportFormMarkup() {
     const current = record() || {};
-    const plan = transportPlan();
+    const selected = transportUrgencyLabel(current.documentation?.transportPriority || current.impressions?.action || '');
     return `
       <form class="horse-treatment-action-form horse-transport-selection-form">
-        <div class="horse-treatment-detail-grid">
-          <label>Working impression<select name="impression">${selectOptions(plan.impressions, current.impressions?.primary || '', 'Choose working impression')}</select></label>
-          <label>Transport urgency<select name="priority">${selectOptions(transportPriorityOptions(), current.documentation?.transportPriority || '', 'Choose transport urgency')}</select></label>
-          <label>Destination<select name="destination">${selectOptions(transportDestinationOptions(), current.documentation?.destination || '', 'Choose destination')}</select></label>
-          <label>Notification<select name="notification">${selectOptions(['No specialty activation','Trauma activation','Stroke alert','STEMI / cath-lab activation','Pediatric alert','Burn-center notification'], current.documentation?.transportNotification || '', 'Choose notification')}</select></label>
+        <p class="horse-transport-prompt">Choose transport urgency.</p>
+        <div class="horse-transport-urgency-choices" role="group" aria-label="Transport urgency">
+          <button type="submit" class="horse-transport-urgency${selected === 'Emergent' ? ' selected' : ''}" name="priority" value="Emergent">Emergent</button>
+          <button type="submit" class="horse-transport-urgency${selected === 'Non-emergent' ? ' selected' : ''}" name="priority" value="Non-emergent">Non-emergent</button>
         </div>
-        <label class="horse-treatment-rationale">Reason for decision<textarea name="rationale" rows="2" placeholder="Optional clinical reasoning">${escapeHtml(current.documentation?.transportRationale || '')}</textarea></label>
-        <div class="horse-treatment-perform-row"><button class="horse-treatment-perform" type="submit">Initiate transport</button><p class="transport-entry-error" hidden></p></div>
+        <p class="transport-entry-error" hidden></p>
       </form>`;
   }
 
@@ -2319,7 +2317,7 @@
       detail.innerHTML = `<p class="horse-treatment-summary">${escapeHtml(plan.summary)}</p>${horseTransportFormMarkup()}`;
       detail.querySelector('form')?.addEventListener('submit', event => {
         event.preventDefault();
-        saveTransportDecision(event.currentTarget);
+        saveTransportDecision(event.currentTarget, event.submitter);
       });
       return;
     }
@@ -3375,8 +3373,15 @@
     return `<option value="">${escapeHtml(placeholder)}</option>${values.map(value => `<option value="${escapeHtml(value)}" ${value === selected ? 'selected' : ''}>${escapeHtml(value)}</option>`).join('')}`;
   }
 
+  function transportUrgencyLabel(value) {
+    const text = String(value || '').trim();
+    if (/non[- ]?emergent/i.test(text)) return 'Non-emergent';
+    if (/emergent|prompt/i.test(text)) return 'Emergent';
+    return text;
+  }
+
   function transportPriorityOptions() {
-    if (id === 'horse_crush') return transportPlan().priorities || ['Non-emergent transport','Prompt trauma transport','Emergent trauma transport'];
+    if (id === 'horse_crush') return transportPlan().priorities || ['Emergent','Non-emergent'];
     return ['Non-emergent transport','Emergent transport'];
   }
   function transportDestinationOptions() {
@@ -3384,27 +3389,42 @@
     return ['Closest appropriate emergency department','Trauma center','Stroke center','Cardiac catheterization center','Pediatric-capable emergency department','Burn center','Specialty respiratory center'];
   }
 
-  function saveTransportDecision(form) {
+  function saveTransportDecision(form, submitter) {
     const current = record() || {};
-    const impression = String(form.elements.namedItem('impression')?.value || '');
-    const priority = String(form.elements.namedItem('priority')?.value || '');
-    const destination = String(form.elements.namedItem('destination')?.value || '');
+    const plan = transportPlan();
+    const priorityField = form.elements.namedItem('priority');
+    const priorityRaw = String(submitter?.value || priorityField?.value || '');
+    const priority = id === 'horse_crush' ? transportUrgencyLabel(priorityRaw) : priorityRaw;
+    const impression = String(form.elements.namedItem('impression')?.value || current.impressions?.primary || '');
+    const destination = String(form.elements.namedItem('destination')?.value || current.documentation?.destination || '');
     const notification = String(form.elements.namedItem('notification')?.value || '');
     const rationale = String(form.elements.namedItem('rationale')?.value || '').trim();
     const error = form.querySelector('.transport-entry-error');
-    if (!impression || !priority || !destination) {
-      error.textContent = 'Choose a working impression, transport priority, and destination.';
-      error.hidden = false;
+    if (id === 'horse_crush') {
+      if (!priority) {
+        if (error) {
+          error.textContent = 'Choose Emergent or Non-emergent.';
+          error.hidden = false;
+        }
+        return;
+      }
+    } else if (!impression || !priority || !destination) {
+      if (error) {
+        error.textContent = 'Choose a working impression, transport priority, and destination.';
+        error.hidden = false;
+      }
       return;
     }
-    error.hidden = true;
-    api?.setImpressions?.({ primary: impression, action: priority, source:'transport-treatment', updatedAt:new Date().toISOString() });
+    if (error) error.hidden = true;
+    if (impression || id === 'horse_crush') {
+      api?.setImpressions?.({ primary: impression || current.impressions?.primary || '', action: priority, source:'transport-treatment', updatedAt:new Date().toISOString() });
+    }
     api?.setDocumentation?.({ transportPriority:priority, destination, transportNotification:notification, transportRationale:rationale, transportDecisionAt:new Date().toISOString() });
-    api?.setFinding?.('transport_decision', `${priority} to ${destination}`, { label:'Transport decision', source:'transport-treatment', details:rationale || `Working impression: ${impression}` });
-    const plan = transportPlan();
+    const findingValue = destination ? `${priority} to ${destination}` : priority;
+    api?.setFinding?.('transport_decision', findingValue, { label:'Transport decision', source:'transport-treatment', details:rationale || (impression ? `Working impression: ${impression}` : priority) });
     const expectedPriority = id === 'horse_crush' ? plan.bestPriority : (/Emergent|Prompt/i.test(plan.bestPriority || '') ? 'Emergent transport' : 'Non-emergent transport');
-    const priorityMatch = priority === expectedPriority;
-    const destinationMatch = destination === plan.bestDestination || (plan.bestDestination === 'Stroke-capable center' && destination === 'Stroke center');
+    const priorityMatch = id === 'horse_crush' ? transportUrgencyLabel(priority) === transportUrgencyLabel(expectedPriority) : priority === expectedPriority;
+    const destinationMatch = id === 'horse_crush' ? true : (destination === plan.bestDestination || (plan.bestDestination === 'Stroke-capable center' && destination === 'Stroke center'));
     const classification = priorityMatch && destinationMatch ? 'appropriate-effective' : 'transport-choice-review';
     const transportHorseState = id === 'horse_crush' ? horseClinicalState() : null;
     const transportPatientResponse = id === 'horse_crush'
@@ -3414,7 +3434,7 @@
       : 'The patient is prepared for movement and transport while care and reassessment continue.';
     const treatment = {
       actionId:'transport_decision', treatment:'Initiate transport', name:'Initiate transport', label:'Transport initiated',
-      description:`${priority} to ${destination}${notification ? ` • ${notification}` : ''}`,
+      description:`${findingValue}${notification ? ` • ${notification}` : ''}`,
       source:'transport-treatment', classification, indicationStatus:classification,
       targetKeys:[], reassessmentRequired:false,
       documentation:{ impression, priority, destination, notification, rationale },
@@ -3449,8 +3469,13 @@
     details.className = 'treatment-category treatment-category-transport';
     details.dataset.treatmentCategory = 'transport';
     details.open = treatmentCategoryFocus === 'transport';
+    if (id === 'horse_crush') {
+      details.innerHTML = `<summary><span><strong>Transport</strong><small>Choose Emergent or Non-emergent.</small></span><em>${recorded ? 'Recorded' : 'Decision required'}</em></summary><div class="treatment-category-list"><article class="treatment-card transport-treatment-card"><div class="treatment-card-heading"><div><h3>Initiate transport</h3></div><span class="status-chip ${recorded ? 'done' : ''}">${recorded ? 'Recorded' : 'Available'}</span></div><p>Choose Emergent or Non-emergent. Correctness is reviewed during debrief.</p>${horseTransportFormMarkup()}</article></div>`;
+      details.querySelector('form')?.addEventListener('submit', event => { event.preventDefault(); saveTransportDecision(event.currentTarget, event.submitter); });
+      return details;
+    }
     details.innerHTML = `<summary><span><strong>Transport</strong><small>Select urgency, destination, and specialty notification.</small></span><em>${recorded ? 'Recorded' : 'Decision required'}</em></summary><div class="treatment-category-list"><article class="treatment-card transport-treatment-card"><div class="treatment-card-heading"><div><h3>Initiate transport</h3></div><span class="status-chip ${recorded ? 'done' : ''}">${recorded ? 'Recorded' : 'Available'}</span></div><p>Make the transport decision from the findings you obtained. Correctness is reviewed during debrief.</p><form class="transport-treatment-form"><label>Working impression<select name="impression">${selectOptions(plan.impressions, current.impressions?.primary || '', 'Choose working impression')}</select></label><label>Transport urgency<select name="priority">${selectOptions(transportPriorityOptions(), current.documentation?.transportPriority || '', 'Choose emergent or non-emergent')}</select></label><label>Destination<select name="destination">${selectOptions(transportDestinationOptions(), current.documentation?.destination || '', 'Choose receiving destination')}</select></label><label>Specialty notification<select name="notification">${selectOptions(['No specialty activation','Trauma activation','Stroke alert','STEMI / cath-lab activation','Pediatric alert','Burn-center notification'], current.documentation?.transportNotification || '', 'Choose notification')}</select></label><label>Reason for decision<textarea name="rationale" rows="3" placeholder="Use findings, time sensitivity, and specialty needs">${escapeHtml(current.documentation?.transportRationale || '')}</textarea></label><button class="primary-action" type="submit">${recorded ? 'Update transport decision' : 'Initiate and record transport'}</button><p class="transport-entry-error" hidden></p></form></article></div>`;
-    details.querySelector('form')?.addEventListener('submit', event => { event.preventDefault(); saveTransportDecision(event.currentTarget); });
+    details.querySelector('form')?.addEventListener('submit', event => { event.preventDefault(); saveTransportDecision(event.currentTarget, event.submitter); });
     return details;
   }
   function recordedFindingValue(current, key) {
@@ -3546,10 +3571,7 @@
       value:item.description || item.response || item.value || ''
     }));
     const transportRows = [
-      { label:'Impression', value:current.impressions?.primary || '' },
-      { label:'Urgency', value:current.documentation?.transportPriority || current.impressions?.action || '' },
-      { label:'Destination', value:current.documentation?.destination || '' },
-      { label:'Notification', value:current.documentation?.transportNotification || '' }
+      { label:'Urgency', value:current.documentation?.transportPriority || current.impressions?.action || '' }
     ];
     return {
       patient:documentedPatient,
@@ -3588,7 +3610,7 @@
       const saved = Boolean(current.documentation?.handoffSavedAt && current.documentation?.handoff);
       $('hospitalHandoffStatus').textContent = saved ? 'Saved' : 'Not saved';
       $('hospitalHandoffStatus').classList.toggle('done', saved);
-      if ($('openHorseCallGrade')) $('openHorseCallGrade').hidden = !saved;
+      if ($('openHorseCallGrade')) $('openHorseCallGrade').hidden = false;
     }
     const draft = $('hospitalHandoffDraft');
     if (draft && !draft.dataset.userEdited) draft.value = current.documentation?.handoff || '';
@@ -3668,7 +3690,7 @@
     renderSignatures.treatments = '';
     refreshFromRecord({ force:true });
     renderHorseHospitalHandoff();
-    sceneObservationUpdate = { id:`horse-handoff-saved-${Date.now()}`, type:'HANDOFF COMPLETE', title:'Report given', text:'Hospital handoff saved. The receiving team has your report and care can transfer. Select Grade call to review the entire scenario.', kind:'transport', sticky:true, recordedAt:new Date().toISOString() };
+    sceneObservationUpdate = { id:`horse-handoff-saved-${Date.now()}`, type:'HANDOFF COMPLETE', title:'Report given', text:'Hospital handoff saved. The receiving team has your report and care can transfer. Select Grade to review the entire scenario.', kind:'transport', sticky:true, recordedAt:new Date().toISOString() };
     lastInfoSignature = '';
     renderInfoUpdate(true);
     toast('Hospital handoff saved');
@@ -3748,7 +3770,7 @@
     const repeatedVitals = coreVitals.filter(key => horseGradeVitalEventCount(current, key) >= 2);
     if (repeatedVitals.length < 2) return 'Repeat key vital signs after treatment so you can document whether the patient improved.';
     if (!['scoop_position_comfort','vacuum_mattress','board_transfer'].some(action => treatmentIds.has(action))) return 'Choose a coordinated low-movement packaging/transfer method that preserves the position of comfort.';
-    if (!current.documentation?.transportDecisionAt) return 'Make the transport decision: working impression, urgency, destination, and any needed notification.';
+    if (!current.documentation?.transportDecisionAt) return 'Make the transport decision: Emergent or Non-emergent.';
     if (!current.documentation?.handoffSavedAt) return 'Give the hospital handoff using the findings, vital trend, treatments, and patient response you documented.';
     return 'The major call elements are complete. Review the final grade, then end the scenario when ready.';
   }
@@ -3862,20 +3884,17 @@
     let handoff = 0;
     const transportRecorded = Boolean(current.documentation?.transportDecisionAt);
     const priority = String(current.documentation?.transportPriority || '');
-    const destination = String(current.documentation?.destination || '');
-    if (transportRecorded) handoff += 4;
-    if (priority === 'Prompt trauma transport') handoff += 2;
-    if (destination) handoff += 1;
-    if (String(current.documentation?.transportRationale || '').trim()) handoff += 1;
+    if (transportRecorded) handoff += 6;
+    if (transportUrgencyLabel(priority) === 'Emergent') handoff += 2;
     const handoffSaved = Boolean(current.documentation?.handoffSavedAt && current.documentation?.handoff);
     if (handoffSaved) handoff += 5;
     const handoffQuality = horseGradeHandoffQuality(current);
     handoff += handoffQuality.score;
     handoff = Math.min(15, handoff);
     categories.push({ id:'handoff', label:'Transport & handoff', score:handoff, max:15 });
-    if (transportRecorded && priority === 'Prompt trauma transport') strengths.push('Selected a prompt trauma transport priority for a significant painful hip injury with stable ABCs.');
-    else if (!transportRecorded) improvements.push('Make and document a transport priority and destination decision before ending the call.');
-    else improvements.push('Review transport urgency: this patient is stable but has a significant mechanism and severe hip injury, supporting prompt trauma transport.');
+    if (transportRecorded && transportUrgencyLabel(priority) === 'Emergent') strengths.push('Selected emergent transport for a significant painful hip injury with a high-energy mechanism.');
+    else if (!transportRecorded) improvements.push('Make and document an Emergent or Non-emergent transport decision before ending the call.');
+    else improvements.push('Review transport urgency: this patient has a significant horse-crush mechanism and severe hip injury, supporting emergent transport rather than a non-emergent trip.');
     if (handoffSaved && handoffQuality.complete) strengths.push('Completed a structured hospital handoff that included the mechanism, injury, vitals, care, and transport information.');
     else if (!handoffSaved) improvements.push('Give and save the hospital handoff before transferring care.');
     else improvements.push('Make the handoff more complete: mechanism, focused findings, vital trend, treatment/response, and transport destination should all be easy to hear.');
@@ -4028,7 +4047,7 @@
     const group = HORSE_TREATMENT_GROUPS.find(item => item.id === 'transport');
     sceneObservationUpdate = {
       id:`horse-top-transport-${Date.now()}`, type:'TRANSPORT', title:'Transport decision',
-      text:group?.instruction || 'Choose transport urgency and destination from the information you have gathered.',
+      text:group?.instruction || 'Choose Emergent or Non-emergent from the information you have gathered.',
       kind:'transport', sticky:true, recordedAt:new Date().toISOString()
     };
     lastInfoSignature = '';
