@@ -9,12 +9,12 @@ body.ems-embedded-mini-sim .ems-mini-flow span.active{border-color:#4fb3ff;backg
 body.ems-embedded-mini-sim .ems-mini-flow span.complete{border-color:#2e946d;background:#10392d;color:#bff5dc}
 body.ems-embedded-mini-sim .sv-main{width:100%!important;max-width:none!important;min-height:0!important;margin:0!important;padding:8px!important;display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(250px,.75fr)!important;grid-template-rows:minmax(0,1fr)!important;gap:8px!important;align-items:stretch!important}
 body.ems-embedded-mini-sim .sv-card{margin:0!important;padding:10px!important;border-radius:14px!important;box-shadow:none!important}
-body.ems-embedded-mini-sim #simCard{grid-column:1!important;display:flex!important;flex-direction:column!important;min-height:0!important;overflow:auto!important}
+body.ems-embedded-mini-sim #simCard{grid-column:1!important;grid-row:1!important;display:flex!important;flex-direction:column!important;min-height:0!important;overflow:auto!important}
 body.ems-embedded-mini-sim #simCard[hidden],
 body.ems-embedded-mini-sim #answerCard[hidden],
 body.ems-embedded-mini-sim #scenarioError[hidden],
 body.ems-embedded-mini-sim #patientStrip[hidden]{display:none!important}
-body.ems-embedded-mini-sim #answerCard{grid-column:2!important;align-self:stretch!important;min-height:0!important;overflow:auto!important;animation:emsMiniReveal .18s ease-out}
+body.ems-embedded-mini-sim #answerCard{grid-column:2!important;grid-row:1!important;align-self:stretch!important;min-height:0!important;overflow:auto!important;animation:emsMiniReveal .18s ease-out}
 body.ems-embedded-mini-sim #answerCard.ems-discovery-locked{display:none!important}
 body.ems-embedded-mini-sim #simCard:has(+ #answerCard.ems-discovery-locked){grid-column:1/-1!important}
 body.ems-embedded-mini-sim .sv-instruction{margin:0 0 7px!important;font-size:.76rem!important;line-height:1.35!important}
