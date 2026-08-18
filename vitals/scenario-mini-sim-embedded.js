@@ -425,7 +425,7 @@
   }, true);
 
   window.EMSCodeSimEmbeddedMiniSim = Object.freeze({
-    version: '2026.08.18.6',
+    version: '2026.08.18.11',
     unlockDocument,
     markObserved,
     setFlow,

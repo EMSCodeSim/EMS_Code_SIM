@@ -6,7 +6,7 @@
   const $ = id => document.getElementById(id);
 
   const cases = [
-    { id:'horse_crush', image:'/vitals/assets/horse-crush/patient-initial.webp', title:'Horse-Crush Hip Injury', patient:'64-year-old adult', scene:'Horse facility • south barn', clue:'Alert on the ground with severe left-hip pain', dispatch:'You are dispatched for a reported fall at a horse facility. A BLS engine crew is already on scene.', goal:'Assess before moving, protect the leg in its tolerated position, plan packaging, control pain, and repeat distal CSM after movement' }
+    { id:'horse_crush', image:'/vitals/assets/horse-crush/patient-initial.webp', title:'Horse-Crush Hip Injury', patient:'64-year-old adult', scene:'5541 E Snow Bird Road • south barn', clue:'Alert on the ground with severe left-hip pain', dispatch:'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.', goal:'Assess before moving, protect the leg in its tolerated position, plan packaging, control pain, and repeat distal CSM after movement' }
   ];
 
   let selectedCase = null;

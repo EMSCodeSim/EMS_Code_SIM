@@ -3,7 +3,8 @@
 
   const CASE_ID = 'horse_crush';
   const ASSET = '/vitals/assets/horse-crush/';
-  const DISPATCH_TEXT = 'Reported fall at a horse facility; a BLS engine crew is already on scene.';
+  const DISPATCH_TEXT = window.EMSCodeSimScenarioDefinitions?.CATALOG?.horse_crush?.dispatch
+    || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.';
   const INTRO_VIDEO = `${ASSET}incident-calm-walk.mp4`;
   const INTRO_POSTER = `${ASSET}incident-calm-walk.jpg`;
   const BLS_HANDOFF_TEXT = '“She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented ×4 and complains of left-hip pain. We have not moved her.”';
@@ -173,13 +174,14 @@
   function finishIntroVideo() {
     const phase = document.body.dataset.horseIntro;
     if (phase === 'dispatch' || phase === 'arrived') return;
+    setIntroPhase('dispatch');
     hideIntroOverlay();
     showDispatch();
     window.clearTimeout(introTimer);
     introTimer = window.setTimeout(() => {
       markIntroComplete();
       renderArrivalCard();
-    }, 1000);
+    }, 3500);
   }
 
   function ensureIntroOverlay() {
@@ -209,7 +211,7 @@
       return;
     }
     const phase = document.body.dataset.horseIntro;
-    if (phase === 'dispatch') return;
+    if (phase === 'dispatch' || phase === 'arrived') return;
     if (phase === 'video' && document.getElementById('horseIntroOverlay')) return;
     document.body.classList.add('horse-intro-playing');
     setIntroPhase('video');

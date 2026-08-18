@@ -2958,7 +2958,7 @@
     if (horseIntroPhase === 'dispatch') {
       return [{
         id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information',
-        text: current?.dispatch || 'Reported fall at a horse facility; a BLS engine crew is already on scene.',
+        text: current?.dispatch || scenario.dispatch || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.',
         kind: 'dispatch', recordedAt: startedAt
       }];
     }
@@ -4590,6 +4590,8 @@
 
   let embeddedRecordSignature = '';
   let embeddedCompletionTimer = 0;
+  let embeddedCloseTimer = 0;
+  let embeddedOpenGeneration = 0;
 
   function embeddedRecordCompletionSignature() {
     try {
@@ -4602,22 +4604,51 @@
     } catch (_) { return ''; }
   }
 
-  function armEmbeddedCompletionWatcher() {
+  function cancelEmbeddedAutoClose() {
     clearInterval(embeddedCompletionTimer);
+    embeddedCompletionTimer = 0;
+    window.clearTimeout(embeddedCloseTimer);
+    embeddedCloseTimer = 0;
+  }
+
+  function queueEmbeddedAutoClose(delay = 180) {
+    const generation = embeddedOpenGeneration;
+    window.clearTimeout(embeddedCloseTimer);
+    embeddedCloseTimer = window.setTimeout(() => {
+      embeddedCloseTimer = 0;
+      if (generation !== embeddedOpenGeneration) return;
+      closeEmbeddedSimulator({ refresh:true, generation });
+      toast('Assessment saved');
+    }, delay);
+  }
+
+  function armEmbeddedCompletionWatcher() {
+    cancelEmbeddedAutoClose();
+    const generation = embeddedOpenGeneration;
+    const armedAt = Date.now();
     embeddedRecordSignature = embeddedRecordCompletionSignature();
     embeddedCompletionTimer = window.setInterval(() => {
+      if (generation !== embeddedOpenGeneration) {
+        clearInterval(embeddedCompletionTimer);
+        embeddedCompletionTimer = 0;
+        return;
+      }
       const workspace = $('embeddedSimWorkspace');
       if (!workspace || workspace.hidden) {
         clearInterval(embeddedCompletionTimer);
+        embeddedCompletionTimer = 0;
         return;
       }
       const next = embeddedRecordCompletionSignature();
+      // A previous sim's delayed record refresh must not look like this sim saving.
+      if (Date.now() - armedAt < 450) {
+        embeddedRecordSignature = next || embeddedRecordSignature;
+        return;
+      }
       if (next && embeddedRecordSignature && next !== embeddedRecordSignature) {
         clearInterval(embeddedCompletionTimer);
-        window.setTimeout(() => {
-          closeEmbeddedSimulator({refresh:true});
-          toast('Assessment saved');
-        }, 180);
+        embeddedCompletionTimer = 0;
+        queueEmbeddedAutoClose(180);
       }
       embeddedRecordSignature = next || embeddedRecordSignature;
     }, 350);
@@ -4629,22 +4660,38 @@
     if (!['ems-sim-complete','ems-assessment-saved','ems-vital-saved'].includes(data.type)) return;
     const frame = $('embeddedSimFrame');
     if (frame?.contentWindow && event.source !== frame.contentWindow) return;
+    const generation = embeddedOpenGeneration;
     clearInterval(embeddedCompletionTimer);
-    closeEmbeddedSimulator({refresh:true});
+    if (generation !== embeddedOpenGeneration) return;
+    closeEmbeddedSimulator({refresh:true, generation});
     toast(data.label ? `${data.label} saved` : 'Assessment saved');
   }
+  window.addEventListener('emscodesim:embedded-sim-opened', () => {
+    embeddedOpenGeneration += 1;
+    cancelEmbeddedAutoClose();
+  });
   window.addEventListener('message', handleEmbeddedSimulatorComplete);
 
   function closeEmbeddedSimulator(options = {}) {
-    clearInterval(embeddedCompletionTimer);
+    const generation = Number.isInteger(options.generation) ? options.generation : embeddedOpenGeneration;
+    cancelEmbeddedAutoClose();
+    if (generation !== embeddedOpenGeneration) return;
     const workspace = $('embeddedSimWorkspace');
     const frame = $('embeddedSimFrame');
     if (!workspace || workspace.hidden) return;
     workspace.hidden = true;
     document.body.classList.remove('sim-workspace-open');
+    if (generation !== embeddedOpenGeneration) {
+      workspace.hidden = false;
+      document.body.classList.add('sim-workspace-open');
+      return;
+    }
     if (frame) frame.src = 'about:blank';
     if (options.refresh !== false) {
-      window.setTimeout(() => refreshFromRecord({ force:true }), 40);
+      window.setTimeout(() => {
+        if (generation !== embeddedOpenGeneration) return;
+        refreshFromRecord({ force:true });
+      }, 40);
     }
   }
 
@@ -4669,6 +4716,8 @@
     url.searchParams.set('return', `/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&embeddedReturn=1`);
     const titleNode = $('embeddedSimTitle');
     if (titleNode) titleNode.textContent = title;
+    embeddedOpenGeneration += 1;
+    cancelEmbeddedAutoClose();
     workspace.hidden = false;
     document.body.classList.add('sim-workspace-open');
     embeddedRecordSignature = embeddedRecordCompletionSignature();
@@ -4782,11 +4831,14 @@
         if (!control) return;
         const label = String(control.textContent || control.value || '').trim().toLowerCase();
         if (!/(save|record|submit|complete|document|done|use result|return to patient)/.test(label)) return;
-        window.setTimeout(() => {
+        const generation = embeddedOpenGeneration;
+        window.clearTimeout(embeddedCloseTimer);
+        embeddedCloseTimer = window.setTimeout(() => {
+          embeddedCloseTimer = 0;
+          if (generation !== embeddedOpenGeneration) return;
           const next = embeddedRecordCompletionSignature();
           if (next && embeddedRecordSignature && next !== embeddedRecordSignature) {
-            clearInterval(embeddedCompletionTimer);
-            closeEmbeddedSimulator({refresh:true});
+            closeEmbeddedSimulator({ refresh:true, generation });
             toast('Assessment saved');
           }
         }, 220);
@@ -4802,10 +4854,13 @@
   $('embeddedSimFrame')?.addEventListener('load', () => {
     const frame = $('embeddedSimFrame');
     if (!frame || frame.src === 'about:blank') return;
+    const generation = embeddedOpenGeneration;
     try {
       const current = frame.contentWindow?.location;
-      if (current?.pathname === '/vitals/visual-patient.html') closeEmbeddedSimulator();
-      else {
+      if (generation !== embeddedOpenGeneration) return;
+      if (current?.pathname === '/vitals/visual-patient.html') {
+        closeEmbeddedSimulator({ generation });
+      } else {
         installEmbeddedSaveBridge();
         armEmbeddedCompletionWatcher();
         scheduleEmbeddedFit();

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const OVERLAY_VERSION = '2026.08.18.6';
+  const OVERLAY_VERSION = '2026.08.18.11';
   const registry = window.EMSCodeSimToolRegistry;
   const toolPaths = new Set([
     ...(registry?.vitalTools || []).map(tool => tool.url),
@@ -128,6 +128,9 @@
     const iframe = frame();
     const url = buildEmbeddedUrl(href);
     if (!node || !iframe || !url) return false;
+    // Bump generation and cancel a previous sim's delayed close before this
+    // overlay becomes visible, so pulse-ox save cannot hide airway a moment later.
+    window.dispatchEvent(new CustomEvent('emscodesim:embedded-sim-opened'));
     ensureWorkspaceOverPatient();
     const titleNode = $('embeddedSimTitle');
     if (titleNode) titleNode.textContent = title;
