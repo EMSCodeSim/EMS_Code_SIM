@@ -82,7 +82,7 @@ test('horse-crush plays the walk video, then dispatch, ambulance position, and h
     const image = document.getElementById('patientImage');
     if (!image) return '';
     try { return new URL(image.src, location.href).pathname; } catch { return ''; }
-  })).toBe('/vitals/assets/horse-crush/handoff.webp');
+  })).toBe('/vitals/assets/horse-crush/Rd9Hp.jpg');
   await expect(page.locator('#infoUpdateText')).toContainText('She was smashed between two horses');
   await expect(page.locator('#infoUpdateType')).not.toHaveText('PATIENT');
   await expect(page.locator('#horseBlsFollowups')).toBeVisible();

@@ -5,7 +5,7 @@
   const ASSET = '/vitals/assets/horse-crush/';
   const DISPATCH_TEXT = window.EMSCodeSimScenarioDefinitions?.CATALOG?.horse_crush?.dispatch
     || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.';
-  const INTRO_BUILD = '2026.08.18.22';
+  const INTRO_BUILD = '2026.08.18.24';
   const INTRO_VIDEO_FILE = 'grok-video-c075593f-4ca1-4531-a603-2152e5874082 (1).mp4';
   const INTRO_VIDEO = `${ASSET}${encodeURIComponent(INTRO_VIDEO_FILE)}?v=${INTRO_BUILD}`;
   const INTRO_PLAY_WAIT_MS = 250;
@@ -13,7 +13,7 @@
   const DISPATCH_PHOTO = `${ASSET}ambulance-enroute.webp`;
   const PARKING_PHOTO = `${ASSET}map-arrival.webp`;
   const PARKING_TEXT = 'The ambulance is positioned near the south barn apron, facing out, with the driveway and exit path open.';
-  const HANDOFF_PHOTO = `${ASSET}handoff.webp`;
+  const HANDOFF_PHOTO = `${ASSET}Rd9Hp.jpg`;
   const PATIENT_PHOTO = `${ASSET}patient-initial.webp`;
   const MOVEMENT_PHOTO = `${ASSET}movement-scoop.webp`;
   const TRANSPORT_PHOTO = `${ASSET}transport-ambulance.webp`;
@@ -222,7 +222,7 @@
     let photo = photoForAssessment(key);
     if (!photo) {
       const path = currentPatientPhotoPath();
-      if (path.includes('handoff.webp') || path.includes('map-arrival.webp') || path.includes('ambulance-enroute.webp')) {
+      if (path.includes('handoff.webp') || path.includes('Rd9Hp.jpg') || path.includes('map-arrival.webp') || path.includes('ambulance-enroute.webp')) {
         photo = { src: PATIENT_PHOTO, alt: 'Alert patient lying on dirt outside the south barn with the left knee flexed' };
       }
     }

@@ -62,13 +62,13 @@ const horseAssets = [
   'exam-leg.webp',
   'movement-blankets.webp',
   'movement-scoop.webp',
-  'handoff.webp',
+  'Rd9Hp.jpg',
   'map-arrival.webp',
   'ambulance-enroute.webp',
   'incident-calm-walk.jpg'
 ];
 for (const filename of horseAssets) {
-  if (filename.endsWith('.webp') && !horseScenario.includes(filename)) {
+  if ((filename.endsWith('.webp') || filename === 'Rd9Hp.jpg') && !horseScenario.includes(filename)) {
     throw new Error(`Horse scenario no longer references required photo: ${filename}`);
   }
   const filePath = path.join(root, 'vitals/assets/horse-crush', filename);
