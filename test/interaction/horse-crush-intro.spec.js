@@ -22,7 +22,7 @@ test('horse-crush plays the walk video, then dispatch, ambulance position, and h
   await expect.poll(() => page.locator('#horseIntroVideo').evaluate(video => video.tagName)).toBe('VIDEO');
   await expect.poll(() => page.locator('#horseIntroVideo').evaluate(video => {
     const src = video.currentSrc || video.getAttribute('src') || '';
-    return src.includes('incident-calm-walk.mp4');
+    return src.includes('calm_walk.mp4');
   })).toBe(true);
   await expect.poll(() => page.locator('#horseIntroVideo').evaluate(video => video.readyState)).toBeGreaterThan(0);
   await expect.poll(() => page.locator('#horseIntroVideo').evaluate(video => video.paused)).toBe(false);

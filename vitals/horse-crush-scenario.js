@@ -5,8 +5,8 @@
   const ASSET = '/vitals/assets/horse-crush/';
   const DISPATCH_TEXT = window.EMSCodeSimScenarioDefinitions?.CATALOG?.horse_crush?.dispatch
     || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.';
-  const INTRO_BUILD = '2026.08.18.17';
-  const INTRO_VIDEO = `${ASSET}incident-calm-walk.mp4?v=${INTRO_BUILD}`;
+  const INTRO_BUILD = '2026.08.18.18';
+  const INTRO_VIDEO = `${ASSET}calm_walk.mp4?v=${INTRO_BUILD}`;
   const INTRO_PLAY_WAIT_MS = 250;
   const INTRO_PLAY_RETRY_MS = 800;
   const PARKING_PHOTO = `${ASSET}map-arrival.webp`;
