@@ -1151,6 +1151,13 @@
           }
           return;
         }
+        if (item.id === 'skin') {
+          const href = '/vitals/skin.html';
+          if (!openEmbeddedSimulator(href, 'Skin signs')) {
+            window.EMSCodeSimMiniSimOverlay?.openOverlay?.(href, 'Skin signs');
+          }
+          return;
+        }
         // Reuse existing assessment selection path if available.
         const existing = document.querySelector(`[data-assessment-key="${CSS.escape(item.id)}"], [data-assessment="${CSS.escape(item.id)}"]`);
         if (existing && existing !== button) {

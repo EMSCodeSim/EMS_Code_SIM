@@ -18,6 +18,7 @@
 
   const SIM_ASSESSMENTS = {
     pupils: { label:'Pupils / PERL', url:'/vitals/pupil.html' },
+    skin: { label:'Skin signs', url:'/vitals/skin.html' },
     mental_status: { label:'Mental status / AVPU', url:'/vitals/avpu-scenario.html' },
     breath_sounds: { label:'Breath sounds', url:'/vitals/breath-sounds-scenario.html' },
     lung_sounds: { label:'Breath sounds', url:'/vitals/breath-sounds-scenario.html' }
