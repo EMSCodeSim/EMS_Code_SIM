@@ -79,11 +79,13 @@ test('horse-crush plays the walk video, then dispatch, ambulance position, and h
   await expect(page.locator('#infoUpdateType')).not.toHaveText('PATIENT');
 
   await page.evaluate(() => window.EMSCodeSimHorseCrush.performExam('neck_back'));
+  await expect(page.locator('#horseBlsFollowups')).toBeHidden();
   await expect.poll(() => page.evaluate(() => new URL(document.getElementById('patientImage').src, location.href).pathname)).toBe('/vitals/assets/horse-crush/exam-neck-back.webp');
   await page.evaluate(() => window.EMSCodeSimHorseCrush.performExam('chest_assessment'));
   await expect.poll(() => page.evaluate(() => new URL(document.getElementById('patientImage').src, location.href).pathname)).toBe('/vitals/assets/horse-crush/exam-chest.webp');
   await page.evaluate(() => window.EMSCodeSimHorseCrush.performExam('left_leg'));
   await expect.poll(() => page.evaluate(() => new URL(document.getElementById('patientImage').src, location.href).pathname)).toBe('/vitals/assets/horse-crush/exam-leg.webp');
+  await expect(page.locator('#horseBlsFollowups')).toBeHidden();
 
   expect(await page.evaluate(() => window.EMSCodeSimHorseCrush.movementImage('', 'blankets_position'))).toContain('movement-blankets.webp');
   expect(await page.evaluate(() => window.EMSCodeSimHorseCrush.movementImage('scoop', ''))).toContain('movement-scoop.webp');
