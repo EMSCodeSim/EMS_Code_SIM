@@ -5,11 +5,12 @@
   const ASSET = '/vitals/assets/horse-crush/';
   const DISPATCH_TEXT = window.EMSCodeSimScenarioDefinitions?.CATALOG?.horse_crush?.dispatch
     || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.';
-  const INTRO_BUILD = '2026.08.18.19';
+  const INTRO_BUILD = '2026.08.18.21';
   const INTRO_VIDEO_FILE = 'grok-video-c075593f-4ca1-4531-a603-2152e5874082 (1).mp4';
   const INTRO_VIDEO = `${ASSET}${encodeURIComponent(INTRO_VIDEO_FILE)}?v=${INTRO_BUILD}`;
   const INTRO_PLAY_WAIT_MS = 250;
   const INTRO_PLAY_RETRY_MS = 800;
+  const DISPATCH_PHOTO = `${ASSET}ambulance-enroute.webp`;
   const PARKING_PHOTO = `${ASSET}map-arrival.webp`;
   const PARKING_TEXT = 'The ambulance is positioned near the south barn apron, facing out, with the driveway and exit path open.';
   const HANDOFF_PHOTO = `${ASSET}handoff.webp`;
@@ -221,7 +222,7 @@
     let photo = photoForAssessment(key);
     if (!photo) {
       const path = currentPatientPhotoPath();
-      if (path.includes('handoff.webp') || path.includes('map-arrival.webp')) {
+      if (path.includes('handoff.webp') || path.includes('map-arrival.webp') || path.includes('ambulance-enroute.webp')) {
         photo = { src: PATIENT_PHOTO, alt: 'Alert patient lying on dirt outside the south barn with the left knee flexed' };
       }
     }
@@ -279,6 +280,9 @@
     if (title) title.textContent = 'Dispatch information';
     if (text) text.textContent = DISPATCH_TEXT;
     if (time) time.textContent = '00:00';
+    setMainPatientImage(DISPATCH_PHOTO, 'Type III ambulance en route on a rural two-lane road toward the horse facility');
+    document.querySelector('.patient-stage')?.classList.add('horse-enroute');
+    document.querySelector('.patient-stage')?.classList.remove('horse-arrival-map');
     setIntroPhase('dispatch');
   }
 
@@ -293,6 +297,7 @@
     if (time) time.textContent = 'ARRIVAL';
     setIntroPhase('parking');
     setMainPatientImage(PARKING_PHOTO, 'Aerial view of the horse facility showing ambulance access to the south barn and patient location');
+    document.querySelector('.patient-stage')?.classList.remove('horse-enroute');
     document.querySelector('.patient-stage')?.classList.add('horse-arrival-map');
     if (!has('arrival_parking')) {
       saveFinding('arrival_parking', 'Ambulance positioned safely near the south barn', {
@@ -543,9 +548,8 @@
       syncIntroPlayButton(video);
       return;
     }
-    setIntroPhase('dispatch');
-    hideIntroOverlay();
     showDispatch();
+    hideIntroOverlay();
     window.clearTimeout(introTimer);
     introTimer = window.setTimeout(continueAfterDispatch, dispatchDwellMs());
   }
@@ -614,7 +618,7 @@
     if (controls) controls.hidden = false;
     const layer = document.getElementById('sceneClueLayer');
     if (layer) layer.hidden = false;
-    document.querySelector('.patient-stage')?.classList.remove('horse-arrival-map');
+    document.querySelector('.patient-stage')?.classList.remove('horse-arrival-map', 'horse-enroute');
   }
 
   function renderArrivalCard() {
