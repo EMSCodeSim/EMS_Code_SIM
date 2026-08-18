@@ -490,3 +490,54 @@ body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 .scen
     pointer-events:auto!important;
   }
 }
+
+.horse-aaox4-workspace{
+  display:grid;
+  gap:8px;
+}
+.horse-aaox4-workspace .horse-assessment-workspace-head{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:8px;
+  align-items:center;
+}
+.horse-aaox4-workspace .horse-assessment-back{
+  min-height:32px;
+  border:1px solid #526c7c;
+  border-radius:8px;
+  background:#173147;
+  color:#fff;
+  padding:5px 8px;
+  font-size:.62rem;
+  font-weight:900;
+  cursor:pointer;
+}
+.horse-aaox4-steps{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:6px;
+}
+.horse-aaox4-workspace .horse-assessment-workspace-action{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:center;
+  gap:7px;
+  min-height:44px;
+  border:1px solid #31566d;
+  border-radius:9px;
+  background:#0d2232;
+  color:#fff;
+  padding:7px 8px;
+  text-align:left;
+  cursor:pointer;
+}
+.horse-aaox4-workspace .horse-assessment-workspace-action>span{color:#8fe0c4;font-size:.72rem}
+.horse-aaox4-workspace .horse-assessment-workspace-action strong{display:block;font-size:.72rem;line-height:1.2}
+.horse-aaox4-workspace .horse-assessment-workspace-action small{display:block;margin-top:2px;color:#9fb5c2;font-size:.58rem}
+.horse-aaox4-workspace .horse-assessment-workspace-action.used{border-color:#2e946d;background:#0d3028}
+.horse-aaox4-live{padding:8px 10px;border:1px solid #31566d;border-radius:10px;background:#0b2231;color:#dcecf5}
+.horse-aaox4-quote{margin:0;color:#f4fbff;font-size:.82rem;line-height:1.35}
+.horse-aaox4-result{margin:8px 0 0;color:#8fe0c4;font-size:.72rem;font-weight:850}
+@media(max-width:620px){
+  .horse-aaox4-steps{grid-template-columns:1fr}
+}
