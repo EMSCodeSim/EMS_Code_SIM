@@ -1081,7 +1081,18 @@ body.home-page{
   }
   .home-page .mobile-menu{display:block}
   .home-page .header-cta{margin-left:auto}
-}
+  .home-page .nav-wrap{
+    padding-top:max(8px, env(safe-area-inset-top));
+    padding-left:max(16px, env(safe-area-inset-left));
+    padding-right:max(16px, env(safe-area-inset-right));
+  }
+  .home-page .mobile-menu{
+    min-height:44px;
+    font-size:16px;
+  }
+  .home-page .header-cta{min-height:44px}
+  .home-page select,
+  .home-page .mobile-stage-select{font-size:16px}
   .home-page .hero-home-inner{
     grid-template-columns:1fr;
     gap:24px;
@@ -1089,13 +1100,26 @@ body.home-page{
   }
   .home-page .hero-sim-card{order:0}
   .home-page .start-here-grid{grid-template-columns:1fr}
+  .home-page .path-and-practice #pathCards.path-cards,
+  .home-page .path-cards{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-auto-flow:row;
+  }
+  .home-page .path-card,
+  .home-page .path-card h3,
+  .home-page .path-card p{
+    overflow-wrap:break-word;
+    word-break:normal;
+    min-width:0;
+  }
   .home-page .ideal-quick-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 
 @media (max-width:768px){
   .home-page .nav-wrap{
     min-height:64px;
-    padding:8px 16px;
+    padding:max(8px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left));
     gap:8px;
   }
   .home-page .brand{font-size:1.02rem}
@@ -1110,7 +1134,19 @@ body.home-page{
   .home-page .stage-detail{grid-template-columns:1fr}
   .home-page .stage-actions{justify-content:stretch}
   .home-page .stage-actions a{flex:1}
-  .home-page .path-cards{grid-template-columns:1fr}
+  .home-page .path-and-practice #pathCards.path-cards,
+  .home-page .path-cards{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-auto-flow:row;
+  }
+  .home-page .path-card,
+  .home-page .path-card h3,
+  .home-page .path-card p{
+    overflow-wrap:break-word;
+    word-break:normal;
+    min-width:0;
+  }
   .home-page .feature-grid{grid-template-columns:1fr}
 }
 
@@ -1202,6 +1238,7 @@ body.home-page{
     column-gap:8px;
     align-items:center;
     min-height:72px;
+    min-width:0;
     padding:12px;
     border:1px solid var(--ideal-line);
     border-radius:12px;
@@ -1227,6 +1264,12 @@ body.home-page{
   .home-page .ideal-quick-wrap{display:none}
   .home-page .hero-copy h1{font-size:clamp(1.9rem,9vw,2.6rem)}
   .home-page .home-main{padding:16px 16px 40px}
+  .home-page .path-and-practice #pathCards.path-cards,
+  .home-page .path-cards{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-auto-flow:row;
+  }
   .home-page .path-card{
     min-height:0;
     padding:14px 14px 14px 56px;

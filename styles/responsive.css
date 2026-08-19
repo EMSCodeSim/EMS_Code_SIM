@@ -204,8 +204,57 @@ dialog, .modal-card, .panel[role="dialog"] {
     max-width: 100%;
   }
 
-  .comparison {
-    min-width: 620px;
+  .comparison,
+  .fee-table {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .table-wrap .comparison,
+  .table-wrap .fee-table,
+  .table-wrap .comparison thead,
+  .table-wrap .comparison tbody,
+  .table-wrap .fee-table thead,
+  .table-wrap .fee-table tbody {
+    display: block;
+  }
+  .table-wrap .comparison thead,
+  .table-wrap .fee-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .table-wrap .comparison tr,
+  .table-wrap .fee-table tr {
+    display: block;
+    margin: 0 0 12px;
+    padding: 14px;
+    border: 1px solid #d9e2eb;
+    border-radius: 12px;
+    background: #fff;
+  }
+  .table-wrap .comparison th,
+  .table-wrap .comparison td,
+  .table-wrap .fee-table th,
+  .table-wrap .fee-table td {
+    display: block;
+    width: auto;
+    min-width: 0;
+    max-width: 100%;
+    border-bottom: 0;
+    padding: 4px 0;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+  .table-wrap .comparison td:first-child,
+  .table-wrap .fee-table td:first-child {
+    font-weight: 800;
+    font-size: 1.05rem;
+    margin-bottom: 2px;
   }
 
   .btn-label {
@@ -341,3 +390,145 @@ dialog, .modal-card, .panel[role="dialog"] {
     scroll-behavior: auto !important;
   }
 }
+
+/* ===== MOBILE-ONLY (do not affect desktop) =====
+   Desktop layout at ≥961px stays as authored. These overrides
+   only tighten phones and small tablets. */
+@media (max-width: 960px) {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  .site-header {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .nav-wrap {
+    min-height: 56px;
+    padding-top: max(8px, env(safe-area-inset-top));
+    padding-bottom: 8px;
+    gap: 10px;
+  }
+
+  .mobile-menu {
+    min-height: 44px;
+    min-width: 108px;
+    font-size: 16px;
+    padding: 8px 12px;
+  }
+
+  .brand img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .btn, .btn-primary, .btn-outline, .btn-blue, .home-btn,
+  .hero-actions .btn, .cta .btn {
+    min-height: 44px;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  select, textarea {
+    font-size: 16px;
+  }
+
+  .hero-inner,
+  .page-hero-inner,
+  .hero-home-inner {
+    min-width: 0;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .hero-actions .btn,
+  .hero-actions .home-btn,
+  .hero-actions a {
+    min-height: 48px;
+  }
+
+  .quick-grid,
+  .tool-grid,
+  .card-grid,
+  .resource-grid,
+  .journey-grid,
+  .feature-grid,
+  .path-cards,
+  .start-here-grid {
+    min-width: 0;
+  }
+
+  .path-cards {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-footer .footer-inner,
+  .footer-grid,
+  .footer-bottom {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+
+  img, video, iframe {
+    max-width: 100%;
+  }
+
+  th, td {
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+  .comparison th:first-child,
+  .comparison td:first-child,
+  .fee-table th:first-child,
+  .fee-table td:first-child {
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+}
+
+@media (max-width: 700px) {
+  .hero-actions .btn,
+  .hero-actions .home-btn,
+  .hero-actions a {
+    width: 100%;
+  }
+
+  .journey-grid,
+  .tool-grid,
+  .card-grid,
+  .resource-grid,
+  .feature-grid,
+  .path-cards,
+  .stats,
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .section,
+  .page-hero-inner,
+  .content-layout {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cta .btn {
+    width: 100%;
+  }
+}
+

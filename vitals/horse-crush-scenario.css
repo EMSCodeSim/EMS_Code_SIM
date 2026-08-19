@@ -1,4 +1,4 @@
-@import url('/vitals/mobile-simulator-upgrade.css?v=3000');
+@import url('/vitals/mobile-simulator-upgrade.css?v=3004');
 .horse-arrival-card{margin:14px 16px 92px;padding:16px;border:1px solid #cbd5e1;border-radius:18px;background:#fff;box-shadow:0 10px 30px rgba(15,23,42,.08)}
 .horse-arrival-card.complete{border-color:#86efac;background:#f0fdf4}
 .horse-arrival-head,.horse-arrival-complete-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
@@ -326,7 +326,7 @@ body.horse-arrival-pending #horseArrivalDecision [data-horse-parking]{display:fl
 }
 @media(max-width:700px){
   .communication-workspace-head{display:grid}.communication-source-key{justify-content:flex-start}.communication-source-key span{font-size:.52rem}
-  .communication-workspace #infoUpdateText{font-size:.8rem}.info-update-quick-reply-buttons{display:grid}.info-update-quick-reply{text-align:left;border-radius:9px}
+  .communication-workspace #infoUpdateText{font-size:1rem;line-height:1.5;color:#e8f2f8}.info-update-quick-reply-buttons{display:grid}.info-update-quick-reply{text-align:left;border-radius:9px}
 }
 
 
@@ -538,8 +538,60 @@ body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 .scen
 .horse-aaox4-live{padding:8px 10px;border:1px solid #31566d;border-radius:10px;background:#0b2231;color:#dcecf5}
 .horse-aaox4-quote{margin:0;color:#f4fbff;font-size:.82rem;line-height:1.35}
 .horse-aaox4-result{margin:8px 0 0;color:#8fe0c4;font-size:.72rem;font-weight:850}
-@media(max-width:620px){
-  .horse-aaox4-steps{grid-template-columns:1fr}
+@media(prefers-reduced-motion:reduce){
+  .horse-aaox4-workspace .horse-assessment-workspace-action,
+  .horse-exam-button{transition:none}
+}
+
+/* ===== MOBILE-ONLY (do not affect desktop) ===== */
+@media (max-width: 960px) {
+  #horseIntroOverlay video,
+  #horseIntroOverlay video.intro-video {
+    max-width: 100%;
+  }
+  #horseIntroPlay {
+    min-height: 48px;
+    padding: 14px 22px;
+    font-size: 1rem;
+    border-radius: 12px;
+    bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  #horseIntroSkip {
+    min-height: 44px;
+    padding: 10px 16px;
+    font-size: .95rem;
+    border-radius: 12px;
+  }
+  .horse-bls-followup-btn {
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+  .horse-exam-button,
+  .horse-exam-actions button,
+  .horse-assessment-workspace-action,
+  .horse-aaox4-workspace .horse-assessment-workspace-action {
+    min-height: 44px;
+  }
+  .horse-aaox4-workspace .horse-assessment-back {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 8px 12px;
+  }
+  .info-update-quick-reply,
+  .horse-bls-followup-btn {
+    min-height: 44px;
+    white-space: normal;
+  }
+  .info-update-quick-reply-buttons,
+  .horse-bls-followup-buttons {
+    flex-wrap: wrap;
+  }
+  .communication-workspace #infoUpdateText,
+  #infoUpdateText {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #e8f2f8;
+  }
 }
 
 .horse-pain-scale-workspace{

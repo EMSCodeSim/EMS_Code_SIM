@@ -17,3 +17,17 @@
 
 @media(max-width:920px){.daily-practice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pathway-grid{grid-template-columns:1fr}.module-dashboard{grid-template-columns:1fr}}
 @media(max-width:560px){.daily-practice-home{padding:30px 14px 6px}.daily-practice-shell{padding:18px}.daily-practice-head{align-items:flex-start;flex-direction:column}.daily-practice-grid{grid-template-columns:1fr}.daily-practice-card{min-height:0}.author-panel{grid-template-columns:1fr;margin:20px 14px}.module-nav{flex-direction:column}.module-nav a{max-width:none;width:100%}.privacy-banner{left:9px;right:9px;bottom:9px}.privacy-actions>*{flex:1;text-align:center}.pathway-grid{padding:11px 14px}}
+
+/* ===== MOBILE-ONLY (do not affect desktop) ===== */
+@media (max-width: 960px) {
+  .pathway-step,
+  .practice-next-actions a,
+  .privacy-actions button,
+  .privacy-actions a,
+  .module-nav a {
+    min-height: 44px;
+  }
+  .nav-dropdown a {
+    min-height: 44px;
+  }
+}
