@@ -593,3 +593,57 @@ body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 .scen
     color: #e8f2f8;
   }
 }
+
+.horse-pain-scale-workspace{
+  display:grid;
+  gap:8px;
+}
+.horse-pain-scale-meta{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:6px;
+}
+.horse-pain-scale-meta label{
+  display:grid;
+  gap:3px;
+  color:#9fb5c2;
+  font-size:.62rem;
+  font-weight:850;
+}
+.horse-pain-scale-meta select{
+  min-height:36px;
+  border:1px solid #31566d;
+  border-radius:8px;
+  background:#0d2232;
+  color:#fff;
+  padding:6px 8px;
+  font-size:.78rem;
+}
+.horse-pain-scale-grid{
+  display:grid;
+  grid-template-columns:repeat(11,minmax(0,1fr));
+  gap:4px;
+}
+.horse-pain-scale-num{
+  min-height:44px;
+  border:1px solid #31566d;
+  border-radius:8px;
+  background:#0d2232;
+  color:#fff;
+  font-size:.82rem;
+  font-weight:900;
+  cursor:pointer;
+}
+.horse-pain-scale-num.used{
+  border-color:#2e946d;
+  background:#0d3028;
+  color:#8fe0c4;
+}
+.horse-pain-scale-hint{
+  margin:0;
+  color:#9fb5c2;
+  font-size:.62rem;
+}
+@media(max-width:720px){
+  .horse-pain-scale-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
+}

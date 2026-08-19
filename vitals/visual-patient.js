@@ -99,6 +99,9 @@
   let horseHistoryActiveGroup = '';
   let horseAssessmentActiveCategory = '';
   let horseAssessmentActiveItem = '';
+  let horsePainScaleLocation = 'left hip';
+  let horsePainScaleQuality = 'sharp';
+  let horsePainScaleFromHistory = false;
   let horseTreatmentActiveGroup = '';
   let horseTreatmentActivePlan = '';
   let horseHandoffOpen = false;
@@ -935,8 +938,7 @@
       return;
     }
     if (key === 'pain') {
-      openSheet('historyPanel');
-      window.setTimeout(() => selectHorseHistoryGroup('pain', { updateInfo:false }), 30);
+      openHorsePainScaleTool();
       return;
     }
     const tool = registryTool(key);
@@ -1069,7 +1071,8 @@
         items:[
           { id:'upper_extremities', label:'Upper Extremities', prompt:'Assess both upper extremities.' },
           { id:'left_leg', label:'Injured Leg', prompt:'Assess the painful/injured leg.' },
-          { id:'distal_csm', label:'Distal CSM', prompt:'Assess distal circulation, sensation, and movement.' }
+          { id:'distal_csm', label:'Distal CSM', prompt:'Assess distal circulation, sensation, and movement.' },
+          { id:'pain', label:'Pain scale', prompt:'Ask a 0–10 pain rating for the left hip.' }
         ]
       },
       {
@@ -1145,6 +1148,10 @@
         }
         if (item.id === 'mental_status' || item.id === 'aaox4' || item.id === 'neuro') {
           openHorseAaox4Tool();
+          return;
+        }
+        if (item.id === 'pain' || item.id === 'pain_scale') {
+          openHorsePainScaleTool();
           return;
         }
         if (item.id === 'lung_sounds' || item.id === 'breath_sounds') {
@@ -1246,6 +1253,118 @@
     return true;
   }
 
+  function openHorsePainScaleTool(options) {
+    options = options || {};
+    if (id !== 'horse_crush') return false;
+    horseAssessmentActiveCategory = horseAssessmentActiveCategory || 'extremities';
+    horseAssessmentActiveItem = 'pain';
+    horsePainScaleFromHistory = options.fromHistory === true;
+    const started = window.EMSCodeSimHorseCrush?.startPainScale?.();
+    if (!started) {
+      toast('Finish arrival and BLS handoff before asking the pain scale.');
+      return false;
+    }
+    horsePainScaleLocation = started.location || 'left hip';
+    horsePainScaleQuality = started.quality || 'sharp';
+    if (!desktopWorkspace() || horsePainScaleFromHistory) openSheet('assessmentPanel');
+    renderHorsePainScaleWorkspace();
+    return true;
+  }
+
+  function markHorsePainSeverityAsked(quote) {
+    const key = interviewHistoryKey('severity');
+    api?.setHistory?.(key, quote, {
+      label: 'How severe is the pain?',
+      details: 'Asked: On a scale of 0 to 10, with 10 the worst pain you can imagine, what is your pain right now?',
+      source: 'horse-crush-pain-scale',
+      questionId: 'severity'
+    });
+    const askedIds = new Set(askedInterviewQuestions(api?.active?.() || record() || {}).map(item => item.id));
+    askedIds.add('severity');
+    saveInterviewMilestones(askedIds);
+  }
+
+  function renderHorsePainScaleWorkspace() {
+    const box = $('assessmentTools');
+    const horse = window.EMSCodeSimHorseCrush;
+    if (!box || !horse?.painScaleState) return false;
+    const state = horse.painScaleState();
+    const savedScore = state.savedScore;
+    box.className = 'assessment-list horse-assessment-followup-workspace horse-pain-scale-workspace';
+    box.innerHTML = `
+      <div class="horse-assessment-workspace-head">
+        <button type="button" class="horse-assessment-back" id="horsePainScaleBack">‹ ${horsePainScaleFromHistory ? 'OPQRST' : 'Extremities'}</button>
+        <div>
+          <small>${horsePainScaleFromHistory ? 'OPQRST · SEVERITY' : 'PAIN'}</small>
+          <strong>Pain scale / Pain assessment</strong>
+          <span>${escapeHtml(state.prompt)}</span>
+        </div>
+      </div>
+      <div class="horse-pain-scale-meta">
+        <label>Location
+          <select id="horsePainScaleLocation">
+            <option value="left hip"${horsePainScaleLocation === 'left hip' ? ' selected' : ''}>Left hip</option>
+            <option value="left leg"${horsePainScaleLocation === 'left leg' ? ' selected' : ''}>Left leg</option>
+            <option value="other"${horsePainScaleLocation === 'other' ? ' selected' : ''}>Other</option>
+          </select>
+        </label>
+        <label>Quality
+          <select id="horsePainScaleQuality">
+            <option value="sharp"${horsePainScaleQuality === 'sharp' ? ' selected' : ''}>Sharp</option>
+            <option value="dull"${horsePainScaleQuality === 'dull' ? ' selected' : ''}>Dull</option>
+            <option value="pressure"${horsePainScaleQuality === 'pressure' ? ' selected' : ''}>Pressure</option>
+          </select>
+        </label>
+      </div>
+      <div class="horse-pain-scale-grid" role="group" aria-label="Pain scale 0 to 10">
+        ${[0,1,2,3,4,5,6,7,8,9,10].map(score => `
+          <button type="button" class="horse-pain-scale-num${savedScore === score ? ' used' : ''}" data-pain-score="${score}">${score}</button>
+        `).join('')}
+      </div>
+      <p class="horse-pain-scale-hint">0 = no pain · 10 = worst pain imaginable</p>
+      <div class="horse-aaox4-live" id="horsePainScaleLive">
+        ${state.saved ? `<blockquote class="horse-aaox4-quote">${escapeHtml(state.quote)}</blockquote>
+          <p class="horse-aaox4-result">Finding saved: ${escapeHtml(state.savedValue || `${state.score}/10 left hip`)}. Severe left-hip pain, worse with movement.</p>`
+          : '<p>Ask the 0–10 question, then tap the number she reports.</p>'}
+      </div>`;
+    box.querySelector('#horsePainScaleBack')?.addEventListener('click', () => {
+      horseAssessmentActiveItem = '';
+      if (horsePainScaleFromHistory) {
+        horsePainScaleFromHistory = false;
+        openSheet('historyPanel');
+        window.setTimeout(() => selectHorseHistoryGroup('opqrst', { updateInfo:false }), 30);
+        return;
+      }
+      if (desktopWorkspace()) renderHorseAssessmentCategoryWorkspace('extremities');
+      else {
+        horseAssessmentActiveCategory = '';
+        buildAssessments();
+      }
+    });
+    box.querySelector('#horsePainScaleLocation')?.addEventListener('change', event => {
+      horsePainScaleLocation = event.target.value || 'left hip';
+    });
+    box.querySelector('#horsePainScaleQuality')?.addEventListener('change', event => {
+      horsePainScaleQuality = event.target.value || 'sharp';
+    });
+    box.querySelectorAll('[data-pain-score]').forEach(button => {
+      button.addEventListener('click', () => {
+        const result = horse.documentPainScale({
+          score: Number(button.dataset.painScore),
+          location: horsePainScaleLocation,
+          quality: horsePainScaleQuality
+        });
+        if (!result) {
+          toast('Finish arrival and BLS handoff before asking the pain scale.');
+          return;
+        }
+        markHorsePainSeverityAsked(result.quote);
+        renderHorsePainScaleWorkspace();
+      });
+    });
+    return true;
+  }
+
   function renderHorseAssessmentInlineFollowup(title, bodyHtml, onBack) {
     const box = $('assessmentTools');
     if (!box || !desktopWorkspace()) return false;
@@ -1269,6 +1388,10 @@
     if (!box) return;
     if (horseAssessmentActiveItem === 'mental_status' || horseAssessmentActiveItem === 'aaox4') {
       renderHorseAaox4Workspace();
+      return;
+    }
+    if (horseAssessmentActiveItem === 'pain' || horseAssessmentActiveItem === 'pain_scale') {
+      renderHorsePainScaleWorkspace();
       return;
     }
     if (horseAssessmentActiveCategory) {
@@ -1306,6 +1429,10 @@
     const box = $('assessmentTools');
     if (id === 'horse_crush' && (horseAssessmentActiveItem === 'mental_status' || horseAssessmentActiveItem === 'aaox4')) {
       renderHorseAaox4Workspace();
+      return;
+    }
+    if (id === 'horse_crush' && (horseAssessmentActiveItem === 'pain' || horseAssessmentActiveItem === 'pain_scale')) {
+      renderHorsePainScaleWorkspace();
       return;
     }
     if (id === 'horse_crush' && desktopWorkspace()) {
@@ -1607,6 +1734,10 @@
         <div><small>ASK THE PATIENT</small><strong>${escapeHtml(group.label)}</strong><span>${askedCount}/${questions.length} asked</span></div>
       </div>
       <div class="horse-history-drill-questions" role="group" aria-label="${escapeHtml(group.label)} questions">
+        ${group.id === 'opqrst' ? `<button type="button" class="horse-history-drill-question horse-opqrst-pain-scale${asked.has('severity') ? ' asked' : ''}" id="horseOpqrstPainScale">
+            <span>${asked.has('severity') ? '✓' : '0–10'}</span>
+            <strong>Pain scale: rate left-hip pain from 0 to 10</strong>
+          </button>` : ''}
         ${questions.map(question => `
           <button type="button" class="horse-history-drill-question${asked.has(question.id) ? ' asked' : ''}" data-history-question="${escapeHtml(question.id)}">
             <span>${asked.has(question.id) ? '✓' : 'Ask'}</span>
@@ -1629,10 +1760,17 @@
       renderInfoUpdate(true);
     });
 
+    host.querySelector('#horseOpqrstPainScale')?.addEventListener('click', () => {
+      openHorsePainScaleTool({ fromHistory: true });
+    });
     host.querySelectorAll('[data-history-question]').forEach(button => {
       button.addEventListener('click', () => {
         const question = questions.find(item => item.id === button.dataset.historyQuestion);
         if (!question) return;
+        if (question.id === 'severity') {
+          openHorsePainScaleTool({ fromHistory: true });
+          return;
+        }
         askInterviewQuestion(question);
         window.setTimeout(() => renderHorseHistoryQuestionBox(group.id), 40);
       });
@@ -3606,7 +3744,7 @@
     const documentedPatient = preferredName || (approximateAge ? `${approximateAge} adult` : 'Adult training patient');
     const mechanism = handoffHistoryValue(current, 'events') || recordedFindingValue(current, 'bls_handoff');
     const chief = handoffHistoryValue(current, 'chief_complaint') || handoffHistoryValue(current, 'symptoms') || recordedFindingValue(current, 'pain') || recordedFindingValue(current, 'left_leg');
-    const pain = handoffHistoryValue(current, 'severity') || recordedFindingDetails(current, 'pain');
+    const pain = recordedFindingValue(current, 'pain') || handoffHistoryValue(current, 'severity') || recordedFindingDetails(current, 'pain');
     const abc = [
       { label:'Airway', value:recordedFindingValue(current, 'airway') },
       { label:'Breathing', value:recordedFindingValue(current, 'breathing') },
@@ -3619,7 +3757,8 @@
       { label:'Abdomen', value:recordedFindingValue(current, 'abdominal_assessment') },
       { label:'Pelvis / hip', value:recordedFindingValue(current, 'pelvis_hip') },
       { label:'Left leg', value:recordedFindingValue(current, 'left_leg') },
-      { label:'Distal CSM', value:recordedFindingValue(current, 'distal_csm') }
+      { label:'Distal CSM', value:recordedFindingValue(current, 'distal_csm') },
+      { label:'Pain scale', value:recordedFindingValue(current, 'pain') }
     ];
     const vitals = [
       { label:'BP', value:handoffVitalValue(current, 'blood_pressure') },
@@ -4083,7 +4222,7 @@
     const age = current.patient || (id === 'pediatric' ? '3-year-old child' : 'Adult patient');
     const impression = current.impressions?.primary || 'working impression not yet selected';
     const initialVitals = ['blood_pressure','pulse','respirations','spo2','blood_glucose','temperature'].filter(key => findings[key]).map(key => `${labelFor(key)} ${findings[key].value}`).join(', ');
-    const important = ['airway','breathing','perfusion','mental_status','motor_sensory','breath_sounds','skin'].filter(key => findings[key]).map(key => `${labelFor(key)}: ${findings[key].value}`).join('; ');
+    const important = ['airway','breathing','perfusion','mental_status','pain','motor_sensory','breath_sounds','skin'].filter(key => findings[key]).map(key => `${labelFor(key)}: ${findings[key].value}`).join('; ');
     const treatments = (current.treatments || []).map(item => item.description || item.name || item.treatmentLabel || item.value).filter(Boolean).join('; ');
     const reassess = (current.reassessments || []).slice(-3).map(item => item.description || item.response || item.value).filter(Boolean).join('; ');
     const priority = current.documentation?.transportPriority || current.impressions?.action || 'transport priority not yet selected';
@@ -4842,6 +4981,9 @@
     if (id === 'horse_crush' && (toolKey === 'mental_status' || /avpu-scenario\.html(?:\?|$)/.test(String(href || '')))) {
       return openHorseAaox4Tool();
     }
+    if (id === 'horse_crush' && (toolKey === 'pain' || /pain-opqrst\.html(?:\?|$)/.test(String(href || '')))) {
+      return openHorsePainScaleTool();
+    }
     if (!desktopScenarioMode()) return false;
     const workspace = $('embeddedSimWorkspace');
     const frame = $('embeddedSimFrame');
@@ -5071,7 +5213,8 @@
       selectAssessment: selectHorseCurrentAssessment,
       showCurrent: closeSheet,
       openSheet,
-      openAaox4: openHorseAaox4Tool
+      openAaox4: openHorseAaox4Tool,
+      openPainScale: openHorsePainScaleTool
     });
   }
   if ($('modeBadge')) $('modeBadge').textContent = assessmentMode() ? 'Assessment Mode' : 'Learning Mode';

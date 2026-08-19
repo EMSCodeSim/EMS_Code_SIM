@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const VERSION = '2026.08.18.33';
+  const VERSION = '2026.08.18.34';
   let lastAbcCommitAt = 0;
   let lastAbcCommitToken = '';
   const FOCUSED_EXAMS = new Set([
@@ -384,6 +384,11 @@
       window.EMSCodeSimHorseWorkspace?.openAaox4?.();
       return;
     }
+    if (key === 'pain' || key === 'pain_scale') {
+      event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation?.();
+      window.EMSCodeSimHorseWorkspace?.openPainScale?.();
+      return;
+    }
     if (SIM_ASSESSMENTS[key]) {
       event.preventDefault();
       event.stopPropagation();
@@ -430,11 +435,19 @@
       if (!anchor) return;
       let url;
       try { url = new URL(anchor.href, location.href); } catch { return; }
-      if (!url.pathname.endsWith('/vitals/avpu-scenario.html')) return;
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation?.();
-      window.EMSCodeSimHorseWorkspace?.openAaox4?.();
+      if (url.pathname.endsWith('/vitals/avpu-scenario.html')) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation?.();
+        window.EMSCodeSimHorseWorkspace?.openAaox4?.();
+        return;
+      }
+      if (url.pathname.endsWith('/vitals/pain-opqrst.html')) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation?.();
+        window.EMSCodeSimHorseWorkspace?.openPainScale?.();
+      }
     }, true);
     window.setTimeout(scheduleRefresh, 250);
     window.setTimeout(scheduleRefresh, 900);
