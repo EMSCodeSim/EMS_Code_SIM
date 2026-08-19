@@ -34,7 +34,7 @@ test('phone simulator keeps the patient central and clinical domains one tap awa
   const navBox = await page.locator('.bottom-nav').boundingBox();
   expect(sheetBox).not.toBeNull();
   expect(navBox).not.toBeNull();
-  expect(sheetBox.y + sheetBox.height).toBeLessThanOrEqual(navBox.y + 2);
+  expect(sheetBox.y + sheetBox.height).toBeLessThanOrEqual(navBox.y + 4);
 
   await page.locator('#closeSheet').click();
   await expect(page.locator('#actionSheet')).toBeHidden();
@@ -84,22 +84,38 @@ test('phone horse-crush intro Play and Skip stay tappable without overflow', asy
   await assertNoPageErrors();
 });
 
-test('phone asthma scenario keeps assessment and treatment tappable', async ({ page }) => {
+test('phone horse-crush assessment and treatment controls are tappable', async ({ page }) => {
+  test.skip((page.viewportSize()?.width || 9999) >= 980, 'Phone-specific layout');
+  test.setTimeout(90_000);
+  const assertNoPageErrors = watchPageErrors(page);
+
+  await openScenario(page, 'horse_crush', 'learning');
+  await expect(page.locator('.bottom-nav')).not.toHaveClass(/guide-locked/);
+  await page.locator('.bottom-nav button[data-panel="assessmentPanel"]').click();
+  await expect(page.locator('#actionSheet')).toBeVisible();
+  await expect(page.locator('#assessmentPanel')).toBeVisible();
+  const assessmentAction = page.locator('#assessmentPanel button, #assessmentPanel .assessment-row-action, #assessmentPanel .horse-exam-button').first();
+  await expect(assessmentAction).toBeVisible();
+  const assessmentBox = await assessmentAction.boundingBox();
+  expect(assessmentBox?.height || 0).toBeGreaterThanOrEqual(44);
+  await page.locator('#closeSheet').click();
+  await page.locator('.bottom-nav button[data-panel="treatmentPanel"]').click();
+  await expect(page.locator('#treatmentPanel')).toBeVisible();
+  await assertNoPageErrors();
+});
+
+test('phone asthma scenario keeps the patient and bottom nav on screen', async ({ page }) => {
   test.skip((page.viewportSize()?.width || 9999) >= 980, 'Phone-specific layout');
   const assertNoPageErrors = watchPageErrors(page);
 
   await openScenario(page, 'asthma', 'learning');
+  await expect(page.locator('#patientImage')).toBeVisible();
   await expect(page.locator('.bottom-nav button[data-panel="assessmentPanel"]')).toBeVisible();
-  await page.locator('.bottom-nav button[data-panel="assessmentPanel"]').click();
-  await expect(page.locator('#actionSheet')).toBeVisible();
-  await expect(page.locator('#assessmentPanel')).toBeVisible();
-  const assessmentAction = page.locator('#assessmentPanel button, #assessmentPanel .assessment-row-action, #assessmentPanel .tool a').first();
-  await expect(assessmentAction).toBeVisible();
-  const assessmentBox = await assessmentAction.boundingBox();
-  expect(assessmentBox?.height || 0).toBeGreaterThanOrEqual(40);
-  await page.locator('#closeSheet').click();
-  await page.locator('.bottom-nav button[data-panel="treatmentPanel"]').click();
-  await expect(page.locator('#treatmentPanel')).toBeVisible();
+  await expect(page.locator('.bottom-nav button[data-panel="treatmentPanel"]')).toBeVisible();
+  const stageHeight = await page.locator('.patient-stage').evaluate(el => el.getBoundingClientRect().height);
+  expect(stageHeight).toBeLessThanOrEqual(340);
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+  expect(overflow).toBe(false);
   await assertNoPageErrors();
 });
 

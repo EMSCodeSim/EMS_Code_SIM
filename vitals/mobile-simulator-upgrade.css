@@ -64,6 +64,12 @@ html,body{min-height:100%;background:#06131f;overscroll-behavior-y:none}
     min-height: 56px;
     font-size: .68rem;
   }
+  .action-sheet {
+    bottom: calc(76px + env(safe-area-inset-bottom));
+  }
+  .clinical-next-actions {
+    bottom: calc(82px + env(safe-area-inset-bottom));
+  }
   .return-patient-btn { min-height: 44px; }
   .finding-filters button { min-height: 44px; }
   .tool a, .tool button, .assessment-card button, .treatment-card button {
