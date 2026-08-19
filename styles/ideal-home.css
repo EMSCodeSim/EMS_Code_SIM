@@ -1100,6 +1100,19 @@ body.home-page{
   }
   .home-page .hero-sim-card{order:0}
   .home-page .start-here-grid{grid-template-columns:1fr}
+  .home-page .path-and-practice #pathCards.path-cards,
+  .home-page .path-cards{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-auto-flow:row;
+  }
+  .home-page .path-card,
+  .home-page .path-card h3,
+  .home-page .path-card p{
+    overflow-wrap:break-word;
+    word-break:normal;
+    min-width:0;
+  }
   .home-page .ideal-quick-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 
@@ -1121,7 +1134,19 @@ body.home-page{
   .home-page .stage-detail{grid-template-columns:1fr}
   .home-page .stage-actions{justify-content:stretch}
   .home-page .stage-actions a{flex:1}
-  .home-page .path-cards{grid-template-columns:1fr}
+  .home-page .path-and-practice #pathCards.path-cards,
+  .home-page .path-cards{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-auto-flow:row;
+  }
+  .home-page .path-card,
+  .home-page .path-card h3,
+  .home-page .path-card p{
+    overflow-wrap:break-word;
+    word-break:normal;
+    min-width:0;
+  }
   .home-page .feature-grid{grid-template-columns:1fr}
 }
 
@@ -1239,6 +1264,12 @@ body.home-page{
   .home-page .ideal-quick-wrap{display:none}
   .home-page .hero-copy h1{font-size:clamp(1.9rem,9vw,2.6rem)}
   .home-page .home-main{padding:16px 16px 40px}
+  .home-page .path-and-practice #pathCards.path-cards,
+  .home-page .path-cards{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-auto-flow:row;
+  }
   .home-page .path-card{
     min-height:0;
     padding:14px 14px 14px 56px;

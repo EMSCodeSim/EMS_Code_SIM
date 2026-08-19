@@ -51,6 +51,8 @@ test('homepage header and hero stay readable and keep one primary action', async
     const heroCols = await page.locator('.hero-home-inner').evaluate(el => getComputedStyle(el).gridTemplateColumns);
     expect(heroCols.trim()).not.toBe('1fr');
     expect(heroCols.split(/\s+/).filter(Boolean).length).toBeGreaterThanOrEqual(2);
+    const pathCols = await page.locator('#pathCards').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(/\s+/).filter(Boolean).length);
+    expect(pathCols).toBeGreaterThanOrEqual(3);
     await page.locator('.stage-button[data-stage="pre"]').click();
     await expect(page.locator('.stage-button[data-stage="pre"]')).toHaveClass(/active/);
     await expect(page.locator('#heroPrimary')).toBeVisible();
@@ -68,6 +70,13 @@ test('homepage header and hero stay readable and keep one primary action', async
     expect(mobileMenu?.height || 0).toBeGreaterThanOrEqual(44);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
     expect(overflow, 'horizontal scroll at 390px').toBe(false);
+    const pathCols = await page.locator('#pathCards').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(/\s+/).filter(Boolean).length);
+    expect(pathCols, 'path cards should stack in one column on phones').toBe(1);
+    const firstTitle = page.locator('#pathCards .path-card h3').first();
+    await expect(firstTitle).toBeVisible();
+    const titleBox = await firstTitle.boundingBox();
+    expect(titleBox?.width || 0).toBeGreaterThan(160);
+    await expect(firstTitle).toHaveText(/Explore the Career|Find the Right Program|Review the Lesson|Protect Health and Identity/);
   }
 
   await assertNoPageErrors();

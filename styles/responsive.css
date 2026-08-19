@@ -414,6 +414,11 @@ dialog, .modal-card, .panel[role="dialog"] {
     min-width: 0;
   }
 
+  .path-cards {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .site-footer .footer-inner,
   .footer-grid,
   .footer-bottom {
@@ -439,6 +444,7 @@ dialog, .modal-card, .panel[role="dialog"] {
   .card-grid,
   .resource-grid,
   .feature-grid,
+  .path-cards,
   .stats,
   .footer-grid {
     grid-template-columns: 1fr;
