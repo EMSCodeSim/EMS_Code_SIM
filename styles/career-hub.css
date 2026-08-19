@@ -81,4 +81,20 @@ button,input,select{font:inherit}
     display: flex;
     align-items: center;
   }
+
+  .comparison th,
+  .comparison td,
+  .fee-table th,
+  .fee-table td {
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+  .comparison th:first-child,
+  .comparison td:first-child,
+  .fee-table th:first-child,
+  .fee-table td:first-child {
+    white-space: nowrap;
+    overflow-wrap: normal;
+    min-width: 7.5rem;
+  }
 }
