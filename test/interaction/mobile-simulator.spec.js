@@ -48,10 +48,7 @@ test('phone simulator keeps the patient central and clinical domains one tap awa
 
   const stageHeight = await page.locator('.patient-stage').evaluate(el => el.getBoundingClientRect().height);
   expect(stageHeight).toBeLessThanOrEqual(340);
-  const commsSize = await page.locator('#infoUpdateWindow').evaluate(el => {
-    const text = el.querySelector('p') || el;
-    return parseFloat(getComputedStyle(text).fontSize);
-  });
+  const commsSize = await page.locator('#infoUpdateText').evaluate(el => parseFloat(getComputedStyle(el).fontSize));
   expect(commsSize).toBeGreaterThanOrEqual(14);
   const navButton = await page.locator('.bottom-nav button').first().boundingBox();
   expect(navButton?.height || 0).toBeGreaterThanOrEqual(44);
