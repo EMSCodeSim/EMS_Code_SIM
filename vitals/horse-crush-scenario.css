@@ -1,4 +1,4 @@
-@import url('/vitals/mobile-simulator-upgrade.css?v=3003');
+@import url('/vitals/mobile-simulator-upgrade.css?v=3004');
 .horse-arrival-card{margin:14px 16px 92px;padding:16px;border:1px solid #cbd5e1;border-radius:18px;background:#fff;box-shadow:0 10px 30px rgba(15,23,42,.08)}
 .horse-arrival-card.complete{border-color:#86efac;background:#f0fdf4}
 .horse-arrival-head,.horse-arrival-complete-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
@@ -326,7 +326,7 @@ body.horse-arrival-pending #horseArrivalDecision [data-horse-parking]{display:fl
 }
 @media(max-width:700px){
   .communication-workspace-head{display:grid}.communication-source-key{justify-content:flex-start}.communication-source-key span{font-size:.52rem}
-  .communication-workspace #infoUpdateText{font-size:.8rem}.info-update-quick-reply-buttons{display:grid}.info-update-quick-reply{text-align:left;border-radius:9px}
+  .communication-workspace #infoUpdateText{font-size:1rem;line-height:1.5;color:#e8f2f8}.info-update-quick-reply-buttons{display:grid}.info-update-quick-reply{text-align:left;border-radius:9px}
 }
 
 
@@ -585,5 +585,11 @@ body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 .scen
   .info-update-quick-reply-buttons,
   .horse-bls-followup-buttons {
     flex-wrap: wrap;
+  }
+  .communication-workspace #infoUpdateText,
+  #infoUpdateText {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #e8f2f8;
   }
 }

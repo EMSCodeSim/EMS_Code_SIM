@@ -51,8 +51,10 @@ html,body{min-height:100%;background:#06131f;overscroll-behavior-y:none}
     max-height: 340px;
   }
   .info-update-window > strong { font-size: 1rem; color: #fff; }
-  .info-update-window > p {
-    font-size: .95rem;
+  .info-update-window > p,
+  .communication-workspace #infoUpdateText,
+  #infoUpdateText {
+    font-size: 1rem;
     line-height: 1.5;
     max-height: 6.4em;
     color: #e8f2f8;
