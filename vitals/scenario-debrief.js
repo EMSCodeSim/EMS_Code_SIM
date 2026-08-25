@@ -11,11 +11,56 @@
   const label = key => phaseApi?.labelFor?.(key) || text(key).replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
 
   const SCENARIO_EXPECTATIONS = {
-    asthma:{critical:['airway','breathing','perfusion','respirations','breath_sounds','spo2'], maxTreatmentDelay:180, destination:'Closest appropriate emergency department'},
-    stroke:{critical:['airway','breathing','perfusion','mental_status','motor_sensory','blood_glucose','blood_pressure'], maxTreatmentDelay:240, destination:'Stroke-capable center'},
-    hypoglycemia:{critical:['airway','breathing','perfusion','mental_status','blood_glucose'], maxTreatmentDelay:180, destination:'Closest appropriate emergency department'},
-    trauma:{critical:['airway','breathing','perfusion','blood_pressure','pulse','chest_assessment','trauma_assessment'], maxTreatmentDelay:180, destination:'Trauma center'},
-    pediatric:{critical:['pediatric_assessment_triangle','airway','breathing','perfusion','respirations','spo2'], maxTreatmentDelay:180, destination:'Pediatric-capable emergency department'}
+    asthma:{
+      critical:['airway','breathing','perfusion','respirations','breath_sounds','spo2'],
+      maxTreatmentDelay:180,
+      destination:'Closest appropriate emergency department',
+      whyItMatters:[
+        'Asthma can look stable until fatigue hides a failing airway—reassess work of breathing and air movement after every intervention.',
+        'Bronchodilator and oxygen decisions should follow discovered breathing findings, not dispatch alone.',
+        'Quiet lungs after loud wheezing can mean less air movement, not improvement.'
+      ]
+    },
+    stroke:{
+      critical:['airway','breathing','perfusion','mental_status','motor_sensory','blood_glucose','blood_pressure'],
+      maxTreatmentDelay:240,
+      destination:'Stroke-capable center',
+      whyItMatters:[
+        'Last known well drives hospital routing and therapy windows—capture it early and protect it in your handoff.',
+        'Glucose excludes a common stroke mimic before you settle on destination.',
+        'Scene delays for nonessential assessments cost brain; prioritize airway protection and rapid transport.'
+      ]
+    },
+    hypoglycemia:{
+      critical:['airway','breathing','perfusion','mental_status','blood_glucose'],
+      maxTreatmentDelay:180,
+      destination:'Closest appropriate emergency department',
+      whyItMatters:[
+        'Altered mental status is a symptom set—glucose is a reversible cause you must rule in or out.',
+        'Oral glucose is only safe when the patient can protect the airway and swallow.',
+        'If the patient cannot take oral sugar safely, escalate airway support and ALS / transport without delay.'
+      ]
+    },
+    trauma:{
+      critical:['airway','breathing','perfusion','blood_pressure','pulse','chest_assessment','trauma_assessment'],
+      maxTreatmentDelay:180,
+      destination:'Trauma center',
+      whyItMatters:[
+        'Bleeding and airway threats kill before detailed secondary surveys—sequence ABCs and hemorrhage control first.',
+        'Serial vitals detect compensated shock becoming decompensated.',
+        'Destination and scene time matter as much as individual treatments in blunt trauma.'
+      ]
+    },
+    pediatric:{
+      critical:['pediatric_assessment_triangle','airway','breathing','perfusion','respirations','spo2'],
+      maxTreatmentDelay:180,
+      destination:'Pediatric-capable emergency department',
+      whyItMatters:[
+        'The pediatric assessment triangle gives an immediate first look before you touch equipment.',
+        'Kids compensate until they crash—track work of breathing and interaction, not SpO₂ alone.',
+        'Keep the caregiver close when it reduces distress without compromising ABCs.'
+      ]
+    }
   };
 
   function record(){ return api?.active?.() || null; }
@@ -95,7 +140,8 @@
     avg=Math.max(0,avg-critical.length*8);
     const uniqueOpportunities=[...new Set(opportunities)];
     const priorities=coachingPriorities(evaluation,critical,uniqueOpportunities);
-    return {evaluation,ratings,strengths:[...new Set(strengths)],opportunities:uniqueOpportunities,selection:[...new Set(selection)],handoff:[...new Set(handoff)],critical,priorities,categoryScores:{clinical,treatment,communication},score:avg,label:statusRating(avg)};
+    const whyItMatters=arr(expected.whyItMatters);
+    return {evaluation,ratings,strengths:[...new Set(strengths)],opportunities:uniqueOpportunities,selection:[...new Set(selection)],handoff:[...new Set(handoff)],critical,priorities,whyItMatters,categoryScores:{clinical,treatment,communication},score:avg,label:statusRating(avg)};
   }
 
   function renderList(id,items,type){ $(id).innerHTML=items.length?items.map(x=>`<div class="feedback-item ${type}">${esc(x)}</div>`).join(''):`<div class="feedback-item neutral">No items recorded.</div>`; }
@@ -118,6 +164,11 @@
   function render(record){
     const g=grade(record); $('patientTitle').textContent=record.title||'Patient scenario'; $('patientSummary').textContent=[record.patient,record.dispatch,record.scene].filter(Boolean).join(' • ');
     $('overallScore').textContent=`${g.score}%`; $('overallLabel').textContent=g.label; renderCategoryScores(g.categoryScores); renderCritical(g.critical); renderPriorities(g.priorities); $('overallSummary').textContent=g.opportunities.length?`The call contained ${g.strengths.length} documented strengths and ${g.opportunities.length} coaching points.`:'All essential phases were addressed.';
+    const whySection=$('whyItMattersSection');
+    if(whySection){
+      whySection.hidden=!g.whyItMatters.length;
+      if(g.whyItMatters.length) renderList('whyItMattersList',g.whyItMatters,'neutral');
+    }
     $('phaseRatings').innerHTML=g.ratings.map(r=>`<article class="phase-rating"><div><strong>${esc(r.label)}</strong><small>${esc(r.detail)}</small></div><span class="rating ${r.rating.toLowerCase().replace(/\s+/g,'-')}">${esc(r.rating)}</span></article>`).join('');
     renderTimeline(record); renderList('strengthList',g.strengths,'good'); renderList('opportunityList',g.opportunities,'review'); renderList('selectionReview',g.selection,'neutral'); renderList('handoffReview',g.handoff,'neutral');
     return g;

@@ -8,4 +8,7 @@ assert(html.includes('id="continueSavedScenario"') && html.includes('id="resetSa
 assert(!html.includes('id="assignmentBanner"') && !html.includes('Assigned scenario'), 'Assigned Scenario must be hidden from the launcher');
 assert(js.includes('openCaseDialog(item)') && js.includes('progress-badge'), 'Clicking a patient picture must open the scenario menu and mark active progress');
 assert(js.includes('clearActiveProgress') && js.includes('continueSavedScenario'), 'Launcher must support reset and resume behavior');
+assert(js.includes('CATALOG') || js.includes('buildCases'), 'Launcher must build the gallery from scenario definitions');
+assert(js.includes('asthma') && js.includes('stroke') && js.includes('horse_crush'), 'Launcher library must expose core medical cases plus the featured horse scenario');
+assert(html.includes('data-case-filter="medical"') && html.includes('id="randomCase"'), 'Launcher must offer category filters and a random-case control');
 console.log('Scenario selection picture, mode, continue, and reset checks passed.');

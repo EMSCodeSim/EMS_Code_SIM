@@ -11,6 +11,15 @@ test('picture-first launcher opens the public horse scenario in Assessment Mode'
   const assertNoPageErrors = watchPageErrors(page);
   await page.goto('/vitals/scenario-launcher.html');
 
+  await expect(page.locator('[data-case="horse_crush"]')).toBeVisible();
+  await expect(page.locator('[data-case="asthma"]')).toBeVisible();
+  await expect(page.locator('[data-case-filter="medical"]')).toBeVisible();
+
+  await page.locator('[data-case-filter="medical"]').click();
+  await expect(page.locator('[data-case="asthma"]')).toBeVisible();
+  await expect(page.locator('[data-case="horse_crush"]')).toHaveCount(0);
+
+  await page.locator('[data-case-filter="all"]').click();
   const horseCard = page.locator('[data-case="horse_crush"]');
   await expect(horseCard).toBeVisible();
   await horseCard.click();

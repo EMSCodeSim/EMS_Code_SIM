@@ -332,8 +332,16 @@ body{margin:0;background:#07131f;color:var(--text);font-family:Inter,system-ui,-
 .completion-choice-actions button{border:0;border-radius:10px;padding:10px 12px;font-weight:850;background:#0b719d;color:#fff}
 .completion-choice-actions button.secondary{background:#fff;color:#8b4200;border:1px solid #e0a16b}
 /* Dynamic patient condition states */
-.patient-image[data-condition-mode$="-worse"],.patient-image[data-condition-mode="critical"]{filter:saturate(.82) contrast(1.08)}
+/* Condition engine writes data-condition-mode on #patientImage */
+#patientImage[data-condition-mode$="-worse"],
+#patientImage[data-condition-mode="critical"],
+.patient-image[data-condition-mode$="-worse"],
+.patient-image[data-condition-mode="critical"]{filter:saturate(.82) contrast(1.08);transition:filter .45s ease}
+#patientImage[data-condition-mode="critical"],
 .patient-image[data-condition-mode="critical"]{filter:saturate(.65) contrast(1.13) brightness(.88)}
+#patientImage[data-condition-mode$="-worse"]{animation:patient-condition-pulse 2.8s ease-in-out infinite}
+@keyframes patient-condition-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.008)}}
+@media(prefers-reduced-motion:reduce){#patientImage[data-condition-mode$="-worse"]{animation:none}}
 /* Initial ABC decisions are completed over the patient photo. */
 /* Assessment Menu Workflow Cleanup */
 .assessment-workflow-clean{gap:10px}
