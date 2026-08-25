@@ -20,7 +20,7 @@ test('homepage header and hero stay readable and keep one primary action', async
   await page.goto('/');
   await expect(page.locator('.site-header .brand')).toContainText('EMSCodeSim');
   await expect(page.locator('.header-cta')).toBeVisible();
-  await expect(page.locator('.header-cta')).toHaveAttribute('href', /visual-patient\.html/);
+  await expect(page.locator('.header-cta')).toHaveAttribute('href', /scenario-launcher\.html/);
 
   for (const size of sizes) {
     await page.setViewportSize({ width: size.width, height: size.height });

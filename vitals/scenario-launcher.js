@@ -3,14 +3,84 @@
 
   const api = window.EMSCodeSimPatientRecord;
   const session = window.EMSCodeSimScenarioSession;
+  const definitions = window.EMSCodeSimScenarioDefinitions;
   const $ = id => document.getElementById(id);
 
-  const cases = [
-    { id:'horse_crush', image:'/vitals/assets/horse-crush/patient-initial.webp', title:'Horse-Crush Hip Injury', patient:'64-year-old adult', scene:'5541 E Snow Bird Road • south barn', clue:'Alert on the ground with severe left-hip pain', dispatch:'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.', goal:'Assess before moving, protect the leg in its tolerated position, plan packaging, control pain, and repeat distal CSM after movement' }
-  ];
+  // Gallery metadata overlays CATALOG/PATIENT_CASES. Horse stays featured;
+  // remaining cases reuse existing definitions (already covered by contract tests).
+  const GALLERY_META = {
+    horse_crush: {
+      category: 'trauma',
+      featured: true,
+      badge: 'Featured',
+      image: '/vitals/assets/horse-crush/patient-initial.webp',
+      clue: 'Alert on the ground with severe left-hip pain'
+    },
+    asthma: {
+      category: 'medical',
+      badge: 'Core case',
+      image: '/vitals/assets/scenario-asthma-learning.svg',
+      clue: 'Upright, anxious, speaking in short sentences'
+    },
+    stroke: {
+      category: 'medical',
+      badge: 'Core case',
+      image: '/vitals/assets/scenario-stroke-learning.svg',
+      clue: 'Sudden speech change with right-sided weakness'
+    },
+    hypoglycemia: {
+      category: 'medical',
+      badge: 'Core case',
+      image: '/vitals/assets/scenario-hypoglycemia-learning.svg',
+      clue: 'Confused, sweaty, slow to follow commands'
+    },
+    trauma: {
+      category: 'trauma',
+      badge: 'Core case',
+      image: '/vitals/assets/scenario-patient-adult-v3.png',
+      clue: 'Pale patient with guarded breathing after a collision'
+    },
+    pediatric: {
+      category: 'pediatric',
+      badge: 'Core case',
+      image: '/vitals/assets/scenario-patient-pediatric-v3.png',
+      clue: 'Poor interaction with increased work of breathing'
+    }
+  };
 
+  const FEATURED_ORDER = ['horse_crush', 'asthma', 'stroke', 'hypoglycemia', 'trauma', 'pediatric'];
+
+  function buildCases() {
+    const catalog = definitions?.CATALOG || {};
+    const patients = definitions?.PATIENT_CASES || {};
+    const ids = FEATURED_ORDER.filter(id => catalog[id]);
+    Object.keys(catalog).forEach(id => {
+      if (!ids.includes(id)) ids.push(id);
+    });
+    return ids.map(id => {
+      const entry = catalog[id] || {};
+      const patient = patients[id] || {};
+      const meta = GALLERY_META[id] || {};
+      return {
+        id,
+        title: entry.title || patient.title || id,
+        patient: entry.patient || 'Patient',
+        scene: entry.scene || '',
+        dispatch: entry.dispatch || '',
+        goal: entry.goal || '',
+        clue: meta.clue || (patient.sceneClues || []).slice(0, 2).join(' • ') || patient.visible || entry.dispatch || '',
+        image: meta.image || patient.image || '/vitals/assets/scenario-patient-adult-v3.png',
+        category: meta.category || 'medical',
+        featured: Boolean(meta.featured),
+        badge: meta.badge || (meta.featured ? 'Featured' : 'Core case')
+      };
+    });
+  }
+
+  const cases = buildCases();
   let selectedCase = null;
   let activeRecord = api?.active?.() || null;
+  let activeFilter = 'all';
 
   function trainingMode(mode) {
     return mode === 'assessment' ? 'assessment' : 'learning';
@@ -48,21 +118,36 @@
     return details.join(' • ');
   }
 
+  function filteredCases() {
+    if (activeFilter === 'all') return cases;
+    if (activeFilter === 'featured') return cases.filter(item => item.featured);
+    return cases.filter(item => item.category === activeFilter);
+  }
+
   function renderGallery() {
     const gallery = $('caseGallery');
+    if (!gallery) return;
     gallery.innerHTML = '';
     activeRecord = api?.active?.() || null;
+    const visible = filteredCases();
 
-    cases.forEach(item => {
+    if (!visible.length) {
+      gallery.innerHTML = '<p class="case-empty">No scenarios match this filter.</p>';
+      return;
+    }
+
+    visible.forEach(item => {
       const inProgress = activeRecord?.scenarioId === item.id;
       const button = document.createElement('button');
       button.type = 'button';
-      button.className = `case-choice${inProgress ? ' has-progress' : ''}`;
+      button.className = `case-choice${inProgress ? ' has-progress' : ''}${item.featured ? ' is-featured' : ''}`;
       button.dataset.case = item.id;
+      button.dataset.category = item.category;
       button.setAttribute('aria-label', `${item.title}. ${inProgress ? 'Scenario in progress. Continue or reset.' : 'Choose practice mode.'}`);
       button.innerHTML = `
         <span class="case-image-wrap">
           <img src="${item.image}" alt="${item.title} patient scenario">
+          <span class="case-badge">${item.badge}</span>
           ${inProgress ? '<span class="progress-badge">In progress</span>' : ''}
         </span>
         <span class="case-choice-body">
@@ -72,6 +157,14 @@
         </span>`;
       button.addEventListener('click', () => openCaseDialog(item));
       gallery.appendChild(button);
+    });
+  }
+
+  function syncFilterButtons() {
+    document.querySelectorAll('[data-case-filter]').forEach(button => {
+      const active = button.dataset.caseFilter === activeFilter;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', active ? 'true' : 'false');
     });
   }
 
@@ -140,7 +233,7 @@
     api?.create?.(item);
     session?.sync?.(item.id);
     api?.setDocumentation?.({ trainingMode: trainingMode(mode), trainingModeSetAt: new Date().toISOString() });
-    location.href = patientHome(item.id, mode, { reset:true });
+    location.href = patientHome(item.id, mode, { reset: true });
   }
 
   $('continueSavedScenario').addEventListener('click', () => {
@@ -169,9 +262,18 @@
     button.addEventListener('click', () => startFresh(selectedCase, button.value));
   });
 
+  document.querySelectorAll('[data-case-filter]').forEach(button => {
+    button.addEventListener('click', () => {
+      activeFilter = button.dataset.caseFilter || 'all';
+      syncFilterButtons();
+      renderGallery();
+    });
+  });
+
   $('randomCase')?.addEventListener('click', () => {
-    const item = cases[Math.floor(Math.random() * cases.length)];
-    openCaseDialog(item);
+    const pool = filteredCases();
+    const item = pool[Math.floor(Math.random() * pool.length)];
+    if (item) openCaseDialog(item);
   });
   $('closeCaseDialog').addEventListener('click', closeCaseDialog);
   $('caseDialogBackdrop').addEventListener('click', closeCaseDialog);
@@ -180,6 +282,7 @@
   });
   window.addEventListener('pageshow', renderGallery);
 
+  syncFilterButtons();
   renderGallery();
 
   const params = new URLSearchParams(location.search);

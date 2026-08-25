@@ -14,11 +14,19 @@
   <link rel="stylesheet" href="/vitals/scenario-status.css">
 </head>
 <body>
-  <header class="scenario-hero"><div><span class="scenario-build-stamp">Scenario UI 1.41</span><p><a href="/">Home</a> / <a href="/vitals/">Vital Learning Center</a> / Scenario Launcher</p><h1>Featured patient scenario</h1><p>The completed horse-crush assessment scenario is currently available. Additional cases will return as they finish production review.</p></div></header>
+  <header class="scenario-hero"><div><span class="scenario-build-stamp">Scenario UI 1.50</span><p><a href="/">Home</a> / <a href="/vitals/">Vital Learning Center</a> / Scenario Launcher</p><h1>Patient scenario library</h1><p>Choose a patient picture, then Learning or Assessment Mode. The horse-crush call is the featured production scenario; core medical, trauma, and pediatric cases are available for focused practice.</p></div></header>
   <main class="scenario-shell">
     <section class="control-card picture-first">
       <div class="case-intro-row">
-        <div class="case-intro"><p class="eyebrow">Production-ready scenario</p><h2>Horse-Crush Hip Injury</h2><p>Open the patient to choose Learning or Assessment Mode. Saved progress can still be continued or reset.</p></div>
+        <div class="case-intro"><p class="eyebrow">Picture-first launch</p><h2>Pick a patient, then a mode</h2><p>Filter by category, open a card, and continue or reset saved progress. Educational practice only—not a substitute for approved programs or local protocols.</p></div>
+        <button id="randomCase" class="secondary random-case" type="button">Random case</button>
+      </div>
+      <div class="case-filter-row" role="group" aria-label="Filter scenarios by category">
+        <button type="button" class="case-filter is-active" data-case-filter="all" aria-pressed="true">All</button>
+        <button type="button" class="case-filter" data-case-filter="featured" aria-pressed="false">Featured</button>
+        <button type="button" class="case-filter" data-case-filter="medical" aria-pressed="false">Medical</button>
+        <button type="button" class="case-filter" data-case-filter="trauma" aria-pressed="false">Trauma</button>
+        <button type="button" class="case-filter" data-case-filter="pediatric" aria-pressed="false">Pediatric</button>
       </div>
       <div id="caseGallery" class="case-gallery" aria-label="Available patient scenarios"></div>
     </section>
@@ -67,7 +75,7 @@
 
   <script src="/vitals/patient-record.js"></script>
   <script src="/vitals/scenario-definitions.js?v=1600"></script><script src="/vitals/scenario-session.js?v=1600"></script>
-  <script src="/vitals/scenario-launcher.js?v=2026.08.18.13"></script>
+  <script src="/vitals/scenario-launcher.js?v=2026.08.25.01"></script>
   <script src="/vitals/scenario-status.js?v=1600"></script>
 </body>
 </html>

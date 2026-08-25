@@ -24,6 +24,13 @@ body.dialog-open{overflow:hidden}.case-dialog-backdrop{position:fixed;inset:0;ba
 
 /* Consolidated scenario launcher build marker */
 .scenario-build-stamp{display:inline-flex;align-items:center;margin-bottom:8px;padding:5px 9px;border-radius:999px;background:#dff6ea;color:#0b6a45;font-size:.72rem;font-weight:950;letter-spacing:.04em;text-transform:uppercase}
+.case-filter-row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.case-filter{appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:8px 12px;min-height:40px;font:inherit;font-weight:800;font-size:.82rem;cursor:pointer}
+.case-filter.is-active,.case-filter[aria-pressed="true"]{border-color:var(--blue);background:var(--soft);color:var(--blue2)}
+.case-badge{position:absolute;left:10px;top:10px;background:rgba(4,25,43,.82);color:#fff;border-radius:999px;padding:5px 9px;font-size:.68rem;font-weight:950;letter-spacing:.03em;text-transform:uppercase}
+.case-choice.is-featured{border-color:#5daed9}
+.case-choice.is-featured .case-badge{background:#0b6a45}
+.case-empty{margin:8px 0;color:var(--muted);font-weight:750}
 
 /* =========================================================
    PHONE-FIRST SCENARIO LAUNCHER 1.40
