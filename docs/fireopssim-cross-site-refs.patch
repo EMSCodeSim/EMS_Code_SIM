@@ -1,0 +1,74 @@
+From f32f91575a80e5851ec9d589fa3e2b15a32b55ae Mon Sep 17 00:00:00 2001
+From: Cursor Agent <cursoragent@cursor.com>
+Date: Tue, 25 Aug 2026 03:52:52 +0000
+Subject: [PATCH] Point FireOpsSim visitors to EMSCodeSim from About and Home.
+
+Make the sister EMS patient-care site visible in the places that already describe the connected fire and EMS ecosystem.
+---
+ about.html | 9 +++++----
+ index.html | 6 +++---
+ 2 files changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/about.html b/about.html
+index 1a411ce..e36379e 100644
+--- a/about.html
++++ b/about.html
+@@ -50,6 +50,7 @@
+     <h2>Built by David Gallaher</h2>
+     <p>David is an experienced firefighter, paramedic, driver/operator instructor, and fire/EMS educator. FireOpsSim grew from a simple goal: make practical training tools easier for firefighters and instructors to use on a phone, tablet, or station computer.</p>
+     <p>The tools are designed to support training discussions, classroom practice, and station drills. They are not a replacement for certified instruction, department SOPs, manufacturer guidance, adopted codes, or the authority having jurisdiction.</p>
++    <p>For EMT and paramedic patient assessment, vitals practice, EMS career guidance, and clinical scenarios, use the sister site <a href="https://emscodesim.com/" rel="noopener">EMSCodeSim</a>. FireOpsSim stays focused on fire service tools and career stages; EMSCodeSim stays focused on medical learning.</p>
+   </article>
+   <aside class="content-card accent-card">
+     <p class="eyebrow">Review approach</p>
+@@ -65,8 +66,8 @@
+ </section>
+ <section class="section shell content-block">
+   <h2>What FireOpsSim includes</h2>
+-  <p>The website includes pump-pressure and friction-loss calculators, water-supply tools, visual pump scenarios, printable worksheets, firefighter skills references, HazMat planning aids, inspection resources, and links to FireOps Calc and FirePumpSim.</p>
+-  <div class="hero-actions"><a class="button primary" href="/tools.html">View All Tools</a><a class="button secondary" href="https://fireopscalc.com/">Open FireOps Calc</a></div>
++  <p>The website includes pump-pressure and friction-loss calculators, water-supply tools, visual pump scenarios, printable worksheets, firefighter skills references, HazMat planning aids, inspection resources, and links to FireOps Calc, FirePumpSim, and EMSCodeSim.</p>
++  <div class="hero-actions"><a class="button primary" href="/tools.html">View All Tools</a><a class="button secondary" href="https://emscodesim.com/" rel="noopener">Open EMSCodeSim</a><a class="button secondary" href="https://fireopscalc.com/">Open FireOps Calc</a></div>
+ </section>
+ </main>
+ <footer class="footer site-footer-refresh">
+@@ -78,9 +79,9 @@
+     </div>
+     <div><h2>Use the site</h2><a href="/tools.html">Tool directory</a><a href="/training.html">Training center</a><a href="/printable-scenarios.html">Printables</a><a href="/daily-challenge.html">Daily drill</a></div>
+     <div><h2>Fire service</h2><a href="/firefighter-career.html">Career pathway</a><a href="/firefighter-wellness.html">Firefighter wellness</a><a href="/hazmat-tools.html">HazMat tools</a><a href="/fire-inspector-tools.html">Inspection tools</a></div>
+-    <div><h2>About</h2><a href="/apps.html">Apps</a><a href="/about.html">About FireOpsSim</a><a href="/sitemap.xml">Sitemap</a></div>
++    <div><h2>About</h2><a href="/apps.html">Apps</a><a href="/about.html">About FireOpsSim</a><a href="https://emscodesim.com/" rel="noopener">EMSCodeSim</a><a href="/sitemap.xml">Sitemap</a></div>
+   </div>
+-  <div class="shell legal"><p>© 2026 FireOpsSim. Built for firefighters, driver/operators, instructors, inspectors, and candidates.</p></div>
++  <div class="shell legal"><p>© 2026 FireOpsSim. Built for firefighters, driver/operators, instructors, inspectors, and candidates. For EMT/paramedic patient-care learning, visit <a href="https://emscodesim.com/" rel="noopener">EMSCodeSim</a>.</p></div>
+ </footer>
+ </body>
+ </html>
+diff --git a/index.html b/index.html
+index ee6e411..a84f001 100644
+--- a/index.html
++++ b/index.html
+@@ -116,7 +116,7 @@
+ </div></section>
+ <section class="home2-section shell"><div id="continueStage" class="continue"><div><strong id="continueTitle">Continue your saved career stage</strong><p id="continueText"></p></div><a class="button primary" href="/career-stages.html">Continue</a></div><div class="section-title-row"><div><p class="section-kicker">Your stage changes what matters</p><h2>Use the site like the person you are today.</h2></div><p>The same site should not send an EMT student, probationary firefighter and acting lieutenant to the same checklist.</p></div><div class="stage-cards">
+ <a class="stage-card2" href="/career-stages.html"><span>Candidate</span><strong>Exploring fire / EMS</strong><p>Compare paths, understand hiring and school requirements, prepare physically and choose the next concrete step.</p><em>Candidate direction →</em></a>
+-<a class="stage-card2" href="/ems-career.html"><span>EMS path</span><strong>EMT / paramedic</strong><p>School, first field year, paramedic development, recertification and long-term EMS growth.</p><em>EMS career center →</em></a>
++<a class="stage-card2" href="/ems-career.html"><span>EMS path</span><strong>EMT / paramedic</strong><p>School, first field year, paramedic development, recertification and long-term EMS growth—with patient simulation on EMSCodeSim.</p><em>EMS career center →</em></a>
+ <a class="stage-card2" href="/study-center.html"><span>Fire fundamentals</span><strong>Academy / probation</strong><p>Study fire behavior, construction, SCBA, hose, ladders, search, ventilation, apparatus and company expectations.</p><em>Study fundamentals →</em></a>
+ <a class="stage-card2" href="/fireground-decision-sim.html"><span>Company operations</span><strong>Working firefighter</strong><p>Use scenario decisions, fire-dynamics refreshers, Mayday practice, mentoring and health/exposure resources.</p><em>Challenge my decisions →</em></a>
+ <a class="stage-card2" href="/driver-operator-practice.html"><span>Engineer</span><strong>Driver / Operator</strong><p>Driving, placement, pump systems, hydraulics, water supply, troubleshooting and scenario practice.</p><em>Engineer path →</em></a>
+@@ -126,8 +126,8 @@
+ </div></section>
+ <section class="home2-section learning-band"><div class="shell"><div class="section-title-row"><div><p class="section-kicker">A learning system, not a link dump</p><h2>Four ways to get better.</h2></div><p>Use active recall, decision practice, hands-on repetition and a professional record together.</p></div><div class="learning-grid"><article class="learning-card"><span>01 · Learn</span><strong>Stage Study Center</strong><p>Focused guides, 40 stage-specific flashcards and role-specific mini exams across academy, probation, firefighter, engineer, officer and instructor tracks.</p><a href="/study-center.html">Open Study Center →</a></article><article class="learning-card"><span>02 · Decide</span><strong>Fireground Decision Sim</strong><p>Four branching tabletop fires built around size-up, coordination, life safety, water, placement, changing conditions and reassessment.</p><a href="/fireground-decision-sim.html">Run a simulation →</a></article><article class="learning-card"><span>03 · Practice</span><strong>Hands-on tools</strong><p>Certification Focus Drills, Daily Training Wheel, First 100 Shifts, pump scenarios, flashcards, CPAT, HazMat and company practice.</p><a href="/focus-drills.html">Open Focus Drills →</a></article><article class="learning-card"><span>04 · Grow</span><strong>90-Day Career Plan</strong><p>Balance training, education, relevant experience and continuing education around a real target role.</p><a href="/career-plan-builder.html">Build my plan →</a></article></div></div></section>
+ <section class="home2-section shell"><div class="section-title-row"><div><p class="section-kicker">Fast operational access</p><h2>The field tools stay one click away.</h2></div><p>Career planning never blocks a quick operational reference or training calculator.</p></div><div class="tool-grid2"><a href="/fire-pump-calculator.html"><strong>Pump Pressure Calculator</strong><span>Pressure, friction loss, elevation and appliances</span></a><a href="/hydrant-flow-calculator.html"><strong>Hydrant Flow</strong><span>Static/residual flow estimation practice</span></a><a href="/scba-air-management-calculator.html"><strong>SCBA Air Management</strong><span>Training calculations and air planning</span></a><a href="/hazmat-tools.html"><strong>HazMat Center</strong><span>References, isolation, placards, notes and decon tools</span></a><a href="/focus-drills.html#wheel"><strong>Daily Training Wheel</strong><span>Certification-level random drills for today's focus</span></a><a href="/firehouse-fun.html"><strong>Firehouse Fun</strong><span>Trivia, word games, bingo, meals, fitness and crew challenges</span></a></div></section>
+-<section class="home2-section home-section-shaded"><div class="shell"><div class="section-title-row"><div><p class="section-kicker">Keep learning current</p><h2>FireOpsSim points back to primary sources.</h2></div><p>Local SOPs, adopted standards, certification agencies and medical direction remain authoritative. FireOpsSim helps organize the work.</p></div><div class="sources"><a href="https://training.fsri.org/" rel="noopener">FSRI Fire Safety Academy</a><a href="https://www.usfa.fema.gov/nfa/" rel="noopener">National Fire Academy</a><a href="https://www.cdc.gov/niosh/firefighters/" rel="noopener">NIOSH Firefighter Center</a><a href="https://www.nremt.org/" rel="noopener">National Registry</a><a href="https://www.ems.gov/" rel="noopener">EMS.gov</a></div><p class="hx-note">Content reviewed August 16, 2026.</p></div></section>
+-</main><footer class="footer site-footer-refresh"><div class="shell"><p>© 2026 FireOpsSim. Free practical learning and career tools for fire and EMS. Training/reference only; follow current department SOPs, local requirements, medical direction and adopted standards.</p></div></footer>
++<section class="home2-section home-section-shaded"><div class="shell"><div class="section-title-row"><div><p class="section-kicker">Keep learning current</p><h2>FireOpsSim points back to primary sources.</h2></div><p>Local SOPs, adopted standards, certification agencies and medical direction remain authoritative. FireOpsSim helps organize the work.</p></div><div class="sources"><a href="https://training.fsri.org/" rel="noopener">FSRI Fire Safety Academy</a><a href="https://www.usfa.fema.gov/nfa/" rel="noopener">National Fire Academy</a><a href="https://www.cdc.gov/niosh/firefighters/" rel="noopener">NIOSH Firefighter Center</a><a href="https://www.nremt.org/" rel="noopener">National Registry</a><a href="https://www.ems.gov/" rel="noopener">EMS.gov</a><a href="https://emscodesim.com/" rel="noopener">EMSCodeSim</a></div><p class="hx-note">Content reviewed August 16, 2026.</p></div></section>
++</main><footer class="footer site-footer-refresh"><div class="shell"><p>© 2026 FireOpsSim. Free practical learning and career tools for fire and EMS. For EMT/paramedic patient assessment and clinical practice, use <a href="https://emscodesim.com/" rel="noopener">EMSCodeSim</a>. Training/reference only; follow current department SOPs, local requirements, medical direction and adopted standards.</p></div></footer>
+ <script>
+ (()=>{let s='';try{const raw=localStorage.getItem('fos-career-stage-v1');if(raw){const v=JSON.parse(raw);s=v&&v.stage?v.stage:''}}catch{}if(!s)s=localStorage.getItem('fireopssim-career-stage-v1')||'';if(!s)return;const labels={explore:'Exploring fire / EMS',emt_school:'EMT student',new_emt:'New EMT',academy:'Fire academy',probation:'Probation / first 100 shifts',firefighter:'Working firefighter',working:'Working fire / EMS',driver:'Driver / Operator',officer:'Officer / Acting Officer',instructor:'Instructor / Training',specialty:'Specialty path',late:'Late career'};const box=document.getElementById('continueStage');document.getElementById('continueTitle').textContent='Continue: '+(labels[s]||s.replaceAll('_',' '));document.getElementById('continueText').textContent='Your saved stage can now drive the Study Center, Career Plan Builder and other recommendations on this device.';box.classList.add('show')})();
+ </script></body></html>
+\ No newline at end of file
+-- 
+2.43.0
+
