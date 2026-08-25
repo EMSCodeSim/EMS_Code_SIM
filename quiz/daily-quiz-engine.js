@@ -291,6 +291,9 @@
             ? 'Daily set complete — open your results.'
             : 'Nice. Keep the streak alive with the next question.';
         }
+        requestAnimationFrame(() => {
+          stage.querySelector('.feedback-panel')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
       } else {
         setActions({
           primary: 'Check answer',
