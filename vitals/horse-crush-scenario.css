@@ -1083,6 +1083,20 @@ body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 .scen
     min-height: 46px;
   }
 
+  /* Assessment sheet: less instructional chrome, more exam list */
+  body.horse-current-emt-call .action-sheet .assessment-order-note,
+  body.horse-current-emt-call .action-sheet #assessmentPanel > .sub {
+    display: none;
+  }
+  body.horse-current-emt-call .action-sheet .horse-expanded-assessments > header,
+  body.horse-current-emt-call .action-sheet .assessment-sequence-heading {
+    margin-top: 8px;
+  }
+  body.horse-current-emt-call .action-sheet .horse-assessment-deep-button,
+  body.horse-current-emt-call .action-sheet .horse-exam-button {
+    min-height: 52px;
+  }
+
   /* Persistent clinical bar: avoid colliding with nav / sheet */
   body.horse-current-emt-call .persistent-clinical-bar {
     bottom: calc(var(--horse-mobile-nav-h) + 4px);
@@ -1187,7 +1201,10 @@ body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 .scen
     font-size: .92rem;
   }
   body.horse-current-emt-call #infoUpdateNext::after {
-    content: " Next";
+    content: " Continue";
+  }
+  body.horse-current-emt-call[data-horse-intro="parking"] #infoUpdateNext::after {
+    content: " Begin";
   }
 }
 
