@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
 <title>EMSCodeSim Daily Quiz | Free EMT &amp; Paramedic Practice Questions</title>
-<meta content="Free daily EMT and paramedic practice questions, EMS facts, MedWord, home medication review, and quick EMS study tools. No login required." name="description"/>
+<meta content="Free daily EMT and paramedic quizzes with one-at-a-time feedback, completion streaks, and shareable scores. No login required." name="description"/>
 <meta content="index, follow, max-image-preview:large" name="robots"/>
 <link href="https://emscodesim.com/quiz/" rel="canonical"/>
 <link href="/favicon.png" rel="icon" type="image/png"/>
@@ -15,7 +14,7 @@
 <meta content="website" property="og:type"/>
 <meta content="EMSCodeSim Daily Quiz" property="og:site_name"/>
 <meta content="EMSCodeSim Daily Quiz | Free EMT &amp; Paramedic Practice" property="og:title"/>
-<meta content="Build EMS knowledge with free daily EMT and paramedic quiz questions, quick facts, medication review, and EMS mini-games." property="og:description"/>
+<meta content="Five free questions a day with instant feedback, streaks, and shareable results for EMT and Paramedic learners." property="og:description"/>
 <meta content="https://emscodesim.com/quiz/" property="og:url"/>
 <meta content="https://emscodesim.com/quiz/og-image.jpg" property="og:image"/>
 <meta content="summary_large_image" name="twitter:card"/>
@@ -29,7 +28,7 @@
         "@id":"https://emscodesim.com/quiz/#website",
         "name":"EMSCodeSim Daily Quiz",
         "url":"https://emscodesim.com/quiz/",
-        "description":"Free daily EMT and paramedic quiz practice, EMS facts, home medication review, and EMS study tools.",
+        "description":"Free daily EMT and paramedic quiz practice with streaks and shareable scores.",
         "inLanguage":"en-US",
         "publisher":{"@id":"https://emscodesim.com/quiz/#organization"}
       },
@@ -86,64 +85,79 @@
 <a href="/quiz/ems_fact.html">EMS Facts</a>
 <a href="/quiz/medword.html">MedWord</a>
 <a href="/quiz/home_med.html">Home Meds</a>
-<a class="career-hub-link" href="/">Career Hub</a></nav>
+<a class="career-hub-link" href="/">Career Hub</a>
+</nav>
 </div>
-</header><div class="quiz-breadcrumb"><a href="/">EMSCodeSim</a> / <a href="/quiz/">Daily Quiz</a></div>
+</header>
+<div class="quiz-breadcrumb"><a href="/">EMSCodeSim</a> / <a href="/quiz/">Daily Quiz</a></div>
 <main id="main">
 <section class="hero">
 <div class="container hero-grid">
 <div>
-<span class="eyebrow">🚑 Free EMS practice • No login required</span>
-<h1>Daily EMT and paramedic quiz practice.</h1>
-<p class="lead">Build EMS knowledge one short session at a time with daily NREMT-style questions, quick facts, medication review, and EMS mini-games.</p>
-<p class="hero-copy">EMSCodeSim Daily Quiz is designed for EMT students, paramedic students, EMS instructors, and providers who want fast review between calls, before class, or while preparing for exams.</p>
+<span class="eyebrow">Free daily EMS practice • No login</span>
+<h1>EMSCodeSim Daily Quiz</h1>
+<p class="lead">Five questions. Instant feedback. A streak worth protecting. Shareable scores that bring classmates back tomorrow.</p>
+<p class="hero-copy">Built like the daily apps people actually finish — one question at a time, completion streaks (not just page visits), and a spoiler-safe emoji score card for group chats.</p>
 <div aria-label="Start studying" class="cta-row">
-<a class="btn btn-primary" href="/quiz/emt_quiz.html">Start EMT Quiz</a>
-<a class="btn btn-secondary" href="/quiz/paramedic_quiz.html">Start Paramedic Quiz</a>
+<a class="btn btn-primary" id="heroEmtCta" href="/quiz/emt_quiz.html">Start EMT Quiz</a>
+<a class="btn btn-secondary" id="heroParamedicCta" href="/quiz/paramedic_quiz.html">Start Paramedic Quiz</a>
 <a class="btn btn-ghost" href="#study-tools">View all tools</a>
+</div>
+<div class="today-status" aria-label="Today’s quiz status">
+<article id="emtStatusCard">
+<strong>EMT today</strong>
+<span id="emtStatusText">Checking…</span>
+</article>
+<article id="paramedicStatusCard">
+<strong>Paramedic today</strong>
+<span id="paramedicStatusText">Checking…</span>
+</article>
 </div>
 </div>
 <aside aria-label="Quiz preview" class="hero-panel">
 <div class="phone-card">
-<div class="daily-label"><span>Today’s practice</span><span id="streakLabel">🔥 Streak: 0</span></div>
+<div class="daily-label"><span>Today’s habit</span><span id="streakLabel">🔥 Streak: 0</span></div>
 <div class="quiz-preview">
-<h2>Sample EMS question</h2>
+<h2>One question at a time</h2>
 <p>A patient has chest pressure, pale skin, and shortness of breath. What should an EMT do first?</p>
 <span class="answer-chip">A. Delay transport for full history</span>
-<span class="answer-chip good">B. Assess ABCs and treat life threats</span>
+<span class="answer-chip good">B. Assess ABCs and treat life threats ✓</span>
 <span class="answer-chip">C. Give any medication found at scene</span>
 </div>
 <div class="mini-stats">
-<div class="mini-stat"><strong>5</strong><span>daily EMT Qs</span></div>
-<div class="mini-stat"><strong>5</strong><span>daily medic Qs</span></div>
+<div class="mini-stat"><strong id="bestStreakStat">0</strong><span>best streak</span></div>
+<div class="mini-stat"><strong>5</strong><span>Qs per day</span></div>
 <div class="mini-stat"><strong>0</strong><span>logins</span></div>
 </div>
 </div>
 </aside>
 </div>
 </section>
+
 <section class="section" id="study-tools">
 <div class="container">
 <div class="section-head">
 <div>
 <h2>EMS study tools</h2>
-<p class="section-intro">Short, repeatable practice tools for EMS learners. Each page is linked directly so students and search engines can find the right study resource.</p>
+<p class="section-intro">Start with today’s quiz, then stack MedWord, facts, and meds for a two-minute daily loop that beats cramming.</p>
 </div>
 </div>
 <div class="cards">
 <article class="tool-card featured">
 <div class="tool-icon">📝</div>
 <h3>Daily EMT Quiz</h3>
-<p>Five quick EMT-level practice questions covering patient assessment, airway, trauma, medical emergencies, operations, and EMS fundamentals.</p>
-<div class="badge-row"><span class="badge">EMT review</span><span class="badge">5 questions</span><span class="badge">Daily practice</span></div>
-<a class="btn btn-primary" href="/quiz/emt_quiz.html">Practice EMT questions</a>
+<p>Five EMT questions with instant check → feedback → next. Finish to grow your streak and share a score grid.</p>
+<div class="badge-row"><span class="badge">Instant feedback</span><span class="badge">Streaks</span><span class="badge">Shareable</span></div>
+<p class="section-intro" id="emtCardHint" style="margin:0 0 14px">Ready for today’s set.</p>
+<a class="btn btn-primary" id="emtCardCta" href="/quiz/emt_quiz.html">Practice EMT questions</a>
 </article>
 <article class="tool-card featured">
 <div class="tool-icon">🧠</div>
 <h3>Daily Paramedic Quiz</h3>
-<p>Paramedic-level review questions for ALS assessment, cardiology, medications, airway, ECG concepts, and treatment decision-making.</p>
-<div class="badge-row"><span class="badge">Paramedic review</span><span class="badge">ALS topics</span><span class="badge">Exam prep</span></div>
-<a class="btn btn-primary" href="/quiz/paramedic_quiz.html">Practice paramedic questions</a>
+<p>Five ALS questions in the same modern flow — focused stems, explanations, and a shareable result card.</p>
+<div class="badge-row"><span class="badge">ALS topics</span><span class="badge">Streaks</span><span class="badge">Shareable</span></div>
+<p class="section-intro" id="paramedicCardHint" style="margin:0 0 14px">Ready for today’s set.</p>
+<a class="btn btn-primary" id="paramedicCardCta" href="/quiz/paramedic_quiz.html">Practice paramedic questions</a>
 </article>
 <article class="tool-card">
 <div class="tool-icon">📚</div>
@@ -162,7 +176,7 @@
 <article class="tool-card">
 <div class="tool-icon">💊</div>
 <h3>Daily Home Medication</h3>
-<p>Review a common home medication, class, use, and EMS consideration to improve patient history and medication recognition.</p>
+<p>Review a common home medication, class, use, and EMS consideration to improve patient history recognition.</p>
 <div class="badge-row"><span class="badge">Home meds</span><span class="badge">Assessment</span></div>
 <a class="btn btn-secondary" href="/quiz/home_med.html">Review today’s medication</a>
 </article>
@@ -176,26 +190,29 @@
 </div>
 </div>
 </section>
+
 <section class="section">
 <div class="container info-grid">
 <article class="info-box steps">
-<h2>How to use EMSCodeSim Daily Quiz</h2>
-<div class="step"><h3>Pick EMT or Paramedic</h3><p>Start with the level that matches your current class, certification, or review goal.</p></div>
-<div class="step"><h3>Answer five questions</h3><p>Each short quiz is built for quick daily repetition instead of long study sessions.</p></div>
-<div class="step"><h3>Review missed answers</h3><p>Use the feedback after submission to identify weak topics and decide what to study next.</p></div>
+<h2>How today’s quiz works</h2>
+<div class="step"><h3>Answer one at a time</h3><p>Pick a choice, check it, and read why — the same focused loop top quiz apps use instead of a wall of questions.</p></div>
+<div class="step"><h3>Finish to keep your streak</h3><p>Streaks count when you complete today’s set, so opening the page alone doesn’t inflate progress.</p></div>
+<div class="step"><h3>Share and come back tomorrow</h3><p>Copy a spoiler-safe emoji score card for class chats. Results stay locked until midnight’s new set.</p></div>
 </article>
 <article class="info-box">
-<h2>Built for EMS learners</h2>
-<p>This site is meant to become the main EMSCodeSim Quiz and EMSCodeSim learning hub for future EMS education projects.</p>
+<h2>Why this beats a long question bank</h2>
+<p>Retention comes from a daily habit people finish and talk about — not from dumping 50 questions on one page.</p>
 <ul>
-<li>Free EMT practice questions for entry-level EMS review.</li>
-<li>Paramedic questions for ALS decision-making and exam prep.</li>
-<li>Short daily tools that are easy to use on a phone.</li>
-<li>Future EMS scenario, medication, assessment, and instructor tools can be added from this homepage.</li>
+<li>Micro-session length (about two minutes) so it’s easy to finish on a break.</li>
+<li>Instant feedback so every miss becomes a teaching moment.</li>
+<li>Completion streaks that create a reason to return tomorrow.</li>
+<li>Shareable results that invite classmates without giving away answers.</li>
+<li>Free, no login, phone-first — same questions all day so you can resume later.</li>
 </ul>
 </article>
 </div>
 </section>
+
 <section class="section">
 <div class="container">
 <h2>EMSCodeSim Daily Quiz FAQ</h2>
@@ -206,16 +223,20 @@
 <p>Yes. The daily EMT quiz, paramedic quiz, EMS fact, MedWord, and medication review tools are available without a login.</p>
 </details>
 <details>
+<summary>How do streaks work?</summary>
+<p>Your streak increases when you finish today’s EMT or Paramedic quiz. Visiting the hub alone does not count. Miss a day and the streak resets to 1 on your next completion.</p>
+</details>
+<details>
+<summary>Can I share my score?</summary>
+<p>Yes. After you finish, use Share to post a spoiler-safe emoji grid with your score and streak — or copy it to the clipboard.</p>
+</details>
+<details>
 <summary>Is this an official NREMT site?</summary>
 <p>No. EMSCodeSim Daily Quiz is an independent EMS study resource and is not affiliated with or endorsed by the National Registry of Emergency Medical Technicians.</p>
 </details>
 <details>
 <summary>Who is this site for?</summary>
 <p>It is designed for EMT students, paramedic students, EMS instructors, and providers who want short, repeatable EMS review.</p>
-</details>
-<details>
-<summary>Will more EMS tools be added?</summary>
-<p>Yes. This homepage is structured as a hub so future EMSCodeSim projects, simulators, medication tools, and scenario practice pages can be added cleanly.</p>
 </details>
 </div>
 </div>
@@ -228,25 +249,95 @@
 </div>
 </footer>
 <script>
-  (function(){
-    try{
-      const key='deq_streak', lastKey='deq_last';
-      const today=new Date(); today.setHours(0,0,0,0);
-      const last=localStorage.getItem(lastKey);
-      let streak=parseInt(localStorage.getItem(key)||'0',10);
-      if(!last) streak=1;
-      else{
-        const lastDate=new Date(parseInt(last,10)); lastDate.setHours(0,0,0,0);
-        const diffDays=Math.round((today-lastDate)/(1000*60*60*24));
-        if(diffDays===1) streak=Math.max(1,streak+1);
-        else if(diffDays>1) streak=1;
-      }
-      localStorage.setItem(key,String(streak));
-      localStorage.setItem(lastKey,String(+today));
-      const label=document.getElementById('streakLabel');
-      if(label) label.textContent='🔥 Streak: '+streak;
-    }catch(e){}
-  })();
-  </script>
+(function () {
+  function todayKey() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+
+  function readJSON(key) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || 'null');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function applyTrack(opts) {
+    const today = todayKey();
+    const session = readJSON(opts.sessionKey);
+    const streak = readJSON(opts.streakKey) || { count: 0, best: 0, lastCompleted: '' };
+    const done = session && session.date === today && session.completed;
+    const inProgress = session && session.date === today && !session.completed &&
+      Array.isArray(session.correctMap) && session.correctMap.some(function (v) { return v != null; });
+    const score = typeof session?.score === 'number' ? session.score : null;
+    const total = Array.isArray(session?.questions) ? session.questions.length : 5;
+    const streakCount = Number(streak.count) || 0;
+    const streakBest = Number(streak.best) || streakCount;
+
+    const statusCard = document.getElementById(opts.statusCardId);
+    const statusText = document.getElementById(opts.statusTextId);
+    const hint = document.getElementById(opts.hintId);
+    const cta = document.getElementById(opts.ctaId);
+    const heroCta = document.getElementById(opts.heroCtaId);
+
+    if (done) {
+      statusText.textContent = score + '/' + total + ' · streak ' + streakCount;
+      statusCard.classList.add('done');
+      hint.textContent = 'Done today · ' + score + '/' + total + ' · streak ' + streakCount;
+      cta.textContent = 'View today’s results';
+      if (heroCta) heroCta.textContent = opts.doneHeroLabel;
+    } else if (inProgress) {
+      statusText.textContent = 'In progress · streak ' + streakCount;
+      hint.textContent = 'Resume where you left off · streak ' + streakCount;
+      cta.textContent = 'Resume ' + opts.label + ' quiz';
+      if (heroCta) heroCta.textContent = 'Resume ' + opts.label;
+    } else {
+      statusText.textContent = streakCount
+        ? 'Not started · streak ' + streakCount
+        : 'Not started · ready when you are';
+      hint.textContent = streakCount
+        ? 'Ready · protect your ' + streakCount + '-day streak'
+        : 'Ready · start today’s set';
+      cta.textContent = 'Practice ' + opts.label + ' questions';
+      if (heroCta) heroCta.textContent = opts.startHeroLabel;
+    }
+
+    return { count: streakCount, best: streakBest };
+  }
+
+  const emt = applyTrack({
+    label: 'EMT',
+    sessionKey: 'dailyQuiz_emt',
+    streakKey: 'dailyQuiz_emt_streak_v2',
+    statusCardId: 'emtStatusCard',
+    statusTextId: 'emtStatusText',
+    hintId: 'emtCardHint',
+    ctaId: 'emtCardCta',
+    heroCtaId: 'heroEmtCta',
+    startHeroLabel: 'Start EMT Quiz',
+    doneHeroLabel: 'EMT results'
+  });
+  const medic = applyTrack({
+    label: 'Paramedic',
+    sessionKey: 'dailyQuiz_paramedic',
+    streakKey: 'dailyQuiz_paramedic_streak_v2',
+    statusCardId: 'paramedicStatusCard',
+    statusTextId: 'paramedicStatusText',
+    hintId: 'paramedicCardHint',
+    ctaId: 'paramedicCardCta',
+    heroCtaId: 'heroParamedicCta',
+    startHeroLabel: 'Start Paramedic Quiz',
+    doneHeroLabel: 'Paramedic results'
+  });
+
+  const best = Math.max(emt.best, medic.best);
+  const current = Math.max(emt.count, medic.count);
+  const streakLabel = document.getElementById('streakLabel');
+  const bestStat = document.getElementById('bestStreakStat');
+  if (streakLabel) streakLabel.textContent = '🔥 Streak: ' + current;
+  if (bestStat) bestStat.textContent = String(best);
+})();
+</script>
 </body>
 </html>
