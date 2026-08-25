@@ -154,8 +154,20 @@
     });
   }
 
+  function isImmersiveSimulator() {
+    const path = location.pathname || '';
+    if (/\/vitals\/visual-patient\.html$|\/visual-patient\.html$|\/APGAR\/?$/.test(path)) return true;
+    if (document.body.classList.contains('scenario-mode')) return true;
+    if (document.body.classList.contains('horse-current-emt-call')) return true;
+    return false;
+  }
+
   function mountFab() {
-    if (document.body.dataset.noShare === 'true') return null;
+    if (document.body.dataset.noShare === 'true' || isImmersiveSimulator()) {
+      const existing = document.getElementById(FAB_ID);
+      if (existing) existing.remove();
+      return null;
+    }
     if (document.getElementById(FAB_ID)) return document.getElementById(FAB_ID);
     ensureStyles();
     const button = document.createElement('button');
@@ -233,15 +245,16 @@
     mountFab();
     enhanceMarkedButtons();
     enhanceTrainingCards();
-    enhanceHero();
+    if (!isImmersiveSimulator()) enhanceHero();
     enhancePracticeNext();
 
     // Engagement loop injects late; watch briefly for it.
     const observer = new MutationObserver(function () {
       enhancePracticeNext();
       enhanceTrainingCards();
+      mountFab();
     });
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class', 'data-no-share'], childList: true, subtree: true });
     setTimeout(function () { observer.disconnect(); }, 4000);
   }
 
