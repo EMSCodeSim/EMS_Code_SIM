@@ -343,7 +343,7 @@
         </section>
       `;
 
-      setActions({ primary: 'Share result', secondary: 'Quiz home', share: true });
+      setActions({ primary: 'Share result', secondary: 'Quiz home', share: false });
       if (statusLine) statusLine.textContent = 'Share your score, then come back tomorrow for a new set.';
       syncHud();
       startCountdown();
