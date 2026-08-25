@@ -146,9 +146,11 @@
 <script>
     const quizFile = "emt_quiz.json";
     const storageKey = "dailyQuiz_emt";
+    const topicFilter = new URLSearchParams(location.search).get("topic") || "";
     let questionsData = [];
     let todaysQuestions = [];
     let submitted = false;
+    let studyLinks = {};
 
     const quizContainer = document.getElementById("quiz-container");
     const resultEl = document.getElementById("result");
@@ -165,13 +167,19 @@
 
     function getTodayKey() { return new Date().toISOString().split("T")[0]; }
 
+    function filteredPool() {
+      if (!topicFilter) return questionsData;
+      return questionsData.filter(q => (q.topic || "") === topicFilter);
+    }
+
     function pickUniqueQuestions(n) {
-      const indexes = Array.from({ length: questionsData.length }, (_, i) => i);
+      const pool = filteredPool();
+      const indexes = Array.from({ length: pool.length }, (_, i) => i);
       for (let i = indexes.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [indexes[i], indexes[j]] = [indexes[j], indexes[i]];
       }
-      return indexes.slice(0, Math.min(n, indexes.length)).map(i => questionsData[i]);
+      return indexes.slice(0, Math.min(n, indexes.length)).map(i => pool[i]);
     }
 
     function normalizeQuestion(q) {
@@ -179,19 +187,22 @@
         question: q.question || "",
         choices: q.choices || q.options || [],
         answer: q.answer || "",
-        reason: q.reason || q.explanation || "Review the topic and confirm why the correct answer best matches the patient care priority."
+        reason: q.reason || q.explanation || "Review the topic and confirm why the correct answer best matches the patient care priority.",
+        topic: q.topic || "Medical Emergencies",
+        subtopic: q.subtopic || q.topic || "General"
       };
     }
 
     function loadSavedOrNewQuiz() {
       const today = getTodayKey();
+      const scopedKey = topicFilter ? `${storageKey}_${topicFilter}` : storageKey;
       let saved = null;
-      try { saved = JSON.parse(localStorage.getItem(storageKey)); } catch (_) { saved = null; }
-      if (saved && saved.date === today && Array.isArray(saved.questions)) {
+      try { saved = JSON.parse(localStorage.getItem(scopedKey)); } catch (_) { saved = null; }
+      if (saved && saved.date === today && Array.isArray(saved.questions) && (!topicFilter || saved.topic === topicFilter)) {
         todaysQuestions = saved.questions.map(normalizeQuestion);
       } else {
         todaysQuestions = pickUniqueQuestions(5).map(normalizeQuestion);
-        localStorage.setItem(storageKey, JSON.stringify({ date: today, questions: todaysQuestions }));
+        localStorage.setItem(scopedKey, JSON.stringify({ date: today, topic: topicFilter || null, questions: todaysQuestions }));
       }
       displayQuiz();
     }
@@ -206,7 +217,7 @@
         const div = document.createElement("article");
         div.className = "question-box";
         div.innerHTML = `
-          <div class="question-kicker"><span>Question ${idx + 1}</span><span>EMT practice</span></div>
+          <div class="question-kicker"><span>Question ${idx + 1}</span><span>${escapeHtml(q.subtopic || q.topic || "EMT practice")}</span></div>
           <div class="question-text">${escapeHtml(q.question)}</div>
           <div class="choices">
             ${q.choices.map((choice, i) => `
@@ -231,9 +242,27 @@
       if (!submitted) scoreBig.textContent = answered ? `${answered}/${total}` : 'Ready';
     }
 
+    function renderWeakAreas(missedTopics) {
+      const unique = [...new Set(missedTopics.filter(Boolean))];
+      if (!unique.length) return;
+      const box = document.createElement("section");
+      box.className = "quiz-weak-areas";
+      box.setAttribute("aria-label", "Study weak areas");
+      const links = unique.map(topic => {
+        const map = studyLinks[topic] || {};
+        const primary = map.learning || map.simulator || "/ems-training-tools.html";
+        const secondary = map.scenario || "/emt-flashcards.html";
+        return `<a href="${primary}">Study ${escapeHtml(topic.split("&")[0].trim())}</a><a class="secondary" href="${secondary}">Practice scenario</a>`;
+      }).join("");
+      box.innerHTML = `<h3>Study your missed topics</h3><p>These free tools match the NREMT content areas you missed today.</p><div class="quiz-weak-links">${links}</div>`;
+      const actions = document.querySelector(".quiz-actions");
+      if (actions) actions.insertAdjacentElement("afterend", box);
+    }
+
     function submitQuiz() {
       submitted = true;
       let score = 0;
+      const missedTopics = [];
       todaysQuestions.forEach((q, idx) => {
         const selectedInput = document.querySelector(`input[name="q${idx}"]:checked`);
         const selectedIndex = selectedInput ? Number(selectedInput.value) : -1;
@@ -245,6 +274,7 @@
             if (selectedIndex === i) score++;
           } else if (selectedIndex === i) {
             label.classList.add("incorrect");
+            missedTopics.push(q.topic);
           }
         });
         const explanation = document.getElementById(`explain${idx}`);
@@ -252,16 +282,28 @@
         explanation.innerHTML = `<strong>Answer:</strong> ${escapeHtml(q.answer)}<br>${escapeHtml(q.reason)}`;
       });
       scoreBig.textContent = `${score}/${todaysQuestions.length}`;
-      resultEl.innerHTML = `Score: ${score}/${todaysQuestions.length}. Come back tomorrow for a new daily EMT quiz.`;
+      resultEl.innerHTML = `Score: ${score}/${todaysQuestions.length}. ${topicFilter ? `Review <strong>${escapeHtml(topicFilter)}</strong> with the links below.` : "Come back tomorrow for a new daily EMT quiz."}`;
       progressBar.style.width = '100%';
       submitBtn.textContent = 'Submitted';
+      renderWeakAreas(missedTopics);
     }
 
     submitBtn.addEventListener('click', submitQuiz);
 
-    fetch(quizFile)
-      .then(res => { if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); })
-      .then(data => { questionsData = Array.isArray(data) ? data : (data.quiz || []); loadSavedOrNewQuiz(); })
+    Promise.all([
+      fetch(quizFile).then(res => { if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); }),
+      fetch('/data/nremt-study-links.json').then(res => res.ok ? res.json() : {}).catch(() => ({}))
+    ])
+      .then(([data, links]) => {
+        questionsData = Array.isArray(data) ? data : (data.quiz || []);
+        studyLinks = links || {};
+        if (topicFilter) {
+          const hero = document.querySelector('.quiz-title-card h1');
+          if (hero) hero.textContent = `${topicFilter} Quiz`;
+          document.title = `${topicFilter} EMT Quiz | EMSCodeSim`;
+        }
+        loadSavedOrNewQuiz();
+      })
       .catch(err => {
         console.error(err);
         quizContainer.innerHTML = '<div class="loading">Failed to load questions. Please refresh and try again.</div>';

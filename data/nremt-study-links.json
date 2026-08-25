@@ -1,0 +1,44 @@
+{
+  "Airway, Respiration & Ventilation": {
+    "flashcards": "/emt-flashcards.html",
+    "simulator": "/vitals/breath-sound-simulator.html",
+    "learning": "/breath-sound-training.html",
+    "scenario": "/vitals/visual-patient.html?case=asthma&training=learning&reset=1"
+  },
+  "Cardiology & Resuscitation": {
+    "flashcards": "/emt-flashcards.html",
+    "simulator": "/vitals/pulse.html",
+    "learning": "/cpr-training.html",
+    "scenario": "/vitals/visual-patient.html?case=trauma&training=learning&reset=1"
+  },
+  "Trauma": {
+    "flashcards": "/emt-flashcards.html",
+    "simulator": "/vitals/nines.html",
+    "learning": "/abc-training.html",
+    "scenario": "/vitals/visual-patient.html?case=horse_crush&training=assessment&reset=1"
+  },
+  "Medical Emergencies": {
+    "flashcards": "/emt-flashcards.html",
+    "simulator": "/vitals/bgl.html",
+    "learning": "/abc-training.html",
+    "scenario": "/vitals/visual-patient.html?case=hypoglycemia&training=learning&reset=1"
+  },
+  "Obstetrics & Gynecology": {
+    "flashcards": "/emt-flashcards.html",
+    "simulator": "/APGAR/",
+    "learning": "/emt-prep.html",
+    "scenario": "/vitals/scenario-launcher.html?select=pediatric&open=1"
+  },
+  "EMS Operations": {
+    "flashcards": "/emt-flashcards.html",
+    "simulator": "/daily-protocol.html",
+    "learning": "/nremt-skill-sheets.html",
+    "scenario": "/pcr-narrative-coach.html"
+  },
+  "Patient Assessment": {
+    "flashcards": "/emt-flashcards.html",
+    "simulator": "/vitals/full-vitals-set.html",
+    "learning": "/abc-training.html",
+    "scenario": "/vitals/scenario-launcher.html"
+  }
+}

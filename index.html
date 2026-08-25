@@ -13,7 +13,7 @@
 <meta content="website" property="og:type"/><meta content="EMSCodeSim" property="og:site_name"/><meta content="EMSCodeSim | Free EMT Patient Simulations & Career Tools" property="og:title"/><meta content="Practice EMT patient assessment with interactive scenarios, build core skills, and find free EMS career resources for every stage." property="og:description"/><meta content="https://emscodesim.com/" property="og:url"/><meta content="https://emscodesim.com/ems-logo.png" property="og:image"/>
 <link href="/styles/career-hub.css" rel="stylesheet"/><link href="/styles/responsive.css" rel="stylesheet"/><link href="/styles/site-enhancements.css" rel="stylesheet"/><link href="/styles/ideal-home.css" rel="stylesheet"/>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"EMSCodeSim","url":"https://emscodesim.com/","description":"Free EMS career and training resources from first interest through retirement.","potentialAction":{"@type":"SearchAction","target":"https://emscodesim.com/search.html?q={search_term_string}","query-input":"required name=search_term_string"}}</script>
-<script defer="" src="/privacy-controls.js"></script><script defer="" src="/scripts/engagement-loop.js"></script>
+<script defer="" src="/privacy-controls.js"></script><script defer="" src="/scripts/daily-practice-hub.js"></script><script defer="" src="/scripts/engagement-loop.js"></script>
 <!-- Homepage layout and contrast live in /styles/ideal-home.css -->
 
 </head>
@@ -89,6 +89,24 @@
 <a href="/ems-career-planner.html"><span aria-hidden="true">↗</span><strong>Career Plan</strong><small>Build your roadmap</small></a>
 </nav>
 <main class="home-main mobile-scan-layout" id="main">
+<section aria-labelledby="dailyPracticeHeading" class="daily-practice-home">
+<div class="daily-practice-shell" id="daily-practice">
+<div class="daily-practice-head">
+<div>
+<span class="personalized-label">Free daily habit</span>
+<h2 id="dailyPracticeHeading">Today’s 5-minute practice</h2>
+<p>Quiz, fact, protocol drill, and one skill—rotated for your career stage. No account required.</p>
+</div>
+<div class="daily-practice-meta">
+<span class="daily-practice-date" id="dailyPracticeDate"></span>
+<span class="daily-practice-streak" id="dailyPracticeStreak"></span>
+<span class="daily-practice-progress" id="dailyPracticeProgress"></span>
+</div>
+</div>
+<div class="daily-practice-grid" id="dailyPracticeGrid" aria-live="polite"></div>
+<div class="daily-practice-topics" id="dailyPracticeTopics"></div>
+</div>
+</section>
 <section class="start-here" aria-labelledby="startHereHeading">
 <div class="start-here-head"><span class="personalized-label">Choose one clear next step</span><h2 id="startHereHeading">Start here</h2><p>Practice a patient, sharpen one skill, or follow a career plan.</p></div>
 <div class="start-here-grid">
@@ -147,6 +165,7 @@
     document.documentElement.style.setProperty('--stage-accent',index<2?'#218cff':index<5?'#30a6df':'#55c990');
     document.querySelectorAll('.nav-group').forEach(g=>{const q=g.querySelector('summary');g.classList.toggle('career-stage-current',!!q&&q.textContent.trim()===s.nav)});
     if(focus&&buttons[index])buttons[index].focus({preventScroll:true});if(buttons[index]?.scrollIntoView)buttons[index].scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+    window.EMSCodeSimDailyPractice?.render?.();
   }
   buttons.forEach((b,i)=>b.addEventListener('click',()=>render(i,false)));mobileSelect?.addEventListener('change',()=>{const next=stages.findIndex(stage=>stage.id===mobileSelect.value);if(next>=0)render(next,false)});$('stagePrev')?.addEventListener('click',()=>render(index-1,true));$('stageNext')?.addEventListener('click',()=>render(index+1,true));panel?.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){e.preventDefault();render(index+1,true)}if(e.key==='ArrowLeft'){e.preventDefault();render(index-1,true)}});
   $('mobileMenu')?.addEventListener('change',e=>{if(e.target.value)location.href=e.target.value});render(index,false);
