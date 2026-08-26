@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>Free NREMT EMT Practice Exam | Timed Domain-Weighted Test | EMSCodeSim</title>
+<meta content="Take a free timed EMT practice exam with domain-weighted NREMT-style questions, score by topic, and study weak areas. No login required." name="description"/>
+<meta content="index, follow, max-image-preview:large" name="robots"/>
+<link href="https://emscodesim.com/quiz/emt_practice_exam.html" rel="canonical"/>
+<link href="/favicon.png" rel="icon" type="image/png"/>
+<meta content="#07111f" name="theme-color"/>
+<meta content="website" property="og:type"/>
+<meta content="EMSCodeSim Daily Quiz" property="og:site_name"/>
+<meta content="Free NREMT EMT Practice Exam | EMSCodeSim" property="og:title"/>
+<meta content="Timed, domain-weighted EMT practice exams with topic score reports and weak-area study links. Free and no login." property="og:description"/>
+<meta content="https://emscodesim.com/quiz/emt_practice_exam.html" property="og:url"/>
+<meta content="https://emscodesim.com/quiz/og-image.jpg" property="og:image"/>
+<link href="/quiz/dailyemsquiz.css" rel="stylesheet"/>
+<link href="/styles/responsive.css" rel="stylesheet"/>
+<link href="/styles/site-enhancements.css" rel="stylesheet"/>
+<style>
+.exam-setup{display:grid;gap:14px;margin-top:18px}
+.exam-mode-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.exam-mode{appearance:none;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.06);color:var(--text);padding:16px;text-align:left;cursor:pointer;min-height:140px}
+.exam-mode:hover,.exam-mode.is-selected{border-color:rgba(85,182,255,.55);background:rgba(85,182,255,.12)}
+.exam-mode strong{display:block;font-size:1.1rem;margin-bottom:6px}
+.exam-mode small{display:block;color:var(--muted);line-height:1.45}
+.exam-toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.06)}
+.exam-timer{font-size:1.35rem;font-weight:950;letter-spacing:-.03em}
+.exam-timer.is-low{color:#fbbf24}
+.exam-timer.is-critical{color:#f87171}
+.exam-progress-meta{color:var(--muted);font-weight:750}
+.exam-nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.exam-nav .btn{min-width:120px}
+.exam-flag{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-weight:750}
+.domain-bars{display:grid;gap:10px;margin-top:14px}
+.domain-row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(120px,.8fr) auto;gap:10px;align-items:center}
+.domain-row span{color:var(--muted);font-size:.92rem}
+.domain-track{height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.domain-fill{height:100%;background:linear-gradient(135deg,var(--blue),var(--cyan))}
+.domain-fill.weak{background:linear-gradient(135deg,#f59e0b,#ef4444)}
+.exam-review details{border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:rgba(255,255,255,.05);margin-top:10px}
+.exam-review summary{cursor:pointer;font-weight:850}
+.exam-review .missed{color:#fecaca}
+.exam-review .ok{color:#bbf7d0}
+@media(max-width:800px){.exam-mode-grid{grid-template-columns:1fr}.domain-row{grid-template-columns:1fr}}
+</style>
+<script defer src="/privacy-controls.js"></script>
+<script defer src="/scripts/engagement-loop.js"></script>
+<script defer src="/quiz/practice-exam-engine.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to exam</a>
+<header class="site-header">
+<div class="container nav">
+<a aria-label="EMSCodeSim Daily Quiz home" class="brand" href="/quiz/">
+<img alt="EMSCodeSim logo" class="brand-logo" height="46" src="/ems-logo.png" width="46"/>
+<span class="brand-text">EMSCodeSim Daily Quiz <small>EMT &amp; Paramedic study tools</small></span>
+</a>
+<nav aria-label="Main navigation" class="nav-links">
+<a href="/quiz/emt_quiz.html">EMT Quiz</a>
+<a aria-current="page" href="/quiz/emt_practice_exam.html">Practice Exam</a>
+<a href="/quiz/paramedic_quiz.html">Paramedic Quiz</a>
+<a href="/quiz/ems_fact.html">EMS Facts</a>
+<a class="career-hub-link" href="/">Career Hub</a>
+</nav>
+</div>
+</header>
+<div class="quiz-breadcrumb"><a href="/">EMSCodeSim</a> / <a href="/quiz/">Daily Quiz</a> / EMT Practice Exam</div>
+<main class="container quiz-shell" id="main">
+<section class="quiz-hero">
+<div class="quiz-title-card">
+<span class="eyebrow">Free timed EMT exam</span>
+<h1>NREMT-style EMT practice exam</h1>
+<p>Take a domain-weighted practice test with a live timer, then review score by content area and study your weak topics. Independent practice—not affiliated with NREMT.</p>
+</div>
+<aside class="score-card" aria-live="polite">
+<div class="daily-label"><span>Exam status</span><span id="statusLabel">Ready</span></div>
+<div class="score-big" id="scoreBig">—</div>
+<p style="color:var(--muted);margin:0;line-height:1.5" id="scoreCopy">Choose a length, then start when you are ready.</p>
+</aside>
+</section>
+
+<section id="setupPanel" class="helper-section">
+<h2>Choose your practice exam</h2>
+<p>Questions are pulled from the free EMSCodeSim EMT bank and balanced across Airway, Cardiology, Trauma, Medical, OB/GYN, and Operations.</p>
+<div class="exam-setup">
+<div class="exam-mode-grid" id="modeGrid" role="group" aria-label="Exam length"></div>
+<button class="btn btn-primary" id="startBtn" type="button">Start practice exam</button>
+</div>
+</section>
+
+<section id="examPanel" hidden>
+<div class="exam-toolbar">
+<div>
+<div class="exam-progress-meta" id="questionMeta">Question 1</div>
+<div class="exam-timer" id="timerDisplay">0:00</div>
+</div>
+<div class="exam-progress-meta" id="answeredMeta">0 answered</div>
+</div>
+<article class="question-box" id="questionBox"></article>
+<div class="exam-nav">
+<button class="btn btn-ghost" id="prevBtn" type="button">Previous</button>
+<label class="exam-flag"><input id="flagBox" type="checkbox"/> Flag for review</label>
+<button class="btn btn-secondary" id="nextBtn" type="button">Next</button>
+<button class="btn btn-primary" id="finishBtn" type="button">Submit exam</button>
+</div>
+</section>
+
+<section id="resultsPanel" class="helper-section" hidden>
+<h2>Exam results</h2>
+<p id="resultsSummary"></p>
+<div class="domain-bars" id="domainBars"></div>
+<div class="quiz-weak-areas" id="weakAreaBox" hidden>
+<h3>Study weak areas</h3>
+<p>Use these free tools for the topics you missed most.</p>
+<div class="quiz-weak-links" id="weakLinks"></div>
+</div>
+<div class="exam-review" id="reviewList"></div>
+<div class="cta-row" style="margin-top:18px">
+<button class="btn btn-primary" id="retryBtn" type="button">Take another exam</button>
+<a class="btn btn-secondary" href="/quiz/emt_quiz.html">Daily 5-question quiz</a>
+<a class="btn btn-ghost" href="/nremt-cognitive-prep.html">NREMT prep hub</a>
+</div>
+</section>
+
+<section class="helper-section">
+<h2>How this practice exam works</h2>
+<ul>
+<li>Domain weighting approximates EMT cognitive content areas for study focus—not an official blueprint copy.</li>
+<li>Your answers stay on this device; nothing is uploaded and no account is required.</li>
+<li>After scoring, missed topics link to simulators, learning centers, and scenarios.</li>
+</ul>
+</section>
+</main>
+<footer class="site-footer">
+<div class="container footer-grid">
+<div>© 2026 EMSCodeSim Daily Quiz. Independent EMS education practice site. Not affiliated with NREMT.</div>
+<div class="footer-links"><a href="/privacy.html">Privacy</a><a href="/sitemap.xml">Sitemap</a><a href="/">EMSCodeSim Career Hub</a></div>
+</div>
+</footer>
+<script>
+(function(){
+  const api = () => window.EMSCodeSimPracticeExam;
+  const $ = id => document.getElementById(id);
+  let pool = [];
+  let studyLinks = {};
+  let selectedMode = 'standard';
+  let exam = null;
+  let answers = {};
+  let flags = {};
+  let index = 0;
+  let remaining = 0;
+  let timerId = null;
+  let submitted = false;
+
+  function esc(v){
+    return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function renderModes(){
+    const modes = api().MODES;
+    $('modeGrid').innerHTML = Object.values(modes).map(mode => `
+      <button class="exam-mode${mode.id===selectedMode?' is-selected':''}" type="button" data-mode="${mode.id}">
+        <strong>${esc(mode.label)}</strong>
+        <small>${esc(mode.copy)}</small>
+      </button>`).join('');
+    $('modeGrid').querySelectorAll('[data-mode]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedMode = btn.getAttribute('data-mode');
+        renderModes();
+      });
+    });
+  }
+
+  function stopTimer(){
+    if (timerId) clearInterval(timerId);
+    timerId = null;
+  }
+
+  function tick(){
+    remaining -= 1;
+    const el = $('timerDisplay');
+    el.textContent = api().formatTime(remaining);
+    el.classList.toggle('is-low', remaining <= 300 && remaining > 60);
+    el.classList.toggle('is-critical', remaining <= 60);
+    if (remaining <= 0){
+      stopTimer();
+      finishExam(true);
+    }
+  }
+
+  function startExam(){
+    const built = api().buildExam(pool, selectedMode);
+    if (!built.questions.length){
+      alert('Not enough questions are available to start this exam.');
+      return;
+    }
+    exam = built;
+    answers = {};
+    flags = {};
+    index = 0;
+    submitted = false;
+    remaining = built.mode.minutes * 60;
+    $('setupPanel').hidden = true;
+    $('resultsPanel').hidden = true;
+    $('examPanel').hidden = false;
+    $('statusLabel').textContent = 'In progress';
+    $('scoreBig').textContent = `0/${built.questions.length}`;
+    $('scoreCopy').textContent = `${built.mode.label} · ${built.mode.minutes} minutes`;
+    $('timerDisplay').textContent = api().formatTime(remaining);
+    stopTimer();
+    timerId = setInterval(tick, 1000);
+    renderQuestion();
+  }
+
+  function renderQuestion(){
+    const q = exam.questions[index];
+    $('questionMeta').textContent = `Question ${index + 1} of ${exam.questions.length}`;
+    $('answeredMeta').textContent = `${Object.keys(answers).length} answered · ${Object.keys(flags).filter(k=>flags[k]).length} flagged`;
+    $('flagBox').checked = !!flags[index];
+    $('prevBtn').disabled = index === 0;
+    $('nextBtn').disabled = index >= exam.questions.length - 1;
+    $('questionBox').innerHTML = `
+      <div class="question-kicker"><span>Question ${index + 1}</span><span>${esc(q.subtopic || q.topic)}</span></div>
+      <div class="question-text">${esc(q.question)}</div>
+      <div class="choices">
+        ${q.choices.map((choice, i) => `
+          <label class="choice">
+            <input type="radio" name="examQ" value="${esc(choice)}" ${answers[index]===choice?'checked':''}/>
+            <span>${esc(choice)}</span>
+          </label>`).join('')}
+      </div>`;
+    $('questionBox').querySelectorAll('input[name="examQ"]').forEach(input => {
+      input.addEventListener('change', () => {
+        answers[index] = input.value;
+        $('scoreBig').textContent = `${Object.keys(answers).length}/${exam.questions.length}`;
+        $('answeredMeta').textContent = `${Object.keys(answers).length} answered · ${Object.keys(flags).filter(k=>flags[k]).length} flagged`;
+      });
+    });
+  }
+
+  function finishExam(auto){
+    if (submitted) return;
+    if (!auto){
+      const unanswered = exam.questions.length - Object.keys(answers).length;
+      const msg = unanswered
+        ? `Submit now with ${unanswered} unanswered question${unanswered===1?'':'s'}?`
+        : 'Submit your practice exam?';
+      if (!window.confirm(msg)) return;
+    }
+    submitted = true;
+    stopTimer();
+    const result = api().scoreExam(exam.questions, answers);
+    $('examPanel').hidden = true;
+    $('resultsPanel').hidden = false;
+    $('statusLabel').textContent = auto ? 'Time expired' : 'Submitted';
+    $('scoreBig').textContent = `${result.correct}/${result.total}`;
+    $('scoreCopy').textContent = `${result.percent}% correct`;
+    $('resultsSummary').innerHTML = `You scored <strong>${result.correct}/${result.total}</strong> (${result.percent}%). ${auto ? 'Time ran out and the exam was auto-submitted. ' : ''}Review domain performance below.`;
+
+    $('domainBars').innerHTML = Object.entries(result.byTopic).map(([topic, row]) => `
+      <div class="domain-row">
+        <strong>${esc(topic)}</strong>
+        <div class="domain-track"><div class="domain-fill${row.percent<70?' weak':''}" style="width:${row.percent}%"></div></div>
+        <span>${row.correct}/${row.total} · ${row.percent}%</span>
+      </div>`).join('');
+
+    const weakTopics = Object.entries(result.missed).sort((a,b)=>b[1]-a[1]).map(([topic]) => topic).slice(0,4);
+    if (weakTopics.length){
+      $('weakAreaBox').hidden = false;
+      $('weakLinks').innerHTML = weakTopics.map(topic => {
+        const map = studyLinks[topic] || {};
+        const primary = map.learning || map.simulator || '/ems-training-tools.html';
+        const quiz = `/quiz/emt_quiz.html?topic=${encodeURIComponent(topic)}`;
+        return `<a href="${primary}">Study ${esc(topic.split('&')[0].trim())}</a><a class="secondary" href="${quiz}">Topic quiz</a>`;
+      }).join('');
+    } else {
+      $('weakAreaBox').hidden = true;
+    }
+
+    $('reviewList').innerHTML = `<h3>Question review</h3>` + result.details.map(d => `
+      <details>
+        <summary class="${d.correct?'ok':'missed'}">Q${d.index+1}: ${d.correct?'Correct':'Missed'} · ${esc(d.topic)}</summary>
+        <p><strong>Question:</strong> ${esc(d.question)}</p>
+        <p><strong>Your answer:</strong> ${esc(d.selected || 'No answer')}</p>
+        <p><strong>Correct answer:</strong> ${esc(d.answer)}</p>
+        <p>${esc(d.reason)}</p>
+      </details>`).join('');
+
+    try {
+      localStorage.setItem('emscodesim-last-practice-exam', JSON.stringify({
+        date: new Date().toISOString(),
+        mode: exam.mode.id,
+        percent: result.percent,
+        correct: result.correct,
+        total: result.total
+      }));
+    } catch(_){}
+  }
+
+  function resetToSetup(){
+    stopTimer();
+    exam = null;
+    submitted = false;
+    $('resultsPanel').hidden = true;
+    $('examPanel').hidden = true;
+    $('setupPanel').hidden = false;
+    $('statusLabel').textContent = 'Ready';
+    $('scoreBig').textContent = '—';
+    $('scoreCopy').textContent = 'Choose a length, then start when you are ready.';
+  }
+
+  $('startBtn').addEventListener('click', startExam);
+  $('prevBtn').addEventListener('click', () => { if (index>0){ index--; renderQuestion(); }});
+  $('nextBtn').addEventListener('click', () => { if (index < exam.questions.length-1){ index++; renderQuestion(); }});
+  $('flagBox').addEventListener('change', () => { flags[index] = $('flagBox').checked; renderQuestion(); });
+  $('finishBtn').addEventListener('click', () => finishExam(false));
+  $('retryBtn').addEventListener('click', resetToSetup);
+
+  function boot(){
+    if (!api()){ setTimeout(boot, 20); return; }
+    renderModes();
+    Promise.all([
+      fetch('emt_quiz.json').then(r => { if(!r.ok) throw new Error('quiz'); return r.json(); }),
+      fetch('/data/nremt-study-links.json').then(r => r.ok ? r.json() : {}).catch(() => ({}))
+    ]).then(([data, links]) => {
+      pool = Array.isArray(data) ? data : (data.quiz || []);
+      studyLinks = links || {};
+    }).catch(() => {
+      $('setupPanel').innerHTML = '<p>Failed to load the question bank. Please refresh.</p>';
+    });
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

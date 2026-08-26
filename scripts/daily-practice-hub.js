@@ -188,7 +188,7 @@
     });
 
     if (topicsEl) {
-      topicsEl.innerHTML = `<div class="daily-topic-head"><strong>Study by NREMT topic</strong><span>Jump to weak areas after your quiz</span></div><div class="daily-topic-chips">${NREMT_TOPICS.map(topic =>
+      topicsEl.innerHTML = `<div class="daily-topic-head"><strong>Study by NREMT topic</strong><a href="/quiz/emt_practice_exam.html" style="color:#b9def4;font-weight:800;text-decoration:none">Timed practice exam →</a></div><div class="daily-topic-chips">${NREMT_TOPICS.map(topic =>
         `<a class="daily-topic-chip" href="${topic.href}">${topic.label}</a>`
       ).join('')}</div>`;
     }
