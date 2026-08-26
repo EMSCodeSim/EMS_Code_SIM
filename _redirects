@@ -18,8 +18,8 @@
 /loc-orientation-simulator       /vitals/aao.html                           301
 /rule-of-nines                   /vitals/nines.html                         301
 /apgar-simulator                 /APGAR/                                    301
-/medical-scenario-simulator      /vitals/scenario-launcher.html             302!
-/med_sim.html                    /vitals/scenario-launcher.html             302!
+/medical-scenario-simulator      /vitals/scenario-launcher.html             301!
+/med_sim.html                    /vitals/scenario-launcher.html             301!
 
 # Extensionless internal support
 /vitals/bp /vitals/bp.html 301
@@ -67,6 +67,17 @@
 # EMSCodeSim Daily Quiz aliases
 /daily-quiz                         /quiz/                              301
 /emt-quiz                           /quiz/emt_quiz.html                 301
+/free-emt-quiz                      /quiz/emt_quiz.html                 301
+/emt-practice-test                  /quiz/emt_quiz.html                 301
+/emt-practice-exam                  /quiz/emt_practice_exam.html        301
+/nremt-practice-test                /quiz/emt_practice_exam.html        301
+/nremt-practice-exam                /quiz/emt_practice_exam.html        301
+/nremt-emt-practice-test            /quiz/emt_practice_exam.html        301
+/free-nremt-practice-test           /quiz/emt_practice_exam.html        301
+/nremt-cognitive-prep               /nremt-cognitive-prep.html          301
+/nremt-prep                         /nremt-cognitive-prep.html          301
+/emt-trauma-training                /trauma-training.html               301
+/emt-medication-training            /medication-training.html           301
 /paramedic-quiz                     /quiz/paramedic_quiz.html           301
 /ems-daily-fact                     /quiz/ems_fact.html                 301
 /medword                            /quiz/medword.html                  301

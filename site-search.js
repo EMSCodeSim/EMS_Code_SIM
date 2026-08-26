@@ -4,10 +4,15 @@
   const category=document.getElementById('searchCategory');
   const results=document.getElementById('searchResults');
   const summary=document.getElementById('searchSummary');
-  const index=Array.isArray(window.EMSCODESIM_SEARCH_INDEX)?window.EMSCODESIM_SEARCH_INDEX:[];
+  const index=(Array.isArray(window.EMSCODESIM_SEARCH_INDEX)?window.EMSCODESIM_SEARCH_INDEX:[]).map(item=>({
+    ...item,
+    summary:item.summary||item.description||'',
+    tags:item.tags||(typeof item.keywords==='string'?item.keywords.split(/\s+/).filter(Boolean):[]),
+    level:item.level||''
+  }));
   if(!form||!input||!category||!results||!summary) return;
   const normalize=s=>(s||'').toLowerCase().replace(/[^a-z0-9&×]+/g,' ').trim();
-  const categories=[...new Set(index.map(x=>x.category))].sort();
+  const categories=[...new Set(index.map(x=>x.category).filter(Boolean))].sort();
   categories.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;category.appendChild(o);});
   function score(item,terms){
     const title=normalize(item.title), summaryText=normalize(item.summary), tags=normalize((item.tags||[]).join(' ')), cat=normalize(item.category+' '+item.level);
