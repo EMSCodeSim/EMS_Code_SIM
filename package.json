@@ -35,6 +35,7 @@
     "test:treatment-decision": "node tools/test-treatment-decision-workflow.js",
     "test:repeatable-workflow": "node tools/test-repeatable-clinical-workflow.js",
     "test:daily-protocol": "node tools/test-daily-protocol.js",
+    "test:practice-exam": "node tools/test-practice-exam.js",
     "test:patient-interview": "node tools/test-patient-interview.js",
     "test:scenario-selection": "node tools/test-scenario-selection-menu.js",
     "clean:retired": "node tools/remove-retired-scenario-files.js",
