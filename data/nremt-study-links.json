@@ -14,7 +14,7 @@
   "Trauma": {
     "flashcards": "/emt-flashcards.html",
     "simulator": "/vitals/nines.html",
-    "learning": "/abc-training.html",
+    "learning": "/trauma-training.html",
     "scenario": "/vitals/visual-patient.html?case=horse_crush&training=assessment&reset=1"
   },
   "Medical Emergencies": {

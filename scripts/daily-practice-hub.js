@@ -27,7 +27,7 @@
   const NREMT_TOPICS = [
     { label: 'Airway & Respiration', href: '/quiz/emt_quiz.html?topic=Airway%2C%20Respiration%20%26%20Ventilation', study: '/breath-sound-training.html' },
     { label: 'Cardiology & CPR', href: '/quiz/emt_quiz.html?topic=Cardiology%20%26%20Resuscitation', study: '/cpr-training.html' },
-    { label: 'Trauma', href: '/quiz/emt_quiz.html?topic=Trauma', study: '/vitals/scenario-launcher.html' },
+    { label: 'Trauma', href: '/quiz/emt_quiz.html?topic=Trauma', study: '/trauma-training.html' },
     { label: 'Medical', href: '/quiz/emt_quiz.html?topic=Medical%20Emergencies', study: '/abc-training.html' },
     { label: 'Operations', href: '/quiz/emt_quiz.html?topic=EMS%20Operations', study: '/nremt-skill-sheets.html' },
     { label: 'OB/GYN', href: '/quiz/emt_quiz.html?topic=Obstetrics%20%26%20Gynecology', study: '/APGAR/' }
