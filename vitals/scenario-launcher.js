@@ -6,7 +6,12 @@
   const $ = id => document.getElementById(id);
 
   const cases = [
-    { id:'horse_crush', image:'/vitals/assets/horse-crush/patient-initial.webp', title:'Horse-Crush Hip Injury', patient:'64-year-old adult', scene:'5541 E Snow Bird Road • south barn', clue:'Alert on the ground with severe left-hip pain', dispatch:'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.', goal:'Assess before moving, protect the leg in its tolerated position, plan packaging, control pain, and repeat distal CSM after movement' }
+    { id:'horse_crush', featured:true, image:'/vitals/assets/horse-crush/patient-initial.webp', title:'Horse-Crush Hip Injury', patient:'64-year-old adult', scene:'5541 E Snow Bird Road • south barn', clue:'Alert on the ground with severe left-hip pain', dispatch:'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.', goal:'Assess before moving, protect the leg in its tolerated position, plan packaging, control pain, and repeat distal CSM after movement' },
+    { id:'asthma', image:'/vitals/assets/scenario-patient-adult-v3.png', title:'Respiratory Distress', patient:'24-year-old adult', scene:'Apartment • rescue inhaler nearby', clue:'Short sentences, wheezing, upright position', dispatch:'Worsening shortness of breath and wheezing.', goal:'Assess respiratory adequacy, treat, reassess, and report.' },
+    { id:'stroke', image:'/vitals/assets/scenario-patient-adult-v3.png', title:'Possible Acute Stroke', patient:'68-year-old adult', scene:'Private residence • family present', clue:'Sudden speech difficulty and right-sided weakness', dispatch:'Sudden speech difficulty and right-sided weakness.', goal:'Identify time-sensitive neurologic findings and prepare rapid stroke-center transport.' },
+    { id:'hypoglycemia', image:'/vitals/assets/scenario-patient-adult-v3.png', title:'Altered Mental Status', patient:'57-year-old adult', scene:'Workplace break room', clue:'Confused, sweaty, and behaving abnormally', dispatch:'Confused, sweaty, and behaving abnormally.', goal:'Find a reversible cause, protect the airway, treat, and reassess.' },
+    { id:'trauma', image:'/vitals/assets/scenario-patient-adult-v3.png', title:'Blunt Trauma', patient:'36-year-old adult', scene:'Roadway collision • moderate vehicle damage', clue:'Chest and abdominal pain with signs of poor perfusion', dispatch:'Two-vehicle collision with chest and abdominal pain.', goal:'Find immediate threats, support ABCs, and expedite trauma transport.' },
+    { id:'pediatric', image:'/vitals/assets/scenario-patient-pediatric-v3.png', title:'Sick Pediatric Patient', patient:'3-year-old child', scene:'Home • caregiver present', clue:'Fever, poor interaction, increased work of breathing', dispatch:'Fever, poor interaction, and increased work of breathing.', goal:'Use the pediatric first look, support ABCs, and reassess response.' }
   ];
 
   let selectedCase = null;
@@ -63,12 +68,12 @@
       button.innerHTML = `
         <span class="case-image-wrap">
           <img src="${item.image}" alt="${item.title} patient scenario">
-          ${inProgress ? '<span class="progress-badge">In progress</span>' : ''}
+          ${inProgress ? '<span class="progress-badge">In progress</span>' : item.featured ? '<span class="progress-badge featured-badge">Featured</span>' : ''}
         </span>
         <span class="case-choice-body">
           <strong>${item.title}</strong>
           <span>${item.patient}</span>
-          <small>${inProgress ? 'Tap to continue or reset' : 'Tap to choose a mode'}</small>
+          <small>${inProgress ? 'Tap to continue or reset' : item.featured ? 'Immersive trauma scenario' : 'Learning or assessment mode'}</small>
         </span>`;
       button.addEventListener('click', () => openCaseDialog(item));
       gallery.appendChild(button);

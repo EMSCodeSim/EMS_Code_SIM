@@ -14,11 +14,12 @@
   <link rel="stylesheet" href="/vitals/scenario-status.css">
 </head>
 <body>
-  <header class="scenario-hero"><div><span class="scenario-build-stamp">Scenario UI 1.41</span><p><a href="/">Home</a> / <a href="/vitals/">Vital Learning Center</a> / Scenario Launcher</p><h1>Featured patient scenario</h1><p>The completed horse-crush assessment scenario is currently available. Additional cases will return as they finish production review.</p></div></header>
+  <header class="scenario-hero"><div><span class="scenario-build-stamp">Scenario UI 1.42</span><p><a href="/">Home</a> / <a href="/vitals/">Vital Learning Center</a> / Scenario Launcher</p><h1>Choose a patient scenario</h1><p>Six free EMT patient cases are available. The horse-crush trauma scenario includes the full immersive assessment experience; the other cases use the connected visual-patient simulator with learning or assessment mode.</p></div></header>
   <main class="scenario-shell">
     <section class="control-card picture-first">
       <div class="case-intro-row">
-        <div class="case-intro"><p class="eyebrow">Production-ready scenario</p><h2>Horse-Crush Hip Injury</h2><p>Open the patient to choose Learning or Assessment Mode. Saved progress can still be continued or reset.</p></div>
+        <div class="case-intro"><p class="eyebrow">Free patient scenarios</p><h2>Pick a patient picture</h2><p>Open a case to choose Learning or Assessment Mode. Saved progress can still be continued or reset.</p></div>
+        <button class="secondary random-case" id="randomCase" type="button">Random scenario</button>
       </div>
       <div id="caseGallery" class="case-gallery" aria-label="Available patient scenarios"></div>
     </section>

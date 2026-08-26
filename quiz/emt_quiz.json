@@ -7,7 +7,9 @@
       "Perform advanced airway procedures",
       "Prescribe medications"
     ],
-    "answer": "Provide basic emergency medical care"
+    "answer": "Provide basic emergency medical care",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Anatomy & Terminology"
   },
   {
     "question": "What is an example of off-line medical direction?",
@@ -17,7 +19,9 @@
       "Standing orders",
       "Calling the medical director"
     ],
-    "answer": "Standing orders"
+    "answer": "Standing orders",
+    "topic": "EMS Operations",
+    "subtopic": "EMS Systems"
   },
   {
     "question": "Which level of EMS provider can perform advanced airway management?",
@@ -27,7 +31,9 @@
       "EMT",
       "EMR"
     ],
-    "answer": "Paramedic"
+    "answer": "Paramedic",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Airway Management"
   },
   {
     "question": "What does CQI stand for in EMS systems?",
@@ -37,7 +43,9 @@
       "Certified Quality Initiative",
       "Continuous Quantitative Instruction"
     ],
-    "answer": "Continuous Quality Improvement"
+    "answer": "Continuous Quality Improvement",
+    "topic": "EMS Operations",
+    "subtopic": "EMS Systems"
   },
   {
     "question": "Who provides on-line medical direction?",
@@ -47,7 +55,9 @@
       "Medical assistant",
       "Dispatch center"
     ],
-    "answer": "Physician via radio or phone"
+    "answer": "Physician via radio or phone",
+    "topic": "EMS Operations",
+    "subtopic": "EMS Systems"
   },
   {
     "question": "What must be obtained before providing care to a conscious adult?",
@@ -57,7 +67,9 @@
       "Implied consent",
       "Informed consent"
     ],
-    "answer": "Informed consent"
+    "answer": "Informed consent",
+    "topic": "EMS Operations",
+    "subtopic": "Legal & Ethics"
   },
   {
     "question": "Which of the following is an example of implied consent?",
@@ -67,7 +79,9 @@
       "Signing a waiver",
       "Unconscious trauma patient"
     ],
-    "answer": "Unconscious trauma patient"
+    "answer": "Unconscious trauma patient",
+    "topic": "Trauma",
+    "subtopic": "Legal & Ethics"
   },
   {
     "question": "What is the term for unlawful touching of a patient without consent?",
@@ -77,7 +91,9 @@
       "Negligence",
       "Abandonment"
     ],
-    "answer": "Battery"
+    "answer": "Battery",
+    "topic": "EMS Operations",
+    "subtopic": "Legal & Ethics"
   },
   {
     "question": "What should you do if a patient refuses care?",
@@ -87,7 +103,9 @@
       "Force treatment",
       "Explain risks and document refusal"
     ],
-    "answer": "Explain risks and document refusal"
+    "answer": "Explain risks and document refusal",
+    "topic": "EMS Operations",
+    "subtopic": "Legal & Ethics"
   },
   {
     "question": "What is the legal term for terminating care without transfer?",
@@ -97,7 +115,9 @@
       "Battery",
       "Abandonment"
     ],
-    "answer": "Abandonment"
+    "answer": "Abandonment",
+    "topic": "EMS Operations",
+    "subtopic": "Legal & Ethics"
   },
   {
     "question": "Which organ is responsible for pumping blood throughout the body?",
@@ -107,7 +127,9 @@
       "Liver",
       "Kidney"
     ],
-    "answer": "Heart"
+    "answer": "Heart",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Anatomy & Terminology"
   },
   {
     "question": "Which body system includes the brain and spinal cord?",
@@ -117,7 +139,9 @@
       "Nervous system",
       "Endocrine system"
     ],
-    "answer": "Nervous system"
+    "answer": "Nervous system",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Anatomy & Terminology"
   },
   {
     "question": "Which system is responsible for gas exchange?",
@@ -127,7 +151,9 @@
       "Nervous system",
       "Digestive system"
     ],
-    "answer": "Respiratory system"
+    "answer": "Respiratory system",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Anatomy & Terminology"
   },
   {
     "question": "Which organ is part of the digestive system?",
@@ -137,7 +163,9 @@
       "Stomach",
       "Larynx"
     ],
-    "answer": "Stomach"
+    "answer": "Stomach",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Anatomy & Terminology"
   },
   {
     "question": "Which bones protect the brain?",
@@ -147,7 +175,9 @@
       "Ribs",
       "Cranial bones"
     ],
-    "answer": "Cranial bones"
+    "answer": "Cranial bones",
+    "topic": "Trauma",
+    "subtopic": "Trauma Care"
   },
   {
     "question": "What is the function of alveoli in the lungs?",
@@ -157,7 +187,9 @@
       "Gas exchange",
       "Air filtration"
     ],
-    "answer": "Gas exchange"
+    "answer": "Gas exchange",
+    "topic": "Medical Emergencies",
+    "subtopic": "Medical Emergencies"
   },
   {
     "question": "What vessel carries oxygenated blood from the lungs to the heart?",
@@ -167,7 +199,9 @@
       "Aorta",
       "Pulmonary artery"
     ],
-    "answer": "Pulmonary vein"
+    "answer": "Pulmonary vein",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiology"
   },
   {
     "question": "Which part of the heart pumps blood to the body?",
@@ -177,7 +211,9 @@
       "Right ventricle",
       "Left ventricle"
     ],
-    "answer": "Left ventricle"
+    "answer": "Left ventricle",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiology"
   },
   {
     "question": "Which blood cells help fight infection?",
@@ -187,7 +223,9 @@
       "Plasma",
       "White blood cells"
     ],
-    "answer": "White blood cells"
+    "answer": "White blood cells",
+    "topic": "Medical Emergencies",
+    "subtopic": "Medical Emergencies"
   },
   {
     "question": "Which structure prevents food from entering the airway?",
@@ -197,7 +235,9 @@
       "Epiglottis",
       "Esophagus"
     ],
-    "answer": "Epiglottis"
+    "answer": "Epiglottis",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Airway Management"
   },
   {
     "question": "The prefix 'tachy-' means:",
@@ -207,7 +247,9 @@
       "Pain",
       "Fast"
     ],
-    "answer": "Fast"
+    "answer": "Fast",
+    "topic": "Medical Emergencies",
+    "subtopic": "Anatomy & Terminology"
   },
   {
     "question": "The suffix '-itis' refers to:",
@@ -217,7 +259,9 @@
       "Infection",
       "Inflammation"
     ],
-    "answer": "Inflammation"
+    "answer": "Inflammation",
+    "topic": "Medical Emergencies",
+    "subtopic": "Anatomy & Terminology"
   },
   {
     "question": "The term 'hypoglycemia' means:",
@@ -227,7 +271,9 @@
       "Low oxygen",
       "High blood sugar"
     ],
-    "answer": "Low blood sugar"
+    "answer": "Low blood sugar",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory"
   },
   {
     "question": "The prefix 'brady-' means:",
@@ -237,7 +283,9 @@
       "Slow",
       "Above"
     ],
-    "answer": "Slow"
+    "answer": "Slow",
+    "topic": "Medical Emergencies",
+    "subtopic": "Anatomy & Terminology"
   },
   {
     "question": "The root word 'cardio' refers to:",
@@ -247,7 +295,9 @@
       "Liver",
       "Lungs"
     ],
-    "answer": "Heart"
+    "answer": "Heart",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Anatomy & Terminology"
   },
   {
     "question": "Which of the following is a common early sign of shock?",
@@ -257,7 +307,9 @@
       "Bradycardia",
       "Tachycardia"
     ],
-    "answer": "Tachycardia"
+    "answer": "Tachycardia",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Bleeding & Shock"
   },
   {
     "question": "What type of shock results from fluid loss?",
@@ -267,7 +319,9 @@
       "Cardiogenic shock",
       "Hypovolemic shock"
     ],
-    "answer": "Hypovolemic shock"
+    "answer": "Hypovolemic shock",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Bleeding & Shock"
   },
   {
     "question": "Which condition is most likely to lead to cardiogenic shock?",
@@ -277,7 +331,9 @@
       "Heart attack",
       "Stroke"
     ],
-    "answer": "Heart attack"
+    "answer": "Heart attack",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Bleeding & Shock"
   },
   {
     "question": "What is a late sign of shock?",
@@ -287,7 +343,9 @@
       "Anxiety",
       "Increased pulse"
     ],
-    "answer": "Drop in blood pressure"
+    "answer": "Drop in blood pressure",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Bleeding & Shock"
   },
   {
     "question": "Which organ is most sensitive to inadequate perfusion?",
@@ -297,7 +355,9 @@
       "Stomach",
       "Liver"
     ],
-    "answer": "Brain"
+    "answer": "Brain",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Anatomy & Terminology"
   },
   {
     "question": "Which age group is most likely to have separation anxiety during assessment?",
@@ -307,7 +367,9 @@
       "Adults",
       "Neonates"
     ],
-    "answer": "Toddlers"
+    "answer": "Toddlers",
+    "topic": "Obstetrics & Gynecology",
+    "subtopic": "Patient Assessment"
   },
   {
     "question": "How should you communicate with an elderly patient who is hard of hearing?",
@@ -317,7 +379,9 @@
       "Use medical jargon",
       "Ignore their hearing difficulty"
     ],
-    "answer": "Speak clearly and slowly"
+    "answer": "Speak clearly and slowly",
+    "topic": "Medical Emergencies",
+    "subtopic": "Medical Emergencies"
   },
   {
     "question": "Which age group is most likely to underreport pain?",
@@ -327,7 +391,9 @@
       "Infants",
       "Adults"
     ],
-    "answer": "Geriatric patients"
+    "answer": "Geriatric patients",
+    "topic": "Medical Emergencies",
+    "subtopic": "Medical Emergencies"
   },
   {
     "question": "Which is a normal heart rate for a neonate?",
@@ -337,7 +403,9 @@
       "120\u2013160 bpm",
       "100\u2013120 bpm"
     ],
-    "answer": "120\u2013160 bpm"
+    "answer": "120\u2013160 bpm",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiology"
   },
   {
     "question": "Which age group commonly presents with nonspecific symptoms in serious illness?",
@@ -347,7 +415,9 @@
       "Teens",
       "Infants"
     ],
-    "answer": "Geriatrics"
+    "answer": "Geriatrics",
+    "topic": "Medical Emergencies",
+    "subtopic": "Medical Emergencies"
   },
   {
     "question": "Which action represents EMS involvement in public health?",
@@ -357,7 +427,9 @@
       "Providing vaccinations at community events",
       "Filing insurance claims"
     ],
-    "answer": "Providing vaccinations at community events"
+    "answer": "Providing vaccinations at community events",
+    "topic": "Medical Emergencies",
+    "subtopic": "Medical Emergencies"
   },
   {
     "question": "What is one goal of community paramedicine?",
@@ -367,7 +439,9 @@
       "Focus only on trauma",
       "Prevent hospital readmissions"
     ],
-    "answer": "Prevent hospital readmissions"
+    "answer": "Prevent hospital readmissions",
+    "topic": "Trauma",
+    "subtopic": "Trauma Care"
   },
   {
     "question": "Which is a benefit of EMS data collection?",
@@ -377,7 +451,9 @@
       "Reduces scene time",
       "Shortens hospital stays"
     ],
-    "answer": "Improves public health planning"
+    "answer": "Improves public health planning",
+    "topic": "Medical Emergencies",
+    "subtopic": "Medical Emergencies"
   },
   {
     "question": "How can EMS help during a disease outbreak?",
@@ -387,7 +463,9 @@
       "Transport without PPE",
       "Avoid public interaction"
     ],
-    "answer": "Assist with screening and education"
+    "answer": "Assist with screening and education",
+    "topic": "Trauma",
+    "subtopic": "Trauma Care"
   },
   {
     "question": "What does public health emphasize?",
@@ -397,7 +475,9 @@
       "Emergency only",
       "Long-term care"
     ],
-    "answer": "Prevention and wellness"
+    "answer": "Prevention and wellness",
+    "topic": "Medical Emergencies",
+    "subtopic": "Medical Emergencies"
   },
   {
     "question": "Which medication is commonly administered for hypoglycemia?",
@@ -407,7 +487,9 @@
       "Nitroglycerin",
       "Aspirin"
     ],
-    "answer": "Oral glucose"
+    "answer": "Oral glucose",
+    "topic": "Medical Emergencies",
+    "subtopic": "Endocrine"
   },
   {
     "question": "Which medication is used for anaphylaxis?",
@@ -417,7 +499,9 @@
       "Albuterol",
       "Epinephrine auto-injector"
     ],
-    "answer": "Epinephrine auto-injector"
+    "answer": "Epinephrine auto-injector",
+    "topic": "Medical Emergencies",
+    "subtopic": "Medical Emergencies"
   },
   {
     "question": "Which medication dilates the coronary arteries?",
@@ -427,7 +511,9 @@
       "Nitroglycerin",
       "Epinephrine"
     ],
-    "answer": "Nitroglycerin"
+    "answer": "Nitroglycerin",
+    "topic": "Medical Emergencies",
+    "subtopic": "Endocrine"
   },
   {
     "question": "Which medication reverses opioid overdose?",
@@ -437,7 +523,9 @@
       "Glucose",
       "Albuterol"
     ],
-    "answer": "Naloxone"
+    "answer": "Naloxone",
+    "topic": "Medical Emergencies",
+    "subtopic": "Endocrine"
   },
   {
     "question": "Which medication is indicated for chest pain of suspected cardiac origin?",
@@ -447,7 +535,9 @@
       "Epinephrine",
       "Oral glucose"
     ],
-    "answer": "Aspirin"
+    "answer": "Aspirin",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiac Emergencies"
   },
   {
     "question": "What is the most appropriate airway adjunct for an unconscious patient without a gag reflex?",
@@ -457,7 +547,9 @@
       "Endotracheal tube",
       "Oropharyngeal airway"
     ],
-    "answer": "Oropharyngeal airway"
+    "answer": "Oropharyngeal airway",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Airway Management"
   },
   {
     "question": "What is the best method to open the airway of a trauma patient?",
@@ -467,7 +559,9 @@
       "Cricoid pressure",
       "Jaw-thrust maneuver"
     ],
-    "answer": "Jaw-thrust maneuver"
+    "answer": "Jaw-thrust maneuver",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Airway Management"
   },
   {
     "question": "Which device provides the highest concentration of oxygen?",
@@ -477,7 +571,9 @@
       "Bag-valve mask with reservoir",
       "Venturi mask"
     ],
-    "answer": "Bag-valve mask with reservoir"
+    "answer": "Bag-valve mask with reservoir",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory"
   },
   {
     "question": "What is the purpose of suctioning?",
@@ -487,7 +583,9 @@
       "Remove secretions and prevent aspiration",
       "Warm inhaled air"
     ],
-    "answer": "Remove secretions and prevent aspiration"
+    "answer": "Remove secretions and prevent aspiration",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Airway Management"
   },
   {
     "question": "What indicates adequate artificial ventilation?",
@@ -497,7 +595,9 @@
       "Visible chest rise and fall",
       "Dry mucous membranes"
     ],
-    "answer": "Visible chest rise and fall"
+    "answer": "Visible chest rise and fall",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Airway, Respiration"
   },
   {
     "question": "What does the 'P' in AVPU stand for?",
@@ -507,7 +607,9 @@
       "Pain",
       "Peripheral"
     ],
-    "answer": "Pain"
+    "answer": "Pain",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Neurologic"
   },
   {
     "question": "What is the first step in the primary assessment?",
@@ -517,7 +619,9 @@
       "Assess SAMPLE history",
       "Begin CPR"
     ],
-    "answer": "Form general impression"
+    "answer": "Form general impression",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiac Emergencies"
   },
   {
     "question": "Which mnemonic helps assess a patient\u2019s chief complaint?",
@@ -527,7 +631,9 @@
       "OPQRST",
       "AVPU"
     ],
-    "answer": "OPQRST"
+    "answer": "OPQRST",
+    "topic": "Medical Emergencies",
+    "subtopic": "Neurologic"
   },
   {
     "question": "What does the 'L' in SAMPLE stand for?",
@@ -537,7 +643,9 @@
       "Last oral intake",
       "Laceration"
     ],
-    "answer": "Last oral intake"
+    "answer": "Last oral intake",
+    "topic": "Trauma",
+    "subtopic": "Patient Assessment"
   },
   {
     "question": "What is a key part of the secondary assessment?",
@@ -547,7 +655,9 @@
       "Checking oxygen tank",
       "Calling for ALS backup"
     ],
-    "answer": "Performing a focused physical exam"
+    "answer": "Performing a focused physical exam",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory"
   },
   {
     "question": "Which condition is characterized by wheezing and bronchoconstriction?",
@@ -557,7 +667,9 @@
       "Stroke",
       "Asthma"
     ],
-    "answer": "Asthma"
+    "answer": "Asthma",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory"
   },
   {
     "question": "Which condition may present with crushing chest pain and diaphoresis?",
@@ -567,7 +679,9 @@
       "Anxiety attack",
       "Myocardial infarction"
     ],
-    "answer": "Myocardial infarction"
+    "answer": "Myocardial infarction",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Respiratory"
   },
   {
     "question": "What is a typical sign of congestive heart failure (CHF)?",
@@ -577,7 +691,9 @@
       "Pulmonary edema",
       "JVD"
     ],
-    "answer": "Pulmonary edema"
+    "answer": "Pulmonary edema",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiology"
   },
   {
     "question": "Which patient is most likely experiencing a transient ischemic attack (TIA)?",
@@ -587,7 +703,9 @@
       "Symptoms resolve within 24 hours",
       "Persistent right-side weakness"
     ],
-    "answer": "Symptoms resolve within 24 hours"
+    "answer": "Symptoms resolve within 24 hours",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiac Emergencies"
   },
   {
     "question": "Which condition is treated with albuterol?",
@@ -597,7 +715,9 @@
       "Hypoglycemia",
       "Bronchospasm"
     ],
-    "answer": "Bronchospasm"
+    "answer": "Bronchospasm",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Endocrine"
   },
   {
     "question": "What is the compression rate for adult CPR?",
@@ -607,7 +727,9 @@
       "100\u2013120 compressions per minute",
       "120\u2013140"
     ],
-    "answer": "100\u2013120 compressions per minute"
+    "answer": "100\u2013120 compressions per minute",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiac Emergencies"
   },
   {
     "question": "How deep should compressions be on an adult?",
@@ -617,7 +739,9 @@
       "At least 2 inches",
       "1 inch"
     ],
-    "answer": "At least 2 inches"
+    "answer": "At least 2 inches",
+    "topic": "Medical Emergencies",
+    "subtopic": "Medical Emergencies"
   },
   {
     "question": "When should the AED be applied to a pulseless patient?",
@@ -627,7 +751,9 @@
       "As soon as it is available",
       "After 2 minutes of CPR"
     ],
-    "answer": "As soon as it is available"
+    "answer": "As soon as it is available",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Airway Management"
   },
   {
     "question": "Which rhythm is shockable by an AED?",
@@ -637,7 +763,9 @@
       "Normal sinus rhythm",
       "First-degree AV block"
     ],
-    "answer": "Ventricular fibrillation"
+    "answer": "Ventricular fibrillation",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiac Emergencies"
   },
   {
     "question": "What is the ratio of compressions to ventilations in two-rescuer adult CPR?",
@@ -647,7 +775,9 @@
       "30:2",
       "15:2"
     ],
-    "answer": "30:2"
+    "answer": "30:2",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Cardiac Emergencies"
   },
   {
     "question": "What is the first step in controlling external bleeding?",
@@ -657,7 +787,9 @@
       "Elevate the limb",
       "Apply cold packs"
     ],
-    "answer": "Apply direct pressure"
+    "answer": "Apply direct pressure",
+    "topic": "Trauma",
+    "subtopic": "Bleeding & Shock"
   },
   {
     "question": "Which type of bleed is most likely arterial?",
@@ -667,7 +799,9 @@
       "No visible bleeding",
       "Steady flow"
     ],
-    "answer": "Bright red and spurting"
+    "answer": "Bright red and spurting",
+    "topic": "Trauma",
+    "subtopic": "Bleeding & Shock"
   },
   {
     "question": "A burn that blisters is classified as:",
@@ -677,7 +811,9 @@
       "Partial-thickness",
       "Superficial"
     ],
-    "answer": "Partial-thickness"
+    "answer": "Partial-thickness",
+    "topic": "Trauma",
+    "subtopic": "Trauma Care"
   },
   {
     "question": "Which sign suggests internal bleeding?",
@@ -687,7 +823,9 @@
       "Low oxygen saturation",
       "Red skin"
     ],
-    "answer": "Rigid, distended abdomen"
+    "answer": "Rigid, distended abdomen",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Bleeding & Shock"
   },
   {
     "question": "What is the best method to control bleeding from a leg amputation?",
@@ -697,7 +835,9 @@
       "Elevation",
       "Direct pressure only"
     ],
-    "answer": "Tourniquet"
+    "answer": "Tourniquet",
+    "topic": "Trauma",
+    "subtopic": "Bleeding & Shock"
   },
   {
     "question": "What is the first step in assisting with a normal delivery?",
@@ -707,7 +847,9 @@
       "Deliver the placenta",
       "Clamp the cord"
     ],
-    "answer": "Support the head as it emerges"
+    "answer": "Support the head as it emerges",
+    "topic": "Obstetrics & Gynecology",
+    "subtopic": "Obstetrics"
   },
   {
     "question": "What does APGAR assess in a newborn?",
@@ -717,7 +859,9 @@
       "Appearance, Position, Grunt, Agitation, Reflex",
       "Appearance, Pulse, Grimace, Activity, Respirations"
     ],
-    "answer": "Appearance, Pulse, Grimace, Activity, Respirations"
+    "answer": "Appearance, Pulse, Grimace, Activity, Respirations",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Airway Management"
   },
   {
     "question": "What is the most common cause of cardiac arrest in pediatric patients?",
@@ -727,7 +871,9 @@
       "Respiratory failure",
       "Heart attack"
     ],
-    "answer": "Respiratory failure"
+    "answer": "Respiratory failure",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory"
   },
   {
     "question": "How should an EMT assess a child\u2019s airway?",
@@ -737,7 +883,9 @@
       "Use a jaw thrust on all pediatric patients",
       "Use a head tilt\u2013chin lift unless trauma suspected"
     ],
-    "answer": "Use a head tilt\u2013chin lift unless trauma suspected"
+    "answer": "Use a head tilt\u2013chin lift unless trauma suspected",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Airway Management"
   },
   {
     "question": "What is a sign of respiratory distress in infants?",
@@ -747,7 +895,9 @@
       "Cool skin",
       "Nasal flaring"
     ],
-    "answer": "Nasal flaring"
+    "answer": "Nasal flaring",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory"
   },
   {
     "question": "What is the purpose of the START triage system?",
@@ -757,7 +907,9 @@
       "Transport first arrivals",
       "Treat all patients the same"
     ],
-    "answer": "Sort patients by severity"
+    "answer": "Sort patients by severity",
+    "topic": "Medical Emergencies",
+    "subtopic": "Anatomy & Terminology"
   },
   {
     "question": "What color tag is assigned to patients who are deceased in triage?",
@@ -767,7 +919,9 @@
       "Yellow",
       "Black"
     ],
-    "answer": "Black"
+    "answer": "Black",
+    "topic": "Medical Emergencies",
+    "subtopic": "Medical Emergencies"
   },
   {
     "question": "Which of the following best describes the role of the EMT at a crime scene?",
@@ -777,7 +931,9 @@
       "Avoid disturbing evidence while providing care",
       "Collect evidence for police"
     ],
-    "answer": "Avoid disturbing evidence while providing care"
+    "answer": "Avoid disturbing evidence while providing care",
+    "topic": "EMS Operations",
+    "subtopic": "Operations"
   },
   {
     "question": "When driving an ambulance with lights and sirens, what must EMTs still do?",
@@ -787,7 +943,9 @@
       "Ignore traffic signals",
       "Pass on the shoulder at will"
     ],
-    "answer": "Follow all traffic laws with due regard"
+    "answer": "Follow all traffic laws with due regard",
+    "topic": "EMS Operations",
+    "subtopic": "Operations"
   },
   {
     "question": "What is a primary goal of incident command at an MCI?",
@@ -797,7 +955,9 @@
       "Load all patients rapidly",
       "Avoid documentation"
     ],
-    "answer": "Establish control and coordination"
+    "answer": "Establish control and coordination",
+    "topic": "EMS Operations",
+    "subtopic": "Patient Assessment"
   },
   {
     "question": "A 56-year-old male with a history of angina is complaining of chest discomfort. His vital signs are BP 124/82, HR 96, RR 18, and SpO\u2082 95%. What should you do first?",
@@ -808,7 +968,9 @@
       "Obtain a detailed SAMPLE history"
     ],
     "answer": "Obtain a detailed SAMPLE history",
-    "reason": "The patient is stable and has a normal oxygen saturation. The first step should be assessment and history gathering before administering medications."
+    "reason": "The patient is stable and has a normal oxygen saturation. The first step should be assessment and history gathering before administering medications.",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory"
   },
   {
     "question": "You arrive to find a 67-year-old man slumped over the wheel of his car. He is unresponsive, breathing at 8 breaths per minute, and has a carotid pulse. What should you do?",
@@ -819,7 +981,9 @@
       "Wait for ALS before intervening"
     ],
     "answer": "Ventilate with BVM at 10\u201312/min",
-    "reason": "Inadequate respiratory rate requires immediate assisted ventilations with a bag-valve mask (BVM)."
+    "reason": "Inadequate respiratory rate requires immediate assisted ventilations with a bag-valve mask (BVM).",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory"
   },
   {
     "question": "Which of the following findings most clearly indicates that a patient is in compensated shock?",
@@ -830,7 +994,9 @@
       "Irregular breathing with dilated pupils"
     ],
     "answer": "Cool skin, restlessness, and tachycardia",
-    "reason": "These are signs that the body is still compensating to maintain perfusion despite the onset of shock."
+    "reason": "These are signs that the body is still compensating to maintain perfusion despite the onset of shock.",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Bleeding & Shock"
   },
   {
     "question": "A construction worker falls from a ladder and is found lying supine. He is conscious and complaining of back pain. What is your first priority?",
@@ -841,7 +1007,9 @@
       "Manually stabilize the cervical spine"
     ],
     "answer": "Manually stabilize the cervical spine",
-    "reason": "In trauma with suspected spinal injury, immediate manual stabilization of the spine is critical to prevent further injury."
+    "reason": "In trauma with suspected spinal injury, immediate manual stabilization of the spine is critical to prevent further injury.",
+    "topic": "Trauma",
+    "subtopic": "Trauma Care"
   },
   {
     "question": "Which of the following is the most appropriate action when assisting ventilations with a BVM in an adult patient?",
@@ -852,7 +1020,9 @@
       "Use 6 L/min oxygen to conserve tank usage"
     ],
     "answer": "Ensure a tight mask seal with two hands",
-    "reason": "A good seal is essential for effective ventilation and delivery of oxygen."
+    "reason": "A good seal is essential for effective ventilation and delivery of oxygen.",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory"
   },
   {
     "question": "What is the primary reason EMTs administer aspirin to a patient with chest pain?",
@@ -862,7 +1032,9 @@
       "To reduce fever",
       "To inhibit blood clotting"
     ],
-    "answer": "To inhibit blood clotting"
+    "answer": "To inhibit blood clotting",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiac Emergencies"
   },
   {
     "question": "Which of the following is a contraindication for aspirin administration?",
@@ -872,7 +1044,9 @@
       "History of hypertension",
       "Age over 40"
     ],
-    "answer": "Known allergy to aspirin"
+    "answer": "Known allergy to aspirin",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiology"
   },
   {
     "question": "What is the typical dose of aspirin administered by EMTs for chest pain?",
@@ -882,7 +1056,9 @@
       "400 mg total",
       "1,000 mg total"
     ],
-    "answer": "325 mg total"
+    "answer": "325 mg total",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiac Emergencies"
   },
   {
     "question": "Aspirin is most beneficial during a suspected heart attack because it:",
@@ -892,7 +1068,9 @@
       "Prevents clot growth",
       "Stops chest pain immediately"
     ],
-    "answer": "Prevents clot growth"
+    "answer": "Prevents clot growth",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory"
   },
   {
     "question": "Under what condition can an EMT assist a patient with nitroglycerin?",
@@ -902,7 +1080,9 @@
       "The patient is unconscious",
       "The EMT carries nitroglycerin"
     ],
-    "answer": "The patient has a prescription and systolic BP > 100 mmHg"
+    "answer": "The patient has a prescription and systolic BP > 100 mmHg",
+    "topic": "Trauma",
+    "subtopic": "Trauma Care"
   },
   {
     "question": "What is the typical route of nitroglycerin administration?",
@@ -912,7 +1092,9 @@
       "Sublingual",
       "Intravenous"
     ],
-    "answer": "Sublingual"
+    "answer": "Sublingual",
+    "topic": "Medical Emergencies",
+    "subtopic": "Medical Emergencies"
   },
   {
     "question": "Which condition is a contraindication to assisting with nitroglycerin?",
@@ -922,7 +1104,9 @@
       "History of angina",
       "Mild headache"
     ],
-    "answer": "Use of erectile dysfunction medications within 48 hours"
+    "answer": "Use of erectile dysfunction medications within 48 hours",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiac Emergencies"
   },
   {
     "question": "How does nitroglycerin help patients with chest pain?",
@@ -932,7 +1116,9 @@
       "It dilates blood vessels to improve blood flow",
       "It constricts coronary arteries"
     ],
-    "answer": "It dilates blood vessels to improve blood flow"
+    "answer": "It dilates blood vessels to improve blood flow",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory"
   },
   {
     "question": "What is the primary action of albuterol when used for a respiratory emergency?",
@@ -942,7 +1128,9 @@
       "Dilates the bronchioles",
       "Decreases respiratory rate"
     ],
-    "answer": "Dilates the bronchioles"
+    "answer": "Dilates the bronchioles",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory"
   },
   {
     "question": "Which patient condition is an indication for albuterol use?",
@@ -952,7 +1140,9 @@
       "Bradycardia",
       "Nasal congestion"
     ],
-    "answer": "Wheezing and shortness of breath"
+    "answer": "Wheezing and shortness of breath",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory"
   },
   {
     "question": "What is a common side effect of albuterol?",
@@ -962,7 +1152,9 @@
       "Shakiness and increased heart rate",
       "Low blood sugar"
     ],
-    "answer": "Shakiness and increased heart rate"
+    "answer": "Shakiness and increased heart rate",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiology"
   },
   {
     "question": "EMTs may assist with albuterol if:",
@@ -972,7 +1164,9 @@
       "The patient has their own prescribed inhaler",
       "They carry a department-issued inhaler"
     ],
-    "answer": "The patient has their own prescribed inhaler"
+    "answer": "The patient has their own prescribed inhaler",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Airway, Respiration"
   },
   {
     "question": "What is the main effect of epinephrine during anaphylaxis?",
@@ -982,7 +1176,9 @@
       "Relaxes smooth muscles and opens airways",
       "Slows the heart rate"
     ],
-    "answer": "Relaxes smooth muscles and opens airways"
+    "answer": "Relaxes smooth muscles and opens airways",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiology"
   },
   {
     "question": "When should epinephrine be administered by EMTs?",
@@ -992,7 +1188,9 @@
       "When signs of severe allergic reaction are present",
       "Only for patients with asthma"
     ],
-    "answer": "When signs of severe allergic reaction are present"
+    "answer": "When signs of severe allergic reaction are present",
+    "topic": "Medical Emergencies",
+    "subtopic": "Respiratory"
   },
   {
     "question": "What is the most common route of administration for EMTs giving epinephrine?",
@@ -1002,7 +1200,9 @@
       "Intramuscular (auto-injector)",
       "Sublingual"
     ],
-    "answer": "Intramuscular (auto-injector)"
+    "answer": "Intramuscular (auto-injector)",
+    "topic": "Medical Emergencies",
+    "subtopic": "Medical Emergencies"
   },
   {
     "question": "What is a possible side effect of epinephrine?",
@@ -1012,6 +1212,8 @@
       "Anxiety and rapid heartbeat",
       "Sedation"
     ],
-    "answer": "Anxiety and rapid heartbeat"
+    "answer": "Anxiety and rapid heartbeat",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiology"
   }
 ]
