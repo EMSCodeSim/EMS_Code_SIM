@@ -19,8 +19,8 @@
   },
   "Medical Emergencies": {
     "flashcards": "/emt-flashcards.html",
-    "simulator": "/vitals/bgl.html",
-    "learning": "/abc-training.html",
+    "simulator": "/vitals/meds.html",
+    "learning": "/medication-training.html",
     "scenario": "/vitals/visual-patient.html?case=hypoglycemia&training=learning&reset=1"
   },
   "Obstetrics & Gynecology": {
