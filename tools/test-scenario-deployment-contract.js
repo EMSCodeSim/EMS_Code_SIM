@@ -107,4 +107,7 @@ assert(read('vitals/breath-sounds-auscultation.js').includes('stageMarkup') && r
 assert(visualAssessmentSuite.includes('function interpret(config={})'), 'Visual assessment suite must require learner interpretation before saving findings');
 assert(visualAssessmentSuite.includes('reviewAtDebrief:true'), 'Visual assessment grading data must remain hidden until debrief');
 
+assert(registry.includes('/vitals/scenario-scorecard-challenge.js'), 'Scenario tool registry must load the peer scorecard challenge module');
+assert(fs.existsSync(path.join(root, 'vitals/scenario-scorecard-challenge.js')), 'Scorecard challenge module file must exist');
+
 console.log('Scenario deployment contract OK');

@@ -5,6 +5,10 @@
 /visual-patient                     /vitals/visual-patient.html              301!
 /assessment-workspace.html          /vitals/visual-patient.html              301!
 
+# Short viral sim / challenge URLs (preserve query string for score challenges)
+/sim/:scenario                       /vitals/visual-patient.html?case=:scenario  200
+/sim                                 /vitals/scenario-launcher.html             302
+
 # Clean, human-readable tool URLs
 /blood-pressure-simulator        /vitals/bp.html                            301
 /breath-sound-simulator          /vitals/breath-sound-simulator.html        301
