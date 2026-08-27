@@ -264,6 +264,19 @@
     document.body.classList.toggle('horse-intro-playing', phase === 'video');
     document.body.classList.toggle('horse-intro-locked', introLocked());
     window.dispatchEvent(new CustomEvent('emscodesim:patient-record-updated'));
+    unlockMobileIntroContinue();
+  }
+
+  function unlockMobileIntroContinue() {
+    if (!window.matchMedia?.('(max-width: 979px)')?.matches) return;
+    const next = document.getElementById('infoUpdateNext');
+    if (!next) return;
+    const phase = document.body.dataset.horseIntro;
+    if (phase === 'dispatch' || phase === 'parking') {
+      next.disabled = false;
+      next.removeAttribute('aria-disabled');
+      next.title = phase === 'parking' ? 'Begin patient care' : 'Continue to the scene';
+    }
   }
 
   function markIntroComplete() {
@@ -628,6 +641,9 @@
     document.body.classList.remove('horse-arrival-pending', 'horse-intro-playing');
     setIntroPhase('arrived');
     hideIntroOverlay();
+    if (window.matchMedia?.('(max-width: 979px)')?.matches) {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
 
     if (!has('arrival_parking')) {
       saveFinding('arrival_parking', 'Ambulance positioned safely near the south barn', {
@@ -1122,10 +1138,37 @@
     else container.appendChild(details);
   }
 
+  function installMobileIntroAdvance() {
+    if (!window.matchMedia?.('(max-width: 979px)')?.matches) return;
+    unlockMobileIntroContinue();
+    const next = document.getElementById('infoUpdateNext');
+    if (!next || next.dataset.horseIntroAdvanceBound === '1') return;
+    next.dataset.horseIntroAdvanceBound = '1';
+    next.addEventListener('click', () => {
+      const phase = document.body.dataset.horseIntro;
+      if (phase === 'dispatch') {
+        continueAfterDispatch();
+        unlockMobileIntroContinue();
+        return;
+      }
+      if (phase === 'parking') {
+        window.clearTimeout(introTimer);
+        markIntroComplete();
+        renderArrivalCard();
+      }
+    }, true);
+    // visual-patient re-disables Next at end of message list; keep it usable during intro.
+    const observer = new MutationObserver(() => unlockMobileIntroContinue());
+    observer.observe(next, { attributes: true, attributeFilter: ['disabled'] });
+    window.setTimeout(() => observer.disconnect(), 180000);
+  }
+
   function init() {
     if (!isActive()) return;
     playIncidentIntro();
     window.setTimeout(playIncidentIntro, 400);
+    window.setTimeout(installMobileIntroAdvance, 200);
+    window.setTimeout(installMobileIntroAdvance, 1200);
     const unlockIntro = () => {
       if (document.body.dataset.horseIntro !== 'video') return;
       const video = document.getElementById('horseIntroVideo');
@@ -1180,6 +1223,7 @@
     init,
     playIncidentIntro,
     renderArrivalCard,
+    continueAfterDispatch,
     renderAssessmentSection,
     renderMovementSection,
     performExam,
