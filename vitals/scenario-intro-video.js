@@ -1,13 +1,34 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.09.1';
-  const ASTHMA_VIDEO_URL = 'https://dnznrvs05pmza.cloudfront.net/seedance_2/cgt-20260910065357-qd2md/Single_continuous_realistic_EMS_training_scene__Preserve_the_same_woman__clothing__park_bench__water.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMWNjNzk4NjFjNGRlMWIxNSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTEyNDMyMX0.WpQO4hyvfMk8hjfB0J6SEJg7HAr0I-KwX3x6d38T0ok';
+  const VERSION = '2026.09.09.2';
+  const VIDEOS = Object.freeze({
+    intro: {
+      url: 'https://dnznrvs05pmza.cloudfront.net/seedance_2/cgt-20260910065357-qd2md/Single_continuous_realistic_EMS_training_scene__Preserve_the_same_woman__clothing__park_bench__water.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMWNjNzk4NjFjNGRlMWIxNSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTEyNDMyMX0.WpQO4hyvfMk8hjfB0J6SEJg7HAr0I-KwX3x6d38T0ok',
+      eyebrow: 'ARRIVAL · PUBLIC PARK',
+      copy: 'Observe the patient before beginning your assessment.'
+    },
+    worsening: {
+      url: 'https://dnznrvs05pmza.cloudfront.net/kling-o3-pro/926809681547366413/Preserve_the_same_woman__clothing__park_bench__daylight__public_park__framing__and_overall_appearanc.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNmJmNDY0MDUzNDM1ZjI0NyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTE0NjUwMX0.K4pH34xbHWVTgvMknkq9zU3foqUfSD4FluYF264yMgQ',
+      eyebrow: 'PATIENT UPDATE · RESPIRATORY DISTRESS',
+      copy: 'The patient appears more fatigued with increased work of breathing.'
+    },
+    improved: {
+      url: 'https://dnznrvs05pmza.cloudfront.net/kling-o3-pro/926809727395954732/Preserve_the_same_woman__clothing__park_bench__daylight__public_park__framing__and_overall_appearanc.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMjFhMzhjZTg0MTk2NTIyMyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTA4NjU2OH0.22zss6jmfIf3DsDCPEKQexax-jIMVtmADXEHCZue_qg',
+      eyebrow: 'PATIENT UPDATE · AFTER BRONCHODILATOR',
+      copy: 'Work of breathing is improving, but reassessment is still required.'
+    }
+  });
 
   const params = new URLSearchParams(location.search);
   const rawCase = String(params.get('case') || window.EMSCodeSimScenarioSession?.requestedCaseId?.() || window.EMSCodeSimPatientRecord?.active?.()?.scenarioId || '').trim().toLowerCase();
   const caseId = rawCase === 'respiratory' ? 'asthma' : rawCase;
   if (caseId !== 'asthma') return;
+
+  let shell = null;
+  let video = null;
+  let activeState = '';
+  let replayButton = null;
 
   function installStyles() {
     if (document.getElementById('scenarioIntroVideoStyles')) return;
@@ -30,58 +51,126 @@
     document.head.appendChild(style);
   }
 
+  function record() {
+    try { return window.EMSCodeSimPatientRecord?.active?.() || null; }
+    catch (_) { return null; }
+  }
+
+  function recordToken(current = record()) {
+    return String(current?.id || current?.startedAt || current?.scenarioId || 'asthma');
+  }
+
+  function seenKey(state, current = record()) {
+    return `emscodesim:asthma-video:${state}:${recordToken(current)}`;
+  }
+
+  function hasSeen(state, current = record()) {
+    try { return sessionStorage.getItem(seenKey(state, current)) === '1'; }
+    catch (_) { return false; }
+  }
+
+  function markSeen(state, current = record()) {
+    try { sessionStorage.setItem(seenKey(state, current), '1'); } catch (_) {}
+  }
+
+  function treatmentText(current = record()) {
+    return (Array.isArray(current?.treatments) ? current.treatments : []).map(item => {
+      try { return JSON.stringify(item); } catch (_) { return String(item || ''); }
+    }).join(' ').toLowerCase();
+  }
+
+  function hasBronchodilator(current = record()) {
+    return /bronchodilator|albuterol|inhaler/.test(treatmentText(current));
+  }
+
+  function hasEarlyRespiratoryTreatment(current = record()) {
+    return /bronchodilator|albuterol|inhaler|oxygen/.test(treatmentText(current));
+  }
+
+  function elapsedSeconds(current = record()) {
+    const started = new Date(current?.startedAt || 0).getTime();
+    return Number.isFinite(started) && started > 0 ? Math.max(0, (Date.now() - started) / 1000) : 0;
+  }
+
+  function close() {
+    if (!shell || shell.hidden) return;
+    shell.hidden = true;
+    try { video?.pause(); } catch (_) {}
+  }
+
+  function playState(state, options = {}) {
+    const config = VIDEOS[state];
+    if (!config || !shell || !video) return;
+    const current = record();
+    if (options.once && hasSeen(state, current)) return;
+    activeState = state;
+    document.getElementById('scenarioVideoEyebrow').textContent = config.eyebrow;
+    document.getElementById('scenarioVideoCopy').textContent = config.copy;
+    const source = video.querySelector('source');
+    if (source?.src !== config.url) {
+      source.src = config.url;
+      video.load();
+    }
+    shell.hidden = false;
+    if (options.once) markSeen(state, current);
+    try { video.currentTime = 0; video.play().catch(() => {}); } catch (_) {}
+    if (replayButton) replayButton.textContent = state === 'intro' ? 'Replay intro' : 'Replay patient update';
+  }
+
+  function evaluatePatientState() {
+    const current = record();
+    if (!current || current.scenarioId !== 'asthma') return;
+    if (hasBronchodilator(current) && !hasSeen('improved', current)) {
+      playState('improved', { once:true });
+      return;
+    }
+    if (elapsedSeconds(current) >= 180 && !hasEarlyRespiratoryTreatment(current) && !hasSeen('worsening', current)) {
+      playState('worsening', { once:true });
+    }
+  }
+
   function start() {
     const stage = document.querySelector('.patient-stage');
     const patientImage = document.getElementById('patientImage');
     if (!stage || !patientImage || document.getElementById('scenarioIntroVideo')) return;
-
     installStyles();
 
-    const shell = document.createElement('section');
+    shell = document.createElement('section');
     shell.id = 'scenarioIntroVideo';
     shell.className = 'scenario-intro-video-shell';
-    shell.setAttribute('aria-label', 'Asthma patient intro video');
+    shell.setAttribute('aria-label', 'Asthma patient video');
     shell.innerHTML = `
-      <video id="scenarioIntroVideoElement" muted playsinline preload="metadata" poster="${patientImage.src}">
-        <source src="${ASTHMA_VIDEO_URL}" type="video/mp4">
-      </video>
+      <video id="scenarioIntroVideoElement" muted playsinline preload="metadata" poster="${patientImage.src}"><source src="${VIDEOS.intro.url}" type="video/mp4"></video>
       <div class="scenario-intro-video-controls">
-        <div class="scenario-intro-video-copy"><small>ARRIVAL · PUBLIC PARK</small><strong>Observe the patient before beginning your assessment.</strong></div>
-        <div class="scenario-intro-video-actions">
-          <button id="scenarioIntroReplay" type="button">Replay</button>
-          <button id="scenarioIntroSkip" class="primary" type="button">Begin assessment</button>
-        </div>
+        <div class="scenario-intro-video-copy"><small id="scenarioVideoEyebrow"></small><strong id="scenarioVideoCopy"></strong></div>
+        <div class="scenario-intro-video-actions"><button id="scenarioIntroReplay" type="button">Replay</button><button id="scenarioIntroSkip" class="primary" type="button">Continue assessment</button></div>
       </div>`;
-
     stage.appendChild(shell);
-    const video = document.getElementById('scenarioIntroVideoElement');
-    const close = () => {
-      if (!shell.hidden) {
-        shell.hidden = true;
-        try { video.pause(); } catch (_) {}
-      }
-    };
-    const replay = () => {
-      shell.hidden = false;
-      try { video.currentTime = 0; video.play().catch(() => {}); } catch (_) {}
-    };
+    video = document.getElementById('scenarioIntroVideoElement');
 
     document.getElementById('scenarioIntroSkip')?.addEventListener('click', close);
-    document.getElementById('scenarioIntroReplay')?.addEventListener('click', replay);
+    document.getElementById('scenarioIntroReplay')?.addEventListener('click', () => playState(activeState || 'intro'));
     video?.addEventListener('ended', close);
-    video?.addEventListener('error', close, { once:true });
+    video?.addEventListener('error', close);
 
-    const replayButton = document.createElement('button');
+    replayButton = document.createElement('button');
     replayButton.type = 'button';
     replayButton.className = 'scenario-intro-replay';
     replayButton.textContent = 'Replay intro';
-    replayButton.addEventListener('click', replay);
+    replayButton.addEventListener('click', () => playState(activeState || 'intro'));
     stage.appendChild(replayButton);
 
-    try { video.play().catch(() => {}); } catch (_) {}
+    playState('intro', { once:true });
+    window.addEventListener('emscodesim:patient-record-updated', () => window.setTimeout(evaluatePatientState, 40));
+    window.setInterval(evaluatePatientState, 5000);
   }
 
-  window.EMSCodeSimScenarioIntroVideo = Object.freeze({ version:VERSION, caseId:'asthma', replay:() => document.getElementById('scenarioIntroReplay')?.click() });
+  window.EMSCodeSimScenarioIntroVideo = Object.freeze({
+    version:VERSION,
+    caseId:'asthma',
+    replay:() => playState(activeState || 'intro'),
+    evaluate:evaluatePatientState
+  });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
   else start();
 })();
