@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.09.2';
-  const ENDPOINT = '/.netlify/functions/scenario-question-labels';
+  const VERSION = '2026.09.09.3';
+  const ENDPOINT = '/api/scenario-question-labels';
   const ACTIVE_SCENARIOS = new Set(['asthma']);
   const MAX_QUICK_REPLIES = 4;
   const REQUEST_TIMEOUT_MS = 2200;
