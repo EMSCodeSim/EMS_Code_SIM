@@ -1,7 +1,4 @@
-'use strict';
-
 const OPENAI_URL = 'https://api.openai.com/v1/responses';
-const MODEL = process.env.EMSCODESIM_QUESTION_MODEL || 'gpt-5.6-luna';
 const MAX_CANDIDATES = 10;
 const MAX_RESULTS = 4;
 const MAX_BODY_BYTES = 12_000;
@@ -25,15 +22,14 @@ const ASTHMA_QUESTIONS = Object.freeze({
   prior_episodes: 'Has this happened before?'
 });
 
-function json(statusCode, body) {
-  return {
-    statusCode,
+function json(body, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
     headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'no-store'
-    },
-    body: JSON.stringify(body)
-  };
+      'Content-Type':'application/json; charset=utf-8',
+      'Cache-Control':'no-store'
+    }
+  });
 }
 
 function parseOutputText(payload) {
@@ -48,11 +44,10 @@ function parseOutputText(payload) {
 }
 
 function parseJsonText(text) {
-  const cleaned = String(text || '')
+  return JSON.parse(String(text || '')
     .replace(/^```(?:json)?\s*/i, '')
     .replace(/\s*```$/i, '')
-    .trim();
-  return JSON.parse(cleaned);
+    .trim());
 }
 
 function normalizeCandidates(body) {
@@ -77,24 +72,26 @@ function validateQuestions(raw, allowedIds) {
     .slice(0, MAX_RESULTS);
 }
 
-exports.handler = async function handler(event) {
-  if (event.httpMethod === 'OPTIONS') return json(204, {});
-  if (event.httpMethod !== 'POST') return json(405, { error:'Method not allowed.' });
-  if (Buffer.byteLength(event.body || '', 'utf8') > MAX_BODY_BYTES) return json(413, { error:'Request too large.' });
+export default async (request) => {
+  if (request.method !== 'POST') return json({ error:'Method not allowed.' }, 405);
+
+  const rawBody = await request.text();
+  if (new TextEncoder().encode(rawBody).byteLength > MAX_BODY_BYTES) {
+    return json({ error:'Request too large.' }, 413);
+  }
 
   let body;
-  try { body = JSON.parse(event.body || '{}'); }
-  catch (_) { return json(400, { error:'Invalid JSON.' }); }
+  try { body = JSON.parse(rawBody || '{}'); }
+  catch (_) { return json({ error:'Invalid JSON.' }, 400); }
 
   const candidates = normalizeCandidates(body);
-  if (!candidates.length) return json(400, { error:'No approved asthma questions supplied.' });
+  if (!candidates.length) return json({ error:'No approved asthma questions supplied.' }, 400);
 
   const asked = new Set((Array.isArray(body?.askedIds) ? body.askedIds : []).map(String).filter(id => ASTHMA_QUESTIONS[id]));
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = Netlify.env.get('OPENAI_API_KEY');
+  const model = Netlify.env.get('EMSCODESIM_QUESTION_MODEL') || 'gpt-5.6-luna';
   if (!apiKey) {
-    // The browser already renders an instant local fallback. Missing AI config
-    // must never make the clinical simulator unusable.
-    return json(200, { questions:[], source:'fallback', reason:'ai_not_configured' });
+    return json({ questions:[], source:'fallback', reason:'ai_not_configured' });
   }
 
   const candidateText = candidates
@@ -113,7 +110,7 @@ exports.handler = async function handler(event) {
         'Content-Type':'application/json'
       },
       body:JSON.stringify({
-        model:MODEL,
+        model,
         instructions,
         input,
         max_output_tokens:260
@@ -123,15 +120,19 @@ exports.handler = async function handler(event) {
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
       console.error('scenario-question-labels OpenAI error', response.status, payload?.error?.message || 'unknown');
-      return json(200, { questions:[], source:'fallback', reason:'ai_unavailable' });
+      return json({ questions:[], source:'fallback', reason:'ai_unavailable' });
     }
 
     const parsed = parseJsonText(parseOutputText(payload));
     const questions = validateQuestions(parsed, new Set(candidates.map(item => item.id)));
-    if (!questions.length) return json(200, { questions:[], source:'fallback', reason:'invalid_ai_output' });
-    return json(200, { questions, source:'ai', model:MODEL });
+    if (!questions.length) return json({ questions:[], source:'fallback', reason:'invalid_ai_output' });
+    return json({ questions, source:'ai', model });
   } catch (error) {
     console.error('scenario-question-labels failure', error?.message || error);
-    return json(200, { questions:[], source:'fallback', reason:'ai_unavailable' });
+    return json({ questions:[], source:'fallback', reason:'ai_unavailable' });
   }
+};
+
+export const config = {
+  path:'/api/scenario-question-labels'
 };
