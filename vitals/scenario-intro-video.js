@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.09.2';
+  const VERSION = '2026.09.09.3';
   const VIDEOS = Object.freeze({
     intro: {
       url: 'https://dnznrvs05pmza.cloudfront.net/seedance_2/cgt-20260910065357-qd2md/Single_continuous_realistic_EMS_training_scene__Preserve_the_same_woman__clothing__park_bench__water.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMWNjNzk4NjFjNGRlMWIxNSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTEyNDMyMX0.WpQO4hyvfMk8hjfB0J6SEJg7HAr0I-KwX3x6d38T0ok',
@@ -27,7 +27,7 @@
 
   let shell = null;
   let video = null;
-  let activeState = '';
+  let activeState = 'intro';
   let replayButton = null;
 
   function installStyles() {
@@ -55,41 +55,20 @@
     try { return window.EMSCodeSimPatientRecord?.active?.() || null; }
     catch (_) { return null; }
   }
-
-  function recordToken(current = record()) {
-    return String(current?.id || current?.startedAt || current?.scenarioId || 'asthma');
-  }
-
-  function seenKey(state, current = record()) {
-    return `emscodesim:asthma-video:${state}:${recordToken(current)}`;
-  }
-
-  function hasSeen(state, current = record()) {
-    try { return sessionStorage.getItem(seenKey(state, current)) === '1'; }
-    catch (_) { return false; }
-  }
-
-  function markSeen(state, current = record()) {
-    try { sessionStorage.setItem(seenKey(state, current), '1'); } catch (_) {}
-  }
-
-  function treatmentText(current = record()) {
+  function recordToken(current=record()) { return String(current?.id || current?.startedAt || current?.scenarioId || 'asthma'); }
+  function seenKey(state,current=record()) { return `emscodesim:asthma-video:${state}:${recordToken(current)}`; }
+  function hasSeen(state,current=record()) { try { return sessionStorage.getItem(seenKey(state,current)) === '1'; } catch (_) { return false; } }
+  function markSeen(state,current=record()) { try { sessionStorage.setItem(seenKey(state,current),'1'); } catch (_) {} }
+  function treatmentText(current=record()) {
     return (Array.isArray(current?.treatments) ? current.treatments : []).map(item => {
       try { return JSON.stringify(item); } catch (_) { return String(item || ''); }
     }).join(' ').toLowerCase();
   }
-
-  function hasBronchodilator(current = record()) {
-    return /bronchodilator|albuterol|inhaler/.test(treatmentText(current));
-  }
-
-  function hasEarlyRespiratoryTreatment(current = record()) {
-    return /bronchodilator|albuterol|inhaler|oxygen/.test(treatmentText(current));
-  }
-
-  function elapsedSeconds(current = record()) {
+  function hasBronchodilator(current=record()) { return /bronchodilator|albuterol|inhaler/.test(treatmentText(current)); }
+  function hasEarlyRespiratoryTreatment(current=record()) { return /bronchodilator|albuterol|inhaler|oxygen/.test(treatmentText(current)); }
+  function elapsedSeconds(current=record()) {
     const started = new Date(current?.startedAt || 0).getTime();
-    return Number.isFinite(started) && started > 0 ? Math.max(0, (Date.now() - started) / 1000) : 0;
+    return Number.isFinite(started) && started > 0 ? Math.max(0,(Date.now()-started)/1000) : 0;
   }
 
   function close() {
@@ -98,35 +77,32 @@
     try { video?.pause(); } catch (_) {}
   }
 
-  function playState(state, options = {}) {
+  function playState(state,options={}) {
     const config = VIDEOS[state];
     if (!config || !shell || !video) return;
     const current = record();
-    if (options.once && hasSeen(state, current)) return;
+    if (options.once && hasSeen(state,current)) return;
     activeState = state;
-    document.getElementById('scenarioVideoEyebrow').textContent = config.eyebrow;
-    document.getElementById('scenarioVideoCopy').textContent = config.copy;
+    const eyebrow = document.getElementById('scenarioVideoEyebrow');
+    const copy = document.getElementById('scenarioVideoCopy');
+    if (eyebrow) eyebrow.textContent = config.eyebrow;
+    if (copy) copy.textContent = config.copy;
     const source = video.querySelector('source');
-    if (source?.src !== config.url) {
-      source.src = config.url;
-      video.load();
-    }
+    if (source && source.src !== config.url) { source.src=config.url; video.load(); }
     shell.hidden = false;
-    if (options.once) markSeen(state, current);
-    try { video.currentTime = 0; video.play().catch(() => {}); } catch (_) {}
+    if (options.once) markSeen(state,current);
+    try { video.currentTime=0; video.play().catch(() => {}); } catch (_) {}
     if (replayButton) replayButton.textContent = state === 'intro' ? 'Replay intro' : 'Replay patient update';
   }
 
   function evaluatePatientState() {
     const current = record();
     if (!current || current.scenarioId !== 'asthma') return;
-    if (hasBronchodilator(current) && !hasSeen('improved', current)) {
-      playState('improved', { once:true });
+    if (hasBronchodilator(current) && !hasSeen('improved',current)) {
+      playState('improved',{once:true});
       return;
     }
-    if (elapsedSeconds(current) >= 180 && !hasEarlyRespiratoryTreatment(current) && !hasSeen('worsening', current)) {
-      playState('worsening', { once:true });
-    }
+    if (elapsedSeconds(current) >= 180 && !hasEarlyRespiratoryTreatment(current) && !hasSeen('worsening',current)) playState('worsening',{once:true});
   }
 
   function start() {
@@ -138,7 +114,8 @@
     shell = document.createElement('section');
     shell.id = 'scenarioIntroVideo';
     shell.className = 'scenario-intro-video-shell';
-    shell.setAttribute('aria-label', 'Asthma patient video');
+    shell.hidden = true;
+    shell.setAttribute('aria-label','Asthma patient video');
     shell.innerHTML = `
       <video id="scenarioIntroVideoElement" muted playsinline preload="metadata" poster="${patientImage.src}"><source src="${VIDEOS.intro.url}" type="video/mp4"></video>
       <div class="scenario-intro-video-controls">
@@ -148,29 +125,24 @@
     stage.appendChild(shell);
     video = document.getElementById('scenarioIntroVideoElement');
 
-    document.getElementById('scenarioIntroSkip')?.addEventListener('click', close);
-    document.getElementById('scenarioIntroReplay')?.addEventListener('click', () => playState(activeState || 'intro'));
-    video?.addEventListener('ended', close);
-    video?.addEventListener('error', close);
+    document.getElementById('scenarioIntroSkip')?.addEventListener('click',close);
+    document.getElementById('scenarioIntroReplay')?.addEventListener('click',() => playState(activeState));
+    video?.addEventListener('ended',close);
+    video?.addEventListener('error',close);
 
     replayButton = document.createElement('button');
-    replayButton.type = 'button';
-    replayButton.className = 'scenario-intro-replay';
-    replayButton.textContent = 'Replay intro';
-    replayButton.addEventListener('click', () => playState(activeState || 'intro'));
+    replayButton.type='button';
+    replayButton.className='scenario-intro-replay';
+    replayButton.textContent='Replay intro';
+    replayButton.addEventListener('click',() => playState(activeState));
     stage.appendChild(replayButton);
 
-    playState('intro', { once:true });
-    window.addEventListener('emscodesim:patient-record-updated', () => window.setTimeout(evaluatePatientState, 40));
-    window.setInterval(evaluatePatientState, 5000);
+    playState('intro',{once:true});
+    window.addEventListener('emscodesim:patient-record-updated',() => window.setTimeout(evaluatePatientState,40));
+    window.setInterval(evaluatePatientState,5000);
   }
 
-  window.EMSCodeSimScenarioIntroVideo = Object.freeze({
-    version:VERSION,
-    caseId:'asthma',
-    replay:() => playState(activeState || 'intro'),
-    evaluate:evaluatePatientState
-  });
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
+  window.EMSCodeSimScenarioIntroVideo = Object.freeze({ version:VERSION, caseId:'asthma', replay:() => playState(activeState), evaluate:evaluatePatientState });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();
 })();
