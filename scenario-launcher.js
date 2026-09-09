@@ -6,7 +6,8 @@
   const $ = id => document.getElementById(id);
 
   const cases = [
-    { id:'horse_crush', image:'/vitals/assets/horse-crush/patient-initial.webp', title:'Horse-Crush Hip Injury', patient:'64-year-old adult', scene:'5541 E Snow Bird Road • south barn', clue:'Alert on the ground with severe left-hip pain', dispatch:'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.', goal:'Assess before moving, protect the leg in its tolerated position, plan packaging, control pain, and repeat distal CSM after movement' }
+    { id:'horse_crush', image:'/vitals/assets/horse-crush/patient-initial.webp', title:'Horse-Crush Hip Injury', patient:'64-year-old adult', scene:'5541 E Snow Bird Road • south barn', clue:'Alert on the ground with severe left-hip pain', dispatch:'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.', goal:'Assess before moving, protect the leg in its tolerated position, plan packaging, control pain, and repeat distal CSM after movement' },
+    { id:'asthma', image:'/vitals/assets/scenario-asthma-learning.svg', title:'Breathing Problem', patient:'24-year-old adult', scene:'Public park • patient seated upright in respiratory distress', clue:'Visible increased work of breathing with wheezing and a rescue inhaler nearby', dispatch:'Respond for a 24-year-old with worsening shortness of breath and wheezing in a public park.', goal:'Assess respiratory adequacy, identify the asthma history, treat as indicated, reassess, and report.' }
   ];
 
   let selectedCase = null;
