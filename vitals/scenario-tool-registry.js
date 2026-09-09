@@ -1,7 +1,30 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.09.09.3';
+  const PATIENT_WORKSPACE_BUILD = '2026.09.09.4';
+
+  function redirectGenericHorseStartToLauncher() {
+    if (!/\/vitals\/visual-patient(?:\.html)?$/.test(location.pathname)) return false;
+    const params = new URLSearchParams(location.search);
+    const caseId = String(params.get('case') || '').trim().toLowerCase();
+    if (caseId !== 'horse_crush' || params.get('reset') !== '1') return false;
+
+    let referrerPath = '';
+    try {
+      if (document.referrer) {
+        const referrer = new URL(document.referrer, location.href);
+        if (referrer.origin === location.origin) referrerPath = referrer.pathname;
+      }
+    } catch (_) {}
+
+    const genericEntryPages = new Set(['/', '/index.html', '/vitals', '/vitals/', '/vitals/index.html']);
+    if (!genericEntryPages.has(referrerPath)) return false;
+
+    location.replace('/vitals/scenario-launcher.html');
+    return true;
+  }
+
+  if (redirectGenericHorseStartToLauncher()) return;
 
   function applyAsthmaParkContent() {
     const defs = window.EMSCodeSimScenarioDefinitions;
@@ -66,7 +89,7 @@
     { category:'Focused examination', key:'abdominal_assessment', label:'Abdominal assessment', description:'Assess tenderness, guarding, rigidity, and distention.', url:'/vitals/abdomen-pelvis-visual.html' },
     { category:'Focused examination', key:'trauma_assessment', label:'Rapid trauma assessment', description:'Perform a systematic head-to-toe trauma examination.', url:'/vitals/visual-trauma-body-exam.html' },
     { category:'Focused examination', key:'pain', label:'Pain / OPQRST', description:'Characterize symptoms and pain using OPQRST.', url:'/vitals/pain-opqrst.html' },
-    { category:'History', key:'sample', label:'SAMPLE history', description:'Gather symptoms, allergies, medications, history, intake, and events.', url:'/vitals/sample-history.html' },
+    { category:'History', key:'sample', label:'SAMPLE history', description:'Gather history that changes risk, treatment, and transport decisions.', url:'/vitals/sample-history.html' },
     { category:'Pediatric', key:'pediatric_assessment_triangle', label:'Pediatric Assessment Triangle', description:'Assess appearance, work of breathing, and circulation to skin.', url:'/vitals/pediatric-assessment-triangle.html' },
     { category:'Burns', key:'rule_of_nines', label:'Rule of Nines', description:'Estimate total body surface area involved in burns.', url:'/vitals/nines.html' }
   ];
