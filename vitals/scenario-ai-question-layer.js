@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.09.3';
+  const VERSION = '2026.09.09.4';
   const ENDPOINT = '/api/scenario-question-labels';
   const ACTIVE_SCENARIOS = new Set(['asthma']);
   const MAX_QUICK_REPLIES = 4;
@@ -34,6 +34,10 @@
     }
     return copy;
   };
+
+  function onPatientScenarioPage() {
+    return /\/vitals\/visual-patient(?:\.html)?$/.test(location.pathname);
+  }
 
   function scenarioId() {
     const params = new URLSearchParams(location.search);
@@ -96,6 +100,7 @@
   }
 
   function ensurePanel() {
+    if (!onPatientScenarioPage()) return null;
     const historyPanel = $('historyPanel');
     if (!historyPanel) return null;
     let panel = $('aiQuickHistory');
@@ -150,7 +155,7 @@
   }
 
   async function requestAiSet(candidatePool, asked) {
-    if (!candidatePool.length) return [];
+    if (!onPatientScenarioPage() || !candidatePool.length) return [];
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     try {
@@ -186,6 +191,7 @@
 
   let refreshToken = 0;
   async function refresh() {
+    if (!onPatientScenarioPage()) return;
     const id = scenarioId();
     if (!ACTIVE_SCENARIOS.has(id)) return;
     const interview = interviewFor(id);
@@ -216,6 +222,7 @@
   }
 
   function start() {
+    if (!onPatientScenarioPage()) return;
     if (!ACTIVE_SCENARIOS.has(scenarioId())) return;
     ensurePanel();
     installObservers();
