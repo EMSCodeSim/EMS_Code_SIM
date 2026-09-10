@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.09.5';
+  const VERSION = '2026.09.09.6';
   const ENDPOINT = '/api/scenario-question-labels';
   const ACTIVE_SCENARIOS = new Set(['asthma']);
   const MAX_QUICK_REPLIES = 4;
@@ -224,7 +224,9 @@
     }
     document.addEventListener('click', event => {
       if (event.target.closest?.('#askHistoryCustom')) window.setTimeout(refresh, REFRESH_DELAY_MS);
+      if (event.target.closest?.('button[data-panel="historyPanel"]')) window.setTimeout(refresh, REFRESH_DELAY_MS);
     });
+    window.addEventListener('emscodesim:patient-record-updated', () => window.setTimeout(refresh, 40));
   }
 
   function start() {
