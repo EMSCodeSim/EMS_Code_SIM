@@ -3,12 +3,37 @@
 const { test, expect } = require('@playwright/test');
 const { clearSiteStorage, watchPageErrors, openScenario } = require('./helpers');
 
+async function completeGuidedStart(page) {
+  const guide = page.locator('#sceneGuide');
+  await expect(guide).toBeVisible();
+
+  // Assessment Mode intentionally locks the other care tabs until scene size-up
+  // and the initial ABC decisions are recorded. Work through both guides using
+  // the same select + Record and continue controls a learner sees.
+  for (let step = 0; step < 16; step += 1) {
+    if (await guide.isHidden()) break;
+    const answer = page.locator('#sceneGuideAnswer');
+    await expect(answer).toBeVisible();
+    const values = await answer.locator('option').evaluateAll(options => options.map(option => option.value).filter(Boolean));
+    expect(values.length).toBeGreaterThan(0);
+    await answer.selectOption(values[0]);
+    const next = page.locator('#sceneGuideNext');
+    await expect(next).toBeEnabled();
+    await next.click();
+  }
+
+  await expect(guide).toBeHidden();
+  await expect(page.locator('.bottom-nav')).not.toHaveClass(/guide-locked/);
+  await expect.poll(() => page.evaluate(() => window.EMSCodeSimSceneGuide?.isComplete?.())).toBe(true);
+  await expect.poll(() => page.evaluate(() => window.EMSCodeSimSceneGuide?.isPrimaryComplete?.())).toBe(true);
+}
+
 test.beforeEach(async ({ page }) => {
   await clearSiteStorage(page);
   await page.setViewportSize({ width: 390, height: 844 });
 });
 
-test('asthma mobile workflow keeps the patient, history, treatment, and quick-response controls usable', async ({ page }) => {
+test('asthma mobile workflow keeps the patient, guided assessment, history, treatment, and quick-response controls usable', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
   await openScenario(page, 'asthma', 'assessment');
 
@@ -25,6 +50,8 @@ test('asthma mobile workflow keeps the patient, history, treatment, and quick-re
   const patientBox = await patient.boundingBox();
   expect(patientBox?.width || 0).toBeGreaterThan(120);
   expect(patientBox?.height || 0).toBeGreaterThan(120);
+
+  await completeGuidedStart(page);
 
   const historyTab = page.locator('.bottom-nav button[data-panel="historyPanel"]');
   const treatmentTab = page.locator('.bottom-nav button[data-panel="treatmentPanel"]');
