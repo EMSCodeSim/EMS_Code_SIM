@@ -37,10 +37,11 @@ test('scenario launcher shows horse and breathing problem and opens asthma in As
   const intro = page.locator('#scenarioIntroVideo');
   await expect(intro).toBeVisible({ timeout: 10000 });
   await expect(page.locator('#scenarioVideoEyebrow')).toContainText(/PUBLIC PARK/);
+  await expect(page.locator('#patientImage')).toBeHidden();
   await page.locator('#scenarioIntroSkip').click();
-  await expect(intro).toBeHidden();
+  await expect(intro).toHaveClass(/resting/);
+  await expect(page.locator('#scenarioIntroVideoElement')).toBeVisible();
 
-  await expect(page.locator('#patientImage')).toBeVisible();
   const visibleSceneStart = page.locator('#assessmentPanel button:visible').filter({ hasText: 'Scene size-up' }).first();
   const visibleAbcStart = page.locator('#assessmentPanel button:visible').filter({ hasText: 'Initial ABC Assessment' }).first();
   await expect(visibleSceneStart).toBeVisible();
