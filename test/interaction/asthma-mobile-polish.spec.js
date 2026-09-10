@@ -9,8 +9,9 @@ async function completeGuidedStart(page) {
 
   // Assessment Mode intentionally locks the other care tabs until scene size-up
   // and the initial ABC decisions are recorded. Work through both guides using
-  // the same select + Record and continue controls a learner sees.
-  for (let step = 0; step < 16; step += 1) {
+  // the same select + Record and continue controls a learner sees. Keyboard
+  // activation avoids mobile smooth-scroll movement stealing a pointer click.
+  for (let step = 0; step < 20; step += 1) {
     if (await guide.isHidden()) break;
     const answer = page.locator('#sceneGuideAnswer');
     await expect(answer).toBeVisible();
@@ -19,7 +20,9 @@ async function completeGuidedStart(page) {
     await answer.selectOption(values[0]);
     const next = page.locator('#sceneGuideNext');
     await expect(next).toBeEnabled();
-    await next.click();
+    await next.focus();
+    await next.press('Enter');
+    await page.waitForTimeout(140);
   }
 
   await expect(guide).toBeHidden();
@@ -64,6 +67,8 @@ test('asthma mobile workflow keeps the patient, guided assessment, history, trea
 
   await historyTab.click();
   await expect(page.locator('#historyPanel')).toBeVisible();
+  await expect(page.locator('#historyCategoryList .history-question-button[data-history-question]').first()).toBeVisible({ timeout: 5000 });
+  await page.evaluate(() => window.EMSCodeSimAIQuestionLayer?.refreshWhenHistoryReady?.());
   await expect(page.locator('#aiQuickHistory')).toBeVisible({ timeout: 5000 });
   const quickButtons = page.locator('#aiQuickHistoryButtons button');
   await expect(quickButtons.first()).toBeVisible();
