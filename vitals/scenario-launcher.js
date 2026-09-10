@@ -21,7 +21,7 @@
     {
       id:'asthma',
       featured:true,
-      image:'/vitals/assets/scenario-patient-adult-v3.png',
+      image:'/vitals/assets/scenario-asthma-learning.svg',
       title:'Breathing Problem',
       patient:'24-year-old adult',
       scene:'Public park • patient seated upright on a bench',
