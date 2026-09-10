@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.10.2';
+  const VERSION = '2026.09.10.3';
   const VIDEOS = Object.freeze({
     intro: {
       url: 'https://dnznrvs05pmza.cloudfront.net/seedance_2/cgt-20260910065357-qd2md/Single_continuous_realistic_EMS_training_scene__Preserve_the_same_woman__clothing__park_bench__water.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMWNjNzk4NjFjNGRlMWIxNSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTEyNDMyMX0.WpQO4hyvfMk8hjfB0J6SEJg7HAr0I-KwX3x6d38T0ok',
@@ -38,6 +38,8 @@
       html body.asthma-video-only .patient-stage > img#patientImage,
       html body.asthma-video-only img#focusImage{display:none!important;visibility:hidden!important;opacity:0!important}
       html body.asthma-video-only .patient-stage{position:relative;background:#071625!important}
+      body.asthma-video-only .bottom-nav.guide-locked button[data-panel="assessmentPanel"]{opacity:1!important;pointer-events:auto!important;cursor:pointer!important}
+      body.asthma-video-only #assessmentPanel button:not(:disabled){pointer-events:auto!important;cursor:pointer!important}
       .scenario-intro-video-shell{position:absolute;inset:0;z-index:30;background:#071625;display:flex;align-items:center;justify-content:center;overflow:hidden}
       .scenario-intro-video-shell[hidden]{display:none}
       .scenario-intro-video-shell video{width:100%;height:100%;object-fit:cover;background:#071625}
