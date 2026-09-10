@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.09.4';
+  const VERSION = '2026.09.09.5';
   const ENDPOINT = '/api/scenario-question-labels';
   const ACTIVE_SCENARIOS = new Set(['asthma']);
   const MAX_QUICK_REPLIES = 4;
@@ -37,6 +37,12 @@
 
   function onPatientScenarioPage() {
     return /\/vitals\/visual-patient(?:\.html)?$/.test(location.pathname);
+  }
+
+  function shouldUseAiEndpoint() {
+    const host = String(location.hostname || '').toLowerCase();
+    const localStatic = (host === '127.0.0.1' || host === 'localhost') && location.port !== '8888';
+    return !localStatic;
   }
 
   function scenarioId() {
@@ -155,7 +161,7 @@
   }
 
   async function requestAiSet(candidatePool, asked) {
-    if (!onPatientScenarioPage() || !candidatePool.length) return [];
+    if (!onPatientScenarioPage() || !candidatePool.length || !shouldUseAiEndpoint()) return [];
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     try {
@@ -201,7 +207,7 @@
     const asked = askedIds();
     const base = chooseFallbackCandidates(interview, asked);
     renderQuickReplies(base.map(question => ({ id:question.id, label:fallbackLabel(question) })), 'fallback');
-    if (!base.length) return;
+    if (!base.length || !shouldUseAiEndpoint()) return;
 
     const allUnasked = shuffle(interview.questions.filter(question => !asked.has(question.id)));
     const approvedPool = Array.from(new Map([...base, ...allUnasked.slice(0, 8)].map(question => [question.id, question])).values()).slice(0, 10);
