@@ -4,7 +4,16 @@
     ['Blood Pressure Simulator','/vitals/bp.html'],['Pulse Trainer','/vitals/pulse.html'],['Pulse Oximeter Simulator','/vitals/pulse-ox.html'],['Blood Glucose Simulator','/vitals/bgl.html'],['Breath Sound Simulator','/vitals/breath-sound-simulator.html'],['GCS Trainer','/vitals/gcs.html'],['Stroke Assessment Trainer','/vitals/stroke.html'],['Pupil Simulator','/vitals/pupil.html']
   ];
   function dayIndex(){const d=new Date(),s=new Date(d.getFullYear(),0,0);return Math.floor((d-s)/86400000);}
+  function normalizeScenarioEntryLinks(){
+    const path=location.pathname;
+    const genericEntryPage=path==='/'||path==='/index.html'||path==='/vitals'||path==='/vitals/'||path==='/vitals/index.html';
+    if(!genericEntryPage)return;
+    document.querySelectorAll('a[href*="/vitals/visual-patient.html?case=horse_crush"][href*="reset=1"]').forEach(link=>{
+      link.href='/vitals/scenario-launcher.html';
+    });
+  }
   document.addEventListener('DOMContentLoaded',function(){
+    normalizeScenarioEntryLinks();
     if(document.querySelector('.practice-next')||document.body.dataset.noEngagement==='true')return;
     const path=location.pathname;let title='',copy='',primary='',primaryUrl='',secondary='',secondaryUrl='';
     if(path.startsWith('/quiz/')){const tool=tools[dayIndex()%tools.length];title='Turn today’s review into hands-on practice';copy='Use one short simulator to reinforce assessment skills after the quiz.';primary='Practice '+tool[0];primaryUrl=tool[1];secondary='Browse all training tools';secondaryUrl='/ems-training-tools.html';}
