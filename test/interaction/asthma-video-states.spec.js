@@ -14,17 +14,20 @@ test('asthma patient worsens after delay without respiratory treatment, then imp
 
   const overlay = page.locator('#scenarioIntroVideo');
   await expect(overlay).toBeVisible({ timeout: 10000 });
+  await expect(page.locator('#patientImage')).toBeHidden();
   await page.locator('#scenarioIntroSkip').click();
-  await expect(overlay).toBeHidden();
+  await expect(overlay).toHaveClass(/resting/);
+  await expect(page.locator('#scenarioIntroVideoElement')).toBeVisible();
 
-  // Three minutes without oxygen/bronchodilator should trigger the worsening visual update.
+  // Three minutes without oxygen/bronchodilator should trigger the worsening video update.
   await page.clock.runFor(181_000);
   await page.evaluate(() => window.EMSCodeSimScenarioIntroVideo?.evaluate?.());
   await expect(overlay).toBeVisible();
+  await expect(overlay).not.toHaveClass(/resting/);
   await expect(page.locator('#scenarioVideoEyebrow')).toContainText('RESPIRATORY DISTRESS');
   await expect(page.locator('#scenarioVideoCopy')).toContainText(/more fatigued|increased work of breathing/i);
   await page.locator('#scenarioIntroSkip').click();
-  await expect(overlay).toBeHidden();
+  await expect(overlay).toHaveClass(/resting/);
 
   // Recording a bronchodilator should move the visual state to improvement and still require reassessment.
   await page.evaluate(() => {
@@ -38,8 +41,10 @@ test('asthma patient worsens after delay without respiratory treatment, then imp
     window.EMSCodeSimScenarioIntroVideo?.evaluate?.();
   });
   await expect(overlay).toBeVisible();
+  await expect(overlay).not.toHaveClass(/resting/);
   await expect(page.locator('#scenarioVideoEyebrow')).toContainText('AFTER BRONCHODILATOR');
   await expect(page.locator('#scenarioVideoCopy')).toContainText(/improving/i);
+  await expect(page.locator('#patientImage')).toBeHidden();
 
   const record = await page.evaluate(() => window.EMSCodeSimPatientRecord.active());
   expect(record.scenarioId).toBe('asthma');
