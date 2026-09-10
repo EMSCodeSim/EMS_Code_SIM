@@ -36,7 +36,7 @@ test.beforeEach(async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
 });
 
-test('asthma mobile workflow keeps the patient, guided assessment, history, treatment, and quick-response controls usable', async ({ page }) => {
+test('asthma mobile workflow keeps the video patient, guided assessment, history, treatment, and quick-response controls usable', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
   await openScenario(page, 'asthma', 'assessment');
 
@@ -46,13 +46,14 @@ test('asthma mobile workflow keeps the patient, guided assessment, history, trea
   const continueBox = await continueButton.boundingBox();
   expect(continueBox?.height || 0).toBeGreaterThanOrEqual(44);
   await continueButton.click();
-  await expect(intro).toBeHidden();
+  await expect(intro).toHaveClass(/resting/);
 
-  const patient = page.locator('#patientImage');
-  await expect(patient).toBeVisible();
-  const patientBox = await patient.boundingBox();
-  expect(patientBox?.width || 0).toBeGreaterThan(120);
-  expect(patientBox?.height || 0).toBeGreaterThan(120);
+  await expect(page.locator('#patientImage')).toBeHidden();
+  const patientVideo = page.locator('#scenarioIntroVideoElement');
+  await expect(patientVideo).toBeVisible();
+  const videoBox = await patientVideo.boundingBox();
+  expect(videoBox?.width || 0).toBeGreaterThan(120);
+  expect(videoBox?.height || 0).toBeGreaterThan(120);
 
   await completeGuidedStart(page);
 
@@ -78,6 +79,8 @@ test('asthma mobile workflow keeps the patient, guided assessment, history, trea
   await page.locator('#closeSheet').click();
   await treatmentTab.click();
   await expect(page.locator('#treatmentPanel')).toBeVisible();
+  await expect(page.locator('#patientImage')).toBeHidden();
+  await expect(patientVideo).toBeVisible();
 
   await assertNoPageErrors();
 });
