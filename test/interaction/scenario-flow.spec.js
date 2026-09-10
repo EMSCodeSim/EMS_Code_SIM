@@ -12,7 +12,7 @@ test('scenario launcher shows horse and breathing problem and opens asthma in As
   await page.route('**/api/scenario-question-labels', route => route.fulfill({
     status: 200,
     contentType: 'application/json',
-    body: JSON.stringify({ choices: [] })
+    body: JSON.stringify({ questions: [] })
   }));
   await page.goto('/vitals/scenario-launcher.html');
 
@@ -41,7 +41,10 @@ test('scenario launcher shows horse and breathing problem and opens asthma in As
   await expect(intro).toBeHidden();
 
   await expect(page.locator('#patientImage')).toBeVisible();
-  await expect(page.locator('#startSceneSizeupPhoto')).toBeVisible();
+  const visibleSceneStart = page.locator('#assessmentPanel button:visible').filter({ hasText: 'Scene size-up' }).first();
+  const visibleAbcStart = page.locator('#assessmentPanel button:visible').filter({ hasText: 'Initial ABC Assessment' }).first();
+  await expect(visibleSceneStart).toBeVisible();
+  await expect(visibleAbcStart).toBeVisible();
   await expect(page.locator('.bottom-nav button[data-panel="historyPanel"]')).toBeVisible();
   await expect(page.locator('.bottom-nav button[data-panel="treatmentPanel"]')).toBeVisible();
 
