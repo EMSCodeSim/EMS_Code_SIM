@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.09.3';
+  const VERSION = '2026.09.10.1';
   const VIDEOS = Object.freeze({
     intro: {
       url: 'https://dnznrvs05pmza.cloudfront.net/seedance_2/cgt-20260910065357-qd2md/Single_continuous_realistic_EMS_training_scene__Preserve_the_same_woman__clothing__park_bench__water.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMWNjNzk4NjFjNGRlMWIxNSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTEyNDMyMX0.WpQO4hyvfMk8hjfB0J6SEJg7HAr0I-KwX3x6d38T0ok',
@@ -35,17 +35,21 @@
     const style = document.createElement('style');
     style.id = 'scenarioIntroVideoStyles';
     style.textContent = `
-      .patient-stage{position:relative}
+      body.asthma-video-only #patientImage,
+      body.asthma-video-only #focusImage{display:none!important;visibility:hidden!important;opacity:0!important}
+      body.asthma-video-only .patient-stage{position:relative;background:#071625!important}
       .scenario-intro-video-shell{position:absolute;inset:0;z-index:30;background:#071625;display:flex;align-items:center;justify-content:center;overflow:hidden}
       .scenario-intro-video-shell[hidden]{display:none}
       .scenario-intro-video-shell video{width:100%;height:100%;object-fit:cover;background:#071625}
+      .scenario-intro-video-shell.resting{pointer-events:none}
+      .scenario-intro-video-shell.resting .scenario-intro-video-controls{display:none}
       .scenario-intro-video-controls{position:absolute;left:14px;right:14px;bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:12px;background:rgba(5,18,31,.76);backdrop-filter:blur(8px);color:#fff}
       .scenario-intro-video-copy small{display:block;font-size:.68rem;font-weight:800;letter-spacing:.12em;opacity:.78}
       .scenario-intro-video-copy strong{display:block;margin-top:2px;font-size:.95rem}
       .scenario-intro-video-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
       .scenario-intro-video-actions button{border:1px solid rgba(255,255,255,.34);border-radius:9px;background:rgba(255,255,255,.1);color:#fff;padding:8px 11px;font:inherit;font-weight:800;cursor:pointer}
       .scenario-intro-video-actions button.primary{background:#fff;color:#102b43}
-      .scenario-intro-replay{position:absolute;right:12px;top:12px;z-index:5;border:1px solid rgba(255,255,255,.38);border-radius:9px;background:rgba(5,18,31,.72);color:#fff;padding:8px 10px;font:inherit;font-size:.78rem;font-weight:800;cursor:pointer}
+      .scenario-intro-replay{position:absolute;right:12px;top:12px;z-index:35;border:1px solid rgba(255,255,255,.38);border-radius:9px;background:rgba(5,18,31,.72);color:#fff;padding:8px 10px;font:inherit;font-size:.78rem;font-weight:800;cursor:pointer}
       @media(max-width:640px){.scenario-intro-video-controls{align-items:flex-start;flex-direction:column}.scenario-intro-video-actions{width:100%;justify-content:stretch}.scenario-intro-video-actions button{flex:1}}
     `;
     document.head.appendChild(style);
@@ -71,10 +75,11 @@
     return Number.isFinite(started) && started > 0 ? Math.max(0,(Date.now()-started)/1000) : 0;
   }
 
-  function close() {
-    if (!shell || shell.hidden) return;
-    shell.hidden = true;
+  function rest() {
+    if (!shell) return;
     try { video?.pause(); } catch (_) {}
+    shell.hidden = false;
+    shell.classList.add('resting');
   }
 
   function playState(state,options={}) {
@@ -90,8 +95,9 @@
     const source = video.querySelector('source');
     if (source && source.src !== config.url) { source.src=config.url; video.load(); }
     shell.hidden = false;
+    shell.classList.remove('resting');
     if (options.once) markSeen(state,current);
-    try { video.currentTime=0; video.play().catch(() => {}); } catch (_) {}
+    try { video.currentTime=0; video.play().catch(() => rest()); } catch (_) { rest(); }
     if (replayButton) replayButton.textContent = state === 'intro' ? 'Replay intro' : 'Replay patient update';
   }
 
@@ -107,8 +113,8 @@
 
   function start() {
     const stage = document.querySelector('.patient-stage');
-    const patientImage = document.getElementById('patientImage');
-    if (!stage || !patientImage || document.getElementById('scenarioIntroVideo')) return;
+    if (!stage || document.getElementById('scenarioIntroVideo')) return;
+    document.body.classList.add('asthma-video-only');
     installStyles();
 
     shell = document.createElement('section');
@@ -117,7 +123,7 @@
     shell.hidden = true;
     shell.setAttribute('aria-label','Asthma patient video');
     shell.innerHTML = `
-      <video id="scenarioIntroVideoElement" muted playsinline preload="metadata" poster="${patientImage.src}"><source src="${VIDEOS.intro.url}" type="video/mp4"></video>
+      <video id="scenarioIntroVideoElement" muted playsinline preload="metadata"><source src="${VIDEOS.intro.url}" type="video/mp4"></video>
       <div class="scenario-intro-video-controls">
         <div class="scenario-intro-video-copy"><small id="scenarioVideoEyebrow"></small><strong id="scenarioVideoCopy"></strong></div>
         <div class="scenario-intro-video-actions"><button id="scenarioIntroReplay" type="button">Replay</button><button id="scenarioIntroSkip" class="primary" type="button">Continue assessment</button></div>
@@ -125,10 +131,10 @@
     stage.appendChild(shell);
     video = document.getElementById('scenarioIntroVideoElement');
 
-    document.getElementById('scenarioIntroSkip')?.addEventListener('click',close);
+    document.getElementById('scenarioIntroSkip')?.addEventListener('click',rest);
     document.getElementById('scenarioIntroReplay')?.addEventListener('click',() => playState(activeState));
-    video?.addEventListener('ended',close);
-    video?.addEventListener('error',close);
+    video?.addEventListener('ended',rest);
+    video?.addEventListener('error',rest);
 
     replayButton = document.createElement('button');
     replayButton.type='button';

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.09.5';
+  const VERSION = '2026.09.09.7';
   const ENDPOINT = '/api/scenario-question-labels';
   const ACTIVE_SCENARIOS = new Set(['asthma']);
   const MAX_QUICK_REPLIES = 4;
@@ -216,15 +216,32 @@
     renderQuickReplies(aiItems, 'ai');
   }
 
+  function refreshWhenHistoryReady(attempt = 0) {
+    if (!onPatientScenarioPage() || !ACTIVE_SCENARIOS.has(scenarioId())) return;
+    ensurePanel();
+    if (historyButtons().length) {
+      refresh();
+      return;
+    }
+    const panel = $('aiQuickHistory');
+    const status = $('aiQuickHistoryStatus');
+    if (panel) panel.hidden = false;
+    if (status) status.textContent = 'Preparing patient questions…';
+    if (attempt < 12) window.setTimeout(() => refreshWhenHistoryReady(attempt + 1), 100);
+    else if (panel) panel.hidden = true;
+  }
+
   function installObservers() {
     const history = $('historyCategoryList');
     if (history) {
-      const observer = new MutationObserver(() => window.setTimeout(refresh, 25));
+      const observer = new MutationObserver(() => window.setTimeout(() => refreshWhenHistoryReady(), 25));
       observer.observe(history, { subtree:true, childList:true, attributes:true, attributeFilter:['class'] });
     }
     document.addEventListener('click', event => {
-      if (event.target.closest?.('#askHistoryCustom')) window.setTimeout(refresh, REFRESH_DELAY_MS);
+      if (event.target.closest?.('#askHistoryCustom')) window.setTimeout(() => refreshWhenHistoryReady(), REFRESH_DELAY_MS);
+      if (event.target.closest?.('button[data-panel="historyPanel"]')) window.setTimeout(() => refreshWhenHistoryReady(), REFRESH_DELAY_MS);
     });
+    window.addEventListener('emscodesim:patient-record-updated', () => window.setTimeout(() => refreshWhenHistoryReady(), 40));
   }
 
   function start() {
@@ -232,10 +249,10 @@
     if (!ACTIVE_SCENARIOS.has(scenarioId())) return;
     ensurePanel();
     installObservers();
-    window.setTimeout(refresh, 100);
+    window.setTimeout(() => refreshWhenHistoryReady(), 100);
   }
 
-  window.EMSCodeSimAIQuestionLayer = Object.freeze({ version:VERSION, refresh, activeScenarios:Array.from(ACTIVE_SCENARIOS) });
+  window.EMSCodeSimAIQuestionLayer = Object.freeze({ version:VERSION, refresh, refreshWhenHistoryReady, activeScenarios:Array.from(ACTIVE_SCENARIOS) });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once:true });
   else start();
 })();

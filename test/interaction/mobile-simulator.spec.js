@@ -101,12 +101,13 @@ test('phone horse-crush assessment and treatment controls are tappable', async (
   await assertNoPageErrors();
 });
 
-test('phone asthma scenario keeps the patient and bottom nav on screen', async ({ page }) => {
+test('phone asthma scenario keeps the video patient and bottom nav on screen', async ({ page }) => {
   test.skip((page.viewportSize()?.width || 9999) >= 980, 'Phone-specific layout');
   const assertNoPageErrors = watchPageErrors(page);
 
   await openScenario(page, 'asthma', 'learning');
-  await expect(page.locator('#patientImage')).toBeVisible();
+  await expect(page.locator('#patientImage')).toBeHidden();
+  await expect(page.locator('#scenarioIntroVideoElement')).toBeVisible();
   await expect(page.locator('.bottom-nav button[data-panel="assessmentPanel"]')).toBeVisible();
   await expect(page.locator('.bottom-nav button[data-panel="treatmentPanel"]')).toBeVisible();
   const stageHeight = await page.locator('.patient-stage').evaluate(el => el.getBoundingClientRect().height);
