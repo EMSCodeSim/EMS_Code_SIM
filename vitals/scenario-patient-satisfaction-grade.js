@@ -102,3 +102,13 @@ function styles(){if(document.querySelector('style[data-patient-satisfaction-gra
 function start(){styles();observer=new MutationObserver(schedule);observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});document.addEventListener('click',e=>{if(e.target.closest?.('#openHorseCallGrade,.handoff-grade-button,[data-grade],#horseGradeReturn,#gradeScenarioFromPatient,#completeScenarioFromPatient,#closeHorseCallGrade'))setTimeout(schedule,100)},true);window.addEventListener('emscodesim:scenario-updated',schedule);window.EMSCodeSimPatientSatisfactionGrade=Object.freeze({version:VERSION,model});schedule();window.addEventListener('pagehide',()=>observer?.disconnect(),{once:true})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
+
+(() => {
+  'use strict';
+  if (document.querySelector('script[data-scenario-first-run-guide]')) return;
+  const script = document.createElement('script');
+  script.src = '/vitals/scenario-first-run-guide.js?v=2026.09.11.1';
+  script.async = false;
+  script.dataset.scenarioFirstRunGuide = '1';
+  document.head.appendChild(script);
+})();
