@@ -91,3 +91,16 @@
     min-height: 44px;
   }
 }
+
+
+/* topic-faq */
+main details{margin:10px 0;padding:12px 14px;border:1px solid rgba(15,23,42,.12);border-radius:12px;background:rgba(255,255,255,.55)}
+main details summary{cursor:pointer;font-weight:750}
+main details[open]{background:rgba(255,255,255,.8)}
+.bp-page main details,.pulse-page main details,.breath-page main details,.skin-page main details,.cpr-page main details,.abc-page main details{border-color:rgba(15,23,42,.14);background:rgba(255,255,255,.7)}
+.helper-section details{margin:10px 0;padding:12px 14px;border:1px solid var(--line,rgba(255,255,255,.14));border-radius:12px}
+.helper-section details summary{cursor:pointer;font-weight:750}
+.career-resource-main details{margin:10px 0;padding:12px 14px;border:1px solid rgba(15,23,42,.12);border-radius:12px;background:#fff}
+.career-resource-main details summary{cursor:pointer;font-weight:700}
+.content-layout details{margin:10px 0;padding:12px 14px;border:1px solid rgba(15,23,42,.12);border-radius:12px;background:#fff}
+.content-layout details summary{cursor:pointer;font-weight:700}
