@@ -1,20 +1,21 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.10.4';
+  const VERSION = '2026.09.11.1';
+  const COVER = '/vitals/assets/breathing-problem-cover.webp';
   const VIDEOS = Object.freeze({
     intro: {
-      url: 'https://dnznrvs05pmza.cloudfront.net/seedance_2/cgt-20260910065357-qd2md/Single_continuous_realistic_EMS_training_scene__Preserve_the_same_woman__clothing__park_bench__water.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMWNjNzk4NjFjNGRlMWIxNSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTEyNDMyMX0.WpQO4hyvfMk8hjfB0J6SEJg7HAr0I-KwX3x6d38T0ok',
+      url: 'https://dnznrvs05pmza.cloudfront.net/seedance_2/cgt-20260910065357-qd2md/Single_continuous_realistic_EMS_training_scene__Preserve_the_same_woman__clothing__park_bench__water.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMWNjNzk4NjFjNGRlMWIxNSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTI5NzEyMX0.OxlGcsx6o5ujSdj8GcWrF4_BBJP8ua3OiTOwSpGP0oc',
       eyebrow: 'ARRIVAL · PUBLIC PARK',
       copy: 'Observe the patient before beginning your assessment.'
     },
     worsening: {
-      url: 'https://dnznrvs05pmza.cloudfront.net/kling-o3-pro/926809681547366413/Preserve_the_same_woman__clothing__park_bench__daylight__public_park__framing__and_overall_appearanc.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNmJmNDY0MDUzNDM1ZjI0NyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTE0NjUwMX0.K4pH34xbHWVTgvMknkq9zU3foqUfSD4FluYF264yMgQ',
+      url: 'https://dnznrvs05pmza.cloudfront.net/kling-o3-pro/926809681547366413/Preserve_the_same_woman__clothing__park_bench__daylight__public_park__framing__and_overall_appearanc.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNmJmNDY0MDUzNDM1ZjI0NyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTMxOTMwMX0.8lj3CyCcKsn3Z9Zn9gy8pyYejEu3mAkWx7W54r2mxCc',
       eyebrow: 'PATIENT UPDATE · RESPIRATORY DISTRESS',
       copy: 'The patient appears more fatigued with increased work of breathing.'
     },
     improved: {
-      url: 'https://dnznrvs05pmza.cloudfront.net/kling-o3-pro/926809727395954732/Preserve_the_same_woman__clothing__park_bench__daylight__public_park__framing__and_overall_appearanc.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMjFhMzhjZTg0MTk2NTIyMyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTA4NjU2OH0.22zss6jmfIf3DsDCPEKQexax-jIMVtmADXEHCZue_qg',
+      url: 'https://dnznrvs05pmza.cloudfront.net/kling-o3-pro/926809727395954732/Preserve_the_same_woman__clothing__park_bench__daylight__public_park__framing__and_overall_appearanc.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMjFhMzhjZTg0MTk2NTIyMyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTI1OTM2OH0.Tkmx-KfFcbwZn-fcsve9LwULX2kr8KJt1jOLChOytGc',
       eyebrow: 'PATIENT UPDATE · AFTER BRONCHODILATOR',
       copy: 'Work of breathing is improving, but reassessment is still required.'
     }
@@ -112,7 +113,7 @@
     if (eyebrow) eyebrow.textContent = config.eyebrow;
     if (copy) copy.textContent = config.copy;
     const source = video.querySelector('source');
-    if (source && source.src !== config.url) { source.src=config.url; video.load(); }
+    if (source && source.getAttribute('src') !== config.url) { source.src=config.url; video.load(); }
     shell.hidden = false;
     shell.classList.remove('resting');
     if (options.once) markSeen(state,current);
@@ -143,7 +144,7 @@
     shell.hidden = true;
     shell.setAttribute('aria-label','Asthma patient video');
     shell.innerHTML = `
-      <video id="scenarioIntroVideoElement" muted playsinline preload="metadata"><source src="${VIDEOS.intro.url}" type="video/mp4"></video>
+      <video id="scenarioIntroVideoElement" muted playsinline preload="auto" poster="${COVER}"><source src="${VIDEOS.intro.url}" type="video/mp4"></video>
       <div class="scenario-intro-video-controls">
         <div class="scenario-intro-video-copy"><small id="scenarioVideoEyebrow"></small><strong id="scenarioVideoCopy"></strong></div>
         <div class="scenario-intro-video-actions"><button id="scenarioIntroReplay" type="button">Replay</button><button id="scenarioIntroSkip" class="primary" type="button">Continue assessment</button></div>
