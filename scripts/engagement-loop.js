@@ -14,3 +14,116 @@
     const footer=document.querySelector('footer,.site-footer');if(footer)footer.parentNode.insertBefore(box,footer);else document.body.appendChild(box);
   });
 })();
+
+(function(){
+  'use strict';
+  const HOME_PATHS=new Set(['/','/index.html']);
+  const isHome=()=>HOME_PATHS.has(location.pathname);
+  const q=(s,r=document)=>r.querySelector(s);
+  const qa=(s,r=document)=>[...r.querySelectorAll(s)];
+
+  function normalizeBrand(){
+    qa('.brand small').forEach(el=>{el.textContent='EMS Career & Training Hub';});
+  }
+
+  function enhanceFooter(){
+    const footer=q('footer.site-footer, footer');
+    if(!footer||q('[data-site-review-trust]',footer))return;
+    const trust=document.createElement('div');
+    trust.dataset.siteReviewTrust='1';
+    trust.className='site-review-trust';
+    trust.innerHTML='<div><strong>Built from field and teaching experience.</strong><span>Created and reviewed by a practicing paramedic/firefighter with EMS instruction and quality-improvement experience. Educational support only—follow your approved program, local protocols, and medical direction.</span></div><div class="site-review-trust-links"><a href="/about.html">About & editorial standards</a><a href="/about.html">Corrections & contact</a><a href="/vitals/scenario-launcher.html">Patient scenarios</a><a href="/#daily-practice">5-minute practice</a><a href="/ems-training-tools.html">Training tools</a><a href="https://fireopssim.com/" rel="noopener">FireOpsSim</a></div><small>Last editorial review: September 2026</small>';
+    const bottom=q('.footer-bottom',footer);
+    if(bottom)footer.insertBefore(trust,bottom);else footer.appendChild(trust);
+  }
+
+  function installSharedStyles(){
+    if(q('style[data-site-review-polish]'))return;
+    const style=document.createElement('style');
+    style.dataset.siteReviewPolish='1';
+    style.textContent=`
+      .site-review-trust{max-width:1120px;margin:18px auto 0;padding:18px 20px;border-top:1px solid rgba(148,163,184,.35);display:grid;gap:10px}
+      .site-review-trust>div:first-child{display:grid;gap:4px}.site-review-trust strong{font-size:.92rem}.site-review-trust span,.site-review-trust small{font-size:.78rem;line-height:1.45;opacity:.82}
+      .site-review-trust-links{display:flex;gap:12px 18px;flex-wrap:wrap}.site-review-trust-links a{font-size:.8rem;font-weight:700}
+      .home-mobile-scenario-cta{display:none}
+      .home-page .hero-scene-still{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;border:1px solid #475569;background:#0f172a}
+      .home-page .hero-sim-card ul,.home-page .hero-sim-card .hero-sim-primary,.home-page .hero-sim-card .hero-sim-secondary,.home-page .hero-sim-icon{display:none!important}
+      .home-page .hero-sim-card{padding:14px}.home-page .hero-sim-card h2{margin:10px 0 4px}.home-page .hero-sim-card p{font-size:.86rem}
+      .home-page .site-review-scenario-catalog{max-width:1120px;margin:0 auto;padding:28px 20px 10px}
+      .home-page .site-review-scenario-catalog header{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:14px}
+      .home-page .site-review-scenario-catalog h2{margin:0;font-size:1.45rem}.home-page .site-review-scenario-catalog p{margin:4px 0 0;color:#475569}
+      .home-page .scenario-catalog-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+      .home-page .scenario-catalog-card{display:grid;gap:7px;padding:16px;border:1px solid #d8e0ea;border-radius:12px;background:#fff;color:#0f172a;box-shadow:0 1px 2px rgba(15,23,42,.05)}
+      .home-page .scenario-catalog-card:hover{border-color:#93c5fd;background:#f8fbff}.home-page .scenario-catalog-card small{color:#64748b}.home-page .scenario-catalog-card em{font-style:normal;color:#2563eb;font-weight:800;font-size:.84rem}
+      .home-page .mobile-career-picker,.home-page .mobile-home-shortcuts,.home-page .ideal-quick-wrap{display:none!important}
+      .home-page .career-stage-wrap{padding-top:22px}.home-page .daily-practice-home{margin-top:0}
+      @media(max-width:760px){
+        .home-page .scenario-catalog-grid{grid-template-columns:1fr 1fr}.home-page .site-review-scenario-catalog header{display:block}
+        .home-mobile-scenario-cta{display:flex;position:fixed;z-index:150;left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom));min-height:50px;align-items:center;justify-content:center;border-radius:13px;background:#2563eb;color:#fff!important;font-weight:850;text-decoration:none;box-shadow:0 8px 28px rgba(15,23,42,.28)}
+        .home-page{padding-bottom:78px}
+      }
+      @media(max-width:480px){.home-page .scenario-catalog-grid{grid-template-columns:1fr}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function scenarioCatalog(){
+    let section=q('.site-review-scenario-catalog');
+    if(section)return section;
+    section=document.createElement('section');
+    section.className='site-review-scenario-catalog';
+    section.setAttribute('aria-labelledby','scenarioCatalogTitle');
+    const cases=[
+      ['Breathing Problem','Shortness of breath / wheezing','EMT · Medical','8–12 min','asthma'],
+      ['Possible Stroke','Speech change / unilateral weakness','EMT · Medical','8–12 min','stroke'],
+      ['Altered Mental Status','Confusion / possible hypoglycemia','EMT · Medical','8–12 min','hypoglycemia'],
+      ['Horse-Crush Trauma','Severe hip pain after blunt trauma','EMT · Trauma','12–15 min','horse_crush']
+    ];
+    section.innerHTML='<header><div><h2 id="scenarioCatalogTitle">Choose a patient scenario</h2><p>Pick the complaint and difficulty that fits today’s practice.</p></div><a href="/vitals/scenario-launcher.html">View scenario catalog →</a></header><div class="scenario-catalog-grid">'+cases.map(c=>`<a class="scenario-catalog-card" href="/vitals/visual-patient.html?case=${c[4]}&training=learning&reset=1"><strong>${c[0]}</strong><span>${c[1]}</span><small>${c[2]} · ${c[3]}</small><em>Start case →</em></a>`).join('')+'</div>';
+    return section;
+  }
+
+  function applyHome(){
+    if(!isHome())return;
+    const heroTitle=q('#heroTitle');
+    const heroKicker=q('#heroKicker');
+    const heroCopy=q('#heroCopy');
+    const primary=q('#heroPrimary');
+    const secondary=q('#heroSecondary');
+    if(heroKicker)heroKicker.textContent='Free EMT practice · no account required';
+    if(heroTitle)heroTitle.innerHTML='Free EMT patient simulations <span>and career tools.</span>';
+    if(heroCopy)heroCopy.textContent='Run a full EMT assessment. No login. Practice patient care first, then use daily review and career tools when you need them.';
+    if(primary){primary.href='/vitals/scenario-launcher.html';primary.textContent='Start a scenario';}
+    if(secondary){secondary.href='#daily-practice';secondary.textContent='Do today’s 5-minute practice';}
+    const summary=q('.stage-summary-line');if(summary)summary.textContent='Career-stage personalization is optional and never blocks the training tools.';
+    const headerCta=q('.header-cta');if(headerCta)headerCta.href='/vitals/scenario-launcher.html';
+
+    const sim=q('.hero-sim-card');
+    if(sim&&!q('.hero-scene-still',sim)){
+      sim.insertAdjacentHTML('afterbegin','<img class="hero-scene-still" src="/vitals/assets/scenario-patient-adult-v3.png" alt="Visual EMT patient scenario">');
+      const label=q('.hero-sim-label',sim);if(label)label.textContent='Visual patient simulator';
+      const h2=q('h2',sim);if(h2)h2.textContent='Look at the patient. Decide what to do next.';
+      const p=q('p',sim);if(p)p.textContent='Assessment Mode, patient clock, findings, treatment, reassessment, and debrief.';
+    }
+
+    const oldQuick=q('.ideal-quick-wrap');
+    const hero=q('.hero-home');
+    const catalog=scenarioCatalog();
+    if(hero&&catalog.parentNode!==hero.parentNode)hero.insertAdjacentElement('afterend',catalog);
+    if(oldQuick)oldQuick.hidden=true;
+
+    const daily=q('.daily-practice-home');
+    const career=q('.career-stage-wrap');
+    if(daily&&career&&daily.nextElementSibling!==career)career.parentNode.insertBefore(daily,career);
+
+    const stageIntro=q('.career-stage-panel .stage-intro p');if(stageIntro)stageIntro.textContent='Optional: choose your stage to personalize recommended guides and practice links.';
+    const stageBadge=q('.stage-badge');if(stageBadge)stageBadge.textContent='Optional personalization';
+
+    if(!q('.home-mobile-scenario-cta')){
+      const a=document.createElement('a');a.className='home-mobile-scenario-cta';a.href='/vitals/scenario-launcher.html';a.textContent='Start a scenario';document.body.appendChild(a);
+    }
+  }
+
+  function start(){normalizeBrand();installSharedStyles();enhanceFooter();applyHome();setTimeout(()=>{normalizeBrand();enhanceFooter();applyHome();},100);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
