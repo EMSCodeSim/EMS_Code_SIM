@@ -18,7 +18,7 @@
 (function(){
   'use strict';
   const HOME_PATHS=new Set(['/','/index.html']);
-  const DEFAULT_SCENARIO='/vitals/visual-patient.html?case=hypoglycemia&training=learning&reset=1';
+  const DEFAULT_SCENARIO='/vitals/visual-patient.html?case=asthma&training=learning&reset=1';
   const isHome=()=>HOME_PATHS.has(location.pathname);
   const q=(s,r=document)=>r.querySelector(s);
   const qa=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -53,18 +53,19 @@
       .home-page .site-review-scenario-catalog{max-width:1120px;margin:0 auto;padding:28px 20px 10px}
       .home-page .site-review-scenario-catalog header{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:14px}
       .home-page .site-review-scenario-catalog h2{margin:0;font-size:1.45rem}.home-page .site-review-scenario-catalog p{margin:4px 0 0;color:#475569}
-      .home-page .scenario-catalog-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-      .home-page .scenario-catalog-card{display:grid;gap:7px;padding:16px;border:1px solid #d8e0ea;border-radius:12px;background:#fff;color:#0f172a;box-shadow:0 1px 2px rgba(15,23,42,.05)}
-      .home-page .scenario-catalog-card:hover{border-color:#93c5fd;background:#f8fbff}.home-page .scenario-catalog-card small{color:#64748b}.home-page .scenario-catalog-card em{font-style:normal;color:#2563eb;font-weight:800;font-size:.84rem}
+      .home-page .scenario-catalog-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+      .home-page .scenario-catalog-card{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:12px;border:1px solid #d8e0ea;border-radius:12px;background:#fff;color:#0f172a;box-shadow:0 1px 2px rgba(15,23,42,.05);align-items:center}
+      .home-page .scenario-catalog-card img{width:150px;height:104px;object-fit:cover;border-radius:9px;background:#e2e8f0}
+      .home-page .scenario-catalog-card .scenario-card-copy{display:grid;gap:6px}.home-page .scenario-catalog-card:hover{border-color:#93c5fd;background:#f8fbff}.home-page .scenario-catalog-card small{color:#64748b}.home-page .scenario-catalog-card em{font-style:normal;color:#2563eb;font-weight:800;font-size:.84rem}
       .home-page .mobile-career-picker,.home-page .mobile-home-shortcuts,.home-page .ideal-quick-wrap,.home-page .start-here{display:none!important}
       .home-page .path-and-practice .practice-box{display:none!important}.home-page .path-and-practice{grid-template-columns:1fr!important}
       .home-page .career-stage-wrap{padding-top:22px}.home-page .daily-practice-home{margin-top:0}
       @media(max-width:760px){
-        .home-page .scenario-catalog-grid{grid-template-columns:1fr 1fr}.home-page .site-review-scenario-catalog header{display:block}
+        .home-page .scenario-catalog-grid{grid-template-columns:1fr}.home-page .site-review-scenario-catalog header{display:block}.home-page .scenario-catalog-card{grid-template-columns:120px 1fr}.home-page .scenario-catalog-card img{width:120px;height:92px}
         .home-mobile-scenario-cta{display:flex;position:fixed;z-index:150;left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom));min-height:50px;align-items:center;justify-content:center;border-radius:13px;background:#2563eb;color:#fff!important;font-weight:850;text-decoration:none;box-shadow:0 8px 28px rgba(15,23,42,.28)}
         .home-page{padding-bottom:78px}
       }
-      @media(max-width:480px){.home-page .scenario-catalog-grid{grid-template-columns:1fr}}
+      @media(max-width:480px){.home-page .scenario-catalog-card{grid-template-columns:1fr}.home-page .scenario-catalog-card img{width:100%;height:auto;aspect-ratio:16/9}}
     `;
     document.head.appendChild(style);
   }
@@ -76,12 +77,10 @@
     section.className='site-review-scenario-catalog';
     section.setAttribute('aria-labelledby','scenarioCatalogTitle');
     const cases=[
-      ['Breathing Problem','Shortness of breath / wheezing','EMT · Medical','8–12 min','asthma'],
-      ['Possible Stroke','Speech change / unilateral weakness','EMT · Medical','8–12 min','stroke'],
-      ['Altered Mental Status','Confusion / possible hypoglycemia','EMT · Medical','8–12 min','hypoglycemia'],
-      ['Horse-Crush Trauma','Severe hip pain after blunt trauma','EMT · Trauma','12–15 min','horse_crush']
+      ['Breathing Problem','Shortness of breath / wheezing','EMT · Medical','8–12 min','asthma','/vitals/assets/breathing-problem-cover.webp'],
+      ['Horse-Crush Trauma','Severe hip pain after blunt trauma','EMT · Trauma','12–15 min','horse_crush','/vitals/assets/horse-crush/patient-initial.webp']
     ];
-    section.innerHTML='<header><div><h2 id="scenarioCatalogTitle">Choose a patient scenario</h2><p>Pick the complaint and difficulty that fits today’s practice.</p></div><a href="/vitals/scenario-launcher.html">View scenario catalog →</a></header><div class="scenario-catalog-grid">'+cases.map(c=>`<a class="scenario-catalog-card" href="/vitals/visual-patient.html?case=${c[4]}&training=learning&reset=1"><strong>${c[0]}</strong><span>${c[1]}</span><small>${c[2]} · ${c[3]}</small><em>Start case →</em></a>`).join('')+'</div>';
+    section.innerHTML='<header><div><h2 id="scenarioCatalogTitle">Choose a patient scenario</h2><p>These are the two complete scenarios currently ready for practice.</p></div><a href="/vitals/scenario-launcher.html">Open scenario selector →</a></header><div class="scenario-catalog-grid">'+cases.map(c=>`<a class="scenario-catalog-card" href="/vitals/visual-patient.html?case=${c[4]}&training=learning&reset=1"><img src="${c[5]}" alt="${c[0]} scenario cover"><span class="scenario-card-copy"><strong>${c[0]}</strong><span>${c[1]}</span><small>${c[2]} · ${c[3]}</small><em>Start case →</em></span></a>`).join('')+'</div>';
     return section;
   }
 
@@ -102,11 +101,11 @@
 
     const sim=q('.hero-sim-card');
     if(sim&&!q('.hero-scene-still',sim)){
-      sim.insertAdjacentHTML('afterbegin','<img class="hero-scene-still" src="/vitals/assets/scenario-patient-adult-v3.png" alt="Visual EMT patient scenario">');
+      sim.insertAdjacentHTML('afterbegin','<img class="hero-scene-still" src="/vitals/assets/breathing-problem-cover.webp" alt="Breathing problem visual patient scenario">');
       const label=q('.hero-sim-label',sim);if(label)label.textContent='Visual patient simulator';
       const h2=q('h2',sim);if(h2)h2.textContent='Look at the patient. Decide what to do next.';
       const p=q('p',sim);if(p)p.textContent='Assessment Mode, patient clock, findings, treatment, reassessment, and debrief.';
-    }
+    }else if(sim){const image=q('.hero-scene-still',sim);if(image)image.src='/vitals/assets/breathing-problem-cover.webp';}
 
     const oldQuick=q('.ideal-quick-wrap');
     const hero=q('.hero-home');
