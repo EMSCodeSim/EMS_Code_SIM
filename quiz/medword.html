@@ -377,7 +377,26 @@ shareBtn.addEventListener('click', async()=>{
     }
     if(line) rows += line+"\n";
   }
-  const text = `MedWord ${today}\n${rows}\n${saved.wonToday?`Solved (${Math.min(row+1,ROWS)}/${ROWS})`:'Unsolved'} — ${ANSWER}`;
+  const status = saved.wonToday ? `Solved (${Math.min(row+1,ROWS)}/${ROWS})` : 'Still playing';
+  const url = 'https://emscodesim.com/quiz/medword.html';
+  const text = `MedWord ${today}\n${rows}${status}\n🔥 Streak ${saved.streak||0}\n${url}`;
+  if (window.EMSCodeSimShare && typeof window.EMSCodeSimShare.share === 'function') {
+    const result = await window.EMSCodeSimShare.share({
+      title: 'EMSCodeSim MedWord',
+      text: `MedWord ${today}\n${rows}${status}\n🔥 Streak ${saved.streak||0}`,
+      url
+    });
+    if (result && result.method === 'cancelled') return;
+    toast(result && result.method === 'share' ? 'Shared' : 'Result copied');
+    return;
+  }
+  try{
+    if (navigator.share) {
+      await navigator.share({ title: 'EMSCodeSim MedWord', text, url });
+      toast('Shared');
+      return;
+    }
+  }catch(e){ if(e && e.name==='AbortError') return; }
   try{ await navigator.clipboard.writeText(text); toast('Result copied to clipboard'); }
   catch{ toast('Copy failed'); }
 });

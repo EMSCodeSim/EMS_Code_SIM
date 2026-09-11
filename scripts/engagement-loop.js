@@ -10,7 +10,9 @@
     if(path.startsWith('/quiz/')){const tool=tools[dayIndex()%tools.length];title='Turn today’s review into hands-on practice';copy='Use one short simulator to reinforce assessment skills after the quiz.';primary='Practice '+tool[0];primaryUrl=tool[1];secondary='Browse all training tools';secondaryUrl='/ems-training-tools.html';}
     else if(path.startsWith('/vitals/')||path.startsWith('/APGAR/')){title='Keep your daily practice streak going';copy='Finish with today’s short EMT or paramedic review, then return tomorrow for a new activity.';primary='Take today’s quiz';primaryUrl='/quiz/';secondary='Browse all training tools';secondaryUrl='/ems-training-tools.html';}
     else return;
-    const box=document.createElement('section');box.className='practice-next';box.setAttribute('aria-label','Continue practicing');box.innerHTML='<span class="practice-next-label">Next five-minute step</span><h2>'+title+'</h2><p>'+copy+'</p><div class="practice-next-actions"><a href="'+primaryUrl+'">'+primary+'</a><a class="secondary" href="'+secondaryUrl+'">'+secondary+'</a></div>';
+    const box=document.createElement('section');box.className='practice-next';box.setAttribute('aria-label','Continue practicing');box.innerHTML='<span class="practice-next-label">Next five-minute step</span><h2>'+title+'</h2><p>'+copy+'</p><div class="practice-next-actions"><a href="'+primaryUrl+'">'+primary+'</a><a class="secondary" href="'+secondaryUrl+'">'+secondary+'</a><button type="button" class="ems-share-inline" data-ems-share="practice">Share this page</button></div>';
     const footer=document.querySelector('footer,.site-footer');if(footer)footer.parentNode.insertBefore(box,footer);else document.body.appendChild(box);
+    if(window.EMSCodeSimShare&&typeof window.EMSCodeSimShare.mount==='function'){/* share-tool binds data-ems-share on boot/observer */}
+    else if(!document.querySelector('script[src*="share-tool.js"]')){const s=document.createElement('script');s.defer=true;s.src='/scripts/share-tool.js';document.head.appendChild(s);}
   });
 })();

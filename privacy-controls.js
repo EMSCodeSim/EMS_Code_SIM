@@ -20,4 +20,11 @@
   script.async = true;
   script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(measurementId);
   document.head.appendChild(script);
+
+  // Site-wide share helper for tools, simulators, and hubs.
+  if (!document.querySelector('script[src*="share-tool.js"]')) {
+    const share = document.createElement('script');
+    share.src = '/scripts/share-tool.js';
+    document.head.appendChild(share);
+  }
 })();
