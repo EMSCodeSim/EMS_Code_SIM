@@ -55,7 +55,8 @@
       .home-page .scenario-catalog-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
       .home-page .scenario-catalog-card{display:grid;gap:7px;padding:16px;border:1px solid #d8e0ea;border-radius:12px;background:#fff;color:#0f172a;box-shadow:0 1px 2px rgba(15,23,42,.05)}
       .home-page .scenario-catalog-card:hover{border-color:#93c5fd;background:#f8fbff}.home-page .scenario-catalog-card small{color:#64748b}.home-page .scenario-catalog-card em{font-style:normal;color:#2563eb;font-weight:800;font-size:.84rem}
-      .home-page .mobile-career-picker,.home-page .mobile-home-shortcuts,.home-page .ideal-quick-wrap{display:none!important}
+      .home-page .mobile-career-picker,.home-page .mobile-home-shortcuts,.home-page .ideal-quick-wrap,.home-page .start-here{display:none!important}
+      .home-page .path-and-practice .practice-box{display:none!important}.home-page .path-and-practice{grid-template-columns:1fr!important}
       .home-page .career-stage-wrap{padding-top:22px}.home-page .daily-practice-home{margin-top:0}
       @media(max-width:760px){
         .home-page .scenario-catalog-grid{grid-template-columns:1fr 1fr}.home-page .site-review-scenario-catalog header{display:block}
@@ -124,6 +125,12 @@
     }
   }
 
-  function start(){normalizeBrand();installSharedStyles();enhanceFooter();applyHome();setTimeout(()=>{normalizeBrand();enhanceFooter();applyHome();},100);}
+  function keepHeroScenarioFirst(){
+    if(!isHome())return;
+    document.addEventListener('click',event=>{if(event.target.closest?.('[data-stage],#stagePrev,#stageNext'))setTimeout(applyHome,0);},true);
+    document.addEventListener('change',event=>{if(event.target.matches?.('#mobileStageSelect'))setTimeout(applyHome,0);},true);
+  }
+
+  function start(){normalizeBrand();installSharedStyles();enhanceFooter();applyHome();keepHeroScenarioFirst();setTimeout(()=>{normalizeBrand();enhanceFooter();applyHome();},100);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
