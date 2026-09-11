@@ -18,6 +18,7 @@
 (function(){
   'use strict';
   const HOME_PATHS=new Set(['/','/index.html']);
+  const DEFAULT_SCENARIO='/vitals/visual-patient.html?case=hypoglycemia&training=learning&reset=1';
   const isHome=()=>HOME_PATHS.has(location.pathname);
   const q=(s,r=document)=>r.querySelector(s);
   const qa=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -94,10 +95,10 @@
     if(heroKicker)heroKicker.textContent='Free EMT practice · no account required';
     if(heroTitle)heroTitle.innerHTML='Free EMT patient simulations <span>and career tools.</span>';
     if(heroCopy)heroCopy.textContent='Run a full EMT assessment. No login. Practice patient care first, then use daily review and career tools when you need them.';
-    if(primary){primary.href='/vitals/scenario-launcher.html';primary.textContent='Start a scenario';}
+    if(primary){primary.href=DEFAULT_SCENARIO;primary.textContent='Start a scenario';}
     if(secondary){secondary.href='#daily-practice';secondary.textContent='Do today’s 5-minute practice';}
     const summary=q('.stage-summary-line');if(summary)summary.textContent='Career-stage personalization is optional and never blocks the training tools.';
-    const headerCta=q('.header-cta');if(headerCta)headerCta.href='/vitals/scenario-launcher.html';
+    const headerCta=q('.header-cta');if(headerCta)headerCta.href=DEFAULT_SCENARIO;
 
     const sim=q('.hero-sim-card');
     if(sim&&!q('.hero-scene-still',sim)){
@@ -121,7 +122,9 @@
     const stageBadge=q('.stage-badge');if(stageBadge)stageBadge.textContent='Optional personalization';
 
     if(!q('.home-mobile-scenario-cta')){
-      const a=document.createElement('a');a.className='home-mobile-scenario-cta';a.href='/vitals/scenario-launcher.html';a.textContent='Start a scenario';document.body.appendChild(a);
+      const a=document.createElement('a');a.className='home-mobile-scenario-cta';a.href=DEFAULT_SCENARIO;a.textContent='Start a scenario';document.body.appendChild(a);
+    }else{
+      q('.home-mobile-scenario-cta').href=DEFAULT_SCENARIO;
     }
   }
 
