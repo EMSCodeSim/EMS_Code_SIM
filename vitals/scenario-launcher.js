@@ -5,7 +5,7 @@
   const session = window.EMSCodeSimScenarioSession;
   const $ = id => document.getElementById(id);
 
-  // Public scenario menu: keep the two completed/active experiences front and center.
+  // Public scenario menu: only completed/ready experiences are shown here.
   const cases = [
     {
       id:'horse_crush',
@@ -21,7 +21,7 @@
     {
       id:'asthma',
       featured:true,
-      image:'/vitals/assets/scenario-asthma-learning.svg',
+      image:'/vitals/assets/breathing-problem-cover.webp',
       title:'Breathing Problem',
       patient:'24-year-old adult',
       scene:'Public park • patient seated upright on a bench',
