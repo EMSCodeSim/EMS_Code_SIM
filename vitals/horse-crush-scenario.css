@@ -647,3 +647,564 @@ body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 .scen
 @media(max-width:720px){
   .horse-pain-scale-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
 }
+
+/* ===== HORSE-CRUSH MOBILE UX OVERHAUL =====
+   Desktop layout (min-width:980px / .desktop-scenario-layout) is intentionally untouched.
+   Pair with JS breakpoint at 980px. */
+@media (max-width: 979px) {
+  body.horse-current-emt-call {
+    --horse-mobile-nav-h: 74px;
+    --horse-mobile-gap: 8px;
+  }
+
+  body.horse-current-emt-call .patient-desktop-workspace,
+  body.horse-current-emt-call .scenario-hero-layout,
+  body.horse-current-emt-call .vp-shell {
+    overflow: visible;
+  }
+  body.horse-current-emt-call .vp-shell {
+    max-width: 100%;
+    padding: 6px 8px calc(var(--horse-mobile-nav-h) + 18px + env(safe-area-inset-bottom));
+  }
+
+  /* Sticky header + photo so scrolling communications never loses the patient */
+  body.horse-current-emt-call .vp-top {
+    position: sticky;
+    top: 0;
+    z-index: 12;
+    background: rgba(7, 19, 31, .96);
+    backdrop-filter: blur(10px);
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 4px 0 6px;
+    align-items: start;
+  }
+  body.horse-current-emt-call .vp-top h1 {
+    font-size: 1rem;
+    line-height: 1.15;
+    white-space: normal;
+  }
+  body.horse-current-emt-call .vp-top p#dispatch {
+    font-size: .62rem;
+    color: #8ccfff;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    -webkit-line-clamp: 1;
+  }
+  body.horse-current-emt-call .vp-timer {
+    padding: 5px 7px;
+    min-width: 72px;
+  }
+  body.horse-current-emt-call .vp-timer span {
+    font-size: .52rem;
+  }
+  body.horse-current-emt-call .vp-timer strong {
+    font-size: .95rem;
+  }
+  body.horse-current-emt-call .patient-clock-status,
+  body.horse-current-emt-call .scenario-build-stamp-dark {
+    display: none !important;
+  }
+
+  /* End/Reset tuck away during intro — available from Scenario menu */
+  body.horse-current-emt-call:not([data-horse-intro="arrived"]) .scenario-quick-controls {
+    display: none !important;
+  }
+  body.horse-current-emt-call .scenario-quick-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin: 0 0 8px;
+    max-width: none;
+  }
+  body.horse-current-emt-call .scenario-quick-controls button {
+    min-height: 36px;
+    font-size: .72rem;
+    padding: 6px 8px;
+    opacity: .92;
+  }
+
+  /* Photo: shorter so communications + actions stay on-screen */
+  body.horse-current-emt-call .scenario-hero-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--horse-mobile-gap);
+  }
+  body.horse-current-emt-call .patient-stage {
+    position: sticky;
+    top: 58px;
+    z-index: 11;
+    height: min(34vh, 260px) !important;
+    min-height: 180px !important;
+    max-height: 280px !important;
+    border-radius: 16px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .35);
+  }
+  body.horse-current-emt-call.horse-intro-playing .patient-stage,
+  body.horse-current-emt-call.horse-intro-locked .patient-stage,
+  body.horse-current-emt-call[data-horse-intro="dispatch"] .patient-stage,
+  body.horse-current-emt-call[data-horse-intro="video"] .patient-stage {
+    height: min(34vh, 260px) !important;
+    min-height: 180px !important;
+  }
+  body.horse-current-emt-call .patient-stage.horse-arrival-map {
+    height: min(42vh, 340px) !important;
+    min-height: 240px !important;
+  }
+  body.horse-current-emt-call .patient-stage img {
+    object-position: center 35%;
+  }
+
+  /* Control column becomes the primary work surface */
+  body.horse-current-emt-call .patient-control-column {
+    display: grid !important;
+    gap: 8px !important;
+    align-content: start;
+    position: static !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Communications card — readable, primary story surface */
+  body.horse-current-emt-call #infoUpdateWindow,
+  body.horse-current-emt-call .info-update-window.communication-workspace {
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    left: auto !important;
+    top: auto !important;
+    margin: 0 !important;
+    padding: 12px 12px 10px !important;
+    border-radius: 16px !important;
+    border: 1px solid #3e6f8c !important;
+    background: #0c2233 !important;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .28) !important;
+  }
+  body.horse-current-emt-call .communication-workspace-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+  }
+  body.horse-current-emt-call .communication-workspace-head strong {
+    font-size: 1rem;
+  }
+  body.horse-current-emt-call .communication-source-key {
+    display: none; /* reduce chrome; source shown on the message itself */
+  }
+  body.horse-current-emt-call .communication-workspace #infoUpdateTitle {
+    margin-top: 8px;
+    font-size: 1.05rem;
+    line-height: 1.25;
+  }
+  body.horse-current-emt-call .communication-workspace #infoUpdateText,
+  body.horse-current-emt-call #infoUpdateText {
+    margin: 8px 0 0 !important;
+    padding: 12px 14px !important;
+    font-size: 1.02rem !important;
+    line-height: 1.5 !important;
+    color: #eef7fb !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  body.horse-current-emt-call .info-update-head {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  body.horse-current-emt-call .info-update-voice-controls {
+    display: none; /* reduce first-run chrome; replay remains available from expanded menus later */
+  }
+
+  /* Hide empty follow-up + learning cue until the call actually starts */
+  /* Hide empty follow-up shells that add scroll noise */
+  body.horse-current-emt-call #horseClinicalQuestionBox:has(.horse-question-placeholder):not(:has(.horse-question-choice)):not(:has(select)):not(:has(button.horse-question-choice)) {
+    display: none !important;
+  }
+  body.horse-current-emt-call:not([data-horse-intro="arrived"]) #horseClinicalQuestionBox:not(.active):not(.treatment-active) {
+    display: none !important;
+  }
+  body.horse-current-emt-call:not([data-horse-intro="arrived"]) #clinicalReasoningBoard,
+  body.horse-current-emt-call.horse-intro-playing #clinicalReasoningBoard,
+  body.horse-current-emt-call.horse-intro-locked #clinicalReasoningBoard {
+    display: none !important;
+  }
+  body.horse-current-emt-call:not([data-horse-intro="arrived"]) .reasoning-discovery-cue,
+  body.horse-current-emt-call.horse-intro-locked .reasoning-discovery-cue,
+  body.horse-current-emt-call.horse-intro-playing .reasoning-discovery-cue {
+    display: none !important;
+  }
+
+  /* After arrival, BLS follow-ups are the first care action */
+  body.horse-current-emt-call[data-horse-intro="arrived"] #horseBlsFollowups {
+    order: -1;
+    margin: 0 0 8px;
+    padding: 12px;
+    border: 1px solid #4b7895;
+    border-radius: 14px;
+    background: #10283a;
+  }
+  body.horse-current-emt-call #horseBlsFollowupButtons {
+    display: grid;
+    gap: 8px;
+  }
+  body.horse-current-emt-call .horse-bls-followup-btn {
+    width: 100%;
+    text-align: left;
+  }
+
+  body.horse-current-emt-call .patient-entry-workflow {
+    margin-top: 4px;
+  }
+
+  /* Story advance becomes an obvious primary action */
+  body.horse-current-emt-call .info-update-controls {
+    display: grid !important;
+    grid-template-columns: 48px 1fr 1.4fr;
+    gap: 8px;
+    align-items: center;
+    margin-top: 12px;
+    justify-content: stretch !important;
+  }
+  body.horse-current-emt-call #infoUpdatePrevious,
+  body.horse-current-emt-call #infoUpdateNext {
+    width: auto !important;
+    height: auto !important;
+    min-height: 48px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 900;
+  }
+  body.horse-current-emt-call #infoUpdateCount {
+    text-align: center;
+    font-size: .78rem;
+    font-weight: 800;
+    color: #9ec9e0;
+  }
+  body.horse-current-emt-call #infoUpdateNext {
+    background: linear-gradient(135deg, #4fb3ff, #2f9fe0) !important;
+    color: #061523 !important;
+    border-color: transparent !important;
+  }
+  body.horse-current-emt-call #infoUpdateNext::after {
+    content: " Continue";
+    font-size: .82rem;
+    font-weight: 900;
+  }
+  body.horse-current-emt-call[data-horse-intro="parking"] #infoUpdateNext::after {
+    content: " Begin care";
+  }
+  body.horse-current-emt-call[data-horse-intro="arrived"] #infoUpdateNext::after {
+    content: "";
+  }
+  body.horse-current-emt-call #infoUpdateNext:disabled {
+    opacity: .45;
+  }
+  body.horse-current-emt-call[data-horse-intro="dispatch"] #infoUpdateNext:disabled,
+  body.horse-current-emt-call[data-horse-intro="parking"] #infoUpdateNext:disabled {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  body.horse-current-emt-call #infoUpdateNext:disabled::after {
+    content: "";
+  }
+
+  body.horse-current-emt-call .info-update-quick-reply-buttons {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  body.horse-current-emt-call .info-update-quick-reply {
+    min-height: 48px;
+    border-radius: 12px !important;
+    padding: 12px 14px !important;
+    font-size: .88rem !important;
+    text-align: left;
+    white-space: normal;
+  }
+
+  /* Follow-up / clinical question */
+  body.horse-current-emt-call #horseClinicalQuestionBox {
+    border: 1px solid #3e6f8c;
+    border-radius: 14px;
+    background: #10283a;
+    padding: 10px 12px;
+  }
+  body.horse-current-emt-call .horse-question-placeholder small,
+  body.horse-current-emt-call #horseClinicalQuestionBox small {
+    font-size: .62rem;
+    letter-spacing: .08em;
+  }
+  body.horse-current-emt-call #horseClinicalQuestionBox .horse-question-choice,
+  body.horse-current-emt-call .horse-bls-followup-btn {
+    min-height: 48px;
+    font-size: .9rem;
+    border-radius: 12px;
+  }
+
+  /* Desktop assessment rail stays hidden on phones — tools open in the sheet */
+  body.horse-current-emt-call #horseCurrentAssessment {
+    display: none !important;
+  }
+
+  /* Phase buttons: large first-run CTAs */
+  body.horse-current-emt-call .patient-phase-controls {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  body.horse-current-emt-call .patient-phase-controls button {
+    min-height: 58px !important;
+    padding: 12px 14px !important;
+    border-radius: 14px;
+  }
+  body.horse-current-emt-call .patient-phase-controls strong {
+    font-size: .92rem !important;
+  }
+  body.horse-current-emt-call .patient-phase-controls em {
+    max-width: none !important;
+    font-size: .72rem !important;
+  }
+
+  /* Arrival / parking */
+  body.horse-current-emt-call #horseArrivalDecision,
+  body.horse-current-emt-call .horse-arrival-card {
+    margin: 0 0 10px !important;
+    padding: 14px !important;
+    border-radius: 16px !important;
+  }
+  body.horse-current-emt-call .horse-parking-options {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  body.horse-current-emt-call .horse-parking-options button,
+  body.horse-current-emt-call #horseArrivalDecision [data-horse-parking] {
+    min-height: 56px !important;
+    padding: 12px 14px !important;
+    border-radius: 12px !important;
+  }
+
+  /* Scene guide sits as a readable card under the photo */
+  body.horse-current-emt-call .scene-guide-photo {
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+  body.horse-current-emt-call .scene-guide-actions {
+    display: grid;
+    grid-template-columns: 1fr 1.35fr;
+    gap: 8px;
+  }
+  body.horse-current-emt-call .scene-guide-actions button {
+    min-height: 48px;
+    font-size: .88rem;
+  }
+
+  /* Bottom nav: clearer labels, safer taps, no phantom zero badges */
+  body.horse-current-emt-call .bottom-nav {
+    width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+    gap: 5px;
+    padding: 8px max(8px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+    background: rgba(4, 16, 27, .98);
+  }
+  body.horse-current-emt-call .bottom-nav button {
+    min-height: 62px;
+    border-radius: 14px;
+    padding: 7px 2px 6px;
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: 0;
+  }
+  body.horse-current-emt-call .bottom-nav button > span {
+    font-size: 1.2rem;
+    margin-bottom: 3px;
+  }
+  body.horse-current-emt-call .bottom-nav em[hidden] {
+    display: none !important;
+  }
+
+  /* Action sheet: phone-native drawer above the nav */
+  body.horse-current-emt-call .action-sheet {
+    width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+    max-height: min(86vh, calc(100vh - 52px)) !important;
+    border-radius: 22px 22px 0 0;
+    padding: 6px 12px calc(var(--horse-mobile-nav-h) + 12px + env(safe-area-inset-bottom));
+    overscroll-behavior: contain;
+  }
+  body.horse-current-emt-call .sheet-handle {
+    width: 48px;
+    height: 5px;
+    margin: 4px auto 8px;
+  }
+  body.horse-current-emt-call .sheet-header {
+    position: sticky;
+    top: -6px;
+    z-index: 4;
+    padding: 4px 0 10px;
+    background: #0b1d2c;
+  }
+  body.horse-current-emt-call .sheet-header h2 {
+    font-size: 1.15rem;
+  }
+  body.horse-current-emt-call .return-patient-btn {
+    min-width: 84px;
+    min-height: 42px;
+    border-radius: 12px;
+    font-size: .78rem;
+    font-weight: 850;
+  }
+  body.horse-current-emt-call .sheet-patient-context {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  body.horse-current-emt-call .assessment-card,
+  body.horse-current-emt-call .treatment-card,
+  body.horse-current-emt-call .tool,
+  body.horse-current-emt-call .history-question-button,
+  body.horse-current-emt-call .assessment-compact-row {
+    border-radius: 14px;
+  }
+  body.horse-current-emt-call .assessment-card button,
+  body.horse-current-emt-call .tool a,
+  body.horse-current-emt-call .tool button,
+  body.horse-current-emt-call .history-question-button,
+  body.horse-current-emt-call .primary-action {
+    min-height: 46px;
+  }
+
+  /* Assessment sheet: less instructional chrome, more exam list */
+  body.horse-current-emt-call .action-sheet .assessment-order-note,
+  body.horse-current-emt-call .action-sheet #assessmentPanel > .sub {
+    display: none;
+  }
+  body.horse-current-emt-call .action-sheet .horse-expanded-assessments > header,
+  body.horse-current-emt-call .action-sheet .assessment-sequence-heading {
+    margin-top: 8px;
+  }
+  body.horse-current-emt-call .action-sheet .horse-assessment-deep-button,
+  body.horse-current-emt-call .action-sheet .horse-exam-button {
+    min-height: 52px;
+  }
+
+  /* Persistent clinical bar: avoid colliding with nav / sheet */
+  body.horse-current-emt-call .persistent-clinical-bar {
+    bottom: calc(var(--horse-mobile-nav-h) + 4px);
+    width: 100%;
+    left: 0;
+    transform: none;
+    padding: 0 8px 4px;
+  }
+  body.horse-current-emt-call .persistent-clinical-bar > button {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    min-height: 46px;
+  }
+  body.horse-current-emt-call .clinical-bar-finding,
+  body.horse-current-emt-call .clinical-bar-due {
+    display: none;
+  }
+
+  body.horse-current-emt-call .toast {
+    bottom: calc(var(--horse-mobile-nav-h) + 14px);
+  }
+
+  body.horse-current-emt-call .clinical-next-actions {
+    left: 8px !important;
+    right: 8px !important;
+    bottom: calc(var(--horse-mobile-nav-h) + 10px) !important;
+    transform: none !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+
+  /* Intro overlay CTAs */
+  body.horse-current-emt-call #horseIntroOverlay {
+    border-radius: 16px;
+  }
+  body.horse-current-emt-call #horseIntroPlay {
+    min-height: 52px;
+    font-size: 1.05rem;
+    padding: 14px 24px;
+  }
+  body.horse-current-emt-call #horseIntroSkip {
+    min-height: 44px;
+    top: 10px;
+    right: 10px;
+  }
+
+  /* Pain scale denser but tappable */
+  body.horse-current-emt-call .horse-pain-scale-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  body.horse-current-emt-call .horse-pain-scale-num {
+    min-height: 48px;
+    font-size: .9rem;
+  }
+
+  /* First-run coaching strip under photo when still locked to intro */
+  body.horse-current-emt-call.horse-intro-locked .patient-control-column::before,
+  body.horse-current-emt-call[data-horse-intro="dispatch"] .patient-control-column::before {
+    content: "Read dispatch, then tap Continue to roll to the scene.";
+    display: block;
+    margin: 0 0 2px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #3f6f3f;
+    background: #10291f;
+    color: #c9f5d8;
+    font-size: .82rem;
+    font-weight: 750;
+    line-height: 1.35;
+  }
+  body.horse-current-emt-call[data-horse-intro="parking"] .patient-control-column::before {
+    content: "Choose a safe parking spot to begin patient care.";
+    display: block;
+    margin: 0 0 2px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #6e5724;
+    background: #2a2314;
+    color: #ffe3a3;
+    font-size: .82rem;
+    font-weight: 750;
+    line-height: 1.35;
+  }
+  body.horse-current-emt-call[data-horse-intro="arrived"] .patient-control-column::before {
+    display: none;
+  }
+}
+
+@media (max-width: 979px) and (max-height: 720px) {
+  body.horse-current-emt-call .patient-stage {
+    height: min(30vh, 220px) !important;
+    min-height: 160px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  body.horse-current-emt-call .bottom-nav button {
+    font-size: .62rem;
+    min-height: 60px;
+  }
+  body.horse-current-emt-call .vp-top h1 {
+    font-size: .92rem;
+  }
+  body.horse-current-emt-call #infoUpdateNext::after {
+    content: " Continue";
+  }
+  body.horse-current-emt-call[data-horse-intro="parking"] #infoUpdateNext::after {
+    content: " Begin";
+  }
+}
+

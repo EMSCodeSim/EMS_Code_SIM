@@ -23,6 +23,7 @@ body{margin:0;background:#07131f;color:var(--text);font-family:Inter,system-ui,-
 .bottom-nav button:nth-child(3).active{background:#583b83}
 .bottom-nav button:nth-child(4).active{background:#76570f}
 .bottom-nav em{position:absolute;right:8px;top:5px;background:var(--danger);color:white;width:19px;height:19px;border-radius:50%;font-style:normal;font-size:.68rem;display:grid;place-items:center}
+.bottom-nav em[hidden]{display:none!important}
 .sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:35}
 .sheet-backdrop[hidden],.action-sheet[hidden],.assessment-focus[hidden]{display:none}
 .action-sheet{position:fixed;z-index:40;left:50%;bottom:0;transform:translateX(-50%);width:min(760px,100%);max-height:78vh;overflow:auto;background:#0b1d2c;border:1px solid #31566d;border-bottom:0;border-radius:24px 24px 0 0;padding:8px 13px calc(88px + env(safe-area-inset-bottom));box-shadow:0 -18px 50px rgba(0,0,0,.45)}

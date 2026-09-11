@@ -131,10 +131,18 @@
   }
 
   function relocateReasoningBoard() {
-    if (!isDesktopHorse()) return false;
+    if (!isHorseScenario()) return false;
     const board = document.getElementById('clinicalReasoningBoard');
     const recordPanel = document.getElementById('findingsPanel');
     if (!board || !recordPanel) return false;
+    // Mobile: keep first screen focused on photo + communications; reasoning lives in Record.
+    if (!isDesktopHorse()) {
+      if (board.parentNode !== recordPanel) {
+        board.classList.add('horse-reasoning-in-record');
+        recordPanel.prepend(board);
+      }
+      return true;
+    }
     if (board.parentNode !== recordPanel) {
       board.classList.add('horse-reasoning-in-record');
       recordPanel.prepend(board);
@@ -410,11 +418,65 @@
     scheduleTransportPromotion();
   });
 
+  function isMobileHorse() {
+    return isHorseScenario() && window.matchMedia?.('(max-width: 979px)')?.matches === true;
+  }
+
+  function enhanceMobileFirstRun() {
+    if (!isMobileHorse()) return;
+
+    ['historyBadge', 'findingBadge'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (!el.textContent || el.textContent === '0') el.hidden = true;
+    });
+
+    const next = document.getElementById('infoUpdateNext');
+    if (next && !next.dataset.mobileHintBound) {
+      next.dataset.mobileHintBound = '1';
+      // Intro advance is owned by horse-crush-scenario.js on mobile.
+      next.addEventListener('click', () => {
+        window.setTimeout(() => {
+          if (document.body.dataset.horseIntro === 'arrived') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+          }
+          const bls = document.getElementById('horseBlsFollowups');
+          if (bls && !bls.hidden) {
+            const top = bls.getBoundingClientRect().top;
+            if (top > window.innerHeight * 0.75) {
+              bls.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+          }
+        }, 220);
+      });
+    }
+
+    const skip = document.getElementById('horseIntroSkip');
+    if (skip && !skip.dataset.mobileHintBound) {
+      skip.dataset.mobileHintBound = '1';
+      skip.addEventListener('click', () => {
+        window.setTimeout(() => {
+          // Keep the photo visible; nudge only if communications are mostly off-screen.
+          const info = document.getElementById('infoUpdateWindow');
+          if (!info) return;
+          const rect = info.getBoundingClientRect();
+          if (rect.top > window.innerHeight * 0.72) {
+            info.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }, 280);
+      }, { once: true });
+    }
+
+    relocateReasoningBoard();
+  }
+
   function refresh() {
     installStyles();
     injectExpandedAssessments();
     relocateReasoningBoard();
     promoteHiddenTransportForm();
+    enhanceMobileFirstRun();
   }
 
   let refreshQueued = false;
@@ -451,6 +513,11 @@
     }, true);
     window.setTimeout(scheduleRefresh, 250);
     window.setTimeout(scheduleRefresh, 900);
+    window.setTimeout(enhanceMobileFirstRun, 400);
+    window.setTimeout(enhanceMobileFirstRun, 1400);
+    const introWatcher = new MutationObserver(() => enhanceMobileFirstRun());
+    introWatcher.observe(document.body, { attributes: true, attributeFilter: ['data-horse-intro', 'class'] });
+    window.setTimeout(() => introWatcher.disconnect(), 120000);
   }
 
   window.EMSCodeSimHorseCrushUiFix = Object.freeze({
