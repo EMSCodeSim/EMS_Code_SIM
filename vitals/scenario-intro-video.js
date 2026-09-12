@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.12.2';
+  const VERSION = '2026.09.12.3';
   const COVER = '/vitals/assets/breathing-problem-cover.webp';
   const VIDEOS = Object.freeze({
     intro: {
@@ -66,20 +66,28 @@
       .scenario-intro-replay{position:absolute;right:12px;top:12px;z-index:35;border:1px solid rgba(255,255,255,.38);border-radius:9px;background:rgba(5,18,31,.72);color:#fff;padding:8px 10px;font:inherit;font-size:.78rem;font-weight:800;cursor:pointer}
       @media(min-width:980px){
         body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .scenario-hero-layout{
-          grid-template-columns:minmax(300px,.72fr) minmax(520px,1.45fr) minmax(420px,1.1fr)!important;
-          gap:16px!important;
+          grid-template-columns:minmax(260px,.62fr) minmax(600px,1.7fr) minmax(350px,.88fr)!important;
+          gap:14px!important;
         }
         body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column{
           padding:16px!important;
-          gap:14px!important;
+          gap:12px!important;
+        }
+        body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column>.info-update-window.cockpit-center-update{
+          flex:0 0 150px!important;
+          min-height:120px!important;
+          max-height:180px!important;
+          overflow:auto!important;
         }
         body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #patientCommunicationStage{
-          min-height:320px!important;
-          padding:16px 4px 6px!important;
+          flex:1 1 auto!important;
+          min-height:420px!important;
+          height:auto!important;
+          padding:18px 4px 8px!important;
           overflow:auto!important;
         }
         body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #patientConversationTurn{
-          min-height:220px!important;
+          min-height:300px!important;
           font-size:1rem!important;
         }
         body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #patientConversationTurn .patient-conversation-choices{
@@ -93,11 +101,11 @@
         body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column select,
         body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column input,
         body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column textarea{
-          min-height:46px!important;
-          font-size:.95rem!important;
+          min-height:48px!important;
+          font-size:1rem!important;
         }
         body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .action-sheet{
-          min-width:420px!important;
+          min-width:350px!important;
         }
         body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .action-sheet .vp-panel{
           padding:14px!important;
