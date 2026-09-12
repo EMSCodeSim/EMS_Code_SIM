@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
   await clearSiteStorage(page);
 });
 
-test('scenario launcher shows horse and breathing problem and opens asthma in Assessment Mode', async ({ page }) => {
+test('scenario launcher shows horse and breathing problem and opens asthma in Assessment Mode', async ({ page }, testInfo) => {
   const assertNoPageErrors = watchPageErrors(page);
   await page.route('**/api/scenario-question-labels', route => route.fulfill({
     status: 200,
@@ -38,21 +38,31 @@ test('scenario launcher shows horse and breathing problem and opens asthma in As
   await expect(intro).toBeVisible({ timeout: 10000 });
   await expect(page.locator('#scenarioVideoEyebrow')).toContainText(/PUBLIC PARK/);
   await page.locator('#scenarioIntroSkip').click();
-  await expect(intro).toBeHidden();
+  await expect(page.locator('.patient-stage')).toBeVisible();
+  await expect(page.locator('#scenarioIntroVideoElement')).toHaveCount(1);
+  await expect(page.locator('#patientImage')).toBeHidden();
 
-  await expect(page.locator('#patientImage')).toBeVisible();
   const visibleSceneStart = page.locator('#assessmentPanel button:visible').filter({ hasText: 'Scene size-up' }).first();
   const visibleAbcStart = page.locator('#assessmentPanel button:visible').filter({ hasText: 'Initial ABC Assessment' }).first();
   await expect(visibleSceneStart).toBeVisible();
   await expect(visibleAbcStart).toBeVisible();
-  await expect(page.locator('.bottom-nav button[data-panel="historyPanel"]')).toBeVisible();
-  await expect(page.locator('.bottom-nav button[data-panel="treatmentPanel"]')).toBeVisible();
 
-  await page.locator('.bottom-nav button[data-panel="historyPanel"]').click();
+  const mobile = testInfo.project.name === 'mobile-chromium';
+  const historyButton = mobile
+    ? page.locator('#patientFirstMobileNav [data-mobile-domain="historyPanel"]')
+    : page.locator('.patient-control-column .bottom-nav button[data-panel="historyPanel"]');
+  const treatmentButton = mobile
+    ? page.locator('#patientFirstMobileNav [data-mobile-domain="treatmentPanel"]')
+    : page.locator('.patient-control-column .bottom-nav button[data-panel="treatmentPanel"]');
+
+  await expect(historyButton).toBeVisible();
+  await expect(treatmentButton).toBeVisible();
+
+  await historyButton.click();
   await expect(page.locator('#historyPanel')).toBeVisible();
-  await page.locator('#closeSheet').click();
+  if (await page.locator('#closeSheet').isVisible().catch(() => false)) await page.locator('#closeSheet').click();
 
-  await page.locator('.bottom-nav button[data-panel="treatmentPanel"]').click();
+  await treatmentButton.click();
   await expect(page.locator('#treatmentPanel')).toBeVisible();
 
   const state = await page.evaluate(() => {
