@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION='2026.09.12.4';
+  const VERSION='2026.09.12.5';
   const mq=window.matchMedia('(max-width:979px)');
   const q=(s,r=document)=>r.querySelector(s);
   const qa=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -215,8 +215,8 @@
     script.dataset[key]='1';
     document.head.appendChild(script);
   };
-  load('/vitals/scenario-asthma-learning-contract.js?v=2026.09.12.1','scenarioAsthmaLearningContract','script[data-scenario-asthma-learning-contract]');
-  load('/vitals/scenario-case-copy-sweep.js?v=2026.09.12.1','scenarioCaseCopySweep','script[data-scenario-case-copy-sweep]');
+  load('/vitals/scenario-asthma-learning-contract-v2.js?v=2026.09.12.1','scenarioAsthmaLearningContract','script[data-scenario-asthma-learning-contract]');
+  load('/vitals/scenario-case-copy-sweep.js?v=2026.09.12.2','scenarioCaseCopySweep','script[data-scenario-case-copy-sweep]');
   load('/vitals/scenario-desktop-polish.js?v=2026.09.12.2','scenarioDesktopPolish','script[data-scenario-desktop-polish]');
   load('/vitals/scenario-desktop-layout-override.js?v=2026.09.12.1','scenarioDesktopLayoutOverride','script[data-scenario-desktop-layout-override]');
 })();
