@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const PATIENT_WORKSPACE_BUILD = '2026.09.12.7';
+  const PATIENT_WORKSPACE_BUILD = '2026.09.12.8';
 
   function redirectGenericHorseStartToLauncher() {
     if (!/\/vitals\/visual-patient(?:\.html)?$/.test(location.pathname)) return false;
@@ -160,4 +160,5 @@
   loadPatientScenarioScript(`/vitals/scenario-patient-satisfaction-grade.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioPatientSatisfactionGrade','script[data-scenario-patient-satisfaction-grade]');
   loadPatientScenarioScript(`/vitals/scenario-first-run-guide.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioFirstRunGuide','script[data-scenario-first-run-guide]');
   loadPatientScenarioScript(`/vitals/scenario-patient-experience.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioPatientExperience','script[data-scenario-patient-experience]');
+  loadPatientScenarioScript(`/vitals/scenario-reliability-polish.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioReliabilityPolish','script[data-scenario-reliability-polish]');
 })();
