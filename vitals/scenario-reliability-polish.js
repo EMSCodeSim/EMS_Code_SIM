@@ -204,3 +204,13 @@
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();
 })();
+
+(()=>{
+  'use strict';
+  if(document.querySelector('script[data-scenario-desktop-polish]')) return;
+  const script=document.createElement('script');
+  script.src='/vitals/scenario-desktop-polish.js?v=2026.09.12.1';
+  script.async=false;
+  script.dataset.scenarioDesktopPolish='1';
+  document.head.appendChild(script);
+})();
