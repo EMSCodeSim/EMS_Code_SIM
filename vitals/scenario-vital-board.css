@@ -37,7 +37,7 @@
     left:auto!important;
     right:auto!important;
     transform:none!important;
-    grid-template-columns:minmax(360px,1.12fr) minmax(300px,.78fr) minmax(360px,.9fr)!important;
+    grid-template-columns:minmax(300px,.75fr) minmax(440px,1.35fr) minmax(300px,.8fr)!important;
     gap:14px!important;
   }
 
@@ -181,7 +181,7 @@
     width:calc(100vw - 24px)!important;
   }
   html body.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .scenario-hero-layout.scenario-hero-layout{
-    grid-template-columns:minmax(320px,1fr) minmax(280px,.78fr) minmax(330px,.9fr)!important;
+    grid-template-columns:minmax(250px,.72fr) minmax(360px,1.3fr) minmax(270px,.82fr)!important;
     gap:10px!important;
   }
   body.desktop-scenario-layout.clinical-domain-workspace-v2 #vitalTools{
