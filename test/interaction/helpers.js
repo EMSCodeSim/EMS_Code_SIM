@@ -37,13 +37,43 @@ async function completeHorseIntroIfPresent(page) {
   await expect(page.locator('#horseIntroOverlay')).toHaveCount(0);
 }
 
+async function completeAsthmaIntroIfPresent(page) {
+  const intro = page.locator('#scenarioIntroVideo');
+  try {
+    await intro.waitFor({ state: 'visible', timeout: 5000 });
+  } catch {
+    return;
+  }
+
+  const skip = page.locator('#scenarioIntroSkip');
+  if (await skip.isVisible().catch(() => false)) await skip.click();
+
+  // The asthma scenario is intentionally video-only. The intro shell remains as
+  // the resting patient view after Continue, while the legacy patient image is hidden.
+  await expect(page.locator('.patient-stage')).toBeVisible({ timeout: 8000 });
+  await expect(page.locator('#scenarioIntroVideoElement')).toHaveCount(1);
+}
+
 async function openScenario(page, caseId = 'asthma', mode = 'learning') {
   const selectedMode = mode === 'assessment' ? 'assessment' : 'learning';
   await page.goto(`/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}&training=${selectedMode}&reset=1`);
   await expect(page).toHaveURL(new RegExp(`/vitals/visual-patient\\.html\\?case=${caseId}`));
-  if (caseId === 'horse_crush') await completeHorseIntroIfPresent(page);
+
+  if (caseId === 'horse_crush') {
+    await completeHorseIntroIfPresent(page);
+    await expect(page.locator('#patientImage')).toBeVisible();
+    await expect.poll(() => page.locator('#patientImage').evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
+    return;
+  }
+
+  if (caseId === 'asthma' || caseId === 'respiratory') {
+    await completeAsthmaIntroIfPresent(page);
+    await expect(page.locator('.patient-stage')).toBeVisible();
+    return;
+  }
+
   await expect(page.locator('#patientImage')).toBeVisible();
   await expect.poll(() => page.locator('#patientImage').evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
 }
 
-module.exports = { clearSiteStorage, watchPageErrors, openScenario, completeHorseIntroIfPresent };
+module.exports = { clearSiteStorage, watchPageErrors, openScenario, completeHorseIntroIfPresent, completeAsthmaIntroIfPresent };
