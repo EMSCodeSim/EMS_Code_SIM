@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.11.1';
+  const VERSION = '2026.09.11.2';
   const COVER = '/vitals/assets/breathing-problem-cover.webp';
   const VIDEOS = Object.freeze({
     intro: {
@@ -41,8 +41,11 @@
       html body.asthma-video-only #clinicalReasoningBoard,
       html body.asthma-video-only #reasoningDiscoveryCue{display:none!important}
       html body.asthma-video-only .patient-stage{position:relative;background:#071625!important}
-      body.asthma-video-only .bottom-nav.guide-locked button[data-panel="assessmentPanel"]{opacity:1!important;pointer-events:auto!important;cursor:pointer!important}
-      body.asthma-video-only #assessmentPanel button:not(:disabled){pointer-events:auto!important;cursor:pointer!important}
+      body.asthma-video-only .bottom-nav.guide-locked button[data-panel="assessmentPanel"],
+      body.asthma-video-only .bottom-nav.guide-locked button[data-panel="vitalsPanel"]{opacity:1!important;pointer-events:auto!important;cursor:pointer!important}
+      body.asthma-video-only #assessmentPanel button:not(:disabled),
+      body.asthma-video-only #vitalsPanel button:not(:disabled),
+      body.asthma-video-only #vitalsPanel a{pointer-events:auto!important;cursor:pointer!important}
       .scenario-intro-video-shell{position:absolute;inset:0;z-index:30;background:#071625;display:flex;align-items:center;justify-content:center;overflow:hidden}
       .scenario-intro-video-shell[hidden]{display:none}
       .scenario-intro-video-shell video{width:100%;height:100%;object-fit:cover;background:#071625}
