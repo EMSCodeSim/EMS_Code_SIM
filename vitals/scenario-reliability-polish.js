@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION='2026.09.12.1';
+  const VERSION='2026.09.12.2';
   const mq=window.matchMedia('(max-width:979px)');
   const q=(s,r=document)=>r.querySelector(s);
   const qa=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -207,10 +207,14 @@
 
 (()=>{
   'use strict';
-  if(document.querySelector('script[data-scenario-desktop-polish]')) return;
-  const script=document.createElement('script');
-  script.src='/vitals/scenario-desktop-polish.js?v=2026.09.12.1';
-  script.async=false;
-  script.dataset.scenarioDesktopPolish='1';
-  document.head.appendChild(script);
+  const load=(src,key,selector)=>{
+    if(document.querySelector(selector)) return;
+    const script=document.createElement('script');
+    script.src=src;
+    script.async=false;
+    script.dataset[key]='1';
+    document.head.appendChild(script);
+  };
+  load('/vitals/scenario-desktop-polish.js?v=2026.09.12.2','scenarioDesktopPolish','script[data-scenario-desktop-polish]');
+  load('/vitals/scenario-desktop-layout-override.js?v=2026.09.12.1','scenarioDesktopLayoutOverride','script[data-scenario-desktop-layout-override]');
 })();
