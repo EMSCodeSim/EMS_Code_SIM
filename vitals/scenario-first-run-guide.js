@@ -23,8 +23,16 @@
     return { active: Boolean(findingCount || historyCount || treatmentCount || careCount) };
   }
 
+  function respiratoryScenario() {
+    return document.body.classList.contains('asthma-video-only');
+  }
+
   function respiratoryDesktop() {
-    return window.matchMedia?.('(min-width:980px)')?.matches && document.body.classList.contains('asthma-video-only');
+    return window.matchMedia?.('(min-width:980px)')?.matches && respiratoryScenario();
+  }
+
+  function respiratoryMobile() {
+    return window.matchMedia?.('(max-width:979px)')?.matches && respiratoryScenario();
   }
 
   function installStyles() {
@@ -38,6 +46,16 @@
       .site-review-orientation-steps{display:grid;gap:10px;margin:16px 0}.site-review-orientation-step{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start;padding:11px;border:1px solid #d7e3eb;border-radius:12px;background:#f8fbfd}.site-review-orientation-step b{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#0878a8;color:#fff}.site-review-orientation-step strong{display:block;margin-bottom:2px}.site-review-orientation-step span{font-size:.88rem;color:#526879;line-height:1.4}
       .site-review-orientation-card button{width:100%;min-height:48px;border:0;border-radius:11px;background:#0878a8;color:#fff;font:inherit;font-weight:900;cursor:pointer}
       .site-review-first-load .reasoning-card.locked.assessment-hidden{display:none!important}
+
+      #patientQuestionChoiceTray .patient-question-tray-head{display:flex;align-items:end;justify-content:space-between;gap:12px;padding-bottom:8px;border-bottom:1px solid rgba(142,213,239,.18)}
+      #patientQuestionChoiceTray .patient-question-tray-head small{display:block;color:#8ed5ef;font-weight:900;letter-spacing:.1em;font-size:.64rem}
+      #patientQuestionChoiceTray .patient-question-tray-head strong{display:block;margin-top:3px;font-size:1rem}
+      #patientQuestionChoiceTray .patient-question-tray-head span{color:#a9c2cf;font-size:.74rem;text-align:right}
+      #patientQuestionChoiceTray .patient-question-tray-list{display:grid;grid-template-columns:1fr;gap:8px}
+      #patientQuestionChoiceTray .patient-question-choice{width:100%;min-height:48px;padding:10px 12px;border:1px solid #31566d;border-radius:10px;background:#10283a;color:#eef8fb;text-align:left;font:inherit;font-size:.9rem;font-weight:750;line-height:1.3;cursor:pointer}
+      #patientQuestionChoiceTray .patient-question-choice:hover{border-color:#67c2f5;background:#174a68}
+      #patientQuestionChoiceTray .patient-question-choice.asked{opacity:.72}
+      #patientQuestionChoiceTray .patient-question-empty{padding:16px;border:1px dashed #31596f;border-radius:10px;color:#b8ced9;font-size:.86rem;line-height:1.45}
 
       @media(min-width:980px){
         body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column{
@@ -61,20 +79,48 @@
           display:grid;gap:10px;width:100%;margin:0 0 14px;padding:12px;border:1px solid #31596f;border-radius:13px;background:#0b2333;color:#eef8fb
         }
         body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #patientQuestionChoiceTray[hidden]{display:none!important}
-        #patientQuestionChoiceTray .patient-question-tray-head{display:flex;align-items:end;justify-content:space-between;gap:12px;padding-bottom:8px;border-bottom:1px solid rgba(142,213,239,.18)}
-        #patientQuestionChoiceTray .patient-question-tray-head small{display:block;color:#8ed5ef;font-weight:900;letter-spacing:.1em;font-size:.64rem}
-        #patientQuestionChoiceTray .patient-question-tray-head strong{display:block;margin-top:3px;font-size:1rem}
-        #patientQuestionChoiceTray .patient-question-tray-head span{color:#a9c2cf;font-size:.74rem;text-align:right}
-        #patientQuestionChoiceTray .patient-question-tray-list{display:grid;grid-template-columns:1fr;gap:8px}
-        #patientQuestionChoiceTray .patient-question-choice{width:100%;min-height:48px;padding:10px 12px;border:1px solid #31566d;border-radius:10px;background:#10283a;color:#eef8fb;text-align:left;font:inherit;font-size:.9rem;font-weight:750;line-height:1.3;cursor:pointer}
-        #patientQuestionChoiceTray .patient-question-choice:hover{border-color:#67c2f5;background:#174a68}
-        #patientQuestionChoiceTray .patient-question-choice.asked{opacity:.72}
-        #patientQuestionChoiceTray .patient-question-empty{padding:16px;border:1px dashed #31596f;border-radius:10px;color:#b8ced9;font-size:.86rem;line-height:1.45}
         body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #historyPanel .history-question-list{display:none!important}
         body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 #historyPanel .history-question-category>summary{cursor:pointer!important}
         body.asthma-video-only.desktop-scenario-layout.clinical-domain-workspace-v2.clinical-interaction-workspace-v4 .clinical-interaction-column .bottom-nav.clinical-domain-rail{
           position:static!important;flex:0 0 auto!important;width:100%!important;margin-top:8px!important;padding-top:8px!important;padding-bottom:2px!important;background:#081a28!important;z-index:8!important
         }
+      }
+
+      @media(max-width:979px){
+        body.asthma-video-only .patient-desktop-workspace{width:100%!important;max-width:none!important;overflow:hidden!important;padding:0!important}
+        body.asthma-video-only .scenario-hero-layout{
+          display:flex!important;flex-direction:row!important;align-items:stretch!important;gap:0!important;width:100%!important;max-width:none!important;
+          overflow-x:auto!important;overflow-y:hidden!important;scroll-snap-type:x mandatory!important;scroll-behavior:smooth!important;overscroll-behavior-x:contain!important;
+          -webkit-overflow-scrolling:touch!important;scrollbar-width:none!important
+        }
+        body.asthma-video-only .scenario-hero-layout::-webkit-scrollbar{display:none!important}
+        body.asthma-video-only .scenario-hero-layout>.patient-stage,
+        body.asthma-video-only .scenario-hero-layout>#clinicalInteractionColumn,
+        body.asthma-video-only .scenario-hero-layout>.patient-control-column{
+          flex:0 0 100%!important;width:100%!important;min-width:100%!important;max-width:100%!important;
+          min-height:calc(100dvh - 118px)!important;height:calc(100dvh - 118px)!important;scroll-snap-align:start!important;scroll-snap-stop:always!important;box-sizing:border-box!important
+        }
+        body.asthma-video-only .scenario-hero-layout>.patient-stage{overflow:hidden!important;position:relative!important}
+        body.asthma-video-only .scenario-hero-layout>#clinicalInteractionColumn{
+          display:flex!important;flex-direction:column!important;overflow:hidden!important;padding:10px!important;background:#081a28!important
+        }
+        body.asthma-video-only .scenario-hero-layout>.patient-control-column{
+          display:block!important;overflow-y:auto!important;overflow-x:hidden!important;padding:10px!important;background:#081a28!important;scrollbar-gutter:stable!important
+        }
+        body.asthma-video-only #clinicalInteractionColumn>.info-update-window,
+        body.asthma-video-only #siteReviewNextAction{display:none!important}
+        body.asthma-video-only #patientCommunicationStage{
+          display:flex!important;flex:1 1 auto!important;flex-direction:column!important;min-height:0!important;height:100%!important;width:100%!important;overflow-y:auto!important;overflow-x:hidden!important;
+          padding:8px!important;margin:0!important;border:0!important;justify-content:flex-start!important;scrollbar-gutter:stable!important
+        }
+        body.asthma-video-only #patientConversationTurn{display:block!important;width:100%!important;min-height:0!important;height:auto!important;overflow:visible!important;font-size:1rem!important}
+        body.asthma-video-only #patientConversationTurn .patient-conversation-choices{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;width:100%!important;margin-top:12px!important}
+        body.asthma-video-only #patientConversationTurn .patient-conversation-choices button{width:100%!important;min-height:50px!important;text-align:left!important;font-size:1rem!important;line-height:1.35!important}
+        body.asthma-video-only #patientQuestionChoiceTray{display:grid;gap:10px;width:100%;margin:0 0 14px;padding:12px;border:1px solid #31596f;border-radius:13px;background:#0b2333;color:#eef8fb;box-sizing:border-box}
+        body.asthma-video-only #patientQuestionChoiceTray[hidden]{display:none!important}
+        body.asthma-video-only .patient-control-column .bottom-nav{position:sticky!important;top:0!important;z-index:12!important;width:100%!important;margin:0 0 10px!important;background:#081a28!important}
+        body.asthma-video-only #historyPanel .history-question-list{display:none!important}
+        body.asthma-video-only #historyPanel .history-question-category>summary{cursor:pointer!important}
       }
     `;
     document.head.appendChild(style);
@@ -94,8 +140,45 @@
     });
   }
 
+  function ensureMobileSwipeStructure() {
+    if (!respiratoryMobile()) return null;
+    const layout = q('.scenario-hero-layout');
+    const patient = q('.patient-stage', layout || document);
+    const catalog = q('.patient-control-column', layout || document);
+    if (!layout || !patient || !catalog) return null;
+
+    let center = q('#clinicalInteractionColumn');
+    if (!center) {
+      center = document.createElement('section');
+      center.id = 'clinicalInteractionColumn';
+      center.className = 'clinical-interaction-column';
+      center.setAttribute('aria-label', 'Patient communication');
+    }
+    if (center.parentElement !== layout || center.previousElementSibling !== patient) layout.insertBefore(center, catalog);
+
+    const stage = q('#patientCommunicationStage');
+    if (stage && stage.parentElement !== center) center.appendChild(stage);
+    const turn = q('#patientConversationTurn');
+    if (turn && stage && turn.parentElement !== stage) stage.appendChild(turn);
+
+    const nav = q('.bottom-nav');
+    if (nav && nav.parentElement !== catalog) catalog.prepend(nav);
+    if (nav) nav.classList.add('mobile-catalog-domain-rail');
+
+    layout.dataset.mobileSwipeReady = '1';
+    return layout;
+  }
+
+  function scrollMobilePane(index, behavior = 'smooth') {
+    if (!respiratoryMobile()) return;
+    const layout = ensureMobileSwipeStructure();
+    if (!layout) return;
+    const width = layout.clientWidth || window.innerWidth || 1;
+    layout.scrollTo({ left: Math.max(0, index) * width, behavior });
+  }
+
   function ensureQuestionTray() {
-    if (!respiratoryDesktop()) return null;
+    if (!respiratoryScenario()) return null;
     const stage = q('#patientCommunicationStage');
     if (!stage) return null;
     let tray = q('#patientQuestionChoiceTray');
@@ -153,7 +236,8 @@
       button.addEventListener('click', () => {
         source.click();
         window.setTimeout(syncPatientQuestionChoices, 80);
-        q('#patientConversationTurn')?.scrollIntoView?.({ block:'nearest', behavior:'smooth' });
+        if (respiratoryMobile()) scrollMobilePane(1);
+        else q('#patientConversationTurn')?.scrollIntoView?.({ block:'nearest', behavior:'smooth' });
       });
       list.appendChild(button);
     });
@@ -161,6 +245,7 @@
 
   function renderGuide() {
     q('#siteReviewNextAction')?.remove();
+    ensureMobileSwipeStructure();
     const state = activityState();
     document.body.classList.toggle('site-review-first-load', !state.active);
     syncHistoryBadge(state.active);
@@ -180,8 +265,11 @@
     q('#siteReviewOrientationClose', wrap)?.addEventListener('click', () => {
       try { localStorage.setItem(ORIENTATION_KEY, '1'); } catch (_) {}
       wrap.remove();
-      const firstAction = q('button[data-panel="assessmentPanel"],#startSceneSizeupPhoto');
-      firstAction?.focus?.();
+      if (respiratoryMobile()) scrollMobilePane(0, 'auto');
+      else {
+        const firstAction = q('button[data-panel="assessmentPanel"],#startSceneSizeupPhoto');
+        firstAction?.focus?.();
+      }
     }, { once: true });
   }
 
@@ -198,12 +286,27 @@
     installStyles();
     renderGuide();
     showOnboarding();
+
     document.addEventListener('toggle', event => {
-      if (event.target?.matches?.('#historyPanel .history-question-category')) refresh();
+      if (!event.target?.matches?.('#historyPanel .history-question-category')) return;
+      refresh();
+      if (respiratoryMobile() && event.target.open) window.setTimeout(() => scrollMobilePane(1), 60);
     }, true);
+
     document.addEventListener('click', event => {
-      if (event.target.closest?.('button[data-panel="historyPanel"],#historyPanel .history-question-category>summary')) window.setTimeout(refresh, 20);
+      const historyTab = event.target.closest?.('button[data-panel="historyPanel"]');
+      const category = event.target.closest?.('#historyPanel .history-question-category>summary');
+      if (historyTab || category) window.setTimeout(refresh, 20);
+      if (historyTab && respiratoryMobile()) window.setTimeout(() => scrollMobilePane(2), 30);
+      if (category && respiratoryMobile()) window.setTimeout(() => scrollMobilePane(1), 80);
     });
+
+    document.addEventListener('play', event => {
+      const media = event.target;
+      if (!respiratoryMobile() || !media?.closest?.('.patient-stage')) return;
+      window.setTimeout(() => scrollMobilePane(0), 0);
+    }, true);
+
     const observer = new MutationObserver(mutations => {
       const onlyOwnChanges = mutations.every(mutation => mutation.target.closest?.('#patientQuestionChoiceTray,#siteReviewOrientation'));
       if (!onlyOwnChanges) refresh();
@@ -211,6 +314,8 @@
     observer.observe(document.body, { subtree:true, childList:true, attributes:true, attributeFilter:['hidden','class','open'] });
     window.addEventListener('emscodesim:scenario-updated', refresh);
     window.addEventListener('resize', refresh);
+    window.setTimeout(refresh, 80);
+    window.setTimeout(refresh, 400);
     window.addEventListener('pagehide', () => observer.disconnect(), { once:true });
   }
 
