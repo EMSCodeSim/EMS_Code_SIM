@@ -94,8 +94,6 @@
       });
     }
 
-    // Older intro logic can mark the clip as "seen" before playback succeeds.
-    // If that leaves the stage blank/resting at the start, explicitly replay once.
     const atStart = !Number.isFinite(video.currentTime) || video.currentTime < 0.15;
     const looksStuck = shell.hidden || (video.paused && !video.ended && atStart);
     if (looksStuck && !shell.dataset.recoveryAttempted) {
@@ -107,6 +105,15 @@
         if (video.paused && !video.ended && fallback) fallback.hidden = false;
       }, 1200);
     }
+  }
+
+  function ensureAsthmaStartupGuard() {
+    if (caseId !== 'asthma' || q('script[data-asthma-startup-guard]')) return;
+    const script = document.createElement('script');
+    script.src = '/vitals/scenario-asthma-startup-guard.js?v=2026.09.12.1';
+    script.async = false;
+    script.dataset.asthmaStartupGuard = '1';
+    document.head.appendChild(script);
   }
 
   function sweepAsthma() {
@@ -126,6 +133,7 @@
       '.horse-assessment-workspace-head', '.horse-grade-button', '.handoff-grade-button'
     ].forEach(selector => qa(selector).forEach(hideNode));
 
+    ensureAsthmaStartupGuard();
     repairAsthmaVideo();
     return true;
   }
@@ -139,8 +147,6 @@
   run();
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once: true });
 
-  // Late-loaded scenario modules can create the horse-only shells and video after this file runs.
-  // Observe insertions only, debounce them, and stop after startup settles.
   let queued = false;
   let passes = 0;
   const observer = new MutationObserver(mutations => {
@@ -157,6 +163,7 @@
   if (document.documentElement) observer.observe(document.documentElement, { subtree: true, childList: true });
 
   if (caseId === 'asthma') {
+    ensureAsthmaStartupGuard();
     window.setTimeout(repairAsthmaVideo, 250);
     window.setTimeout(repairAsthmaVideo, 900);
     window.setTimeout(repairAsthmaVideo, 1800);
