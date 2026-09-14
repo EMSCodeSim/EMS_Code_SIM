@@ -61,10 +61,18 @@ function possibleIdentifier(text) {
   return /\b(?:patient name|full name|date of birth|dob|home address|phone number|incident number|report number)\s*(?:is|:|#)/i.test(text);
 }
 
-function callOpenAI(apiKey, payload) {
+function env(name) {
+  return globalThis.Netlify?.env?.get?.(name) || process.env[name];
+}
+
+function callOpenAI(apiKey, baseUrl, payload) {
   return new Promise((resolve, reject) => {
     const body = JSON.stringify(payload);
-    const request = https.request({ hostname: 'api.openai.com', path: '/v1/responses', method: 'POST', headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) } }, res => {
+    const base = String(baseUrl || 'https://api.openai.com/v1').replace(/\/+$/, '') + '/';
+    const endpoint = new URL('responses', base);
+    const headers = { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) };
+    if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
+    const request = https.request({ hostname: endpoint.hostname, port: endpoint.port || 443, path: endpoint.pathname + endpoint.search, method: 'POST', headers }, res => {
       let data = '';
       res.setEncoding('utf8');
       res.on('data', chunk => { data += chunk; });
@@ -121,7 +129,9 @@ exports.handler = async event => {
   if (narrative.length < 80) return response(400, { error: 'The narrative is too short to grade.' });
   if (narrative.length > 8000) return response(413, { error: 'The narrative exceeds the 8,000-character limit.' });
   if (possibleIdentifier(narrative)) return response(400, { error: 'Possible patient-identifying information was detected. Remove it before submitting.' });
-  if (!process.env.OPENAI_API_KEY) return response(503, { error: 'AI grading is not configured yet.' });
+  const apiKey = env('OPENAI_API_KEY');
+  const baseUrl = env('OPENAI_BASE_URL');
+  if (!apiKey && !baseUrl) return response(503, { error: 'AI grading is not enabled for this site yet.' });
 
   const instructions = `You are a strict but constructive EMS documentation instructor grading a learner's fictional PCR narrative.
 Use only the supplied scenario as ground truth. Never infer that an undocumented finding was normal. Never reward invented facts.
@@ -135,8 +145,8 @@ Return concise, actionable feedback. Empty arrays are allowed when no issue exis
 
   const input = JSON.stringify({ scenario, learner: { level, format, narrative } });
   try {
-    const aiResult = await callOpenAI(process.env.OPENAI_API_KEY, {
-      model: process.env.OPENAI_NARRATIVE_MODEL || 'gpt-5-mini',
+    const aiResult = await callOpenAI(apiKey, baseUrl, {
+      model: env('OPENAI_NARRATIVE_MODEL') || 'gpt-5-mini',
       store: false,
       instructions,
       input,

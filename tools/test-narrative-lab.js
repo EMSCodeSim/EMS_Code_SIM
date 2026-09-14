@@ -22,6 +22,7 @@ for (const scenario of scenarios) {
 for (const requiredId of ['scenarioGrid', 'narrativeText', 'gradeBtn', 'categoryScores', 'exampleNarrative', 'reviseBtn']) assert.ok(html.includes(`id="${requiredId}"`), `Missing lab element #${requiredId}`);
 assert.ok(client.includes("/.netlify/functions/narrative-grader"), 'Client must call the server-side grader');
 assert.ok(grader.includes("store: false"), 'AI grading requests must disable response storage');
+assert.ok(grader.includes("env('OPENAI_BASE_URL')"), 'Grader must support Netlify AI Gateway');
 assert.ok(grader.includes('Use only the supplied scenario as ground truth'), 'Grader must anchor feedback to supplied facts');
 assert.ok(grader.includes('unsupportedStatements'), 'Grader must report unsupported documentation');
 assert.ok(!client.includes('OPENAI_API_KEY'), 'Client must never contain the OpenAI API key name');
