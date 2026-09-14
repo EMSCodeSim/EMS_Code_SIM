@@ -34,6 +34,14 @@ function copyActiveFunctions(directory, relativeBase = '') {
 
 copyActiveFunctions(source);
 
+const narrativeScenarioSource = path.join(root, 'data', 'narrative-lab-scenarios.json');
+if (fs.existsSync(narrativeScenarioSource)) {
+  const narrativeScenarioDestination = path.join(out, 'data', 'narrative-lab-scenarios.json');
+  fs.mkdirSync(path.dirname(narrativeScenarioDestination), { recursive: true });
+  fs.copyFileSync(narrativeScenarioSource, narrativeScenarioDestination);
+  copied += 1;
+}
+
 if (copied === 0) fs.writeFileSync(path.join(out, '.gitkeep'), '');
 
 if (fs.existsSync(path.join(out, 'gpt4-turbo.js'))) {
