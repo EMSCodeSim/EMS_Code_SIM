@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const scenarios = JSON.parse(fs.readFileSync(path.join(root, 'data', 'narrative-lab-scenarios.json'), 'utf8'));
+const scenarios = JSON.parse(fs.readFileSync(path.join(root, 'netlify', 'functions', 'data', 'narrative-lab-scenarios.json'), 'utf8'));
 const html = fs.readFileSync(path.join(root, 'narrative-writing-lab.html'), 'utf8');
 const client = fs.readFileSync(path.join(root, 'narrative-writing-lab.js'), 'utf8');
 const grader = fs.readFileSync(path.join(root, 'netlify', 'functions', 'narrative-grader.js'), 'utf8');

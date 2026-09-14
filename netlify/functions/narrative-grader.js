@@ -1,15 +1,7 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
 const https = require('https');
-
-const scenarioPaths = [
-  path.join(__dirname, 'data', 'narrative-lab-scenarios.json'),
-  path.join(__dirname, '..', '..', 'data', 'narrative-lab-scenarios.json')
-];
-const scenarioPath = scenarioPaths.find(candidate => fs.existsSync(candidate));
-const scenarios = scenarioPath ? JSON.parse(fs.readFileSync(scenarioPath, 'utf8')) : [];
+const scenarios = require('./data/narrative-lab-scenarios.json');
 const requestBuckets = new Map();
 
 const categoryDefinitions = [
@@ -118,8 +110,6 @@ exports.handler = async event => {
   if (event.httpMethod === 'OPTIONS') return response(204, {});
   if (event.httpMethod !== 'POST') return response(405, { error: 'Method not allowed.' }, { Allow: 'POST, OPTIONS' });
   if (rateLimited(event)) return response(429, { error: 'Too many grading requests. Wait one minute and try again.' });
-  if (!scenarios.length) return response(503, { error: 'The scenario library is unavailable.' });
-
   let body;
   try { body = JSON.parse(event.body || '{}'); } catch (_) { return response(400, { error: 'Invalid request.' }); }
   if (body.website) return response(400, { error: 'Invalid request.' });
