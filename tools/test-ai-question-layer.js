@@ -14,7 +14,9 @@ const fn = read('netlify/functions/scenario-question-labels.js');
 const policy = require('./deployment-policy');
 
 assert(registry.includes('scenario-ai-question-layer.js'), 'Patient workspace must load the AI Quick Response layer.');
-assert(client.includes("const ACTIVE_SCENARIOS = new Set(['asthma'])"), 'AI Quick Response pilot must remain limited to asthma.');
+for (const id of ['asthma','stroke','hypoglycemia','trauma','pediatric','horse_crush']) {
+  assert(client.includes(`'${id}'`), `AI Quick Response must support ${id}.`);
+}
 assert(client.includes("const ENDPOINT = '/api/scenario-question-labels'"), 'Client must use the scoped friendly API route.');
 assert(client.includes('MAX_QUICK_REPLIES = 4'), 'Quick Response must remain limited to four choices.');
 assert(client.includes('buttonByQuestionId(item.id)'), 'Quick Response choices must map back to existing deterministic question IDs.');
@@ -25,8 +27,10 @@ assert(!client.includes('OPENAI_API_KEY'), 'API keys must never appear in browse
 assert(fn.includes("https://api.openai.com/v1/responses"), 'Question endpoint must use the OpenAI Responses API.');
 assert(fn.includes("Netlify.env.get('OPENAI_API_KEY')"), 'OpenAI API key must be read server-side from Netlify environment variables.');
 assert(fn.includes("path:'/api/scenario-question-labels'"), 'Netlify function must expose the scoped friendly route.');
-assert(fn.includes("body?.scenarioId !== 'asthma'"), 'Server must reject non-asthma scenarios during the pilot.');
-assert(fn.includes('ASTHMA_QUESTIONS'), 'Server must maintain a fixed question-ID allowlist.');
+assert(fn.includes('const SCENARIOS = Object.freeze'), 'Server must maintain scenario-specific fixed question-ID allowlists.');
+assert(fn.includes("Netlify.env.get('OPENAI_NARRATIVE_MODEL')"), 'Question endpoint should share the configured low-latency model by default.');
+assert(fn.includes("type:'json_schema'"), 'Question endpoint must request structured output.');
+assert(fn.includes('store:false'), 'Question endpoint must disable response storage.');
 assert(fn.includes('allowedIds.has(item.id)'), 'AI output IDs must be validated against the approved candidate set.');
 assert(fn.includes("source:'fallback'"), 'Server failures must return a safe fallback result.');
 assert(!fn.includes('About two hours ago'), 'Server prompt must not contain the patient answer for onset.');
@@ -37,11 +41,13 @@ assert(!policy.isRetiredPath('netlify/functions/scenario-question-labels.js'), '
 const context = { window:{} };
 vm.createContext(context);
 vm.runInContext(read('vitals/scenario-interviews.js'), context, { filename:'scenario-interviews.js' });
-const asthma = context.window.EMSCodeSimScenarioInterviews?.get?.('asthma');
-assert(asthma, 'Asthma interview profile must be available.');
-for (const question of asthma.questions) {
-  const escaped = question.id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  assert(new RegExp(`\\b${escaped}\\s*:`).test(fn), `Server allowlist is missing asthma question ID: ${question.id}`);
+const profiles = context.window.EMSCodeSimScenarioInterviews?.PROFILES;
+assert(profiles, 'Scenario interview profiles must be available.');
+for (const [scenarioId, profile] of Object.entries(profiles)) {
+  assert(client.includes(`'${scenarioId}'`), `Client allowlist is missing scenario: ${scenarioId}`);
+  for (const question of profile.questions) {
+    assert(fn.includes(question.id), `Server allowlist is missing ${scenarioId} question ID: ${question.id}`);
+  }
 }
 
-console.log('AI Quick Response safety contract passed: asthma-only, four-choice, deterministic question mapping, server-side allowlist, and no clinical-answer authority.');
+console.log('AI Quick Response safety contract passed: all patient scenarios, four-choice, deterministic question mapping, structured output, server-side allowlists, and no clinical-answer authority.');
