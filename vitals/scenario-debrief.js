@@ -9,6 +9,14 @@
   const ts = v => { const n = new Date(v || 0).getTime(); return Number.isFinite(n) ? n : 0; };
   const fmt = sec => `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(Math.max(0,sec%60)).padStart(2,'0')}`;
   const label = key => phaseApi?.labelFor?.(key) || text(key).replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+  const AI_LESSONS = Object.freeze({
+    primary_assessment:{label:'Practice primary assessment',href:'/abc-training.html'},
+    history:{label:'Practice SAMPLE history',href:'/vitals/sample-history.html'},
+    vitals:{label:'Practice vital-sign assessment',href:'/vitals/'},
+    treatment:{label:'Practice treatment decisions',href:'/vitals/treatment-reassessment.html'},
+    reassessment:{label:'Practice reassessment',href:'/vitals/treatment-reassessment.html'},
+    transport_handoff:{label:'Practice PCR and handoff',href:'/vitals/pcr-handoff.html'}
+  });
 
   const SCENARIO_EXPECTATIONS = {
     asthma:{critical:['airway','breathing','perfusion','respirations','breath_sounds','spo2'], maxTreatmentDelay:180, destination:'Closest appropriate emergency department'},
@@ -122,11 +130,48 @@
     renderTimeline(record); renderList('strengthList',g.strengths,'good'); renderList('opportunityList',g.opportunities,'review'); renderList('selectionReview',g.selection,'neutral'); renderList('handoffReview',g.handoff,'neutral');
     return g;
   }
+  function limitText(value,max=360){return text(value).replace(/\s+/g,' ').slice(0,max)}
+  function aiPayload(r,g){
+    return {
+      scenarioId:limitText(r.scenarioId||r.id,40),score:g.score,label:limitText(g.label,40),
+      categoryScores:g.categoryScores,
+      phaseRatings:g.ratings.slice(0,8).map(x=>({id:limitText(x.id,30),label:limitText(x.label,80),score:x.score,rating:limitText(x.rating,40),detail:limitText(x.detail)})),
+      strengths:g.strengths.slice(0,5).map(x=>limitText(x)),opportunities:g.opportunities.slice(0,6).map(x=>limitText(x)),
+      criticalErrors:g.critical.slice(0,4).map(x=>limitText(x)),
+      priorities:g.priorities.slice(0,3).map(x=>({level:limitText(x.level,20),title:limitText(x.title,80),detail:limitText(x.detail)}))
+    };
+  }
+  function aiCacheKey(r,g){return `emscodesim_ai_debrief_${limitText(r.scenarioId||r.id,40)}_${ts(r.startedAt)}_${g.score}`}
+  function showAiDebrief(result,fromCache=false){
+    $('aiDebriefHeadline').textContent=limitText(result.headline,160);
+    $('aiDebriefSummary').textContent=limitText(result.summary,700);
+    $('aiDebriefStrengths').innerHTML=arr(result.strengths).slice(0,3).map(x=>`<li>${esc(limitText(x,240))}</li>`).join('')||'<li>Review the documented strengths above.</li>';
+    $('aiDebriefPriority').textContent=limitText(result.priorityAction,500);
+    $('aiDebriefSequence').textContent=limitText(result.sequenceFeedback,500);
+    $('aiDebriefReassessment').textContent=limitText(result.reassessmentFeedback,500);
+    $('aiDebriefGoal').textContent=limitText(result.nextAttemptGoal,300);
+    $('aiDebriefReflection').textContent=`Reflection: ${limitText(result.reflectionQuestion,300)}`;
+    const lesson=AI_LESSONS[result.lessonFocus]||AI_LESSONS.primary_assessment;
+    $('aiDebriefLesson').textContent=lesson.label;$('aiDebriefLesson').href=lesson.href;
+    $('aiDebriefResult').hidden=false;$('generateAiDebrief').textContent='Refresh personalized debrief';
+    $('aiDebriefStatus').classList.remove('error');$('aiDebriefStatus').textContent=fromCache?'Saved personalized debrief loaded.':'Personalized debrief ready.';
+  }
+  async function requestAiDebrief(r,g){
+    const button=$('generateAiDebrief'),status=$('aiDebriefStatus');button.disabled=true;status.classList.remove('error');status.textContent='Your instructor debrief is being prepared…';
+    try{
+      const response=await fetch('/api/scenario-debrief-coach',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(aiPayload(r,g))});
+      const result=await response.json().catch(()=>({}));
+      if(!response.ok||result.source!=='ai')throw new Error(result.error||'AI coaching is temporarily unavailable.');
+      localStorage.setItem(aiCacheKey(r,g),JSON.stringify(result.coaching));showAiDebrief(result.coaching);
+    }catch(error){status.classList.add('error');status.textContent=`${limitText(error.message,180)} Your scored debrief and coaching priorities above are still available.`}
+    finally{button.disabled=false}
+  }
+  function loadAiDebrief(r,g){try{const cached=JSON.parse(localStorage.getItem(aiCacheKey(r,g))||'null');if(cached)showAiDebrief(cached,true)}catch{}}
   function reflectionKey(r){return `emscodesim_debrief_reflection_${r.id}`}
   function loadReflection(r){try{const x=JSON.parse(localStorage.getItem(reflectionKey(r))||'{}');$('reflectionFinding').value=x.finding||'';$('reflectionChange').value=x.change||'';$('reflectionReassess').value=x.reassess||'';}catch{}}
   function saveReflection(r,g){ const savedAt=new Date().toISOString(); const reflection={finding:$('reflectionFinding').value.trim(),change:$('reflectionChange').value.trim(),reassess:$('reflectionReassess').value.trim(),savedAt}; localStorage.setItem(reflectionKey(r),JSON.stringify(reflection)); api.update(x=>{x.debrief={...(x.debrief||{}),reflection,score:g.score,label:g.label};x.documentation={...(x.documentation||{}),debrief:{savedAt,score:g.score,label:g.label,reflection}};return x}); const stateKey=`emscodesim_scenario_${r.scenarioId||r.id}`; let state={};try{state=JSON.parse(localStorage.getItem(stateKey)||'{}')}catch{} state.complete=true;state.completedAt=savedAt;localStorage.setItem(stateKey,JSON.stringify(state));$('reflectionStatus').textContent='Reflection saved. Scenario marked complete.'; }
   function download(r,g){ const blob=new Blob([JSON.stringify({generatedAt:new Date().toISOString(),grade:g,record:r},null,2)],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`EMSCodeSim-${r.id}-full-call-debrief.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500); }
-  function init(){ const r=record(); $('emptyState').hidden=!!r; $('reportContent').hidden=!r; if(!r)return; const g=render(r);loadReflection(r);$('returnToPatient').onclick=()=>location.href=`/vitals/visual-patient.html?case=${encodeURIComponent(r.scenarioId||r.id)}`;$('printReport').onclick=()=>print();$('downloadReport').onclick=()=>download(r,g);$('saveReflection').onclick=()=>saveReflection(r,g); }
+  function init(){ const r=record(); $('emptyState').hidden=!!r; $('reportContent').hidden=!r; if(!r)return; const g=render(r);loadReflection(r);loadAiDebrief(r,g);$('generateAiDebrief').onclick=()=>requestAiDebrief(r,g);$('returnToPatient').onclick=()=>location.href=`/vitals/visual-patient.html?case=${encodeURIComponent(r.scenarioId||r.id)}`;$('printReport').onclick=()=>print();$('downloadReport').onclick=()=>download(r,g);$('saveReflection').onclick=()=>saveReflection(r,g); }
   window.EMSCodeSimDebriefEngine={grade};
   document.addEventListener('DOMContentLoaded',init);
 })();
