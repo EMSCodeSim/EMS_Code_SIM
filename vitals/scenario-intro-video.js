@@ -1,21 +1,24 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.12.3';
+  const VERSION = '2026.09.14.1';
   const COVER = '/vitals/assets/breathing-problem-cover.webp';
+  // Generated video preview URLs were temporary signed Runway/CloudFront URLs.
+  // Never auto-load an expiring signed URL in production. Until durable local
+  // video assets are added, the scenario uses the local cover image instead.
   const VIDEOS = Object.freeze({
     intro: {
-      url: 'https://dnznrvs05pmza.cloudfront.net/seedance_2/cgt-20260910065357-qd2md/Single_continuous_realistic_EMS_training_scene__Preserve_the_same_woman__clothing__park_bench__water.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMWNjNzk4NjFjNGRlMWIxNSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTI5NzEyMX0.OxlGcsx6o5ujSdj8GcWrF4_BBJP8ua3OiTOwSpGP0oc',
+      url: '',
       eyebrow: 'ARRIVAL · PUBLIC PARK',
       copy: 'Observe the patient before beginning your assessment.'
     },
     worsening: {
-      url: 'https://dnznrvs05pmza.cloudfront.net/kling-o3-pro/926809681547366413/Preserve_the_same_woman__clothing__park_bench__daylight__public_park__framing__and_overall_appearanc.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNmJmNDY0MDUzNDM1ZjI0NyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTMxOTMwMX0.8lj3CyCcKsn3Z9Zn9gy8pyYejEu3mAkWx7W54r2mxCc',
+      url: '',
       eyebrow: 'PATIENT UPDATE · RESPIRATORY DISTRESS',
       copy: 'The patient appears more fatigued with increased work of breathing.'
     },
     improved: {
-      url: 'https://dnznrvs05pmza.cloudfront.net/kling-o3-pro/926809727395954732/Preserve_the_same_woman__clothing__park_bench__daylight__public_park__framing__and_overall_appearanc.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMjFhMzhjZTg0MTk2NTIyMyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTI1OTM2OH0.Tkmx-KfFcbwZn-fcsve9LwULX2kr8KJt1jOLChOytGc',
+      url: '',
       eyebrow: 'PATIENT UPDATE · AFTER BRONCHODILATOR',
       copy: 'Work of breathing is improving, but reassessment is still required.'
     }
@@ -168,11 +171,21 @@
     const copy = document.getElementById('scenarioVideoCopy');
     if (eyebrow) eyebrow.textContent = config.eyebrow;
     if (copy) copy.textContent = config.copy;
+    if (options.once) markSeen(state,current);
+
+    // No durable video asset is currently configured. Show the local poster
+    // without requesting an expired signed URL or generating a 401 error.
+    if (!config.url) {
+      shell.hidden = false;
+      shell.classList.add('resting');
+      try { video.pause(); } catch (_) {}
+      return;
+    }
+
     const source = video.querySelector('source');
     if (source && source.getAttribute('src') !== config.url) { source.src=config.url; video.load(); }
     shell.hidden = false;
     shell.classList.remove('resting');
-    if (options.once) markSeen(state,current);
     try { video.currentTime=0; video.play().catch(() => rest()); } catch (_) { rest(); }
     if (replayButton) replayButton.textContent = state === 'intro' ? 'Replay intro' : 'Replay patient update';
   }
@@ -198,9 +211,9 @@
     shell.id = 'scenarioIntroVideo';
     shell.className = 'scenario-intro-video-shell';
     shell.hidden = true;
-    shell.setAttribute('aria-label','Asthma patient video');
+    shell.setAttribute('aria-label','Asthma patient visual');
     shell.innerHTML = `
-      <video id="scenarioIntroVideoElement" muted playsinline preload="auto" poster="${COVER}"><source src="${VIDEOS.intro.url}" type="video/mp4"></video>
+      <video id="scenarioIntroVideoElement" muted playsinline preload="none" poster="${COVER}">${VIDEOS.intro.url ? `<source src="${VIDEOS.intro.url}" type="video/mp4">` : ''}</video>
       <div class="scenario-intro-video-controls">
         <div class="scenario-intro-video-copy"><small id="scenarioVideoEyebrow"></small><strong id="scenarioVideoCopy"></strong></div>
         <div class="scenario-intro-video-actions"><button id="scenarioIntroReplay" type="button">Replay</button><button id="scenarioIntroSkip" class="primary" type="button">Continue assessment</button></div>
@@ -216,7 +229,7 @@
     replayButton = document.createElement('button');
     replayButton.type='button';
     replayButton.className='scenario-intro-replay';
-    replayButton.textContent='Replay intro';
+    replayButton.textContent='Patient visual';
     replayButton.addEventListener('click',() => playState(activeState));
     stage.appendChild(replayButton);
 
