@@ -48,10 +48,10 @@ async function completeAsthmaIntroIfPresent(page) {
   const skip = page.locator('#scenarioIntroSkip');
   if (await skip.isVisible().catch(() => false)) await skip.click();
 
-  // The asthma scenario is intentionally video-only. The intro shell remains as
-  // the resting patient view after Continue, while the legacy patient image is hidden.
+  // Like the horse-crush case, Continue must reveal a usable patient workspace.
   await expect(page.locator('.patient-stage')).toBeVisible({ timeout: 8000 });
-  await expect(page.locator('#scenarioIntroVideoElement')).toHaveCount(1);
+  await expect(page.locator('#scenarioIntroVideo')).toBeHidden();
+  await expect(page.locator('#patientImage')).toBeVisible();
 }
 
 async function openScenario(page, caseId = 'asthma', mode = 'learning') {

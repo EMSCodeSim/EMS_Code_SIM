@@ -5,7 +5,7 @@
   const caseId = String(params.get('case') || '').replace(/-/g, '_').toLowerCase();
   if (caseId !== 'asthma') return;
 
-  const VERSION = '2026.09.12.1';
+  const VERSION = '2026.09.15.1';
   const q = (s, r = document) => r.querySelector(s);
   const reset = params.get('reset') === '1';
   const pageLoadedAt = Date.now();
@@ -109,9 +109,7 @@
 
     installStyles();
     const button = ensurePlayButton(stage);
-    shell.hidden = false;
-    shell.classList.remove('resting');
-    document.body.classList.add('asthma-startup-video-pending');
+    button.hidden = true;
 
     if (wiredVideo !== video) {
       wiredVideo = video;
@@ -124,16 +122,13 @@
       video.addEventListener('timeupdate', () => {
         if (video.currentTime > 0.15) hideButton();
       });
-      video.addEventListener('error', () => {
-        button.textContent = 'Retry patient video';
-        button.hidden = false;
-      });
+      video.addEventListener('error', () => window.EMSCodeSimScenarioIntroVideo?.showPatient?.());
       video.addEventListener('stalled', () => {
-        if (!video.ended) button.hidden = false;
+        if (!video.ended && video.currentTime < 0.15) window.EMSCodeSimScenarioIntroVideo?.showPatient?.();
       });
       video.addEventListener('waiting', () => {
         window.setTimeout(() => {
-          if (video.paused && video.currentTime < 0.2 && !video.ended) button.hidden = false;
+          if (video.currentTime < 0.2 && !video.ended) window.EMSCodeSimScenarioIntroVideo?.showPatient?.();
         }, 800);
       });
     }
@@ -146,18 +141,6 @@
     video.autoplay = true;
     video.setAttribute('autoplay', '');
 
-    const actuallyPlaying = !video.paused && !video.ended && video.currentTime > 0.05;
-    if (actuallyPlaying) {
-      button.hidden = true;
-      document.body.classList.remove('asthma-startup-video-pending');
-      return true;
-    }
-
-    try { window.EMSCodeSimScenarioIntroVideo?.replay?.(); } catch (_) {}
-    Promise.resolve(video.play()).catch(() => {});
-    window.setTimeout(() => {
-      if (video.paused && video.currentTime < 0.2 && !video.ended) button.hidden = false;
-    }, 1100);
     return true;
   }
 

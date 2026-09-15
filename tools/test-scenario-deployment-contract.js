@@ -19,6 +19,8 @@ const registry = read('vitals/scenario-tool-registry.js');
 const miniOverlay = read('vitals/scenario-mini-sim-overlay.js');
 const embeddedMiniSim = read('vitals/scenario-mini-sim-embedded.js');
 const visualAssessmentSuite = read('vitals/visual-assessment-suite.js');
+const asthmaIntro = read('vitals/scenario-intro-video.js');
+const asthmaStartupGuard = read('vitals/scenario-asthma-startup-guard.js');
 
 function assertRevalidatedHeader(pattern) {
   const marker = `for = "${pattern}"`;
@@ -106,5 +108,11 @@ assert(embeddedMiniSim.includes('installPerlAdapter') && embeddedMiniSim.include
 assert(read('vitals/breath-sounds-auscultation.js').includes('stageMarkup') && read('vitals/breath-sounds-scenario.html').includes('breath-sounds-auscultation.js'), 'Breath-sounds scenario must load the rebuilt anatomical auscultation stage');
 assert(visualAssessmentSuite.includes('function interpret(config={})'), 'Visual assessment suite must require learner interpretation before saving findings');
 assert(visualAssessmentSuite.includes('reviewAtDebrief:true'), 'Visual assessment grading data must remain hidden until debrief');
+
+assert(asthmaIntro.includes('function showPatient()'), 'Breathing-problem startup must provide an explicit patient-workspace fallback');
+assert(asthmaIntro.includes("shell.hidden = true"), 'Breathing-problem Continue/error handling must remove the video overlay from the active workspace');
+assert(asthmaIntro.includes("image.hidden = false"), 'Breathing-problem startup must reveal the static patient image when media is unavailable');
+assert(!asthmaIntro.includes("img#focusImage{display:none!important"), 'Breathing-problem media must not permanently hide the patient images');
+assert(!asthmaStartupGuard.includes('EMSCodeSimScenarioIntroVideo?.replay?.()'), 'The startup guard must not reopen a failed video over the patient workspace');
 
 console.log('Scenario deployment contract OK');
