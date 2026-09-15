@@ -1,5 +1,6 @@
 <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Distal CSM & Capillary Refill | EMSCodeSim</title><link rel="stylesheet" href="/vitals/visual-assessment-suite.css?v=2318"></head><body>
+<title>Distal CSM & Capillary Refill | EMSCodeSim</title><link rel="stylesheet" href="/vitals/visual-assessment-suite.css?v=2318"><link rel="stylesheet" href="/styles/skills-session-mode.css?v=1">
+</head><body>
 <main class="va-shell"><header class="va-head"><div><small>VISUAL ASSESSMENT MINI SIM</small><h1>Distal CSM & Capillary Refill</h1></div><small>Perform → observe → document</small></header>
 <section class="va-card va-stage"><div class="va-visual"><div class="va-csm"><div class="foot"><div class="pulse-dot"></div><div class="toe">🦶</div></div><div class="cap-nail" id="nail"></div><p id="csmObservation" style="max-width:350px;margin:10px auto 0;text-align:center;font-weight:750;color:#36566a">Perform each distal neurovascular check and observe the response.</p></div></div><div class="va-controls"><button class="va-btn" data-step="pulse">1. Palpate distal pulse</button><button class="va-btn" data-step="sensation">2. Check sensation</button><button class="va-btn" data-step="movement">3. Check movement</button><button class="va-btn" data-step="cap">4. Press nail bed for cap refill</button></div></section>
 <section id="result" class="va-card va-result">Complete pulse, sensation, movement, and capillary refill before documenting.</section></main>
@@ -16,4 +17,5 @@ document.querySelectorAll('[data-step]').forEach(b=>b.onclick=()=>{done.add(b.da
  if(b.dataset.step==='cap'){let n=document.querySelector('#nail');n.classList.add('pressed');setTimeout(()=>{n.classList.remove('pressed');n.classList.add('refill')},850)}
  if(b.dataset.step==='movement')document.querySelector('.toe')?.classList.add('wiggle');
  if(done.size===4)VA.interpret({key:saveKey,label:saveLabel,prompt:saveKey==='perfusion'?'How would you classify circulation and perfusion?':'How would you document distal CSM?',help:'Use the pulse, sensation, movement, and capillary-refill findings you obtained.',expectedFinding:finding,correctValue:correct,choices:[{value:'intact',label:saveKey==='perfusion'?'Perfusion appears adequate; no major bleeding':'Distal CSM intact with brisk capillary refill'},{value:'abnormal',label:saveKey==='perfusion'?'Poor perfusion or major bleeding is present':'Abnormal distal neurovascular finding present'},{value:'uncertain',label:'Unable to determine distal CSM'}]})
-});</script></body></html>
+});</script><script defer src="/skills-session-mode.js?v=1"></script>
+</body></html>

@@ -211,11 +211,20 @@
     }
   }
 
+  function preserveSkillsMode(url) {
+    const current = new URLSearchParams(location.search);
+    if (current.get('mode') !== 'skills' && current.get('skillsMode') !== '1') return url;
+    const next = new URL(url, location.origin);
+    next.searchParams.set('skillsMode', '1');
+    next.searchParams.set('station', current.get('station') || 'patient-assessment');
+    return next.pathname + next.search + next.hash;
+  }
+
   function toolUrl(url, returnLabel = 'Patient', context = '', key = '') {
     const registryKey = key || context;
     return registry?.buildUrl?.(url, {
       caseId: id,
-      returnTo: `/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}`,
+      returnTo: preserveSkillsMode(`/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}`),
       training: trainingMode(),
       returnLabel,
       context: context || registryKey,
@@ -4445,7 +4454,7 @@
       api?.clear?.();
       const partnerKey = session?.partnerTaskKey?.(id);
       [partnerKey, partnerKey && `${partnerKey}_backup`, partnerKey && `${partnerKey}_shadow`, `emscodesim_scenario_${id}`, `emscodesim_scenario_${id}_backup`, `emscodesim_scenario_${id}_shadow`].filter(Boolean).forEach(key => localStorage.removeItem(key));
-      location.href = `/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&reset=1`;
+      location.href = preserveSkillsMode(`/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&reset=1`);
     } catch (error) {
       console.error(error);
       toast('Scenario could not be reset. Try returning to the launcher.');
@@ -4455,7 +4464,7 @@
   function endScenario() {
     stopInfoSpeech();
     closeScenarioControls();
-    location.href = `/vitals/scenario-launcher.html?select=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&ended=1`;
+    location.href = preserveSkillsMode(`/vitals/scenario-launcher.html?select=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&ended=1`);
   }
 
   const desktopWorkspaceQuery = window.matchMedia('(min-width: 980px)');

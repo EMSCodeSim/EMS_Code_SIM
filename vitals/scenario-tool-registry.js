@@ -118,6 +118,11 @@
     if (options.returnLabel) query.set('returnLabel',options.returnLabel);
     if (options.context) query.set('context',options.context);
     if (options.key) query.set('key',options.key);
+    const current = new URLSearchParams(location.search);
+    if (current.get('mode') === 'skills' || current.get('skillsMode') === '1') {
+      query.set('skillsMode','1');
+      query.set('station',current.get('station') || 'patient-assessment');
+    }
     return `${path}?${query.toString()}`;
   }
   function currentPageReturn() { return `${location.pathname}${location.search}`; }
