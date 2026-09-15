@@ -85,26 +85,17 @@
       video.dataset.asthmaRecoveryWired = '1';
       video.addEventListener('playing', () => { if (fallback) fallback.hidden = true; });
       video.addEventListener('ended', () => { if (fallback) fallback.hidden = true; });
-      video.addEventListener('error', () => { if (fallback) fallback.hidden = false; });
-      video.addEventListener('stalled', () => { if (!video.ended && fallback) fallback.hidden = false; });
+      video.addEventListener('error', () => window.EMSCodeSimScenarioIntroVideo?.showPatient?.());
+      video.addEventListener('stalled', () => {
+        if (!video.ended && video.currentTime < 0.15) window.EMSCodeSimScenarioIntroVideo?.showPatient?.();
+      });
       video.addEventListener('waiting', () => {
         window.setTimeout(() => {
-          if (video.paused && !video.ended && fallback) fallback.hidden = false;
+          if (video.currentTime < 0.15 && !video.ended) window.EMSCodeSimScenarioIntroVideo?.showPatient?.();
         }, 900);
       });
     }
-
-    const atStart = !Number.isFinite(video.currentTime) || video.currentTime < 0.15;
-    const looksStuck = shell.hidden || (video.paused && !video.ended && atStart);
-    if (looksStuck && !shell.dataset.recoveryAttempted) {
-      shell.dataset.recoveryAttempted = '1';
-      shell.hidden = false;
-      shell.classList.remove('resting');
-      try { window.EMSCodeSimScenarioIntroVideo?.replay?.(); } catch (_) {}
-      window.setTimeout(() => {
-        if (video.paused && !video.ended && fallback) fallback.hidden = false;
-      }, 1200);
-    }
+    if (fallback) fallback.hidden = true;
   }
 
   function ensureAsthmaStartupGuard() {

@@ -12,8 +12,8 @@ test('breathing problem desktop centers the patient encounter and keeps tools on
   const assertNoPageErrors = watchPageErrors(page);
   await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
 
-  await expect(page.locator('#scenarioIntroVideo')).toBeVisible({ timeout: 10000 });
-  await page.locator('#scenarioIntroSkip').click();
+  await expect(page.locator('#scenarioIntroVideo')).toHaveCount(1, { timeout: 10000 });
+  if (await page.locator('#scenarioIntroVideo').isVisible().catch(() => false)) await page.locator('#scenarioIntroSkip').click();
   await expect(page.locator('#desktopPatientHub')).toBeVisible({ timeout: 10000 });
   await expect(page.locator('#desktopPatientActions button')).toHaveCount(4);
   await expect(page.locator('#desktopPatientStream')).toBeVisible();

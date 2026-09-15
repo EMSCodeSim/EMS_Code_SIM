@@ -5203,8 +5203,8 @@
   const requestedTrainingMode = params.get('training');
   if (requestedTrainingMode === 'learning' || requestedTrainingMode === 'assessment') api?.setDocumentation?.({ trainingMode: requestedTrainingMode });
   document.body.dataset.trainingMode = trainingMode();
-  if (id === 'horse_crush') {
-    document.body.classList.add('horse-current-emt-call');
+  if (id === 'horse_crush' || id === 'asthma') {
+    document.body.classList.add(id === 'horse_crush' ? 'horse-current-emt-call' : 'asthma-current-emt-call');
     const phaseControls = $('patientPhaseControls');
     if (phaseControls) phaseControls.hidden = true;
     const guide = $('sceneGuide');
@@ -5220,16 +5220,20 @@
     const guidedHistory = document.querySelector('.history-guided-tools');
     if (guidedHistory) guidedHistory.hidden = true;
     const treatmentSub = document.querySelector('#treatmentPanel > .sub');
-    if (treatmentSub) treatmentSub.textContent = 'Choose treatment, movement, packaging, comfort, and reassessment actions as you would on a real call. On a computer, Transport and Handoff are available in the quick-action row above the patient.';
+    if (treatmentSub) treatmentSub.textContent = id === 'horse_crush'
+      ? 'Choose treatment, movement, packaging, comfort, and reassessment actions as you would on a real call. On a computer, Transport and Handoff are available in the quick-action row above the patient.'
+      : 'Choose respiratory support and other indicated treatment as you would on a real call. Reassess breathing, oxygenation, and the patient’s response after every intervention.';
     const returnButtonLabel = document.querySelector('#closeSheet span');
     if (returnButtonLabel) returnButtonLabel.textContent = 'Current assessment';
-    window.EMSCodeSimHorseWorkspace = Object.freeze({
-      selectAssessment: selectHorseCurrentAssessment,
-      showCurrent: closeSheet,
-      openSheet,
-      openAaox4: openHorseAaox4Tool,
-      openPainScale: openHorsePainScaleTool
-    });
+    if (id === 'horse_crush') {
+      window.EMSCodeSimHorseWorkspace = Object.freeze({
+        selectAssessment: selectHorseCurrentAssessment,
+        showCurrent: closeSheet,
+        openSheet,
+        openAaox4: openHorseAaox4Tool,
+        openPainScale: openHorsePainScaleTool
+      });
+    }
   }
   if ($('modeBadge')) $('modeBadge').textContent = assessmentMode() ? 'Assessment Mode' : 'Learning Mode';
   scenarioStartMs = new Date(initialRecord?.startedAt || Date.now()).getTime();

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.12.3';
+  const VERSION = '2026.09.15.1';
   const COVER = '/vitals/assets/breathing-problem-cover.webp';
   const VIDEOS = Object.freeze({
     intro: {
@@ -30,14 +30,13 @@
   let video = null;
   let activeState = 'intro';
   let replayButton = null;
+  let playbackFallbackTimer = 0;
 
   function installStyles() {
     if (document.getElementById('scenarioIntroVideoStyles')) return;
     const style = document.createElement('style');
     style.id = 'scenarioIntroVideoStyles';
     style.textContent = `
-      html body.asthma-video-only .patient-stage > img#patientImage,
-      html body.asthma-video-only img#focusImage{display:none!important;visibility:hidden!important;opacity:0!important}
       html body.asthma-video-only #clinicalReasoningBoard,
       html body.asthma-video-only #reasoningDiscoveryCue{display:none!important}
       html body.asthma-video-only .patient-stage{position:relative;background:#071625!important}
@@ -55,8 +54,6 @@
       .scenario-intro-video-shell{position:absolute;inset:0;z-index:30;background:#071625;display:flex;align-items:center;justify-content:center;overflow:hidden}
       .scenario-intro-video-shell[hidden]{display:none}
       .scenario-intro-video-shell video{width:100%;height:100%;object-fit:cover;background:#071625}
-      .scenario-intro-video-shell.resting{pointer-events:none}
-      .scenario-intro-video-shell.resting .scenario-intro-video-controls{display:none}
       .scenario-intro-video-controls{position:absolute;left:14px;right:14px;bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:12px;background:rgba(5,18,31,.76);backdrop-filter:blur(8px);color:#fff}
       .scenario-intro-video-copy small{display:block;font-size:.68rem;font-weight:800;letter-spacing:.12em;opacity:.78}
       .scenario-intro-video-copy strong{display:block;margin-top:2px;font-size:.95rem}
@@ -136,31 +133,34 @@
     return Number.isFinite(started) && started > 0 ? Math.max(0,(Date.now()-started)/1000) : 0;
   }
 
-  function enforceVideoOnly() {
+  function enablePatientWorkspace() {
     document.body.classList.add('asthma-video-only');
     for (const id of ['patientImage','focusImage']) {
       const image = document.getElementById(id);
       if (!image) continue;
-      image.hidden = true;
-      image.setAttribute('aria-hidden','true');
-      image.style.setProperty('display','none','important');
-      image.style.setProperty('visibility','hidden','important');
-      image.style.setProperty('opacity','0','important');
+      image.hidden = false;
+      image.removeAttribute('aria-hidden');
+      image.style.removeProperty('display');
+      image.style.removeProperty('visibility');
+      image.style.removeProperty('opacity');
     }
   }
 
-  function rest() {
-    if (!shell) return;
-    enforceVideoOnly();
+  function showPatient() {
+    enablePatientWorkspace();
+    window.clearTimeout(playbackFallbackTimer);
     try { video?.pause(); } catch (_) {}
-    shell.hidden = false;
-    shell.classList.add('resting');
+    if (shell) {
+      shell.hidden = true;
+      shell.classList.remove('resting');
+    }
+    document.body.classList.remove('asthma-startup-video-pending','mobile-patient-video-playing');
   }
 
   function playState(state,options={}) {
     const config = VIDEOS[state];
     if (!config || !shell || !video) return;
-    enforceVideoOnly();
+    enablePatientWorkspace();
     const current = record();
     if (options.once && hasSeen(state,current)) return;
     activeState = state;
@@ -173,12 +173,16 @@
     shell.hidden = false;
     shell.classList.remove('resting');
     if (options.once) markSeen(state,current);
-    try { video.currentTime=0; video.play().catch(() => rest()); } catch (_) { rest(); }
+    window.clearTimeout(playbackFallbackTimer);
+    playbackFallbackTimer = window.setTimeout(() => {
+      if (!video || video.currentTime < 0.15) showPatient();
+    }, 2500);
+    try { video.currentTime=0; video.play().catch(showPatient); } catch (_) { showPatient(); }
     if (replayButton) replayButton.textContent = state === 'intro' ? 'Replay intro' : 'Replay patient update';
   }
 
   function evaluatePatientState() {
-    enforceVideoOnly();
+    enablePatientWorkspace();
     const current = record();
     if (!current || current.scenarioId !== 'asthma') return;
     if (hasBronchodilator(current) && !hasSeen('improved',current)) {
@@ -192,7 +196,7 @@
     const stage = document.querySelector('.patient-stage');
     if (!stage || document.getElementById('scenarioIntroVideo')) return;
     installStyles();
-    enforceVideoOnly();
+    enablePatientWorkspace();
 
     shell = document.createElement('section');
     shell.id = 'scenarioIntroVideo';
@@ -208,10 +212,11 @@
     stage.appendChild(shell);
     video = document.getElementById('scenarioIntroVideoElement');
 
-    document.getElementById('scenarioIntroSkip')?.addEventListener('click',rest);
+    document.getElementById('scenarioIntroSkip')?.addEventListener('click',showPatient);
     document.getElementById('scenarioIntroReplay')?.addEventListener('click',() => playState(activeState));
-    video?.addEventListener('ended',rest);
-    video?.addEventListener('error',rest);
+    video?.addEventListener('ended',showPatient);
+    video?.addEventListener('error',showPatient);
+    video?.addEventListener('playing',() => window.clearTimeout(playbackFallbackTimer));
 
     replayButton = document.createElement('button');
     replayButton.type='button';
@@ -225,7 +230,7 @@
     window.setInterval(evaluatePatientState,5000);
   }
 
-  window.EMSCodeSimScenarioIntroVideo = Object.freeze({ version:VERSION, caseId:'asthma', replay:() => playState(activeState), evaluate:evaluatePatientState });
+  window.EMSCodeSimScenarioIntroVideo = Object.freeze({ version:VERSION, caseId:'asthma', replay:() => playState(activeState), showPatient, evaluate:evaluatePatientState });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();
 })();
