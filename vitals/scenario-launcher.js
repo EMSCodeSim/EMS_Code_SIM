@@ -41,6 +41,11 @@
   function patientHome(caseId, mode = 'learning', options = {}) {
     const params = new URLSearchParams({ case: caseId, training: trainingMode(mode) });
     if (options.reset) params.set('reset', '1');
+    const current = new URLSearchParams(location.search);
+    if (current.get('mode') === 'skills' || current.get('skillsMode') === '1') {
+      params.set('mode', 'skills');
+      params.set('station', current.get('station') || 'patient-assessment');
+    }
     return `/vitals/visual-patient.html?${params}`;
   }
 

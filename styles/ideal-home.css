@@ -137,6 +137,7 @@ body.home-page{
 /* Third hero CTA is kept in the DOM for stage JS, but hidden so the hero
    only shows one primary and one secondary action. */
 .home-page #heroPractice{display:none !important}
+.home-page .skills-session-home-card{display:grid;gap:3px;margin:-4px -4px 18px;padding:14px;border:1px solid #79d6bc;border-radius:12px;background:#e9fbf4;color:#075d43!important;text-decoration:none}.home-page .skills-session-home-card span{font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em}.home-page .skills-session-home-card strong{font-size:1rem}.home-page .skills-session-home-card small{color:#315f50}.home-page .skills-session-home-card:hover{background:#d9f6eb}
 
 /* ---------- Header ---------- */
 .home-page .site-header{

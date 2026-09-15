@@ -2,12 +2,20 @@
 (function(){
 
   const navGroups=[...document.querySelectorAll('[data-nav-group]')];
+  navGroups.forEach(function(group){
+    const summary=group.querySelector('summary');
+    const menu=group.querySelector('.nav-dropdown');
+    if(!summary||summary.textContent.trim()!=='Practice'||!menu||menu.querySelector('a[href="/skills-session"]'))return;
+    const link=document.createElement('a');link.href='/skills-session';link.innerHTML='<strong>Skills Session</strong><small>Assessment, vitals, and narrative practice</small>';menu.insertBefore(link,menu.firstChild);
+  });
   navGroups.forEach(function(group){group.addEventListener('toggle',function(){if(!group.open)return;navGroups.forEach(function(other){if(other!==group)other.open=false;});});});
   document.addEventListener('click',function(event){if(!event.target.closest('.nav-group'))navGroups.forEach(function(group){group.open=false;});});
   document.addEventListener('keydown',function(event){if(event.key==='Escape')navGroups.forEach(function(group){group.open=false;});});
 
   const mobile = document.getElementById('mobileMenu');
   if(mobile){
+    const practice=[...mobile.querySelectorAll('optgroup')].find(function(group){return group.label==='Practice'});
+    if(practice&&![...practice.options].some(function(option){return option.value==='/skills-session'})){const option=new Option('Skills Session','/skills-session');practice.insertBefore(option,practice.firstChild);}
     mobile.addEventListener('change', function(){
       if(!this.value) return;
       if(this.value.startsWith('#')) location.hash = this.value;
