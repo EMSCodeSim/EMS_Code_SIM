@@ -1,7 +1,7 @@
 (function(){
   const search=document.getElementById('toolSearch'),category=document.getElementById('toolCategory'),level=document.getElementById('toolLevel'),clear=document.getElementById('clearToolFilters'),summary=document.getElementById('toolSummary');
   const cards=[...document.querySelectorAll('.training-card')];if(!search||!category||!level||!summary)return;
-  const params=new URLSearchParams(location.search),skillsMode=params.get('mode')==='skills';
+  const params=new URLSearchParams(location.search),skillsMode=['skills','bootcamp'].includes(params.get('mode'));
   const skillCategories={Assessment:['Patient Assessment','Trauma Assessment','Neurologic Assessment','Pediatric Assessment','Respiratory'],Vitals:['Vital Signs'],Documentation:['Documentation']};
   const timeByCategory={'Protocol Practice':8,'Patient Assessment':15,'Documentation':15,'Knowledge Review':10,'Vital Signs':5,'Respiratory':8,'Neurologic Assessment':6,'Trauma Assessment':10,'Pediatric Assessment':8,'Medication Safety':8};
   let skillsFocus='';

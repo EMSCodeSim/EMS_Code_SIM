@@ -1,38 +1,144 @@
 (() => {
   'use strict';
-  const $=id=>document.getElementById(id), esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const STORAGE_KEY='emscodesim_skills_session_practice_v1';
-  const commonPrimary=[
-    '“Scene safe. I am using appropriate PPE. I have one patient.”',
-    '“The nature of illness or mechanism of injury is ___. I will request additional resources as needed and consider spinal precautions.”',
-    '“My general impression is ___. The patient is alert to ___ and appears ___.”',
-    '“I am assessing airway, breathing, circulation, and immediate life threats.”',
-    '“This patient is high/low priority. I will make a transport decision and continue my focused assessment.”'
-  ];
-  const stations={
-    'patient-assessment':{title:'Patient Assessment',time:'20–40 min',intro:'Run the complete patient-care cycle with an organized primary assessment, focused history/exam, vitals, care, reassessment, and handoff.',script:'“Scene safe. Number of patients: one. NOI/MOI is ___. I will request ___. General impression: ___. The patient is responsive to ___. Airway is ___. Breathing is ___. Circulation is ___. My transport priority is ___.”',sequence:[...commonPrimary,'Obtain SAMPLE/OPQRST as appropriate, baseline vital signs, and a focused secondary assessment.','State treatments, repeat the relevant assessment and vitals, choose disposition, and give a concise handoff.'],critical:['Failure to address scene hazards or use appropriate PPE.','Failure to identify or manage an immediate airway, breathing, or circulation threat.','Delay in identifying a high-priority patient or arranging transport.','Giving an unsafe intervention or failing to reassess after care.'],tools:[['Launch patient scenario','Full assessment through debrief','/vitals/scenario-launcher.html'],['Open skill-sheet library','Review medical and trauma sheets','/nremt-skill-sheets.html'],['Practice full vital set','Enter and chart findings','/vitals/full-vitals-set.html']]},
-    'trauma-assessment':{title:'Trauma Assessment',time:'20–30 min',intro:'Prioritize mechanism, hemorrhage, ABC threats, rapid exam, transport, and reassessment.',script:'“Scene safe. PPE. One trauma patient. MOI is ___. I am considering spinal precautions and additional resources. General impression ___. I will control major bleeding while assessing airway, breathing, and circulation.”',sequence:[...commonPrimary,'Expose and control life-threatening hemorrhage; perform a rapid head-to-toe trauma assessment.','Obtain baseline vitals and SAMPLE history without delaying transport.','Treat threats, package appropriately, repeat ABCs/distal findings, and give handoff.'],critical:['Missing uncontrolled major hemorrhage.','Failure to manage airway or inadequate breathing.','Prolonging scene time for nonessential tasks in a high-priority patient.','Moving or splinting without appropriate stabilization and pre/post distal checks.'],tools:[['Start trauma scenario','Connected visual patient','/vitals/visual-patient.html?case=trauma&training=assessment&reset=1'],['Review trauma skill sheet','Sequence and practice tracking','/nremt-skill-sheets.html'],['Practice trauma exam','Interactive assessment','/vitals/visual-trauma-body-exam.html']]},
-    'medical-assessment':{title:'Medical Assessment',time:'20–30 min',intro:'Build a repeatable medical assessment around the chief complaint, ABCs, focused history, vitals, intervention, and reassessment.',script:'“Scene safe. PPE. One patient. Nature of illness is ___. General impression ___. The patient is alert to ___. Airway, breathing, and circulation are ___. I will obtain OPQRST, SAMPLE, focused findings, and baseline vitals.”',sequence:[...commonPrimary,'Explore the chief complaint with OPQRST and obtain relevant SAMPLE history.','Perform the focused exam and obtain a complete baseline vital-sign set.','State the working impression, provide indicated care, reassess, and communicate transport/handoff.'],critical:['Failing to identify an immediate ABC threat.','Omitting time-sensitive history such as onset or last known well when relevant.','Providing care before completing essential safety checks.','Failing to reassess the complaint and relevant vital signs after treatment.'],tools:[['Start medical scenario','Choose respiratory, stroke, glucose, or pediatric','/vitals/scenario-launcher.html'],['Practice SAMPLE history','Ask complaint-specific questions','/vitals/sample-history.html'],['Review medical skill sheet','Read the assessment sequence','/nremt-skill-sheets.html']]},
-    bvm:{title:'BVM Ventilation',time:'10–15 min',intro:'Rehearse airway opening, adjunct selection, mask seal, oxygen connection, effective ventilation, and reassessment.',script:'“The patient is unresponsive and not breathing adequately. I will open and clear the airway, select an appropriate adjunct, connect high-concentration oxygen, establish a two-person seal if available, and ventilate while watching for chest rise.”',sequence:['Use PPE, assess responsiveness and breathing, and request needed help/AED.','Open the airway, suction if indicated, and select the appropriate airway adjunct.','Assemble the BVM, connect oxygen, and confirm the reservoir fills.','Create an effective mask seal and ventilate at the appropriate patient rate.','Confirm visible chest rise, avoid excessive ventilation, and reassess pulse and ventilation.'],critical:['Failing to recognize inadequate breathing or start ventilation.','Ventilating without opening/clearing the airway.','No effective mask seal or visible chest rise.','Excessive ventilation rate or failure to reassess.'],tools:[['Review BVM skill sheet','Official document link and practice order','/nremt-skill-sheets.html'],['Practice airway assessment','Recognize airway findings','/vitals/visual-airway-assessment.html'],['Open ABC learning center','Review immediate threats','/abc-training.html']]},
-    oxygen:{title:'Oxygen Administration',time:'8–12 min',intro:'Practice cylinder safety, regulator setup, device selection, application, verbalization, and reassessment.',script:'“I have inspected the oxygen cylinder and regulator, will open the cylinder safely, confirm pressure, choose the appropriate device and flow, apply it to the patient, and reassess oxygenation and tolerance.”',sequence:['Use PPE and identify the indication for oxygen or ventilatory support.','Inspect the cylinder, secure it, attach the regulator, and open it safely.','Confirm pressure and leaks; select and prepare the correct delivery device.','Set the appropriate flow, apply the device, and explain it to the patient.','Reassess breathing, SpO₂ trend, device function, and patient tolerance.'],critical:['Unsafe cylinder handling or opening.','Selecting a device that does not meet the patient’s ventilatory needs.','Failing to establish oxygen flow before applying a non-rebreather.','Failure to reassess breathing and response.'],tools:[['Review oxygen skill sheet','Equipment sequence and practice tracking','/nremt-skill-sheets.html'],['Practice pulse oximetry','Reading, limitations, and documentation','/vitals/pulse-ox.html'],['Practice airway assessment','Match findings to action','/vitals/visual-airway-assessment.html']]},
-    bleeding:{title:'Bleeding Control',time:'10–15 min',intro:'Recognize major hemorrhage, expose the source, control it, manage shock, and reassess.',script:'“I see life-threatening bleeding from ___. I will expose the wound, apply immediate direct pressure, escalate hemorrhage control if needed, assess circulation and shock, prevent heat loss, and arrange rapid transport.”',sequence:['Use PPE, identify the bleeding source, and expose the wound.','Apply firm direct pressure; use packing or a tourniquet when appropriate.','Confirm bleeding control and note the time of tourniquet placement if used.','Assess perfusion, manage shock, prevent heat loss, and prioritize transport.','Reassess bleeding control, distal findings when applicable, and overall perfusion.'],critical:['Failing to recognize or control life-threatening hemorrhage.','Delaying effective bleeding control.','Loosening or covering a tourniquet so it cannot be monitored.','Failure to recognize shock, prevent heat loss, or reassess.'],tools:[['Review bleeding skill sheet','Bleeding and shock sequence','/nremt-skill-sheets.html'],['Start trauma scenario','Apply priorities in a full call','/vitals/visual-patient.html?case=trauma&training=assessment&reset=1'],['Practice perfusion findings','Assess circulation clues','/vitals/perfusion-assessment.html']]},
-    immobilization:{title:'Immobilization',time:'12–18 min',intro:'Practice manual stabilization, injury assessment, proper device application, and pre/post neurovascular checks.',script:'“I will manually stabilize the injury, expose and assess it, check distal pulse, motor function, and sensation before splinting, immobilize the injury appropriately, then repeat and document distal findings.”',sequence:['Use PPE, explain the procedure, and manually stabilize the injury.','Expose the area; inspect and palpate as appropriate.','Assess distal pulse/circulation, motor function, and sensation before movement.','Apply and secure the appropriate splint without creating additional injury.','Repeat distal neurovascular findings and reassess comfort and alignment.'],critical:['No manual stabilization when needed.','Failure to assess distal neurovascular status before and after splinting.','Moving the injury unnecessarily or forcing alignment.','Splint application that impairs circulation or fails to immobilize the injury.'],tools:[['Review immobilization sheets','Seated, supine, joint, and long bone','/nremt-skill-sheets.html'],['Practice distal CSM','Pulse, movement, sensation, refill','/vitals/distal-csm-assessment.html'],['Start trauma scenario','Integrate splinting into patient care','/vitals/visual-patient.html?case=trauma&training=assessment&reset=1']]},
-    'vitals-only':{title:'Vitals Only',time:'15 min',intro:'Practice a complete baseline set, verbalize the quality—not only the numbers—and create a clean documentation entry.',script:'“I will obtain heart rate with rhythm and quality; respirations with rhythm, quality, and effort; blood pressure; SpO₂ with oxygen status; skin; pupils; BGL when indicated; and pain. I will repeat abnormal or treatment-relevant findings.”',sequence:['Introduce yourself, explain the procedure, and position the patient appropriately.','Obtain HR, RR, BP, SpO₂, skin, pupils, BGL, pain, and mental status as indicated.','State the number and the qualitative finding aloud.','Identify abnormal findings and explain what needs prompt reassessment.','Enter the full set, include relevant context, and compare repeat values.'],critical:['Reporting a guessed value or a finding that was not assessed.','Ignoring visibly inadequate breathing or poor perfusion while completing routine vitals.','Using an unreliable reading without repeating or verifying it.','Failing to repeat abnormal or intervention-related vital signs.'],tools:[['Enter a full vital set','One mobile documentation form','/vitals/full-vitals-set.html'],['Open vitals learning hub','Choose an individual simulator','/vitals/'],['Find a vitals tool','Assessment, Vitals, Documentation catalog','/ems-training-tools.html']]},
-    'narrative-only':{title:'Narrative Only',time:'25 min',intro:'Write from a fictional case, check completeness and factual support, then revise once.',script:'“I will document dispatch and arrival, patient presentation, relevant history, objective assessment and vitals, treatment, patient response, transport, and transfer of care—in chronological order and without inventing normal findings.”',sequence:['Review the fictional case facts and choose CHART or chronological structure.','Write dispatch, scene, chief complaint, and relevant history.','Document objective assessment findings and initial vital signs.','Describe treatment in order and include the patient’s documented response/reassessment.','Finish disposition and transfer, run the completeness review, then revise once.'],critical:['Entering real patient identifiers or copying practice text into a real PCR.','Inventing normal findings, treatments, responses, or times.','Omitting reassessment, disposition, or transfer of care.','Copying an example narrative without verifying every fact.'],tools:[['Use guided PCR Coach','Build sections and check completeness','/pcr-narrative-coach.html'],['Open AI Writing Lab','Write, grade, and revise once','/narrative-writing-lab.html'],['Review skill sheets','Connect documentation to station sequence','/nremt-skill-sheets.html']]}
+  const params = new URLSearchParams(location.search);
+  const sectionKey = 'emscodesim_bls_bootcamp_sections_v1';
+  const videoKey = 'emscodesim_bls_bootcamp_video_v1';
+  const debriefKey = 'emscodesim_bls_bootcamp_debrief_v1';
+  const stationAliases = {
+    'patient-assessment':'assessment','trauma-assessment':'trauma','medical-assessment':'medical',
+    'vitals-only':'vitals','narrative-only':'narrative',bvm:'initial',oxygen:'primary',
+    bleeding:'primary',immobilization:'secondary'
   };
-  const params=new URLSearchParams(location.search);let selected=stations[params.get('station')]?params.get('station'):'patient-assessment';
-  function dateKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-  function progress(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')}catch{return {}}}
-  function save(value){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(value))}catch{}}
-  function skillsUrl(path,station=selected,focus=''){const url=new URL(path,location.origin);url.searchParams.set('mode','skills');url.searchParams.set('station',station);if(focus)url.searchParams.set('focus',focus);return url.pathname+url.search+url.hash}
-  function stationUrl(id=selected){return `${location.origin}/skills-session?station=${encodeURIComponent(id)}`}
-  function renderPicker(){const done=progress();$('stationPicker').innerHTML=Object.entries(stations).map(([id,s])=>`<button type="button" class="station-button ${id===selected?'active':''} ${done[id]===dateKey()?'practiced':''}" data-station="${esc(id)}" role="listitem"><strong>${esc(s.title)}</strong><span>${esc(s.time)}</span></button>`).join('');const count=Object.keys(stations).filter(id=>done[id]===dateKey()).length;$('todayProgress').textContent=`${count} practiced today`;}
-  function renderStation(scroll=false){const s=stations[selected],done=progress();$('selectedStationMeta').textContent=`Selected station · ${s.time}`;$('selectedStationTitle').textContent=s.title;$('selectedStationIntro').textContent=s.intro;$('stationSequence').innerHTML=s.sequence.map(x=>`<li>${esc(x)}</li>`).join('');$('stationCritical').innerHTML=s.critical.map(x=>`<li>${esc(x)}</li>`).join('');$('stationScript').textContent=s.script;$('stationTools').innerHTML=s.tools.map(([title,detail,path])=>`<a class="tool-link" href="${esc(skillsUrl(path))}"><strong>${esc(title)}</strong><span>${esc(detail)}</span></a>`).join('');document.querySelectorAll('[data-skills-link]').forEach(link=>{link.href=skillsUrl(link.dataset.path,selected,link.dataset.focus||'')});$('stationUrl').value=stationUrl();const button=$('markPracticed'),isDone=done[selected]===dateKey();button.textContent=isDone?'Practiced today ✓':'Mark practiced today';button.classList.toggle('done',isDone);renderPicker();if(scroll)$('station-plan').scrollIntoView({behavior:'smooth',block:'start'});history.replaceState(null,'',`?station=${encodeURIComponent(selected)}${location.hash||'#station-plan'}`)}
-  $('stationPicker').addEventListener('click',event=>{const button=event.target.closest('[data-station]');if(!button)return;selected=button.dataset.station;renderStation(true)});
-  document.querySelectorAll('[data-station-jump]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();selected=link.dataset.stationJump;renderStation(false);const target=selected==='vitals-only'?'vitals-warmup':selected==='narrative-only'?'write-call':'station-plan';document.getElementById(target).scrollIntoView({behavior:'smooth',block:'start'})}));
-  $('markPracticed').addEventListener('click',()=>{const done=progress();done[selected]=dateKey();save(done);renderStation()});
-  $('printStation').addEventListener('click',()=>{document.body.classList.remove('skills-print-instructor');print()});
-  $('printInstructor').addEventListener('click',()=>{document.body.classList.add('skills-print-instructor');print();setTimeout(()=>document.body.classList.remove('skills-print-instructor'),500)});
-  $('copyStationUrl').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(stationUrl());$('copyStationUrl').textContent='Copied ✓'}catch{$('stationUrl').select();document.execCommand('copy');$('copyStationUrl').textContent='Copied ✓'}setTimeout(()=>$('copyStationUrl').textContent='Copy link',1600)});
-  renderStation(false);
+  const validPaths = new Set(['assessment','vitals','initial','trauma','medical','narrative']);
+  const requested = params.get('path') || stationAliases[params.get('station')] || 'assessment';
+  const currentPath = validPaths.has(requested) ? requested : 'assessment';
+  const today = () => new Date().toLocaleDateString('en-CA');
+  const read = (key, fallback = {}) => { try { return JSON.parse(localStorage.getItem(key) || 'null') || fallback; } catch { return fallback; } };
+  const write = (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} };
+
+  function bootcampUrl(raw, path = currentPath) {
+    const url = new URL(raw, location.origin);
+    if (url.origin !== location.origin) return raw;
+    url.searchParams.set('mode', 'bootcamp');
+    url.searchParams.set('path', path);
+    url.searchParams.delete('skillsMode');
+    return url.pathname + url.search + url.hash;
+  }
+
+  function wireLinks() {
+    document.querySelectorAll('[data-bootcamp-link]').forEach(link => {
+      const call = link.closest('[data-call]')?.dataset.call;
+      link.href = bootcampUrl(link.getAttribute('href'), call || currentPath);
+    });
+  }
+
+  function sectionProgress() {
+    const saved = read(sectionKey);
+    if (saved.date !== today()) return { date: today(), done: {} };
+    return saved;
+  }
+
+  function renderSectionProgress() {
+    const saved = sectionProgress();
+    const cards = [...document.querySelectorAll('[data-section]')];
+    cards.forEach(card => {
+      const done = Boolean(saved.done[card.dataset.section]);
+      card.classList.toggle('practiced', done);
+      const button = card.querySelector('.mark-section');
+      if (button) {
+        button.classList.toggle('done', done);
+        button.textContent = done ? 'Practiced today ✓' : 'Mark section practiced today';
+      }
+    });
+    const count = Object.keys(saved.done).length;
+    document.querySelector('#progressCount').textContent = `${count} of ${cards.length} sections practiced today`;
+    document.querySelector('#progressBar').style.width = `${cards.length ? count / cards.length * 100 : 0}%`;
+  }
+
+  function wireAccordion() {
+    const cards = [...document.querySelectorAll('.assessment-card')];
+    cards.forEach(card => {
+      card.addEventListener('toggle', () => {
+        if (card.open) cards.forEach(other => { if (other !== card) other.open = false; });
+      });
+      card.querySelector('.mark-section')?.addEventListener('click', () => {
+        const saved = sectionProgress();
+        saved.done[card.dataset.section] = true;
+        write(sectionKey, saved);
+        renderSectionProgress();
+      });
+    });
+  }
+
+  function wireVideoLab() {
+    const state = read(videoKey, { checks:{}, answers:{} });
+    document.querySelectorAll('[data-video-check]').forEach(input => {
+      input.checked = Boolean(state.checks[input.dataset.videoCheck]);
+      input.addEventListener('change', () => { state.checks[input.dataset.videoCheck] = input.checked; write(videoKey, state); });
+    });
+    document.querySelectorAll('[data-video-answer]').forEach(input => {
+      input.value = state.answers[input.dataset.videoAnswer] || '';
+      input.addEventListener('input', () => { state.answers[input.dataset.videoAnswer] = input.value; write(videoKey, state); });
+    });
+    document.querySelector('#resetVideoChecks')?.addEventListener('click', () => {
+      state.checks = {};
+      document.querySelectorAll('[data-video-check]').forEach(input => { input.checked = false; });
+      write(videoKey, state);
+    });
+  }
+
+  function wireDebriefs() {
+    const saved = read(debriefKey, { trauma:{}, medical:{} });
+    document.querySelectorAll('[data-debrief]').forEach(form => {
+      const path = form.dataset.debrief;
+      saved[path] ||= {};
+      const fields = [...form.querySelectorAll('[data-question]')];
+      fields.forEach(field => {
+        field.value = saved[path][field.dataset.question] || '';
+        field.addEventListener('input', () => {
+          saved[path][field.dataset.question] = field.value.trim();
+          write(debriefKey, saved);
+          update();
+        });
+      });
+      function update() {
+        const complete = fields.every(field => field.value.trim().length >= 3);
+        const status = form.querySelector('.debrief-status');
+        status.classList.toggle('complete', complete);
+        status.textContent = complete ? 'Thinking debrief complete. Assessment mode and documentation unlocked ✓' : `Answer all six decisions to continue (${fields.filter(field => field.value.trim().length >= 3).length}/6 complete).`;
+        document.querySelectorAll(`[data-unlock="${path}"]`).forEach(link => {
+          link.classList.toggle('unlocked', complete);
+          link.setAttribute('aria-disabled', complete ? 'false' : 'true');
+          link.tabIndex = complete ? 0 : -1;
+        });
+      }
+      update();
+    });
+    document.querySelectorAll('.locked-link').forEach(link => link.addEventListener('click', event => {
+      if (!link.classList.contains('unlocked')) event.preventDefault();
+    }));
+  }
+
+  function routePath() {
+    const targets = {
+      assessment: document.querySelector('#assessment'),
+      initial: document.querySelector('#initial'),
+      vitals: document.querySelector('#vitals'),
+      trauma: document.querySelector('#trauma-path'),
+      medical: document.querySelector('#medical-path'),
+      narrative: document.querySelector('#narrative')
+    };
+    const target = targets[currentPath];
+    if (!target || location.hash) return;
+    target.classList.add('path-highlight');
+    setTimeout(() => target.scrollIntoView({ behavior:'smooth', block:'start' }), 120);
+    setTimeout(() => target.classList.remove('path-highlight'), 1800);
+  }
+
+  wireLinks();
+  wireAccordion();
+  renderSectionProgress();
+  wireVideoLab();
+  wireDebriefs();
+  routePath();
 })();
