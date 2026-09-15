@@ -1,11 +1,11 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.09.5';
+  const VERSION = '2026.09.14.1';
   const ENDPOINT = '/api/scenario-question-labels';
-  const ACTIVE_SCENARIOS = new Set(['asthma']);
+  const ACTIVE_SCENARIOS = new Set(['asthma','stroke','hypoglycemia','trauma','pediatric','horse_crush']);
   const MAX_QUICK_REPLIES = 4;
-  const REQUEST_TIMEOUT_MS = 2200;
+  const REQUEST_TIMEOUT_MS = 6500;
   const REFRESH_DELAY_MS = 140;
 
   const FALLBACK_WORDING = Object.freeze({
@@ -160,7 +160,7 @@
       : 'Instant fallback choices — scenario remains fully usable.';
   }
 
-  async function requestAiSet(candidatePool, asked) {
+  async function requestAiSet(id, interview, candidatePool, asked) {
     if (!onPatientScenarioPage() || !candidatePool.length || !shouldUseAiEndpoint()) return [];
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -170,8 +170,9 @@
         headers:{ 'Content-Type':'application/json' },
         signal:controller.signal,
         body:JSON.stringify({
-          scenarioId:'asthma',
+          scenarioId:id,
           askedIds:Array.from(asked),
+          priorityIds:[...(interview.sampleRequired || []), ...(interview.opqrstRequired || [])].filter(questionId => !asked.has(questionId)),
           candidates:candidatePool.map(question => ({ id:question.id }))
         })
       });
@@ -211,7 +212,7 @@
 
     const allUnasked = shuffle(interview.questions.filter(question => !asked.has(question.id)));
     const approvedPool = Array.from(new Map([...base, ...allUnasked.slice(0, 8)].map(question => [question.id, question])).values()).slice(0, 10);
-    const aiItems = await requestAiSet(approvedPool, asked);
+    const aiItems = await requestAiSet(id, interview, approvedPool, asked);
     if (token !== refreshToken || !aiItems.length) return;
     renderQuickReplies(aiItems, 'ai');
   }

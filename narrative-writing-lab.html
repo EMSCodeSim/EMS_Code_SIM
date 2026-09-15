@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>AI EMS Narrative Writing Lab | PCR Practice & Feedback</title>
+  <meta name="description" content="Practice writing EMS PCR narratives from realistic fictional scenarios, then receive AI-powered scoring, missing-detail checks, and revision feedback.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://emscodesim.com/narrative-writing-lab.html">
+  <meta name="theme-color" content="#071426">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EMSCodeSim">
+  <meta property="og:title" content="AI EMS Narrative Writing Lab">
+  <meta property="og:description" content="Write a PCR narrative from a fictional EMS case, receive AI feedback, revise, and improve.">
+  <meta property="og:url" content="https://emscodesim.com/narrative-writing-lab.html">
+  <meta property="og:image" content="https://emscodesim.com/ems-logo.png">
+  <link rel="stylesheet" href="/styles/career-hub.css">
+  <link rel="stylesheet" href="/styles/responsive.css">
+  <link rel="stylesheet" href="/styles/site-enhancements.css">
+  <link rel="stylesheet" href="/styles/narrative-writing-lab.css">
+  <script defer src="/privacy-controls.js"></script>
+  <script defer src="/narrative-writing-lab.js"></script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"AI EMS Narrative Writing Lab","url":"https://emscodesim.com/narrative-writing-lab.html","description":"Scenario-based EMS PCR narrative writing practice with AI feedback.","learningResourceType":"Interactive learning tool","educationalLevel":["EMT student","EMT","Paramedic"],"isAccessibleForFree":true,"provider":{"@type":"Organization","name":"EMSCodeSim"}}</script>
+</head>
+<body class="narrative-lab-page">
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <nav class="nav-wrap" aria-label="Primary navigation">
+    <a class="brand" href="/"><img src="/ems-logo.png" alt="EMSCodeSim" width="42" height="42"><span>EMSCodeSim<small>From First Interest to Your Final Shift</small></span></a>
+    <div class="main-nav">
+      <a href="/">Home</a><a href="/emt-prep.html">Prepare</a><a href="/ems-training-tools.html" aria-current="page">Practice</a><a href="/first-100-shifts.html">New EMT</a><a href="/ems-career-growth.html">Career</a><a href="/ems-resources.html">Resources</a>
+    </div>
+    <label class="mobile-menu-wrap"><span>Menu</span><select id="mobileMenu" class="mobile-menu" aria-label="Navigate EMSCodeSim"><option value="">Menu</option><option value="/">Home</option><option value="/ems-training-tools.html">Training Tools</option><option value="/narrative-writing-lab.html">Narrative Writing Lab</option><option value="/pcr-narrative-coach.html">PCR Narrative Coach</option><option value="/vitals/scenario-launcher.html">Patient Scenarios</option><option value="/quiz/">Daily Quiz</option></select></label>
+  </nav>
+</header>
+
+<section class="lab-hero">
+  <div class="lab-hero-inner">
+    <div><p class="lab-kicker">Standalone documentation class</p><h1>Write the call. Get feedback. <em>Rewrite it better.</em></h1><p>Study a complete fictional EMS call, write your own PCR narrative, and receive AI-powered feedback based only on the facts supplied in the scenario.</p><div class="hero-pills"><span>10 fictional cases</span><span>CHART, SOAP, or chronological</span><span>EMT and paramedic</span></div></div>
+    <aside class="hero-score" aria-label="Narrative grading preview"><span>Example score</span><strong>84</strong><small>Clear chronology · Add repeat vitals</small></aside>
+  </div>
+</section>
+
+<main id="main" class="lab-shell">
+  <section class="privacy-alert" aria-label="Privacy warning"><strong>Use fictional scenarios only.</strong><span>Do not paste a real patient report or enter names, dates of birth, addresses, incident numbers, exact locations, or other protected health information. Submitted text is sent to an AI service for grading and is not an agency-approved medical record.</span></section>
+
+  <section class="lab-step" aria-labelledby="chooseHeading">
+    <div class="step-heading"><span>1</span><div><p class="eyebrow">Choose a call</p><h2 id="chooseHeading">Select your level and scenario</h2></div></div>
+    <div class="level-tabs" role="group" aria-label="Difficulty"><button type="button" data-level="Beginner">Beginner</button><button type="button" class="active" data-level="EMT">EMT</button><button type="button" data-level="Paramedic">Paramedic</button></div>
+    <div id="scenarioGrid" class="scenario-grid" aria-live="polite"></div>
+  </section>
+
+  <section id="workspace" class="lab-workspace hidden" aria-labelledby="caseTitle">
+    <div class="case-column">
+      <article class="case-card">
+        <div class="case-title-row"><div><p id="caseMeta" class="eyebrow"></p><h2 id="caseTitle"></h2></div><button id="changeCase" type="button" class="text-btn">Change case</button></div>
+        <div id="caseFacts" class="case-facts"></div>
+        <details id="beginnerGuide" class="beginner-guide"><summary>Beginner writing checklist</summary><ol><li>Start with dispatch, scene, and how the patient was found.</li><li>Document the chief complaint and relevant history.</li><li>Record objective assessment findings and initial vitals.</li><li>Describe care in chronological order.</li><li>Include response, repeat findings, disposition, and transfer.</li></ol></details>
+      </article>
+    </div>
+
+    <div class="writing-column">
+      <article class="writer-card">
+        <div class="writer-head"><div><p class="eyebrow">2 · Write</p><h2>Your PCR narrative</h2></div><label>Format<select id="formatSelect"><option value="chronological">Chronological</option><option value="chart">CHART</option><option value="soap">SOAP</option></select></label></div>
+        <div id="formatGuide" class="format-guide"></div>
+        <label class="narrative-label" for="narrativeText">Narrative</label>
+        <textarea id="narrativeText" maxlength="8000" spellcheck="true" placeholder="Write your narrative here using only the supplied scenario facts..."></textarea>
+        <div class="writing-meta"><span id="wordCount">0 words</span><span id="draftStatus">Draft stays on this device</span></div>
+        <div id="preflight" class="preflight" aria-live="polite"></div>
+        <div class="writer-actions"><button id="gradeBtn" class="lab-btn primary" type="button">Grade my narrative</button><button id="clearBtn" class="lab-btn ghost" type="button">Clear draft</button></div>
+        <p class="ai-note">AI feedback is educational and may be imperfect. Always follow your program, agency policy, approved abbreviations, and local documentation requirements.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="gradingState" class="grading-state hidden" aria-live="polite"><div class="spinner" aria-hidden="true"></div><div><strong>Reviewing your narrative</strong><span>Comparing it with the scenario facts and grading rubric…</span></div></section>
+
+  <section id="feedback" class="feedback hidden" aria-labelledby="feedbackHeading">
+    <div class="feedback-top"><div class="score-ring"><strong id="totalScore">0</strong><span>/ 100</span></div><div><p class="eyebrow">3 · Feedback</p><h2 id="feedbackHeading">Your narrative review</h2><p id="summaryText"></p><div id="attemptBadge" class="attempt-badge"></div></div></div>
+    <div id="categoryScores" class="category-scores"></div>
+    <div class="feedback-grid">
+      <article class="feedback-card good"><h3>What you did well</h3><ul id="strengthsList"></ul></article>
+      <article class="feedback-card improve"><h3>Highest-priority improvements</h3><ul id="improvementsList"></ul></article>
+      <article class="feedback-card missing"><h3>Missing scenario details</h3><ul id="missingList"></ul></article>
+      <article class="feedback-card caution"><h3>Unsupported or conflicting documentation</h3><ul id="unsupportedList"></ul></article>
+    </div>
+    <article class="feedback-card line-feedback"><h3>Sentence-level coaching</h3><div id="lineFeedback"></div></article>
+    <details class="example-card"><summary>View an example improved narrative</summary><p>This is one possible approach—not language to copy into a real PCR.</p><div id="exampleNarrative"></div></details>
+    <div class="revision-bar"><div><strong>Use the feedback, then try again.</strong><span>Your next score will be compared with this attempt.</span></div><button id="reviseBtn" class="lab-btn primary" type="button">Revise and resubmit</button></div>
+  </section>
+
+  <section class="rubric-section" aria-labelledby="rubricHeading"><p class="eyebrow">How grading works</p><h2 id="rubricHeading">Eight-part documentation rubric</h2><div class="rubric-grid"><span>Completeness</span><span>Clinical accuracy</span><span>Organization</span><span>Objectivity</span><span>Pertinent negatives</span><span>Medical necessity</span><span>Documentation safety</span><span>Writing quality</span></div><p>The grader must treat facts not supplied by the scenario as unsupported documentation. A polished sentence cannot earn accuracy points if it invents an assessment, treatment, or patient response.</p></section>
+
+  <aside class="next-tool"><div><p class="eyebrow">Need help building a report?</p><h2>Use the guided PCR Narrative Coach</h2><p>The Writing Lab tests your independent narrative. The existing coach walks you through each section and helps assemble a de-identified report.</p></div><a class="lab-btn ghost" href="/pcr-narrative-coach.html">Open Narrative Coach</a></aside>
+</main>
+
+<footer class="site-footer"><div class="footer-bottom">EMSCodeSim provides educational information and simulation practice. It does not replace an approved EMS course, agency ePCR, medical direction, local protocol, or documentation policy.</div></footer>
+</body>
+</html>

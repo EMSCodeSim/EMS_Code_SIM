@@ -44,6 +44,16 @@ function copyDir(source, destination, relativeBase = '') {
 
 copyDir(root, out);
 
+// The narrative scenario library is canonical function data so Netlify can
+// bundle it with the grader. Publish the same file for the standalone browser UI.
+const narrativeScenarioSource = path.join(root, 'netlify', 'functions', 'data', 'narrative-lab-scenarios.json');
+const narrativeScenarioDestination = path.join(out, 'data', 'narrative-lab-scenarios.json');
+if (!fs.existsSync(narrativeScenarioSource)) throw new Error('Missing narrative lab scenario library.');
+fs.mkdirSync(path.dirname(narrativeScenarioDestination), { recursive: true });
+fs.copyFileSync(narrativeScenarioSource, narrativeScenarioDestination);
+copied += 1;
+bytes += fs.statSync(narrativeScenarioSource).size;
+
 for (const required of ['index.html', '_redirects', 'robots.txt', 'sitemap.xml', 'offline-reference-sw.js', 'emt-prep-module2.js']) {
   if (!fs.existsSync(path.join(out, required))) throw new Error(`Build missing required file: ${required}`);
 }
