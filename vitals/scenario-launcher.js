@@ -42,9 +42,11 @@
     const params = new URLSearchParams({ case: caseId, training: trainingMode(mode) });
     if (options.reset) params.set('reset', '1');
     const current = new URLSearchParams(location.search);
-    if (current.get('mode') === 'skills' || current.get('skillsMode') === '1') {
-      params.set('mode', 'skills');
-      params.set('station', current.get('station') || 'patient-assessment');
+    if (['skills', 'bootcamp'].includes(current.get('mode')) || current.get('skillsMode') === '1') {
+      const bootcamp = current.get('mode') === 'bootcamp';
+      params.set('mode', bootcamp ? 'bootcamp' : 'skills');
+      if (bootcamp) params.set('path', current.get('path') || (caseId === 'horse_crush' ? 'trauma' : 'medical'));
+      else params.set('station', current.get('station') || 'patient-assessment');
     }
     return `/vitals/visual-patient.html?${params}`;
   }

@@ -119,9 +119,15 @@
     if (options.context) query.set('context',options.context);
     if (options.key) query.set('key',options.key);
     const current = new URLSearchParams(location.search);
-    if (current.get('mode') === 'skills' || current.get('skillsMode') === '1') {
-      query.set('skillsMode','1');
-      query.set('station',current.get('station') || 'patient-assessment');
+    if (['skills','bootcamp'].includes(current.get('mode')) || current.get('skillsMode') === '1' || current.get('bootcampMode') === '1') {
+      const bootcamp = current.get('mode') === 'bootcamp' || current.get('bootcampMode') === '1';
+      if (bootcamp) {
+        query.set('bootcampMode','1');
+        query.set('path',current.get('path') || (caseId === 'horse_crush' ? 'trauma' : 'medical'));
+      } else {
+        query.set('skillsMode','1');
+        query.set('station',current.get('station') || 'patient-assessment');
+      }
     }
     return `${path}?${query.toString()}`;
   }

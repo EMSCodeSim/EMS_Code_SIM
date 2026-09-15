@@ -1,25 +1,61 @@
-'use strict';
-const assert=require('assert');const fs=require('fs');
-const read=file=>fs.readFileSync(file,'utf8');
-const html=read('skills-session.html'),js=read('skills-session.js'),css=read('styles/skills-session.css'),mode=read('skills-session-mode.js'),modeCss=read('styles/skills-session-mode.css'),home=read('index.html'),toolsHtml=read('ems-training-tools.html'),toolsJs=read('training-tools.js');
-for(const id of ['patient-assessment','trauma-assessment','medical-assessment','bvm','oxygen','bleeding','immobilization','vitals-only','narrative-only'])assert(js.includes(`'${id}'`)||js.includes(`${id}:`),`Missing station ${id}`);
-for(const id of ['stationPicker','stationSequence','stationCritical','stationTools','vitals-warmup','write-call','stationUrl'])assert(html.includes(`id="${id}"`),`Hub missing #${id}`);
-for(const label of ['Start Patient Assessment','Practice Vitals','Write a Narrative'])assert(html.includes(label),`Mobile first-screen action missing: ${label}`);
-assert(html.includes('This is practice, not the official exam.'),'Required exam disclaimer missing.');
-assert(html.includes('EMSCodeSim is not affiliated with NREMT'),'Non-affiliation disclaimer missing.');
-assert(html.includes('Vitals</span><span><strong>40 min</strong>Assessment</span><span><strong>25 min</strong>Documentation</span><span><strong>10 min</strong>Debrief'),'90-minute rotation is incomplete.');
-assert(js.includes('localStorage.setItem(STORAGE_KEY'),'Local practice tracking is missing.');
-assert(js.includes("url.searchParams.set('mode','skills')"),'Hub links must enter skills mode.');
-assert(js.includes("url.searchParams.set('station',station)"),'Hub links must preserve the selected station.');
-assert(css.includes('@media(max-width:760px)')&&css.includes('.hero-actions{display:grid'),'Mobile primary actions are missing.');
-assert(css.includes('@media print')&&css.includes('.print-only{display:block}'),'Printable station sheet styles are missing.');
-assert(mode.includes('← Back to Skills Session')&&modeCss.includes('.skills-session-return'),'Persistent return control is missing.');
-assert(modeCss.includes('.skills-session-mode .site-header')&&modeCss.includes('.skills-session-mode .site-footer'),'Skills mode must hide long site chrome.');
-assert(home.includes('Skills testing this month?')&&home.includes('href="/skills-session"'),'Homepage Skills Session card is missing.');
-assert(home.includes('<strong>Skills Session</strong>'),'Desktop Practice navigation is missing Skills Session.');
-assert(home.includes('<option value="/skills-session">Skills Session</option>'),'Mobile navigation is missing Skills Session.');
-assert(toolsHtml.includes('placeholder="blood pressure, GCS, PCR, trauma assessment"'),'Task-language tools search placeholder is missing.');
-for(const chip of ['Assessment','Vitals','Documentation'])assert(toolsJs.includes(chip),`Skills-mode tools chip missing: ${chip}`);
-assert(toolsJs.includes('Use in skills session')&&toolsJs.includes('For: ${card.dataset.level}')&&toolsJs.includes('timeByCategory'),'Tool audience, time, or skills badge metadata is missing.');
-for(const file of ['nremt-skill-sheets.html','pcr-narrative-coach.html','narrative-writing-lab.html','vitals/scenario-launcher.html','vitals/visual-patient.html','vitals/full-vitals-set.html'])assert(read(file).includes('/skills-session-mode.js'),`${file} does not support persistent Skills Session return.`);
-console.log('Skills Session Hub verified: nine deep-linked stations, mobile actions, local progress, print/QR workflow, skills mode, tool filters, and disclaimers are present.');
+const fs = require('fs');
+const path = require('path');
+const root = path.resolve(__dirname, '..');
+const read = file => fs.readFileSync(path.join(root, file), 'utf8');
+const must = (condition, message) => { if (!condition) throw new Error(message); };
+
+const page = read('skills-session.html');
+const script = read('skills-session.js');
+const mode = read('skills-session-mode.js');
+const css = read('styles/skills-session.css');
+const home = read('index.html');
+const career = read('career.js');
+const netlify = read('netlify.toml');
+const narratives = JSON.parse(read('netlify/functions/data/narrative-lab-scenarios.json'));
+
+must(page.includes('Run a BLS call in order. Think out loud. Then write it.'), 'Boot Camp hero headline is missing');
+['Start Assessment Breakdown','Run a Full Call','Write the Narrative'].forEach(text => must(page.includes(text), `Hero action missing: ${text}`));
+must((page.match(/class="assessment-card"/g) || []).length === 8, 'Boot Camp must contain eight assessment-section cards');
+['Scene size-up','General impression','Initial / primary assessment','History','Secondary / focused exam','Vital signs','Treatment and reassessment','Handoff and documentation'].forEach((text, index) => {
+  must(page.includes(text), `Assessment section ${index + 1} missing: ${text}`);
+});
+must((page.match(/<strong>Say this<\/strong>/g) || []).length === 8, 'Every assessment section needs a Say this prompt');
+must((page.match(/<strong>Think this<\/strong>/g) || []).length === 8, 'Every assessment section needs a Think this prompt');
+must((page.match(/Common critical error/g) || []).length === 8, 'Every assessment section needs a common critical error');
+must((page.match(/Mark section practiced today/g) || []).length === 8, 'Every assessment section needs local practice tracking');
+
+must(page.includes('Initial Assessment Video Lab') && page.includes('<video controls'), 'Initial Assessment Video Lab player shelf is missing');
+must((page.match(/data-video-check=/g) || []).length === 7, 'Video Lab needs seven timed checklist items');
+must((page.match(/data-video-answer=/g) || []).length === 5, 'Video Lab needs five decision questions');
+must(page.includes('Additional assessment video shelf') && page.includes('Add an instructor-approved video URL or file later'), 'Future video structure is missing');
+
+['/vitals/full-vitals-set.html','/vitals/bp.html','/vitals/pulse.html','/vitals/respiratory-rate.html','/vitals/pulse-ox.html','/vitals/bgl.html','/vitals/skin.html','/vitals/pupil.html','/vitals/avpu.html','/vitals/breath-sound-simulator.html'].forEach(url => must(page.includes(url), `Vitals wiring missing: ${url}`));
+must(page.includes('case=horse_crush&amp;training=learning') && page.includes('case=horse_crush&amp;training=assessment'), 'Horse-crush Learning/Assessment links are missing');
+must(page.includes('case=asthma&amp;training=learning') && page.includes('case=asthma&amp;training=assessment'), 'Asthma Learning/Assessment links are missing');
+must((page.match(/data-debrief=/g) || []).length === 2 && (page.match(/data-question=/g) || []).length === 12, 'Both calls need six-question thinking debriefs');
+must(page.includes('scenario=horse-crush') && page.includes('scenario=shortness-of-breath'), 'Narrative Lab links must retain the same cases');
+must(page.includes('PCR Narrative Coach') && page.includes('AI Narrative Writing Lab'), 'Both existing narrative tools must remain wired');
+must(page.includes('not affiliated with NREMT') && page.includes('does not award certification or determine pass/fail status'), 'Practice disclaimer is incomplete');
+must(page.includes('not a lecture deck') && page.includes('Suggested total: 90 minutes'), 'Host notes must stay small and self-paced');
+
+must(script.includes("mode', 'bootcamp") && script.includes('stationAliases'), 'Boot Camp deep-link and station-alias logic is missing');
+must(script.includes("['assessment','vitals','initial','trauma','medical','narrative']"), 'Required path deep links are incomplete');
+must(script.includes("emscodesim_bls_bootcamp_sections_v1") && script.includes('localStorage'), 'Local section progress is missing');
+must(script.includes('every(field => field.value.trim().length >= 3)') && script.includes('data-unlock'), 'Thinking debrief must gate later steps');
+must(css.includes('.assessment-card') && css.includes('@media(max-width:820px)') && css.includes('.vertical-stepper'), 'Mobile accordion or vertical stepper styling is missing');
+must(mode.includes("params.get('mode') === 'bootcamp'") && mode.includes('bootcampMode'), 'Back bar must support Boot Camp and embedded tools');
+must(mode.includes('Back to ${bootcamp ? \'BLS Boot Camp\''), 'Boot Camp back-bar label is missing');
+
+must(netlify.includes('from = "/bls-bootcamp"') && netlify.includes('to = "/skills-session"'), '/bls-bootcamp alias is missing');
+must(home.includes('<span>BLS Boot Camp</span><strong>Assessment, vitals, full call, narrative →</strong>'), 'Homepage Boot Camp card copy is missing');
+must(home.includes('<strong>BLS Boot Camp</strong><small>Assessment sections, vitals, full calls, and narrative</small>'), 'Homepage desktop navigation label is missing');
+must(career.includes("new Option('BLS Boot Camp'"), 'Shared mobile navigation label is missing');
+
+must(narratives.some(item => item.id === 'horse-crush'), 'Horse-crush case is not available to the AI Narrative Lab');
+const asthma = narratives.find(item => item.id === 'shortness-of-breath');
+must(asthma && /park/i.test(`${asthma.dispatch} ${asthma.scene}`), 'Asthma narrative case must match the park scenario');
+
+const linkedPages = ['abc-training.html','nremt-skill-sheets.html','pcr-narrative-coach.html','narrative-writing-lab.html','quiz/emt_practice_exam.html','vitals/full-vitals-set.html','vitals/bp.html','vitals/pulse.html','vitals/respiratory-rate.html','vitals/pulse-ox.html','vitals/bgl.html','vitals/skin.html','vitals/pupil.html','vitals/avpu.html','vitals/gcs.html','vitals/visual-airway-assessment.html','vitals/breathing-assessment.html','vitals/perfusion-assessment.html','vitals/sample-history.html','vitals/pain-opqrst.html','vitals/visual-trauma-body-exam.html','vitals/breath-sound-simulator.html','vitals/treatment-reassessment.html','vitals/scenario-launcher.html','vitals/visual-patient.html'];
+linkedPages.forEach(file => must(read(file).includes('skills-session-mode.js?v=2'), `${file} is missing the Boot Camp return-bar script`));
+
+console.log('BLS Boot Camp verified: eight assessment sections, video decisions, vitals wiring, two gated full calls, same-case narratives, deep-link aliases, mobile states, and disclaimers are present.');

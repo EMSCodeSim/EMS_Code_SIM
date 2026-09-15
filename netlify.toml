@@ -99,6 +99,16 @@
     Cache-Control = "public, max-age=0, must-revalidate"
 
 [[redirects]]
+  from = "/bls-bootcamp"
+  to = "/skills-session"
+  status = 200
+
+[[redirects]]
+  from = "/bls-bootcamp/"
+  to = "/skills-session"
+  status = 200
+
+[[redirects]]
   from = "/vitals/assessment-workspace.html"
   to = "/vitals/visual-patient.html"
   status = 301

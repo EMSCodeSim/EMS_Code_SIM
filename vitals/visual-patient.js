@@ -213,10 +213,15 @@
 
   function preserveSkillsMode(url) {
     const current = new URLSearchParams(location.search);
-    if (current.get('mode') !== 'skills' && current.get('skillsMode') !== '1') return url;
+    if (!['skills', 'bootcamp'].includes(current.get('mode')) && current.get('skillsMode') !== '1') return url;
     const next = new URL(url, location.origin);
-    next.searchParams.set('skillsMode', '1');
-    next.searchParams.set('station', current.get('station') || 'patient-assessment');
+    if (current.get('mode') === 'bootcamp') {
+      next.searchParams.set('mode', 'bootcamp');
+      next.searchParams.set('path', current.get('path') || (id === 'horse_crush' ? 'trauma' : 'medical'));
+    } else {
+      next.searchParams.set('skillsMode', '1');
+      next.searchParams.set('station', current.get('station') || 'patient-assessment');
+    }
     return next.pathname + next.search + next.hash;
   }
 

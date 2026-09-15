@@ -10,7 +10,7 @@ const html = fs.readFileSync(path.join(root, 'narrative-writing-lab.html'), 'utf
 const client = fs.readFileSync(path.join(root, 'narrative-writing-lab.js'), 'utf8');
 const grader = fs.readFileSync(path.join(root, 'netlify', 'functions', 'narrative-grader.js'), 'utf8');
 
-assert.strictEqual(scenarios.length, 10, 'Narrative lab must ship with 10 scenarios');
+assert.strictEqual(scenarios.length, 11, 'Narrative lab must ship with 11 scenarios');
 assert.strictEqual(new Set(scenarios.map(item => item.id)).size, scenarios.length, 'Scenario IDs must be unique');
 for (const scenario of scenarios) {
   for (const field of ['id', 'title', 'category', 'level', 'dispatch', 'scene', 'history', 'findings', 'vitals', 'care', 'response', 'disposition', 'requiredFacts']) {
