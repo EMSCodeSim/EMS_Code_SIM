@@ -28,6 +28,7 @@ test('breathing problem desktop centers the patient encounter and keeps tools on
 
   await page.locator('#desktopPatientActions button[data-panel="historyPanel"]').click();
   await expect(page.locator('#historyPanel')).toBeVisible();
-  await expect(page.locator('.patient-control-column .bottom-nav')).toBeVisible();
+  // Desktop navigation now lives in the patient hub, not the retired .bottom-nav wrapper.
+  await expect(page.locator('#desktopPatientActions')).toBeVisible();
   await assertNoPageErrors();
 });
