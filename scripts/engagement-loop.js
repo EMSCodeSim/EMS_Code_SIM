@@ -52,9 +52,10 @@
       .home-page .path-and-practice .practice-box{display:none!important}.home-page .path-and-practice{grid-template-columns:1fr!important}
       .home-page .career-stage-wrap{padding-top:22px}.home-page .daily-practice-home{margin-top:0}
       .home-page .featured-training{margin-top:24px}
+      .home-page .skills-session-home-card{display:none!important}
       @media(max-width:760px){
-        .home-mobile-scenario-cta{display:flex;position:fixed;z-index:150;left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom));min-height:50px;align-items:center;justify-content:center;border-radius:4px;background:#e8a317;color:#1a1200!important;font-weight:850;text-decoration:none;box-shadow:0 8px 28px rgba(7,16,24,.28)}
-        .home-page{padding-bottom:78px}
+        .home-mobile-scenario-cta{display:none!important}
+        .home-page{padding-bottom:0}
       }
     `;
     document.head.appendChild(style);
@@ -118,9 +119,9 @@
     const stageBadge=q('.stage-badge');if(stageBadge)stageBadge.textContent='Optional personalization';
 
     if(!q('.home-mobile-scenario-cta')){
-      const a=document.createElement('a');a.className='home-mobile-scenario-cta';a.href=DEFAULT_SCENARIO;a.textContent='Start a scenario';document.body.appendChild(a);
+      /* Fixed mobile CTA removed — hero already exposes Start a scenario. */
     }else{
-      q('.home-mobile-scenario-cta').href=DEFAULT_SCENARIO;
+      q('.home-mobile-scenario-cta').remove();
     }
   }
 
