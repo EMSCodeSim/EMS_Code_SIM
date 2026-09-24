@@ -47,25 +47,16 @@
       .site-review-trust>div:first-child{display:grid;gap:4px}.site-review-trust strong{font-size:.92rem}.site-review-trust span,.site-review-trust small{font-size:.78rem;line-height:1.45;opacity:.82}
       .site-review-trust-links{display:flex;gap:12px 18px;flex-wrap:wrap}.site-review-trust-links a{font-size:.8rem;font-weight:700}
       .home-mobile-scenario-cta{display:none}
-      .home-page .hero-scene-still{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;border:1px solid #475569;background:#0f172a}
       .home-page .hero-sim-card ul,.home-page .hero-sim-card .hero-sim-primary,.home-page .hero-sim-card .hero-sim-secondary,.home-page .hero-sim-icon{display:none!important}
-      .home-page .hero-sim-card{padding:14px}.home-page .hero-sim-card h2{margin:10px 0 4px}.home-page .hero-sim-card p{font-size:.86rem}
-      .home-page .site-review-scenario-catalog{max-width:1120px;margin:0 auto;padding:28px 20px 10px}
-      .home-page .site-review-scenario-catalog header{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:14px}
-      .home-page .site-review-scenario-catalog h2{margin:0;font-size:1.45rem}.home-page .site-review-scenario-catalog p{margin:4px 0 0;color:#475569}
-      .home-page .scenario-catalog-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-      .home-page .scenario-catalog-card{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:12px;border:1px solid #d8e0ea;border-radius:12px;background:#fff;color:#0f172a;box-shadow:0 1px 2px rgba(15,23,42,.05);align-items:center}
-      .home-page .scenario-catalog-card img{width:150px;height:104px;object-fit:cover;border-radius:9px;background:#e2e8f0}
-      .home-page .scenario-catalog-card .scenario-card-copy{display:grid;gap:6px}.home-page .scenario-catalog-card:hover{border-color:#93c5fd;background:#f8fbff}.home-page .scenario-catalog-card small{color:#64748b}.home-page .scenario-catalog-card em{font-style:normal;color:#2563eb;font-weight:800;font-size:.84rem}
       .home-page .mobile-career-picker,.home-page .mobile-home-shortcuts,.home-page .ideal-quick-wrap,.home-page .start-here{display:none!important}
       .home-page .path-and-practice .practice-box{display:none!important}.home-page .path-and-practice{grid-template-columns:1fr!important}
       .home-page .career-stage-wrap{padding-top:22px}.home-page .daily-practice-home{margin-top:0}
+      .home-page .featured-training{margin-top:24px}
+      .home-page .skills-session-home-card{display:none!important}
       @media(max-width:760px){
-        .home-page .scenario-catalog-grid{grid-template-columns:1fr}.home-page .site-review-scenario-catalog header{display:block}.home-page .scenario-catalog-card{grid-template-columns:120px 1fr}.home-page .scenario-catalog-card img{width:120px;height:92px}
-        .home-mobile-scenario-cta{display:flex;position:fixed;z-index:150;left:14px;right:14px;bottom:calc(12px + env(safe-area-inset-bottom));min-height:50px;align-items:center;justify-content:center;border-radius:13px;background:#2563eb;color:#fff!important;font-weight:850;text-decoration:none;box-shadow:0 8px 28px rgba(15,23,42,.28)}
-        .home-page{padding-bottom:78px}
+        .home-mobile-scenario-cta{display:none!important}
+        .home-page{padding-bottom:0}
       }
-      @media(max-width:480px){.home-page .scenario-catalog-card{grid-template-columns:1fr}.home-page .scenario-catalog-card img{width:100%;height:auto;aspect-ratio:16/9}}
     `;
     document.head.appendChild(style);
   }
@@ -101,16 +92,23 @@
 
     const sim=q('.hero-sim-card');
     if(sim&&!q('.hero-scene-still',sim)){
-      sim.insertAdjacentHTML('afterbegin','<img class="hero-scene-still" src="/vitals/assets/breathing-problem-cover.webp" alt="Breathing problem visual patient scenario">');
-      const label=q('.hero-sim-label',sim);if(label)label.textContent='Visual patient simulator';
+      const label=q('.hero-sim-label',sim);
+      if(label){
+        label.insertAdjacentHTML('afterend','<img class="hero-scene-still" src="/vitals/assets/breathing-problem-cover.webp" alt="Breathing problem visual patient scenario">');
+      }else{
+        sim.insertAdjacentHTML('afterbegin','<img class="hero-scene-still" src="/vitals/assets/breathing-problem-cover.webp" alt="Breathing problem visual patient scenario">');
+      }
+      if(label)label.textContent='Visual patient simulator';
       const h2=q('h2',sim);if(h2)h2.textContent='Look at the patient. Decide what to do next.';
       const p=q('p',sim);if(p)p.textContent='Assessment Mode, patient clock, findings, treatment, reassessment, and debrief.';
     }else if(sim){const image=q('.hero-scene-still',sim);if(image)image.src='/vitals/assets/breathing-problem-cover.webp';}
 
     const oldQuick=q('.ideal-quick-wrap');
+    const featured=q('.featured-training');
     const hero=q('.hero-home');
     const catalog=scenarioCatalog();
-    if(hero&&catalog.parentNode!==hero.parentNode)hero.insertAdjacentElement('afterend',catalog);
+    const catalogAnchor=featured||hero;
+    if(catalogAnchor&&catalog.parentNode!==catalogAnchor.parentNode)catalogAnchor.insertAdjacentElement('afterend',catalog);
     if(oldQuick)oldQuick.hidden=true;
 
     const daily=q('.daily-practice-home');
@@ -121,9 +119,9 @@
     const stageBadge=q('.stage-badge');if(stageBadge)stageBadge.textContent='Optional personalization';
 
     if(!q('.home-mobile-scenario-cta')){
-      const a=document.createElement('a');a.className='home-mobile-scenario-cta';a.href=DEFAULT_SCENARIO;a.textContent='Start a scenario';document.body.appendChild(a);
+      /* Fixed mobile CTA removed — hero already exposes Start a scenario. */
     }else{
-      q('.home-mobile-scenario-cta').href=DEFAULT_SCENARIO;
+      q('.home-mobile-scenario-cta').remove();
     }
   }
 
