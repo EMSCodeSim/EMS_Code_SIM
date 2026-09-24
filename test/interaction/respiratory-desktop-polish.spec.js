@@ -28,6 +28,7 @@ test('breathing problem desktop centers the patient encounter and keeps tools on
 
   await page.locator('#desktopPatientActions button[data-panel="historyPanel"]').click();
   await expect(page.locator('#historyPanel')).toBeVisible();
-  await expect(page.locator('.patient-control-column .bottom-nav')).toBeVisible();
+  // Domain rail lives in the center clinical interaction column on desktop.
+  await expect(page.locator('#clinicalInteractionColumn .bottom-nav, .bottom-nav.clinical-domain-rail')).toBeVisible();
   await assertNoPageErrors();
 });
