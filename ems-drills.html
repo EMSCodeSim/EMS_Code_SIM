@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>EMS Drills | Short Interactive EMT &amp; Paramedic Training | EMSCodeSim</title>
+<meta name="description" content="Free mobile-first EMS drills for assessment, airway, cardiology, trauma, medications, communication, and documentation. Practice independently or complete Responder Roadmap assignments."/>
+<meta name="robots" content="index,follow,max-image-preview:large"/>
+<link rel="canonical" href="https://emscodesim.com/ems-drills.html"/>
+<meta name="theme-color" content="#071624"/>
+<link rel="icon" href="/favicon.png" type="image/png"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="EMSCodeSim"/>
+<meta property="og:title" content="EMS Drills | EMSCodeSim"/>
+<meta property="og:description" content="Short interactive EMS drills: Learn → Perform → Document → Complete. Works standalone or with Responder Roadmap assignments."/>
+<meta property="og:url" content="https://emscodesim.com/ems-drills.html"/>
+<meta property="og:image" content="https://emscodesim.com/ems-logo.png"/>
+<link rel="stylesheet" href="/styles/career-hub.css"/>
+<link rel="stylesheet" href="/styles/responsive.css"/>
+<link rel="stylesheet" href="/styles/site-enhancements.css"/>
+<link rel="stylesheet" href="/styles/ems-design-system.css"/>
+<link rel="stylesheet" href="/styles/ems-drills.css"/>
+<script defer src="/privacy-controls.js"></script>
+<script defer src="/scripts/ems-intent-nav.js"></script>
+<script defer src="/ems-drills.js"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://emscodesim.com/"},{"@type":"ListItem","position":2,"name":"EMS Drills","item":"https://emscodesim.com/ems-drills.html"}]},{"@type":"CollectionPage","name":"EMS Drills","url":"https://emscodesim.com/ems-drills.html","description":"Interactive EMS training drills for EMT and paramedic assessment, airway, cardiology, trauma, medication safety, communication, and documentation.","isPartOf":{"@type":"WebSite","name":"EMSCodeSim","url":"https://emscodesim.com/"}}]}</script>
+</head>
+<body class="ems-drills-page">
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+<nav class="nav-wrap" aria-label="Primary navigation">
+<a class="brand" href="/"><picture><source srcset="/ems-logo.webp" type="image/webp"/><img alt="EMSCodeSim logo" height="40" src="/ems-logo.png" width="40"/></picture><span>EMSCodeSim<small>EMS Career &amp; Training Hub</small></span></a>
+<div class="main-nav ems-intent-nav" aria-label="Primary training paths">
+<a href="/emt-prep.html">Learn</a>
+<a aria-current="page" href="/ems-drills.html">Drills</a>
+<a href="/ems-training-tools.html">Practice</a>
+<a href="/vitals/scenario-launcher.html">Sims</a>
+<a href="/nremt-cognitive-prep.html">NREMT</a>
+</div>
+<select class="mobile-menu" id="mobileMenu" aria-label="Navigate EMSCodeSim">
+<option value="">Menu</option>
+<option value="/">Home</option>
+<optgroup label="Train">
+<option value="/ems-drills.html">EMS Drills</option>
+<option value="/emt-prep.html">Learn</option>
+<option value="/ems-training-tools.html">Practice</option>
+<option value="/vitals/scenario-launcher.html">Sims</option>
+<option value="/nremt-cognitive-prep.html">NREMT</option>
+</optgroup>
+</select>
+</nav>
+</header>
+
+<main id="main">
+<section class="ems-drills-hero">
+<div class="breadcrumbs"><a href="/">Home</a> / EMS Drills</div>
+<p class="ems-drill-kicker">EMSCodeSim</p>
+<h1>EMS Drills</h1>
+<p class="ems-drills-lead">Short, practical EMS training activities for station, classroom, or phone practice. Open a drill, work the decisions, and finish with a clear completion receipt—no LMS account required.</p>
+<ul class="ems-philosophy" aria-label="Drill philosophy">
+<li>Learn</li><li>Perform</li><li>Document</li><li>Complete</li>
+</ul>
+</section>
+
+<div class="ems-drills-layout">
+<section class="ems-split-note" aria-labelledby="rolesHeading">
+<h2 id="rolesHeading">Training experience, not another LMS</h2>
+<p><strong>EMSCodeSim</strong> provides the interactive drill. <strong>Responder Roadmap</strong> can assign the drill, track completion, and keep department accountability. Your agency RMS remains the long-term official record when you use that workflow.</p>
+</section>
+
+<section aria-labelledby="libraryHeading">
+<div class="section-head" style="margin-bottom:8px">
+<p class="eyebrow">Drill library</p>
+<h2 id="libraryHeading">Choose a drill and start</h2>
+<p class="section-lead">Filter by category, certification level, crew type, or completion style. Every card shows time, difficulty, and whether the drill is self-completed or evaluator-verified.</p>
+</div>
+
+<div class="ems-drill-filters">
+<label for="drillSearch">Search<input id="drillSearch" type="search" placeholder="respiratory, stroke, BVM, PCR"/></label>
+<label for="drillCategory">Category<select id="drillCategory"><option value="">All categories</option></select></label>
+<label for="drillLevel">Certification<select id="drillLevel"><option value="">All levels</option><option>EMT</option><option>AEMT</option><option>Paramedic</option></select></label>
+<label for="drillCrew">Crew<select id="drillCrew"><option value="">Any</option><option value="individual">Individual</option><option value="crew">Crew</option></select></label>
+<label for="drillCompletion">Completion<select id="drillCompletion"><option value="">Any</option><option value="self">Self-completed</option><option value="evaluator">Evaluator-verified</option></select></label>
+<button type="button" class="ems-btn ems-btn-secondary" id="clearDrillFilters">Clear</button>
+</div>
+<p class="library-summary" id="drillSummary" aria-live="polite"></p>
+<div class="ems-drill-grid" id="drillGrid"></div>
+</section>
+
+<section style="margin-top:36px" aria-labelledby="categoryHeading">
+<div class="section-head">
+<p class="eyebrow">Expandable categories</p>
+<h2 id="categoryHeading">Built for growth</h2>
+<p class="section-lead">Categories are data-driven so new drills can be added without rebuilding the site. Initial coverage spans assessment through documentation.</p>
+</div>
+<div class="ems-category-grid" id="categoryGuide"></div>
+</section>
+
+<section class="ems-split-note" style="margin-top:36px" aria-labelledby="protocolHeading">
+<h2 id="protocolHeading">General education vs local protocol</h2>
+<p>EMS Drills teach repeatable assessment and decision habits. They do <strong>not</strong> silently invent your local medication doses, destination plans, or documentation rules. When a choice depends on agency policy, the drill says so and points you back to medical direction.</p>
+</section>
+
+<section style="margin-top:28px" aria-labelledby="roadmapHeading">
+<h2 id="roadmapHeading">Responder Roadmap assignments</h2>
+<p>Departments using <a href="https://responderroadmap.com">Responder Roadmap</a> can assign an EMSCodeSim drill. Members tap <strong>Start Drill</strong>, complete the activity here, and a signed completion event returns to Roadmap. Standalone users can still run every drill without Roadmap.</p>
+</section>
+</div>
+</main>
+
+<aside class="author-panel" aria-label="About the author">
+<div class="author-mark" aria-hidden="true">DG</div>
+<div>
+<h2>Created by an experienced EMS educator</h2>
+<p><strong>David Gallaher</strong> is a career paramedic, firefighter, and EMS instructor. EMS Drills support—not replace—approved education, medical direction, and local protocols. <a href="/about.html">Editorial standards</a>.</p>
+</div>
+</aside>
+
+<footer class="site-footer"><div class="footer-grid">
+<div><h2>EMSCodeSim</h2><p>Free guidance and practice from first interest in EMS through career growth.</p></div>
+<div><h3>Practice</h3><a href="/ems-drills.html">EMS Drills</a><a href="/ems-training-tools.html">Training Tools</a><a href="/daily-protocol.html">Daily Protocol</a><a href="/quiz/">Daily Quiz</a></div>
+<div><h3>Sims</h3><a href="/vitals/scenario-launcher.html">Scenario Launcher</a><a href="/skills-session">BLS Boot Camp</a><a href="/narrative-writing-lab.html">Narrative Lab</a></div>
+<div><h3>About</h3><a href="/about.html">About</a><a href="/privacy.html">Privacy</a><a href="https://responderroadmap.com">Responder Roadmap</a></div>
+</div>
+<div class="footer-bottom">EMSCodeSim provides educational information and simulation practice. It does not replace an approved EMS course, local protocol, medical direction, or certification authority.</div>
+</footer>
+<script defer src="/career.js"></script>
+</body>
+</html>

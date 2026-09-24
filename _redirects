@@ -1,3 +1,10 @@
+# EMS Drills
+/ems-drills                      /ems-drills.html                           301
+/drills                          /ems-drills.html                           301
+/api/ems-drills/catalog          /.netlify/functions/ems-drill-catalog      200
+/api/ems-drills/session          /.netlify/functions/ems-drill-session      200
+/api/ems-drills/complete         /.netlify/functions/ems-drill-complete     200
+
 # Canonical patient scenario page
 /scenario-launcher.html              /vitals/scenario-launcher.html           301!
 /scenario-launcher                   /vitals/scenario-launcher.html           301!

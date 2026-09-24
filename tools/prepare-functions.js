@@ -34,6 +34,15 @@ function copyActiveFunctions(directory, relativeBase = '') {
 
 copyActiveFunctions(source);
 
+// Keep EMS drill catalog bundled with serverless handlers.
+const drillCatalogSource = path.join(root, 'data', 'ems-drills.json');
+const drillCatalogDestination = path.join(out, 'data', 'ems-drills.json');
+if (fs.existsSync(drillCatalogSource)) {
+  fs.mkdirSync(path.dirname(drillCatalogDestination), { recursive: true });
+  fs.copyFileSync(drillCatalogSource, drillCatalogDestination);
+  copied += 1;
+}
+
 if (copied === 0) fs.writeFileSync(path.join(out, '.gitkeep'), '');
 
 if (fs.existsSync(path.join(out, 'gpt4-turbo.js'))) {
