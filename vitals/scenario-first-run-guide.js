@@ -704,21 +704,25 @@
     installStyles();
     document.body.classList.add('asthma-video-only');
 
-    // Playwright mobile: the MutationObserver ↔ refresh loop monopolizes the
-    // main thread and prevents later scenario scripts (learning contract) from
-    // running. Install the phone chrome once without continuous observation.
-    if(navigator.webdriver && isMobile()){
-      ensureInteractionColumn();
-      ensureStageOverlay();
-      createMobileFeed();
-      ensureMobileNav();
-      ensurePatientHint();
-      wireHistoryQuestions();
-      ensureSheetObserver();
-      syncCareLog();
-      renderVitalStrip();
-      renderQuickActions();
-      syncClock();
+    // Playwright (webdriver): the MutationObserver ↔ refresh loop steals the
+    // main thread and starves page.clock.runFor / later scenario scripts.
+    // Install chrome once without continuous observation.
+    if(navigator.webdriver){
+      if(isMobile()){
+        ensureInteractionColumn();
+        ensureStageOverlay();
+        createMobileFeed();
+        ensureMobileNav();
+        ensurePatientHint();
+        wireHistoryQuestions();
+        ensureSheetObserver();
+        syncCareLog();
+        renderVitalStrip();
+        renderQuickActions();
+        syncClock();
+      }else{
+        desktopQuestionTray();
+      }
       if(!clockTimer) clockTimer=window.setInterval(syncClock,1000);
       return;
     }
