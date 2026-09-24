@@ -391,39 +391,40 @@
 
   EmsDrillEngine.prototype.renderStep = function renderStep(step) {
     const content = this.drill.content || {};
+    const titled = (inner) => `<h2>${esc(step.title)}</h2>${inner}`;
     switch (step.kind) {
       case 'intro':
-        return `<p class="ems-lead">${esc(content.introduction || '')}</p>
-          <p>Philosophy: <strong>Learn → Perform → Document → Complete</strong></p>`;
+        return titled(`<p class="ems-lead">${esc(content.introduction || '')}</p>
+          <p>Philosophy: <strong>Learn → Perform → Document → Complete</strong></p>`);
       case 'objectives':
-        return `<ul class="ems-list">${(content.objectives || []).map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`;
+        return titled(`<ul class="ems-list">${(content.objectives || []).map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`);
       case 'equipment':
-        return `<ul class="ems-list">${(content.equipment || []).map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`;
+        return titled(`<ul class="ems-list">${(content.equipment || []).map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`);
       case 'scenario':
-        return `<dl class="ems-scenario">
+        return titled(`<dl class="ems-scenario">
           <dt>Dispatch</dt><dd>${esc(content.scenario?.dispatch || '')}</dd>
           <dt>Scene</dt><dd>${esc(content.scenario?.scene || '')}</dd>
           <dt>Patient</dt><dd>${esc(content.scenario?.patient || '')}</dd>
-        </dl>`;
+        </dl>`);
       case 'instructions':
-        return `<ul class="ems-list">${(content.instructions || []).map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`;
+        return titled(`<ul class="ems-list">${(content.instructions || []).map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`);
       case 'activity':
         return this.renderActivity(step.activity);
       case 'critical':
-        return this.renderCritical(content.criticalActions || []);
+        return titled(this.renderCritical(content.criticalActions || []));
       case 'knowledge':
-        return this.renderKnowledge(content.knowledgeChecks || []);
+        return titled(this.renderKnowledge(content.knowledgeChecks || []));
       case 'debrief':
-        return `<div class="ems-debrief">
+        return titled(`<div class="ems-debrief">
           <p class="ems-lead">${esc(content.debrief?.summary || '')}</p>
-          <h2>Takeaways</h2>
+          <h3>Takeaways</h3>
           <ul class="ems-list">${(content.debrief?.takeaways || []).map((item) => `<li>${esc(item)}</li>`).join('')}</ul>
-          <h2>Common misses</h2>
+          <h3>Common misses</h3>
           <ul class="ems-list">${(content.debrief?.commonMisses || []).map((item) => `<li>${esc(item)}</li>`).join('')}</ul>
           <label class="ems-field"><span>Optional notes</span>
             <textarea data-field="notes" rows="3" placeholder="What will you change next time?">${esc(this.session.notes)}</textarea>
           </label>
-        </div>`;
+        </div>`);
       case 'complete':
         return this.renderCompletion();
       default:
