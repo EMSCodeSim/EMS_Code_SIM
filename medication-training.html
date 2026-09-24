@@ -19,8 +19,10 @@
 <link href="/styles/responsive.css" rel="stylesheet"/>
 <link href="/styles/site-enhancements.css" rel="stylesheet"/>
 <link href="/styles/medication-learning.css" rel="stylesheet"/>
+<link href="/styles/ems-design-system.css" rel="stylesheet"/>
 <script defer src="/privacy-controls.js"></script>
 <script defer src="/scripts/engagement-loop.js"></script>
+<script defer src="/scripts/ems-intent-nav.js"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://emscodesim.com/"},{"@type":"ListItem","position":2,"name":"Medication Learning Center","item":"https://emscodesim.com/medication-training.html"}]},{"@type":"LearningResource","name":"EMT Medication Learning Center","description":"Free EMT medication safety training covering five rights and common EMS medications.","url":"https://emscodesim.com/medication-training.html","isAccessibleForFree":true,"learningResourceType":"tutorial","educationalLevel":"EMT"}]}</script>
 </head>
 <body class="med-page">
@@ -128,59 +130,89 @@
 <p>Exact doses and products are protocol-specific. Learn the clinical idea first, then confirm local numbers with your instructor and medical direction.</p>
 </div>
 <div class="med-grid">
-<article class="med-card">
+<article class="ems-med-card">
 <span class="tag">Cardiac</span>
 <h3>Aspirin</h3>
-<ul>
-<li><strong>Why:</strong> reduces platelet aggregation in suspected ACS</li>
-<li><strong>Watch for:</strong> allergy, active bleeding, inability to swallow</li>
-<li><strong>Reassess:</strong> pain, perfusion, mental status, side effects</li>
+<ul class="ems-med-fields">
+<li><b>Medication</b><span>Aspirin (acetylsalicylic acid)</span></li>
+<li><b>Indications</b><span>Suspected acute coronary syndrome when authorized</span></li>
+<li><b>Contraindications</b><span>Allergy, active bleeding, inability to swallow</span></li>
+<li><b>Dose</b><span>Confirm with local protocol / medical direction</span></li>
+<li><b>Route</b><span>Oral (chewed when protocol allows)</span></li>
+<li><b>Mechanism</b><span>Reduces platelet aggregation</span></li>
+<li><b>EMS notes</b><span>Reassess pain, perfusion, mental status, and side effects</span></li>
 </ul>
+<a class="start" href="/vitals/meds.html">Practice This Medication</a>
 </article>
-<article class="med-card">
+<article class="ems-med-card">
 <span class="tag">Cardiac</span>
 <h3>Nitroglycerin</h3>
-<ul>
-<li><strong>Why:</strong> dilates vessels and may reduce cardiac workload/pain</li>
-<li><strong>Watch for:</strong> hypotension, recent PDE-5 inhibitor use, right indications only</li>
-<li><strong>Reassess:</strong> BP, pain, dizziness, syncope risk</li>
+<ul class="ems-med-fields">
+<li><b>Medication</b><span>Nitroglycerin</span></li>
+<li><b>Indications</b><span>Chest pain of suspected cardiac origin when authorized</span></li>
+<li><b>Contraindications</b><span>Hypotension, recent PDE-5 inhibitor use, and other protocol exclusions</span></li>
+<li><b>Dose</b><span>Confirm with local protocol / medical direction</span></li>
+<li><b>Route</b><span>Sublingual tablet or spray (product-specific)</span></li>
+<li><b>Mechanism</b><span>Dilates vessels; may reduce cardiac workload and pain</span></li>
+<li><b>EMS notes</b><span>Reassess BP, pain, dizziness, and syncope risk</span></li>
 </ul>
+<a class="start" href="/vitals/meds.html">Practice This Medication</a>
 </article>
-<article class="med-card">
+<article class="ems-med-card">
 <span class="tag">Allergy</span>
 <h3>Epinephrine</h3>
-<ul>
-<li><strong>Why:</strong> reverses anaphylaxis airway and shock physiology</li>
-<li><strong>Watch for:</strong> wrong indication, delayed use when true anaphylaxis is present</li>
-<li><strong>Reassess:</strong> airway, breathing, BP, mental status, need to escalate</li>
+<ul class="ems-med-fields">
+<li><b>Medication</b><span>Epinephrine (auto-injector or protocol product)</span></li>
+<li><b>Indications</b><span>Anaphylaxis with airway or shock findings when authorized</span></li>
+<li><b>Contraindications</b><span>Follow product labeling and local protocol exclusions</span></li>
+<li><b>Dose</b><span>Confirm with local protocol / medical direction</span></li>
+<li><b>Route</b><span>Intramuscular (typical EMT route when authorized)</span></li>
+<li><b>Mechanism</b><span>Reverses anaphylaxis airway and shock physiology</span></li>
+<li><b>EMS notes</b><span>Do not delay for true anaphylaxis; reassess airway, breathing, BP, and mental status</span></li>
 </ul>
+<a class="start" href="/vitals/meds.html">Practice This Medication</a>
 </article>
-<article class="med-card">
+<article class="ems-med-card">
 <span class="tag">Toxicology</span>
 <h3>Naloxone</h3>
-<ul>
-<li><strong>Why:</strong> reverses opioid respiratory depression</li>
-<li><strong>Watch for:</strong> agitation on awakening; incomplete reversal</li>
-<li><strong>Reassess:</strong> ventilation first, then response and need to repeat per protocol</li>
+<ul class="ems-med-fields">
+<li><b>Medication</b><span>Naloxone</span></li>
+<li><b>Indications</b><span>Suspected opioid overdose with respiratory depression when authorized</span></li>
+<li><b>Contraindications</b><span>Follow product labeling and local protocol exclusions</span></li>
+<li><b>Dose</b><span>Confirm with local protocol / medical direction</span></li>
+<li><b>Route</b><span>Intranasal or intramuscular (product-specific)</span></li>
+<li><b>Mechanism</b><span>Opioid antagonist that can reverse respiratory depression</span></li>
+<li><b>EMS notes</b><span>Support ventilation first; watch for agitation and incomplete reversal</span></li>
 </ul>
+<a class="start" href="/vitals/meds.html">Practice This Medication</a>
 </article>
-<article class="med-card">
+<article class="ems-med-card">
 <span class="tag">Endocrine</span>
 <h3>Oral glucose</h3>
-<ul>
-<li><strong>Why:</strong> raises blood sugar in symptomatic hypoglycemia</li>
-<li><strong>Watch for:</strong> inability to protect airway or swallow</li>
-<li><strong>Reassess:</strong> mental status and repeat glucose when available</li>
+<ul class="ems-med-fields">
+<li><b>Medication</b><span>Oral glucose</span></li>
+<li><b>Indications</b><span>Symptomatic hypoglycemia when the patient can protect the airway</span></li>
+<li><b>Contraindications</b><span>Inability to swallow or protect airway</span></li>
+<li><b>Dose</b><span>Confirm with local protocol / medical direction</span></li>
+<li><b>Route</b><span>Oral / buccal gel as authorized</span></li>
+<li><b>Mechanism</b><span>Raises blood glucose</span></li>
+<li><b>EMS notes</b><span>Reassess mental status and repeat glucose when available</span></li>
 </ul>
+<a class="start" href="/vitals/meds.html">Practice This Medication</a>
 </article>
-<article class="med-card">
+<article class="ems-med-card">
 <span class="tag">Respiratory</span>
 <h3>Bronchodilator / assist inhaler</h3>
-<ul>
-<li><strong>Why:</strong> opens constricted lower airways in wheezing/asthma/COPD presentations</li>
-<li><strong>Watch for:</strong> inadequate breathing that needs BVM instead</li>
-<li><strong>Reassess:</strong> work of breathing, air movement, SpO₂, fatigue</li>
+<ul class="ems-med-fields">
+<li><b>Medication</b><span>Prescribed bronchodilator (assist) / protocol product</span></li>
+<li><b>Indications</b><span>Wheezing / asthma / COPD presentations when authorized</span></li>
+<li><b>Contraindications</b><span>Inadequate breathing that needs assisted ventilation instead</span></li>
+<li><b>Dose</b><span>Confirm with local protocol / medical direction</span></li>
+<li><b>Route</b><span>Inhaled</span></li>
+<li><b>Mechanism</b><span>Opens constricted lower airways</span></li>
+<li><b>EMS notes</b><span>Reassess work of breathing, air movement, SpO₂, and fatigue</span></li>
 </ul>
+<a class="start" href="/vitals/meds.html">Practice This Medication</a>
 </article>
 </div>
 <div class="med-note danger" style="margin-top:16px"><strong>Never invent a dose.</strong> If you cannot confirm the medication, dose, route, indication, and authorization, do not give it. Support ABCs and contact medical direction when required.</div>

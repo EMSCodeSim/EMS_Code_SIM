@@ -82,13 +82,15 @@
     const heroCopy=q('#heroCopy');
     const primary=q('#heroPrimary');
     const secondary=q('#heroSecondary');
+    const practice=q('#heroPractice');
     if(heroKicker)heroKicker.textContent='Free EMT practice · no account required';
-    if(heroTitle)heroTitle.innerHTML='Free EMT patient simulations <span>and career tools.</span>';
-    if(heroCopy)heroCopy.textContent='Run a full EMT assessment. No login. Practice patient care first, then use daily review and career tools when you need them.';
-    if(primary){primary.href=DEFAULT_SCENARIO;primary.textContent='Start a scenario';}
-    if(secondary){secondary.href='#daily-practice';secondary.textContent='Do today’s 5-minute practice';}
+    if(heroTitle)heroTitle.innerHTML='Free EMS Training That Makes You <span>Think Like a Clinician</span>';
+    if(heroCopy)heroCopy.textContent='Practice patient assessment, EMT skills, medications, NREMT questions, documentation, and realistic EMS scenarios.';
+    if(primary){primary.href=DEFAULT_SCENARIO;primary.textContent='Start Patient Assessment →';}
+    if(secondary){secondary.href='/ems-training-tools.html';secondary.textContent='Explore Free Training Tools';}
+    if(practice){practice.href='#daily-practice';practice.textContent='Today’s 5-Minute Practice';}
     const summary=q('.stage-summary-line');if(summary)summary.textContent='Career-stage personalization is optional and never blocks the training tools.';
-    const headerCta=q('.header-cta');if(headerCta)headerCta.href=DEFAULT_SCENARIO;
+    const headerCta=q('.header-cta');if(headerCta){headerCta.href=DEFAULT_SCENARIO;headerCta.textContent='Start Patient Assessment';}
 
     const sim=q('.hero-sim-card');
     if(sim&&!q('.hero-scene-still',sim)){

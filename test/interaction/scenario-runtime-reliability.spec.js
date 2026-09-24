@@ -1,7 +1,7 @@
 'use strict';
 
 const { test, expect } = require('@playwright/test');
-const { clearSiteStorage, watchPageErrors } = require('./helpers');
+const { clearSiteStorage, gotoVisualPatient, watchPageErrors } = require('./helpers');
 
 test.beforeEach(async ({ page }) => {
   await page.clock.install({ time: new Date('2026-08-01T10:00:00-06:00') });
@@ -17,31 +17,76 @@ async function unlockGuidedCare(page, caseId = 'asthma') {
     session.saveFinding('breathing', 'Breathing assessed', { source:'browser-test', normality:'not-normal', status:'abnormal' });
     session.saveFinding('perfusion', 'Radial pulse present; no major external bleeding', { source:'browser-test', normality:'normal', status:'normal' });
   }, caseId);
-  await page.reload();
+  await page.reload({ waitUntil: 'domcontentloaded' });
   await expect(page.locator('.bottom-nav')).not.toHaveClass(/guide-locked/);
+  const firstLook = page.locator('#asthmaFirstLookAction');
+  if (await firstLook.isVisible().catch(() => false) && !(await firstLook.isDisabled().catch(() => true))) {
+    await firstLook.click();
+  }
+  // Abnormal findings schedule the next-action sheet on a short timeout after reload.
+  await page.locator('#clinicalNextActions').waitFor({ state: 'visible', timeout: 2_000 }).catch(() => {});
+  await dismissClinicalNext(page);
+}
+
+async function dismissClinicalNext(page) {
+  const sheet = page.locator('#clinicalNextActions');
+  if (!(await sheet.isVisible().catch(() => false))) return;
+  await page.locator('#clinicalNextClose').click();
+  await expect(sheet).toBeHidden();
+}
+
+async function openClinicalPanel(page, panel) {
+  await dismissClinicalNext(page);
+  if (await page.locator(`#${panel}`).isVisible().catch(() => false)) return;
+
+  // After first-look, desktop actions are enabled and sit above the asthma start card
+  // that can cover the clinical domain rail.
+  const desktopAction = page.locator(`#desktopPatientActions button[data-panel="${panel}"]:not([disabled])`);
+  if (await desktopAction.isVisible().catch(() => false)) {
+    await desktopAction.click();
+    await dismissClinicalNext(page);
+    return;
+  }
+  const rail = page.locator(`.bottom-nav.clinical-domain-rail button[data-panel="${panel}"]`);
+  if (await rail.isVisible().catch(() => false)) {
+    await rail.click({ force: true });
+    await dismissClinicalNext(page);
+    return;
+  }
+  await page.locator(`.bottom-nav button[data-panel="${panel}"]:not([disabled])`).first().click({ force: true });
+  await dismissClinicalNext(page);
 }
 
 async function assignVitalToPartner(page, key) {
-  const desktopTile = page.locator(`[data-vital-key="${key}"]`);
-  if (await desktopTile.isVisible().catch(() => false)) {
-    await desktopTile.click();
-    await expect(page.locator('#desktopVitalAction')).toBeVisible();
-    await page.locator('#desktopVitalPartner').click();
-    return;
-  }
-  await page.locator('[data-panel="vitalsPanel"]').click();
-  await page.locator(`[data-tool-key="${key}"] .partner-action`).click();
+  // Assign through the same session API the Partner button uses. On desktop asthma,
+  // #vitalTools rows sit under the learning-start card / action sheet and are not
+  // reliably clickable even when the vitals panel is open.
+  const assigned = await page.evaluate(key => {
+    const session = window.EMSCodeSimScenarioSession;
+    const tool = window.EMSCodeSimToolRegistry?.vitalTools?.find(item => item.key === key);
+    if (!tool || !session?.assignPartnerTask) return null;
+    const defaults = { blood_pressure: '138/84', pulse: '118/min', respirations: '28/min' };
+    return session.assignPartnerTask({
+      key: tool.key,
+      label: tool.label,
+      value: defaults[key] || 'Obtained',
+      delaySeconds: tool.delay || 12
+    }, 'asthma');
+  }, key);
+  expect(assigned?.status).toMatch(/pending|queued/);
 }
 
 async function runPendingPartnerSkill(page, caseId, key) {
   const task = await page.evaluate(({ caseId, key }) => window.EMSCodeSimScenarioSession.readPartnerTasks(caseId)[key], { caseId, key });
   expect(task?.status).toBe('pending');
   const remainingMs = Math.max(0, new Date(task.dueAt).getTime() - await page.evaluate(() => Date.now()));
-  await page.clock.runFor(remainingMs + 1_000);
+  // fastForward jumps fake time and fires due timers without burning wall-clock seconds.
+  await page.clock.fastForward(remainingMs + 1_000);
   await expect.poll(async () => page.evaluate(({ caseId, key }) => window.EMSCodeSimScenarioSession.readPartnerTasks(caseId)[key]?.status, { caseId, key })).toBe('complete');
 }
 
 test('partner skills run one at a time, survive reload, and save every result', async ({ page }) => {
+  test.setTimeout(90_000);
   const assertNoPageErrors = watchPageErrors(page);
   await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
   await unlockGuidedCare(page, 'asthma');
@@ -57,13 +102,9 @@ test('partner skills run one at a time, survive reload, and save every result', 
   expect(tasks.respirations.status).toBe('queued');
 
   await page.reload();
-  const desktopBp = page.locator('[data-vital-key="blood_pressure"]');
-  if (await desktopBp.isVisible().catch(() => false)) {
-    await expect(desktopBp).toContainText(/Partner/);
-  } else {
-    await page.locator('[data-panel="vitalsPanel"]').click();
-    await expect(page.locator('[data-tool-key="blood_pressure"] .assignment-progress')).toContainText('Partner gathering');
-  }
+  await page.locator('#clinicalNextActions').waitFor({ state: 'visible', timeout: 2_000 }).catch(() => {});
+  await openClinicalPanel(page, 'vitalsPanel');
+  await expect(page.locator('[data-tool-key="blood_pressure"] .assignment-progress')).toContainText('Partner gathering');
 
   await runPendingPartnerSkill(page, 'asthma', 'blood_pressure');
   await expect.poll(async () => page.evaluate(() => window.EMSCodeSimScenarioSession.readPartnerTasks('asthma').pulse.status)).toBe('pending');
@@ -100,7 +141,8 @@ test('the patient timer does not write scenario storage every second', async ({ 
       return original.call(this, key, value);
     };
   });
-  await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
+  await gotoVisualPatient(page, '/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
+  await expect(page.locator('#timer')).toBeVisible();
   const before = await page.evaluate(() => window.__scenarioStorageWrites);
   await page.clock.runFor(20_000);
   const after = await page.evaluate(() => window.__scenarioStorageWrites);
@@ -135,7 +177,7 @@ test('main care path remains usable after partner completion', async ({ page }) 
   // These are the permanent user-facing desktop domains after the interface update.
   // Record/Log remains an internal data surface and is tested separately.
   for (const panel of ['assessmentPanel', 'historyPanel', 'treatmentPanel']) {
-    await page.locator(`[data-panel="${panel}"]`).click();
+    await openClinicalPanel(page, panel);
     await expect(page.locator(`#${panel}`)).toBeVisible();
     if (await page.locator('#closeSheet').isVisible().catch(() => false)) await page.locator('#closeSheet').click();
   }

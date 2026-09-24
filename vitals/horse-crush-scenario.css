@@ -454,20 +454,21 @@ body.horse-grade-open.desktop-scenario-layout.clinical-domain-workspace-v2 .scen
     z-index:2!important;
     pointer-events:auto!important;
   }
+  /* Keep More treatments + transport/handoff in normal grid flow (side-by-side via
+     grid-column rules). Sticky bottom pinning covered the 5th primary category
+     (resources) at Desktop Chrome 1280x720 and stole its hit target. */
   body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>#horseMoreTreatmentsToggle{
-    position:sticky!important;
-    bottom:0!important;
-    z-index:30!important;
+    position:relative!important;
+    z-index:8!important;
     overflow:hidden!important;
     background:#0b1d2c!important;
   }
   body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>#horseTransportHandoffActions{
-    position:sticky!important;
-    bottom:0!important;
+    position:relative!important;
     height:auto!important;
     max-height:34px!important;
     overflow:visible!important;
-    z-index:31!important;
+    z-index:8!important;
     pointer-events:auto!important;
     background:#0b1d2c!important;
   }

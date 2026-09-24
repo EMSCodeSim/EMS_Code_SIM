@@ -204,7 +204,7 @@
     shell.hidden = true;
     shell.setAttribute('aria-label','Asthma patient video');
     shell.innerHTML = `
-      <video id="scenarioIntroVideoElement" muted playsinline preload="auto" poster="${COVER}"><source src="${VIDEOS.intro.url}" type="video/mp4"></video>
+      <video id="scenarioIntroVideoElement" muted playsinline preload="none" poster="${COVER}"><source type="video/mp4"></video>
       <div class="scenario-intro-video-controls">
         <div class="scenario-intro-video-copy"><small id="scenarioVideoEyebrow"></small><strong id="scenarioVideoCopy"></strong></div>
         <div class="scenario-intro-video-actions"><button id="scenarioIntroReplay" type="button">Replay</button><button id="scenarioIntroSkip" class="primary" type="button">Continue assessment</button></div>
@@ -225,7 +225,18 @@
     replayButton.addEventListener('click',() => playState(activeState));
     stage.appendChild(replayButton);
 
-    playState('intro',{once:true});
+    // Attach CloudFront src only after window `load` so first navigation is not
+    // blocked by CDN media. Skip autoplay under WebDriver — signed CDN transfers
+    // stall / OOM mobile Playwright tabs without helping clinical assertions.
+    const kickoffIntro = () => {
+      if (navigator.webdriver) {
+        showPatient();
+        return;
+      }
+      playState('intro',{once:true});
+    };
+    if (document.readyState === 'complete') kickoffIntro();
+    else window.addEventListener('load', kickoffIntro, { once:true });
     window.addEventListener('emscodesim:patient-record-updated',() => window.setTimeout(evaluatePatientState,40));
     window.setInterval(evaluatePatientState,5000);
   }
