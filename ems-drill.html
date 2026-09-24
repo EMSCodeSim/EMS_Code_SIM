@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>EMS Drill | EMSCodeSim</title>
+<meta name="description" content="Complete an interactive EMSCodeSim drill for EMT and paramedic training."/>
+<meta name="robots" content="index,follow,max-image-preview:large"/>
+<link rel="canonical" href="https://emscodesim.com/ems-drill.html"/>
+<meta name="theme-color" content="#071624"/>
+<link rel="icon" href="/favicon.png" type="image/png"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="EMSCodeSim"/>
+<meta property="og:title" content="EMS Drill | EMSCodeSim"/>
+<meta property="og:description" content="Interactive EMS drill runner with completion tracking for standalone practice or Responder Roadmap assignments."/>
+<meta property="og:url" content="https://emscodesim.com/ems-drill.html"/>
+<meta property="og:image" content="https://emscodesim.com/ems-logo.png"/>
+<link rel="stylesheet" href="/styles/career-hub.css"/>
+<link rel="stylesheet" href="/styles/responsive.css"/>
+<link rel="stylesheet" href="/styles/site-enhancements.css"/>
+<link rel="stylesheet" href="/styles/ems-design-system.css"/>
+<link rel="stylesheet" href="/styles/ems-drills.css"/>
+<script defer src="/privacy-controls.js"></script>
+<script defer src="/scripts/ems-intent-nav.js"></script>
+<script defer src="/ems-drill-engine.js"></script>
+<script defer src="/ems-drill-roadmap.js"></script>
+<script defer src="/ems-drill-runner.js"></script>
+</head>
+<body class="ems-drill-page">
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+<nav class="nav-wrap" aria-label="Primary navigation">
+<a class="brand" href="/"><picture><source srcset="/ems-logo.webp" type="image/webp"/><img alt="EMSCodeSim logo" height="40" src="/ems-logo.png" width="40"/></picture><span>EMSCodeSim<small>EMS Career &amp; Training Hub</small></span></a>
+<div class="main-nav ems-intent-nav" aria-label="Primary training paths">
+<a href="/emt-prep.html">Learn</a>
+<a aria-current="page" href="/ems-drills.html">Drills</a>
+<a href="/ems-training-tools.html">Practice</a>
+<a href="/vitals/scenario-launcher.html">Sims</a>
+</div>
+<select class="mobile-menu" id="mobileMenu" aria-label="Navigate EMSCodeSim">
+<option value="">Menu</option>
+<option value="/ems-drills.html">EMS Drills</option>
+<option value="/ems-training-tools.html">Practice</option>
+<option value="/">Home</option>
+</select>
+</nav>
+</header>
+
+<main id="main" class="ems-drills-layout">
+<div class="breadcrumbs"><a href="/">Home</a> / <a href="/ems-drills.html">EMS Drills</a> / Runner</div>
+<div id="drillApp" aria-live="polite"></div>
+<div id="drillReceipt" hidden></div>
+</main>
+
+<footer class="site-footer">
+<div class="footer-bottom">EMSCodeSim EMS Drills are educational practice tools. Confirm all local protocol requirements with your agency and medical direction.</div>
+</footer>
+<script defer src="/career.js"></script>
+</body>
+</html>

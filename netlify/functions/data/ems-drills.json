@@ -1,0 +1,2458 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-09-24",
+  "product": "EMSCodeSim EMS Drills",
+  "philosophy": [
+    "Learn",
+    "Perform",
+    "Document",
+    "Complete"
+  ],
+  "protocolDisclaimer": "General educational material for training. Confirm exact indications, doses, destinations, and documentation requirements with your local protocol and medical direction.",
+  "categories": [
+    {
+      "id": "patient-assessment",
+      "name": "Patient Assessment",
+      "description": "Primary survey, focused exams, and decision sequencing."
+    },
+    {
+      "id": "airway-respiratory",
+      "name": "Airway / Respiratory",
+      "description": "Airway adjuncts, oxygen, ventilation, and distress decisions."
+    },
+    {
+      "id": "cardiology",
+      "name": "Cardiology",
+      "description": "Chest pain, arrest roles, AED, and rhythm recognition."
+    },
+    {
+      "id": "medical",
+      "name": "Medical",
+      "description": "Common medical emergencies and differential thinking."
+    },
+    {
+      "id": "trauma",
+      "name": "Trauma",
+      "description": "Hemorrhage, shock, and trauma assessment priorities."
+    },
+    {
+      "id": "pediatrics",
+      "name": "Pediatrics",
+      "description": "Pediatric assessment and age-adjusted care."
+    },
+    {
+      "id": "medication-safety",
+      "name": "Medication Safety",
+      "description": "Verification, calculation, and cross-check habits."
+    },
+    {
+      "id": "operations-equipment",
+      "name": "Operations / Equipment",
+      "description": "Ambulance and equipment familiarity."
+    },
+    {
+      "id": "communication",
+      "name": "Communication",
+      "description": "Radio reports, hospital notification, and handoff."
+    },
+    {
+      "id": "documentation",
+      "name": "Documentation",
+      "description": "PCR narrative structure and refusal documentation."
+    }
+  ],
+  "drills": [
+    {
+      "id": "ems-medical-assessment-001",
+      "version": 1,
+      "slug": "medical-patient-assessment",
+      "title": "Medical Patient Assessment",
+      "categoryId": "patient-assessment",
+      "certificationLevels": [
+        "EMT",
+        "AEMT",
+        "Paramedic"
+      ],
+      "estimatedMinutes": 12,
+      "difficulty": "foundational",
+      "crewType": "individual",
+      "completionType": "self",
+      "summary": "Work a medical primary survey, focused history, vitals interpretation, and transport priority decision.",
+      "protocolNote": "General educational material for training. Confirm exact indications, doses, destinations, and documentation requirements with your local protocol and medical direction.",
+      "relatedTools": [
+        {
+          "title": "Patient Assessment Simulator",
+          "url": "/vitals/visual-patient.html?case=asthma&training=assessment&reset=1"
+        },
+        {
+          "title": "SAMPLE History Simulator",
+          "url": "/vitals/sample-history.html"
+        }
+      ],
+      "seoDescription": "Practice a structured EMT medical patient assessment with primary survey decisions, SAMPLE/OPQRST choices, and reassessment priorities.",
+      "components": [
+        "introduction",
+        "objective",
+        "equipment",
+        "scenario",
+        "instructions",
+        "interactive",
+        "criticalActions",
+        "knowledgeChecks",
+        "completionCriteria",
+        "debrief",
+        "completion"
+      ],
+      "content": {
+        "introduction": "This drill strengthens a repeatable medical assessment sequence you can use on almost any medical call.",
+        "objectives": [
+          "Perform a logical primary survey order",
+          "Collect focused SAMPLE and OPQRST information",
+          "Recognize findings that change priority",
+          "Document the reassessment trigger"
+        ],
+        "equipment": [
+          "PPE",
+          "Stethoscope",
+          "BP cuff",
+          "Pulse oximeter",
+          "Glucometer",
+          "Oxygen delivery devices"
+        ],
+        "scenario": {
+          "dispatch": "61-year-old with weakness and nausea at home.",
+          "scene": "Private residence, no hazards, family present.",
+          "patient": "Sitting on the couch, pale, speaking in full sentences, oriented."
+        },
+        "instructions": [
+          "Complete each interactive decision in order.",
+          "Treat this as general training\u2014not a local protocol worksheet.",
+          "Pass requires correct critical actions and at least 70% on knowledge checks."
+        ],
+        "activities": [
+          {
+            "id": "a1",
+            "type": "ordered-steps",
+            "title": "Order the primary survey",
+            "prompt": "Put these medical assessment steps in a practical field order.",
+            "items": [
+              {
+                "id": "s1",
+                "text": "Scene size-up and PPE"
+              },
+              {
+                "id": "s2",
+                "text": "General impression and responsiveness"
+              },
+              {
+                "id": "s3",
+                "text": "Airway, breathing, circulation check"
+              },
+              {
+                "id": "s4",
+                "text": "Chief complaint and priority decision"
+              },
+              {
+                "id": "s5",
+                "text": "Focused history and vital signs"
+              },
+              {
+                "id": "s6",
+                "text": "Treatment, transport, and reassessment"
+              }
+            ],
+            "correctOrder": [
+              "s1",
+              "s2",
+              "s3",
+              "s4",
+              "s5",
+              "s6"
+            ]
+          },
+          {
+            "id": "a2",
+            "type": "mcq",
+            "title": "Priority decision",
+            "prompt": "The patient remains pale with ongoing nausea. BP 88/54, HR 118, SpO2 94% on room air. What is the best immediate priority?",
+            "choices": [
+              {
+                "id": "c1",
+                "text": "Complete a full head-to-toe before any treatment",
+                "correct": false,
+                "feedback": "Unstable perfusion findings should drive immediate support and rapid transport planning."
+              },
+              {
+                "id": "c2",
+                "text": "Support ABCs, treat for shock per scope, and prepare for priority transport",
+                "correct": true,
+                "feedback": "Hypotension, tachycardia, and poor color make this a high-priority medical patient."
+              },
+              {
+                "id": "c3",
+                "text": "Wait for a 12-lead before any supportive care",
+                "correct": false,
+                "feedback": "Diagnostics can wait behind immediate ABC and perfusion support."
+              }
+            ]
+          },
+          {
+            "id": "a3",
+            "type": "equipment-select",
+            "title": "Assessment tools",
+            "prompt": "Select the tools most useful for the next focused assessment of this weak, pale adult.",
+            "options": [
+              {
+                "id": "bp",
+                "label": "Blood pressure cuff",
+                "correct": true
+              },
+              {
+                "id": "spo2",
+                "label": "Pulse oximeter",
+                "correct": true
+              },
+              {
+                "id": "bgl",
+                "label": "Glucometer",
+                "correct": true
+              },
+              {
+                "id": "tq",
+                "label": "Tourniquet",
+                "correct": false
+              },
+              {
+                "id": "cspine",
+                "label": "Cervical collar as first action",
+                "correct": false
+              }
+            ],
+            "minCorrect": 3
+          }
+        ],
+        "criticalActions": [
+          {
+            "id": "ca1",
+            "text": "Protect yourself and size up the scene before patient contact"
+          },
+          {
+            "id": "ca2",
+            "text": "Assess airway, breathing, and circulation early"
+          },
+          {
+            "id": "ca3",
+            "text": "Identify unstable vital-sign patterns and escalate priority"
+          },
+          {
+            "id": "ca4",
+            "text": "Reassess after interventions and during transport"
+          }
+        ],
+        "knowledgeChecks": [
+          {
+            "question": "Which finding most strongly suggests a higher transport priority?",
+            "options": [
+              "Stable vitals with mild headache",
+              "Hypotension with tachycardia and pallor",
+              "History of seasonal allergies",
+              "A chronic medication list"
+            ],
+            "answer": 1,
+            "rationale": "Shock signs raise priority regardless of the eventual diagnosis."
+          },
+          {
+            "question": "What should happen after oxygen or position changes?",
+            "options": [
+              "Skip documentation",
+              "Reassess mental status, breathing, and vitals",
+              "Assume improvement",
+              "Discharge on scene"
+            ],
+            "answer": 1,
+            "rationale": "Reassessment confirms whether the patient improved, stayed the same, or worsened."
+          }
+        ],
+        "completionCriteria": [
+          "Ordered assessment steps correctly",
+          "Passed the priority decision",
+          "Selected appropriate assessment tools",
+          "Completed critical-action checklist",
+          "Scored at least 70% on knowledge checks"
+        ],
+        "debrief": {
+          "summary": "Medical assessment is a sequence, not a checklist race.",
+          "takeaways": [
+            "Primary survey comes before detailed history when findings are unstable.",
+            "Vitals change priority more than the working label.",
+            "Reassessment closes the loop."
+          ],
+          "commonMisses": [
+            "Collecting a long history before ABCs",
+            "Ignoring hypotension because the patient is still talking"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ems-trauma-assessment-001",
+      "version": 1,
+      "slug": "trauma-patient-assessment",
+      "title": "Trauma Patient Assessment",
+      "categoryId": "patient-assessment",
+      "certificationLevels": [
+        "EMT",
+        "AEMT",
+        "Paramedic"
+      ],
+      "estimatedMinutes": 12,
+      "difficulty": "foundational",
+      "crewType": "individual",
+      "completionType": "self",
+      "summary": "Prioritize XABC trauma assessment, hemorrhage control timing, and rapid transport cues.",
+      "protocolNote": "General educational material for training. Confirm exact indications, doses, destinations, and documentation requirements with your local protocol and medical direction.",
+      "relatedTools": [
+        {
+          "title": "Trauma Learning Center",
+          "url": "/trauma-training.html"
+        },
+        {
+          "title": "Trauma Head-to-Toe Simulator",
+          "url": "/vitals/trauma-assessment.html"
+        }
+      ],
+      "seoDescription": "Practice trauma patient assessment priorities including hemorrhage control, airway, breathing, circulation, and rapid transport decisions.",
+      "components": [
+        "introduction",
+        "objective",
+        "equipment",
+        "scenario",
+        "instructions",
+        "interactive",
+        "criticalActions",
+        "knowledgeChecks",
+        "completionCriteria",
+        "debrief",
+        "completion"
+      ],
+      "content": {
+        "introduction": "Trauma assessment fails when bleeding and airway threats are delayed by a detailed secondary survey.",
+        "objectives": [
+          "Apply XABC priorities",
+          "Identify life threats that stop the survey",
+          "Choose when to load-and-go",
+          "Connect findings to reassessment"
+        ],
+        "equipment": [
+          "PPE",
+          "Tourniquet",
+          "Trauma dressings",
+          "Occlusive dressing",
+          "Oxygen/BVM",
+          "C-collar and packaging gear as locally indicated"
+        ],
+        "scenario": {
+          "dispatch": "MVC, one patient, bleeding from a lower extremity.",
+          "scene": "Stable vehicle, no fire, bystanders present.",
+          "patient": "Responsive adult with arterial bleeding from the right lower leg and rapid breathing."
+        },
+        "instructions": [
+          "Select actions in clinical priority order.",
+          "Do not invent local spinal packaging rules\u2014use general educational priorities."
+        ],
+        "activities": [
+          {
+            "id": "t1",
+            "type": "ordered-steps",
+            "title": "XABC order",
+            "prompt": "Order these trauma priorities for the bleeding extremity patient.",
+            "items": [
+              {
+                "id": "x",
+                "text": "Control life-threatening external hemorrhage"
+              },
+              {
+                "id": "a",
+                "text": "Open and protect the airway as needed"
+              },
+              {
+                "id": "b",
+                "text": "Support oxygenation and ventilation"
+              },
+              {
+                "id": "c",
+                "text": "Assess remaining circulation and shock signs"
+              },
+              {
+                "id": "d",
+                "text": "Perform rapid trauma survey and package for transport"
+              }
+            ],
+            "correctOrder": [
+              "x",
+              "a",
+              "b",
+              "c",
+              "d"
+            ]
+          },
+          {
+            "id": "t2",
+            "type": "mcq",
+            "title": "Life-threat decision",
+            "prompt": "Bright red spurting blood continues despite direct pressure. Best next action?",
+            "choices": [
+              {
+                "id": "c1",
+                "text": "Apply a tourniquet proximal to the wound and note the time",
+                "correct": true,
+                "feedback": "Uncontrolled extremity arterial bleeding is a classic tourniquet indication in training scenarios."
+              },
+              {
+                "id": "c2",
+                "text": "Complete a full SAMPLE history first",
+                "correct": false,
+                "feedback": "History waits behind immediate hemorrhage control."
+              },
+              {
+                "id": "c3",
+                "text": "Wait for ALS before any bleeding control",
+                "correct": false,
+                "feedback": "BLS hemorrhage control should not wait."
+              }
+            ]
+          },
+          {
+            "id": "t3",
+            "type": "branching",
+            "title": "Transport branch",
+            "prompt": "After hemorrhage is controlled, the patient becomes pale and confused with a weak radial pulse. Choose the best path.",
+            "branches": [
+              {
+                "id": "b1",
+                "text": "Stay on scene for a complete secondary survey",
+                "result": "miss",
+                "feedback": "Shock with altered mentation after major trauma favors rapid transport after life threats are addressed."
+              },
+              {
+                "id": "b2",
+                "text": "Limit scene interventions to life threats and begin priority transport",
+                "result": "pass",
+                "feedback": "Correct: treat threats, package, and move toward definitive care."
+              },
+              {
+                "id": "b3",
+                "text": "Remove the tourniquet to reassess bleeding immediately",
+                "result": "miss",
+                "feedback": "Do not casually remove a tourniquet that is controlling life-threatening bleeding."
+              }
+            ]
+          }
+        ],
+        "criticalActions": [
+          {
+            "id": "ca1",
+            "text": "Control massive external hemorrhage early"
+          },
+          {
+            "id": "ca2",
+            "text": "Protect airway and breathing after exsanguinating bleeding is addressed"
+          },
+          {
+            "id": "ca3",
+            "text": "Recognize shock and shorten scene time"
+          },
+          {
+            "id": "ca4",
+            "text": "Reassess bleeding control and mentation after interventions"
+          }
+        ],
+        "knowledgeChecks": [
+          {
+            "question": "In XABC, what does the leading X emphasize?",
+            "options": [
+              "X-ray first",
+              "Exsanguinating hemorrhage",
+              "Extra paperwork",
+              "Extended history"
+            ],
+            "answer": 1,
+            "rationale": "Massive bleeding can kill before a traditional ABC sequence finishes."
+          },
+          {
+            "question": "Which finding supports rapid transport after life threats are managed?",
+            "options": [
+              "Isolated finger laceration",
+              "Controlled nosebleed with normal vitals",
+              "Confusion, pallor, and weak pulses after major trauma",
+              "Ankle sprain"
+            ],
+            "answer": 2,
+            "rationale": "Shock signs after significant trauma raise transport urgency."
+          }
+        ],
+        "completionCriteria": [
+          "Correct XABC order",
+          "Correct hemorrhage decision",
+          "Correct transport branch",
+          "Critical actions checked",
+          "Knowledge score \u2265 70%"
+        ],
+        "debrief": {
+          "summary": "Trauma assessment is threat-driven.",
+          "takeaways": [
+            "Bleed first when hemorrhage is massive.",
+            "Shock shortens the scene.",
+            "Secondary survey is important but not first."
+          ],
+          "commonMisses": [
+            "Detailed exam before tourniquet",
+            "Lingering on scene with decompensating vitals"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ems-respiratory-distress-001",
+      "version": 1,
+      "slug": "respiratory-distress",
+      "title": "Respiratory Distress Assessment",
+      "categoryId": "airway-respiratory",
+      "certificationLevels": [
+        "EMT",
+        "AEMT",
+        "Paramedic"
+      ],
+      "estimatedMinutes": 10,
+      "difficulty": "intermediate",
+      "crewType": "individual",
+      "completionType": "self",
+      "summary": "Differentiate distress from failure, choose oxygen/ventilation support, and reassess work of breathing.",
+      "protocolNote": "General educational material for training. Confirm exact indications, doses, destinations, and documentation requirements with your local protocol and medical direction.",
+      "relatedTools": [
+        {
+          "title": "Breath Sound Simulator",
+          "url": "/vitals/breath-sound-simulator.html"
+        },
+        {
+          "title": "Breathing Assessment",
+          "url": "/vitals/breathing-assessment.html"
+        }
+      ],
+      "seoDescription": "Interactive EMS drill for respiratory distress assessment, oxygen device selection, and failure recognition.",
+      "components": [
+        "introduction",
+        "objective",
+        "equipment",
+        "scenario",
+        "instructions",
+        "interactive",
+        "criticalActions",
+        "knowledgeChecks",
+        "completionCriteria",
+        "debrief",
+        "completion"
+      ],
+      "content": {
+        "introduction": "Respiratory calls are won by recognizing when a talking patient is about to stop ventilating effectively.",
+        "objectives": [
+          "Recognize distress versus failure cues",
+          "Select an appropriate oxygen/ventilation approach",
+          "Reassess after support"
+        ],
+        "equipment": [
+          "Nasal cannula",
+          "Non-rebreather",
+          "BVM",
+          "Airway adjuncts",
+          "Suction",
+          "Pulse oximeter",
+          "Capnography if available and authorized"
+        ],
+        "scenario": {
+          "dispatch": "Difficulty breathing.",
+          "scene": "Apartment, no hazards.",
+          "patient": "68-year-old upright, 2\u20133 word dyspnea, wheezes, becoming tired."
+        },
+        "instructions": [
+          "Choose support based on ventilation adequacy, not SpO2 alone."
+        ],
+        "activities": [
+          {
+            "id": "r1",
+            "type": "vitals-interp",
+            "title": "Interpret the picture",
+            "prompt": "Which pattern best matches impending respiratory failure?",
+            "vitals": {
+              "RR": "8 and tiring",
+              "SpO2": "89%",
+              "Speech": "Unable",
+              "Mentation": "Becoming drowsy"
+            },
+            "choices": [
+              {
+                "id": "c1",
+                "text": "Mild distress only",
+                "correct": false,
+                "feedback": "Fatigue, low rate, and drowsiness are failure warnings."
+              },
+              {
+                "id": "c2",
+                "text": "Impending respiratory failure needing assisted ventilation",
+                "correct": true,
+                "feedback": "Correct\u2014support ventilation now."
+              },
+              {
+                "id": "c3",
+                "text": "Anxiety attack without airway risk",
+                "correct": false,
+                "feedback": "Objective fatigue and hypoxia argue against that."
+              }
+            ]
+          },
+          {
+            "id": "r2",
+            "type": "equipment-select",
+            "title": "Support selection",
+            "prompt": "Patient is tiring with inadequate chest rise. Select appropriate immediate support tools.",
+            "options": [
+              {
+                "id": "bvm",
+                "label": "BVM with oxygen",
+                "correct": true
+              },
+              {
+                "id": "opa",
+                "label": "Airway adjunct if no gag and indicated",
+                "correct": true
+              },
+              {
+                "id": "nc",
+                "label": "Nasal cannula alone as sole support",
+                "correct": false
+              },
+              {
+                "id": "suction",
+                "label": "Suction ready",
+                "correct": true
+              }
+            ],
+            "minCorrect": 2
+          },
+          {
+            "id": "r3",
+            "type": "mcq",
+            "title": "Reassessment",
+            "prompt": "After assisted ventilation, what reassessment matters most?",
+            "choices": [
+              {
+                "id": "c1",
+                "text": "Chest rise, mental status, rate/quality of breathing, SpO2/ETCO2 if available",
+                "correct": true,
+                "feedback": "Reassessment must show whether ventilation improved."
+              },
+              {
+                "id": "c2",
+                "text": "Only the patient's opinion",
+                "correct": false,
+                "feedback": "Subjective report helps but is not enough."
+              },
+              {
+                "id": "c3",
+                "text": "Nothing until hospital arrival",
+                "correct": false,
+                "feedback": "Ongoing reassessment is required."
+              }
+            ]
+          }
+        ],
+        "criticalActions": [
+          {
+            "id": "ca1",
+            "text": "Identify fatigue and reduced air movement as failure warnings"
+          },
+          {
+            "id": "ca2",
+            "text": "Support ventilation when breathing becomes inadequate"
+          },
+          {
+            "id": "ca3",
+            "text": "Keep suction available"
+          },
+          {
+            "id": "ca4",
+            "text": "Reassess after every ventilation/oxygen change"
+          }
+        ],
+        "knowledgeChecks": [
+          {
+            "question": "Which finding is the strongest failure clue?",
+            "options": [
+              "Mild wheeze with full sentences",
+              "Increasing fatigue and declining mentation",
+              "Anxious but pink and speaking freely",
+              "Isolated cough"
+            ],
+            "answer": 1,
+            "rationale": "Fatigue and mentation changes often precede arrest."
+          }
+        ],
+        "completionCriteria": [
+          "Correct vitals interpretation",
+          "Appropriate equipment selected",
+          "Reassessment decision correct",
+          "Critical actions complete",
+          "Knowledge \u2265 70%"
+        ],
+        "debrief": {
+          "summary": "Treat the work of breathing, not a single number.",
+          "takeaways": [
+            "Distress can become failure quickly.",
+            "BVM is for inadequate ventilation.",
+            "Reassess relentlessly."
+          ],
+          "commonMisses": [
+            "Leaving a tiring patient on a cannula",
+            "Forgetting suction"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ems-chest-pain-acs-001",
+      "version": 1,
+      "slug": "chest-pain-acs",
+      "title": "Chest Pain / ACS Assessment",
+      "categoryId": "cardiology",
+      "certificationLevels": [
+        "EMT",
+        "AEMT",
+        "Paramedic"
+      ],
+      "estimatedMinutes": 10,
+      "difficulty": "intermediate",
+      "crewType": "individual",
+      "completionType": "self",
+      "summary": "Assess suspected ACS, prioritize ABCs and aspirin/nitro safety concepts, and plan hospital notification.",
+      "protocolNote": "General educational material for training. Confirm exact indications, doses, destinations, and documentation requirements with your local protocol and medical direction. Medication eligibility is agency-specific.",
+      "relatedTools": [
+        {
+          "title": "Medication Trainer",
+          "url": "/vitals/meds.html"
+        },
+        {
+          "title": "Pain/OPQRST Simulator",
+          "url": "/vitals/pain-opqrst.html"
+        }
+      ],
+      "seoDescription": "EMS chest pain and ACS assessment drill covering OPQRST, red flags, medication safety concepts, and notification priorities.",
+      "components": [
+        "introduction",
+        "objective",
+        "equipment",
+        "scenario",
+        "instructions",
+        "interactive",
+        "criticalActions",
+        "knowledgeChecks",
+        "completionCriteria",
+        "debrief",
+        "completion"
+      ],
+      "content": {
+        "introduction": "Chest pain assessment balances symptom details with continuous ABC and medication-safety checks.",
+        "objectives": [
+          "Collect focused cardiac history",
+          "Identify red flags",
+          "Apply medication safety concepts without inventing local doses"
+        ],
+        "equipment": [
+          "Oxygen if indicated by presentation/protocol",
+          "Aspirin if authorized",
+          "Nitroglycerin if authorized",
+          "AED",
+          "Monitor/12-lead if in scope"
+        ],
+        "scenario": {
+          "dispatch": "52-year-old with chest pressure.",
+          "scene": "Office break room.",
+          "patient": "Diaphoretic, clutching chest, BP 148/90, HR 96, SpO2 97%."
+        },
+        "instructions": [
+          "Focus on assessment and safety checks. Exact drug authorization is local."
+        ],
+        "activities": [
+          {
+            "id": "cp1",
+            "type": "ordered-steps",
+            "title": "Focused chest pain flow",
+            "prompt": "Order a practical chest-pain assessment flow.",
+            "items": [
+              {
+                "id": "1",
+                "text": "ABCs and general impression"
+              },
+              {
+                "id": "2",
+                "text": "OPQRST and cardiac risk context"
+              },
+              {
+                "id": "3",
+                "text": "Vitals and focused exam"
+              },
+              {
+                "id": "4",
+                "text": "Medication safety screen if considering aspirin/nitro"
+              },
+              {
+                "id": "5",
+                "text": "Notify receiving facility / prepare transport"
+              }
+            ],
+            "correctOrder": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ]
+          },
+          {
+            "id": "cp2",
+            "type": "mcq",
+            "title": "Aspirin safety concept",
+            "prompt": "Before aspirin (when locally authorized), which question is most essential?",
+            "choices": [
+              {
+                "id": "c1",
+                "text": "Any aspirin allergy or active contraindications per protocol?",
+                "correct": true,
+                "feedback": "Allergy and contraindication screening is a core safety step."
+              },
+              {
+                "id": "c2",
+                "text": "Favorite hospital sports team?",
+                "correct": false,
+                "feedback": "Irrelevant."
+              },
+              {
+                "id": "c3",
+                "text": "Whether the patient has eaten salad today",
+                "correct": false,
+                "feedback": "Not the key safety screen."
+              }
+            ]
+          },
+          {
+            "id": "cp3",
+            "type": "mcq",
+            "title": "Nitro safety concept",
+            "prompt": "Which situation should block nitroglycerin until clarified with protocol/medical direction?",
+            "choices": [
+              {
+                "id": "c1",
+                "text": "Recent phosphodiesterase inhibitor use / hypotension risk per local rules",
+                "correct": true,
+                "feedback": "These are classic high-risk nitro considerations."
+              },
+              {
+                "id": "c2",
+                "text": "Patient drank water one hour ago",
+                "correct": false,
+                "feedback": "Not a typical blocker."
+              },
+              {
+                "id": "c3",
+                "text": "Patient owns a bicycle",
+                "correct": false,
+                "feedback": "Irrelevant."
+              }
+            ]
+          }
+        ],
+        "criticalActions": [
+          {
+            "id": "ca1",
+            "text": "Maintain ABC vigilance during history"
+          },
+          {
+            "id": "ca2",
+            "text": "Screen for medication contraindications before suggesting cardiac meds"
+          },
+          {
+            "id": "ca3",
+            "text": "Plan early hospital notification for suspected ACS"
+          },
+          {
+            "id": "ca4",
+            "text": "Keep AED/defibrillation capability immediately available"
+          }
+        ],
+        "knowledgeChecks": [
+          {
+            "question": "Why is hospital notification valuable in suspected ACS?",
+            "options": [
+              "It replaces assessment",
+              "It helps the receiving team prepare time-sensitive resources",
+              "It guarantees diagnosis",
+              "It avoids documentation"
+            ],
+            "answer": 1,
+            "rationale": "Early notification supports team readiness for ECG and reperfusion pathways."
+          }
+        ],
+        "completionCriteria": [
+          "Correct assessment order",
+          "Medication safety questions correct",
+          "Critical actions complete",
+          "Knowledge \u2265 70%"
+        ],
+        "debrief": {
+          "summary": "ACS care is assessment plus safety.",
+          "takeaways": [
+            "History never outruns ABCs.",
+            "Drug screens are non-negotiable.",
+            "Notify early."
+          ],
+          "commonMisses": [
+            "Giving nitro without BP/contraindication checks",
+            "Skipping AED readiness"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ems-stroke-assessment-001",
+      "version": 1,
+      "slug": "stroke-assessment",
+      "title": "Stroke Assessment",
+      "categoryId": "patient-assessment",
+      "certificationLevels": [
+        "EMT",
+        "AEMT",
+        "Paramedic"
+      ],
+      "estimatedMinutes": 8,
+      "difficulty": "foundational",
+      "crewType": "individual",
+      "completionType": "self",
+      "summary": "Perform a structured stroke assessment, capture last known well, and prioritize destination/notification thinking.",
+      "protocolNote": "General educational material for training. Confirm exact indications, doses, destinations, and documentation requirements with your local protocol and medical direction.",
+      "relatedTools": [
+        {
+          "title": "Stroke Assessment Trainer",
+          "url": "/vitals/stroke.html"
+        },
+        {
+          "title": "GCS Trainer",
+          "url": "/vitals/gcs.html"
+        }
+      ],
+      "seoDescription": "Practice EMT stroke assessment including BE-FAST findings, last known well, and hospital notification priorities.",
+      "components": [
+        "introduction",
+        "objective",
+        "equipment",
+        "scenario",
+        "instructions",
+        "interactive",
+        "criticalActions",
+        "knowledgeChecks",
+        "completionCriteria",
+        "debrief",
+        "completion"
+      ],
+      "content": {
+        "introduction": "Stroke care depends on fast recognition and a reliable last-known-well time.",
+        "objectives": [
+          "Apply a structured stroke screen",
+          "Capture last known well",
+          "Identify notification/transport urgency"
+        ],
+        "equipment": [
+          "Glucometer",
+          "Stroke screening tool reference",
+          "Oxygen if needed",
+          "Suction"
+        ],
+        "scenario": {
+          "dispatch": "Facial droop and arm weakness.",
+          "scene": "Home with spouse.",
+          "patient": "Right arm drift, slurred speech, last seen normal 45 minutes ago."
+        },
+        "instructions": [
+          "Check glucose conceptually because hypoglycemia can mimic stroke."
+        ],
+        "activities": [
+          {
+            "id": "st1",
+            "type": "checklist",
+            "title": "Stroke screen elements",
+            "prompt": "Mark the assessment elements you should capture now.",
+            "items": [
+              {
+                "id": "i1",
+                "text": "Last known well time",
+                "required": true
+              },
+              {
+                "id": "i2",
+                "text": "Facial symmetry / arm drift / speech changes",
+                "required": true
+              },
+              {
+                "id": "i3",
+                "text": "Blood glucose",
+                "required": true
+              },
+              {
+                "id": "i4",
+                "text": "Exact CT radiology protocol order",
+                "required": false
+              }
+            ]
+          },
+          {
+            "id": "st2",
+            "type": "mcq",
+            "title": "Priority",
+            "prompt": "Best next priority after ABCs and stroke screen?",
+            "choices": [
+              {
+                "id": "c1",
+                "text": "Rapid transport/notification toward an appropriate stroke-capable facility per local plan",
+                "correct": true,
+                "feedback": "Time-sensitive pathway."
+              },
+              {
+                "id": "c2",
+                "text": "Delay transport for nonessential paperwork on scene",
+                "correct": false,
+                "feedback": "Do not burn time."
+              },
+              {
+                "id": "c3",
+                "text": "Wait to see if symptoms resolve for an hour",
+                "correct": false,
+                "feedback": "Do not wait out possible stroke."
+              }
+            ]
+          },
+          {
+            "id": "st3",
+            "type": "communication",
+            "title": "Hospital notification elements",
+            "prompt": "Select the elements that belong in a concise stroke notification.",
+            "options": [
+              {
+                "id": "age",
+                "label": "Age/sex",
+                "correct": true
+              },
+              {
+                "id": "lkw",
+                "label": "Last known well",
+                "correct": true
+              },
+              {
+                "id": "findings",
+                "label": "Key neuro findings",
+                "correct": true
+              },
+              {
+                "id": "bgl",
+                "label": "Glucose if obtained",
+                "correct": true
+              },
+              {
+                "id": "gossip",
+                "label": "Neighbor's opinions about the family",
+                "correct": false
+              }
+            ],
+            "minCorrect": 3
+          }
+        ],
+        "criticalActions": [
+          {
+            "id": "ca1",
+            "text": "Obtain last known well"
+          },
+          {
+            "id": "ca2",
+            "text": "Perform structured stroke assessment"
+          },
+          {
+            "id": "ca3",
+            "text": "Consider glucose as a stroke mimic screen"
+          },
+          {
+            "id": "ca4",
+            "text": "Notify early and protect airway if secretions/vomit risk rises"
+          }
+        ],
+        "knowledgeChecks": [
+          {
+            "question": "Why check glucose in suspected stroke?",
+            "options": [
+              "It replaces imaging",
+              "Hypoglycemia can mimic stroke findings",
+              "It is required for billing only",
+              "It diagnoses hemorrhage"
+            ],
+            "answer": 1,
+            "rationale": "Treatable mimics must be considered."
+          }
+        ],
+        "completionCriteria": [
+          "Required screen elements selected",
+          "Priority decision correct",
+          "Notification elements correct",
+          "Critical actions complete"
+        ],
+        "debrief": {
+          "summary": "Stroke drills reward speed with structure.",
+          "takeaways": [
+            "Last known well is gold.",
+            "Screen + glucose + notify.",
+            "Destination rules are local."
+          ],
+          "commonMisses": [
+            "Missing last known well",
+            "Over-talking the radio report"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ems-hypoglycemia-001",
+      "version": 1,
+      "slug": "hypoglycemia",
+      "title": "Hypoglycemia Management",
+      "categoryId": "medical",
+      "certificationLevels": [
+        "EMT",
+        "AEMT",
+        "Paramedic"
+      ],
+      "estimatedMinutes": 8,
+      "difficulty": "foundational",
+      "crewType": "individual",
+      "completionType": "self",
+      "summary": "Recognize hypoglycemia, decide on oral glucose vs advanced options conceptually, and reassess mentation.",
+      "protocolNote": "General educational material for training. Confirm exact indications, doses, destinations, and documentation requirements with your local protocol and medical direction. Exact glucose cutoffs and ALS meds are local/scope-specific.",
+      "relatedTools": [
+        {
+          "title": "Blood Glucose Simulator",
+          "url": "/vitals/bgl.html"
+        },
+        {
+          "title": "AVPU Simulator",
+          "url": "/vitals/avpu.html"
+        }
+      ],
+      "seoDescription": "Interactive hypoglycemia drill for EMS providers covering recognition, airway safety, glucose decisions, and reassessment.",
+      "components": [
+        "introduction",
+        "objective",
+        "equipment",
+        "scenario",
+        "instructions",
+        "interactive",
+        "criticalActions",
+        "knowledgeChecks",
+        "completionCriteria",
+        "debrief",
+        "completion"
+      ],
+      "content": {
+        "introduction": "Altered mentation plus diabetes history should make glucose an early action, not an afterthought.",
+        "objectives": [
+          "Link mentation to glucose testing",
+          "Protect airway during treatment decisions",
+          "Reassess after glucose"
+        ],
+        "equipment": [
+          "Glucometer",
+          "Oral glucose if authorized",
+          "Suction",
+          "Airway kit",
+          "ALS meds if in scope"
+        ],
+        "scenario": {
+          "dispatch": "Diabetic, altered mental status.",
+          "scene": "Home.",
+          "patient": "Diaphoretic, confused, responds to voice, BGL 42 mg/dL."
+        },
+        "instructions": [
+          "Assume local authorization exists only as a training premise when a choice mentions oral glucose."
+        ],
+        "activities": [
+          {
+            "id": "h1",
+            "type": "mcq",
+            "title": "Immediate priority",
+            "prompt": "Patient can follow commands and protect their airway. Best EMT-level concept?",
+            "choices": [
+              {
+                "id": "c1",
+                "text": "Give oral glucose if authorized and the patient can swallow safely",
+                "correct": true,
+                "feedback": "Airway-protective patients may receive oral glucose when indicated and authorized."
+              },
+              {
+                "id": "c2",
+                "text": "Force oral glucose into an unresponsive patient",
+                "correct": false,
+                "feedback": "Never."
+              },
+              {
+                "id": "c3",
+                "text": "Ignore glucose because BP is normal",
+                "correct": false,
+                "feedback": "Mentation plus low BGL matters."
+              }
+            ]
+          },
+          {
+            "id": "h2",
+            "type": "branching",
+            "title": "Airway branch",
+            "prompt": "The patient becomes poorly responsive with snoring respirations. Choose the next path.",
+            "branches": [
+              {
+                "id": "b1",
+                "text": "Open airway, suction as needed, support breathing, and escalate treatment per scope",
+                "result": "pass",
+                "feedback": "Airway first when mentation falls."
+              },
+              {
+                "id": "b2",
+                "text": "Continue trying to pour oral glucose",
+                "result": "miss",
+                "feedback": "Aspiration risk."
+              },
+              {
+                "id": "b3",
+                "text": "Leave the patient flat and wait",
+                "result": "miss",
+                "feedback": "Airway needs action now."
+              }
+            ]
+          },
+          {
+            "id": "h3",
+            "type": "med-calc",
+            "title": "Reassessment timing concept",
+            "prompt": "After glucose administration, you should reassess mentation and BGL. Enter the minimum number of critical reassessment items from this list you will check: mentation, airway, BGL, vital signs.",
+            "answer": 4,
+            "tolerance": 0,
+            "unit": "items",
+            "hint": "All four matter."
+          }
+        ],
+        "criticalActions": [
+          {
+            "id": "ca1",
+            "text": "Check glucose early in diabetic altered mentation"
+          },
+          {
+            "id": "ca2",
+            "text": "Confirm ability to swallow before oral glucose"
+          },
+          {
+            "id": "ca3",
+            "text": "Protect airway if responsiveness drops"
+          },
+          {
+            "id": "ca4",
+            "text": "Reassess mentation and glucose after treatment"
+          }
+        ],
+        "knowledgeChecks": [
+          {
+            "question": "Oral glucose is inappropriate when:",
+            "options": [
+              "The patient is awake and can swallow",
+              "The patient is unresponsive with an unprotected airway",
+              "The patient has a known diabetes history",
+              "BGL is low and mentation is improving with treatment"
+            ],
+            "answer": 1,
+            "rationale": "Airway protection governs route selection."
+          }
+        ],
+        "completionCriteria": [
+          "Correct initial treatment concept",
+          "Correct airway branch",
+          "Reassessment count correct",
+          "Critical actions complete"
+        ],
+        "debrief": {
+          "summary": "Glucose treatment follows airway safety.",
+          "takeaways": [
+            "Test early.",
+            "Route depends on mentation.",
+            "Reassess."
+          ],
+          "commonMisses": [
+            "Oral glucose in an unprotected airway",
+            "No reassessment"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ems-anaphylaxis-001",
+      "version": 1,
+      "slug": "anaphylaxis",
+      "title": "Anaphylaxis Recognition & Response",
+      "categoryId": "medical",
+      "certificationLevels": [
+        "EMT",
+        "AEMT",
+        "Paramedic"
+      ],
+      "estimatedMinutes": 9,
+      "difficulty": "intermediate",
+      "crewType": "individual",
+      "completionType": "self",
+      "summary": "Recognize anaphylaxis, prioritize epinephrine conceptually, and support airway/breathing.",
+      "protocolNote": "General educational material for training. Confirm exact indications, doses, destinations, and documentation requirements with your local protocol and medical direction. Epinephrine dose/device authorization is local and scope-specific.",
+      "relatedTools": [
+        {
+          "title": "Medication Learning Center",
+          "url": "/medication-training.html"
+        },
+        {
+          "title": "ABC Learning Center",
+          "url": "/abc-training.html"
+        }
+      ],
+      "seoDescription": "EMS anaphylaxis drill covering recognition, epinephrine priority concepts, airway support, and reassessment.",
+      "components": [
+        "introduction",
+        "objective",
+        "equipment",
+        "scenario",
+        "instructions",
+        "interactive",
+        "criticalActions",
+        "knowledgeChecks",
+        "completionCriteria",
+        "debrief",
+        "completion"
+      ],
+      "content": {
+        "introduction": "Anaphylaxis is a multi-system emergency. Delaying epinephrine for minor tasks is a common training miss.",
+        "objectives": [
+          "Recognize multi-system involvement",
+          "Prioritize epinephrine when authorized",
+          "Support ABCs and reassess"
+        ],
+        "equipment": [
+          "Epinephrine auto-injector if authorized",
+          "Oxygen/BVM",
+          "Suction",
+          "Antihistamine only if locally included after epinephrine priorities"
+        ],
+        "scenario": {
+          "dispatch": "Allergic reaction after bee sting.",
+          "scene": "Park.",
+          "patient": "Urticaria, wheezing, swollen lips, BP 82/50, anxious."
+        },
+        "instructions": [
+          "Treat epinephrine as the priority concept when authorized\u2014do not invent mg doses here."
+        ],
+        "activities": [
+          {
+            "id": "an1",
+            "type": "mcq",
+            "title": "Recognition",
+            "prompt": "Why does this presentation meet anaphylaxis concern?",
+            "choices": [
+              {
+                "id": "c1",
+                "text": "Skin findings plus respiratory compromise and hypotension after exposure",
+                "correct": true,
+                "feedback": "Multi-system involvement after allergen exposure."
+              },
+              {
+                "id": "c2",
+                "text": "Isolated itchy finger only",
+                "correct": false,
+                "feedback": "Not this case."
+              },
+              {
+                "id": "c3",
+                "text": "Chronic seasonal allergies alone",
+                "correct": false,
+                "feedback": "Not acute anaphylaxis."
+              }
+            ]
+          },
+          {
+            "id": "an2",
+            "type": "ordered-steps",
+            "title": "Response order",
+            "prompt": "Order the educational response priorities.",
+            "items": [
+              {
+                "id": "1",
+                "text": "Scene safety / expose sting context"
+              },
+              {
+                "id": "2",
+                "text": "Support ABCs"
+              },
+              {
+                "id": "3",
+                "text": "Administer epinephrine if authorized and indicated"
+              },
+              {
+                "id": "4",
+                "text": "Oxygen/ventilation support as needed"
+              },
+              {
+                "id": "5",
+                "text": "Reassess and prepare for possible repeat dosing per protocol"
+              }
+            ],
+            "correctOrder": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ]
+          },
+          {
+            "id": "an3",
+            "type": "equipment-select",
+            "title": "Immediate gear",
+            "prompt": "Select immediate gear for this patient.",
+            "options": [
+              {
+                "id": "epi",
+                "label": "Epinephrine (authorized device)",
+                "correct": true
+              },
+              {
+                "id": "o2",
+                "label": "Oxygen / airway support",
+                "correct": true
+              },
+              {
+                "id": "suction",
+                "label": "Suction",
+                "correct": true
+              },
+              {
+                "id": "splint",
+                "label": "Traction splint",
+                "correct": false
+              }
+            ],
+            "minCorrect": 3
+          }
+        ],
+        "criticalActions": [
+          {
+            "id": "ca1",
+            "text": "Recognize multi-system anaphylaxis"
+          },
+          {
+            "id": "ca2",
+            "text": "Prioritize epinephrine when indicated/authorized"
+          },
+          {
+            "id": "ca3",
+            "text": "Support airway and breathing"
+          },
+          {
+            "id": "ca4",
+            "text": "Reassess BP, work of breathing, and mentation"
+          }
+        ],
+        "knowledgeChecks": [
+          {
+            "question": "Which medication concept comes first in true anaphylaxis when authorized?",
+            "options": [
+              "Optional topical lotion",
+              "Epinephrine",
+              "Oral fluids",
+              "Delayed observation only"
+            ],
+            "answer": 1,
+            "rationale": "Epinephrine is the priority treatment concept."
+          }
+        ],
+        "completionCriteria": [
+          "Recognition correct",
+          "Order correct",
+          "Equipment correct",
+          "Critical actions complete"
+        ],
+        "debrief": {
+          "summary": "Anaphylaxis care is speed plus reassessment.",
+          "takeaways": [
+            "Multi-system = emergency.",
+            "Epinephrine first when authorized.",
+            "Airway gear ready."
+          ],
+          "commonMisses": [
+            "Antihistamine-first mindset",
+            "No reassessment after epi"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ems-cardiac-arrest-team-001",
+      "version": 1,
+      "slug": "cardiac-arrest-team",
+      "title": "Cardiac Arrest Team Drill",
+      "categoryId": "cardiology",
+      "certificationLevels": [
+        "EMT",
+        "AEMT",
+        "Paramedic"
+      ],
+      "estimatedMinutes": 12,
+      "difficulty": "intermediate",
+      "crewType": "crew",
+      "completionType": "self",
+      "summary": "Assign arrest roles, sequence CPR/AED actions, and communicate clearly as a small team.",
+      "protocolNote": "General educational material for training. Confirm exact indications, doses, destinations, and documentation requirements with your local protocol and medical direction.",
+      "relatedTools": [
+        {
+          "title": "CPR Practice Lab",
+          "url": "/cpr-practice.html"
+        },
+        {
+          "title": "CPR Guidelines Explorer",
+          "url": "/cpr-guidelines.html"
+        }
+      ],
+      "seoDescription": "Crew-oriented cardiac arrest drill for role assignment, CPR/AED sequencing, and team communication.",
+      "components": [
+        "introduction",
+        "objective",
+        "equipment",
+        "scenario",
+        "instructions",
+        "interactive",
+        "criticalActions",
+        "knowledgeChecks",
+        "completionCriteria",
+        "debrief",
+        "completion"
+      ],
+      "content": {
+        "introduction": "High-performance arrest care is role clarity under stress.",
+        "objectives": [
+          "Assign compressor, AED, and airway/support roles",
+          "Minimize interruptions",
+          "Communicate switches"
+        ],
+        "equipment": [
+          "AED",
+          "BVM",
+          "CPR board/surface",
+          "Timer or metronome if available"
+        ],
+        "scenario": {
+          "dispatch": "Unresponsive, not breathing normally.",
+          "scene": "Gym floor, three providers available.",
+          "patient": "Adult in cardiac arrest."
+        },
+        "instructions": [
+          "Assume a three-person crew."
+        ],
+        "activities": [
+          {
+            "id": "ca1a",
+            "type": "ordered-steps",
+            "title": "First 60 seconds",
+            "prompt": "Order the immediate arrest actions.",
+            "items": [
+              {
+                "id": "1",
+                "text": "Confirm unresponsiveness / no normal breathing"
+              },
+              {
+                "id": "2",
+                "text": "Start high-quality compressions"
+              },
+              {
+                "id": "3",
+                "text": "Power on AED and apply pads"
+              },
+              {
+                "id": "4",
+                "text": "Clear and deliver shock if advised"
+              },
+              {
+                "id": "5",
+                "text": "Resume compressions immediately"
+              }
+            ],
+            "correctOrder": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ]
+          },
+          {
+            "id": "ca2a",
+            "type": "mcq",
+            "title": "Role clarity",
+            "prompt": "With three providers, which role split is most coherent?",
+            "choices": [
+              {
+                "id": "c1",
+                "text": "Compressor, AED/monitor operator, airway/BVM support with planned switch",
+                "correct": true,
+                "feedback": "Clear roles reduce chaos."
+              },
+              {
+                "id": "c2",
+                "text": "Everyone compresses at once",
+                "correct": false,
+                "feedback": "Counterproductive."
+              },
+              {
+                "id": "c3",
+                "text": "No one touches the AED until ALS arrives",
+                "correct": false,
+                "feedback": "AED is a BLS priority."
+              }
+            ]
+          },
+          {
+            "id": "ca3a",
+            "type": "communication",
+            "title": "Closed-loop calls",
+            "prompt": "Select effective team communications.",
+            "options": [
+              {
+                "id": "a",
+                "label": "\"Compressing. Switch in 10 seconds.\"",
+                "correct": true
+              },
+              {
+                "id": "b",
+                "label": "\"Clear \u2014 shocking.\"",
+                "correct": true
+              },
+              {
+                "id": "c",
+                "label": "\"Somebody do something.\"",
+                "correct": false
+              },
+              {
+                "id": "d",
+                "label": "\"Airway ready with BVM.\"",
+                "correct": true
+              }
+            ],
+            "minCorrect": 3
+          }
+        ],
+        "criticalActions": [
+          {
+            "id": "c1",
+            "text": "Start compressions early"
+          },
+          {
+            "id": "c2",
+            "text": "Apply AED without delay"
+          },
+          {
+            "id": "c3",
+            "text": "Minimize pause around shocks"
+          },
+          {
+            "id": "c4",
+            "text": "Use closed-loop communication"
+          }
+        ],
+        "knowledgeChecks": [
+          {
+            "question": "After an AED shock, what comes next?",
+            "options": [
+              "Long pulse check first",
+              "Immediate resume compressions",
+              "End resuscitation",
+              "Remove pads"
+            ],
+            "answer": 1,
+            "rationale": "Minimize interruptions."
+          }
+        ],
+        "completionCriteria": [
+          "Correct early sequence",
+          "Role decision correct",
+          "Communication selections correct",
+          "Critical actions complete"
+        ],
+        "debrief": {
+          "summary": "Roles beat heroics.",
+          "takeaways": [
+            "Compress early.",
+            "AED early.",
+            "Talk in closed loops."
+          ],
+          "commonMisses": [
+            "Pause stacking",
+            "Unclear ownership of airway"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ems-bvm-ventilation-001",
+      "version": 1,
+      "slug": "bvm-ventilation",
+      "title": "BVM Ventilation",
+      "categoryId": "airway-respiratory",
+      "certificationLevels": [
+        "EMT",
+        "AEMT",
+        "Paramedic"
+      ],
+      "estimatedMinutes": 10,
+      "difficulty": "foundational",
+      "crewType": "individual",
+      "completionType": "evaluator",
+      "summary": "Evaluator-verified BVM skills: equipment, positioning, seal, rate, and reassessment.",
+      "protocolNote": "General educational material for training. Confirm exact indications, doses, destinations, and documentation requirements with your local protocol and medical direction.",
+      "relatedTools": [
+        {
+          "title": "ABC Skills",
+          "url": "/abc-skills.html"
+        },
+        {
+          "title": "Airway Assessment",
+          "url": "/vitals/airway-assessment.html"
+        }
+      ],
+      "seoDescription": "Evaluator checklist drill for BVM ventilation including seal, rate, adjunct selection, and reassessment.",
+      "components": [
+        "introduction",
+        "objective",
+        "equipment",
+        "scenario",
+        "instructions",
+        "interactive",
+        "criticalActions",
+        "completionCriteria",
+        "debrief",
+        "completion"
+      ],
+      "content": {
+        "introduction": "BVM skill is best verified by an evaluator watching seal, volume, and rate\u2014not by reading alone.",
+        "objectives": [
+          "Select correct equipment",
+          "Demonstrate airway position and seal",
+          "Ventilate at an appropriate educational rate",
+          "Reassess chest rise"
+        ],
+        "equipment": [
+          "BVM",
+          "Oxygen source",
+          "OPA/NPA as indicated",
+          "Suction"
+        ],
+        "scenario": {
+          "dispatch": "Apneic adult after overdose.",
+          "scene": "Bedroom.",
+          "patient": "Unresponsive, snoring, no gag reflex, weak pulse."
+        },
+        "instructions": [
+          "This is an evaluator-verified drill. An evaluator should observe the skill and check each item.",
+          "Responder Roadmap can later supply evaluator identity; for now enter evaluator name/ID if known."
+        ],
+        "activities": [
+          {
+            "id": "bvm1",
+            "type": "equipment-select",
+            "title": "Equipment selection",
+            "prompt": "Select appropriate gear for this apneic adult with snoring and no gag.",
+            "options": [
+              {
+                "id": "bvm",
+                "label": "BVM with oxygen",
+                "correct": true
+              },
+              {
+                "id": "opa",
+                "label": "OPA",
+                "correct": true
+              },
+              {
+                "id": "suction",
+                "label": "Suction",
+                "correct": true
+              },
+              {
+                "id": "nrb",
+                "label": "NRB alone without ventilation",
+                "correct": false
+              }
+            ],
+            "minCorrect": 3
+          },
+          {
+            "id": "bvm2",
+            "type": "evaluator-checklist",
+            "title": "Evaluator verification",
+            "prompt": "Evaluator: verify each critical performance item.",
+            "items": [
+              {
+                "id": "e1",
+                "text": "Correct equipment selected"
+              },
+              {
+                "id": "e2",
+                "text": "Airway positioned appropriately"
+              },
+              {
+                "id": "e3",
+                "text": "Appropriate airway adjunct selected"
+              },
+              {
+                "id": "e4",
+                "text": "Proper mask seal"
+              },
+              {
+                "id": "e5",
+                "text": "Appropriate ventilation technique/volume"
+              },
+              {
+                "id": "e6",
+                "text": "Appropriate ventilation rate"
+              },
+              {
+                "id": "e7",
+                "text": "Reassessment of chest rise/perfusion performed"
+              }
+            ],
+            "requireAll": true
+          }
+        ],
+        "criticalActions": [
+          {
+            "id": "ca1",
+            "text": "Do not delay ventilation for nonessential tasks"
+          },
+          {
+            "id": "ca2",
+            "text": "Avoid excessive rate/volume"
+          },
+          {
+            "id": "ca3",
+            "text": "Reassess continuously"
+          }
+        ],
+        "knowledgeChecks": [],
+        "completionCriteria": [
+          "Equipment selection passed",
+          "Evaluator marks all checklist items",
+          "Evaluator identity captured when available"
+        ],
+        "debrief": {
+          "summary": "BVM quality is visible and measurable.",
+          "takeaways": [
+            "Seal before speed.",
+            "Watch chest rise.",
+            "Rate discipline matters."
+          ],
+          "commonMisses": [
+            "Over-ventilation",
+            "Poor sniffing/position",
+            "No reassessment"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ems-hemorrhage-control-001",
+      "version": 1,
+      "slug": "hemorrhage-control",
+      "title": "Hemorrhage Control",
+      "categoryId": "trauma",
+      "certificationLevels": [
+        "EMT",
+        "AEMT",
+        "Paramedic"
+      ],
+      "estimatedMinutes": 8,
+      "difficulty": "foundational",
+      "crewType": "individual",
+      "completionType": "self",
+      "summary": "Choose direct pressure, packing, or tourniquet pathways and reassess bleeding control.",
+      "protocolNote": "General educational material for training. Confirm exact indications, doses, destinations, and documentation requirements with your local protocol and medical direction.",
+      "relatedTools": [
+        {
+          "title": "Trauma Learning Center",
+          "url": "/trauma-training.html"
+        }
+      ],
+      "seoDescription": "EMS hemorrhage control drill covering direct pressure, wound packing concepts, tourniquet decisions, and reassessment.",
+      "components": [
+        "introduction",
+        "objective",
+        "equipment",
+        "scenario",
+        "instructions",
+        "interactive",
+        "criticalActions",
+        "knowledgeChecks",
+        "completionCriteria",
+        "debrief",
+        "completion"
+      ],
+      "content": {
+        "introduction": "Bleeding control is a decision tree under time pressure.",
+        "objectives": [
+          "Apply a sensible bleeding-control ladder",
+          "Know when tourniquets are indicated",
+          "Reassess"
+        ],
+        "equipment": [
+          "Gloves",
+          "Gauze",
+          "Pressure dressing",
+          "Tourniquet",
+          "Hemostatic dressing if available/authorized"
+        ],
+        "scenario": {
+          "dispatch": "Laceration with heavy bleeding.",
+          "scene": "Workshop.",
+          "patient": "Alert adult, deep thigh wound with ongoing heavy bleeding."
+        },
+        "instructions": [
+          "Use general educational indications; department SOPs may add packaging details."
+        ],
+        "activities": [
+          {
+            "id": "bl1",
+            "type": "ordered-steps",
+            "title": "Bleeding ladder",
+            "prompt": "Order a practical bleeding-control progression for an extremity wound.",
+            "items": [
+              {
+                "id": "1",
+                "text": "Expose the wound and apply direct pressure"
+              },
+              {
+                "id": "2",
+                "text": "Add packing/pressure dressing as appropriate"
+              },
+              {
+                "id": "3",
+                "text": "Escalate to tourniquet if bleeding remains life-threatening"
+              },
+              {
+                "id": "4",
+                "text": "Note time and reassess distal status/bleeding control"
+              }
+            ],
+            "correctOrder": [
+              "1",
+              "2",
+              "3",
+              "4"
+            ]
+          },
+          {
+            "id": "bl2",
+            "type": "mcq",
+            "title": "Tourniquet decision",
+            "prompt": "Direct pressure fails and blood loss remains massive from the thigh. Best action?",
+            "choices": [
+              {
+                "id": "c1",
+                "text": "Apply a tourniquet proximal to the wound and note the time",
+                "correct": true,
+                "feedback": "Correct escalation."
+              },
+              {
+                "id": "c2",
+                "text": "Remove gloves to improve dexterity",
+                "correct": false,
+                "feedback": "Unsafe."
+              },
+              {
+                "id": "c3",
+                "text": "Walk the patient to look for a bandage in another building",
+                "correct": false,
+                "feedback": "Delays care."
+              }
+            ]
+          },
+          {
+            "id": "bl3",
+            "type": "checklist",
+            "title": "Reassessment",
+            "prompt": "Select reassessment actions after hemorrhage control.",
+            "items": [
+              {
+                "id": "r1",
+                "text": "Confirm bleeding is controlled",
+                "required": true
+              },
+              {
+                "id": "r2",
+                "text": "Monitor mentation and perfusion",
+                "required": true
+              },
+              {
+                "id": "r3",
+                "text": "Leave tourniquet undocumented",
+                "required": false
+              }
+            ]
+          }
+        ],
+        "criticalActions": [
+          {
+            "id": "ca1",
+            "text": "Expose and pressure early"
+          },
+          {
+            "id": "ca2",
+            "text": "Escalate promptly when pressure fails"
+          },
+          {
+            "id": "ca3",
+            "text": "Document tourniquet time"
+          },
+          {
+            "id": "ca4",
+            "text": "Reassess control and shock signs"
+          }
+        ],
+        "knowledgeChecks": [
+          {
+            "question": "A tourniquet time should be:",
+            "options": [
+              "Guessed later",
+              "Recorded as soon as applied",
+              "Ignored",
+              "Shared only after discharge"
+            ],
+            "answer": 1,
+            "rationale": "Time matters for receiving teams."
+          }
+        ],
+        "completionCriteria": [
+          "Correct ladder order",
+          "Correct tourniquet decision",
+          "Reassessment checklist passed",
+          "Critical actions complete"
+        ],
+        "debrief": {
+          "summary": "Pressure first, escalate fast.",
+          "takeaways": [
+            "Expose.",
+            "Escalate.",
+            "Record time."
+          ],
+          "commonMisses": [
+            "Hidden wound under clothing",
+            "No tourniquet time"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ems-radio-report-001",
+      "version": 1,
+      "slug": "radio-report",
+      "title": "Radio Report",
+      "categoryId": "communication",
+      "certificationLevels": [
+        "EMT",
+        "AEMT",
+        "Paramedic"
+      ],
+      "estimatedMinutes": 8,
+      "difficulty": "foundational",
+      "crewType": "individual",
+      "completionType": "self",
+      "summary": "Build a concise radio report with unit ID, age/sex, chief complaint, findings, treatment, and ETA.",
+      "protocolNote": "General educational material for training. Confirm exact indications, doses, destinations, and documentation requirements with your local protocol and medical direction.",
+      "relatedTools": [
+        {
+          "title": "PCR/Handoff Simulator",
+          "url": "/vitals/pcr-handoff.html"
+        },
+        {
+          "title": "EMT Prep Communication Module",
+          "url": "/emt-prep/module-9-communication-professionalism.html"
+        }
+      ],
+      "seoDescription": "Practice building a clear EMS radio report with essential handoff elements and concise wording.",
+      "components": [
+        "introduction",
+        "objective",
+        "equipment",
+        "scenario",
+        "instructions",
+        "interactive",
+        "criticalActions",
+        "knowledgeChecks",
+        "completionCriteria",
+        "debrief",
+        "completion"
+      ],
+      "content": {
+        "introduction": "A good radio report is short, ordered, and useful to the listener.",
+        "objectives": [
+          "Include essential elements",
+          "Avoid clutter",
+          "Deliver a usable ETA/priority statement"
+        ],
+        "equipment": [
+          "Radio or phone notification process used by your agency"
+        ],
+        "scenario": {
+          "dispatch": "Chest pain.",
+          "scene": "En route to hospital.",
+          "patient": "64-year-old female, pressure pain, diaphoretic, BP 100/62, given aspirin per authorization, ETA 8 minutes."
+        },
+        "instructions": [
+          "Select report elements and assemble a concise transmission."
+        ],
+        "activities": [
+          {
+            "id": "rr1",
+            "type": "communication",
+            "title": "Essential elements",
+            "prompt": "Select elements that belong in a standard hospital radio report.",
+            "options": [
+              {
+                "id": "unit",
+                "label": "Unit identification",
+                "correct": true
+              },
+              {
+                "id": "age",
+                "label": "Age and sex",
+                "correct": true
+              },
+              {
+                "id": "cc",
+                "label": "Chief complaint / working impression",
+                "correct": true
+              },
+              {
+                "id": "find",
+                "label": "Key findings and vitals",
+                "correct": true
+              },
+              {
+                "id": "tx",
+                "label": "Treatments and response",
+                "correct": true
+              },
+              {
+                "id": "eta",
+                "label": "ETA / priority",
+                "correct": true
+              },
+              {
+                "id": "song",
+                "label": "Hold music preference",
+                "correct": false
+              }
+            ],
+            "minCorrect": 5
+          },
+          {
+            "id": "rr2",
+            "type": "narrative",
+            "title": "Build the report",
+            "prompt": "Write a concise radio report (2\u20134 sentences) including age/sex, complaint, key vitals, treatment, and ETA.",
+            "requiredTerms": [
+              "64",
+              "chest",
+              "aspirin",
+              "ETA"
+            ],
+            "minWords": 20,
+            "maxWords": 90
+          },
+          {
+            "id": "rr3",
+            "type": "mcq",
+            "title": "Clarity check",
+            "prompt": "Which report is better?",
+            "choices": [
+              {
+                "id": "c1",
+                "text": "\"Medic 3 en route with a 64-year-old female, chest pressure, BP 100/62, aspirin given, ETA 8 minutes.\"",
+                "correct": true,
+                "feedback": "Concise and complete."
+              },
+              {
+                "id": "c2",
+                "text": "\"We have a patient who is not feeling great and stuff is going on, more later.\"",
+                "correct": false,
+                "feedback": "Missing actionable detail."
+              },
+              {
+                "id": "c3",
+                "text": "A 4-minute biography with no vitals or ETA",
+                "correct": false,
+                "feedback": "Too long, too little signal."
+              }
+            ]
+          }
+        ],
+        "criticalActions": [
+          {
+            "id": "ca1",
+            "text": "Identify your unit"
+          },
+          {
+            "id": "ca2",
+            "text": "Give age/sex and chief complaint"
+          },
+          {
+            "id": "ca3",
+            "text": "Include key vitals/treatments"
+          },
+          {
+            "id": "ca4",
+            "text": "State ETA"
+          }
+        ],
+        "knowledgeChecks": [
+          {
+            "question": "Radio reports should prioritize:",
+            "options": [
+              "Entertainment value",
+              "Actionable clinical content",
+              "Personal opinions about the neighborhood",
+              "Repeating every SAMPLE answer twice"
+            ],
+            "answer": 1,
+            "rationale": "Receiving teams need usable information."
+          }
+        ],
+        "completionCriteria": [
+          "Essential elements selected",
+          "Narrative includes required terms",
+          "Clarity question correct",
+          "Critical actions complete"
+        ],
+        "debrief": {
+          "summary": "Short reports save repeats.",
+          "takeaways": [
+            "Order matters.",
+            "Vitals and ETA matter.",
+            "Cut filler."
+          ],
+          "commonMisses": [
+            "No ETA",
+            "No treatment mentioned"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ems-pcr-narrative-001",
+      "version": 1,
+      "slug": "pcr-narrative",
+      "title": "PCR Narrative",
+      "categoryId": "documentation",
+      "certificationLevels": [
+        "EMT",
+        "AEMT",
+        "Paramedic"
+      ],
+      "estimatedMinutes": 12,
+      "difficulty": "intermediate",
+      "crewType": "individual",
+      "completionType": "self",
+      "summary": "Write a CHART-style narrative from a short call stem and hit required documentation elements.",
+      "protocolNote": "General educational material for training. Confirm exact indications, doses, destinations, and documentation requirements with your local protocol and medical direction.",
+      "relatedTools": [
+        {
+          "title": "PCR Narrative Coach",
+          "url": "/pcr-narrative-coach.html"
+        },
+        {
+          "title": "AI Narrative Writing Lab",
+          "url": "/narrative-writing-lab.html"
+        }
+      ],
+      "seoDescription": "Practice writing an EMS PCR narrative with CHART structure, objective findings, and required clinical elements.",
+      "components": [
+        "introduction",
+        "objective",
+        "equipment",
+        "scenario",
+        "instructions",
+        "interactive",
+        "criticalActions",
+        "knowledgeChecks",
+        "completionCriteria",
+        "debrief",
+        "completion"
+      ],
+      "content": {
+        "introduction": "Documentation is part of patient care. A usable narrative is chronological, objective, and complete.",
+        "objectives": [
+          "Use a CHART-style structure",
+          "Include assessment, treatments, and response",
+          "Avoid unsafe or judgmental language"
+        ],
+        "equipment": [
+          "ePCR or notepad"
+        ],
+        "scenario": {
+          "dispatch": "Shortness of breath.",
+          "scene": "Residence.",
+          "patient": "72-year-old with wheezes, SpO2 88% on room air, improved to 94% on oxygen, transported sitting upright."
+        },
+        "instructions": [
+          "Write only from the provided stem\u2014do not invent allergies or meds."
+        ],
+        "activities": [
+          {
+            "id": "pcr1",
+            "type": "ordered-steps",
+            "title": "CHART order",
+            "prompt": "Order the CHART sections.",
+            "items": [
+              {
+                "id": "c",
+                "text": "Chief complaint"
+              },
+              {
+                "id": "h",
+                "text": "History"
+              },
+              {
+                "id": "a",
+                "text": "Assessment"
+              },
+              {
+                "id": "r",
+                "text": "Treatment / Rx"
+              },
+              {
+                "id": "t",
+                "text": "Transport"
+              }
+            ],
+            "correctOrder": [
+              "c",
+              "h",
+              "a",
+              "r",
+              "t"
+            ]
+          },
+          {
+            "id": "pcr2",
+            "type": "narrative",
+            "title": "Write the narrative",
+            "prompt": "Write a brief CHART-style narrative for this call. Include complaint, respiratory findings, SpO2 values, oxygen, response, and transport position.",
+            "requiredTerms": [
+              "shortness",
+              "wheez",
+              "88",
+              "94",
+              "oxygen",
+              "upright"
+            ],
+            "minWords": 40,
+            "maxWords": 160
+          },
+          {
+            "id": "pcr3",
+            "type": "mcq",
+            "title": "Objectivity",
+            "prompt": "Which sentence is more appropriate for a PCR?",
+            "choices": [
+              {
+                "id": "c1",
+                "text": "\"Patient stated he could not catch his breath; wheezes noted bilaterally; SpO2 improved after oxygen.\"",
+                "correct": true,
+                "feedback": "Objective and specific."
+              },
+              {
+                "id": "c2",
+                "text": "\"Patient was dramatic and probably overreacting.\"",
+                "correct": false,
+                "feedback": "Judgmental and unsafe."
+              },
+              {
+                "id": "c3",
+                "text": "\"Everything seemed fine so details do not matter.\"",
+                "correct": false,
+                "feedback": "Incomplete."
+              }
+            ]
+          }
+        ],
+        "criticalActions": [
+          {
+            "id": "ca1",
+            "text": "Include chief complaint"
+          },
+          {
+            "id": "ca2",
+            "text": "Document objective assessment findings"
+          },
+          {
+            "id": "ca3",
+            "text": "Document treatments and response"
+          },
+          {
+            "id": "ca4",
+            "text": "Document transport condition/position"
+          }
+        ],
+        "knowledgeChecks": [
+          {
+            "question": "A strong PCR narrative should:",
+            "options": [
+              "Invent missing history",
+              "Stay objective and support medical necessity",
+              "Use insults for clarity",
+              "Omit treatments"
+            ],
+            "answer": 1,
+            "rationale": "Objective, complete documentation protects patients and providers."
+          }
+        ],
+        "completionCriteria": [
+          "CHART order correct",
+          "Narrative includes required clinical terms",
+          "Objectivity question correct",
+          "Critical actions complete"
+        ],
+        "debrief": {
+          "summary": "Write what you saw, did, and observed next.",
+          "takeaways": [
+            "Structure helps completeness.",
+            "Objectivity matters.",
+            "Response to treatment belongs in the record."
+          ],
+          "commonMisses": [
+            "No reassessment values",
+            "Judgmental wording"
+          ]
+        }
+      }
+    }
+  ]
+}

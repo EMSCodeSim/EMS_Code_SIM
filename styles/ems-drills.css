@@ -1,0 +1,505 @@
+/* EMS Drills — mobile-first training UI */
+:root {
+  --drill-navy: #071624;
+  --drill-ink: #142433;
+  --drill-muted: #5a6f80;
+  --drill-line: #c9d7e2;
+  --drill-paper: #eef4f8;
+  --drill-surface: #ffffff;
+  --drill-blue: #0a6ea8;
+  --drill-blue-dark: #085887;
+  --drill-green: #1f7a45;
+  --drill-red: #a52d2d;
+  --drill-amber: #b86a00;
+  --drill-radius: 12px;
+  --drill-font: "Barlow", "Segoe UI", sans-serif;
+  --drill-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --drill-safe-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+.ems-drills-page,
+.ems-drill-page {
+  font-family: var(--drill-font);
+  color: var(--drill-ink);
+  background:
+    radial-gradient(circle at top left, rgba(10, 110, 168, 0.12), transparent 42%),
+    linear-gradient(180deg, #dbe7f0 0%, var(--drill-paper) 28%, #f7fafc 100%);
+  min-height: 100vh;
+}
+
+.ems-drills-hero,
+.ems-drill-page .page-hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 20px 10px;
+}
+
+.ems-drills-hero h1,
+.ems-drill-header h1,
+.ems-receipt h2 {
+  font-family: var(--drill-display);
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  margin: 0.2rem 0 0.6rem;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  color: var(--drill-navy);
+}
+
+.ems-drill-kicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--drill-blue-dark);
+  font-family: var(--drill-display);
+}
+
+.ems-drills-lead,
+.ems-lead {
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: var(--drill-muted);
+  max-width: 58ch;
+}
+
+.ems-philosophy {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ems-philosophy li {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--drill-line);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.ems-drills-layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 20px 48px;
+}
+
+.ems-drill-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 18px 0;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--drill-line);
+  border-radius: var(--drill-radius);
+}
+
+.ems-drill-filters label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.ems-drill-filters input,
+.ems-drill-filters select,
+.ems-field input,
+.ems-field textarea {
+  min-height: 44px;
+  border: 1px solid var(--drill-line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ems-field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.ems-drill-grid,
+.ems-category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.ems-drill-card,
+.ems-category-card,
+.ems-drill-shell,
+.ems-receipt {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--drill-line);
+  border-radius: var(--drill-radius);
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(7, 22, 36, 0.06);
+}
+
+.ems-drill-card-meta,
+.ems-drill-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.ems-drill-card-meta span,
+.ems-drill-meta span {
+  background: #e7f2f8;
+  color: var(--drill-blue-dark);
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+.ems-drill-card h2,
+.ems-category-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  line-height: 1.25;
+}
+
+.ems-drill-card h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.ems-drill-card p,
+.ems-category-card p {
+  color: var(--drill-muted);
+  line-height: 1.5;
+  margin: 0 0 14px;
+}
+
+.ems-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  min-width: 46px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ems-btn-primary {
+  background: var(--drill-navy);
+  color: #fff;
+}
+
+.ems-btn-secondary {
+  background: #fff;
+  color: var(--drill-navy);
+  border-color: var(--drill-line);
+}
+
+.ems-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ems-muted,
+.ems-empty {
+  color: var(--drill-muted);
+}
+
+.ems-split-note {
+  margin: 28px 0;
+  padding: 18px;
+  border-left: 4px solid var(--drill-blue);
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 0 var(--drill-radius) var(--drill-radius) 0;
+}
+
+.ems-drill-shell {
+  max-width: 860px;
+  margin: 16px auto 40px;
+}
+
+.ems-roadmap-banner {
+  margin-bottom: 14px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #e8f6ee;
+  border: 1px solid #b7ddc4;
+}
+
+.ems-drill-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.ems-drill-exit {
+  white-space: nowrap;
+  font-weight: 750;
+  color: var(--drill-blue-dark);
+}
+
+.ems-drill-progress {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  padding: 0;
+  margin: 18px 0;
+}
+
+.ems-drill-progress li {
+  border: 1px solid var(--drill-line);
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: #f7fbfe;
+  opacity: 0.7;
+}
+
+.ems-drill-progress li.is-current,
+.ems-drill-progress li.is-done {
+  opacity: 1;
+}
+
+.ems-drill-progress li.is-current {
+  border-color: var(--drill-blue);
+  background: #e7f3fa;
+}
+
+.ems-drill-progress span {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--drill-muted);
+  font-weight: 800;
+}
+
+.ems-drill-progress strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.9rem;
+}
+
+.ems-drill-panel {
+  min-height: 220px;
+}
+
+.ems-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  line-height: 1.55;
+}
+
+.ems-scenario {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 8px 12px;
+  margin: 0;
+}
+
+.ems-scenario dt {
+  font-weight: 800;
+}
+
+.ems-scenario dd {
+  margin: 0;
+}
+
+.ems-choice-set,
+.ems-check-grid,
+.ems-branch-grid {
+  display: grid;
+  gap: 8px;
+  border: 0;
+  padding: 0;
+  margin: 0 0 12px;
+}
+
+.ems-choice {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px;
+  border: 1px solid var(--drill-line);
+  border-radius: 10px;
+  background: #fff;
+  min-height: 48px;
+}
+
+.ems-choice input {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.ems-order-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.ems-order-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--drill-line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.ems-order-controls {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.ems-order-controls button,
+.ems-branch {
+  min-height: 44px;
+  min-width: 44px;
+  border-radius: 10px;
+  border: 1px solid var(--drill-line);
+  background: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ems-branch {
+  text-align: left;
+  padding: 12px 14px;
+}
+
+.ems-branch.is-selected {
+  border-color: var(--drill-blue);
+  background: #e7f3fa;
+}
+
+.ems-vitals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 12px;
+  background: #f3f8fb;
+  border-radius: 10px;
+}
+
+.ems-vitals dt {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--drill-muted);
+}
+
+.ems-vitals dd {
+  margin: 0;
+  font-weight: 800;
+}
+
+.ems-activity-footer,
+.ems-drill-actions,
+.ems-receipt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.ems-drill-actions {
+  position: sticky;
+  bottom: 0;
+  padding: 12px 0 var(--drill-safe-bottom);
+  background: linear-gradient(180deg, rgba(247, 250, 252, 0), rgba(247, 250, 252, 0.96) 30%, #f7fafc);
+  z-index: 5;
+}
+
+.ems-feedback {
+  margin: 0;
+  font-weight: 700;
+}
+
+.ems-feedback.is-pass { color: var(--drill-green); }
+.ems-feedback.is-fail { color: var(--drill-red); }
+
+.ems-protocol-note {
+  margin-top: 18px;
+  font-size: 0.9rem;
+  color: var(--drill-muted);
+  line-height: 1.45;
+}
+
+.ems-eval-fields,
+.ems-receipt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.ems-field {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.ems-related {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.ems-related-link {
+  color: var(--drill-blue-dark);
+  font-weight: 750;
+}
+
+.ems-sync.is-ok { color: var(--drill-green); font-weight: 800; }
+.ems-sync.is-pending { color: var(--drill-amber); font-weight: 800; }
+
+.ems-error-banner {
+  max-width: 860px;
+  margin: 20px auto;
+  padding: 16px;
+  border-radius: 12px;
+  background: #fdeeee;
+  border: 1px solid #e2b4b4;
+  color: var(--drill-red);
+}
+
+@media (max-width: 700px) {
+  .ems-drill-header {
+    flex-direction: column;
+  }
+
+  .ems-scenario {
+    grid-template-columns: 1fr;
+  }
+
+  .ems-drill-progress {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ems-drill-actions .ems-btn-primary,
+  .ems-receipt-actions .ems-btn-primary {
+    width: 100%;
+  }
+}
