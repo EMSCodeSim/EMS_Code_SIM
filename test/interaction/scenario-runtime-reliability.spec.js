@@ -1,7 +1,7 @@
 'use strict';
 
 const { test, expect } = require('@playwright/test');
-const { clearSiteStorage, watchPageErrors } = require('./helpers');
+const { clearSiteStorage, gotoVisualPatient, watchPageErrors } = require('./helpers');
 
 test.beforeEach(async ({ page }) => {
   await page.clock.install({ time: new Date('2026-08-01T10:00:00-06:00') });
@@ -17,7 +17,7 @@ async function unlockGuidedCare(page, caseId = 'asthma') {
     session.saveFinding('breathing', 'Breathing assessed', { source:'browser-test', normality:'not-normal', status:'abnormal' });
     session.saveFinding('perfusion', 'Radial pulse present; no major external bleeding', { source:'browser-test', normality:'normal', status:'normal' });
   }, caseId);
-  await page.reload();
+  await page.reload({ waitUntil: 'domcontentloaded' });
   await expect(page.locator('.bottom-nav')).not.toHaveClass(/guide-locked/);
   const firstLook = page.locator('#asthmaFirstLookAction');
   if (await firstLook.isVisible().catch(() => false) && !(await firstLook.isDisabled().catch(() => true))) {
