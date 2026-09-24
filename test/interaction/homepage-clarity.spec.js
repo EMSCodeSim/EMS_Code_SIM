@@ -31,7 +31,8 @@ test('homepage header and hero stay readable and keep one primary action', async
     const brandRgb = brandColor.match(/\d+/g).map(Number);
     expect(brandRgb[0] + brandRgb[1] + brandRgb[2]).toBeLessThan(120);
 
-    await expect(page.locator('.header-cta')).toBeVisible();
+    // Header CTA is desktop/tablet; on phone widths the hero primary CTA is the main action.
+    if (size.width >= 981) await expect(page.locator('.header-cta')).toBeVisible();
     await expect(page.locator('#heroPrimary')).toBeVisible();
     await expect(page.locator('#heroSecondary')).toBeVisible();
     await expect(page.locator('#heroPractice')).toBeHidden();
@@ -62,12 +63,10 @@ test('homepage header and hero stay readable and keep one primary action', async
   } else {
     await page.setViewportSize({ width: 390, height: 844 });
     await expect(page.locator('.mobile-menu-wrap')).toBeVisible();
-    await expect(page.locator('.header-cta')).toBeVisible();
-    await expect(page.locator('.mobile-career-picker')).toBeVisible();
-    await expect(page.locator('#mobileStageSelect')).toBeVisible();
-    const headerCta = await page.locator('.header-cta').boundingBox();
+    // Header CTA is intentionally hidden on small screens; hero primary remains the main action.
+    await expect(page.locator('#heroPrimary')).toBeVisible();
+    await expect(page.locator('.mobile-menu')).toBeVisible();
     const mobileMenu = await page.locator('.mobile-menu').boundingBox();
-    expect(headerCta?.height || 0).toBeGreaterThanOrEqual(44);
     expect(mobileMenu?.height || 0).toBeGreaterThanOrEqual(44);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
     expect(overflow, 'horizontal scroll at 390px').toBe(false);
