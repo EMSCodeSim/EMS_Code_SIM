@@ -39,12 +39,25 @@ must(page.includes('not affiliated with NREMT') && page.includes('does not award
 must(page.includes('not a lecture deck') && page.includes('Suggested total: 90 minutes'), 'Host notes must stay small and self-paced');
 
 must(script.includes("mode', 'bootcamp") && script.includes('stationAliases'), 'Boot Camp deep-link and station-alias logic is missing');
-must(script.includes("['assessment','vitals','initial','trauma','medical','narrative']"), 'Required path deep links are incomplete');
+must(script.includes("['assessment','vitals','initial','trauma','medical','narrative','final']"), 'Required path deep links are incomplete');
 must(script.includes("emscodesim_bls_bootcamp_sections_v1") && script.includes('localStorage'), 'Local section progress is missing');
 must(script.includes('every(field => field.value.trim().length >= 3)') && script.includes('data-unlock'), 'Thinking debrief must gate later steps');
 must(css.includes('.assessment-card') && css.includes('@media(max-width:820px)') && css.includes('.vertical-stepper'), 'Mobile accordion or vertical stepper styling is missing');
 must(mode.includes("params.get('mode') === 'bootcamp'") && mode.includes('bootcampMode'), 'Back bar must support Boot Camp and embedded tools');
 must(mode.includes('Back to ${bootcamp ? \'BLS Boot Camp\''), 'Boot Camp back-bar label is missing');
+
+must(page.includes('data-bootcamp-interact=') && page.includes('bootcamp-interact.js'), 'Interactive Boot Camp mounts/scripts are missing');
+must(page.includes('id="final-challenge"') && page.includes('data-bootcamp-interact="final-challenge"'), 'Final Boot Camp Challenge section is missing');
+must(page.includes('id="interactProgress"') && page.includes('bootcamp-roadmap'), 'Interactive progress roadmap is missing');
+['scene-quickcheck','impression-decision','primary-life-threat','history-trainer','vitals-trainer','treatment-skill','handoff-radio','mini-respiratory'].forEach(id => {
+  must(page.includes(`data-bootcamp-interact="${id}"`), `Interactive mount missing: ${id}`);
+});
+must(fs.existsSync(path.join(root, 'scripts/bootcamp-interact.js')) && fs.existsSync(path.join(root, 'scripts/bootcamp-interact-data.js')), 'Boot Camp interact scripts are missing from /scripts');
+must(fs.existsSync(path.join(root, 'styles/bootcamp-interact.css')), 'Boot Camp interact stylesheet is missing');
+const interact = read('scripts/bootcamp-interact.js');
+const interactData = read('scripts/bootcamp-interact-data.js');
+must(interact.includes('quickCheck') && interact.includes('finalChallenge') && interact.includes('emscodesim_bls_bootcamp_interact_v1'), 'Interact engine is incomplete');
+must(interactData.includes('scene-quickcheck') && interactData.includes('final-challenge') && interactData.includes('Follow local protocols'), 'Interact content/data safety notes are incomplete');
 
 must(netlify.includes('from = "/bls-bootcamp"') && netlify.includes('to = "/skills-session"'), '/bls-bootcamp alias is missing');
 must(home.includes('<span>BLS Boot Camp</span><strong>Assessment, vitals, full call, narrative →</strong>'), 'Homepage Boot Camp card copy is missing');
@@ -58,4 +71,4 @@ must(asthma && /park/i.test(`${asthma.dispatch} ${asthma.scene}`), 'Asthma narra
 const linkedPages = ['abc-training.html','nremt-skill-sheets.html','pcr-narrative-coach.html','narrative-writing-lab.html','quiz/emt_practice_exam.html','vitals/full-vitals-set.html','vitals/bp.html','vitals/pulse.html','vitals/respiratory-rate.html','vitals/pulse-ox.html','vitals/bgl.html','vitals/skin.html','vitals/pupil.html','vitals/avpu.html','vitals/gcs.html','vitals/visual-airway-assessment.html','vitals/breathing-assessment.html','vitals/perfusion-assessment.html','vitals/sample-history.html','vitals/pain-opqrst.html','vitals/visual-trauma-body-exam.html','vitals/breath-sound-simulator.html','vitals/treatment-reassessment.html','vitals/scenario-launcher.html','vitals/visual-patient.html'];
 linkedPages.forEach(file => must(read(file).includes('skills-session-mode.js?v=2'), `${file} is missing the Boot Camp return-bar script`));
 
-console.log('BLS Boot Camp verified: eight assessment sections, video decisions, vitals wiring, two gated full calls, same-case narratives, deep-link aliases, mobile states, and disclaimers are present.');
+console.log('BLS Boot Camp verified: eight assessment sections, interactive drills, video decisions, vitals wiring, two gated full calls, final challenge, same-case narratives, deep-link aliases, mobile states, and disclaimers are present.');

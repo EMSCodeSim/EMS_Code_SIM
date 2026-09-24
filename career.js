@@ -15,7 +15,13 @@
   const mobile = document.getElementById('mobileMenu');
   if(mobile){
     const practice=[...mobile.querySelectorAll('optgroup')].find(function(group){return group.label==='Practice'});
-    if(practice&&![...practice.options].some(function(option){return option.value==='/skills-session'})){const option=new Option('BLS Boot Camp','/skills-session');practice.insertBefore(option,practice.firstChild);}
+    if(practice){
+      const options=[...practice.querySelectorAll('option')];
+      if(!options.some(function(option){return option.value==='/skills-session'})){
+        const option=new Option('BLS Boot Camp','/skills-session');
+        practice.insertBefore(option,practice.firstChild);
+      }
+    }
     mobile.addEventListener('change', function(){
       if(!this.value) return;
       if(this.value.startsWith('#')) location.hash = this.value;

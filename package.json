@@ -43,7 +43,7 @@
     "clean:retired": "node tools/remove-retired-scenario-files.js",
     "test:scenario-images": "node tools/test-scenario-image-assets.js",
     "test:narrative-lab": "node tools/test-narrative-lab.js",
-    "test:skills-session": "node tools/test-skills-session-hub.js"
+    "test:skills-session": "node tools/test-skills-session-hub.js && node tools/test-bootcamp-interact.js"
   },
   "engines": {
     "node": ">=18 <23"

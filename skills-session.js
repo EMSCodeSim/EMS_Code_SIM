@@ -9,7 +9,7 @@
     'vitals-only':'vitals','narrative-only':'narrative',bvm:'initial',oxygen:'primary',
     bleeding:'primary',immobilization:'secondary'
   };
-  const validPaths = new Set(['assessment','vitals','initial','trauma','medical','narrative']);
+  const validPaths = new Set(['assessment','vitals','initial','trauma','medical','narrative','final']);
   const requested = params.get('path') || stationAliases[params.get('station')] || 'assessment';
   const currentPath = validPaths.has(requested) ? requested : 'assessment';
   const today = () => new Date().toLocaleDateString('en-CA');
@@ -126,7 +126,8 @@
       vitals: document.querySelector('#vitals'),
       trauma: document.querySelector('#trauma-path'),
       medical: document.querySelector('#medical-path'),
-      narrative: document.querySelector('#narrative')
+      narrative: document.querySelector('#narrative'),
+      final: document.querySelector('#final-challenge')
     };
     const target = targets[currentPath];
     if (!target || location.hash) return;

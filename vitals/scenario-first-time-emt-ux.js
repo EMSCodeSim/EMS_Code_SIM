@@ -194,7 +194,10 @@
   }
 
   // 7: surface the small, case-relevant set first.
-  const PRIMARY_TREATMENT_ORDER = ['splinting','medications','movement','reassessment','resources'];
+  // Primary set must fit a 2x2 grid above More/transport on Desktop Chrome (1280x720).
+  // Keep resources behind "More treatments…" so the fifth tile cannot sit clipped
+  // under the panel overflow and steal hit-tests.
+  const PRIMARY_TREATMENT_ORDER = ['splinting','medications','movement','reassessment'];
 
   function primaryTreatmentGroup(button) {
     const id = String(button?.dataset?.horseTreatmentGroup || '').toLowerCase();

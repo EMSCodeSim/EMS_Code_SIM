@@ -1,7 +1,7 @@
 'use strict';
 
 const { test, expect } = require('@playwright/test');
-const { clearSiteStorage, watchPageErrors } = require('./helpers');
+const { clearSiteStorage, gotoVisualPatient, watchPageErrors } = require('./helpers');
 
 test.beforeEach(async ({ page }) => {
   await clearSiteStorage(page);
@@ -11,8 +11,10 @@ test('respiratory phone workspace stays stable through video, drawer, and patien
   test.skip(testInfo.project.name !== 'mobile-chromium', 'Phone reliability regression');
   const assertNoPageErrors = watchPageErrors(page);
 
-  await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
-  await expect(page.locator('#scenarioIntroVideo')).toHaveCount(1, { timeout: 10000 });
+  await gotoVisualPatient(page, '/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
+  // Intro shell is created by scenario-intro-video.js; under WebDriver autoplay is
+  // skipped and the shell may already be hidden — still require the element.
+  await expect(page.locator('#scenarioIntroVideoElement')).toHaveCount(1, { timeout: 10000 });
   await expect(page.locator('#patientFirstMobileNav')).toBeVisible({ timeout: 10000 });
   await expect(page.locator('#patientFirstMobileNav')).toHaveCount(1);
   await expect(page.locator('#patientFirstMobileFeed')).toBeVisible();

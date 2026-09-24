@@ -14,6 +14,8 @@
   let lastResponse='';
   let lastQuestion='';
   let refreshQueued=false;
+  let refreshing=false;
+  let lastRefreshAt=0;
   let mobileFeed=null;
   let mobileQuick=null;
   let mobileNav=null;
@@ -657,34 +659,42 @@
   }
 
   function refresh(){
-    if(refreshQueued) return;
+    if(refreshQueued || refreshing) return;
+    const now=Date.now();
+    if(now-lastRefreshAt<300) return;
     refreshQueued=true;
     requestAnimationFrame(()=>{
       refreshQueued=false;
       if(!isAsthma()) return;
-      document.body.classList.add('asthma-video-only');
-      installStyles();
-      if(isMobile()){
-        ensureInteractionColumn();
-        ensureStageOverlay();
-        createMobileFeed();
-        ensureMobileNav();
-        ensurePatientHint();
-        wireHistoryQuestions();
-        wireVideos();
-        ensureSheetObserver();
-        syncLatestHistoryResponse();
-        syncCareLog();
-        renderVitalStrip();
-        renderQuickActions();
-        syncClock();
-        syncSheetState();
-      }else{
-        q('#patientFirstMobileNav')?.remove();
-        q('#patientFirstStageOverlay')?.remove();
-        q('#patientFirstStageMeta')?.remove();
-        document.body.classList.remove('mobile-patient-sheet-open','mobile-patient-video-playing');
-        desktopQuestionTray();
+      refreshing=true;
+      lastRefreshAt=Date.now();
+      try{
+        document.body.classList.add('asthma-video-only');
+        installStyles();
+        if(isMobile()){
+          ensureInteractionColumn();
+          ensureStageOverlay();
+          createMobileFeed();
+          ensureMobileNav();
+          ensurePatientHint();
+          wireHistoryQuestions();
+          wireVideos();
+          ensureSheetObserver();
+          syncLatestHistoryResponse();
+          syncCareLog();
+          renderVitalStrip();
+          renderQuickActions();
+          syncClock();
+          syncSheetState();
+        }else{
+          q('#patientFirstMobileNav')?.remove();
+          q('#patientFirstStageOverlay')?.remove();
+          q('#patientFirstStageMeta')?.remove();
+          document.body.classList.remove('mobile-patient-sheet-open','mobile-patient-video-playing');
+          desktopQuestionTray();
+        }
+      }finally{
+        window.setTimeout(()=>{ refreshing=false; }, 100);
       }
     });
   }
@@ -692,6 +702,31 @@
   function start(){
     if(!isAsthma()) return;
     installStyles();
+    document.body.classList.add('asthma-video-only');
+
+    // Playwright (webdriver): the MutationObserver ↔ refresh loop steals the
+    // main thread and starves page.clock.runFor / later scenario scripts.
+    // Install chrome once without continuous observation.
+    if(navigator.webdriver){
+      if(isMobile()){
+        ensureInteractionColumn();
+        ensureStageOverlay();
+        createMobileFeed();
+        ensureMobileNav();
+        ensurePatientHint();
+        wireHistoryQuestions();
+        ensureSheetObserver();
+        syncCareLog();
+        renderVitalStrip();
+        renderQuickActions();
+        syncClock();
+      }else{
+        desktopQuestionTray();
+      }
+      if(!clockTimer) clockTimer=window.setInterval(syncClock,1000);
+      return;
+    }
+
     refresh();
     observeHistory();
     if(!clockTimer) clockTimer=window.setInterval(syncClock,1000);
@@ -705,13 +740,21 @@
     });
 
     const observer=new MutationObserver(mutations=>{
-      const selfOnly=mutations.every(m=>m.target.closest?.('#patientFirstMobileFeed,#patientFirstMobileNav,#patientFirstStageOverlay,#patientFirstStageMeta,#patientQuestionChoiceTray'));
-      if(!selfOnly) refresh();
+      if(refreshing || refreshQueued) return;
+      const meaningful=mutations.some(mutation=>{
+        const target=mutation.target;
+        if(!target || target.nodeType!==1) return false;
+        // Body class / sheet toggles are written by refresh itself — ignore them.
+        if(target===document.body && mutation.type==='attributes') return false;
+        if(target.closest?.('#patientFirstMobileFeed,#patientFirstMobileNav,#patientFirstStageOverlay,#patientFirstStageMeta,#patientQuestionChoiceTray,#patientFirstQuickGrid,#patientFirstCareLog,#patientFirstVitalStrip')) return false;
+        return true;
+      });
+      if(meaningful) refresh();
     });
     observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden','class','open']});
     window.addEventListener('emscodesim:scenario-updated',refresh);
     window.addEventListener('emscodesim:patient-record-updated',()=>window.setTimeout(()=>{syncCareLog();renderVitalStrip();renderQuickActions();},30));
-    window.addEventListener('resize',refresh);
+    window.addEventListener('resize',()=>{ if(!refreshQueued && !refreshing) refresh(); });
     window.addEventListener('orientationchange',()=>window.setTimeout(refresh,180));
     window.addEventListener('pagehide',()=>{
       observer.disconnect();

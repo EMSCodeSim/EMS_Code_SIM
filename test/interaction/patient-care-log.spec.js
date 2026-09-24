@@ -1,7 +1,7 @@
 'use strict';
 
 const { test, expect } = require('@playwright/test');
-const { clearSiteStorage, watchPageErrors } = require('./helpers');
+const { clearSiteStorage, gotoVisualPatient, watchPageErrors } = require('./helpers');
 
 test.beforeEach(async ({ page }) => {
   await clearSiteStorage(page);
@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 
 test('Record keeps a chronological log and filters vitals and treatments', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
-  await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
+  await gotoVisualPatient(page, '/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
 
   await page.evaluate(() => {
     const session = window.EMSCodeSimScenarioSession;
