@@ -239,6 +239,36 @@ body.home-page{
   max-width:none;
   padding:0;
 }
+.home-page .main-nav.ems-intent-nav{
+  gap:6px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.home-page .main-nav.ems-intent-nav > a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:40px;
+  padding:8px 12px;
+  border:1px solid var(--ideal-line);
+  border-radius:999px;
+  background:var(--ideal-paper);
+  color:var(--ideal-ink);
+  font-weight:750;
+  font-size:.88rem;
+  text-decoration:none;
+}
+.home-page .main-nav.ems-intent-nav > a:hover{
+  border-color:var(--ideal-blue);
+  color:var(--ideal-blue-dark);
+  background:#eef7fc;
+}
+.home-page .ems-pathway-wrap,
+.home-page .ems-assess-showcase,
+.home-page .ems-alive-strip{
+  position:relative;
+  z-index:1;
+}
 .home-page .nav-group{
   color:var(--ideal-ink);
   position:relative;
