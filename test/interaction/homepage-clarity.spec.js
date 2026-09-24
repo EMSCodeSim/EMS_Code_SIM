@@ -19,8 +19,15 @@ test('homepage header and hero stay readable and keep one primary action', async
 
   await page.goto('/');
   await expect(page.locator('.site-header .brand')).toContainText('EMSCodeSim');
-  await expect(page.locator('.header-cta')).toBeVisible();
-  await expect(page.locator('.header-cta')).toHaveAttribute('href', /visual-patient\.html/);
+  // Header CTA is desktop/tablet only; phone widths hide it in favor of the hero primary.
+  if (testInfo.project.name === 'desktop-chromium') {
+    await expect(page.locator('.header-cta')).toBeVisible();
+    await expect(page.locator('.header-cta')).toHaveAttribute('href', /visual-patient\.html/);
+  } else {
+    await expect(page.locator('.header-cta')).toBeAttached();
+    await expect(page.locator('.header-cta')).toHaveAttribute('href', /visual-patient\.html/);
+    await expect(page.locator('.header-cta')).toBeHidden();
+  }
 
   for (const size of sizes) {
     await page.setViewportSize({ width: size.width, height: size.height });
