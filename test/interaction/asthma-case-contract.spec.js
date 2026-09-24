@@ -1,7 +1,7 @@
 'use strict';
 
 const { test, expect } = require('@playwright/test');
-const { clearSiteStorage, watchPageErrors } = require('./helpers');
+const { clearSiteStorage, gotoVisualPatient, watchPageErrors } = require('./helpers');
 
 test.beforeEach(async ({ page }) => {
   await clearSiteStorage(page);
@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 
 test('asthma learning load is park respiratory care with no trauma leftovers', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
-  await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
+  await gotoVisualPatient(page, '/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
 
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimAsthmaLearningCase))).toBe(true);
   await expect(page.locator('#caseTitle')).toContainText('I can’t get air');
@@ -52,7 +52,7 @@ test('asthma learning load is park respiratory care with no trauma leftovers', a
 });
 
 test('asthma bronchodilator creates a two-minute reassessment gate', async ({ page }) => {
-  await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
+  await gotoVisualPatient(page, '/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
   await expect.poll(() => page.evaluate(() => Boolean(window.EMSCodeSimAsthmaLearningCase))).toBe(true);
   await page.locator('#asthmaFirstLookAction').click();
 
@@ -79,7 +79,7 @@ test('asthma bronchodilator creates a two-minute reassessment gate', async ({ pa
 });
 
 test('horse crush retains a crush-mechanism scene', async ({ page }) => {
-  await page.goto('/vitals/visual-patient.html?case=horse_crush&training=learning');
+  await gotoVisualPatient(page, '/vitals/visual-patient.html?case=horse_crush&training=learning');
   await expect.poll(() => page.locator('#scene').innerText()).toMatch(/horse|barn|crush|smashed/i);
   const scene = (await page.locator('#scene').innerText()).toLowerCase();
   expect(scene).toMatch(/horse|barn|crush|smashed/);

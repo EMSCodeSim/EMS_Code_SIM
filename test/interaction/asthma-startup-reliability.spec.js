@@ -1,16 +1,16 @@
 'use strict';
 
 const { test, expect } = require('@playwright/test');
-const { clearSiteStorage, watchPageErrors } = require('./helpers');
+const { clearSiteStorage, gotoVisualPatient, watchPageErrors } = require('./helpers');
 
 test.beforeEach(async ({ page }) => {
   await clearSiteStorage(page);
 });
 
-test('asthma startup advances timer and always exposes a usable patient workspace', async ({ page }) => {
+test('asthma startup advances timer and always exposes a usable patient workspace', async ({ page }, testInfo) => {
   const assertNoPageErrors = watchPageErrors(page);
   await page.route('**/*.mp4*', route => route.abort());
-  await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
+  await gotoVisualPatient(page, '/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
 
   await expect(page.locator('#scenarioIntroVideoElement')).toHaveCount(1, { timeout: 10000 });
   await expect(page.locator('#timer')).toBeVisible();
@@ -20,6 +20,10 @@ test('asthma startup advances timer and always exposes a usable patient workspac
 
   await expect(page.locator('#scenarioIntroVideo')).toBeHidden({ timeout: 5000 });
   await expect(page.locator('#patientImage')).toBeVisible();
-  await expect(page.locator('#assessmentPanel button:visible').first()).toBeVisible();
+  if (testInfo.project.name === 'mobile-chromium') {
+    await expect(page.locator('#patientFirstMobileNav')).toBeVisible();
+  } else {
+    await expect(page.locator('#assessmentPanel button:visible').first()).toBeVisible();
+  }
   await assertNoPageErrors();
 });
