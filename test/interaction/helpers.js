@@ -30,6 +30,13 @@ async function blockThirdPartyNoise(page) {
     await page.route(pattern, route => route.abort());
   }
   await page.route('**/scenario-first-run-guide.js*', async route => {
+    // Keep the real desktop first-run guide (it owns the desktop patient hub layout).
+    // Only stub on phone viewports where the MutationObserver refresh loop stalls Chromium.
+    const width = page.viewportSize()?.width ?? 1280;
+    if (width >= 980) {
+      await route.continue();
+      return;
+    }
     await route.fulfill({
       status: 200,
       contentType: 'application/javascript; charset=utf-8',

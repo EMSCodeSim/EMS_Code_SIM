@@ -1,7 +1,7 @@
 'use strict';
 
 const { test, expect } = require('@playwright/test');
-const { clearSiteStorage, watchPageErrors } = require('./helpers');
+const { clearSiteStorage, gotoVisualPatient, watchPageErrors } = require('./helpers');
 
 test.beforeEach(async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'Desktop-only regression');
@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }, testInfo) => {
 
 test('breathing problem desktop centers the patient encounter and keeps tools on the right', async ({ page }) => {
   const assertNoPageErrors = watchPageErrors(page);
-  await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
+  await gotoVisualPatient(page, '/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
 
   await expect(page.locator('#scenarioIntroVideo')).toHaveCount(1, { timeout: 10000 });
   if (await page.locator('#scenarioIntroVideo').isVisible().catch(() => false)) await page.locator('#scenarioIntroSkip').click();
