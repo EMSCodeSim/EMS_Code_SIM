@@ -19,43 +19,44 @@ async function unlockGuidedCare(page, caseId = 'asthma') {
   }, caseId);
   await page.reload();
   await expect(page.locator('.bottom-nav')).not.toHaveClass(/guide-locked/);
+  // Abnormal findings schedule the next-action sheet on a short timeout after reload.
+  await page.locator('#clinicalNextActions').waitFor({ state: 'visible', timeout: 2_000 }).catch(() => {});
+  await dismissClinicalNext(page);
+}
+
+async function dismissClinicalNext(page) {
+  const sheet = page.locator('#clinicalNextActions');
+  if (!(await sheet.isVisible().catch(() => false))) return;
+  await page.locator('#clinicalNextClose').click();
+  await expect(sheet).toBeHidden();
 }
 
 async function openClinicalPanel(page, panel) {
+  await dismissClinicalNext(page);
   if (await page.locator(`#${panel}`).isVisible().catch(() => false)) return;
-
-  // Abnormal findings open a floating next-action sheet that covers the rail.
-  const nextShortcut = {
-    vitalsPanel: '#clinicalNextVitals',
-    treatmentPanel: '#clinicalNextTreatment'
-  }[panel];
-  if (nextShortcut && await page.locator(nextShortcut).isVisible().catch(() => false)) {
-    await page.locator(nextShortcut).click();
-    await expect(page.locator(`#${panel}`)).toBeVisible();
-    return;
-  }
-  if (await page.locator('#clinicalNextClose').isVisible().catch(() => false)) {
-    await page.locator('#clinicalNextClose').click();
-  }
 
   // Prefer the clinical domain rail. Asthma learning keeps #desktopPatientActions
   // vitals/treat disabled until first-look, and a bare [data-panel] matches both.
   const rail = page.locator(`.bottom-nav.clinical-domain-rail button[data-panel="${panel}"]`);
   if (await rail.isVisible().catch(() => false)) {
     await rail.click();
+    await dismissClinicalNext(page);
     return;
   }
   const desktopAction = page.locator(`#desktopPatientActions button[data-panel="${panel}"]:not([disabled])`);
   if (await desktopAction.isVisible().catch(() => false)) {
     await desktopAction.click();
+    await dismissClinicalNext(page);
     return;
   }
   await page.locator(`.bottom-nav button[data-panel="${panel}"]:not([disabled])`).first().click();
+  await dismissClinicalNext(page);
 }
 
 async function assignVitalToPartner(page, key) {
   await openClinicalPanel(page, 'vitalsPanel');
-  await page.locator(`#vitalTools [data-tool-key="${key}"] .partner-action, [data-tool-key="${key}"] .partner-action`).first().click();
+  await dismissClinicalNext(page);
+  await page.locator(`#vitalTools [data-tool-key="${key}"] .partner-action`).click();
 }
 
 async function runPendingPartnerSkill(page, caseId, key) {
@@ -84,6 +85,7 @@ test('partner skills run one at a time, survive reload, and save every result', 
   expect(tasks.respirations.status).toBe('queued');
 
   await page.reload();
+  await page.locator('#clinicalNextActions').waitFor({ state: 'visible', timeout: 2_000 }).catch(() => {});
   await openClinicalPanel(page, 'vitalsPanel');
   await expect(page.locator('[data-tool-key="blood_pressure"] .assignment-progress')).toContainText('Partner gathering');
 
