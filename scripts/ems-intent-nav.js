@@ -3,6 +3,7 @@
   if(document.querySelector('[data-ems-intent-nav]'))return;
   if(document.body.classList.contains('home-page'))return;
   if(document.body.classList.contains('bootcamp-page'))return;
+  if(document.querySelector('.main-nav.ems-intent-nav'))return;
   const header=document.querySelector('header.site-header, header.bootcamp-header');
   if(!header)return;
 
