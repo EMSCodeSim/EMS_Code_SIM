@@ -26,7 +26,8 @@ test('homepage header and hero stay readable and keep one primary action', async
     await page.setViewportSize({ width: size.width, height: size.height });
     await expect(page.locator('.site-header')).toBeVisible();
     const headerBg = await page.locator('.site-header').evaluate(el => getComputedStyle(el).backgroundColor);
-    expect(headerBg).toMatch(/rgb\(255,\s*255,\s*255\)/);
+    // Solid white or frosted paper header from the homepage visual system.
+    expect(headerBg).toMatch(/rgba?\(\s*255,\s*255,\s*255(?:\s*,\s*1)?\s*\)|rgba\(\s*247,\s*250,\s*252\s*,\s*0\.9[0-9]*\s*\)/);
     const brandColor = await page.locator('.site-header .brand').evaluate(el => getComputedStyle(el).color);
     const brandRgb = brandColor.match(/\d+/g).map(Number);
     expect(brandRgb[0] + brandRgb[1] + brandRgb[2]).toBeLessThan(120);
