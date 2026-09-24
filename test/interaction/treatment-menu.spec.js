@@ -99,6 +99,7 @@ test('desktop treatment categories stay clickable and More treatments does not s
     return { ok: transportHit.ok && handoffHit.ok, transportCover: transportHit.cover, handoffCover: handoffHit.cover };
   })).toMatchObject({ ok: true });
 
+  await page.locator('#horseOpenTransport').scrollIntoViewIfNeeded();
   const transportBox = await page.locator('#horseOpenTransport').boundingBox();
   expect(transportBox).toBeTruthy();
   await page.mouse.click(transportBox.x + transportBox.width / 2, transportBox.y + transportBox.height / 2);
@@ -106,6 +107,7 @@ test('desktop treatment categories stay clickable and More treatments does not s
 
   await page.locator('#horseTreatmentBackToGroups').click();
   await expect(page.locator('#horseOpenHandoff')).toBeVisible();
+  await page.locator('#horseOpenHandoff').scrollIntoViewIfNeeded();
   const handoffBox = await page.locator('#horseOpenHandoff').boundingBox();
   expect(handoffBox).toBeTruthy();
   await page.mouse.click(handoffBox.x + handoffBox.width / 2, handoffBox.y + handoffBox.height / 2);
@@ -115,6 +117,7 @@ test('desktop treatment categories stay clickable and More treatments does not s
   await expect(page.locator('#hospitalHandoffWorkspace')).toBeHidden();
 
   await expect(page.locator('#horseOpenGrade')).toBeVisible();
+  await page.locator('#horseOpenGrade').scrollIntoViewIfNeeded();
   const gradeBox = await page.locator('#horseOpenGrade').boundingBox();
   expect(gradeBox).toBeTruthy();
   await page.mouse.click(gradeBox.x + gradeBox.width / 2, gradeBox.y + gradeBox.height / 2);
