@@ -46,12 +46,24 @@ test('scenario launcher shows horse and breathing problem and opens asthma in As
   await expect(page.locator('#scenarioIntroVideo')).toBeHidden();
   await expect(page.locator('#patientImage')).toBeVisible();
 
+  const mobile = testInfo.project.name === 'mobile-chromium';
+  // Assessment cards live in the sheet on phone; open Assess before asserting them.
+  if (mobile) {
+    await expect(page.locator('#patientFirstMobileNav')).toBeVisible();
+    await page.locator('#patientFirstMobileNav [data-mobile-domain="assessmentPanel"]').click();
+    await expect(page.locator('#actionSheet')).toBeVisible();
+    await expect(page.locator('#assessmentPanel')).toBeVisible();
+  }
+
   // Assessment workspace shows scene size-up / Initial ABC cards with Begin actions.
   await expect(page.locator('#assessmentPanel').getByText('Scene size-up').first()).toBeVisible();
   await expect(page.locator('#assessmentPanel').getByText(/Initial ABC/).first()).toBeVisible();
   await expect(page.locator('#assessmentPanel button:visible').filter({ hasText: /^Begin/i }).first()).toBeVisible();
+  if (mobile && await page.locator('#closeSheet').isVisible().catch(() => false)) {
+    await page.locator('#closeSheet').click();
+    await expect(page.locator('#actionSheet')).toBeHidden();
+  }
 
-  const mobile = testInfo.project.name === 'mobile-chromium';
   const historyButton = mobile
     ? page.locator('#patientFirstMobileNav [data-mobile-domain="historyPanel"]')
     : page.locator('#clinicalInteractionColumn .bottom-nav button[data-panel="historyPanel"], .bottom-nav.clinical-domain-rail button[data-panel="historyPanel"]');
