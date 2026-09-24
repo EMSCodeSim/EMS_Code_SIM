@@ -141,7 +141,8 @@ test('the patient timer does not write scenario storage every second', async ({ 
       return original.call(this, key, value);
     };
   });
-  await page.goto('/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
+  await gotoVisualPatient(page, '/vitals/visual-patient.html?case=asthma&training=learning&reset=1');
+  await expect(page.locator('#timer')).toBeVisible();
   const before = await page.evaluate(() => window.__scenarioStorageWrites);
   await page.clock.runFor(20_000);
   const after = await page.evaluate(() => window.__scenarioStorageWrites);
