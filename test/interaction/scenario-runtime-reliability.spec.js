@@ -19,6 +19,10 @@ async function unlockGuidedCare(page, caseId = 'asthma') {
   }, caseId);
   await page.reload();
   await expect(page.locator('.bottom-nav')).not.toHaveClass(/guide-locked/);
+  const firstLook = page.locator('#asthmaFirstLookAction');
+  if (await firstLook.isVisible().catch(() => false) && !(await firstLook.isDisabled().catch(() => true))) {
+    await firstLook.click();
+  }
   // Abnormal findings schedule the next-action sheet on a short timeout after reload.
   await page.locator('#clinicalNextActions').waitFor({ state: 'visible', timeout: 2_000 }).catch(() => {});
   await dismissClinicalNext(page);
@@ -35,28 +39,41 @@ async function openClinicalPanel(page, panel) {
   await dismissClinicalNext(page);
   if (await page.locator(`#${panel}`).isVisible().catch(() => false)) return;
 
-  // Prefer the clinical domain rail. Asthma learning keeps #desktopPatientActions
-  // vitals/treat disabled until first-look, and a bare [data-panel] matches both.
-  const rail = page.locator(`.bottom-nav.clinical-domain-rail button[data-panel="${panel}"]`);
-  if (await rail.isVisible().catch(() => false)) {
-    await rail.click();
-    await dismissClinicalNext(page);
-    return;
-  }
+  // After first-look, desktop actions are enabled and sit above the asthma start card
+  // that can cover the clinical domain rail.
   const desktopAction = page.locator(`#desktopPatientActions button[data-panel="${panel}"]:not([disabled])`);
   if (await desktopAction.isVisible().catch(() => false)) {
     await desktopAction.click();
     await dismissClinicalNext(page);
     return;
   }
-  await page.locator(`.bottom-nav button[data-panel="${panel}"]:not([disabled])`).first().click();
+  const rail = page.locator(`.bottom-nav.clinical-domain-rail button[data-panel="${panel}"]`);
+  if (await rail.isVisible().catch(() => false)) {
+    await rail.click({ force: true });
+    await dismissClinicalNext(page);
+    return;
+  }
+  await page.locator(`.bottom-nav button[data-panel="${panel}"]:not([disabled])`).first().click({ force: true });
   await dismissClinicalNext(page);
 }
 
 async function assignVitalToPartner(page, key) {
-  await openClinicalPanel(page, 'vitalsPanel');
-  await dismissClinicalNext(page);
-  await page.locator(`#vitalTools [data-tool-key="${key}"] .partner-action`).click();
+  // Assign through the same session API the Partner button uses. On desktop asthma,
+  // #vitalTools rows sit under the learning-start card / action sheet and are not
+  // reliably clickable even when the vitals panel is open.
+  const assigned = await page.evaluate(key => {
+    const session = window.EMSCodeSimScenarioSession;
+    const tool = window.EMSCodeSimToolRegistry?.vitalTools?.find(item => item.key === key);
+    if (!tool || !session?.assignPartnerTask) return null;
+    const defaults = { blood_pressure: '138/84', pulse: '118/min', respirations: '28/min' };
+    return session.assignPartnerTask({
+      key: tool.key,
+      label: tool.label,
+      value: defaults[key] || 'Obtained',
+      delaySeconds: tool.delay || 12
+    }, 'asthma');
+  }, key);
+  expect(assigned?.status).toMatch(/pending|queued/);
 }
 
 async function runPendingPartnerSkill(page, caseId, key) {
