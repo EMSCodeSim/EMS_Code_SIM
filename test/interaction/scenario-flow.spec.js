@@ -45,18 +45,18 @@ test('scenario launcher shows horse and breathing problem and opens asthma in As
   await expect(page.locator('#scenarioIntroVideo')).toBeHidden();
   await expect(page.locator('#patientImage')).toBeVisible();
 
-  const visibleSceneStart = page.locator('#assessmentPanel button:visible').filter({ hasText: 'Scene size-up' }).first();
-  const visibleAbcStart = page.locator('#assessmentPanel button:visible').filter({ hasText: 'Initial ABC Assessment' }).first();
-  await expect(visibleSceneStart).toBeVisible();
-  await expect(visibleAbcStart).toBeVisible();
+  // Assessment workspace shows scene size-up / Initial ABC cards with Begin actions.
+  await expect(page.locator('#assessmentPanel').getByText('Scene size-up').first()).toBeVisible();
+  await expect(page.locator('#assessmentPanel').getByText(/Initial ABC/).first()).toBeVisible();
+  await expect(page.locator('#assessmentPanel button:visible').filter({ hasText: /^Begin/i }).first()).toBeVisible();
 
   const mobile = testInfo.project.name === 'mobile-chromium';
   const historyButton = mobile
     ? page.locator('#patientFirstMobileNav [data-mobile-domain="historyPanel"]')
-    : page.locator('.patient-control-column .bottom-nav button[data-panel="historyPanel"]');
+    : page.locator('#clinicalInteractionColumn .bottom-nav button[data-panel="historyPanel"], .bottom-nav.clinical-domain-rail button[data-panel="historyPanel"]');
   const treatmentButton = mobile
     ? page.locator('#patientFirstMobileNav [data-mobile-domain="treatmentPanel"]')
-    : page.locator('.patient-control-column .bottom-nav button[data-panel="treatmentPanel"]');
+    : page.locator('#clinicalInteractionColumn .bottom-nav button[data-panel="treatmentPanel"], .bottom-nav.clinical-domain-rail button[data-panel="treatmentPanel"]');
 
   await expect(historyButton).toBeVisible();
   await expect(treatmentButton).toBeVisible();
