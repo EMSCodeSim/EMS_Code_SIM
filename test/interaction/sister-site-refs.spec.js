@@ -13,7 +13,7 @@ test('EMSCodeSim points visitors to FireOpsSim in relevant places', async ({ pag
   await page.goto('/');
   await expect(page.getByRole('heading', { name: /Looking at fire academy or fire-based EMS/i })).toBeVisible();
   await expect(page.locator('.sister-site-panel a.sister-site-cta[href="https://fireopssim.com/"]')).toBeVisible();
-  await expect(page.locator('.site-footer a[href="https://fireopssim.com/"]')).toBeVisible();
+  await expect(page.locator('.site-footer a.sister-site-link[href="https://fireopssim.com/"]')).toBeVisible();
 
   await page.goto('/about.html');
   await expect(page.getByRole('heading', { name: 'Connected fire-service training' })).toBeVisible();
