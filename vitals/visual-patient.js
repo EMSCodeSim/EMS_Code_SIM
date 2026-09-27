@@ -4457,6 +4457,7 @@
     try {
       stopInfoSpeech();
       closeScenarioControls();
+      window.EMSCodeSimLearningLoop?.flushAssistanceToRecord?.(record());
       window.EMSCodeSimLearningLoop?.snapshotAttempt?.(record());
       api?.clear?.();
       const partnerKey = session?.partnerTaskKey?.(id);

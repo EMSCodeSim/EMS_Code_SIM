@@ -14,6 +14,7 @@
 
   const STORAGE_ATTEMPTS = 'emscodesim_learning_loop_attempts_v1';
   const STORAGE_CONTEXT = 'emscodesim_learning_loop_context_v1';
+  const STORAGE_LIVE = 'emscodesim_learning_loop_live_v1';
   const COACH_IDLE_MS = Object.freeze({ level1: 55000, level2: 95000, level3: 140000 });
   const MAX_HINT_LEVEL = 3;
 
@@ -473,40 +474,45 @@
     };
   }
 
+  function liveKey(rec = record()) {
+    return `${STORAGE_LIVE}:${caseId(rec)}:${rec?.id || 'active'}`;
+  }
+
   function assistanceState(rec = record()) {
-    const stored = rec?.documentation?.learningLoop || {};
+    const fromRecord = rec?.documentation?.learningLoop || {};
+    const fromLive = readJson(liveKey(rec), {});
+    const stored = { ...fromRecord, ...fromLive };
+    // Merge nested maps so live session progress wins per key.
+    stored.hints = { ...(fromRecord.hints || {}), ...(fromLive.hints || {}) };
+    stored.highestHintLevel = { ...(fromRecord.highestHintLevel || {}), ...(fromLive.highestHintLevel || {}) };
+    stored.repeatedErrors = { ...(fromRecord.repeatedErrors || {}), ...(fromLive.repeatedErrors || {}) };
+    const mergeUnique = (a, b) => [...new Set([...arr(a), ...arr(b)])];
     return {
       ...emptyAssistance(),
       ...stored,
       hints: { ...(stored.hints || {}) },
       highestHintLevel: { ...(stored.highestHintLevel || {}) },
       repeatedErrors: { ...(stored.repeatedErrors || {}) },
-      skippedCritical: arr(stored.skippedCritical),
-      independentCompletions: arr(stored.independentCompletions),
-      assistedCompletions: arr(stored.assistedCompletions)
+      skippedCritical: mergeUnique(fromRecord.skippedCritical, fromLive.skippedCritical),
+      independentCompletions: mergeUnique(fromRecord.independentCompletions, fromLive.independentCompletions),
+      assistedCompletions: mergeUnique(fromRecord.assistedCompletions, fromLive.assistedCompletions)
     };
   }
 
-  let persistingAssistance = false;
   function persistAssistance(next) {
-    if (persistingAssistance) return next;
-    const previous = assistanceState();
     const payload = { ...next, updatedAt: new Date().toISOString() };
-    // Avoid redundant patient-record writes that can stall the UI on slow devices.
-    const sameHints = JSON.stringify(previous.highestHintLevel || {}) === JSON.stringify(payload.highestHintLevel || {})
-      && JSON.stringify(previous.hints || {}) === JSON.stringify(payload.hints || {})
-      && Number(previous.dismissedHints || 0) === Number(payload.dismissedHints || 0)
-      && JSON.stringify(previous.independentCompletions || []) === JSON.stringify(payload.independentCompletions || [])
-      && JSON.stringify(previous.assistedCompletions || []) === JSON.stringify(payload.assistedCompletions || []);
-    if (sameHints && previous.lastHintId === payload.lastHintId && Number(previous.lastHintLevel || 0) === Number(payload.lastHintLevel || 0)) {
-      return previous;
-    }
-    persistingAssistance = true;
+    // Keep hot coaching state in sessionStorage during the call to avoid
+    // synchronous patient-record writes that can stall the patient workspace.
+    writeJson(liveKey(), payload);
+    return payload;
+  }
+
+  function flushAssistanceToRecord(rec = record()) {
+    const payload = assistanceState(rec);
+    if (!payload.updatedAt && !Object.keys(payload.highestHintLevel || {}).length) return payload;
     try {
-      api()?.setDocumentation?.({ learningLoop: payload, updatedAt: payload.updatedAt });
-    } finally {
-      persistingAssistance = false;
-    }
+      api()?.setDocumentation?.({ learningLoop: payload, updatedAt: new Date().toISOString() });
+    } catch (_) {}
     return payload;
   }
 
@@ -1083,6 +1089,7 @@
   function mountDebrief(host, grade = null) {
     const rec = record();
     if (!host || !rec) return null;
+    flushAssistanceToRecord(rec);
     const model = buildDebriefModel(rec, grade);
     snapshotAttempt(rec, grade);
     host.innerHTML = debriefMarkup(model);
@@ -1101,10 +1108,12 @@
 
   function prepareRetry(rec = record()) {
     // Snapshot current attempt before clearing so improvement comparison works.
+    flushAssistanceToRecord(rec);
     snapshotAttempt(rec);
     const id = caseId(rec);
     const mode = trainingMode(rec);
     try {
+      sessionStorage.removeItem(liveKey(rec));
       api()?.clear?.();
       const partnerKey = window.EMSCodeSimScenarioSession?.partnerTaskKey?.(id);
       [partnerKey, partnerKey && `${partnerKey}_backup`, partnerKey && `${partnerKey}_shadow`,
@@ -1227,6 +1236,7 @@
     toolForWeakness,
     compareImprovement,
     snapshotAttempt,
+    flushAssistanceToRecord,
     prepareRetry,
     patientReturnUrl,
     retryUrl,
