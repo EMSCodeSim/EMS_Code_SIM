@@ -10,12 +10,18 @@
   const fmt = sec => `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(Math.max(0,sec%60)).padStart(2,'0')}`;
   const label = key => phaseApi?.labelFor?.(key) || text(key).replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
   const AI_LESSONS = Object.freeze({
-    primary_assessment:{label:'Practice primary assessment',href:'/abc-training.html'},
-    history:{label:'Practice SAMPLE history',href:'/vitals/sample-history.html'},
-    vitals:{label:'Practice vital-sign assessment',href:'/vitals/'},
-    treatment:{label:'Practice treatment decisions',href:'/vitals/treatment-reassessment.html'},
-    reassessment:{label:'Practice reassessment',href:'/vitals/treatment-reassessment.html'},
-    transport_handoff:{label:'Practice PCR and handoff',href:'/vitals/pcr-handoff.html'}
+    primary_assessment:{label:'Practice primary assessment',href:'/abc-training.html',weaknessId:'life_threats'},
+    history:{label:'Practice SAMPLE history',href:'/vitals/sample-history.html',weaknessId:'sample'},
+    vitals:{label:'Practice vital-sign assessment',href:'/vitals/',weaknessId:'vital_signs'},
+    treatment:{label:'Practice treatment decisions',href:'/vitals/treatment-reassessment.html',weaknessId:'treatment_selection'},
+    reassessment:{label:'Practice reassessment',href:'/vitals/treatment-reassessment.html',weaknessId:'reassessment'},
+    transport_handoff:{label:'Practice PCR and handoff',href:'/vitals/pcr-handoff.html',weaknessId:'handoff'},
+    breathing_assessment:{label:'Practice Respiratory Assessment',href:'/vitals/respiratory-assessment-visual.html',weaknessId:'breathing_assessment'},
+    breath_sounds:{label:'Practice Breath Sounds',href:'/vitals/breath-sounds-scenario.html',weaknessId:'breath_sounds'},
+    sample:{label:'Practice SAMPLE Interview',href:'/vitals/sample-history.html',weaknessId:'sample'},
+    opqrst:{label:'Practice OPQRST Interview',href:'/vitals/pain-opqrst.html',weaknessId:'opqrst'},
+    trauma_assessment:{label:'Practice Trauma Assessment',href:'/vitals/visual-trauma-body-exam.html',weaknessId:'trauma_assessment'},
+    mental_status:{label:'Practice Mental Status / AVPU',href:'/vitals/avpu-scenario.html',weaknessId:'neurological'}
   });
 
   const SCENARIO_EXPECTATIONS = {
@@ -152,7 +158,10 @@
     $('aiDebriefGoal').textContent=limitText(result.nextAttemptGoal,300);
     $('aiDebriefReflection').textContent=`Reflection: ${limitText(result.reflectionQuestion,300)}`;
     const lesson=AI_LESSONS[result.lessonFocus]||AI_LESSONS.primary_assessment;
-    $('aiDebriefLesson').textContent=lesson.label;$('aiDebriefLesson').href=lesson.href;
+    const practice=lesson.weaknessId&&window.EMSCodeSimLearningLoop?.toolForWeakness?.(lesson.weaknessId);
+    $('aiDebriefLesson').textContent=practice?.label||lesson.label;
+    $('aiDebriefLesson').href=practice?.href||lesson.href;
+    if(lesson.weaknessId) $('aiDebriefLesson').onclick=()=>window.EMSCodeSimLearningLoop?.rememberPracticeContext?.(lesson.weaknessId);
     $('aiDebriefResult').hidden=false;$('generateAiDebrief').textContent='Refresh personalized debrief';
     $('aiDebriefStatus').classList.remove('error');$('aiDebriefStatus').textContent=fromCache?'Saved personalized debrief loaded.':'Personalized debrief ready.';
   }
@@ -171,7 +180,35 @@
   function loadReflection(r){try{const x=JSON.parse(localStorage.getItem(reflectionKey(r))||'{}');$('reflectionFinding').value=x.finding||'';$('reflectionChange').value=x.change||'';$('reflectionReassess').value=x.reassess||'';}catch{}}
   function saveReflection(r,g){ const savedAt=new Date().toISOString(); const reflection={finding:$('reflectionFinding').value.trim(),change:$('reflectionChange').value.trim(),reassess:$('reflectionReassess').value.trim(),savedAt}; localStorage.setItem(reflectionKey(r),JSON.stringify(reflection)); api.update(x=>{x.debrief={...(x.debrief||{}),reflection,score:g.score,label:g.label};x.documentation={...(x.documentation||{}),debrief:{savedAt,score:g.score,label:g.label,reflection}};return x}); const stateKey=`emscodesim_scenario_${r.scenarioId||r.id}`; let state={};try{state=JSON.parse(localStorage.getItem(stateKey)||'{}')}catch{} state.complete=true;state.completedAt=savedAt;localStorage.setItem(stateKey,JSON.stringify(state));$('reflectionStatus').textContent='Reflection saved. Scenario marked complete.'; }
   function download(r,g){ const blob=new Blob([JSON.stringify({generatedAt:new Date().toISOString(),grade:g,record:r},null,2)],{type:'application/json'}); const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`EMSCodeSim-${r.id}-full-call-debrief.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500); }
-  function init(){ const r=record(); $('emptyState').hidden=!!r; $('reportContent').hidden=!r; if(!r)return; const g=render(r);loadReflection(r);loadAiDebrief(r,g);$('generateAiDebrief').onclick=()=>requestAiDebrief(r,g);$('returnToPatient').onclick=()=>{const next=new URL('/vitals/visual-patient.html',location.origin);next.searchParams.set('case',r.scenarioId||r.id);const current=new URLSearchParams(location.search);if(current.get('skillsMode')==='1'||current.get('bootcampMode')==='1'||['skills','bootcamp'].includes(current.get('mode'))){const bootcamp=current.get('mode')==='bootcamp'||current.get('bootcampMode')==='1';next.searchParams.set('mode',bootcamp?'bootcamp':'skills');if(bootcamp)next.searchParams.set('path',current.get('path')||((r.scenarioId||r.id)==='horse_crush'?'trauma':'medical'));else next.searchParams.set('station',current.get('station')||'patient-assessment')}location.href=next.pathname+next.search};$('printReport').onclick=()=>print();$('downloadReport').onclick=()=>download(r,g);$('saveReflection').onclick=()=>saveReflection(r,g); }
-  window.EMSCodeSimDebriefEngine={grade};
+  function init(){
+    const r=record();
+    $('emptyState').hidden=!!r;
+    $('reportContent').hidden=!r;
+    if(!r)return;
+    const g=render(r);
+    loadReflection(r);
+    loadAiDebrief(r,g);
+    window.EMSCodeSimLearningLoop?.enhanceFullDebrief?.(g);
+    $('generateAiDebrief').onclick=()=>requestAiDebrief(r,g);
+    $('returnToPatient').onclick=()=>{
+      const loop=window.EMSCodeSimLearningLoop;
+      if(loop?.patientReturnUrl){ location.href=loop.patientReturnUrl(r); return; }
+      const next=new URL('/vitals/visual-patient.html',location.origin);
+      next.searchParams.set('case',r.scenarioId||r.id);
+      const mode=r.documentation?.trainingMode; if(mode==='learning'||mode==='assessment') next.searchParams.set('training',mode);
+      const current=new URLSearchParams(location.search);
+      if(current.get('skillsMode')==='1'||current.get('bootcampMode')==='1'||['skills','bootcamp'].includes(current.get('mode'))){
+        const bootcamp=current.get('mode')==='bootcamp'||current.get('bootcampMode')==='1';
+        next.searchParams.set('mode',bootcamp?'bootcamp':'skills');
+        if(bootcamp) next.searchParams.set('path',current.get('path')||((r.scenarioId||r.id)==='horse_crush'?'trauma':'medical'));
+        else next.searchParams.set('station',current.get('station')||'patient-assessment');
+      }
+      location.href=next.pathname+next.search;
+    };
+    $('printReport').onclick=()=>print();
+    $('downloadReport').onclick=()=>download(r,g);
+    $('saveReflection').onclick=()=>saveReflection(r,g);
+  }
+  window.EMSCodeSimDebriefEngine={grade, AI_LESSONS};
   document.addEventListener('DOMContentLoaded',init);
 })();

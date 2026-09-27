@@ -119,6 +119,9 @@
     if (options.context) query.set('context',options.context);
     if (options.key) query.set('key',options.key);
     const current = new URLSearchParams(location.search);
+    const training = options.training || current.get('training') || window.EMSCodeSimPatientRecord?.active?.()?.documentation?.trainingMode || '';
+    if (training === 'learning' || training === 'assessment') query.set('training', training);
+    if (options.practiceFrom) query.set('practiceFrom', options.practiceFrom);
     if (['skills','bootcamp'].includes(current.get('mode')) || current.get('skillsMode') === '1' || current.get('bootcampMode') === '1') {
       const bootcamp = current.get('mode') === 'bootcamp' || current.get('bootcampMode') === '1';
       if (bootcamp) {
@@ -132,7 +135,13 @@
     return `${path}?${query.toString()}`;
   }
   function currentPageReturn() { return `${location.pathname}${location.search}`; }
-  window.EMSCodeSimToolRegistry = { assessmentTools, vitalTools, buildUrl, currentPageReturn, safeReturn };
+  function toolByKey(key) {
+    return [...assessmentTools, ...vitalTools].find(item => item.key === key) || null;
+  }
+  function practiceToolForWeakness(weaknessId) {
+    return window.EMSCodeSimLearningLoop?.toolForWeakness?.(weaknessId) || null;
+  }
+  window.EMSCodeSimToolRegistry = { assessmentTools, vitalTools, buildUrl, currentPageReturn, safeReturn, toolByKey, practiceToolForWeakness };
 
   function onPatientScenarioPage() { return /\/vitals\/visual-patient(?:\.html)?$/.test(location.pathname); }
   function loadPatientScenarioStyle(href,dataKey,selector) {
@@ -172,4 +181,6 @@
   loadPatientScenarioScript(`/vitals/scenario-first-run-guide.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioFirstRunGuide','script[data-scenario-first-run-guide]');
   loadPatientScenarioScript(`/vitals/scenario-patient-experience.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioPatientExperience','script[data-scenario-patient-experience]');
   loadPatientScenarioScript(`/vitals/scenario-reliability-polish.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioReliabilityPolish','script[data-scenario-reliability-polish]');
+  loadPatientScenarioStyle(`/vitals/scenario-learning-loop.css?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioLearningLoop','link[data-scenario-learning-loop]');
+  loadPatientScenarioScript(`/vitals/scenario-learning-loop.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioLearningLoop','script[data-scenario-learning-loop]');
 })();

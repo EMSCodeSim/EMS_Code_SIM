@@ -6,4 +6,6 @@ const js=fs.readFileSync('vitals/scenario-debrief.js','utf8');const html=fs.read
 ['criticalSection','criticalList','priorityList','categoryScores'].forEach(x=>assert(html.includes(x),`Debrief interface missing ${x}`));
 assert(js.includes("['contraindicated','unsafe']"),'Unsafe treatments must be surfaced as critical errors.');
 assert(js.includes("clinical*.45+treatment*.35+communication*.20"),'Weighted clinical score is missing.');
+assert(html.includes('scenario-learning-loop.js'),'Debrief must load the learning-loop remediation module.');
+assert(js.includes('enhanceFullDebrief'),'Debrief must mount actionable remediation after grading.');
 console.log('Full-call debrief test passed: weighted categories, critical errors, and prioritized coaching are present.');

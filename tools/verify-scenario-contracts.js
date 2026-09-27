@@ -132,8 +132,17 @@ includesAll(registry, [
   '/vitals/avpu-scenario.html', '/vitals/pupil.html', '/vitals/visual-neuro-stroke-assessment.html',
   '/vitals/gcs.html', '/vitals/breath-sounds-scenario.html',
   '/vitals/skin-scenario.html', '/vitals/abdomen-pelvis-visual.html', '/vitals/visual-trauma-body-exam.html',
-  '/vitals/pain-opqrst.html', '/vitals/sample-history.html', '/vitals/pediatric-assessment-triangle.html', '/vitals/nines.html'
+  '/vitals/pain-opqrst.html', '/vitals/sample-history.html', '/vitals/pediatric-assessment-triangle.html', '/vitals/nines.html',
+  'scenario-learning-loop.js', 'practiceToolForWeakness'
 ], 'Assessment registry');
+
+const learningLoop = read('vitals/scenario-learning-loop.js');
+includesAll(learningLoop, [
+  'WEAKNESS_CATALOG', 'COACHING_BY_CASE', 'EMSCodeSimLearningLoop',
+  'breathing_assessment', 'sample', 'opqrst', 'trauma_assessment',
+  'buildDebriefModel', 'compareImprovement', 'toolForWeakness'
+], 'Learning loop');
+assert(read('vitals/visual-patient.html').includes('scenario-learning-loop.js'), 'Patient home must load the learning loop module.');
 
 const scenarioPages = fs.readdirSync(path.join(process.cwd(), 'vitals'))
   .filter(name => /-scenario\.html$/.test(name));

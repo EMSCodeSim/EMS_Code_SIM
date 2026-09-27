@@ -83,3 +83,21 @@ The horse-crush encounter should keep the bedside workflow compact rather than d
 Blood glucose, temperature, GCS, broader neurologic/stroke examination, skin signs, and other scenario-capable tools remain available when the learner chooses to go deeper.
 
 The patient simulator remains non-linear: learners may assess, obtain vitals, take history, treat, move/package, transport, and reassess in clinically reasonable order. This document controls routing and presentation, not a mandatory skill-sheet sequence.
+
+## Learning-loop weakness → practice tool mapping
+
+`vitals/scenario-learning-loop.js` maps identified weaknesses to these same canonical routes (via `EMSCodeSimToolRegistry` when available, with matching `practiceHref` fallbacks). Do not add parallel remediation URLs elsewhere; extend the central weakness catalog instead.
+
+| Weakness id | Canonical practice route |
+| --- | --- |
+| breathing_assessment | `/vitals/respiratory-assessment-visual.html` |
+| breath_sounds | `/vitals/breath-sounds-scenario.html` |
+| sample | `/vitals/sample-history.html` |
+| opqrst | `/vitals/pain-opqrst.html` |
+| mental_status / neurological | `/vitals/avpu-scenario.html` |
+| stroke | `/vitals/visual-neuro-stroke-assessment.html` |
+| trauma_assessment | `/vitals/visual-trauma-body-exam.html` |
+| distal_csm | `/vitals/distal-csm-assessment.html` |
+| spo2 | `/vitals/pulse-ox-scenario.html` |
+| treatment_* / reassessment / transport_* | `/vitals/treatment-reassessment.html` |
+| handoff / documentation | `/vitals/pcr-handoff.html` |
