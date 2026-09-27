@@ -10,4 +10,8 @@ assert(launcherJs.includes('trainingMode') && launcherJs.includes('patientHome')
 assert(patient.includes("trainingMode() === 'assessment'"), 'Patient runtime must detect assessment mode');
 assert(patient.includes('Treatment feedback remains hidden until the final debrief'), 'Treatment feedback must remain deferred to debrief');
 assert(guide.includes('Full feedback remains in the final debrief.') && !guide.includes('Best choice:'), 'Scene guide must suppress answer-revealing coaching');
+const learningLoop = read('vitals/scenario-learning-loop.js');
+assert(learningLoop.includes('assessmentMode') && learningLoop.includes('learningMode'), 'Learning loop must distinguish training modes');
+assert(learningLoop.includes("trainingMode(rec) === 'assessment'") || learningLoop.includes("mode === 'assessment'"), 'Learning loop must detect assessment mode');
+assert(learningLoop.includes('showCoach') && learningLoop.includes('if (!learningMode())'), 'Coaching must be gated to Learning Mode');
 console.log('Scenario learning/assessment mode checks passed.');

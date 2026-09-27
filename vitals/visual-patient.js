@@ -4198,6 +4198,7 @@
     if ($('horseGradeTreatmentList')) $('horseGradeTreatmentList').innerHTML = grade.treatments.length ? grade.treatments.map(horseGradeTreatmentMarkup).join('') : '<p class="horse-grade-empty">No treatment actions were documented.</p>';
     if ($('horseGradeNextFocus')) $('horseGradeNextFocus').textContent = grade.nextFocus;
     if ($('horseGradeNarrative')) $('horseGradeNarrative').textContent = grade.narrative;
+    window.EMSCodeSimLearningLoop?.enhanceHorseGrade?.();
   }
 
   function openHorseCallGrade() {
@@ -4456,6 +4457,8 @@
     try {
       stopInfoSpeech();
       closeScenarioControls();
+      window.EMSCodeSimLearningLoop?.flushAssistanceToRecord?.(record());
+      window.EMSCodeSimLearningLoop?.snapshotAttempt?.(record());
       api?.clear?.();
       const partnerKey = session?.partnerTaskKey?.(id);
       [partnerKey, partnerKey && `${partnerKey}_backup`, partnerKey && `${partnerKey}_shadow`, `emscodesim_scenario_${id}`, `emscodesim_scenario_${id}_backup`, `emscodesim_scenario_${id}_shadow`].filter(Boolean).forEach(key => localStorage.removeItem(key));
@@ -5260,6 +5263,13 @@
     openHandoff: (sample = false) => openHorseHospitalHandoff(Boolean(sample)),
     openGrade: openHorseCallGrade,
     closeHandoff: closeHorseHospitalHandoff
+  });
+  window.EMSCodeSimVisualPatient = Object.freeze({
+    ...(window.EMSCodeSimVisualPatient || {}),
+    buildHorseCallGrade,
+    openHorseCallGrade,
+    trainingMode,
+    assessmentMode
   });
   $('hospitalHandoffDraft')?.addEventListener('input', event => { event.currentTarget.dataset.userEdited = 'true'; });
   if ($('recordTreatmentLink')) $('recordTreatmentLink').href = toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general');
