@@ -507,9 +507,29 @@
     return payload;
   }
 
+  function assistanceSignature(value = {}) {
+    return JSON.stringify({
+      hints: value.hints || {},
+      highestHintLevel: value.highestHintLevel || {},
+      repeatedErrors: value.repeatedErrors || {},
+      skippedCritical: arr(value.skippedCritical),
+      independentCompletions: arr(value.independentCompletions),
+      assistedCompletions: arr(value.assistedCompletions),
+      dismissedHints: Number(value.dismissedHints || 0),
+      lastHintId: value.lastHintId || null,
+      lastHintLevel: Number(value.lastHintLevel || 0)
+    });
+  }
+
   function flushAssistanceToRecord(rec = record()) {
     const payload = assistanceState(rec);
-    if (!payload.updatedAt && !Object.keys(payload.highestHintLevel || {}).length) return payload;
+    if (!payload.updatedAt && !Object.keys(payload.highestHintLevel || {}).length && !arr(payload.independentCompletions).length) {
+      return payload;
+    }
+    const existing = rec?.documentation?.learningLoop || {};
+    // Never write an unchanged learning-loop payload: setDocumentation always
+    // bumps record.updatedAt and can re-enter grade rendering while open.
+    if (assistanceSignature(existing) === assistanceSignature(payload)) return existing;
     try {
       api()?.setDocumentation?.({ learningLoop: payload, updatedAt: new Date().toISOString() });
     } catch (_) {}
@@ -1086,13 +1106,17 @@
     return { track, level };
   }
 
-  function mountDebrief(host, grade = null) {
+  function mountDebrief(host, grade = null, options = {}) {
     const rec = record();
     if (!host || !rec) return null;
-    flushAssistanceToRecord(rec);
+    const persist = options.persist !== false;
+    if (persist) flushAssistanceToRecord(rec);
     const model = buildDebriefModel(rec, grade);
-    snapshotAttempt(rec, grade);
-    host.innerHTML = debriefMarkup(model);
+    if (persist) snapshotAttempt(rec, grade);
+    const markup = debriefMarkup(model);
+    if (host.dataset.llMarkup === markup) return model;
+    host.dataset.llMarkup = markup;
+    host.innerHTML = markup;
     host.querySelectorAll('[data-practice]').forEach(link => {
       link.addEventListener('click', () => rememberPracticeContext(link.getAttribute('data-practice'), rec));
     });
@@ -1123,22 +1147,39 @@
     writeJson(STORAGE_CONTEXT, { caseId: id, trainingMode: mode, retrying: true, savedAt: new Date().toISOString() });
   }
 
+  let horseGradeEnhanceTimer = 0;
+  let horseGradeEnhancing = false;
   function enhanceHorseGrade() {
-    if (caseId() !== 'horse_crush') return;
-    const host = document.getElementById('horseGradeWorkspace');
-    if (!host) return;
-    let panel = document.getElementById('learningLoopHorsePanel');
-    if (!panel) {
-      panel = document.createElement('section');
-      panel.id = 'learningLoopHorsePanel';
-      panel.className = 'll-horse-panel';
-      const actions = host.querySelector('.horse-grade-actions');
-      if (actions?.parentElement) actions.parentElement.insertBefore(panel, actions);
-      else host.appendChild(panel);
-    }
-    const grade = window.EMSCodeSimVisualPatient?.buildHorseCallGrade?.() || null;
-    // Prefer live grade from visual-patient if exposed; otherwise build from record.
-    mountDebrief(panel, grade ? { opportunities: grade.improvements || [], critical: grade.critical || [], score: grade.score } : null);
+    if (caseId() !== 'horse_crush' || horseGradeEnhancing) return;
+    // Defer so grade open/click can finish; avoid re-entrant record writes.
+    window.clearTimeout(horseGradeEnhanceTimer);
+    horseGradeEnhanceTimer = window.setTimeout(() => {
+      if (horseGradeEnhancing) return;
+      horseGradeEnhancing = true;
+      try {
+        const host = document.getElementById('horseGradeWorkspace');
+        if (!host || host.hidden) return;
+        let panel = document.getElementById('learningLoopHorsePanel');
+        if (!panel) {
+          panel = document.createElement('section');
+          panel.id = 'learningLoopHorsePanel';
+          panel.className = 'll-horse-panel';
+          const actions = host.querySelector('.horse-grade-actions');
+          if (actions?.parentElement) actions.parentElement.insertBefore(panel, actions);
+          else host.appendChild(panel);
+        }
+        const grade = window.EMSCodeSimVisualPatient?.buildHorseCallGrade?.() || null;
+        const gradePayload = grade
+          ? { opportunities: grade.improvements || [], critical: grade.critical || [], score: grade.score }
+          : null;
+        // Do not flush patient-record documentation from the live grade renderer;
+        // that re-enters refreshFromRecord while horseGradeOpen is true.
+        mountDebrief(panel, gradePayload, { persist: false });
+        snapshotAttempt(record(), gradePayload);
+      } finally {
+        horseGradeEnhancing = false;
+      }
+    }, 0);
   }
 
   function enhanceFullDebrief(grade) {
@@ -1194,16 +1235,6 @@
       evaluateCoaching();
     });
     document.addEventListener('visibilitychange', () => { if (!document.hidden) evaluateCoaching(); });
-    // When horse grade opens, attach remediation panel.
-    try {
-      const Observer = window.MutationObserver;
-      if (typeof Observer === 'function' && document.body) {
-        const observer = new Observer(() => {
-          if (document.body.classList.contains('horse-grade-open')) enhanceHorseGrade();
-        });
-        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-      }
-    } catch (_) {}
     // Retry query handling: if reset+retry, ensure training mode persists after create.
     if (params().get('retry') === '1') {
       api()?.setDocumentation?.({ trainingMode: trainingMode(), learningLoop: emptyAssistance(), retryFromLearningLoop: true });
