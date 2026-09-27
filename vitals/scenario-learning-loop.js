@@ -487,9 +487,26 @@
     };
   }
 
+  let persistingAssistance = false;
   function persistAssistance(next) {
+    if (persistingAssistance) return next;
+    const previous = assistanceState();
     const payload = { ...next, updatedAt: new Date().toISOString() };
-    api()?.setDocumentation?.({ learningLoop: payload, updatedAt: payload.updatedAt });
+    // Avoid redundant patient-record writes that can stall the UI on slow devices.
+    const sameHints = JSON.stringify(previous.highestHintLevel || {}) === JSON.stringify(payload.highestHintLevel || {})
+      && JSON.stringify(previous.hints || {}) === JSON.stringify(payload.hints || {})
+      && Number(previous.dismissedHints || 0) === Number(payload.dismissedHints || 0)
+      && JSON.stringify(previous.independentCompletions || []) === JSON.stringify(payload.independentCompletions || [])
+      && JSON.stringify(previous.assistedCompletions || []) === JSON.stringify(payload.assistedCompletions || []);
+    if (sameHints && previous.lastHintId === payload.lastHintId && Number(previous.lastHintLevel || 0) === Number(payload.lastHintLevel || 0)) {
+      return previous;
+    }
+    persistingAssistance = true;
+    try {
+      api()?.setDocumentation?.({ learningLoop: payload, updatedAt: payload.updatedAt });
+    } finally {
+      persistingAssistance = false;
+    }
     return payload;
   }
 
@@ -1005,11 +1022,13 @@
   function showCoach(track, level, force = false) {
     if (!learningMode()) return;
     const dock = ensureCoachDock();
-    if (!dock) return;
+    if (!dock || !track) return;
     const suppressedUntil = Number(dock.dataset.suppressedUntil || 0);
     if (!force && suppressedUntil > Date.now() && Number(dock.dataset.level || 0) >= level) return;
     const hint = track.hints[level];
     if (!hint) return;
+    const alreadyShowing = !dock.hidden && dock.dataset.trackId === track.id && Number(dock.dataset.level || 0) === level;
+    if (alreadyShowing && !force) return;
     markHint(track.id, level, track.weaknessIds);
     dock.hidden = false;
     dock.dataset.trackId = track.id;
@@ -1051,9 +1070,13 @@
     if (level < 1) return null;
     // Only auto-show when idle long enough for this level, or escalate from an existing tip.
     const existingLevel = Number(assistance.highestHintLevel[track.id] || 0);
-    if (existingLevel && level > existingLevel) showCoach(track, level, true);
+    const dock = document.getElementById('learningLoopCoach');
+    const showingLevel = dock && !dock.hidden ? Number(dock.dataset.level || 0) : 0;
+    if (existingLevel && level > existingLevel && level > showingLevel) showCoach(track, level, true);
     else if (!existingLevel && idle >= (track.stallAfterMs || COACH_IDLE_MS.level1)) showCoach(track, 1, false);
-    else if (existingLevel && idle >= COACH_IDLE_MS.level2 && existingLevel < MAX_HINT_LEVEL) showCoach(track, Math.min(MAX_HINT_LEVEL, existingLevel + 1), false);
+    else if (existingLevel && idle >= COACH_IDLE_MS.level2 && existingLevel < MAX_HINT_LEVEL && (existingLevel + 1) > showingLevel) {
+      showCoach(track, Math.min(MAX_HINT_LEVEL, existingLevel + 1), false);
+    }
     return { track, level };
   }
 
