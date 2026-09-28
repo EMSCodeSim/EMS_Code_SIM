@@ -123,14 +123,9 @@
         if (video.currentTime > 0.15) hideButton();
       });
       video.addEventListener('error', () => window.EMSCodeSimScenarioIntroVideo?.showPatient?.());
-      video.addEventListener('stalled', () => {
-        if (!video.ended && video.currentTime < 0.15) window.EMSCodeSimScenarioIntroVideo?.showPatient?.();
-      });
-      video.addEventListener('waiting', () => {
-        window.setTimeout(() => {
-          if (video.currentTime < 0.2 && !video.ended) window.EMSCodeSimScenarioIntroVideo?.showPatient?.();
-        }, 800);
-      });
+      // scenario-intro-video.js owns delayed recovery for transient mobile
+      // buffering. Hiding the clip on the first `waiting` event was too early
+      // for slower iPhone connections and could prevent the patient update.
     }
 
     video.muted = true;
