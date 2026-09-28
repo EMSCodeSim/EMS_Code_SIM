@@ -438,6 +438,13 @@ body{margin:0;background:#07131f;color:var(--text);font-family:Inter,system-ui,-
 .treatment-entry-error,.transport-entry-error{margin:0!important;padding:9px 10px;border:1px solid #c45e5e;border-radius:9px;background:#3b1717;color:#ffd0d0!important;font-size:.72rem!important}
 .treatment-entry-error[hidden],.transport-entry-error[hidden]{display:none}
 .transport-treatment-card{margin:0;background:#10283a}
+.horse-transport-prompt{margin:0 0 8px;color:#cfe3ee;font-size:.78rem;font-weight:750}
+.horse-transport-urgency-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.horse-transport-urgency{
+  min-height:48px;border:1px solid #3c6a80;border-radius:12px;background:#12384d;color:#fff;font:inherit;font-weight:900;cursor:pointer
+}
+.horse-transport-urgency:hover,.horse-transport-urgency:focus-visible{border-color:#67b9df;background:#194c66}
+.horse-transport-urgency.selected{border-color:#4d9b73;background:#17664f}
 .handoff-treatment-card{margin-top:12px}
 @media(max-width:430px){.bottom-nav{grid-template-columns:repeat(4,minmax(0,1fr))}.treatment-form-actions{grid-template-columns:1fr}}
 /* Clinical workspace, progressive treatment disclosure, and decision timeline */
@@ -1192,9 +1199,22 @@ body.horse-grade-open #clinicalInteractionColumn,
 body.hospital-handoff-open .clinical-interaction-column,
 body.horse-grade-open .clinical-interaction-column,
 body.hospital-handoff-open #infoUpdateWindow,
-body.horse-grade-open #infoUpdateWindow{
+body.horse-grade-open #infoUpdateWindow,
+body.hospital-handoff-open #actionSheet,
+body.hospital-handoff-open #actionSheet.action-sheet,
+body.hospital-handoff-open #actionSheet:not([hidden]),
+body.horse-grade-open #actionSheet,
+body.horse-grade-open #actionSheet.action-sheet,
+body.horse-grade-open #actionSheet:not([hidden]),
+body.hospital-handoff-open #treatmentPanel,
+body.horse-grade-open #treatmentPanel{
+  display:none !important;
   visibility:hidden !important;
   pointer-events:none !important;
+}
+body.hospital-handoff-open .scenario-hero-layout,
+body.horse-grade-open .scenario-hero-layout{
+  grid-template-columns:minmax(0,1fr) !important;
 }
 @media(min-width:961px){
   body.hospital-handoff-open.desktop-scenario-layout .hospital-handoff-workspace,
@@ -1399,6 +1419,7 @@ body.horse-grade-open #infoUpdateWindow{
 .hospital-handoff-actions .secondary{background:#173f5a;color:#fff;border:1px solid #39789e}
 .horse-grade-actions .primary-action,
 .hospital-handoff-actions .primary-action{background:#d9f3ff;color:#062238}
+.hospital-handoff-actions .handoff-grade-button{background:#7ae0b4;color:#062238}
 .hospital-handoff-draft-label{color:#cfe3ee;font-size:.72rem;font-weight:800}
 #hospitalHandoffDraft{
   width:100%;
@@ -1448,7 +1469,7 @@ body.horse-grade-open .patient-stage>img#patientImage{opacity:.18!important;filt
 .embedded-sim-header small{color:#8ccfff;font-size:.58rem;font-weight:900;letter-spacing:.08em}
 .embedded-sim-header strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.82rem}
 .embedded-sim-header button{flex:0 0 auto;min-height:34px;border:1px solid #39789e;border-radius:9px;padding:6px 10px;background:#173f5a;color:#fff;font-size:.7rem;font-weight:900;cursor:pointer}
-.embedded-sim-workspace iframe{display:block;flex:1 1 auto;width:100%;min-height:0;border:0;background:#fff}
+.embedded-sim-workspace iframe{display:block;flex:1 1 auto;width:100%;min-height:0;border:0;background:#e8f1f6}
 body.sim-workspace-open .patient-stage:after,body.sim-workspace-open .scene-clue-layer{display:none!important}
 @media(max-width:979px){.embedded-sim-workspace{display:none!important}}
 
@@ -1961,7 +1982,14 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     min-height:34px;border:1px solid #2e8f72;border-radius:9px;background:#17664f;color:#fff;padding:6px 11px;font-weight:900;cursor:pointer
   }
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-perform-row p{margin:0;color:#ffb7b7;font-size:.61rem}
-  body.horse-current-emt-call.desktop-scenario-layout .horse-transport-selection-form .horse-treatment-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-transport-prompt{margin:0;color:#cfe3ee;font-size:.72rem;font-weight:800}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-transport-urgency-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-transport-urgency{
+    min-height:48px;border:1px solid #3c6a80;border-radius:12px;background:#12384d;color:#fff;font:inherit;font-weight:900;cursor:pointer
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-transport-urgency:hover,
+  body.horse-current-emt-call.desktop-scenario-layout .horse-transport-urgency:focus-visible{border-color:#67b9df;background:#194c66}
+  body.horse-current-emt-call.desktop-scenario-layout .horse-transport-urgency.selected{border-color:#4d9b73;background:#17664f}
 }
 
 
@@ -2394,24 +2422,55 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     font-size:.61rem;
   }
 
-  /* Full category list initially. */
+  /* Full category list initially.
+     Chrome hit-tests the stretched grid area; Firefox uses the content box.
+     Keep every tile min-content so footer cells cannot swallow category clicks. */
   body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu{
     display:grid!important;
     grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-auto-rows:min-content!important;
     gap:6px!important;
-    align-content:start;
+    align-content:start!important;
+    align-items:start!important;
+    position:relative;
+    z-index:4;
+    pointer-events:auto;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu>*{
+    align-self:start!important;
+    min-height:0!important;
   }
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-menu-head{
     grid-column:1/-1;
   }
-  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > #horseMoreTreatmentsToggle,
-  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions{
-    grid-column:1/-1!important;
-    align-self:start;
-  }
   body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > #horseMoreTreatmentsToggle{
-    min-height:40px;
-    max-height:44px;
+    grid-column:1/2!important;
+    order:30;
+    align-self:start;
+    min-height:32px!important;
+    max-height:34px!important;
+    margin:0!important;
+    padding:0 8px!important;
+    font-size:.7rem!important;
+    overflow:hidden;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions{
+    grid-column:2/3!important;
+    order:30;
+    align-self:start;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    max-height:34px;
+    overflow:visible!important;
+    z-index:8!important;
+    pointer-events:auto!important;
+    position:relative!important;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > #horseTransportHandoffActions[data-mode="detail"]{
+    grid-column:1/-1!important;
+    max-height:none;
+    overflow:auto;
   }
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice{
     display:grid!important;
@@ -2426,6 +2485,20 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     color:#fff;
     text-align:left;
     cursor:pointer;
+    position:relative;
+    z-index:6;
+    pointer-events:auto;
+    isolation:isolate;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:1;
+    pointer-events:auto;
+  }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice[hidden]{
+    display:none!important;
   }
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice:hover,
   body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice:focus-visible{
@@ -2978,6 +3051,9 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
     box-shadow:none!important;
     transition:border-color .12s ease,background .12s ease,transform .12s ease!important;
   }
+  body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice[hidden]{
+    display:none!important;
+  }
 
   body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-drill-choice:hover,
   body.horse-current-emt-call.desktop-scenario-layout .horse-assessment-workspace-action:hover,
@@ -3169,6 +3245,18 @@ body.horse-current-emt-call .horse-abc-row .horse-abc-decision{display:none!impo
 #actionSheet[hidden]{display:none!important;}
 @media(min-width:961px){
   body.desktop-scenario-layout:not(.sim-workspace-open) .patient-stage>img#patientImage{display:block!important;visibility:visible!important;opacity:1!important;}
+  body.hospital-handoff-open.desktop-scenario-layout .patient-control-column,
+  body.horse-grade-open.desktop-scenario-layout .patient-control-column,
+  body.hospital-handoff-open.desktop-scenario-layout #actionSheet,
+  body.hospital-handoff-open.desktop-scenario-layout #actionSheet:not([hidden]),
+  body.horse-grade-open.desktop-scenario-layout #actionSheet,
+  body.horse-grade-open.desktop-scenario-layout #actionSheet:not([hidden]),
+  body.hospital-handoff-open.desktop-scenario-layout #treatmentPanel,
+  body.horse-grade-open.desktop-scenario-layout #treatmentPanel{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
 }
 
 

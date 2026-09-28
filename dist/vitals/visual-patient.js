@@ -51,7 +51,13 @@
   const interviewEngine = window.EMSCodeSimScenarioInterviews;
   const interview = interviewEngine?.get?.(id) || { responder:'Patient', communication:'Patient interview available.', opening:'Select a question to begin.', fallback:'The patient cannot provide that information.', categories:[], questions:[], sampleRequired:[], opqrstRequired:[] };
   const $ = value => document.getElementById(value);
+  const eventElement = event => {
+    const target = event?.target;
+    if (!target) return null;
+    return target.nodeType === 1 ? target : target.parentElement;
+  };
   const MEASURABLE_TOOL_KEYS = new Set(['blood_pressure','pulse','respirations','spo2','blood_glucose','temperature']);
+  const VITALS_PANEL_KEYS = new Set([...MEASURABLE_TOOL_KEYS, 'breath_sounds']);
   const PRIMARY_KEYS = new Set(['scene_size_up','airway','breathing','perfusion']);
   let activeFocus = null;
   let findingFilter = 'all';
@@ -69,7 +75,7 @@
     hypoglycemia: { impressions:['Symptomatic hypoglycemia','Acute stroke','Medication overdose'], priorities:['Routine transport after improvement','Prompt transport / ALS intercept','No transport needed'], destinations:['Closest appropriate emergency department','Stroke-capable center','Trauma center'], bestPriority:'Prompt transport / ALS intercept', bestDestination:'Closest appropriate emergency department' },
     trauma: { impressions:['Blunt multisystem trauma with shock','Isolated chest-wall pain','Minor collision without injury'], priorities:['Routine transport','Emergent trauma transport','Remain on scene for complete history'], destinations:['Trauma center','Closest emergency department','Stroke-capable center'], bestPriority:'Emergent trauma transport', bestDestination:'Trauma center' },
     pediatric: { impressions:['Pediatric respiratory distress','Simple febrile illness','Foreign-body airway obstruction'], priorities:['Routine transport','Prompt pediatric transport','Emergent transport / ALS intercept'], destinations:['Pediatric-capable emergency department','Closest appropriate emergency department'], bestPriority:'Prompt pediatric transport', bestDestination:'Pediatric-capable emergency department' },
-    horse_crush: { impressions:['Significant blunt hip/pelvic-region injury','Isolated soft-tissue hip injury','Occult proximal femur or acetabular injury'], priorities:['Non-emergent transport','Prompt trauma transport','Emergent trauma transport'], destinations:['Closest appropriate emergency department','Trauma center'], bestPriority:'Prompt trauma transport', bestDestination:'Closest appropriate emergency department' }
+    horse_crush: { impressions:['Significant blunt hip/pelvic-region injury','Isolated soft-tissue hip injury','Occult proximal femur or acetabular injury'], priorities:['Emergent','Non-emergent'], destinations:['Closest appropriate emergency department','Trauma center'], bestPriority:'Emergent', bestDestination:'Closest appropriate emergency department' }
   };
 
   let partnerInterval = 0;
@@ -93,6 +99,9 @@
   let horseHistoryActiveGroup = '';
   let horseAssessmentActiveCategory = '';
   let horseAssessmentActiveItem = '';
+  let horsePainScaleLocation = 'left hip';
+  let horsePainScaleQuality = 'sharp';
+  let horsePainScaleFromHistory = false;
   let horseTreatmentActiveGroup = '';
   let horseTreatmentActivePlan = '';
   let horseHandoffOpen = false;
@@ -202,13 +211,29 @@
     }
   }
 
-  function toolUrl(url, returnLabel = 'Patient', context = '') {
+  function preserveSkillsMode(url) {
+    const current = new URLSearchParams(location.search);
+    if (!['skills', 'bootcamp'].includes(current.get('mode')) && current.get('skillsMode') !== '1') return url;
+    const next = new URL(url, location.origin);
+    if (current.get('mode') === 'bootcamp') {
+      next.searchParams.set('mode', 'bootcamp');
+      next.searchParams.set('path', current.get('path') || (id === 'horse_crush' ? 'trauma' : 'medical'));
+    } else {
+      next.searchParams.set('skillsMode', '1');
+      next.searchParams.set('station', current.get('station') || 'patient-assessment');
+    }
+    return next.pathname + next.search + next.hash;
+  }
+
+  function toolUrl(url, returnLabel = 'Patient', context = '', key = '') {
+    const registryKey = key || context;
     return registry?.buildUrl?.(url, {
       caseId: id,
-      returnTo: `/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}`,
+      returnTo: preserveSkillsMode(`/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}`),
       training: trainingMode(),
       returnLabel,
-      context
+      context: context || registryKey,
+      key: registryKey
     }) || url;
   }
 
@@ -289,7 +314,7 @@
   function buildVitals() {
     const box = $('vitalTools');
     box.innerHTML = '';
-    const tools = (registry?.vitalTools || []).filter(tool => MEASURABLE_TOOL_KEYS.has(tool.key));
+    const tools = (registry?.vitalTools || []).filter(tool => VITALS_PANEL_KEYS.has(tool.key));
     if (id === 'horse_crush') {
       appendToolGroup(box, 'Vital and bedside tools', 'Choose the measurements that fit the call. Nothing here is required simply because it appears in the menu.', tools, 'horse-free-flow');
       return;
@@ -879,6 +904,7 @@
       const label = isAbc ? abcLabels[key] : (exam?.label || labelFor(key));
       button.innerHTML = `<span>${finding ? '✓' : '○'}</span><div><strong>${escapeHtml(label)}</strong><small>${finding ? 'Recorded — click to reassess/review' : 'Perform exam'}</small></div>`;
       button.addEventListener('click', () => {
+        window.EMSCodeSimHorseCrush?.noteLearnerAssessment?.(key);
         if (isAbc) {
           sceneObservationUpdate = {
             id:`horse-abc-active`,
@@ -906,6 +932,7 @@
     const allowed = new Set(['abc','head_to_toe','focused_leg']);
     horseCurrentAssessment = allowed.has(type) ? type : 'abc';
     horseAssessmentCollapsed = false;
+    window.EMSCodeSimHorseCrush?.noteLearnerAssessment?.(horseCurrentAssessment);
     configureHorseCurrentAssessmentWorkspace();
     horseWorkspaceContext?.resetQuestionBox?.();
     if (desktopWorkspace()) closeSheet();
@@ -925,8 +952,7 @@
       return;
     }
     if (key === 'pain') {
-      openSheet('historyPanel');
-      window.setTimeout(() => selectHorseHistoryGroup('pain', { updateInfo:false }), 30);
+      openHorsePainScaleTool();
       return;
     }
     const tool = registryTool(key);
@@ -1059,7 +1085,8 @@
         items:[
           { id:'upper_extremities', label:'Upper Extremities', prompt:'Assess both upper extremities.' },
           { id:'left_leg', label:'Injured Leg', prompt:'Assess the painful/injured leg.' },
-          { id:'distal_csm', label:'Distal CSM', prompt:'Assess distal circulation, sensation, and movement.' }
+          { id:'distal_csm', label:'Distal CSM', prompt:'Assess distal circulation, sensation, and movement.' },
+          { id:'pain', label:'Pain scale', prompt:'Ask a 0–10 pain rating for the left hip.' }
         ]
       },
       {
@@ -1068,7 +1095,8 @@
         label:'Neuro / Skin',
         description:'Neurologic and skin findings.',
         items:[
-          { id:'neuro', label:'Neurologic', prompt:'Assess mental status and neurologic function.' },
+          { id:'mental_status', label:'AAOx4 / Orientation', prompt:'Assess alertness and orientation to person, place, time, and event.' },
+          { id:'pupils', label:'Pupils / PERL', prompt:'Assess pupils, light response, and tracking.' },
           { id:'skin', label:'Skin', prompt:'Assess skin color, temperature, and condition.' }
         ]
       }
@@ -1082,7 +1110,11 @@
 
     horseAssessmentActiveCategory = category.id;
     const current = record() || {};
-    const completed = key => Boolean(api?.getFinding?.(key, current));
+    const completed = key => Boolean(
+      api?.getFinding?.(key, current) ||
+      (key === 'lung_sounds' && api?.getFinding?.('breath_sounds', current)) ||
+      (key === 'neuro' && api?.getFinding?.('mental_status', current))
+    );
 
     box.className = 'assessment-list horse-assessment-category-workspace';
     box.innerHTML = `
@@ -1110,6 +1142,7 @@
         if (!item) return;
         horseAssessmentActiveItem = item.id;
         if (['airway','breathing','perfusion'].includes(item.id) && horseWorkspaceContext?.openFollowup) {
+          window.EMSCodeSimHorseCrush?.noteLearnerAssessment?.(item.id);
           const abcLabel = horseWorkspaceContext.labels?.[item.id] || item.label;
           const observation = horseWorkspaceContext.observations?.[item.id] || '';
           sceneObservationUpdate = {
@@ -1127,6 +1160,35 @@
           horseWorkspaceContext.openFollowup(item.id);
           return;
         }
+        if (item.id === 'mental_status' || item.id === 'aaox4' || item.id === 'neuro') {
+          openHorseAaox4Tool();
+          return;
+        }
+        if (item.id === 'pain' || item.id === 'pain_scale') {
+          openHorsePainScaleTool();
+          return;
+        }
+        if (item.id === 'lung_sounds' || item.id === 'breath_sounds') {
+          const href = '/vitals/breath-sounds-scenario.html';
+          if (!openEmbeddedSimulator(href, 'Breath sounds')) {
+            window.EMSCodeSimMiniSimOverlay?.openOverlay?.(href, 'Breath sounds');
+          }
+          return;
+        }
+        if (item.id === 'pupils') {
+          const href = '/vitals/pupil.html';
+          if (!openEmbeddedSimulator(href, 'Pupils / PERL')) {
+            window.EMSCodeSimMiniSimOverlay?.openOverlay?.(href, 'Pupils / PERL');
+          }
+          return;
+        }
+        if (item.id === 'skin') {
+          const href = '/vitals/skin-scenario.html';
+          if (!openEmbeddedSimulator(href, 'Skin signs')) {
+            window.EMSCodeSimMiniSimOverlay?.openOverlay?.(href, 'Skin signs');
+          }
+          return;
+        }
         // Reuse existing assessment selection path if available.
         const existing = document.querySelector(`[data-assessment-key="${CSS.escape(item.id)}"], [data-assessment="${CSS.escape(item.id)}"]`);
         if (existing && existing !== button) {
@@ -1137,6 +1199,184 @@
         selectHorseCurrentAssessment?.(item.id);
       });
     });
+  }
+
+  function openHorseAaox4Tool(options) {
+    options = options || {};
+    if (id !== 'horse_crush') return false;
+    horseAssessmentActiveCategory = horseAssessmentActiveCategory || 'neuro_skin';
+    horseAssessmentActiveItem = 'mental_status';
+    const started = window.EMSCodeSimHorseCrush?.startAaox4?.({ reset: options.reset !== false });
+    if (!started) {
+      toast('Finish arrival and BLS handoff before assessing orientation.');
+      return false;
+    }
+    if (!desktopWorkspace()) openSheet('assessmentPanel');
+    renderHorseAaox4Workspace();
+    return true;
+  }
+
+  function renderHorseAaox4Workspace() {
+    const box = $('assessmentTools');
+    const horse = window.EMSCodeSimHorseCrush;
+    if (!box || !horse?.aaox4State) return false;
+    const state = horse.aaox4State();
+    const lastId = state.checked[state.checked.length - 1];
+    const lastDomain = state.domains.find(item => item.id === lastId);
+    box.className = 'assessment-list horse-assessment-followup-workspace horse-aaox4-workspace';
+    box.innerHTML = `
+      <div class="horse-assessment-workspace-head">
+        <button type="button" class="horse-assessment-back" id="horseAaox4Back">‹ Neuro / Skin</button>
+        <div>
+          <small>NEURO</small>
+          <strong>AAOx4 / Mental status orientation</strong>
+          <span>Check alertness, then person, place, time, and event.</span>
+        </div>
+      </div>
+      <div class="horse-aaox4-steps" role="group" aria-label="AAOx4 domains">
+        ${state.domains.map(domain => {
+          const done = state.checked.includes(domain.id);
+          return `<button type="button" class="horse-assessment-workspace-action${done ? ' used' : ''}" data-aaox4-domain="${escapeHtml(domain.id)}">
+            <span>${done ? '✓' : '○'}</span>
+            <div><strong>${escapeHtml(domain.label)}</strong><small>${escapeHtml(domain.action)}</small></div>
+          </button>`;
+        }).join('')}
+      </div>
+      <div class="horse-aaox4-live" id="horseAaox4Live">
+        ${lastDomain ? `<blockquote class="horse-aaox4-quote">${escapeHtml(lastDomain.response)}</blockquote>` : '<p>Select a domain. The patient will answer as you go.</p>'}
+        ${state.complete ? '<p class="horse-aaox4-result">Finding saved: Alert and oriented ×4. Person, place, time, and event are intact. No LOC.</p>' : ''}
+      </div>`;
+    box.querySelector('#horseAaox4Back')?.addEventListener('click', () => {
+      horseAssessmentActiveItem = '';
+      if (desktopWorkspace()) renderHorseAssessmentCategoryWorkspace('neuro_skin');
+      else {
+        horseAssessmentActiveCategory = '';
+        buildAssessments();
+      }
+    });
+    box.querySelectorAll('[data-aaox4-domain]').forEach(button => {
+      button.addEventListener('click', () => {
+        const result = horse.assessAaox4Domain(button.dataset.aaox4Domain);
+        if (!result) {
+          toast('Finish arrival and BLS handoff before assessing orientation.');
+          return;
+        }
+        renderHorseAaox4Workspace();
+      });
+    });
+    return true;
+  }
+
+  function openHorsePainScaleTool(options) {
+    options = options || {};
+    if (id !== 'horse_crush') return false;
+    horseAssessmentActiveCategory = horseAssessmentActiveCategory || 'extremities';
+    horseAssessmentActiveItem = 'pain';
+    horsePainScaleFromHistory = options.fromHistory === true;
+    const started = window.EMSCodeSimHorseCrush?.startPainScale?.();
+    if (!started) {
+      toast('Finish arrival and BLS handoff before asking the pain scale.');
+      return false;
+    }
+    horsePainScaleLocation = started.location || 'left hip';
+    horsePainScaleQuality = started.quality || 'sharp';
+    if (!desktopWorkspace() || horsePainScaleFromHistory) openSheet('assessmentPanel');
+    renderHorsePainScaleWorkspace();
+    return true;
+  }
+
+  function markHorsePainSeverityAsked(quote) {
+    const key = interviewHistoryKey('severity');
+    api?.setHistory?.(key, quote, {
+      label: 'How severe is the pain?',
+      details: 'Asked: On a scale of 0 to 10, with 10 the worst pain you can imagine, what is your pain right now?',
+      source: 'horse-crush-pain-scale',
+      questionId: 'severity'
+    });
+    const askedIds = new Set(askedInterviewQuestions(api?.active?.() || record() || {}).map(item => item.id));
+    askedIds.add('severity');
+    saveInterviewMilestones(askedIds);
+  }
+
+  function renderHorsePainScaleWorkspace() {
+    const box = $('assessmentTools');
+    const horse = window.EMSCodeSimHorseCrush;
+    if (!box || !horse?.painScaleState) return false;
+    const state = horse.painScaleState();
+    const savedScore = state.savedScore;
+    box.className = 'assessment-list horse-assessment-followup-workspace horse-pain-scale-workspace';
+    box.innerHTML = `
+      <div class="horse-assessment-workspace-head">
+        <button type="button" class="horse-assessment-back" id="horsePainScaleBack">‹ ${horsePainScaleFromHistory ? 'OPQRST' : 'Extremities'}</button>
+        <div>
+          <small>${horsePainScaleFromHistory ? 'OPQRST · SEVERITY' : 'PAIN'}</small>
+          <strong>Pain scale / Pain assessment</strong>
+          <span>${escapeHtml(state.prompt)}</span>
+        </div>
+      </div>
+      <div class="horse-pain-scale-meta">
+        <label>Location
+          <select id="horsePainScaleLocation">
+            <option value="left hip"${horsePainScaleLocation === 'left hip' ? ' selected' : ''}>Left hip</option>
+            <option value="left leg"${horsePainScaleLocation === 'left leg' ? ' selected' : ''}>Left leg</option>
+            <option value="other"${horsePainScaleLocation === 'other' ? ' selected' : ''}>Other</option>
+          </select>
+        </label>
+        <label>Quality
+          <select id="horsePainScaleQuality">
+            <option value="sharp"${horsePainScaleQuality === 'sharp' ? ' selected' : ''}>Sharp</option>
+            <option value="dull"${horsePainScaleQuality === 'dull' ? ' selected' : ''}>Dull</option>
+            <option value="pressure"${horsePainScaleQuality === 'pressure' ? ' selected' : ''}>Pressure</option>
+          </select>
+        </label>
+      </div>
+      <div class="horse-pain-scale-grid" role="group" aria-label="Pain scale 0 to 10">
+        ${[0,1,2,3,4,5,6,7,8,9,10].map(score => `
+          <button type="button" class="horse-pain-scale-num${savedScore === score ? ' used' : ''}" data-pain-score="${score}">${score}</button>
+        `).join('')}
+      </div>
+      <p class="horse-pain-scale-hint">0 = no pain · 10 = worst pain imaginable</p>
+      <div class="horse-aaox4-live" id="horsePainScaleLive">
+        ${state.saved ? `<blockquote class="horse-aaox4-quote">${escapeHtml(state.quote)}</blockquote>
+          <p class="horse-aaox4-result">Finding saved: ${escapeHtml(state.savedValue || `${state.score}/10 left hip`)}. Severe left-hip pain, worse with movement.</p>`
+          : '<p>Ask the 0–10 question, then tap the number she reports.</p>'}
+      </div>`;
+    box.querySelector('#horsePainScaleBack')?.addEventListener('click', () => {
+      horseAssessmentActiveItem = '';
+      if (horsePainScaleFromHistory) {
+        horsePainScaleFromHistory = false;
+        openSheet('historyPanel');
+        window.setTimeout(() => selectHorseHistoryGroup('opqrst', { updateInfo:false }), 30);
+        return;
+      }
+      if (desktopWorkspace()) renderHorseAssessmentCategoryWorkspace('extremities');
+      else {
+        horseAssessmentActiveCategory = '';
+        buildAssessments();
+      }
+    });
+    box.querySelector('#horsePainScaleLocation')?.addEventListener('change', event => {
+      horsePainScaleLocation = event.target.value || 'left hip';
+    });
+    box.querySelector('#horsePainScaleQuality')?.addEventListener('change', event => {
+      horsePainScaleQuality = event.target.value || 'sharp';
+    });
+    box.querySelectorAll('[data-pain-score]').forEach(button => {
+      button.addEventListener('click', () => {
+        const result = horse.documentPainScale({
+          score: Number(button.dataset.painScore),
+          location: horsePainScaleLocation,
+          quality: horsePainScaleQuality
+        });
+        if (!result) {
+          toast('Finish arrival and BLS handoff before asking the pain scale.');
+          return;
+        }
+        markHorsePainSeverityAsked(result.quote);
+        renderHorsePainScaleWorkspace();
+      });
+    });
+    return true;
   }
 
   function renderHorseAssessmentInlineFollowup(title, bodyHtml, onBack) {
@@ -1160,6 +1400,14 @@
   function buildHorseAssessmentChooserDesktop() {
     const box = $('assessmentTools');
     if (!box) return;
+    if (horseAssessmentActiveItem === 'mental_status' || horseAssessmentActiveItem === 'aaox4') {
+      renderHorseAaox4Workspace();
+      return;
+    }
+    if (horseAssessmentActiveItem === 'pain' || horseAssessmentActiveItem === 'pain_scale') {
+      renderHorsePainScaleWorkspace();
+      return;
+    }
     if (horseAssessmentActiveCategory) {
       renderHorseAssessmentCategoryWorkspace(horseAssessmentActiveCategory);
       return;
@@ -1193,6 +1441,14 @@
 
   function buildAssessments() {
     const box = $('assessmentTools');
+    if (id === 'horse_crush' && (horseAssessmentActiveItem === 'mental_status' || horseAssessmentActiveItem === 'aaox4')) {
+      renderHorseAaox4Workspace();
+      return;
+    }
+    if (id === 'horse_crush' && (horseAssessmentActiveItem === 'pain' || horseAssessmentActiveItem === 'pain_scale')) {
+      renderHorsePainScaleWorkspace();
+      return;
+    }
     if (id === 'horse_crush' && desktopWorkspace()) {
       buildHorseAssessmentChooserDesktop();
       return;
@@ -1492,6 +1748,10 @@
         <div><small>ASK THE PATIENT</small><strong>${escapeHtml(group.label)}</strong><span>${askedCount}/${questions.length} asked</span></div>
       </div>
       <div class="horse-history-drill-questions" role="group" aria-label="${escapeHtml(group.label)} questions">
+        ${group.id === 'opqrst' ? `<button type="button" class="horse-history-drill-question horse-opqrst-pain-scale${asked.has('severity') ? ' asked' : ''}" id="horseOpqrstPainScale">
+            <span>${asked.has('severity') ? '✓' : '0–10'}</span>
+            <strong>Pain scale: rate left-hip pain from 0 to 10</strong>
+          </button>` : ''}
         ${questions.map(question => `
           <button type="button" class="horse-history-drill-question${asked.has(question.id) ? ' asked' : ''}" data-history-question="${escapeHtml(question.id)}">
             <span>${asked.has(question.id) ? '✓' : 'Ask'}</span>
@@ -1514,10 +1774,17 @@
       renderInfoUpdate(true);
     });
 
+    host.querySelector('#horseOpqrstPainScale')?.addEventListener('click', () => {
+      openHorsePainScaleTool({ fromHistory: true });
+    });
     host.querySelectorAll('[data-history-question]').forEach(button => {
       button.addEventListener('click', () => {
         const question = questions.find(item => item.id === button.dataset.historyQuestion);
         if (!question) return;
+        if (question.id === 'severity') {
+          openHorsePainScaleTool({ fromHistory: true });
+          return;
+        }
         askInterviewQuestion(question);
         window.setTimeout(() => renderHorseHistoryQuestionBox(group.id), 40);
       });
@@ -2205,8 +2472,8 @@
     },
     {
       id:'transport', label:'Transport', icon:'T',
-      description:'Working impression, urgency, destination, and notification.',
-      instruction:'Make the transport decision from the information you have gathered. Select the transport option below to set urgency and destination.',
+      description:'Emergent or non-emergent transport.',
+      instruction:'Choose Emergent or Non-emergent from the findings you gathered.',
       special:'transport'
     },
     {
@@ -2240,7 +2507,7 @@
 
   function horseTreatmentGroupPlans(group) {
     if (!group) return [];
-    if (group.special === 'transport') return [{ id:'__horse_transport__', label:'Initiate transport', summary:'Choose working impression, transport urgency, destination, and specialty notification.' }];
+    if (group.special === 'transport') return [{ id:'__horse_transport__', label:'Initiate transport', summary:'Choose Emergent or Non-emergent.' }];
     if (group.special === 'handoff') return [{ id:'__horse_handoff__', label:'Begin hospital handoff', summary:'Open the field-note handoff workspace in the patient-picture area and give report from what you documented.' }];
     const pool = horseTreatmentPlanPool();
     if (group.planIds) {
@@ -2259,17 +2526,15 @@
 
   function horseTransportFormMarkup() {
     const current = record() || {};
-    const plan = transportPlan();
+    const selected = transportUrgencyLabel(current.documentation?.transportPriority || current.impressions?.action || '');
     return `
       <form class="horse-treatment-action-form horse-transport-selection-form">
-        <div class="horse-treatment-detail-grid">
-          <label>Working impression<select name="impression">${selectOptions(plan.impressions, current.impressions?.primary || '', 'Choose working impression')}</select></label>
-          <label>Transport urgency<select name="priority">${selectOptions(transportPriorityOptions(), current.documentation?.transportPriority || '', 'Choose transport urgency')}</select></label>
-          <label>Destination<select name="destination">${selectOptions(transportDestinationOptions(), current.documentation?.destination || '', 'Choose destination')}</select></label>
-          <label>Notification<select name="notification">${selectOptions(['No specialty activation','Trauma activation','Stroke alert','STEMI / cath-lab activation','Pediatric alert','Burn-center notification'], current.documentation?.transportNotification || '', 'Choose notification')}</select></label>
+        <p class="horse-transport-prompt">Choose transport urgency.</p>
+        <div class="horse-transport-urgency-choices" role="group" aria-label="Transport urgency">
+          <button type="submit" class="horse-transport-urgency${selected === 'Emergent' ? ' selected' : ''}" name="priority" value="Emergent">Emergent</button>
+          <button type="submit" class="horse-transport-urgency${selected === 'Non-emergent' ? ' selected' : ''}" name="priority" value="Non-emergent">Non-emergent</button>
         </div>
-        <label class="horse-treatment-rationale">Reason for decision<textarea name="rationale" rows="2" placeholder="Optional clinical reasoning">${escapeHtml(current.documentation?.transportRationale || '')}</textarea></label>
-        <div class="horse-treatment-perform-row"><button class="horse-treatment-perform" type="submit">Initiate transport</button><p class="transport-entry-error" hidden></p></div>
+        <p class="transport-entry-error" hidden></p>
       </form>`;
   }
 
@@ -2283,7 +2548,7 @@
       detail.innerHTML = `<p class="horse-treatment-summary">${escapeHtml(plan.summary)}</p>${horseTransportFormMarkup()}`;
       detail.querySelector('form')?.addEventListener('submit', event => {
         event.preventDefault();
-        saveTransportDecision(event.currentTarget);
+        saveTransportDecision(event.currentTarget, event.submitter);
       });
       return;
     }
@@ -2441,8 +2706,21 @@
     if (horseTreatmentActivePlan) choosePlan(horseTreatmentActivePlan);
   }
 
+  function activateHorseTreatmentGroupFromEvent(event) {
+    if (id !== 'horse_crush') return false;
+    const button = eventElement(event)?.closest?.('[data-horse-treatment-group]');
+    if (!button || button.hidden || button.disabled) return false;
+    if (!button.closest('#treatmentTools.horse-treatment-group-menu')) return false;
+    const groupId = button.dataset.horseTreatmentGroup || '';
+    if (!groupId) return false;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    selectHorseTreatmentGroup(groupId);
+    return true;
+  }
+
   function selectHorseTreatmentGroup(groupId, options = {}) {
-    if (id !== 'horse_crush' || !desktopWorkspace()) return;
+    if (id !== 'horse_crush') return;
     const group = HORSE_TREATMENT_GROUPS.find(item => item.id === groupId);
     if (!group) return;
     if (horseTreatmentActiveGroup !== group.id) horseTreatmentActivePlan = '';
@@ -2463,7 +2741,11 @@
       renderInfoUpdate(true);
     }
 
-    renderHorseTreatmentCategoryWorkspace(group.id);
+    if (desktopWorkspace()) renderHorseTreatmentCategoryWorkspace(group.id);
+    else {
+      horseTreatmentActiveGroup = group.id;
+      buildHorseTreatmentsMobile();
+    }
   }
 
   function horseCareSequenceMarkup() {
@@ -2515,20 +2797,23 @@
           <span class="horse-treatment-group-icon" aria-hidden="true">${escapeHtml(group.icon)}</span>
           <span><strong>${escapeHtml(group.label)}</strong><small>${escapeHtml(group.description)}</small></span>
           <em>${completed ? `${completed}/${plans.length}` : `${plans.length}`}</em>`;
-        button.addEventListener('click', () => selectHorseTreatmentGroup(group.id));
         box.appendChild(button);
       });
 
-    // Delegated backup: survives DOM reordering by first-time / endpoint polishers.
+    // Delegated backup: survives DOM reordering and Chromium hit-target quirks.
     if (!box.dataset.horseTreatmentGroupDelegate) {
       box.dataset.horseTreatmentGroupDelegate = '1';
-      box.addEventListener('click', event => {
-        const button = event.target.closest?.('[data-horse-treatment-group]');
-        if (!button || !box.contains(button) || button.hidden) return;
+      const activateGroup = event => {
+        const button = eventElement(event)?.closest?.('[data-horse-treatment-group]');
+        if (!button || !box.contains(button) || button.hidden || button.disabled) return;
         const groupId = button.dataset.horseTreatmentGroup || '';
-        if (!groupId || horseTreatmentActiveGroup === groupId) return;
+        if (!groupId) return;
+        event.preventDefault();
+        event.stopPropagation();
         selectHorseTreatmentGroup(groupId);
-      });
+      };
+      box.addEventListener('pointerup', activateGroup);
+      box.addEventListener('click', activateGroup);
     }
   }
 
@@ -2665,7 +2950,10 @@
     const type = String(item.type || '').toUpperCase();
     const kind = String(item.kind || '').toLowerCase();
     const text = String(item.text || '').trim();
-    if (kind === 'patient_dialogue' || kind === 'patient_response' || /PATIENT RESPONSE|^PATIENT$|HISTORY ANSWER/.test(type) || /^[“"]/u.test(text)) return 'patient';
+    if (kind === 'dispatch' || kind === 'partner' || kind === 'visible' || kind === 'observation' || kind === 'arrival') return 'silent';
+    if (/DISPATCH|BLS ENGINE|HANDOFF|AMBULANCE POSITION|SCENE ARRIVAL|ON-SCENE CREW/.test(type)) return 'silent';
+    if (kind === 'patient_dialogue' || kind === 'patient_response' || /PATIENT RESPONSE|^PATIENT$|HISTORY ANSWER/.test(type)) return 'patient';
+    if (/^[“"]/u.test(text)) return 'patient';
     return 'silent';
   }
 
@@ -2679,9 +2967,13 @@
     if (kind === 'history') return { key:'history', label:'HISTORY', icon:'💬', spoken:false };
     if (kind === 'treatment') return { key:'treatment', label:'TREATMENT', icon:'✚', spoken:false };
     if (kind === 'transport') return { key:'transport', label:'TRANSPORT', icon:'🚑', spoken:false };
-    if (kind === 'partner') return { key:'partner', label:'ON-SCENE CREW', icon:'👥', spoken:false };
+    if (kind === 'partner') {
+      const label = /HANDOFF/.test(type) ? (item.type || 'BLS ENGINE HANDOFF') : 'ON-SCENE CREW';
+      return { key:'partner', label, icon:'👥', spoken:false };
+    }
     if (kind === 'alert') return { key:'alert', label:'ALERT', icon:'⚠', spoken:false };
     if (kind === 'dispatch') return { key:'dispatch', label:'DISPATCH', icon:'📟', spoken:false };
+    if (kind === 'arrival' || /AMBULANCE POSITION|SCENE ARRIVAL/.test(type)) return { key:'information', label:'AMBULANCE POSITION', icon:'🚑', spoken:false };
     return { key:'information', label:'INFORMATION', icon:'ℹ', spoken:false };
   }
 
@@ -2816,6 +3108,7 @@
     if (!replay && !infoVoiceAuto) return false;
     const role = infoVoiceRole(item);
     if (role !== 'patient') return false;
+    if (id === 'horse_crush' && document.body.dataset.horseIntro !== 'arrived') return false;
     let text = cleanInfoSpeechText(item.text);
     if (role === 'patient') {
       const quoted = String(item.text || '').match(/[“"]([^”"]+)[”"]/u);
@@ -2898,18 +3191,40 @@
   function buildInfoUpdates(current) {
     const startedAt = current?.startedAt || new Date().toISOString();
     const startMs = new Date(startedAt).getTime();
+    const horseIntroPhase = id === 'horse_crush' ? (document.body.dataset.horseIntro || 'video') : '';
+    if (horseIntroPhase === 'video') {
+      return [];
+    }
+    if (horseIntroPhase === 'dispatch') {
+      return [{
+        id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information',
+        text: current?.dispatch || scenario.dispatch || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.',
+        kind: 'dispatch', recordedAt: startedAt
+      }];
+    }
+    if (horseIntroPhase === 'parking') {
+      return [{
+        id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information',
+        text: current?.dispatch || scenario.dispatch || 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.',
+        kind: 'dispatch', recordedAt: startedAt
+      }, {
+        id: 'ambulance-position', type: 'AMBULANCE POSITION', title: 'Scene arrival',
+        text: 'The ambulance is positioned near the south barn apron, facing out, with the driveway and exit path open.',
+        kind: 'arrival', recordedAt: new Date(startMs + 1).toISOString()
+      }];
+    }
     const updates = [
       { id: 'dispatch', type: 'DISPATCH', title: 'Dispatch information', text: current?.dispatch || scenario.title, kind: 'dispatch', recordedAt: startedAt }
     ];
     if (id === 'horse_crush') {
       updates.push({
         id:'first-on-scene-handoff',
-        type:'FIRST-ON-SCENE CREW',
-        title:'Engine crew handoff',
-        text:'We found the patient on the ground outside the south barn after being squeezed between two horses and falling. The scene is safe. The patient has remained alert, reports severe left-hip pain, and has not been moved.',
+        type:'BLS ENGINE HANDOFF',
+        title:'Patient has not been moved',
+        text:'“She was smashed between two horses and fell to the ground. No loss of consciousness. She is alert and oriented ×4 and complains of left-hip pain. We have not moved her.”',
         kind:'partner',
         sticky:true,
-        recordedAt:new Date(startMs + 1).toISOString()
+        recordedAt:new Date(startMs + 8).toISOString()
       });
     }
     updates.push({
@@ -2917,7 +3232,7 @@
       kind:'visible', recordedAt:new Date(startMs + 2).toISOString()
     });
     const log = api?.listCareLog?.(current, 'all') || [];
-    log.filter(event => isInformationUpdate(event) && !event.suppressInfoUpdate && !(id === 'horse_crush' && (event.source === 'horse-rapid-abc' || event.source === 'bls-handoff' || event.key === 'bls_handoff')))
+    log.filter(event => isInformationUpdate(event) && !event.suppressInfoUpdate && !(id === 'horse_crush' && (event.source === 'horse-rapid-abc' || event.source === 'bls-handoff' || event.source === 'scenario-start' || event.key === 'bls_handoff' || event.key === 'arrival_parking')))
       .forEach(event => updates.push(updateFromCareEvent(event)));
     if (id === 'horse_crush') {
       const state = horseClinicalState();
@@ -2925,7 +3240,7 @@
       const painEvent = [...log]
         .filter(event => painKeys.has(event.key))
         .sort((a,b) => new Date(b.recordedAt || 0).getTime() - new Date(a.recordedAt || 0).getTime())[0];
-      if (painEvent && state?.stage === 'baseline') {
+      if (painEvent && state?.stage === 'baseline' && horseIntroPhase === 'arrived') {
         const t = new Date(painEvent.recordedAt || startedAt).getTime();
         updates.push({
           id:'horse-pain-request', type:'PATIENT', title:'Patient request', text:state.patientText,
@@ -3004,7 +3319,15 @@
     infoUpdateIndex = Math.max(0, Math.min(infoUpdateIndex, infoUpdates.length - 1));
     lastInfoSignature = signature;
     const item = infoUpdates[infoUpdateIndex];
-    if (!item || !$('infoUpdateWindow')) return;
+    if (!item || !$('infoUpdateWindow')) {
+      if (!item && $('infoUpdateWindow') && id === 'horse_crush' && document.body.dataset.horseIntro === 'video') {
+        $('infoUpdateType').textContent = '';
+        $('infoUpdateTitle').textContent = '';
+        $('infoUpdateText').textContent = '';
+        if ($('infoUpdateCount')) $('infoUpdateCount').textContent = '';
+      }
+      return;
+    }
     const isNew = forceLatest || changed || item.id !== lastInfoItemId;
     const collapsed = $('infoUpdateWindow').dataset.collapsed === 'true';
     const voiceRole = infoVoiceRole(item);
@@ -3281,8 +3604,15 @@
     return `<option value="">${escapeHtml(placeholder)}</option>${values.map(value => `<option value="${escapeHtml(value)}" ${value === selected ? 'selected' : ''}>${escapeHtml(value)}</option>`).join('')}`;
   }
 
+  function transportUrgencyLabel(value) {
+    const text = String(value || '').trim();
+    if (/non[- ]?emergent/i.test(text)) return 'Non-emergent';
+    if (/emergent|prompt/i.test(text)) return 'Emergent';
+    return text;
+  }
+
   function transportPriorityOptions() {
-    if (id === 'horse_crush') return transportPlan().priorities || ['Non-emergent transport','Prompt trauma transport','Emergent trauma transport'];
+    if (id === 'horse_crush') return transportPlan().priorities || ['Emergent','Non-emergent'];
     return ['Non-emergent transport','Emergent transport'];
   }
   function transportDestinationOptions() {
@@ -3290,27 +3620,42 @@
     return ['Closest appropriate emergency department','Trauma center','Stroke center','Cardiac catheterization center','Pediatric-capable emergency department','Burn center','Specialty respiratory center'];
   }
 
-  function saveTransportDecision(form) {
+  function saveTransportDecision(form, submitter) {
     const current = record() || {};
-    const impression = String(form.elements.namedItem('impression')?.value || '');
-    const priority = String(form.elements.namedItem('priority')?.value || '');
-    const destination = String(form.elements.namedItem('destination')?.value || '');
+    const plan = transportPlan();
+    const priorityField = form.elements.namedItem('priority');
+    const priorityRaw = String(submitter?.value || priorityField?.value || '');
+    const priority = id === 'horse_crush' ? transportUrgencyLabel(priorityRaw) : priorityRaw;
+    const impression = String(form.elements.namedItem('impression')?.value || current.impressions?.primary || '');
+    const destination = String(form.elements.namedItem('destination')?.value || current.documentation?.destination || '');
     const notification = String(form.elements.namedItem('notification')?.value || '');
     const rationale = String(form.elements.namedItem('rationale')?.value || '').trim();
     const error = form.querySelector('.transport-entry-error');
-    if (!impression || !priority || !destination) {
-      error.textContent = 'Choose a working impression, transport priority, and destination.';
-      error.hidden = false;
+    if (id === 'horse_crush') {
+      if (!priority) {
+        if (error) {
+          error.textContent = 'Choose Emergent or Non-emergent.';
+          error.hidden = false;
+        }
+        return;
+      }
+    } else if (!impression || !priority || !destination) {
+      if (error) {
+        error.textContent = 'Choose a working impression, transport priority, and destination.';
+        error.hidden = false;
+      }
       return;
     }
-    error.hidden = true;
-    api?.setImpressions?.({ primary: impression, action: priority, source:'transport-treatment', updatedAt:new Date().toISOString() });
+    if (error) error.hidden = true;
+    if (impression || id === 'horse_crush') {
+      api?.setImpressions?.({ primary: impression || current.impressions?.primary || '', action: priority, source:'transport-treatment', updatedAt:new Date().toISOString() });
+    }
     api?.setDocumentation?.({ transportPriority:priority, destination, transportNotification:notification, transportRationale:rationale, transportDecisionAt:new Date().toISOString() });
-    api?.setFinding?.('transport_decision', `${priority} to ${destination}`, { label:'Transport decision', source:'transport-treatment', details:rationale || `Working impression: ${impression}` });
-    const plan = transportPlan();
+    const findingValue = destination ? `${priority} to ${destination}` : priority;
+    api?.setFinding?.('transport_decision', findingValue, { label:'Transport decision', source:'transport-treatment', details:rationale || (impression ? `Working impression: ${impression}` : priority) });
     const expectedPriority = id === 'horse_crush' ? plan.bestPriority : (/Emergent|Prompt/i.test(plan.bestPriority || '') ? 'Emergent transport' : 'Non-emergent transport');
-    const priorityMatch = priority === expectedPriority;
-    const destinationMatch = destination === plan.bestDestination || (plan.bestDestination === 'Stroke-capable center' && destination === 'Stroke center');
+    const priorityMatch = id === 'horse_crush' ? transportUrgencyLabel(priority) === transportUrgencyLabel(expectedPriority) : priority === expectedPriority;
+    const destinationMatch = id === 'horse_crush' ? true : (destination === plan.bestDestination || (plan.bestDestination === 'Stroke-capable center' && destination === 'Stroke center'));
     const classification = priorityMatch && destinationMatch ? 'appropriate-effective' : 'transport-choice-review';
     const transportHorseState = id === 'horse_crush' ? horseClinicalState() : null;
     const transportPatientResponse = id === 'horse_crush'
@@ -3320,7 +3665,7 @@
       : 'The patient is prepared for movement and transport while care and reassessment continue.';
     const treatment = {
       actionId:'transport_decision', treatment:'Initiate transport', name:'Initiate transport', label:'Transport initiated',
-      description:`${priority} to ${destination}${notification ? ` • ${notification}` : ''}`,
+      description:`${findingValue}${notification ? ` • ${notification}` : ''}`,
       source:'transport-treatment', classification, indicationStatus:classification,
       targetKeys:[], reassessmentRequired:false,
       documentation:{ impression, priority, destination, notification, rationale },
@@ -3333,6 +3678,7 @@
     ]);
     refreshFromRecord();
     if (id === 'horse_crush') {
+      window.EMSCodeSimHorseCrush?.noteLearnerAssessment?.('transport');
       sceneObservationUpdate = {
         id:`horse-transport-handoff-ready-${Date.now()}`,
         type:'TRANSPORT',
@@ -3354,8 +3700,13 @@
     details.className = 'treatment-category treatment-category-transport';
     details.dataset.treatmentCategory = 'transport';
     details.open = treatmentCategoryFocus === 'transport';
+    if (id === 'horse_crush') {
+      details.innerHTML = `<summary><span><strong>Transport</strong><small>Choose Emergent or Non-emergent.</small></span><em>${recorded ? 'Recorded' : 'Decision required'}</em></summary><div class="treatment-category-list"><article class="treatment-card transport-treatment-card"><div class="treatment-card-heading"><div><h3>Initiate transport</h3></div><span class="status-chip ${recorded ? 'done' : ''}">${recorded ? 'Recorded' : 'Available'}</span></div><p>Choose Emergent or Non-emergent. Correctness is reviewed during debrief.</p>${horseTransportFormMarkup()}</article></div>`;
+      details.querySelector('form')?.addEventListener('submit', event => { event.preventDefault(); saveTransportDecision(event.currentTarget, event.submitter); });
+      return details;
+    }
     details.innerHTML = `<summary><span><strong>Transport</strong><small>Select urgency, destination, and specialty notification.</small></span><em>${recorded ? 'Recorded' : 'Decision required'}</em></summary><div class="treatment-category-list"><article class="treatment-card transport-treatment-card"><div class="treatment-card-heading"><div><h3>Initiate transport</h3></div><span class="status-chip ${recorded ? 'done' : ''}">${recorded ? 'Recorded' : 'Available'}</span></div><p>Make the transport decision from the findings you obtained. Correctness is reviewed during debrief.</p><form class="transport-treatment-form"><label>Working impression<select name="impression">${selectOptions(plan.impressions, current.impressions?.primary || '', 'Choose working impression')}</select></label><label>Transport urgency<select name="priority">${selectOptions(transportPriorityOptions(), current.documentation?.transportPriority || '', 'Choose emergent or non-emergent')}</select></label><label>Destination<select name="destination">${selectOptions(transportDestinationOptions(), current.documentation?.destination || '', 'Choose receiving destination')}</select></label><label>Specialty notification<select name="notification">${selectOptions(['No specialty activation','Trauma activation','Stroke alert','STEMI / cath-lab activation','Pediatric alert','Burn-center notification'], current.documentation?.transportNotification || '', 'Choose notification')}</select></label><label>Reason for decision<textarea name="rationale" rows="3" placeholder="Use findings, time sensitivity, and specialty needs">${escapeHtml(current.documentation?.transportRationale || '')}</textarea></label><button class="primary-action" type="submit">${recorded ? 'Update transport decision' : 'Initiate and record transport'}</button><p class="transport-entry-error" hidden></p></form></article></div>`;
-    details.querySelector('form')?.addEventListener('submit', event => { event.preventDefault(); saveTransportDecision(event.currentTarget); });
+    details.querySelector('form')?.addEventListener('submit', event => { event.preventDefault(); saveTransportDecision(event.currentTarget, event.submitter); });
     return details;
   }
   function recordedFindingValue(current, key) {
@@ -3407,7 +3758,7 @@
     const documentedPatient = preferredName || (approximateAge ? `${approximateAge} adult` : 'Adult training patient');
     const mechanism = handoffHistoryValue(current, 'events') || recordedFindingValue(current, 'bls_handoff');
     const chief = handoffHistoryValue(current, 'chief_complaint') || handoffHistoryValue(current, 'symptoms') || recordedFindingValue(current, 'pain') || recordedFindingValue(current, 'left_leg');
-    const pain = handoffHistoryValue(current, 'severity') || recordedFindingDetails(current, 'pain');
+    const pain = recordedFindingValue(current, 'pain') || handoffHistoryValue(current, 'severity') || recordedFindingDetails(current, 'pain');
     const abc = [
       { label:'Airway', value:recordedFindingValue(current, 'airway') },
       { label:'Breathing', value:recordedFindingValue(current, 'breathing') },
@@ -3420,7 +3771,8 @@
       { label:'Abdomen', value:recordedFindingValue(current, 'abdominal_assessment') },
       { label:'Pelvis / hip', value:recordedFindingValue(current, 'pelvis_hip') },
       { label:'Left leg', value:recordedFindingValue(current, 'left_leg') },
-      { label:'Distal CSM', value:recordedFindingValue(current, 'distal_csm') }
+      { label:'Distal CSM', value:recordedFindingValue(current, 'distal_csm') },
+      { label:'Pain scale', value:recordedFindingValue(current, 'pain') }
     ];
     const vitals = [
       { label:'BP', value:handoffVitalValue(current, 'blood_pressure') },
@@ -3451,10 +3803,7 @@
       value:item.description || item.response || item.value || ''
     }));
     const transportRows = [
-      { label:'Impression', value:current.impressions?.primary || '' },
-      { label:'Urgency', value:current.documentation?.transportPriority || current.impressions?.action || '' },
-      { label:'Destination', value:current.documentation?.destination || '' },
-      { label:'Notification', value:current.documentation?.transportNotification || '' }
+      { label:'Urgency', value:current.documentation?.transportPriority || current.impressions?.action || '' }
     ];
     return {
       patient:documentedPatient,
@@ -3493,7 +3842,7 @@
       const saved = Boolean(current.documentation?.handoffSavedAt && current.documentation?.handoff);
       $('hospitalHandoffStatus').textContent = saved ? 'Saved' : 'Not saved';
       $('hospitalHandoffStatus').classList.toggle('done', saved);
-      if ($('openHorseCallGrade')) $('openHorseCallGrade').hidden = !saved;
+      if ($('openHorseCallGrade')) $('openHorseCallGrade').hidden = false;
     }
     const draft = $('hospitalHandoffDraft');
     if (draft && !draft.dataset.userEdited) draft.value = current.documentation?.handoff || '';
@@ -3526,6 +3875,12 @@
     ].filter(Boolean).join(' ');
   }
 
+  function hideHorseClinicalRightRail() {
+    const sheet = $('actionSheet');
+    if (sheet) sheet.hidden = true;
+    document.body.classList.remove('horse-tool-sheet-open');
+  }
+
   function openHorseHospitalHandoff(showSample = false) {
     if (id !== 'horse_crush') return;
     closeEmbeddedSimulator({ refresh:false });
@@ -3534,6 +3889,7 @@
     const workspace = $('hospitalHandoffWorkspace');
     if (workspace) workspace.hidden = false;
     document.body.classList.add('hospital-handoff-open');
+    hideHorseClinicalRightRail();
     renderHorseHospitalHandoff();
     sceneObservationUpdate = {
       id:`horse-hospital-handoff-${Date.now()}`,
@@ -3566,7 +3922,7 @@
     renderSignatures.treatments = '';
     refreshFromRecord({ force:true });
     renderHorseHospitalHandoff();
-    sceneObservationUpdate = { id:`horse-handoff-saved-${Date.now()}`, type:'HANDOFF COMPLETE', title:'Report given', text:'Hospital handoff saved. The receiving team has your report and care can transfer. Select Grade call to review the entire scenario.', kind:'transport', sticky:true, recordedAt:new Date().toISOString() };
+    sceneObservationUpdate = { id:`horse-handoff-saved-${Date.now()}`, type:'HANDOFF COMPLETE', title:'Report given', text:'Hospital handoff saved. The receiving team has your report and care can transfer. Select Grade to review the entire scenario.', kind:'transport', sticky:true, recordedAt:new Date().toISOString() };
     lastInfoSignature = '';
     renderInfoUpdate(true);
     toast('Hospital handoff saved');
@@ -3646,7 +4002,7 @@
     const repeatedVitals = coreVitals.filter(key => horseGradeVitalEventCount(current, key) >= 2);
     if (repeatedVitals.length < 2) return 'Repeat key vital signs after treatment so you can document whether the patient improved.';
     if (!['scoop_position_comfort','vacuum_mattress','board_transfer'].some(action => treatmentIds.has(action))) return 'Choose a coordinated low-movement packaging/transfer method that preserves the position of comfort.';
-    if (!current.documentation?.transportDecisionAt) return 'Make the transport decision: working impression, urgency, destination, and any needed notification.';
+    if (!current.documentation?.transportDecisionAt) return 'Make the transport decision: Emergent or Non-emergent.';
     if (!current.documentation?.handoffSavedAt) return 'Give the hospital handoff using the findings, vital trend, treatments, and patient response you documented.';
     return 'The major call elements are complete. Review the final grade, then end the scenario when ready.';
   }
@@ -3760,20 +4116,17 @@
     let handoff = 0;
     const transportRecorded = Boolean(current.documentation?.transportDecisionAt);
     const priority = String(current.documentation?.transportPriority || '');
-    const destination = String(current.documentation?.destination || '');
-    if (transportRecorded) handoff += 4;
-    if (priority === 'Prompt trauma transport') handoff += 2;
-    if (destination) handoff += 1;
-    if (String(current.documentation?.transportRationale || '').trim()) handoff += 1;
+    if (transportRecorded) handoff += 6;
+    if (transportUrgencyLabel(priority) === 'Emergent') handoff += 2;
     const handoffSaved = Boolean(current.documentation?.handoffSavedAt && current.documentation?.handoff);
     if (handoffSaved) handoff += 5;
     const handoffQuality = horseGradeHandoffQuality(current);
     handoff += handoffQuality.score;
     handoff = Math.min(15, handoff);
     categories.push({ id:'handoff', label:'Transport & handoff', score:handoff, max:15 });
-    if (transportRecorded && priority === 'Prompt trauma transport') strengths.push('Selected a prompt trauma transport priority for a significant painful hip injury with stable ABCs.');
-    else if (!transportRecorded) improvements.push('Make and document a transport priority and destination decision before ending the call.');
-    else improvements.push('Review transport urgency: this patient is stable but has a significant mechanism and severe hip injury, supporting prompt trauma transport.');
+    if (transportRecorded && transportUrgencyLabel(priority) === 'Emergent') strengths.push('Selected emergent transport for a significant painful hip injury with a high-energy mechanism.');
+    else if (!transportRecorded) improvements.push('Make and document an Emergent or Non-emergent transport decision before ending the call.');
+    else improvements.push('Review transport urgency: this patient has a significant horse-crush mechanism and severe hip injury, supporting emergent transport rather than a non-emergent trip.');
     if (handoffSaved && handoffQuality.complete) strengths.push('Completed a structured hospital handoff that included the mechanism, injury, vitals, care, and transport information.');
     else if (!handoffSaved) improvements.push('Give and save the hospital handoff before transferring care.');
     else improvements.push('Make the handoff more complete: mechanism, focused findings, vital trend, treatment/response, and transport destination should all be easy to hear.');
@@ -3845,6 +4198,7 @@
     if ($('horseGradeTreatmentList')) $('horseGradeTreatmentList').innerHTML = grade.treatments.length ? grade.treatments.map(horseGradeTreatmentMarkup).join('') : '<p class="horse-grade-empty">No treatment actions were documented.</p>';
     if ($('horseGradeNextFocus')) $('horseGradeNextFocus').textContent = grade.nextFocus;
     if ($('horseGradeNarrative')) $('horseGradeNarrative').textContent = grade.narrative;
+    window.EMSCodeSimLearningLoop?.enhanceHorseGrade?.();
   }
 
   function openHorseCallGrade() {
@@ -3856,6 +4210,7 @@
     const workspace = $('horseGradeWorkspace');
     if (workspace) workspace.hidden = false;
     document.body.classList.add('horse-grade-open');
+    hideHorseClinicalRightRail();
     renderHorseCallGrade();
     const satisfaction = window.EMSCodeSimPatientSatisfactionGrade?.model?.();
     const grade = satisfaction && Number.isFinite(satisfaction.score)
@@ -3882,7 +4237,7 @@
     const age = current.patient || (id === 'pediatric' ? '3-year-old child' : 'Adult patient');
     const impression = current.impressions?.primary || 'working impression not yet selected';
     const initialVitals = ['blood_pressure','pulse','respirations','spo2','blood_glucose','temperature'].filter(key => findings[key]).map(key => `${labelFor(key)} ${findings[key].value}`).join(', ');
-    const important = ['airway','breathing','perfusion','mental_status','motor_sensory','breath_sounds','skin'].filter(key => findings[key]).map(key => `${labelFor(key)}: ${findings[key].value}`).join('; ');
+    const important = ['airway','breathing','perfusion','mental_status','pain','motor_sensory','breath_sounds','skin'].filter(key => findings[key]).map(key => `${labelFor(key)}: ${findings[key].value}`).join('; ');
     const treatments = (current.treatments || []).map(item => item.description || item.name || item.treatmentLabel || item.value).filter(Boolean).join('; ');
     const reassess = (current.reassessments || []).slice(-3).map(item => item.description || item.response || item.value).filter(Boolean).join('; ');
     const priority = current.documentation?.transportPriority || current.impressions?.action || 'transport priority not yet selected';
@@ -3919,29 +4274,24 @@
 
   function openHorseTransportQuick() {
     if (id !== 'horse_crush') return;
-    if (!desktopWorkspace()) {
-      horseTreatmentActiveGroup = 'transport';
-      horseTreatmentActivePlan = '__horse_transport__';
-      openSheet('treatmentPanel');
-      return;
-    }
     closeEmbeddedSimulator({ refresh:false });
     closeHorseHospitalHandoff();
     closeHorseCallGrade();
-    if ($('actionSheet')) $('actionSheet').hidden = true;
-    document.body.classList.remove('horse-tool-sheet-open');
-    document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
-    horseTreatmentActiveGroup = 'transport';
-    horseTreatmentActivePlan = '__horse_transport__';
     const group = HORSE_TREATMENT_GROUPS.find(item => item.id === 'transport');
     sceneObservationUpdate = {
       id:`horse-top-transport-${Date.now()}`, type:'TRANSPORT', title:'Transport decision',
-      text:group?.instruction || 'Choose transport urgency and destination from the information you have gathered.',
+      text:group?.instruction || 'Choose Emergent or Non-emergent from the information you have gathered.',
       kind:'transport', sticky:true, recordedAt:new Date().toISOString()
     };
     lastInfoSignature = '';
     renderInfoUpdate(true);
-    renderHorseTreatmentSelectionBox('transport');
+    horseTreatmentActiveGroup = 'transport';
+    horseTreatmentActivePlan = '__horse_transport__';
+    openSheet('treatmentPanel');
+    // openSheet() can rebuild the category menu; force the transport form after it returns.
+    horseTreatmentActiveGroup = 'transport';
+    horseTreatmentActivePlan = '__horse_transport__';
+    if (desktopWorkspace()) renderHorseTreatmentCategoryWorkspace('transport');
   }
 
   function renderProgress() {
@@ -4107,10 +4457,12 @@
     try {
       stopInfoSpeech();
       closeScenarioControls();
+      window.EMSCodeSimLearningLoop?.flushAssistanceToRecord?.(record());
+      window.EMSCodeSimLearningLoop?.snapshotAttempt?.(record());
       api?.clear?.();
       const partnerKey = session?.partnerTaskKey?.(id);
       [partnerKey, partnerKey && `${partnerKey}_backup`, partnerKey && `${partnerKey}_shadow`, `emscodesim_scenario_${id}`, `emscodesim_scenario_${id}_backup`, `emscodesim_scenario_${id}_shadow`].filter(Boolean).forEach(key => localStorage.removeItem(key));
-      location.href = `/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&reset=1`;
+      location.href = preserveSkillsMode(`/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&reset=1`);
     } catch (error) {
       console.error(error);
       toast('Scenario could not be reset. Try returning to the launcher.');
@@ -4120,7 +4472,7 @@
   function endScenario() {
     stopInfoSpeech();
     closeScenarioControls();
-    location.href = `/vitals/scenario-launcher.html?select=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&ended=1`;
+    location.href = preserveSkillsMode(`/vitals/scenario-launcher.html?select=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&ended=1`);
   }
 
   const desktopWorkspaceQuery = window.matchMedia('(min-width: 980px)');
@@ -4172,10 +4524,8 @@
       }
       buildHistory();
     } else if (panelId === 'treatmentPanel' && id === 'horse_crush') {
-      if (desktopWorkspace()) {
-        horseTreatmentActiveGroup = '';
-        horseTreatmentActivePlan = '';
-      }
+      // Keep an already-open category workspace. Rebuilding the menu here made
+      // category clicks look dead when another helper re-opened Treatment.
       buildTreatments();
       if (desktopWorkspace()) horseWorkspaceContext?.resetQuestionBox?.();
       showHorsePainReminderIfNeeded();
@@ -4264,10 +4614,20 @@
       document.body.style.overflow = '';
       desktopWorkspaceReady = true;
       if (id === 'horse_crush') {
-        sheet.hidden = true;
-        document.body.classList.remove('horse-tool-sheet-open');
-        document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
-        configureHorseCurrentAssessmentWorkspace();
+        const arrived = document.body.dataset.horseIntro === 'arrived';
+        const overlayOpen = document.body.classList.contains('hospital-handoff-open')
+          || document.body.classList.contains('horse-grade-open');
+        if (!arrived || overlayOpen) {
+          sheet.hidden = true;
+          document.body.classList.remove('horse-tool-sheet-open');
+          document.querySelectorAll('.bottom-nav button').forEach(button => button.classList.remove('active'));
+          configureHorseCurrentAssessmentWorkspace();
+        } else {
+          const activePanel = document.querySelector('.bottom-nav button.active')?.dataset.panel
+            || document.body.getAttribute('data-active-domain')
+            || 'assessmentPanel';
+          openSheet(activePanel);
+        }
       } else {
         sheet.hidden = false;
         const activePanel = [...document.querySelectorAll('.vp-panel')].find(panel => !panel.hidden)?.id || 'assessmentPanel';
@@ -4296,7 +4656,7 @@
     const findings = current.findings || {};
     const customAssessmentKeys = id === 'horse_crush' ? ['arrival_parking','bls_handoff','neck_back','pelvis_hip','left_leg','distal_csm','movement_plan'] : [];
     const assessmentKeys = [...new Set([...(registry?.assessmentTools || []).map(tool => tool.key), ...customAssessmentKeys])];
-    const vitalKeys = (registry?.vitalTools || []).filter(tool => MEASURABLE_TOOL_KEYS.has(tool.key)).map(tool => tool.key);
+    const vitalKeys = (registry?.vitalTools || []).filter(tool => VITALS_PANEL_KEYS.has(tool.key)).map(tool => tool.key);
     const partnerTasks = session?.readPartnerTasks?.(id) || {};
     const select = keys => Object.fromEntries(keys.map(key => [key, findings[key] || null]));
     const selectedTasks = keys => Object.fromEntries(keys.map(key => [key, partnerTasks[key] || null]));
@@ -4317,7 +4677,7 @@
   const DESKTOP_VITAL_LABELS = {
     blood_pressure:'NIBP', pulse:'HR', respirations:'RR', spo2:'SpO₂',
     blood_glucose:'BGL', temperature:'TEMP', breath_sounds:'LUNGS',
-    pupils:'PUPILS', skin:'SKIN', mental_status:'AVPU', gcs:'GCS', pain:'PAIN', breathing:'BREATH', distal_csm:'CSM', motor_sensory:'NEURO', abdominal_assessment:'ABD/PELV', trauma_assessment:'TRAUMA'
+    pupils:'PUPILS', skin:'SKIN', mental_status: id === 'horse_crush' ? 'AAO×4' : 'AVPU', gcs:'GCS', pain:'PAIN', breathing:'BREATH', distal_csm:'CSM', motor_sensory:'NEURO', abdominal_assessment:'ABD/PELV', trauma_assessment:'TRAUMA'
   };
   const DESKTOP_MONITOR_PRIMARY_KEYS = ['blood_pressure','pulse','respirations','spo2','blood_glucose','temperature'];
   const DESKTOP_MONITOR_QUICK_KEYS = [
@@ -4481,8 +4841,9 @@
       renderProgress();
       renderSignatures.progress = signatures.progress;
     }
-    $('dispatch').textContent = current.dispatch || scenario.title;
-    $('scene').textContent = current.scene || '';
+    const horseIntroVideo = id === 'horse_crush' && document.body.dataset.horseIntro === 'video';
+    $('dispatch').textContent = horseIntroVideo ? '' : (current.dispatch || scenario.title);
+    $('scene').textContent = horseIntroVideo ? '' : (current.scene || '');
     renderInfoUpdate();
     if (horseHandoffOpen) renderHorseHospitalHandoff();
     if (horseGradeOpen) renderHorseCallGrade();
@@ -4493,49 +4854,100 @@
   const embeddedSimPaths = new Set([
     ...(registry?.vitalTools || []).map(tool => tool.url),
     ...(registry?.assessmentTools || []).map(tool => tool.url)
-  ].filter(Boolean));
+  ].filter(Boolean).filter(path => path !== '/vitals/visual-patient.html'));
 
   function desktopScenarioMode() {
     return window.matchMedia?.('(min-width: 980px)')?.matches === true;
   }
 
   function embeddedToolTitle(anchor, url) {
+    const datasetKey = anchor?.dataset?.assessmentKey || anchor?.dataset?.toolKey || '';
     const matching = [...(registry?.vitalTools || []), ...(registry?.assessmentTools || [])]
-      .find(tool => tool.url === url.pathname);
+      .find(item => item.key === datasetKey || item.url === url.pathname);
     return matching?.label || anchor?.textContent?.trim() || 'Assessment simulator';
+  }
+
+  function embeddedToolKey(anchor, url) {
+    const datasetKey = anchor?.dataset?.assessmentKey || anchor?.dataset?.toolKey || '';
+    const matching = [...(registry?.vitalTools || []), ...(registry?.assessmentTools || [])]
+      .find(item => item.key === datasetKey || item.url === url.pathname);
+    return matching?.key || datasetKey || '';
   }
 
 
   let embeddedRecordSignature = '';
   let embeddedCompletionTimer = 0;
+  let embeddedCloseTimer = 0;
+  let embeddedOpenGeneration = 0;
+  let embeddedOpenedKey = '';
 
-  function embeddedRecordCompletionSignature() {
+  function embeddedSimKeyFromFrame() {
     try {
-      const current = record() || {};
-      return JSON.stringify({
-        findings:current.findings || {},
-        vitals:current.vitals || {},
-        updatedAt:current.updatedAt || current.lastUpdated || ''
-      });
+      const path = $('embeddedSimFrame')?.contentWindow?.location?.pathname || '';
+      const matching = [...(registry?.vitalTools || []), ...(registry?.assessmentTools || [])]
+        .find(item => item.url === path);
+      return matching?.key || embeddedOpenedKey || '';
+    } catch (_) {
+      return embeddedOpenedKey || '';
+    }
+  }
+
+  function embeddedWatchedFindingSignature(key = embeddedSimKeyFromFrame()) {
+    if (!key) return '';
+    try {
+      const finding = (record() || {}).findings?.[key];
+      return JSON.stringify(finding || null);
     } catch (_) { return ''; }
   }
 
-  function armEmbeddedCompletionWatcher() {
+  function cancelEmbeddedAutoClose() {
     clearInterval(embeddedCompletionTimer);
-    embeddedRecordSignature = embeddedRecordCompletionSignature();
+    embeddedCompletionTimer = 0;
+    window.clearTimeout(embeddedCloseTimer);
+    embeddedCloseTimer = 0;
+  }
+
+  function queueEmbeddedAutoClose(delay = 180) {
+    const generation = embeddedOpenGeneration;
+    window.clearTimeout(embeddedCloseTimer);
+    embeddedCloseTimer = window.setTimeout(() => {
+      embeddedCloseTimer = 0;
+      if (generation !== embeddedOpenGeneration) return;
+      closeEmbeddedSimulator({ refresh:true, generation });
+      toast('Assessment saved');
+    }, delay);
+  }
+
+  function armEmbeddedCompletionWatcher() {
+    cancelEmbeddedAutoClose();
+    const generation = embeddedOpenGeneration;
+    const watchedKey = embeddedSimKeyFromFrame();
+    const armedAt = Date.now();
+    // Only watch the finding this mini-sim is supposed to write. Partner tasks,
+    // the patient clock, and other vitals must not close a long cuff check.
+    if (!watchedKey) return;
+    embeddedRecordSignature = embeddedWatchedFindingSignature(watchedKey);
     embeddedCompletionTimer = window.setInterval(() => {
+      if (generation !== embeddedOpenGeneration) {
+        clearInterval(embeddedCompletionTimer);
+        embeddedCompletionTimer = 0;
+        return;
+      }
       const workspace = $('embeddedSimWorkspace');
       if (!workspace || workspace.hidden) {
         clearInterval(embeddedCompletionTimer);
+        embeddedCompletionTimer = 0;
         return;
       }
-      const next = embeddedRecordCompletionSignature();
-      if (next && embeddedRecordSignature && next !== embeddedRecordSignature) {
+      const next = embeddedWatchedFindingSignature(watchedKey);
+      if (Date.now() - armedAt < 450) {
+        embeddedRecordSignature = next || embeddedRecordSignature;
+        return;
+      }
+      if (next && next !== 'null' && next !== embeddedRecordSignature) {
         clearInterval(embeddedCompletionTimer);
-        window.setTimeout(() => {
-          closeEmbeddedSimulator({refresh:true});
-          toast('Assessment saved');
-        }, 180);
+        embeddedCompletionTimer = 0;
+        queueEmbeddedAutoClose(180);
       }
       embeddedRecordSignature = next || embeddedRecordSignature;
     }, 350);
@@ -4547,26 +4959,48 @@
     if (!['ems-sim-complete','ems-assessment-saved','ems-vital-saved'].includes(data.type)) return;
     const frame = $('embeddedSimFrame');
     if (frame?.contentWindow && event.source !== frame.contentWindow) return;
+    const generation = embeddedOpenGeneration;
     clearInterval(embeddedCompletionTimer);
-    closeEmbeddedSimulator({refresh:true});
+    if (generation !== embeddedOpenGeneration) return;
+    closeEmbeddedSimulator({refresh:true, generation});
     toast(data.label ? `${data.label} saved` : 'Assessment saved');
   }
+  window.addEventListener('emscodesim:embedded-sim-opened', () => {
+    embeddedOpenGeneration += 1;
+    cancelEmbeddedAutoClose();
+  });
   window.addEventListener('message', handleEmbeddedSimulatorComplete);
 
   function closeEmbeddedSimulator(options = {}) {
-    clearInterval(embeddedCompletionTimer);
+    const generation = Number.isInteger(options.generation) ? options.generation : embeddedOpenGeneration;
+    cancelEmbeddedAutoClose();
+    if (generation !== embeddedOpenGeneration) return;
     const workspace = $('embeddedSimWorkspace');
     const frame = $('embeddedSimFrame');
     if (!workspace || workspace.hidden) return;
     workspace.hidden = true;
     document.body.classList.remove('sim-workspace-open');
+    if (generation !== embeddedOpenGeneration) {
+      workspace.hidden = false;
+      document.body.classList.add('sim-workspace-open');
+      return;
+    }
     if (frame) frame.src = 'about:blank';
     if (options.refresh !== false) {
-      window.setTimeout(() => refreshFromRecord({ force:true }), 40);
+      window.setTimeout(() => {
+        if (generation !== embeddedOpenGeneration) return;
+        refreshFromRecord({ force:true });
+      }, 40);
     }
   }
 
-  function openEmbeddedSimulator(href, title = 'Assessment simulator') {
+  function openEmbeddedSimulator(href, title = 'Assessment simulator', toolKey = '') {
+    if (id === 'horse_crush' && (toolKey === 'mental_status' || /avpu-scenario\.html(?:\?|$)/.test(String(href || '')))) {
+      return openHorseAaox4Tool();
+    }
+    if (id === 'horse_crush' && (toolKey === 'pain' || /pain-opqrst\.html(?:\?|$)/.test(String(href || '')))) {
+      return openHorsePainScaleTool();
+    }
     if (!desktopScenarioMode()) return false;
     const workspace = $('embeddedSimWorkspace');
     const frame = $('embeddedSimFrame');
@@ -4576,15 +5010,25 @@
     if (url.origin !== location.origin || !embeddedSimPaths.has(url.pathname)) return false;
     url.searchParams.set('embedded', '1');
     url.searchParams.set('autosaveclose', '1');
+    url.searchParams.set('resume', '1');
     url.searchParams.set('case', id);
     url.searchParams.set('mode', 'scenario');
     url.searchParams.set('training', trainingMode());
+    if (toolKey && !url.searchParams.get('key') && !url.searchParams.get('context')) {
+      url.searchParams.set('key', toolKey);
+      url.searchParams.set('context', toolKey);
+    }
     url.searchParams.set('return', `/vitals/visual-patient.html?case=${encodeURIComponent(id)}&training=${encodeURIComponent(trainingMode())}&embeddedReturn=1`);
     const titleNode = $('embeddedSimTitle');
     if (titleNode) titleNode.textContent = title;
+    embeddedOpenGeneration += 1;
+    embeddedOpenedKey = toolKey || embeddedToolKey(null, url) || '';
+    cancelEmbeddedAutoClose();
     workspace.hidden = false;
     document.body.classList.add('sim-workspace-open');
+    embeddedRecordSignature = embeddedWatchedFindingSignature(embeddedOpenedKey);
     frame.src = url.toString();
+    armEmbeddedCompletionWatcher();
     return true;
   }
 
@@ -4596,7 +5040,7 @@
     let url;
     try { url = new URL(anchor.href, location.href); } catch { return; }
     if (!embeddedSimPaths.has(url.pathname)) return;
-    if (openEmbeddedSimulator(url.toString(), embeddedToolTitle(anchor, url))) {
+    if (openEmbeddedSimulator(url.toString(), embeddedToolTitle(anchor, url), embeddedToolKey(anchor, url))) {
       event.preventDefault();
       event.stopPropagation();
     }
@@ -4612,6 +5056,7 @@
       const root = doc.documentElement;
       const body = doc.body;
       if (!root || !body) return;
+      if (body.classList.contains('ems-embedded-mini-sim')) return;
 
       root.dataset.emsEmbeddedFit = 'true';
 
@@ -4692,11 +5137,14 @@
         if (!control) return;
         const label = String(control.textContent || control.value || '').trim().toLowerCase();
         if (!/(save|record|submit|complete|document|done|use result|return to patient)/.test(label)) return;
-        window.setTimeout(() => {
-          const next = embeddedRecordCompletionSignature();
-          if (next && embeddedRecordSignature && next !== embeddedRecordSignature) {
-            clearInterval(embeddedCompletionTimer);
-            closeEmbeddedSimulator({refresh:true});
+        const generation = embeddedOpenGeneration;
+        window.clearTimeout(embeddedCloseTimer);
+        embeddedCloseTimer = window.setTimeout(() => {
+          embeddedCloseTimer = 0;
+          if (generation !== embeddedOpenGeneration) return;
+          const next = embeddedWatchedFindingSignature();
+          if (next && next !== 'null' && next !== embeddedRecordSignature) {
+            closeEmbeddedSimulator({ refresh:true, generation });
             toast('Assessment saved');
           }
         }, 220);
@@ -4712,10 +5160,17 @@
   $('embeddedSimFrame')?.addEventListener('load', () => {
     const frame = $('embeddedSimFrame');
     if (!frame || frame.src === 'about:blank') return;
+    const generation = embeddedOpenGeneration;
     try {
       const current = frame.contentWindow?.location;
-      if (current?.pathname === '/vitals/visual-patient.html') closeEmbeddedSimulator();
-      else scheduleEmbeddedFit();
+      if (generation !== embeddedOpenGeneration) return;
+      if (current?.pathname === '/vitals/visual-patient.html') {
+        closeEmbeddedSimulator({ generation });
+      } else {
+        installEmbeddedSaveBridge();
+        armEmbeddedCompletionWatcher();
+        scheduleEmbeddedFit();
+      }
     } catch (_) {
       // All embedded tools are same-origin; ignore transient navigation access errors.
     }
@@ -4751,8 +5206,8 @@
   const requestedTrainingMode = params.get('training');
   if (requestedTrainingMode === 'learning' || requestedTrainingMode === 'assessment') api?.setDocumentation?.({ trainingMode: requestedTrainingMode });
   document.body.dataset.trainingMode = trainingMode();
-  if (id === 'horse_crush') {
-    document.body.classList.add('horse-current-emt-call');
+  if (id === 'horse_crush' || id === 'asthma') {
+    document.body.classList.add(id === 'horse_crush' ? 'horse-current-emt-call' : 'asthma-current-emt-call');
     const phaseControls = $('patientPhaseControls');
     if (phaseControls) phaseControls.hidden = true;
     const guide = $('sceneGuide');
@@ -4768,13 +5223,20 @@
     const guidedHistory = document.querySelector('.history-guided-tools');
     if (guidedHistory) guidedHistory.hidden = true;
     const treatmentSub = document.querySelector('#treatmentPanel > .sub');
-    if (treatmentSub) treatmentSub.textContent = 'Choose treatment, movement, packaging, comfort, and reassessment actions as you would on a real call. On a computer, Transport and Handoff are available in the quick-action row above the patient.';
+    if (treatmentSub) treatmentSub.textContent = id === 'horse_crush'
+      ? 'Choose treatment, movement, packaging, comfort, and reassessment actions as you would on a real call. On a computer, Transport and Handoff are available in the quick-action row above the patient.'
+      : 'Choose respiratory support and other indicated treatment as you would on a real call. Reassess breathing, oxygenation, and the patient’s response after every intervention.';
     const returnButtonLabel = document.querySelector('#closeSheet span');
     if (returnButtonLabel) returnButtonLabel.textContent = 'Current assessment';
-    window.EMSCodeSimHorseWorkspace = Object.freeze({
-      selectAssessment: selectHorseCurrentAssessment,
-      showCurrent: closeSheet
-    });
+    if (id === 'horse_crush') {
+      window.EMSCodeSimHorseWorkspace = Object.freeze({
+        selectAssessment: selectHorseCurrentAssessment,
+        showCurrent: closeSheet,
+        openSheet,
+        openAaox4: openHorseAaox4Tool,
+        openPainScale: openHorsePainScaleTool
+      });
+    }
   }
   if ($('modeBadge')) $('modeBadge').textContent = assessmentMode() ? 'Assessment Mode' : 'Learning Mode';
   scenarioStartMs = new Date(initialRecord?.startedAt || Date.now()).getTime();
@@ -4802,13 +5264,20 @@
     openGrade: openHorseCallGrade,
     closeHandoff: closeHorseHospitalHandoff
   });
+  window.EMSCodeSimVisualPatient = Object.freeze({
+    ...(window.EMSCodeSimVisualPatient || {}),
+    buildHorseCallGrade,
+    openHorseCallGrade,
+    trainingMode,
+    assessmentMode
+  });
   $('hospitalHandoffDraft')?.addEventListener('input', event => { event.currentTarget.dataset.userEdited = 'true'; });
   if ($('recordTreatmentLink')) $('recordTreatmentLink').href = toolUrl('/vitals/treatment-reassessment.html', 'Patient', 'general');
   if ($('fullPatientRecordLink')) $('fullPatientRecordLink').href = `/vitals/patient-record.html?mode=scenario&resume=1&case=${encodeURIComponent(id)}&return=${encodeURIComponent(`/vitals/visual-patient.html?case=${id}`)}`;
   $('guidedSampleLink').href = toolUrl('/vitals/sample-history.html', 'Patient', 'sample');
   $('guidedOpqrstLink').href = toolUrl('/vitals/pain-opqrst.html', 'Patient', 'pain');
-  refreshFromRecord();
   window.EMSCodeSimHorseCrush?.init?.();
+  refreshFromRecord();
 
   document.querySelectorAll('[data-log-filter]').forEach(button => button.addEventListener('click', () => {
     findingFilter = button.dataset.logFilter || 'all';
@@ -4856,12 +5325,31 @@
     setInfoCollapsed(false);
   });
   document.addEventListener('click', event => {
-    const button = event.target.closest?.('.bottom-nav button[data-panel]');
+    const origin = eventElement(event);
+    const button = origin?.closest?.('.bottom-nav button[data-panel]');
     if (!button || button.hidden || button.classList.contains('desktop-domain-hidden')) return;
+    if (origin?.closest?.('#treatmentTools, #assessmentTools, #historyCategoryList, #vitalTools')) return;
     event.preventDefault();
     event.stopImmediatePropagation();
     hideClinicalNextActions();
     openSheet(button.dataset.panel);
+  }, true);
+  document.addEventListener('pointerup', event => {
+    if (id !== 'horse_crush' || event.button) return;
+    if (activateHorseTreatmentGroupFromEvent(event)) return;
+    const origin = eventElement(event);
+    if (origin?.closest?.('#horseOpenTransport, #horseOpenHandoff, [data-horse-endpoint]')) return;
+    const planButton = origin?.closest?.('[data-horse-workspace-plan]');
+    if (!planButton || planButton.hidden || planButton.disabled) return;
+    if (!planButton.closest('#treatmentTools.horse-treatment-category-workspace')) return;
+    if (horseTreatmentActivePlan === (planButton.dataset.horseWorkspacePlan || '')) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    planButton.click();
+  }, true);
+  document.addEventListener('click', event => {
+    if (id !== 'horse_crush') return;
+    activateHorseTreatmentGroupFromEvent(event);
   }, true);
   $('clinicalNextTreatment')?.addEventListener('click', () => {
     treatmentCategoryFocus = nextTreatmentCategoryForFinding(nextActionFinding?.key || '');
@@ -4877,7 +5365,7 @@
     const tool = desktopSelectedVitalTool(); if (!tool) return;
     const current = record() || {}; const finding = api?.getFinding?.(tool.key, current) || current.findings?.[tool.key];
     let href = toolUrl(tool.url); if (finding) { const u = new URL(href, location.origin); u.searchParams.set('reassess','1'); href = `${u.pathname}${u.search}${u.hash}`; }
-    closeDesktopVitalAction(); if (!openEmbeddedSimulator(href, `${tool.label}${finding ? ' reassessment' : ''}`)) location.href = href;
+    closeDesktopVitalAction(); if (!openEmbeddedSimulator(href, `${tool.label}${finding ? ' reassessment' : ''}`, tool.key)) location.href = href;
   });
   $('desktopVitalPartner')?.addEventListener('click', () => {
     const tool = desktopSelectedVitalTool(); if (!tool) return;

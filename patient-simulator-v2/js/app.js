@@ -70,7 +70,7 @@
     }).join('');
   }
 
-  function renderMonitor() {
+  function renderMonitorValues() {
     if (!session) return;
     const channels = session.getMonitorChannels();
     const vitals = session.patient.getVitals();
@@ -84,20 +84,45 @@
       gcs: channels.gcs ? String(vitals.gcs) : '—'
     };
 
-    $('psv2Monitor').innerHTML = MONITOR_CHANNELS.map(ch => `
-      <div class="psv2-vital">
-        <div class="label"><span>${ch.label}</span><span>${ch.unit}</span></div>
-        <div class="value ${channels[ch.id] ? '' : 'off'}">${values[ch.id]}</div>
-      </div>
-    `).join('');
+    const root = $('psv2Monitor');
+    const needsRebuild = !root.querySelector('[data-vital]');
+    if (needsRebuild) {
+      root.innerHTML = MONITOR_CHANNELS.map(ch => `
+        <div class="psv2-vital" data-vital="${ch.id}">
+          <div class="label"><span>${ch.label}</span><span>${ch.unit}</span></div>
+          <div class="value ${channels[ch.id] ? '' : 'off'}">${values[ch.id]}</div>
+        </div>
+      `).join('');
+      return;
+    }
 
-    $('psv2MonitorActions').innerHTML = [
+    MONITOR_CHANNELS.forEach(ch => {
+      const card = root.querySelector(`[data-vital="${ch.id}"] .value`);
+      if (!card) return;
+      card.textContent = values[ch.id];
+      card.classList.toggle('off', !channels[ch.id]);
+    });
+  }
+
+  function renderMonitorActions() {
+    if (!session) return;
+    const channels = session.getMonitorChannels();
+    const signature = JSON.stringify(channels);
+    const host = $('psv2MonitorActions');
+    if (host.dataset.signature === signature) return;
+    host.dataset.signature = signature;
+    host.innerHTML = [
       ...MONITOR_CHANNELS.map(ch =>
         `<button type="button" class="psv2-chip ${channels[ch.id] ? 'on' : ''}" data-monitor="${ch.id}">${channels[ch.id] ? '✓ ' : ''}Enable ${ch.label}</button>`
       ),
-      `<button type="button" class="psv2-chip" data-monitor="ecg">${channels.ecg ? '✓ ' : ''}ECG</button>`,
-      `<button type="button" class="psv2-chip" data-monitor="capno">${channels.capno ? '✓ ' : ''}Capno</button>`
+      `<button type="button" class="psv2-chip ${channels.ecg ? 'on' : ''}" data-monitor="ecg">${channels.ecg ? '✓ ' : ''}ECG</button>`,
+      `<button type="button" class="psv2-chip ${channels.capno ? 'on' : ''}" data-monitor="capno">${channels.capno ? '✓ ' : ''}Capno</button>`
     ].join('');
+  }
+
+  function renderMonitor() {
+    renderMonitorValues();
+    renderMonitorActions();
   }
 
   function updateVideo() {
@@ -293,11 +318,13 @@
     openTab('talk');
 
     session.subscribe((evt) => {
-      if (evt.type === 'tick' || evt.type === 'physiology' || evt.type === 'stage') {
+      if (evt.type === 'tick' || evt.type === 'physiology') {
         $('psv2Clock').textContent = formatClock(evt.session.elapsed);
-        renderWorkflow(evt.session.stage);
-        renderMonitor();
+        renderMonitorValues();
         updateVideo();
+      }
+      if (evt.type === 'stage') {
+        renderWorkflow(evt.session.stage);
       }
       if (evt.type === 'assessment' || evt.type === 'treatment' || evt.type === 'conversation' || evt.type === 'transport' || evt.type === 'handoff' || evt.type === 'pcr') {
         renderTimeline();
@@ -388,7 +415,39 @@
       if (action === 'transport') openTab('transport');
     });
 
-    $('psv2ChatForm').addEventListener('submit', async (e) => {
+    async function maybeAiPatientPhrasing(text, local) {
+      if (!local?.matchedFact) return null;
+      const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const timer = controller ? setTimeout(() => controller.abort(), 1800) : null;
+      try {
+        const res = await fetch('/api/patient-simulator-v2-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            scenarioId: 'adult-asthma',
+            question: text,
+            factKey: local.matchedFact,
+            factValue: local.factValue,
+            allowedReplyFallback: local.reply,
+            clinicalSpeech: session.patient.snapshotClinical().speech
+          }),
+          signal: controller?.signal
+        });
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (data?.reply && data.source === 'ai') {
+          const safe = session.conversation.sanitizeAiReply(data.reply, [local.matchedFact]);
+          if (safe) return { factKey: local.matchedFact, reply: safe };
+        }
+      } catch (_) {
+        /* offline / timeout / no AI — local engine is authoritative */
+      } finally {
+        if (timer) clearTimeout(timer);
+      }
+      return null;
+    }
+
+    $('psv2ChatForm').addEventListener('submit', (e) => {
       e.preventDefault();
       if (!session) return;
       const input = $('psv2ChatInput');
@@ -396,39 +455,23 @@
       if (!text) return;
       input.value = '';
 
-      // Local fact engine first (source of truth)
-      let aiPhrasing = null;
-      try {
-        const local = session.conversation.answerFromFacts(text);
-        if (local.matchedFact) {
-          const res = await fetch('/api/patient-simulator-v2-chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              scenarioId: 'adult-asthma',
-              question: text,
-              factKey: local.matchedFact,
-              factValue: local.factValue,
-              allowedReplyFallback: local.reply,
-              clinicalSpeech: session.patient.snapshotClinical().speech
-            })
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (data?.reply && data.source === 'ai') {
-              const safe = session.conversation.sanitizeAiReply(data.reply, [local.matchedFact]);
-              if (safe) aiPhrasing = { factKey: local.matchedFact, reply: safe };
-            }
-          }
-        }
-      } catch (_) {
-        /* offline / no AI — local engine handles it */
-      }
-
-      session.talkToPatient(text, aiPhrasing ? { aiPhrasing } : {});
+      // Local fact engine answers immediately (never blocked by AI availability).
+      session.talkToPatient(text);
       renderChat();
       renderTimeline();
       refreshAll();
+
+      // Optional AI rephrase in background — does not delay or replace the recorded facts.
+      const local = session.conversation.answerFromFacts(text);
+      maybeAiPatientPhrasing(text, local).then((aiPhrasing) => {
+        if (!aiPhrasing || !session) return;
+        // Surface phrasing hint only in UI chat bubble without inventing new facts.
+        const log = $('psv2ChatLog');
+        const last = log?.querySelector('.psv2-msg.patient:last-child');
+        if (last && aiPhrasing.reply) {
+          last.innerHTML = `<span class="who">Patient</span>${escapeHtml(aiPhrasing.reply)}`;
+        }
+      });
     });
 
     $('psv2AssessGrid').addEventListener('click', (e) => {
@@ -514,6 +557,8 @@
       const reply = $('psv2HandoffReply');
       reply.hidden = false;
       reply.textContent = 'Receiving: Copy, Medic. We\'ll be ready for you. Continue care and complete your PCR after arrival.';
+      const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const timer = controller ? setTimeout(() => controller.abort(), 1800) : null;
       try {
         const res = await fetch('/api/patient-simulator-v2-chat', {
           method: 'POST',
@@ -522,13 +567,15 @@
             scenarioId: 'adult-asthma',
             mode: 'hospital',
             report
-          })
+          }),
+          signal: controller?.signal
         });
         if (res.ok) {
           const data = await res.json();
           if (data?.reply) reply.textContent = data.reply;
         }
       } catch (_) { /* local fallback already shown */ }
+      finally { if (timer) clearTimeout(timer); }
       renderTimeline();
       refreshAll();
       openTab('pcr');

@@ -5,21 +5,22 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <title>Full EMT Scenario Launcher | EMSCodeSim</title>
-  <meta name="description" content="Choose an EMT patient picture, then select Learning Mode or Assessment Mode and complete the entire call from the visual patient screen.">
+  <meta name="description" content="Choose an EMT patient scenario, then select Learning Mode or Assessment Mode and complete the entire call from the visual patient screen.">
   <link rel="canonical" href="https://emscodesim.com/vitals/scenario-launcher.html">
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="stylesheet" href="/styles/career-hub.css">
   <link rel="stylesheet" href="/styles/responsive.css">
-  <link rel="stylesheet" href="/vitals/scenario-launcher.css?v=1502">
+  <link rel="stylesheet" href="/vitals/scenario-launcher.css?v=2026.09.09.1">
   <link rel="stylesheet" href="/vitals/scenario-status.css">
+<link rel="stylesheet" href="/styles/skills-session-mode.css?v=2">
 </head>
 <body>
-  <header class="scenario-hero"><div><span class="scenario-build-stamp">Scenario UI 1.10</span><p><a href="/">Home</a> / <a href="/vitals/">Vital Learning Center</a> / Scenario Launcher</p><h1>Choose a patient</h1><p>Tap a patient picture, choose Learning Mode or Assessment Mode, and begin on the visual patient screen. Saved calls can be continued or reset from the same menu.</p></div></header>
+  <header class="scenario-hero"><div><span class="scenario-build-stamp">Scenario UI 1.44</span><p><a href="/">Home</a> / <a href="/vitals/">Vital Learning Center</a> / Scenario Launcher</p><h1>Choose a patient scenario</h1><p>Choose between the immersive horse-crush trauma call or the breathing-problem asthma call in a public park. The asthma call now launches Patient Simulator V2.</p></div></header>
   <main class="scenario-shell">
     <section class="control-card picture-first">
       <div class="case-intro-row">
-        <div class="case-intro"><p class="eyebrow">Patient selection</p><h2>Select a scenario picture</h2><p>Open a patient to choose the way you want to practice. A scenario already in progress will be marked below.</p></div>
-        <button id="randomCase" class="secondary random-case" type="button">Choose a random patient</button>
+        <div class="case-intro"><p class="eyebrow">Available patient scenarios</p><h2>Choose your call</h2><p>Select a case, then choose Learning or Assessment Mode. Breathing Problem opens <a href="/patient-simulator-v2/">Patient Simulator V2</a>. Legacy simulator remains at <a href="/vitals/visual-patient.html?case=asthma&amp;training=assessment&amp;reset=1">/vitals/visual-patient.html</a> for rollback.</p></div>
+        <button class="secondary random-case" id="randomCase" type="button">Random scenario</button>
       </div>
       <div id="caseGallery" class="case-gallery" aria-label="Available patient scenarios"></div>
     </section>
@@ -66,9 +67,11 @@
     </div>
   </section>
 
-  <script src="/vitals/patient-record.js"></script>
-  <script src="/vitals/scenario-definitions.js?v=1502"></script><script src="/vitals/scenario-session.js?v=1502"></script>
-  <script src="/vitals/scenario-launcher.js?v=1502"></script>
-  <script src="/vitals/scenario-status.js?v=1502"></script>
+  <script src="/vitals/patient-record.js?v=2026.09.09.1"></script>
+  <script src="/vitals/scenario-definitions.js?v=2026.09.09.1"></script>
+  <script src="/vitals/scenario-session.js?v=2026.09.09.1"></script>
+  <script src="/vitals/scenario-launcher.js?v=2026.09.09.5"></script>
+  <script src="/vitals/scenario-status.js?v=2026.09.09.1"></script>
+<script defer src="/skills-session-mode.js?v=2"></script>
 </body>
 </html>

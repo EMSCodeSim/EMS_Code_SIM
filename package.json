@@ -22,6 +22,7 @@
     "test:scenario-history": "node tools/test-scenario-history-consistency.js",
     "test:condition-engine": "node tools/test-dynamic-condition-engine.js",
     "test:patient-simulator-v2": "node tools/test-patient-simulator-v2.js",
+    "test:patient-simulator-v2-ui": "node tools/test-patient-simulator-v2-ui.js",
     "test:scenario-definitions": "node tools/test-scenario-definitions.js",
     "test:scenario-deployment": "node tools/test-scenario-deployment-contract.js",
     "test:scenario-modes": "node tools/test-scenario-training-modes.js",

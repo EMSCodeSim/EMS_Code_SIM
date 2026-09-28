@@ -5,13 +5,30 @@
   const session = window.EMSCodeSimScenarioSession;
   const $ = id => document.getElementById(id);
 
+  // Public scenario menu: only completed/ready experiences are shown here.
   const cases = [
-    { id:'asthma', image:'/vitals/assets/scenario-patient-adult-v3.webp', title:'Respiratory Distress', patient:'24-year-old adult', scene:'Apartment • inhaler nearby', clue:'Upright, anxious, short sentences', dispatch:'You are dispatched for a 24-year-old with worsening shortness of breath and wheezing.', goal:'Recognize breathing difficulty, treat, reassess, and report' },
-    { id:'stroke', image:'/vitals/assets/scenario-patient-adult-v3.webp', title:'Possible Acute Stroke', patient:'68-year-old adult', scene:'Private residence • family present', clue:'Abnormal speech and right-sided weakness', dispatch:'You are dispatched for a 68-year-old with sudden speech difficulty and right-sided weakness.', goal:'Identify focal neurologic findings, establish timing, and prioritize transport' },
-    { id:'hypoglycemia', image:'/vitals/assets/scenario-patient-adult-v3.webp', title:'Altered Mental Status', patient:'57-year-old adult', scene:'Workplace break room', clue:'Confused, diaphoretic, slow to follow commands', dispatch:'You are dispatched for a 57-year-old who is confused, sweaty, and behaving abnormally.', goal:'Identify a reversible cause, treat appropriately, and reassess mental status' },
-    { id:'trauma', image:'/vitals/assets/scenario-patient-adult-v3.webp', title:'Blunt Trauma', patient:'36-year-old adult', scene:'Roadway collision', clue:'Pale with guarded breathing', dispatch:'You are dispatched to a two-vehicle collision for a patient with chest and abdominal pain.', goal:'Find immediate threats, support ABCs, and expedite trauma transport' },
-    { id:'pediatric', image:'/vitals/assets/scenario-patient-pediatric-v3.webp', title:'Sick Pediatric Patient', patient:'3-year-old child', scene:'Home • caregiver present', clue:'Poor interaction and increased work of breathing', dispatch:'You are dispatched for a 3-year-old with fever, poor interaction, and increased work of breathing.', goal:'Use the pediatric first look, identify respiratory or perfusion compromise, and reassess' },
-    { id:'horse_crush', image:'/vitals/assets/horse-crush/patient-initial.webp', title:'Horse-Crush Hip Injury', patient:'64-year-old adult', scene:'Horse facility • south barn', clue:'Alert on the ground with severe left-hip pain', dispatch:'You are dispatched for a reported fall at a horse facility. A BLS engine crew is already on scene.', goal:'Assess before moving, protect the leg, plan packaging, control pain, and reassess' }
+    {
+      id:'horse_crush',
+      featured:true,
+      image:'/vitals/assets/horse-crush/patient-initial.webp',
+      title:'Horse-Crush Hip Injury',
+      patient:'64-year-old adult',
+      scene:'5541 E Snow Bird Road • south barn',
+      clue:'Alert on the ground with severe left-hip pain',
+      dispatch:'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.',
+      goal:'Assess before moving, protect the leg in its tolerated position, plan packaging, control pain, and repeat distal CSM after movement'
+    },
+    {
+      id:'asthma',
+      featured:true,
+      image:'/vitals/assets/breathing-problem-cover.webp',
+      title:'Breathing Problem',
+      patient:'24-year-old adult',
+      scene:'Public park • patient seated upright on a bench',
+      clue:'Short sentences, wheezing, increased work of breathing',
+      dispatch:'Respond for a 24-year-old with worsening shortness of breath and wheezing in a public park.',
+      goal:'Assess respiratory adequacy, treat, reassess, and report.'
+    }
   ];
 
   let selectedCase = null;
@@ -21,8 +38,21 @@
     return mode === 'assessment' ? 'assessment' : 'learning';
   }
 
-  function patientHome(caseId, mode = 'learning') {
-    return `/vitals/visual-patient.html?case=${encodeURIComponent(caseId)}&training=${encodeURIComponent(trainingMode(mode))}`;
+  function patientHome(caseId, mode = 'learning', options = {}) {
+    // Asthma uses Patient Simulator V2. Legacy visual-patient remains for other cases and rollback.
+    if (caseId === 'asthma' || caseId === 'adult-asthma') {
+      return '/patient-simulator-v2/';
+    }
+    const params = new URLSearchParams({ case: caseId, training: trainingMode(mode) });
+    if (options.reset) params.set('reset', '1');
+    const current = new URLSearchParams(location.search);
+    if (['skills', 'bootcamp'].includes(current.get('mode')) || current.get('skillsMode') === '1') {
+      const bootcamp = current.get('mode') === 'bootcamp';
+      params.set('mode', bootcamp ? 'bootcamp' : 'skills');
+      if (bootcamp) params.set('path', current.get('path') || (caseId === 'horse_crush' ? 'trauma' : 'medical'));
+      else params.set('station', current.get('station') || 'patient-assessment');
+    }
+    return `/vitals/visual-patient.html?${params}`;
   }
 
   function savedMode(record = activeRecord) {
@@ -50,6 +80,7 @@
 
   function renderGallery() {
     const gallery = $('caseGallery');
+    if (!gallery) return;
     gallery.innerHTML = '';
     activeRecord = api?.active?.() || null;
 
@@ -63,12 +94,12 @@
       button.innerHTML = `
         <span class="case-image-wrap">
           <img src="${item.image}" alt="${item.title} patient scenario">
-          ${inProgress ? '<span class="progress-badge">In progress</span>' : ''}
+          ${inProgress ? '<span class="progress-badge">In progress</span>' : item.featured ? '<span class="progress-badge featured-badge">Available</span>' : ''}
         </span>
         <span class="case-choice-body">
           <strong>${item.title}</strong>
           <span>${item.patient}</span>
-          <small>${inProgress ? 'Tap to continue or reset' : 'Tap to choose a mode'}</small>
+          <small>${inProgress ? 'Tap to continue or reset' : 'Choose Learning or Assessment mode'}</small>
         </span>`;
       button.addEventListener('click', () => openCaseDialog(item));
       gallery.appendChild(button);
@@ -122,14 +153,8 @@
     api?.clear?.();
     if (caseId) {
       const partnerKey = session?.partnerTaskKey?.(caseId);
-      [
-        partnerKey,
-        partnerKey && `${partnerKey}_backup`,
-        partnerKey && `${partnerKey}_shadow`,
-        `emscodesim_scenario_${caseId}`,
-        `emscodesim_scenario_${caseId}_backup`,
-        `emscodesim_scenario_${caseId}_shadow`
-      ].filter(Boolean).forEach(key => localStorage.removeItem(key));
+      [partnerKey, partnerKey && `${partnerKey}_backup`, partnerKey && `${partnerKey}_shadow`, `emscodesim_scenario_${caseId}`, `emscodesim_scenario_${caseId}_backup`, `emscodesim_scenario_${caseId}_shadow`]
+        .filter(Boolean).forEach(key => localStorage.removeItem(key));
     }
     activeRecord = null;
   }
@@ -140,10 +165,10 @@
     api?.create?.(item);
     session?.sync?.(item.id);
     api?.setDocumentation?.({ trainingMode: trainingMode(mode), trainingModeSetAt: new Date().toISOString() });
-    location.href = patientHome(item.id, mode);
+    location.href = patientHome(item.id, mode, { reset:true });
   }
 
-  $('continueSavedScenario').addEventListener('click', () => {
+  $('continueSavedScenario')?.addEventListener('click', () => {
     const current = api?.active?.() || activeRecord;
     if (!current?.scenarioId) {
       $('savedScenarioPanel').hidden = true;
@@ -153,7 +178,7 @@
     location.href = patientHome(current.scenarioId, savedMode(current));
   });
 
-  $('resetSavedScenario').addEventListener('click', () => {
+  $('resetSavedScenario')?.addEventListener('click', () => {
     const current = api?.active?.() || activeRecord;
     const name = current?.title || 'current scenario';
     if (!window.confirm(`Reset ${name}? All findings, vitals, history, treatments, partner tasks, and log entries for this patient will be erased.`)) return;
@@ -169,14 +194,11 @@
     button.addEventListener('click', () => startFresh(selectedCase, button.value));
   });
 
-  $('randomCase').addEventListener('click', () => {
-    const item = cases[Math.floor(Math.random() * cases.length)];
-    openCaseDialog(item);
-  });
-  $('closeCaseDialog').addEventListener('click', closeCaseDialog);
-  $('caseDialogBackdrop').addEventListener('click', closeCaseDialog);
+  $('randomCase')?.addEventListener('click', () => openCaseDialog(cases[Math.floor(Math.random() * cases.length)]));
+  $('closeCaseDialog')?.addEventListener('click', closeCaseDialog);
+  $('caseDialogBackdrop')?.addEventListener('click', closeCaseDialog);
   document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && !$('caseDialog').hidden) closeCaseDialog();
+    if (event.key === 'Escape' && !$('caseDialog')?.hidden) closeCaseDialog();
   });
   window.addEventListener('pageshow', renderGallery);
 

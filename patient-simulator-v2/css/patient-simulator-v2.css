@@ -641,9 +641,14 @@ a { color: var(--psv2-cyan); }
   justify-content: center;
   padding: 16px;
   z-index: 40;
+  pointer-events: auto;
 }
 
-.psv2-overlay[hidden] { display: none !important; }
+.psv2-overlay[hidden] {
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
 
 .psv2-modal {
   width: min(560px, 100%);
