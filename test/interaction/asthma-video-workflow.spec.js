@@ -23,7 +23,6 @@ test('asthma arrival, worsening, treatment response, replay, and restart use loc
   await expect(video).toHaveAttribute('preload', 'metadata');
   await expect(video).toHaveAttribute('poster', '/vitals/assets/breathing-problem-cover.webp');
 
-  const firstPatientId = await page.evaluate(() => window.EMSCodeSimPatientRecord.active()?.id);
   await page.evaluate(() => window.EMSCodeSimScenarioIntroVideo.replay());
   await expect(shell).toBeVisible();
   await expect(video.locator('source')).toHaveAttribute('src', '/vitals/assets/asthma-arrival.mp4');
@@ -48,6 +47,9 @@ test('asthma arrival, worsening, treatment response, replay, and restart use loc
   await page.evaluate(() => window.EMSCodeSimPatientRecord.addTreatment({
     name: 'albuterol', actionId: 'albuterol', classification: 'appropriate-effective'
   }));
+  const preResetStartedAt = await page.evaluate(() => window.EMSCodeSimPatientRecord.active()?.startedAt);
+  const preResetTreatments = await page.evaluate(() => window.EMSCodeSimPatientRecord.active()?.treatments?.length || 0);
+  expect(preResetTreatments).toBeGreaterThan(0);
   await expect(shell).toBeVisible();
   await expect(page.locator('#scenarioVideoEyebrow')).toHaveText(/AFTER BRONCHODILATOR/);
   await expect(video.locator('source')).toHaveAttribute('src', '/vitals/assets/asthma-improved.mp4');
@@ -61,11 +63,16 @@ test('asthma arrival, worsening, treatment response, replay, and restart use loc
 
   page.once('dialog', dialog => dialog.accept());
   await page.locator('#scenarioMenuButton').click();
-  await page.locator('#resetAndRestartScenario').click();
-  await expect(page).toHaveURL(/visual-patient\.html\?case=asthma.*reset=1/);
+  // Reset navigates with reset=1, then visual-patient strips that query after applying a clean session.
+  // Assert a fresh asthma session rather than racing the transient reset=1 URL or assuming unique record ids.
+  await Promise.all([
+    page.waitForURL(/visual-patient\.html\?case=asthma/, { timeout: 15000 }),
+    page.locator('#resetAndRestartScenario').click()
+  ]);
+  await expect(page).toHaveURL(/visual-patient\.html\?case=asthma/);
   await expect(video).toHaveCount(1, { timeout: 10000 });
-  await expect.poll(() => page.evaluate(() => window.EMSCodeSimPatientRecord.active()?.id)).not.toBe(firstPatientId);
-  await expect.poll(() => page.evaluate(() => window.EMSCodeSimPatientRecord.active()?.treatments?.length)).toBe(0);
+  await expect.poll(() => page.evaluate(() => window.EMSCodeSimPatientRecord.active()?.treatments?.length || 0)).toBe(0);
+  await expect.poll(() => page.evaluate(() => window.EMSCodeSimPatientRecord.active()?.startedAt)).not.toBe(preResetStartedAt);
   await page.evaluate(() => window.EMSCodeSimScenarioIntroVideo.replay());
   await expect(video.locator('source')).toHaveAttribute('src', '/vitals/assets/asthma-arrival.mp4');
   await expect(shell).toBeVisible();
