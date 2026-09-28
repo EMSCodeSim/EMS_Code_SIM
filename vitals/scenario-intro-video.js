@@ -1,21 +1,21 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.17.1';
+  const VERSION = '2026.09.28.1';
   const COVER = '/vitals/assets/breathing-problem-cover.webp';
   const VIDEOS = Object.freeze({
     intro: {
-      url: 'https://dnznrvs05pmza.cloudfront.net/seedance_2/cgt-20260910065357-qd2md/Single_continuous_realistic_EMS_training_scene__Preserve_the_same_woman__clothing__park_bench__water.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMWNjNzk4NjFjNGRlMWIxNSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTcyOTEyMX0.orYxOmQFEHmHJJ9R-O-H9qCZl9YOzz_f7GEclJqy4Ao',
+      url: '/vitals/assets/asthma-arrival.mp4',
       eyebrow: 'ARRIVAL · PUBLIC PARK',
       copy: 'Observe the patient before beginning your assessment.'
     },
     worsening: {
-      url: 'https://dnznrvs05pmza.cloudfront.net/kling-o3-pro/926809681547366413/Preserve_the_same_woman__clothing__park_bench__daylight__public_park__framing__and_overall_appearanc.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNmJmNDY0MDUzNDM1ZjI0NyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTc1MTMwMX0.ztEQK5TRupCCCAee6kPfMAHJ0rGyou0dhsjWfyVrKME',
+      url: '/vitals/assets/asthma-worsening.mp4',
       eyebrow: 'PATIENT UPDATE · RESPIRATORY DISTRESS',
       copy: 'The patient appears more fatigued with increased work of breathing.'
     },
     improved: {
-      url: 'https://dnznrvs05pmza.cloudfront.net/kling-o3-pro/926809727395954732/Preserve_the_same_woman__clothing__park_bench__daylight__public_park__framing__and_overall_appearanc.mp4?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMjFhMzhjZTg0MTk2NTIyMyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc4OTY5MTM2OH0.5Oo5djakiZKTqo480gwUdIBimnpRKJUiookVB0E8YwY',
+      url: '/vitals/assets/asthma-improved.mp4',
       eyebrow: 'PATIENT UPDATE · AFTER BRONCHODILATOR',
       copy: 'Work of breathing is improving, but reassessment is still required.'
     }
@@ -174,10 +174,14 @@
     shell.classList.remove('resting');
     if (options.once) markSeen(state,current);
     window.clearTimeout(playbackFallbackTimer);
+    // A slow or unsupported clip must never trap the learner behind the video.
+    // Keep the visible Continue control available while giving mobile Safari
+    // enough time to fetch the first frame from the local asset.
     playbackFallbackTimer = window.setTimeout(() => {
       if (!video || video.currentTime < 0.15) showPatient();
-    }, 2500);
-    try { video.currentTime=0; video.play().catch(showPatient); } catch (_) { showPatient(); }
+    }, 10000);
+    try { if (video.readyState > 0) video.currentTime=0; } catch (_) {}
+    try { video.play().catch(showPatient); } catch (_) { showPatient(); }
     if (replayButton) replayButton.textContent = state === 'intro' ? 'Replay intro' : 'Replay patient update';
   }
 
@@ -204,7 +208,7 @@
     shell.hidden = true;
     shell.setAttribute('aria-label','Asthma patient video');
     shell.innerHTML = `
-      <video id="scenarioIntroVideoElement" muted playsinline preload="none" poster="${COVER}"><source type="video/mp4"></video>
+      <video id="scenarioIntroVideoElement" muted playsinline preload="metadata" poster="${COVER}"><source type="video/mp4"></video>
       <div class="scenario-intro-video-controls">
         <div class="scenario-intro-video-copy"><small id="scenarioVideoEyebrow"></small><strong id="scenarioVideoCopy"></strong></div>
         <div class="scenario-intro-video-actions"><button id="scenarioIntroReplay" type="button">Replay</button><button id="scenarioIntroSkip" class="primary" type="button">Continue assessment</button></div>
@@ -217,6 +221,14 @@
     video?.addEventListener('ended',showPatient);
     video?.addEventListener('error',showPatient);
     video?.addEventListener('playing',() => window.clearTimeout(playbackFallbackTimer));
+    video?.addEventListener('waiting',() => {
+      window.clearTimeout(playbackFallbackTimer);
+      playbackFallbackTimer = window.setTimeout(showPatient,5000);
+    });
+    video?.addEventListener('stalled',() => {
+      window.clearTimeout(playbackFallbackTimer);
+      playbackFallbackTimer = window.setTimeout(showPatient,5000);
+    });
 
     replayButton = document.createElement('button');
     replayButton.type='button';
@@ -225,9 +237,9 @@
     replayButton.addEventListener('click',() => playState(activeState));
     stage.appendChild(replayButton);
 
-    // Attach CloudFront src only after window `load` so first navigation is not
-    // blocked by CDN media. Skip autoplay under WebDriver — signed CDN transfers
-    // stall / OOM mobile Playwright tabs without helping clinical assertions.
+    // Start the local clip after page load so it does not compete with the
+    // initial clinical workspace. Skip autoplay under WebDriver so automated
+    // workflow assertions can use the assessment controls immediately.
     const kickoffIntro = () => {
       if (navigator.webdriver) {
         showPatient();
