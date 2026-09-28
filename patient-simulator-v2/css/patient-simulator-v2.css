@@ -682,24 +682,41 @@ a { color: var(--psv2-cyan); }
 
 /* Phone */
 @media (max-width: 720px) {
-  body.psv2-body { overflow: auto; }
+  html, body.psv2-body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+  body.psv2-body { overflow-y: auto; }
   .psv2-app {
     height: auto;
     min-height: 100dvh;
+    width: 100%;
+    max-width: 100vw;
   }
   .psv2-mobile-only { display: initial; }
+  .psv2-topbar {
+    padding: 8px 10px;
+    flex-wrap: wrap;
+  }
   .psv2-main {
-    grid-template-columns: 1fr;
-    grid-template-rows: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+    width: 100%;
   }
   .psv2-col-video,
   .psv2-col-monitor,
   .psv2-col-tools {
-    grid-column: 1;
+    width: 100%;
+    max-width: 100%;
   }
   .psv2-video-shell {
-    min-height: 210px;
-    max-height: 280px;
+    min-height: 200px;
+    max-height: 240px;
+  }
+  .psv2-video-shell video {
+    object-fit: cover;
   }
   .psv2-col-monitor .psv2-panel-bd {
     padding: 8px;
@@ -713,10 +730,28 @@ a { color: var(--psv2-cyan); }
   }
   .psv2-vital .value { font-size: 1.1rem; }
   .psv2-wave { display: none; }
+  .psv2-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 6px;
+  }
+  .psv2-tabs button {
+    flex: 0 0 auto;
+  }
+  .psv2-assess-grid {
+    grid-template-columns: 1fr;
+  }
+  .psv2-finding {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
   .psv2-col-tools {
-    position: sticky;
-    bottom: 0;
+    position: relative;
     z-index: 5;
+  }
+  .psv2-actionbar {
+    width: 100%;
   }
   .psv2-actionbar button {
     min-width: 84px;
@@ -725,6 +760,10 @@ a { color: var(--psv2-cyan); }
   .psv2-brand-text span { display: none; }
   .psv2-top-meta .psv2-btn:not(.danger):not(#psv2PauseBtn) {
     display: none;
+  }
+  .psv2-disclaimer {
+    padding: 8px 10px 12px;
+    text-align: left;
   }
 }
 

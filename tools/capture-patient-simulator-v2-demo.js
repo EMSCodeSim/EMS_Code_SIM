@@ -48,11 +48,16 @@ async function main() {
   await page.waitForTimeout(600);
   await page.screenshot({ path: path.join(shotDir, 'psv2-03-assessment-treatment.png'), fullPage: false });
 
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.waitForTimeout(400);
-  await page.screenshot({ path: path.join(shotDir, 'psv2-04-mobile-layout.png'), fullPage: false });
-
+  // Mobile layout smoke — capture at mobile viewport from a fresh context width
   await context.close();
+  const mobileContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const mobilePage = await mobileContext.newPage();
+  await mobilePage.goto(`${base}/patient-simulator-v2/`, { waitUntil: 'networkidle' });
+  await mobilePage.locator('#psv2StartBtn').click();
+  await mobilePage.waitForFunction(() => document.getElementById('psv2StartOverlay')?.hidden === true);
+  await mobilePage.waitForTimeout(500);
+  await mobilePage.screenshot({ path: path.join(shotDir, 'psv2-04-mobile-layout.png'), fullPage: false });
+  await mobileContext.close();
   await browser.close();
 
   // Rename playwright video to a stable artifact name
