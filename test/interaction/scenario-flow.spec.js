@@ -31,69 +31,28 @@ test('scenario launcher shows horse and breathing problem and opens asthma in As
   await expect(page.locator('#caseDialogMeta')).toContainText(/year-old|inhaler|apartment|park/i);
   await page.locator('[data-start-mode="assessment"]').click();
 
-  await expect(page).toHaveURL(/visual-patient\.html\?case=asthma&training=assessment/);
-  await expect(page.locator('#caseTitle')).toContainText(/Respiratory Distress|Breathing Problem/);
-  await expect(page.locator('#scene')).toContainText(/park|apartment|inhaler|shortness of breath/i);
-
-  const intro = page.locator('#scenarioIntroVideo');
-  await expect(intro).toHaveCount(1, { timeout: 10000 });
-  if (await intro.isVisible().catch(() => false)) {
-    await expect(page.locator('#scenarioVideoEyebrow')).toContainText(/PUBLIC PARK/);
-    await page.locator('#scenarioIntroSkip').click();
-  }
-  await expect(page.locator('.patient-stage')).toBeVisible();
-  await expect(page.locator('#scenarioIntroVideoElement')).toHaveCount(1);
-  await expect(page.locator('#scenarioIntroVideo')).toBeHidden();
-  await expect(page.locator('#patientImage')).toBeVisible();
+  // Breathing Problem launches Patient Simulator V2 with autostart (legacy remains for rollback).
+  await expect(page).toHaveURL(/\/patient-simulator-v2\/?/);
+  await expect(page.locator('#psv2StartOverlay')).toBeHidden({ timeout: 10000 });
+  await expect(page.locator('#psv2DispatchText')).toContainText(/Riverside Park|difficulty breathing|wheezing/i);
+  await expect(page.locator('#psv2Video')).toBeVisible();
+  await expect(page.locator('#psv2ActionBar')).toBeVisible();
+  await expect(page.locator('#psv2Workflow')).toContainText(/Patient Contact|Assessment|Treatment/i);
 
   const mobile = testInfo.project.name === 'mobile-chromium';
-  // Assessment cards live in the sheet on phone; open Assess before asserting them.
   if (mobile) {
-    await expect(page.locator('#patientFirstMobileNav')).toBeVisible();
-    await page.locator('#patientFirstMobileNav [data-mobile-domain="assessmentPanel"]').click();
-    await expect(page.locator('#actionSheet')).toBeVisible();
-    await expect(page.locator('#assessmentPanel')).toBeVisible();
+    await expect(page.locator('#psv2ActionBar button[data-action="assess"]')).toBeVisible();
+    await expect(page.locator('#psv2ActionBar button[data-action="treat"]')).toBeVisible();
   }
 
-  // Assessment workspace shows scene size-up / Initial ABC cards with Begin actions.
-  await expect(page.locator('#assessmentPanel').getByText('Scene size-up').first()).toBeVisible();
-  await expect(page.locator('#assessmentPanel').getByText(/Initial ABC/).first()).toBeVisible();
-  await expect(page.locator('#assessmentPanel button:visible').filter({ hasText: /^Begin/i }).first()).toBeVisible();
-  if (mobile && await page.locator('#closeSheet').isVisible().catch(() => false)) {
-    await page.locator('#closeSheet').click();
-    await expect(page.locator('#actionSheet')).toBeHidden();
-  }
+  await page.locator('#psv2ActionBar button[data-action="assess"]').click();
+  await expect(page.locator('.psv2-tab-panel[data-panel="assess"]')).toBeVisible();
+  await expect(page.locator('#psv2AssessGrid button[data-assess="scene_sizeup"], #psv2AssessGrid button[data-assess="airway"]').first()).toBeVisible();
 
-  const historyButton = mobile
-    ? page.locator('#patientFirstMobileNav [data-mobile-domain="historyPanel"]')
-    : page.locator('#clinicalInteractionColumn .bottom-nav button[data-panel="historyPanel"], .bottom-nav.clinical-domain-rail button[data-panel="historyPanel"]');
-  const treatmentButton = mobile
-    ? page.locator('#patientFirstMobileNav [data-mobile-domain="treatmentPanel"]')
-    : page.locator('#clinicalInteractionColumn .bottom-nav button[data-panel="treatmentPanel"], .bottom-nav.clinical-domain-rail button[data-panel="treatmentPanel"]');
+  await page.locator('#psv2ActionBar button[data-action="treat"]').click();
+  await expect(page.locator('.psv2-tab-panel[data-panel="treat"]')).toBeVisible();
+  await expect(page.locator('#psv2TreatPanel')).toContainText(/Albuterol/i);
 
-  await expect(historyButton).toBeVisible();
-  await expect(treatmentButton).toBeVisible();
-
-  await historyButton.click();
-  await expect(page.locator('#historyPanel')).toBeVisible();
-  if (await page.locator('#closeSheet').isVisible().catch(() => false)) await page.locator('#closeSheet').click();
-
-  await treatmentButton.click();
-  await expect(page.locator('#treatmentPanel')).toBeVisible();
-
-  const state = await page.evaluate(() => {
-    const record = window.EMSCodeSimPatientRecord.active();
-    return {
-      scenarioId: record?.scenarioId,
-      trainingMode: record?.documentation?.trainingMode,
-      title: record?.title,
-      dispatch: document.getElementById('dispatch')?.textContent || '',
-      scene: document.getElementById('scene')?.textContent || ''
-    };
-  });
-  expect(state.scenarioId).toBe('asthma');
-  expect(state.trainingMode).toBe('assessment');
-  expect(state.scene).toMatch(/park|apartment|inhaler|shortness of breath/i);
   await assertNoPageErrors();
 });
 
