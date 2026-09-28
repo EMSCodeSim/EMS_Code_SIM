@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Patient Simulator V2 | EMSCodeSim</title>
+<meta name="description" content="Standalone EMSCodeSim patient simulation experience.">
+<link rel="stylesheet" href="/patient-simulator-v2/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div><a href="/" class="brand">EMSCodeSim</a><span class="badge">Patient Simulator V2</span></div>
+  <div class="top-actions"><span id="clock">00:00</span><button id="restartBtn" class="ghost">Restart</button><button id="endBtn" class="danger">End Scenario</button></div>
+</header>
+
+<nav class="phasebar" id="phaseBar" aria-label="Scenario phases"></nav>
+
+<main class="layout">
+  <section class="dispatch card">
+    <div class="eyebrow">DISPATCH</div>
+    <h1 id="scenarioTitle">Respiratory Distress</h1>
+    <p id="dispatchSummary"></p>
+    <p class="muted" id="dispatchNotes"></p>
+  </section>
+
+  <section class="patient card">
+    <div class="section-head"><div><span class="eyebrow">SCENE VIEW</span><h2>Live Patient</h2></div><span id="conditionChip" class="chip">Arrival</span></div>
+    <div class="video-wrap">
+      <video id="patientVideo" autoplay muted loop playsinline preload="metadata"></video>
+      <div class="video-fallback" id="videoFallback" hidden>Patient video unavailable. Clinical simulation remains active.</div>
+    </div>
+    <div class="patient-meta"><strong id="patientLabel"></strong><span id="clinicalSummary">Observe before acting.</span></div>
+  </section>
+
+  <aside class="monitor card">
+    <div class="eyebrow">MONITOR</div>
+    <div class="monitor-grid">
+      <button data-monitor="heartRate"><span>HR</span><strong id="hrValue">--</strong></button>
+      <button data-monitor="spo2"><span>SpO₂</span><strong id="spo2Value">--</strong></button>
+      <button data-monitor="respiratoryRate"><span>RR</span><strong id="rrValue">--</strong></button>
+      <button data-monitor="bloodPressure"><span>BP</span><strong id="bpValue">--</strong></button>
+      <button data-monitor="etco2"><span>EtCO₂</span><strong id="etco2Value">--</strong></button>
+    </div>
+    <p class="muted tiny">Values appear only after you obtain them.</p>
+  </aside>
+
+  <section class="workspace card">
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-tab="talk">Talk</button>
+      <button class="tab" data-tab="assess">Assess</button>
+      <button class="tab" data-tab="treat">Treat</button>
+      <button class="tab" data-tab="transport">Transport</button>
+      <button class="tab" data-tab="handoff">Handoff</button>
+      <button class="tab" data-tab="pcr">PCR</button>
+    </div>
+
+    <div class="panel active" data-panel="talk">
+      <h3>Talk to the patient</h3>
+      <div id="conversation" class="conversation"><div class="patient-line">Patient: “I can’t catch my breath.”</div></div>
+      <form id="talkForm" class="inline-form"><input id="talkInput" autocomplete="off" placeholder="Ask the patient a question…" required><button>Ask</button></form>
+    </div>
+
+    <div class="panel" data-panel="assess">
+      <h3>Assessment</h3>
+      <div id="assessmentButtons" class="action-grid"></div>
+      <div id="finding" class="result-box">Choose an assessment to reveal that finding.</div>
+      <button id="reassessBtn" class="primary wide">Reassess Patient</button>
+    </div>
+
+    <div class="panel" data-panel="treat">
+      <h3>Treatment</h3>
+      <div id="treatmentButtons" class="action-grid"></div>
+      <div id="treatmentResponse" class="result-box">Select treatment based on your assessment.</div>
+    </div>
+
+    <div class="panel" data-panel="transport">
+      <h3>Transport decision</h3>
+      <label>Destination<input id="destination" value="Emergency Department"></label>
+      <label>Priority<select id="priority"><option>Emergent</option><option>Non-emergent</option></select></label>
+      <button id="transportBtn" class="primary">Commit Transport Decision</button>
+    </div>
+
+    <div class="panel" data-panel="handoff">
+      <h3>Hospital notification / handoff</h3>
+      <textarea id="handoffText" rows="7" placeholder="Give your concise EMS radio report or handoff…"></textarea>
+      <button id="handoffBtn" class="primary">Submit Handoff</button>
+    </div>
+
+    <div class="panel" data-panel="pcr">
+      <h3>PCR narrative</h3>
+      <textarea id="pcrText" rows="9" placeholder="Document the call from your memory and assessment…"></textarea>
+      <button id="pcrBtn" class="primary">Submit PCR</button>
+    </div>
+  </section>
+
+  <aside class="timeline card">
+    <div class="eyebrow">CLINICAL REPLAY</div>
+    <h2>Call Timeline</h2>
+    <ol id="timelineList"></ol>
+  </aside>
+</main>
+
+<section id="debrief" class="debrief" hidden>
+  <div class="debrief-card">
+    <div class="eyebrow">DEBRIEF</div>
+    <h2>Clinical Replay & Feedback</h2>
+    <div id="score"></div>
+    <div id="gradeResults"></div>
+    <h3>Reasoning prompt</h3>
+    <p id="reasoningPrompt">What finding most strongly told you this patient was tiring rather than improving?</p>
+    <button id="closeDebrief" class="primary">Return to Scenario</button>
+  </div>
+</section>
+
+<footer>Educational simulation only. Follow local protocols, medical direction, and agency policy.</footer>
+
+<script src="/patient-simulator-v2/engine.js"></script>
+<script src="/patient-simulator-v2/scenario-asthma.js"></script>
+<script src="/patient-simulator-v2/app.js"></script>
+</body>
+</html>

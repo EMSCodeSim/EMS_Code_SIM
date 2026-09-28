@@ -29,6 +29,8 @@ jobs:
         run: npm run build
       - name: Install Chromium for interaction tests
         run: npx playwright install --with-deps chromium
+      - name: Validate standalone Patient Simulator V2 in browser
+        run: npx playwright test test/interaction/patient-simulator-v2.spec.js
       - name: Run desktop and mobile interaction tests
         run: npx playwright test --max-failures=1
       - name: Upload Playwright diagnostics
