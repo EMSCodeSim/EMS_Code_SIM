@@ -16,6 +16,16 @@
     Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
+  for = "/patient-simulator-v2/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/patient-simulator-v2/index.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
   for = "/vitals/scenario-launcher.html"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"

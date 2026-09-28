@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Patient Simulator V2 — EMSCodeSim</title>
+  <meta name="description" content="EMSCodeSim Patient Simulator V2 — realistic start-to-finish EMS call simulation with deterministic clinical engine and AI-assisted conversation/debrief.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/patient-simulator-v2/css/patient-simulator-v2.css?v=2.0.0">
+</head>
+<body class="psv2-body">
+  <div class="psv2-app" id="psv2App">
+    <header class="psv2-topbar">
+      <a class="psv2-brand" href="/">
+        <img src="/ems-logo.webp" alt="" width="34" height="34">
+        <span class="psv2-brand-text">
+          <strong>EMSCodeSim</strong>
+          <span>Patient Simulator V2 · Educational use only</span>
+        </span>
+      </a>
+      <div class="psv2-top-meta">
+        <div class="psv2-clock" id="psv2Clock" aria-live="polite">00:00</div>
+        <button class="psv2-btn" type="button" id="psv2PauseBtn">Pause</button>
+        <button class="psv2-btn" type="button" id="psv2RestartBtn">Restart</button>
+        <button class="psv2-btn danger" type="button" id="psv2EndBtn">End scenario</button>
+      </div>
+    </header>
+
+    <nav class="psv2-workflow" id="psv2Workflow" aria-label="Call workflow stages"></nav>
+
+    <main class="psv2-main">
+      <section class="psv2-panel psv2-col-video" aria-label="Live patient">
+        <div class="psv2-panel-hd">
+          <h2>Scene view — live patient</h2>
+          <small id="psv2VideoStateLabel">arrival</small>
+        </div>
+        <div class="psv2-video-shell">
+          <video id="psv2Video" muted loop playsinline autoplay preload="auto"></video>
+          <div class="psv2-video-caption">
+            <small id="psv2VideoEyebrow">SCENE VIEW</small>
+            <strong id="psv2VideoCopy">Observe the patient.</strong>
+          </div>
+        </div>
+        <div class="psv2-dispatch-card">
+          <h3>Dispatch</h3>
+          <p id="psv2DispatchText">Loading scenario…</p>
+        </div>
+      </section>
+
+      <section class="psv2-panel psv2-col-monitor" aria-label="Patient monitor">
+        <div class="psv2-panel-hd">
+          <h2>Monitor</h2>
+          <small>Enable channels to reveal values</small>
+        </div>
+        <div class="psv2-panel-bd">
+          <div class="psv2-wave" aria-hidden="true">
+            <svg viewBox="0 0 400 54" preserveAspectRatio="none">
+              <path id="psv2EcgPath" d="M0 27 H40 L48 27 L54 8 L62 46 L70 27 H120 L128 27 L134 10 L142 44 L150 27 H220 L228 27 L234 8 L242 46 L250 27 H320 L328 27 L334 12 L342 42 L350 27 H400"></path>
+            </svg>
+          </div>
+          <div class="psv2-monitor" id="psv2Monitor"></div>
+          <div class="psv2-monitor-actions" id="psv2MonitorActions"></div>
+        </div>
+      </section>
+
+      <section class="psv2-panel psv2-col-tools" aria-label="Clinical tools">
+        <div class="psv2-tabs" role="tablist" id="psv2ToolTabs">
+          <button type="button" role="tab" aria-selected="true" data-tab="talk">Talk</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="assess">Assess</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="treat">Treat</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="transport">Transport</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="handoff">Handoff</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="pcr">PCR</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="timeline">Timeline</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="grade">Grade</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="debrief">Debrief</button>
+        </div>
+
+        <div class="psv2-panel-bd">
+          <div class="psv2-tab-panel" data-panel="talk">
+            <div class="psv2-chat">
+              <div class="psv2-chat-log" id="psv2ChatLog" aria-live="polite"></div>
+              <form class="psv2-chat-form" id="psv2ChatForm">
+                <input id="psv2ChatInput" type="text" autocomplete="off" placeholder="Ask the patient…" aria-label="Message to patient">
+                <button class="psv2-btn primary" type="submit">Send</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="psv2-tab-panel" data-panel="assess" hidden>
+            <div class="psv2-assess-grid" id="psv2AssessGrid"></div>
+            <div class="psv2-finding" id="psv2AssessFinding" hidden></div>
+            <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+              <button class="psv2-btn" type="button" id="psv2ReassessBtn">Mark next as reassessment</button>
+              <label class="psv2-chip" style="display:inline-flex;align-items:center;gap:6px">
+                <input type="checkbox" id="psv2ReassessToggle"> Reassessment mode
+              </label>
+            </div>
+          </div>
+
+          <div class="psv2-tab-panel" data-panel="treat" hidden>
+            <div id="psv2TreatPanel"></div>
+            <div class="psv2-finding" id="psv2TreatNote" hidden></div>
+          </div>
+
+          <div class="psv2-tab-panel" data-panel="transport" hidden>
+            <div class="psv2-field">
+              <label for="psv2TransportAction">Decision</label>
+              <select id="psv2TransportAction">
+                <option value="transport">Transport</option>
+                <option value="continue_scene">Continue treatment on scene</option>
+                <option value="als_intercept">Request ALS intercept</option>
+                <option value="additional_resources">Request additional resources</option>
+              </select>
+            </div>
+            <div class="psv2-field">
+              <label for="psv2TransportPriority">Priority</label>
+              <select id="psv2TransportPriority">
+                <option value="emergent">Emergent</option>
+                <option value="non-emergent">Non-emergent</option>
+              </select>
+            </div>
+            <div class="psv2-field">
+              <label for="psv2TransportDest">Destination</label>
+              <select id="psv2TransportDest"></select>
+            </div>
+            <button class="psv2-btn primary" type="button" id="psv2TransportSubmit">Record transport decision</button>
+          </div>
+
+          <div class="psv2-tab-panel" data-panel="handoff" hidden>
+            <div class="psv2-field">
+              <label for="psv2HandoffReport">Hospital radio report</label>
+              <textarea id="psv2HandoffReport" rows="8" placeholder="Age, sex, chief complaint, severity, history, findings, vitals, treatments, response, ETA…"></textarea>
+            </div>
+            <button class="psv2-btn primary" type="button" id="psv2HandoffSubmit">Send notification</button>
+            <div class="psv2-finding" id="psv2HandoffReply" hidden></div>
+          </div>
+
+          <div class="psv2-tab-panel" data-panel="pcr" hidden>
+            <div id="psv2PcrFields"></div>
+            <div class="psv2-field" style="margin-top:8px;border-top:1px solid rgba(140,190,220,.18);padding-top:10px">
+              <label for="psv2OcrInput">OCR foundation (optional)</label>
+              <textarea id="psv2OcrInput" rows="3" placeholder="Paste/extracted handwritten PCR text — you must confirm before grading."></textarea>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+                <button class="psv2-btn" type="button" id="psv2OcrIngest">Load OCR draft</button>
+                <button class="psv2-btn" type="button" id="psv2OcrConfirm">Confirm OCR text</button>
+              </div>
+              <small style="color:var(--psv2-muted)">Raw OCR is never graded until you confirm/correct it.</small>
+            </div>
+            <button class="psv2-btn primary" type="button" id="psv2PcrSubmit" style="margin-top:10px">Submit PCR</button>
+            <div class="psv2-finding" id="psv2PcrResult" hidden></div>
+          </div>
+
+          <div class="psv2-tab-panel" data-panel="timeline" hidden>
+            <div class="psv2-timeline" id="psv2Timeline"></div>
+          </div>
+
+          <div class="psv2-tab-panel" data-panel="grade" hidden>
+            <div id="psv2GradePanel">
+              <p style="color:var(--psv2-muted)">Complete the call, then generate grading. Scores are deterministic — not LLM-invented.</p>
+              <button class="psv2-btn primary" type="button" id="psv2GradeBtn">Generate grade</button>
+            </div>
+          </div>
+
+          <div class="psv2-tab-panel" data-panel="debrief" hidden>
+            <div id="psv2DebriefPanel">
+              <p style="color:var(--psv2-muted)">Debrief starts after grading. AI instructor discusses reasoning; it cannot change your grade.</p>
+              <button class="psv2-btn primary" type="button" id="psv2DebriefStart">Start debrief</button>
+              <div id="psv2DebriefActive" hidden>
+                <div class="psv2-finding" id="psv2DebriefPrompt"></div>
+                <form id="psv2DebriefForm" style="margin-top:10px">
+                  <div class="psv2-field">
+                    <label for="psv2DebriefAnswer">Your reasoning</label>
+                    <textarea id="psv2DebriefAnswer" rows="4"></textarea>
+                  </div>
+                  <button class="psv2-btn primary" type="submit">Submit answer</button>
+                </form>
+                <div class="psv2-finding" id="psv2DebriefReply" hidden></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div>
+      <div class="psv2-actionbar" id="psv2ActionBar" role="toolbar" aria-label="Primary actions">
+        <button type="button" data-action="talk">Talk to Patient</button>
+        <button type="button" data-action="assess">Assess</button>
+        <button type="button" data-action="vitals">Vitals / Monitor</button>
+        <button type="button" data-action="treat">Treat</button>
+        <button type="button" data-action="procedures">Procedures</button>
+        <button type="button" data-action="equipment">Equipment</button>
+        <button type="button" data-action="partner">Partner</button>
+        <button type="button" data-action="transport">Transport</button>
+      </div>
+      <p class="psv2-disclaimer">Educational / training simulation only. Does not replace local protocols, medical direction, clinical judgment, or formal certification. Not an NREMT exam product.</p>
+    </div>
+  </div>
+
+  <div class="psv2-overlay" id="psv2StartOverlay">
+    <div class="psv2-modal">
+      <h2>Adult Asthma / Respiratory Distress</h2>
+      <p>Run a complete EMS call from dispatch through debrief. The clinical engine controls physiology; conversation and debrief may use AI phrasing without inventing facts.</p>
+      <p><strong style="color:#3ec6e0">Scenario:</strong> 28-year-old female, difficulty breathing in a public park.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+        <button class="psv2-btn primary" type="button" id="psv2StartBtn">Start simulation</button>
+        <a class="psv2-btn" href="/vitals/visual-patient.html?case=asthma&amp;training=assessment&amp;reset=1">Open legacy simulator</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/patient-simulator-v2/js/engines/event-timeline.js?v=2.0.0"></script>
+  <script src="/patient-simulator-v2/js/engines/patient-state-engine.js?v=2.0.0"></script>
+  <script src="/patient-simulator-v2/js/engines/video-state-controller.js?v=2.0.0"></script>
+  <script src="/patient-simulator-v2/js/engines/assessment-engine.js?v=2.0.0"></script>
+  <script src="/patient-simulator-v2/js/engines/treatment-engine.js?v=2.0.0"></script>
+  <script src="/patient-simulator-v2/js/engines/conversation-engine.js?v=2.0.0"></script>
+  <script src="/patient-simulator-v2/js/engines/grading-engine.js?v=2.0.0"></script>
+  <script src="/patient-simulator-v2/js/engines/pcr-engine.js?v=2.0.0"></script>
+  <script src="/patient-simulator-v2/js/engines/debrief-engine.js?v=2.0.0"></script>
+  <script src="/patient-simulator-v2/js/engines/session.js?v=2.0.0"></script>
+  <script src="/patient-simulator-v2/scenarios/adult-asthma.js?v=2.0.0"></script>
+  <script src="/patient-simulator-v2/js/app.js?v=2.0.0"></script>
+</body>
+</html>
