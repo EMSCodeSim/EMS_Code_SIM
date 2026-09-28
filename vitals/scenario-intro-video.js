@@ -39,7 +39,7 @@
     style.textContent = `
       html body.asthma-video-only #clinicalReasoningBoard,
       html body.asthma-video-only #reasoningDiscoveryCue{display:none!important}
-      html body.asthma-video-only .patient-stage{position:relative;background:#071625!important}\n      body.asthma-video-only .scenario-intro-video-shell:not([hidden])~#patientImage,\n      body.asthma-video-only .scenario-intro-video-shell:not([hidden])~#focusImage{visibility:hidden!important}
+      html body.asthma-video-only .patient-stage{position:relative;background:#071625!important}\n      body.asthma-video-only .patient-stage:has(.scenario-intro-video-shell:not([hidden]))>#patientImage,\n      body.asthma-video-only .patient-stage:has(.scenario-intro-video-shell:not([hidden]))>#focusImage{visibility:hidden!important}
       body.asthma-video-only .bottom-nav.guide-locked button[data-panel="assessmentPanel"],
       body.asthma-video-only .bottom-nav.guide-locked button[data-panel="vitalsPanel"],
       body.asthma-video-only .bottom-nav.guide-locked button[data-panel="historyPanel"],
