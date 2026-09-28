@@ -2,7 +2,7 @@
   'use strict';
 
   const CASE_ID = 'horse_crush';
-  const BUILD = '2026.08.18.34';
+  const BUILD = '2026.08.17.7';
 
   function loadOnce(attribute, src) {
     if (document.querySelector(`script[${attribute}]`)) return;
@@ -64,44 +64,6 @@
         body.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet:not([hidden]) {
           display: grid !important;
         }
-        body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu {
-          display: grid !important;
-          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-          grid-auto-rows: min-content !important;
-          align-items: start !important;
-          align-content: start !important;
-          min-height: 0 !important;
-          height: 100% !important;
-          overflow: auto !important;
-        }
-        body.horse-current-emt-call.desktop-scenario-layout #treatmentTools.horse-treatment-group-menu > * {
-          align-self: start !important;
-          min-height: 0 !important;
-        }
-        body.horse-current-emt-call.desktop-scenario-layout .horse-treatment-group-choice[hidden] {
-          display: none !important;
-          pointer-events: none !important;
-        }
-      }
-      body.hospital-handoff-open #actionSheet,
-      body.hospital-handoff-open #actionSheet.action-sheet,
-      body.hospital-handoff-open #actionSheet:not([hidden]),
-      body.hospital-handoff-open.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet,
-      body.hospital-handoff-open.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet:not([hidden]),
-      body.horse-grade-open #actionSheet,
-      body.horse-grade-open #actionSheet.action-sheet,
-      body.horse-grade-open #actionSheet:not([hidden]),
-      body.horse-grade-open.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet,
-      body.horse-grade-open.horse-current-emt-call.desktop-scenario-layout #actionSheet.action-sheet:not([hidden]),
-      body.hospital-handoff-open .patient-control-column,
-      body.horse-grade-open .patient-control-column,
-      body.hospital-handoff-open #treatmentPanel,
-      body.horse-grade-open #treatmentPanel,
-      body.hospital-handoff-open .bottom-nav,
-      body.horse-grade-open .bottom-nav {
-        display: none !important;
-        visibility: hidden !important;
-        pointer-events: none !important;
       }
     `;
     document.head.appendChild(style);
@@ -118,8 +80,7 @@
     document.addEventListener('click', event => {
       const params = new URLSearchParams(location.search);
       if (params.get('case') !== CASE_ID) return;
-      const origin = event.target?.nodeType === 1 ? event.target : event.target?.parentElement;
-      if (!origin?.closest?.('#handoffFromProgress, #transportScenarioQuick, #horseOpenTransport, #horseOpenHandoff, #horseOpenGrade')) return;
+      if (!event.target.closest?.('#handoffFromProgress, #transportScenarioQuick')) return;
       window.setTimeout(clearScenarioControlOverlay, 0);
       window.requestAnimationFrame(clearScenarioControlOverlay);
     });

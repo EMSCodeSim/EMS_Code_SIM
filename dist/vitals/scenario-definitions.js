@@ -32,8 +32,8 @@
     },
     horse_crush: {
       id: 'horse_crush', title: 'Horse-Crush Hip Injury', patient: '64-year-old adult',
-      dispatch: 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.',
-      scene: '5541 E Snow Bird Road; outside the south barn; scene reported safe; patient remains on the ground',
+      dispatch: 'Reported fall at a horse facility; a BLS engine crew is already on scene.',
+      scene: 'Outside the south barn; scene reported safe; patient remains on the ground',
       goal: 'Perform a deliberate trauma assessment, protect the injured leg, plan movement, treat pain, and reassess.'
     }
   });
@@ -151,8 +151,8 @@
     },
     horse_crush: {
       patient: '64-year-old adult',
-      dispatch: 'Medic 181 Engine 182 respond emergent to 5541 E Snow Bird Road in reports of a 64 year old female smashed by a horse.',
-      scene: '5541 E Snow Bird Road; outside the south barn; scene reported safe; patient remains on the ground',
+      dispatch: 'Reported fall at a horse facility; a BLS engine crew is already on scene.',
+      scene: 'Outside the south barn; scene reported safe; patient remains on the ground',
       vitals: {
         blood_pressure: '130/90', systolic: 130, diastolic: 90, pulse: 75, respirations: 16, spo2: 98,
         blood_glucose: 104, temperature: '98.6°F', avpu: 'A', mental_status: 'A&O x4',
@@ -205,9 +205,9 @@
       notIndicatedFindings: ['motor_sensory','chest_assessment','abdominal_assessment','trauma_assessment','rule_of_nines']
     },
     horse_crush: {
-      requiredFindings: ['arrival_parking'],
-      appropriateFindings: ['airway','breathing','perfusion','mental_status','blood_pressure','pulse','respirations','spo2','neck_back','chest_assessment','abdominal_assessment','pelvis_hip','left_leg','distal_csm','pain','pupils','skin','sample','trauma_assessment'],
-      optionalFindings: ['blood_glucose','temperature','breath_sounds','motor_sensory','bls_followup_loc','bls_followup_moved','bls_followup_scene','bls_followup_injuries','bls_followup_vitals'],
+      requiredFindings: ['arrival_parking','airway','breathing','perfusion','mental_status','blood_pressure','pulse','respirations','spo2','neck_back','chest_assessment','abdominal_assessment','pelvis_hip','left_leg','distal_csm','pain'],
+      appropriateFindings: ['pupils','skin','sample','trauma_assessment'],
+      optionalFindings: ['blood_glucose','temperature','breath_sounds'],
       notIndicatedFindings: ['pediatric_assessment_triangle','rule_of_nines']
     }
   });
@@ -216,7 +216,7 @@
     asthma: {
       title: 'Respiratory Distress',
       visible: 'Sitting upright, anxious, speaking in short sentences',
-      image: '/vitals/assets/scenario-patient-adult-v3.png',
+      image: '/vitals/assets/scenario-patient-adult-v3.webp',
       imageMode: 'respiratory',
       sceneClues: ['Upright position', 'Short sentences', 'Rescue inhaler nearby'],
       recommended: ['airway','breathing','perfusion','respirations','breath_sounds','spo2','skin','pulse','blood_pressure','sample'],
@@ -230,7 +230,7 @@
     stroke: {
       title: 'Possible Acute Stroke',
       visible: 'Awake with abnormal speech and right-sided weakness',
-      image: '/vitals/assets/scenario-patient-adult-v3.png',
+      image: '/vitals/assets/scenario-patient-adult-v3.webp',
       imageMode: 'stroke',
       sceneClues: ['Abnormal speech', 'Right arm weakness', 'Family reports sudden onset'],
       recommended: ['airway','breathing','perfusion','mental_status','pupils','motor_sensory','blood_glucose','blood_pressure','pulse','respirations','spo2','sample'],
@@ -244,7 +244,7 @@
     hypoglycemia: {
       title: 'Altered Mental Status',
       visible: 'Confused, sweaty, and slow to follow commands',
-      image: '/vitals/assets/scenario-patient-adult-v3.png',
+      image: '/vitals/assets/scenario-patient-adult-v3.webp',
       imageMode: 'hypoglycemia',
       sceneClues: ['Diaphoretic', 'Confused behavior', 'Diabetic supplies nearby'],
       recommended: ['airway','breathing','perfusion','mental_status','pupils','motor_sensory','blood_glucose','skin','pulse','blood_pressure','respirations','spo2','sample'],
@@ -258,7 +258,7 @@
     trauma: {
       title: 'Blunt Trauma',
       visible: 'Pale patient with guarded breathing after a collision',
-      image: '/vitals/assets/scenario-patient-adult-v3.png',
+      image: '/vitals/assets/scenario-patient-adult-v3.webp',
       imageMode: 'trauma',
       sceneClues: ['Collision mechanism', 'Guarded chest', 'Pale appearance'],
       recommended: ['airway','breathing','perfusion','respirations','breath_sounds','spo2','chest_assessment','trauma_assessment','abdominal_assessment','skin','blood_pressure','pulse'],
@@ -272,7 +272,7 @@
     pediatric: {
       title: 'Sick Pediatric Patient',
       visible: 'Poor interaction with increased work of breathing',
-      image: '/vitals/assets/scenario-patient-pediatric-v3.png',
+      image: '/vitals/assets/scenario-patient-pediatric-v3.webp',
       imageMode: 'pediatric',
       sceneClues: ['Poor interaction', 'Visible retractions', 'Caregiver present'],
       recommended: ['pediatric_assessment_triangle','airway','breathing','perfusion','respirations','breath_sounds','spo2','skin','temperature','pulse'],
@@ -358,27 +358,12 @@
       { id:'supportive_fever', label:'Provide supportive fever care', summary:'Avoid aggressive cooling; prevent heat loss and continue perfusion assessment.', evidence:['temperature','skin','perfusion'], targets:['temperature','skin','perfusion'], response:'Supportive care is provided while the child is reassessed for respiratory and perfusion changes.', effective:'appropriate-effective' }
     ],
     horse_crush: [
-      { id:'manual_leg_support', label:'Assign manual support to the injured leg', summary:'Have one rescuer support the injured leg in the position the patient tolerates while the team assesses and plans movement.', category:'trauma', evidence:[], targets:['left_leg','pain','distal_csm'], response:'With the leg supported and kept still, the patient says the sharp hip pain is easier to tolerate.', outcomeClass:'appropriate-effective', reassessmentRequired:true },
-      { id:'position_comfort', label:'Maintain position of comfort', summary:'Allow the patient to keep the left knee flexed rather than forcing the extremity into a textbook position.', category:'trauma', evidence:[], targets:['left_leg','pain'], response:'The patient relaxes slightly when the leg is allowed to remain flexed and supported.', outcomeClass:'appropriate-effective', reassessmentRequired:true },
-      { id:'blanket_support', label:'Pad and support with blankets / pillows', summary:'Use padding to prevent the leg from dropping, rotating, or shifting during packaging and transport.', category:'trauma', evidence:[], targets:['left_leg','pain','distal_csm'], response:'The padding supports the flexed leg and reduces movement-related pain.', outcomeClass:'appropriate-effective', reassessmentRequired:true },
-      { id:'splint', label:'Splint / support the injured leg in position of comfort', summary:'Use a vacuum device, padded support, or other non-traction stabilization that supports the flexed leg without forcing the hip or knee straight.', category:'trauma', evidence:[], targets:['left_leg','pain','distal_csm'], response:'The supported leg moves less and the patient reports less sharp pain while it remains still.', outcomeClass:'appropriate-effective', reassessmentRequired:true, documentation:[{name:'device',label:'Support / splint method',type:'select',required:true,options:['Vacuum splint / vacuum mattress','Padded blanket or pillow support','Other non-traction support in position of comfort']}] },
-      { id:'request_help', label:'Use the engine crew / request additional personnel', summary:'Assign roles for leg support, equipment, lift coordination, and patient communication before movement.', category:'operations', evidence:[], targets:['left_leg','pain'], response:'With roles assigned, the team can move deliberately without losing control of the injured leg.', outcomeClass:'appropriate-effective', reassessmentRequired:false },
-      { id:'request_als_scene', label:'Request ALS to the scene', summary:'Request advanced pain management to the scene while continuing BLS assessment, stabilization, and packaging.', category:'operations', evidence:[], targets:['pain','blood_pressure','respirations'], response:'ALS is requested. Continue BLS care and decide whether waiting on scene is justified by response time and transport access.', outcomeClass:'defensible', reassessmentRequired:false },
-      { id:'arrange_als_intercept', label:'Transport with an ALS intercept', summary:'Begin prompt transport and arrange an intercept for advanced pain management when this avoids an unnecessary scene delay.', category:'operations', evidence:[], targets:['pain','blood_pressure','respirations'], response:'The patient is packaged for prompt transport while dispatch coordinates an ALS intercept.', outcomeClass:'appropriate-effective', reassessmentRequired:false },
-      { id:'transport_without_als_wait', label:'Transport without waiting for ALS', summary:'Continue BLS stabilization and prompt transport when waiting would create an unreasonable delay.', category:'operations', evidence:[], targets:['pain','distal_csm'], response:'BLS care continues during prompt transport without an avoidable scene delay.', outcomeClass:'defensible', reassessmentRequired:false },
-      { id:'continue_bls_care', label:'Continue BLS care without requesting ALS', summary:'Use BLS positioning, stabilization, communication, and transport when advanced support is unavailable or not operationally appropriate.', category:'operations', evidence:[], targets:['pain','distal_csm'], response:'The crew continues patient-centered BLS care and reassessment while preparing for transport.', outcomeClass:'defensible', reassessmentRequired:false },
-      { id:'pain_control', label:'Address pain before movement', summary:'Use positioning and support and, when allowed by local scope/protocol, coordinate analgesia or ALS pain management before a painful move.', category:'medications', evidence:[], targets:['pain','mental_status','respirations','blood_pressure'], response:'The patient reports that the pain is easing at rest, although hip movement still causes a sharp increase.', outcomeClass:'appropriate-effective', reassessmentRequired:true, documentation:[{name:'method',label:'Pain-control method',type:'select',required:true,options:['Positioning/support only','Request ALS / advanced pain management','Protocol-authorized EMT medication or intervention','Other locally authorized option']},{name:'medication',label:'Medication, if used',placeholder:'Optional medication'},{name:'dose',label:'Dose, if used',placeholder:'Dose and units'},{name:'route',label:'Route, if used',placeholder:'Route'}] },
-      { id:'oxygen', label:'Administer oxygen', summary:'Oxygen is available if your assessment identifies hypoxia or another indication.', category:'breathing', evidence:[], targets:['spo2','breathing','respirations'], response:'The patient tolerates oxygen, but there is no meaningful change in the isolated hip complaint.', outcomeClass:'unnecessary', reassessmentRequired:false, documentation:[{name:'device',label:'Device',type:'select',required:true,options:['Nasal cannula','Non-rebreather mask','Other']},{name:'flow',label:'Flow / setting',required:true,placeholder:'L/min or device setting'}] },
-      { id:'scoop_position_comfort', label:'Scoop stretcher with minimal movement', summary:'Separate and place the scoop around the patient while a rescuer maintains leg support and the tolerated position.', category:'trauma', evidence:[], targets:['left_leg','pain','distal_csm'], response:'The patient is transferred onto the scoop without needing to straighten the painful leg.', outcomeClass:'appropriate-effective', reassessmentRequired:true },
-      { id:'vacuum_mattress', label:'Vacuum mattress / molded support', summary:'Use a coordinated lift and mold the device around the patient and flexed leg if available.', category:'trauma', evidence:[], targets:['left_leg','pain','distal_csm'], response:'The molded support holds the patient and leg securely while preserving the position of comfort.', outcomeClass:'appropriate-effective', reassessmentRequired:true },
-      { id:'board_transfer', label:'Long board as a transfer device', summary:'Use only as a short transfer aid with padding and coordinated movement rather than forcing the patient flat for transport.', category:'trauma', evidence:[], targets:['left_leg','pain','distal_csm'], response:'The transfer can be completed, but extra padding and careful leg support are needed to avoid increasing pain.', outcomeClass:'defensible', reassessmentRequired:true },
-      { id:'pelvic_binder', label:'Apply a pelvic binder', summary:'Choose this only if your findings support an unstable pelvic injury or local protocol indication.', category:'trauma', evidence:[], targets:['pelvis_hip','pain','distal_csm'], response:'The binder does not improve the localized hip pain and adds unnecessary manipulation in the current presentation.', outcomeClass:'unnecessary', reassessmentRequired:true },
-      { id:'traction_splint', label:'Apply a traction splint', summary:'Traction splinting should be based on an appropriate femoral-shaft indication, not hip pain alone.', category:'trauma', evidence:[], targets:['left_leg','pain','distal_csm'], response:'Attempting traction produces a sharp increase in hip pain. The maneuver should be stopped and the plan revised.', outcomeClass:'contraindicated', reassessmentRequired:true },
-      { id:'stand_pivot', label:'Assist patient to stand and pivot', summary:'Attempt a weight-bearing transfer if you believe it is appropriate for the findings you have obtained.', category:'movement', evidence:[], targets:['left_leg','pain','distal_csm'], response:'As weight is placed on the left side, the patient has severe hip pain and cannot safely stand. The attempt must be stopped.', outcomeClass:'contraindicated', reassessmentRequired:true },
-      { id:'force_straight', label:'Straighten the leg before moving', summary:'Attempt to lower and straighten the leg to fit a conventional transport position.', category:'movement', evidence:[], targets:['left_leg','pain','distal_csm'], response:'The patient cries out with a marked increase in hip pain and resists the movement. Stop and return the leg to the tolerated position.', outcomeClass:'contraindicated', reassessmentRequired:true },
-      { id:'heat_conservation', label:'Prevent heat loss', summary:'Use blankets and environmental protection while the patient remains on the ground and during transport.', category:'circulation', evidence:[], targets:['skin','perfusion'], response:'The patient remains warm and comfortable while packaging continues.', outcomeClass:'appropriate-effective', reassessmentRequired:false },
-      { id:'reassess_distal_csm', label:'Repeat distal CSM after movement', summary:'Repeat circulation, sensation, and movement after each significant movement or stabilization step.', category:'reassessment', evidence:[], targets:['distal_csm'], response:'Distal pulse, sensation, and movement remain intact after the movement.', outcomeClass:'appropriate-effective', reassessmentRequired:false },
-      { id:'trauma_transport', label:'Begin transport', summary:'Choose transport timing, priority, and destination based on mechanism, findings, patient age, pain, vitals, and local destination guidance.', category:'transport', evidence:[], targets:['pain','distal_csm'], response:'The patient is moved to the ambulance with the injured leg supported and ongoing reassessment planned.', outcomeClass:'appropriate-effective', reassessmentRequired:true }
+      { id:'manual_leg_support', label:'Assign manual support to the injured leg', summary:'Keep one rescuer focused on supporting the affected leg and minimizing movement during assessment and transfer.', category:'trauma', evidence:['left_leg','pelvis_hip'], targets:['left_leg','pain','distal_csm'], response:'The patient reports less movement-related pain while the leg is continuously supported.', effective:'appropriate-effective' },
+      { id:'pain_control', label:'Provide protocol-directed pain management', summary:'Use nonpharmacologic measures and, when authorized, titrated analgesia with monitoring and reassessment.', category:'medications', evidence:['pain','left_leg'], targets:['pain','mental_status','respirations','blood_pressure'], response:'The patient reports partial improvement at rest, but movement still causes significant pain.', effective:'appropriate-effective', documentation:[{name:'method',label:'Pain-control method',type:'select',required:true,options:['Positioning and support only','Protocol-authorized analgesic','Medical-control-directed analgesia']},{name:'medication',label:'Medication, if used',placeholder:'Medication or nonpharmacologic only'},{name:'dose',label:'Dose, if used',placeholder:'Dose and units'},{name:'route',label:'Route, if used',placeholder:'IV, IN, IM, or other'}] },
+      { id:'scoop_position_comfort', label:'Use a scoop stretcher in position of comfort', summary:'Separate and place the scoop with the least possible patient movement while maintaining the flexed leg position.', category:'trauma', evidence:['neck_back','pelvis_hip','left_leg','distal_csm'], targets:['left_leg','pain','distal_csm'], response:'The patient is transferred onto the scoop with the affected leg maintained in the position of comfort.', effective:'appropriate-effective' },
+      { id:'blanket_support', label:'Pad and secure the leg with blankets', summary:'Use folded blankets and gentle stabilization to prevent the leg from dropping or rotating during transport.', category:'trauma', evidence:['left_leg','distal_csm'], targets:['left_leg','pain','distal_csm'], response:'The leg remains supported. Pain is controlled while the extremity stays still.', effective:'appropriate-effective' },
+      { id:'reassess_distal_csm', label:'Reassess distal circulation, sensation, and movement', summary:'Repeat distal neurovascular checks after every movement, packaging step, and splinting decision.', category:'trauma', evidence:['distal_csm'], targets:['distal_csm'], response:'Distal pulse, sensation, and foot movement remain intact after packaging.', effective:'appropriate-effective' },
+      { id:'trauma_transport', label:'Initiate transport after safe packaging', summary:'Select destination and transport priority from the mechanism, exam, vitals, age, pain, and local trauma criteria.', category:'transport', evidence:['blood_pressure','pulse','respirations','pelvis_hip','left_leg'], targets:['pain','distal_csm'], response:'The patient is moved to the ambulance with the leg supported and serial reassessment planned.', effective:'appropriate-effective' }
     ]
   };
 
