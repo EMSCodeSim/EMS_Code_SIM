@@ -8,3 +8,32 @@ button,input,select,textarea{font:inherit}.topbar{position:sticky;top:0;z-index:
 .debrief{position:fixed;inset:0;background:rgba(0,0,0,.78);display:grid;place-items:center;padding:20px;z-index:50}.debrief[hidden]{display:none}.debrief-card{max-width:800px;width:100%;max-height:90vh;overflow:auto;background:#0d1a22;border:1px solid #355361;border-radius:18px;padding:22px}.grade-row{display:grid;grid-template-columns:1fr auto;gap:10px;border-bottom:1px solid #20343e;padding:9px 0}.pass{color:var(--good)}.fail{color:#fca5a5}footer{padding:22px;text-align:center;color:#718792;font-size:.76rem}
 @media(max-width:900px){.layout{grid-template-columns:1fr;grid-template-areas:"dispatch" "patient" "monitor" "workspace" "timeline"}.monitor-grid{grid-template-columns:repeat(5,1fr)}.monitor-grid button{display:block;text-align:center}.monitor-grid strong{display:block;font-size:1.15rem}.patient-meta{display:block}.patient-meta span{display:block;margin-top:4px}.topbar .badge{display:none}}
 @media(max-width:600px){.inline-form{align-items:stretch}.inline-form input{min-width:0}.inline-form button{min-width:78px}.conversation{max-height:220px}.topbar{padding:9px}.top-actions{gap:5px}.top-actions button{padding:7px}.layout{padding:8px}.card{border-radius:12px;padding:11px}.monitor-grid{grid-template-columns:repeat(3,1fr)}.action-grid{grid-template-columns:1fr}.phasebar{padding-left:8px}.video-wrap{aspect-ratio:4/3}.tabs{position:sticky;top:54px;background:#0d1a22;padding:5px 0;z-index:5}}
+
+
+/* V2 conversation control geometry: keep tap targets non-overlapping on narrow viewports. */
+.inline-form{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:8px;
+  position:relative;
+  z-index:4;
+}
+.inline-form input{
+  width:100%;
+  min-width:0;
+  max-width:100%;
+}
+.inline-form button{
+  width:auto;
+  min-width:78px;
+  position:relative;
+  z-index:5;
+}
+.conversation{
+  position:relative;
+  z-index:1;
+}
+@media(max-width:600px){
+  .inline-form{grid-template-columns:minmax(0,1fr) 82px}
+  .inline-form button{min-width:0;width:82px}
+}
