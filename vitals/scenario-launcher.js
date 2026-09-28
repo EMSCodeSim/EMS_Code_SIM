@@ -41,7 +41,12 @@
   function patientHome(caseId, mode = 'learning', options = {}) {
     // Asthma uses Patient Simulator V2. Legacy visual-patient remains for other cases and rollback.
     if (caseId === 'asthma' || caseId === 'adult-asthma') {
-      return '/patient-simulator-v2/';
+      const v2 = new URLSearchParams({
+        autostart: '1',
+        training: trainingMode(mode),
+        scenario: 'adult-asthma'
+      });
+      return `/patient-simulator-v2/?${v2}`;
     }
     const params = new URLSearchParams({ case: caseId, training: trainingMode(mode) });
     if (options.reset) params.set('reset', '1');

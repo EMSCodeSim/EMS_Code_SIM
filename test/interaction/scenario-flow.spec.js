@@ -31,12 +31,9 @@ test('scenario launcher shows horse and breathing problem and opens asthma in As
   await expect(page.locator('#caseDialogMeta')).toContainText(/year-old|inhaler|apartment|park/i);
   await page.locator('[data-start-mode="assessment"]').click();
 
-  // Breathing Problem launches Patient Simulator V2 (legacy visual-patient remains for rollback).
+  // Breathing Problem launches Patient Simulator V2 with autostart (legacy remains for rollback).
   await expect(page).toHaveURL(/\/patient-simulator-v2\/?/);
-  await expect(page.locator('#psv2StartOverlay')).toBeVisible();
-  await expect(page.locator('#psv2StartOverlay')).toContainText(/Adult Asthma|Respiratory Distress/i);
-  await page.locator('#psv2StartBtn').click();
-  await expect(page.locator('#psv2StartOverlay')).toBeHidden();
+  await expect(page.locator('#psv2StartOverlay')).toBeHidden({ timeout: 10000 });
   await expect(page.locator('#psv2DispatchText')).toContainText(/Riverside Park|difficulty breathing|wheezing/i);
   await expect(page.locator('#psv2Video')).toBeVisible();
   await expect(page.locator('#psv2ActionBar')).toBeVisible();

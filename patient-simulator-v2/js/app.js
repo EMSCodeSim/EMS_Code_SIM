@@ -292,6 +292,22 @@
     renderTimeline();
   }
 
+  function wantsAutostart() {
+    const params = new URLSearchParams(location.search);
+    return params.get('autostart') === '1' || params.get('start') === '1';
+  }
+
+  function beginCallFlow() {
+    startSimulation();
+    // Learner arrives through a natural call timeline without a rigid wizard.
+    session.markEnroute();
+    session.advanceTime(40);
+    session.markArrived();
+    session.advanceTime(15);
+    session.markPatientContact();
+    refreshAll();
+  }
+
   function startSimulation() {
     if (session) {
       session.destroy();
@@ -301,6 +317,11 @@
     activeDebrief = null;
     reassessMode = false;
     $('psv2ReassessToggle').checked = false;
+    if ($('psv2AiCoach')) {
+      $('psv2AiCoach').hidden = true;
+      $('psv2AiCoach').innerHTML = '';
+    }
+    if ($('psv2DebriefForm')) $('psv2DebriefForm').hidden = false;
 
     session = window.PSV2.Session.startNewSession('adult-asthma');
     $('psv2DispatchText').textContent = session.scenario.dispatch.text;
@@ -334,16 +355,68 @@
     });
   }
 
+  async function fetchAiCoachSummary(grade) {
+    const box = $('psv2AiCoach');
+    if (!box || !grade) return;
+    box.hidden = false;
+    box.innerHTML = '<em>Requesting AI instructor summary…</em>';
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), 4000) : null;
+    try {
+      const res = await fetch('/api/scenario-debrief-coach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          // Existing coach endpoint recognizes asthma; V2 grade remains authoritative.
+          scenarioId: 'asthma',
+          score: grade.percent,
+          label: grade.percent >= 80 ? 'Strong' : grade.percent >= 60 ? 'Developing' : 'Needs work',
+          categoryScores: {
+            clinical: Math.round(((grade.domains.primary?.percent || 0) + (grade.domains.exam?.percent || 0)) / 2),
+            treatment: grade.domains.treatment?.percent || 0,
+            communication: grade.domains.communication?.percent || 0
+          },
+          phaseRatings: Object.entries(grade.domains).slice(0, 8).map(([id, d]) => ({
+            id: id === 'primary' ? 'primary' : id === 'treatment' ? 'treatment' : id === 'reassessment' ? 'reassessment' : id === 'transport' ? 'impression' : id === 'documentation' ? 'handoff' : 'focused',
+            label: d.label,
+            score: d.percent,
+            rating: d.percent >= 80 ? 'strong' : d.percent >= 50 ? 'partial' : 'weak',
+            detail: (d.notes || []).slice(0, 2).join('; ')
+          })),
+          strengths: grade.strengths || [],
+          opportunities: grade.opportunities || [],
+          criticalErrors: (grade.missedCritical || []).map(m => m.label),
+          priorities: (grade.missedCritical || []).slice(0, 3).map(m => ({
+            level: 'high',
+            title: m.label,
+            detail: m.why || ''
+          }))
+        }),
+        signal: controller?.signal
+      });
+      if (!res.ok) throw new Error('coach unavailable');
+      const data = await res.json();
+      const coaching = data?.coaching;
+      if (!coaching) {
+        box.innerHTML = '<strong>AI coach</strong><br>Local debrief questions are ready. Deterministic grade is unchanged.';
+        return;
+      }
+      box.innerHTML = `
+        <strong>${escapeHtml(coaching.headline || 'Instructor summary')}</strong>
+        <p style="margin:6px 0 0">${escapeHtml(coaching.summary || '')}</p>
+        <p style="margin:8px 0 0"><em>Priority:</em> ${escapeHtml(coaching.priorityAction || '')}</p>
+        <p style="margin:6px 0 0;color:var(--psv2-muted)">Grade unchanged at ${grade.percent}%.</p>
+      `;
+    } catch (_) {
+      box.innerHTML = '<strong>AI coach</strong><br>Continuing with local instructor questions. Deterministic grade is unchanged.';
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  }
+
   function wireEvents() {
     $('psv2StartBtn').addEventListener('click', () => {
-      startSimulation();
-      // Learner advances dispatch → enroute → scene via workflow or naturally
-      session.markEnroute();
-      session.advanceTime(40);
-      session.markArrived();
-      session.advanceTime(15);
-      session.markPatientContact();
-      refreshAll();
+      beginCallFlow();
     });
 
     $('psv2PauseBtn').addEventListener('click', () => {
@@ -359,13 +432,7 @@
 
     $('psv2RestartBtn').addEventListener('click', () => {
       if (!confirm('Restart scenario with a completely clean session?')) return;
-      startSimulation();
-      session.markEnroute();
-      session.advanceTime(40);
-      session.markArrived();
-      session.advanceTime(15);
-      session.markPatientContact();
-      refreshAll();
+      beginCallFlow();
       $('psv2ChatLog').innerHTML = '';
       $('psv2AssessFinding').hidden = true;
       $('psv2TreatNote').hidden = true;
@@ -629,6 +696,7 @@
     $('psv2DebriefStart').addEventListener('click', () => {
       if (!session) return;
       if (!session.gradeResult) session.runGrading();
+      renderGrade(session.gradeResult);
       activeDebrief = session.startDebrief();
       $('psv2DebriefStart').hidden = true;
       $('psv2DebriefActive').hidden = false;
@@ -638,6 +706,7 @@
       } else {
         $('psv2DebriefPrompt').textContent = q.question.prompt;
       }
+      fetchAiCoachSummary(session.gradeResult);
       refreshAll();
     });
 
@@ -669,5 +738,16 @@
         <div class="value off">—</div>
       </div>
     `).join('');
+
+    if (wantsAutostart()) {
+      beginCallFlow();
+      // Clean the autostart flag so refresh/restart does not loop unexpectedly.
+      try {
+        const url = new URL(location.href);
+        url.searchParams.delete('autostart');
+        url.searchParams.delete('start');
+        history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+      } catch (_) { /* ignore */ }
+    }
   });
 })();
