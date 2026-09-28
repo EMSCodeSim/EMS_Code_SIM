@@ -167,7 +167,7 @@
   loadPatientScenarioScript(`/vitals/scenario-assessment-followup-cleanup.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioAssessmentFollowupCleanup','script[data-scenario-assessment-followup-cleanup]');
   loadPatientScenarioScript(`/vitals/scenario-transport-handoff-actions.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioTransportHandoffActions','script[data-scenario-transport-handoff-actions]');
   loadPatientScenarioScript(`/vitals/scenario-patient-conversation.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioPatientConversation','script[data-scenario-patient-conversation]');
-  loadPatientScenarioScript(`/vitals/scenario-intro-video.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioIntroVideo','script[data-scenario-intro-video]');
+  loadPatientScenarioScript('/vitals/scenario-intro-video.js?v=2026.09.28.1','scenarioIntroVideo','script[data-scenario-intro-video]');
   loadPatientScenarioScript(`/vitals/scenario-ai-question-layer.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioAiQuestionLayer','script[data-scenario-ai-question-layer]');
   loadPatientScenarioScript(`/vitals/scenario-natural-dialogue.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioNaturalDialogue','script[data-scenario-natural-dialogue]');
   loadPatientScenarioScript(`/vitals/scenario-treatment-history-ux.js?v=${encodeURIComponent(PATIENT_WORKSPACE_BUILD)}`,'scenarioTreatmentHistoryUx','script[data-scenario-treatment-history-ux]');
