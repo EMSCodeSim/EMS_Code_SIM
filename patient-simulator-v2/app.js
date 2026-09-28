@@ -1,6 +1,6 @@
 (()=>{'use strict';
 const scenario=window.EMSCodeSimV2Asthma;
-const engine=window.EMSCodeSimV2Engine.createEngine(scenario);
+const engine=window.EMSCodeSimV2Engine.createEngine(scenario);\nwindow.EMSCodeSimV2Session=engine;
 const $=s=>document.querySelector(s);
 const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
 const video=$('#patientVideo');
