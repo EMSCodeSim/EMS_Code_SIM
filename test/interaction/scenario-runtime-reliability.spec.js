@@ -19,11 +19,14 @@ async function unlockGuidedCare(page, caseId = 'asthma') {
   }, caseId);
   await page.reload({ waitUntil: 'domcontentloaded' });
   await expect(page.locator('.bottom-nav')).not.toHaveClass(/guide-locked/);
+  // Abnormal findings schedule the next-action sheet after reload; on mobile it
+  // covers #asthmaFirstLookAction and intercepts clicks until dismissed.
+  await page.locator('#clinicalNextActions').waitFor({ state: 'visible', timeout: 2_000 }).catch(() => {});
+  await dismissClinicalNext(page);
   const firstLook = page.locator('#asthmaFirstLookAction');
   if (await firstLook.isVisible().catch(() => false) && !(await firstLook.isDisabled().catch(() => true))) {
     await firstLook.click();
   }
-  // Abnormal findings schedule the next-action sheet on a short timeout after reload.
   await page.locator('#clinicalNextActions').waitFor({ state: 'visible', timeout: 2_000 }).catch(() => {});
   await dismissClinicalNext(page);
 }
