@@ -44,6 +44,7 @@
   let selectedRole = 'lead_emt';
   const crewEvents = [];
   const crewTaskTimers = new Set();
+  const crewAwareness = { lastEscalationAt: -999, anticipated: new Set() };
 
   const $ = (id) => document.getElementById(id);
 
@@ -299,6 +300,60 @@
     $('psv2StartBtn').textContent = 'Start as ' + role.label;
   }
 
+
+  function appendCrewMessage(roleId, message, kind = 'patient') {
+    const role = session?.scenario?.crewRoles?.[roleId];
+    if (!role || !$('psv2CrewLog')) return;
+    $('psv2CrewLog').insertAdjacentHTML('beforeend','<div class="psv2-msg ' + kind + '"><span class="who">' + escapeHtml(role.label) + '</span>' + escapeHtml(message) + '</div>');
+    $('psv2CrewLog').scrollTop = $('psv2CrewLog').scrollHeight;
+  }
+
+  function pushCrewEvent(roleId, action, result, metadata = {}) {
+    if (!session) return;
+    const clinical = session.patient.snapshotClinical();
+    session.timeline.push({timestamp:session.patient.getFullState().elapsedTime,eventType:'crew',action,result,clinicalStateBefore:clinical,clinicalStateAfter:clinical,metadata:{roleId,...metadata}});
+    renderTimeline();
+  }
+
+  function evaluateCrewAwareness() {
+    if (!session || selectedRole === 'dispatcher') return;
+    const behavior = session.scenario.simulatedCrew?.behavior;
+    if (!behavior) return;
+    const state = session.patient.getFullState();
+    const vitals = session.patient.getVitals();
+    const now = state.elapsedTime;
+    const severe = vitals.spo2 <= behavior.deterioration.severeSpo2 || vitals.respiratoryRate >= behavior.deterioration.severeRespiratoryRate || Number(state.fatigue || 0) >= behavior.deterioration.severeFatigue;
+    if (severe && now - crewAwareness.lastEscalationAt >= behavior.escalationCooldownSec) {
+      const roleId = selectedRole === 'emt_partner' ? 'firefighter' : 'emt_partner';
+      const template = roleId === 'emt_partner' ? behavior.deterioration.partnerMessage : behavior.deterioration.firefighterMessage;
+      const msg = template.replace('{spo2}', String(vitals.spo2)).replace('{rr}', String(vitals.respiratoryRate));
+      appendCrewMessage(roleId, msg);
+      pushCrewEvent(roleId, 'Crew concern escalated', msg, {type:'escalation'});
+      crewAwareness.lastEscalationAt = now;
+    }
+    behavior.anticipation.forEach(item => {
+      if (item.role === selectedRole || crewAwareness.anticipated.has(item.id)) return;
+      const shouldSpeak = item.when === 'respiratory_distress'
+        ? vitals.respiratoryRate >= 28
+        : item.when === 'persistent_hypoxia' ? vitals.spo2 <= 92 && now >= 90 : false;
+      if (!shouldSpeak) return;
+      crewAwareness.anticipated.add(item.id);
+      appendCrewMessage(item.role, item.message);
+      pushCrewEvent(item.role, 'Crew anticipated need', item.message, {type:'anticipation',anticipationId:item.id});
+    });
+  }
+
+  function maybeClarifyCrewMessage(targetId, message) {
+    const clarification = session?.scenario?.simulatedCrew?.behavior?.clarification;
+    if (!clarification) return false;
+    const normalized = message.toLowerCase();
+    const vague = clarification.vagueTerms.some(term => normalized.includes(term));
+    if (!vague) return false;
+    appendCrewMessage(targetId, clarification.response);
+    pushCrewEvent(targetId, 'Crew requested clarification', clarification.response, {type:'clarification',original:message});
+    return true;
+  }
+
   function renderCrewWorkspace() {
     if (!session || !selectedRole) return;
     const roles = session.scenario.crewRoles;
@@ -350,10 +405,12 @@
     const roles = session.scenario.crewRoles;
     const event = { from: selectedRole, to: targetId, type, message, timestamp: session.patient.getFullState().elapsedTime };
     crewEvents.push(event);
+    const needsClarification = maybeClarifyCrewMessage(targetId, message);
     const clinical = session.patient.snapshotClinical();
     session.timeline.push({ timestamp:event.timestamp,eventType:'crew',action:roles[selectedRole].label + ' → ' + roles[targetId].label,result:message,clinicalStateBefore:clinical,clinicalStateAfter:clinical,metadata:{crew:event} });
     $('psv2CrewLog').insertAdjacentHTML('beforeend','<div class="psv2-msg learner"><span class="who">' + escapeHtml(roles[selectedRole].label + ' → ' + roles[targetId].label) + '</span>' + escapeHtml(message) + '</div>');
     $('psv2CrewMessage').value='';
+    if (!needsClarification && type === 'specific_assignment') appendCrewMessage(targetId, 'Copy. I have that assignment.');
     renderTimeline();
   }
 
@@ -462,6 +519,7 @@
       session = null;
     }
     currentVideoUrl = '';
+    crewAwareness.lastEscalationAt = -999; crewAwareness.anticipated.clear();
     activeDebrief = null;
     reassessMode = false;
     $('psv2ReassessToggle').checked = false;
@@ -493,6 +551,7 @@
         $('psv2Clock').textContent = formatClock(evt.session.elapsed);
         renderMonitorValues();
         updateVideo();
+        evaluateCrewAwareness();
       }
       if (evt.type === 'stage') {
         renderWorkflow(evt.session.stage);
