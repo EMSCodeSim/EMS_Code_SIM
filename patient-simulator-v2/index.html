@@ -48,6 +48,7 @@
     <div class="tabs" role="tablist">
       <button class="tab active" data-tab="talk">Talk</button>
       <button class="tab" data-tab="assess">Assess</button>
+      <button class="tab" data-tab="partner">Partner</button>
       <button class="tab" data-tab="treat">Treat</button>
       <button class="tab" data-tab="transport">Transport</button>
       <button class="tab" data-tab="handoff">Handoff</button>
@@ -65,6 +66,13 @@
       <div id="assessmentButtons" class="action-grid"></div>
       <div id="finding" class="result-box">Choose an assessment to reveal that finding.</div>
       <button id="reassessBtn" class="primary wide">Reassess Patient</button>
+    </div>
+
+    <div class="panel" data-panel="partner">
+      <h3>Delegate to your partner</h3>
+      <p class="muted">Delegate tasks while you continue leading the call. Partner actions are recorded on the Clinical Replay timeline.</p>
+      <div id="partnerButtons" class="action-grid"></div>
+      <div id="partnerResponse" class="result-box">Your partner is ready for direction.</div>
     </div>
 
     <div class="panel" data-panel="treat">
@@ -106,8 +114,11 @@
     <h2>Clinical Replay & Feedback</h2>
     <div id="score"></div>
     <div id="gradeResults"></div>
-    <h3>Reasoning prompt</h3>
+    <h3>AI Oral Debrief</h3>
     <p id="reasoningPrompt">What finding most strongly told you this patient was tiring rather than improving?</p>
+    <textarea id="debriefAnswer" rows="4" placeholder="Explain your clinical reasoning…"></textarea>
+    <button id="debriefAnswerBtn" class="primary">Discuss Reasoning</button>
+    <div id="debriefCoach" class="result-box">The debrief coach discusses your reasoning after the deterministic score is complete. It does not change your score.</div>
     <button id="closeDebrief" class="primary">Return to Scenario</button>
   </div>
 </section>
