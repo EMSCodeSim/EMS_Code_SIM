@@ -36,6 +36,13 @@
       skin: { label: 'Skin', value: 'Pale, mildly diaphoretic.' },
       history: { label: 'Focused history', value: 'Known asthma. Rescue inhaler used three times today with little relief. No known drug allergies.' }
     },
+    conversationFallback: 'I am having a hard time breathing. Ask me one question at a time.',
+    partnerTasks: {
+      fullVitals: { label: 'Obtain a complete set of vitals', response: 'Partner: I will obtain a complete set of vitals.', reveals: ['heartRate','respiratoryRate','spo2','bloodPressure'] },
+      monitor: { label: 'Apply patient monitoring', response: 'Partner: Monitoring is being applied.', reveals: ['heartRate','spo2'] },
+      equipment: { label: 'Prepare respiratory equipment', response: 'Partner: Respiratory equipment is ready.' },
+      transport: { label: 'Prepare for transport', response: 'Partner: Transport equipment is ready when you are.' }
+    },
     interview: [
       { keys: ['name'], answer: 'My name is Maya.' },
       { keys: ['start','onset','when'], answer: 'It started about twenty minutes ago while I was walking.' },
