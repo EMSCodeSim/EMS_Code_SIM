@@ -7,7 +7,7 @@
   <meta name="description" content="EMSCodeSim Patient Simulator V2 — realistic start-to-finish EMS call simulation with deterministic clinical engine and AI-assisted conversation/debrief.">
   <meta name="robots" content="noindex">
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/patient-simulator-v2/css/patient-simulator-v2.css?v=2.4.0">
+  <link rel="stylesheet" href="/patient-simulator-v2/css/patient-simulator-v2.css?v=2.5.0">
 </head>
 <body class="psv2-body">
   <div class="psv2-app" id="psv2App">
@@ -154,6 +154,10 @@
             <div class="psv2-field"><label for="psv2CrewEventType">Communication type</label><select id="psv2CrewEventType"></select></div>
             <button class="psv2-btn primary" type="button" id="psv2CrewSend">Communicate</button>
             <div class="psv2-chat-log psv2-scene-chat" id="psv2CrewLog"></div>
+            <h3>What your role knows</h3>
+            <div id="psv2RoleKnowledge" class="psv2-objectives"></div>
+            <h3>Closed-loop tasks</h3>
+            <div id="psv2ClosedLoopTasks" class="psv2-objectives"></div>
           </div>
 
           <div class="psv2-tab-panel" data-panel="assess" hidden>
@@ -288,17 +292,17 @@
     </div>
   </div>
 
-  <script src="/patient-simulator-v2/js/engines/event-timeline.js?v=2.4.0"></script>
-  <script src="/patient-simulator-v2/js/engines/patient-state-engine.js?v=2.4.0"></script>
-  <script src="/patient-simulator-v2/js/engines/video-state-controller.js?v=2.4.0"></script>
-  <script src="/patient-simulator-v2/js/engines/assessment-engine.js?v=2.4.0"></script>
-  <script src="/patient-simulator-v2/js/engines/treatment-engine.js?v=2.4.0"></script>
-  <script src="/patient-simulator-v2/js/engines/conversation-engine.js?v=2.4.0"></script>
-  <script src="/patient-simulator-v2/js/engines/grading-engine.js?v=2.4.0"></script>
-  <script src="/patient-simulator-v2/js/engines/pcr-engine.js?v=2.4.0"></script>
-  <script src="/patient-simulator-v2/js/engines/debrief-engine.js?v=2.4.0"></script>
-  <script src="/patient-simulator-v2/js/engines/session.js?v=2.4.0"></script>
-  <script src="/patient-simulator-v2/scenarios/adult-asthma.js?v=2.4.0"></script>
-  <script src="/patient-simulator-v2/js/app.js?v=2.4.0"></script>
+  <script src="/patient-simulator-v2/js/engines/event-timeline.js?v=2.5.0"></script>
+  <script src="/patient-simulator-v2/js/engines/patient-state-engine.js?v=2.5.0"></script>
+  <script src="/patient-simulator-v2/js/engines/video-state-controller.js?v=2.5.0"></script>
+  <script src="/patient-simulator-v2/js/engines/assessment-engine.js?v=2.5.0"></script>
+  <script src="/patient-simulator-v2/js/engines/treatment-engine.js?v=2.5.0"></script>
+  <script src="/patient-simulator-v2/js/engines/conversation-engine.js?v=2.5.0"></script>
+  <script src="/patient-simulator-v2/js/engines/grading-engine.js?v=2.5.0"></script>
+  <script src="/patient-simulator-v2/js/engines/pcr-engine.js?v=2.5.0"></script>
+  <script src="/patient-simulator-v2/js/engines/debrief-engine.js?v=2.5.0"></script>
+  <script src="/patient-simulator-v2/js/engines/session.js?v=2.5.0"></script>
+  <script src="/patient-simulator-v2/scenarios/adult-asthma.js?v=2.5.0"></script>
+  <script src="/patient-simulator-v2/js/app.js?v=2.5.0"></script>
 </body>
 </html>
