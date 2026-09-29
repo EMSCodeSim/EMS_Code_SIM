@@ -85,7 +85,10 @@ test('Crew roles define distinct responsibilities and team communication', () =>
   assert.ok(scenario.fireSceneManagement.hospitalStatus.length >= 2);
   assert.ok(scenario.fireSceneManagement.fireActions.some(a => a.id === 'clear_egress'));
   assert.ok(scenario.roleKnowledge.facts.fire_initial_spo2.initial.includes('firefighter'));
-  assert.equal(scenario.sceneExperience.targets.environment.src, '/patient-simulator-v2/assets/bench-scene-overview.jpg');
+  assert.strictEqual(scenario.sceneExperience.targets.environment.src, '');
+  assert.strictEqual(scenario.sceneExperience.targets.backpack.src, '');
+  assert.strictEqual(scenario.sceneExperience.targets.access.src, '');
+  assert.strictEqual(scenario.sceneExperience.targets.ambulance.src, '');
   assert.ok(scenario.sceneExperience.clues.find(c => c.id === 'inhaler').finding.includes('open backpack'));
   assert.equal(scenario.roleKnowledge.transferRules.requiresCommunication, true);
   assert.deepEqual(scenario.closedLoop.requiredSequence, ['assignment','acknowledgement','completion','report','leader_acknowledgement']);
