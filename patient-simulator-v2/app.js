@@ -20,6 +20,40 @@ scenario.phases.forEach(phase=>{
   $('#phaseBar').appendChild(b);
 });
 
+let activeSceneTarget='scene';
+function renderSceneTarget(id){
+  activeSceneTarget=id;
+  const target=scenario.sceneMedia[id];
+  $('#sceneFocusTitle').textContent=target.label;
+  $('#sceneMedia').innerHTML='';
+  if(id==='patient'){
+    const v=document.createElement('video'); v.src=scenario.videos[engine.getState().clinical.videoState]||scenario.videos.arrival; v.autoplay=true; v.muted=true; v.loop=true; v.playsInline=true; $('#sceneMedia').appendChild(v);
+  }else if(target.src){
+    if(target.type==='video'){const v=document.createElement('video');v.src=target.src;v.autoplay=true;v.muted=true;v.loop=true;v.playsInline=true;$('#sceneMedia').appendChild(v);}
+    else {const img=document.createElement('img');img.src=target.src;img.alt=target.alt||target.label;$('#sceneMedia').appendChild(img);}
+  }else{
+    const p=document.createElement('div');p.className='scene-placeholder';p.textContent=target.label+' visual media slot';$('#sceneMedia').appendChild(p);
+  }
+  $('#sceneClueButtons').innerHTML='';
+  Object.entries(scenario.sceneFindings||{}).filter(([,f])=>f.mediaTarget===id).forEach(([fid,f])=>{
+    const b=document.createElement('button');b.textContent='Inspect '+f.label;b.addEventListener('click',()=>{const r=engine.inspectScene(fid);$('#sceneFinding').textContent=r.label+': '+r.value;});$('#sceneClueButtons').appendChild(b);
+  });
+  const contact=Object.entries(scenario.sceneContacts||{}).find(([,v])=>v.mediaTarget===id);
+  $('#contactForm').hidden=!contact;
+  $('#contactConversation').innerHTML='';
+}
+Object.entries(scenario.sceneMedia||{}).forEach(([id,target])=>{
+  const b=document.createElement('button');b.className='scene-target';b.textContent=target.label;b.addEventListener('click',()=>{renderSceneTarget(id);engine.setPhase(id==='patient'?'patient-contact':'scene');});$('#sceneTargets').appendChild(b);
+});
+$('#contactForm').addEventListener('submit',e=>{
+  e.preventDefault(); const input=$('#contactInput'); const q=input.value.trim(); if(!q)return;
+  const contact=Object.entries(scenario.sceneContacts||{}).find(([,v])=>v.mediaTarget===activeSceneTarget); if(!contact)return;
+  const r=engine.askContact(contact[0],q); const box=$('#contactConversation');
+  const qd=document.createElement('div');qd.className='learner-line';qd.textContent='You: '+q;box.appendChild(qd);
+  const ad=document.createElement('div');ad.className='patient-line';ad.textContent=r.label+': “'+r.answer+'”';box.appendChild(ad);input.value='';
+});
+renderSceneTarget('scene');
+
 Object.entries(scenario.assessments).forEach(([id,item])=>{
   const b=document.createElement('button'); b.textContent=item.label;
   b.addEventListener('click',()=>{const f=engine.assess(id);$('#finding').textContent=f.label+': '+f.value;});
