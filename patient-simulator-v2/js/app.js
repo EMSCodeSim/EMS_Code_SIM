@@ -50,6 +50,7 @@
   let pulseCount = 0;
   let pulseTimer = null;
   let pulseRemaining = 0;
+  let genericSkillStep = 0;
 
   const $ = (id) => document.getElementById(id);
 
@@ -377,10 +378,50 @@
 
 
 
+
+  const GENERIC_SKILLS = {
+    respiratory_rate: { prompt:'Observe chest rise without announcing that you are counting.', steps:[['Start observation','start'],['Count for 30 seconds','count'],['Report respirations ×2','report']], result:()=>{const rr=session.patient.getVitals().respiratoryRate; return {text:'Respiratory rate reported as '+rr+' /min.', measured:{respiratoryRate:rr}};} },
+    spo2: { prompt:'Choose the sequence for a reliable pulse-ox reading.', steps:[['Check finger/perfusion and remove obstruction','site'],['Apply probe correctly','probe'],['Wait for a stable signal','stable']], result:()=>{const v=session.patient.getVitals(); return {text:'Stable pulse oximetry reading: '+v.spo2+'% with pulse '+v.heartRate+'.', measured:{spo2:v.spo2,heartRate:v.heartRate}};} },
+    lung_sounds: { prompt:'Perform a structured bilateral lung assessment.', steps:[['Expose chest appropriately','expose'],['Compare upper fields bilaterally','upper'],['Compare lower fields bilaterally','lower']], result:()=>({text:'Lung sounds: diffuse bilateral expiratory wheezing with diminished air movement at the bases.',measured:{lungSounds:'diffuse bilateral expiratory wheezing; diminished bases'}}) },
+    glucose: { prompt:'Perform a point-of-care glucose check.', steps:[['Prepare meter and strip','meter'],['Clean/dry site and obtain sample','sample'],['Apply sample and wait for result','read']], result:()=>({text:'Blood glucose: 104 mg/dL.',measured:{glucose:104}}) },
+    ecg: { prompt:'Place monitoring electrodes before reading the rhythm.', steps:[['Prepare/dry electrode sites','prep'],['Place RA/LA/RL/LL electrodes correctly','leads'],['Confirm signal quality','signal']], result:()=>{const hr=session.patient.getVitals().heartRate; return {text:'ECG monitoring established: regular narrow-complex tachycardia at '+hr+' bpm.',measured:{heartRate:hr,rhythm:'sinus tachycardia'}};} },
+    oxygen_setup: { prompt:'Prepare oxygen equipment safely before applying it.', steps:[['Open cylinder/source and verify pressure','source'],['Select delivery device','device'],['Set flow and confirm oxygen delivery','flow']], result:()=>({text:'Oxygen delivery system is assembled, flowing, and ready to apply.',measured:{ready:true}}) },
+    nebulizer_setup: { prompt:'Assemble the nebulizer before medication administration.', steps:[['Select nebulizer kit and oxygen tubing','kit'],['Connect cup, mouthpiece/mask and tubing','assemble'],['Connect gas source and verify mist','mist']], result:()=>({text:'Nebulizer is assembled and producing visible mist; ready for ordered medication.',measured:{ready:true}}) }
+  };
+
+  function renderGenericSkill(simulator) {
+    const def = GENERIC_SKILLS[simulator];
+    if (!def) return;
+    genericSkillStep = 0;
+    $('psv2GenericSkillPrompt').textContent = def.prompt;
+    $('psv2GenericSkillStatus').textContent = 'Complete the skill steps in order.';
+    $('psv2GenericSkillChoices').innerHTML = def.steps.map((step,i)=>'<button type="button" class="psv2-list-btn" data-generic-step="'+i+'">'+escapeHtml(step[0])+'</button>').join('');
+  }
+
+  function doGenericSkillStep(index) {
+    if (!activeSkillTask) return;
+    const def = GENERIC_SKILLS[activeSkillTask.task.simulator];
+    if (!def) return;
+    if (index !== genericSkillStep) {
+      $('psv2GenericSkillStatus').textContent = 'That step is out of sequence. Reconsider the skill workflow.';
+      return;
+    }
+    genericSkillStep += 1;
+    document.querySelector('[data-generic-step="'+index+'"]')?.setAttribute('disabled','');
+    if (genericSkillStep < def.steps.length) {
+      $('psv2GenericSkillStatus').textContent = 'Step complete. Continue the skill.';
+      return;
+    }
+    const result = def.result();
+    $('psv2GenericSkillStatus').textContent = 'Skill complete.';
+    setTimeout(()=>completeSkillTask(result.text,result.measured),250);
+  }
+
   function closeSkillSimulator() {
     $('psv2SkillSimulator').hidden = true;
     $('psv2BpSim').hidden = true;
     $('psv2PulseSim').hidden = true;
+    $('psv2GenericSkillSim').hidden = true;
     activeSkillTask = null;
     if (pulseTimer) { clearInterval(pulseTimer); pulseTimer = null; }
   }
@@ -391,6 +432,9 @@
     $('psv2SkillTitle').textContent = task.label;
     $('psv2BpSim').hidden = task.simulator !== 'blood_pressure';
     $('psv2PulseSim').hidden = task.simulator !== 'pulse';
+    const isGeneric = Boolean(GENERIC_SKILLS[task.simulator]);
+    $('psv2GenericSkillSim').hidden = !isGeneric;
+    if (isGeneric) renderGenericSkill(task.simulator);
     if (task.simulator === 'blood_pressure') {
       bpMarks = { systolic:null, diastolic:null, lastPressure:0 };
       $('psv2CuffPressure').value = '0'; $('psv2CuffReadout').textContent = '0';
@@ -736,6 +780,9 @@
     $('psv2PulseStart').addEventListener('click', startPulseCount);
     $('psv2PulseTap').addEventListener('click', () => { pulseCount += 1; $('psv2PulseStatus').textContent = pulseRemaining + ' seconds remaining · ' + pulseCount + ' beats counted'; });
     $('psv2PulseSubmit').addEventListener('click', submitPulse);
+    $('psv2GenericSkillChoices').addEventListener('click', (e) => {
+      const btn=e.target.closest('[data-generic-step]'); if(btn) doGenericSkillStep(Number(btn.dataset.genericStep));
+    });
     $('psv2StartBtn').addEventListener('click', () => {
       beginCallFlow();
     });
