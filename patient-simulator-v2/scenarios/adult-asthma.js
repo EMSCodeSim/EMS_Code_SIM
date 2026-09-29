@@ -139,6 +139,35 @@
       }
     },
 
+    fireSceneManagement: {
+      hazards: [
+        {id:'traffic',label:'Vehicle/pedestrian movement near the park access',action:'Establish a safe working area and keep the access lane clear.'},
+        {id:'crowd',label:'Bystanders gathering around the patient',action:'Move bystanders back while identifying one useful historian.'},
+        {id:'egress',label:'Narrow pedestrian path between patient and ambulance access',action:'Identify and maintain a clear stretcher egress route.'}
+      ],
+      bystanders: [
+        {id:'friend',label:'Friend with patient',use:'Historian',fact:'She has asthma, used her inhaler several times, and has been getting worse.'},
+        {id:'onlookers',label:'Curious onlookers',use:'Crowd control',fact:'They have no useful clinical information and are crowding the patient.'}
+      ],
+      resources: [
+        {id:'ems_unit',label:'Transport ambulance',etaMin:4,status:'responding'},
+        {id:'engine',label:'Engine company',etaMin:0,status:'on scene'},
+        {id:'supervisor',label:'EMS supervisor',etaMin:8,status:'available on request'},
+        {id:'additional_ambulance',label:'Additional ambulance',etaMin:10,status:'available on request'}
+      ],
+      hospitalStatus: [
+        {id:'community',label:'Community Hospital',minutes:8,status:'Open',capability:'Emergency department'},
+        {id:'regional',label:'Regional Medical Center',minutes:14,status:'Open',capability:'Higher-acuity emergency department'}
+      ],
+      fireActions: [
+        {id:'secure_scene',label:'Secure working area',result:'Working area established and access lane protected.'},
+        {id:'manage_bystanders',label:'Manage bystanders',result:'Onlookers moved back; friend retained as historian.'},
+        {id:'clear_egress',label:'Clear stretcher egress',result:'Path from patient to ambulance access is clear.'},
+        {id:'resource_check',label:'Check incoming resources',result:'Current unit status and ETAs reviewed.'},
+        {id:'hospital_check',label:'Check hospital status',result:'Hospital status and estimated transport times reviewed.'}
+      ]
+    },
+
     teamPerformance: {
       dimensions: ['communication', 'delegation', 'closed_loop', 'situational_awareness', 'information_transfer', 'role_execution'],
       communicationEvents: [
