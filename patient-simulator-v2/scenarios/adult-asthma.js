@@ -111,11 +111,25 @@
       },
       skillTasks: {
         blood_pressure: { label:'Manual blood pressure', role:['emt_partner','firefighter'], simulator:'blood_pressure', resultKey:'bloodPressure' },
-        pulse: { label:'Manual pulse', role:['emt_partner','firefighter'], simulator:'pulse', resultKey:'heartRate' }
+        pulse: { label:'Manual pulse', role:['emt_partner','firefighter'], simulator:'pulse', resultKey:'heartRate' },
+        respiratory_rate: { label:'Count respirations', role:['emt_partner','firefighter'], simulator:'respiratory_rate', resultKey:'respiratoryRate' },
+        spo2: { label:'Obtain pulse oximetry', role:['emt_partner','firefighter'], simulator:'spo2', resultKey:'spo2' },
+        lung_sounds: { label:'Auscultate lung sounds', role:['emt_partner','firefighter'], simulator:'lung_sounds', resultKey:'lungSounds' },
+        glucose: { label:'Check blood glucose', role:['emt_partner','firefighter'], simulator:'glucose', resultKey:'glucose' },
+        ecg: { label:'Place ECG electrodes', role:['emt_partner'], simulator:'ecg', resultKey:'ecg' },
+        oxygen_setup: { label:'Set up oxygen', role:['emt_partner','firefighter'], simulator:'oxygen_setup', resultKey:'oxygen' },
+        nebulizer_setup: { label:'Assemble nebulizer', role:['emt_partner','firefighter'], simulator:'nebulizer_setup', resultKey:'nebulizer' }
       },
       tasks: {
         blood_pressure: { label:'Obtain manual blood pressure', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'blood_pressure', result:'Manual blood pressure obtained.', reveals:['bloodPressure'] },
         pulse: { label:'Obtain manual pulse', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'pulse', result:'Manual pulse obtained.', reveals:['heartRate'] },
+        respiratory_rate: { label:'Count respiratory rate', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'respiratory_rate', result:'Respiratory rate counted.', reveals:['respiratoryRate'] },
+        spo2: { label:'Obtain pulse oximetry', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'spo2', result:'Pulse oximetry obtained.', reveals:['spo2'] },
+        lung_sounds: { label:'Auscultate lung sounds', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'lung_sounds', result:'Lung sounds assessed.', reveals:['lungSounds'] },
+        glucose: { label:'Check blood glucose', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'glucose', result:'Blood glucose checked.', reveals:['glucose'] },
+        ecg: { label:'Place ECG electrodes', assignedTo:['emt_partner'], durationSec:0, simulator:'ecg', result:'ECG electrodes placed.', reveals:['heartRate'] },
+        oxygen_setup: { label:'Set up oxygen delivery', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'oxygen_setup', result:'Oxygen delivery system prepared.', reveals:[] },
+        nebulizer_setup: { label:'Assemble nebulizer', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'nebulizer_setup', result:'Nebulizer assembled.', reveals:[] },
         full_vitals: { label: 'Obtain full vital signs', assignedTo: ['emt_partner','firefighter'], durationSec: 35, result: 'Vitals obtained: HR 126, RR 32, BP 148/92, SpO₂ 88% on room air.', reveals: ['heartRate','respiratoryRate','bloodPressure','spo2'] },
         monitor: { label: 'Place patient on monitor', assignedTo: ['emt_partner'], durationSec: 25, result: 'Monitor attached. Initial displayed HR is 126 and SpO₂ is 88%.', reveals: ['heartRate','spo2'] },
         neb_setup: { label: 'Prepare nebulizer treatment', assignedTo: ['emt_partner','firefighter'], durationSec: 20, result: 'Nebulizer equipment is assembled and ready for medication.', reveals: [] },
