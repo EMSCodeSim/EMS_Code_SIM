@@ -41,7 +41,7 @@
   let reassessMode = false;
   let activeDebrief = null;
   let activeSceneTarget = 'environment';
-  let selectedRole = null;
+  let selectedRole = 'lead_emt';
   const crewEvents = [];
 
   const $ = (id) => document.getElementById(id);
@@ -284,6 +284,7 @@
     $('psv2RoleCards').innerHTML = Object.entries(roles).map(([id, role]) =>
       '<button type="button" class="psv2-role-card" data-role="' + escapeHtml(id) + '"><strong>' + escapeHtml(role.label) + '</strong><span>' + escapeHtml(role.summary) + '</span></button>'
     ).join('');
+    selectRole(selectedRole);
   }
 
   function selectRole(roleId) {
