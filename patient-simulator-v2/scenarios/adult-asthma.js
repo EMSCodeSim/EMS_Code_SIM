@@ -91,6 +91,24 @@
       }
     },
     simulatedCrew: {
+      behavior: {
+        escalationCooldownSec: 45,
+        deterioration: {
+          severeSpo2: 90,
+          severeRespiratoryRate: 32,
+          severeFatigue: 0.55,
+          partnerMessage: 'Her work of breathing is getting worse. SpO₂ is {spo2}% and respirations are {rr}. We need to reassess our plan.',
+          firefighterMessage: 'She looks more tired than when we first got here. Do you want us to get the stretcher moving?'
+        },
+        anticipation: [
+          { id:'airway_ready', when:'respiratory_distress', role:'emt_partner', message:'I have the airway bag and BVM within reach if she tires out.' },
+          { id:'transport_ready', when:'persistent_hypoxia', role:'firefighter', message:'I can get the stretcher positioned and clear the path to the ambulance.' }
+        ],
+        clarification: {
+          vagueTerms: ['stuff','things','help','get ready','do something','take care of it'],
+          response: 'Copy, but what specific task do you want me to handle?'
+        }
+      },
       tasks: {
         full_vitals: { label: 'Obtain full vital signs', assignedTo: ['emt_partner','firefighter'], durationSec: 35, result: 'Vitals obtained: HR 126, RR 32, BP 148/92, SpO₂ 88% on room air.', reveals: ['heartRate','respiratoryRate','bloodPressure','spo2'] },
         monitor: { label: 'Place patient on monitor', assignedTo: ['emt_partner'], durationSec: 25, result: 'Monitor attached. Initial displayed HR is 126 and SpO₂ is 88%.', reveals: ['heartRate','spo2'] },
