@@ -7,7 +7,7 @@
   <meta name="description" content="EMSCodeSim Patient Simulator V2 — realistic start-to-finish EMS call simulation with deterministic clinical engine and AI-assisted conversation/debrief.">
   <meta name="robots" content="noindex">
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/patient-simulator-v2/css/patient-simulator-v2.css?v=2.1.0">
+  <link rel="stylesheet" href="/patient-simulator-v2/css/patient-simulator-v2.css?v=2.2.0">
 </head>
 <body class="psv2-body">
   <div class="psv2-app" id="psv2App">
@@ -116,6 +116,25 @@
             <div class="psv2-field"><label for="psv2CrewTask">Task</label><select id="psv2CrewTask"></select></div>
             <button class="psv2-btn primary" type="button" id="psv2AssignTask">Assign task</button>
             <div id="psv2CrewTaskStatus" class="psv2-finding">No active assignment.</div>
+            <div id="psv2SkillSimulator" class="psv2-skill-sim" hidden>
+              <div class="psv2-skill-head"><strong id="psv2SkillTitle">Skill simulator</strong><button class="psv2-btn" type="button" id="psv2SkillCancel">Cancel</button></div>
+              <div id="psv2BpSim" hidden>
+                <p>Inflate the cuff above the expected systolic pressure, then slowly deflate it. Listen for the first and last Korotkoff sounds.</p>
+                <label for="psv2CuffPressure">Cuff pressure <span id="psv2CuffReadout">0</span> mmHg</label>
+                <input id="psv2CuffPressure" type="range" min="0" max="220" value="0" step="2">
+                <div id="psv2BpAudioCue" class="psv2-finding">Cuff deflated. Inflate to begin.</div>
+                <div class="psv2-skill-actions"><button class="psv2-btn" type="button" id="psv2BpMarkSystolic">Mark first sound</button><button class="psv2-btn" type="button" id="psv2BpMarkDiastolic">Mark last sound</button></div>
+                <div id="psv2BpMarks" class="psv2-finding">Systolic: — · Diastolic: —</div>
+                <button class="psv2-btn primary" type="button" id="psv2BpSubmit">Report BP</button>
+              </div>
+              <div id="psv2PulseSim" hidden>
+                <p>Palpate the radial pulse, start a timed count, and tap once for each beat you feel.</p>
+                <button class="psv2-btn" type="button" id="psv2PulseStart">Start 15-second count</button>
+                <button class="psv2-btn primary" type="button" id="psv2PulseTap" disabled>Pulse beat</button>
+                <div id="psv2PulseStatus" class="psv2-finding">Count not started.</div>
+                <button class="psv2-btn primary" type="button" id="psv2PulseSubmit" disabled>Report pulse</button>
+              </div>
+            </div>
             <h3>Team communication</h3>
             <div class="psv2-field"><label for="psv2CrewTarget">Communicate with</label><select id="psv2CrewTarget"></select></div>
             <div class="psv2-field"><label for="psv2CrewMessage">Message / assignment / report</label><textarea id="psv2CrewMessage" rows="3" placeholder="Example: Partner, get a full set of vitals and place her on the monitor."></textarea></div>
@@ -256,17 +275,17 @@
     </div>
   </div>
 
-  <script src="/patient-simulator-v2/js/engines/event-timeline.js?v=2.1.0"></script>
-  <script src="/patient-simulator-v2/js/engines/patient-state-engine.js?v=2.1.0"></script>
-  <script src="/patient-simulator-v2/js/engines/video-state-controller.js?v=2.1.0"></script>
-  <script src="/patient-simulator-v2/js/engines/assessment-engine.js?v=2.1.0"></script>
-  <script src="/patient-simulator-v2/js/engines/treatment-engine.js?v=2.1.0"></script>
-  <script src="/patient-simulator-v2/js/engines/conversation-engine.js?v=2.1.0"></script>
-  <script src="/patient-simulator-v2/js/engines/grading-engine.js?v=2.1.0"></script>
-  <script src="/patient-simulator-v2/js/engines/pcr-engine.js?v=2.1.0"></script>
-  <script src="/patient-simulator-v2/js/engines/debrief-engine.js?v=2.1.0"></script>
-  <script src="/patient-simulator-v2/js/engines/session.js?v=2.1.0"></script>
-  <script src="/patient-simulator-v2/scenarios/adult-asthma.js?v=2.1.0"></script>
-  <script src="/patient-simulator-v2/js/app.js?v=2.1.0"></script>
+  <script src="/patient-simulator-v2/js/engines/event-timeline.js?v=2.2.0"></script>
+  <script src="/patient-simulator-v2/js/engines/patient-state-engine.js?v=2.2.0"></script>
+  <script src="/patient-simulator-v2/js/engines/video-state-controller.js?v=2.2.0"></script>
+  <script src="/patient-simulator-v2/js/engines/assessment-engine.js?v=2.2.0"></script>
+  <script src="/patient-simulator-v2/js/engines/treatment-engine.js?v=2.2.0"></script>
+  <script src="/patient-simulator-v2/js/engines/conversation-engine.js?v=2.2.0"></script>
+  <script src="/patient-simulator-v2/js/engines/grading-engine.js?v=2.2.0"></script>
+  <script src="/patient-simulator-v2/js/engines/pcr-engine.js?v=2.2.0"></script>
+  <script src="/patient-simulator-v2/js/engines/debrief-engine.js?v=2.2.0"></script>
+  <script src="/patient-simulator-v2/js/engines/session.js?v=2.2.0"></script>
+  <script src="/patient-simulator-v2/scenarios/adult-asthma.js?v=2.2.0"></script>
+  <script src="/patient-simulator-v2/js/app.js?v=2.2.0"></script>
 </body>
 </html>
