@@ -45,6 +45,11 @@
   const crewEvents = [];
   const crewTaskTimers = new Set();
   const crewAwareness = { lastEscalationAt: -999, anticipated: new Set() };
+  let activeSkillTask = null;
+  let bpMarks = { systolic:null, diastolic:null, lastPressure:0 };
+  let pulseCount = 0;
+  let pulseTimer = null;
+  let pulseRemaining = 0;
 
   const $ = (id) => document.getElementById(id);
 
@@ -371,6 +376,95 @@
   }
 
 
+
+  function closeSkillSimulator() {
+    $('psv2SkillSimulator').hidden = true;
+    $('psv2BpSim').hidden = true;
+    $('psv2PulseSim').hidden = true;
+    activeSkillTask = null;
+    if (pulseTimer) { clearInterval(pulseTimer); pulseTimer = null; }
+  }
+
+  function launchSkillSimulator(taskId, assignee, task) {
+    activeSkillTask = { taskId, assignee, task };
+    $('psv2SkillSimulator').hidden = false;
+    $('psv2SkillTitle').textContent = task.label;
+    $('psv2BpSim').hidden = task.simulator !== 'blood_pressure';
+    $('psv2PulseSim').hidden = task.simulator !== 'pulse';
+    if (task.simulator === 'blood_pressure') {
+      bpMarks = { systolic:null, diastolic:null, lastPressure:0 };
+      $('psv2CuffPressure').value = '0'; $('psv2CuffReadout').textContent = '0';
+      $('psv2BpMarks').textContent = 'Systolic: — · Diastolic: —';
+      $('psv2BpAudioCue').textContent = 'Cuff deflated. Inflate to begin.';
+    }
+    if (task.simulator === 'pulse') {
+      pulseCount = 0; pulseRemaining = 0;
+      $('psv2PulseTap').disabled = true; $('psv2PulseSubmit').disabled = true;
+      $('psv2PulseStatus').textContent = 'Count not started.';
+    }
+  }
+
+  function completeSkillTask(resultText, measured) {
+    if (!session || !activeSkillTask) return;
+    const { taskId, assignee } = activeSkillTask;
+    const roles = session.scenario.crewRoles;
+    $('psv2CrewTaskStatus').innerHTML = '<strong>' + escapeHtml(roles[assignee].label) + ':</strong> ' + escapeHtml(resultText);
+    appendCrewMessage(assignee, resultText);
+    pushCrewEvent(assignee, 'Crew skill completed', resultText, {type:'skill',taskId,measured});
+    closeSkillSimulator();
+  }
+
+  function updateBpCue() {
+    if (!session) return;
+    const pressure = Number($('psv2CuffPressure').value);
+    const actual = session.patient.getVitals().bloodPressure;
+    $('psv2CuffReadout').textContent = String(pressure);
+    const deflating = pressure < bpMarks.lastPressure;
+    if (!deflating) {
+      $('psv2BpAudioCue').textContent = pressure > actual.systolic + 20 ? 'No sounds. Cuff is above systolic pressure.' : 'Inflating…';
+    } else if (pressure <= actual.systolic && pressure >= actual.diastolic) {
+      $('psv2BpAudioCue').textContent = 'Korotkoff sounds audible: tap… tap… tap…';
+    } else {
+      $('psv2BpAudioCue').textContent = pressure < actual.diastolic ? 'Sounds have disappeared.' : 'No sounds yet.';
+    }
+    bpMarks.lastPressure = pressure;
+  }
+
+  function markBp(kind) {
+    const pressure = Number($('psv2CuffPressure').value);
+    bpMarks[kind] = pressure;
+    $('psv2BpMarks').textContent = 'Systolic: ' + (bpMarks.systolic ?? '—') + ' · Diastolic: ' + (bpMarks.diastolic ?? '—');
+  }
+
+  function submitBp() {
+    if (!session || bpMarks.systolic == null || bpMarks.diastolic == null) {
+      $('psv2BpMarks').textContent = 'Mark both the first and last sounds before reporting.';
+      return;
+    }
+    completeSkillTask('Manual BP reported as ' + bpMarks.systolic + '/' + bpMarks.diastolic + ' mmHg.', {systolic:bpMarks.systolic,diastolic:bpMarks.diastolic});
+  }
+
+  function startPulseCount() {
+    if (!session || pulseTimer) return;
+    pulseCount = 0; pulseRemaining = 15;
+    $('psv2PulseTap').disabled = false; $('psv2PulseSubmit').disabled = true;
+    $('psv2PulseStatus').textContent = '15 seconds remaining · 0 beats counted';
+    pulseTimer = setInterval(() => {
+      pulseRemaining -= 1;
+      $('psv2PulseStatus').textContent = pulseRemaining + ' seconds remaining · ' + pulseCount + ' beats counted';
+      if (pulseRemaining <= 0) {
+        clearInterval(pulseTimer); pulseTimer = null;
+        $('psv2PulseTap').disabled = true; $('psv2PulseSubmit').disabled = false;
+        $('psv2PulseStatus').textContent = 'Count complete: ' + pulseCount + ' beats in 15 sec = ' + (pulseCount * 4) + ' bpm.';
+      }
+    },1000);
+  }
+
+  function submitPulse() {
+    if (pulseRemaining > 0 || pulseCount <= 0) return;
+    completeSkillTask('Manual pulse reported as ' + (pulseCount * 4) + ' bpm.', {heartRate:pulseCount * 4,count:pulseCount,seconds:15});
+  }
+
   function assignSimulatedCrewTask() {
     if (!session || !selectedRole) return;
     const taskId = $('psv2CrewTask').value;
@@ -385,6 +479,10 @@
     const clinical = session.patient.snapshotClinical();
     session.timeline.push({timestamp:startAt,eventType:'crew',action:'Assignment acknowledged',result:roles[assignee].label + ' accepted: ' + task.label,clinicalStateBefore:clinical,clinicalStateAfter:clinical,metadata:{taskId,assignee,status:'assigned'}});
     renderTimeline();
+    if (task.simulator) {
+      launchSkillSimulator(taskId, assignee, task);
+      return;
+    }
     const timer = setTimeout(() => {
       crewTaskTimers.delete(timer);
       if (!session) return;
@@ -515,6 +613,7 @@
   function startSimulation() {
     if (session) {
       crewTaskTimers.forEach(timer => clearTimeout(timer)); crewTaskTimers.clear();
+      closeSkillSimulator();
       session.destroy();
       session = null;
     }
@@ -629,6 +728,14 @@
     });
     $('psv2CrewSend').addEventListener('click', recordCrewCommunication);
     $('psv2AssignTask').addEventListener('click', assignSimulatedCrewTask);
+    $('psv2SkillCancel').addEventListener('click', closeSkillSimulator);
+    $('psv2CuffPressure').addEventListener('input', updateBpCue);
+    $('psv2BpMarkSystolic').addEventListener('click', () => markBp('systolic'));
+    $('psv2BpMarkDiastolic').addEventListener('click', () => markBp('diastolic'));
+    $('psv2BpSubmit').addEventListener('click', submitBp);
+    $('psv2PulseStart').addEventListener('click', startPulseCount);
+    $('psv2PulseTap').addEventListener('click', () => { pulseCount += 1; $('psv2PulseStatus').textContent = pulseRemaining + ' seconds remaining · ' + pulseCount + ' beats counted'; });
+    $('psv2PulseSubmit').addEventListener('click', submitPulse);
     $('psv2StartBtn').addEventListener('click', () => {
       beginCallFlow();
     });
