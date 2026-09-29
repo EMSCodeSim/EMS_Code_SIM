@@ -25,6 +25,11 @@ Object.entries(scenario.assessments).forEach(([id,item])=>{
   b.addEventListener('click',()=>{const f=engine.assess(id);$('#finding').textContent=f.label+': '+f.value;});
   $('#assessmentButtons').appendChild(b);
 });
+Object.entries(scenario.partnerTasks||{}).forEach(([id,item])=>{
+  const b=document.createElement('button'); b.textContent=item.label;
+  b.addEventListener('click',()=>{const r=engine.delegate(id);$('#partnerResponse').textContent=r.message;});
+  $('#partnerButtons').appendChild(b);
+});
 Object.entries(scenario.treatments).forEach(([id,item])=>{
   const b=document.createElement('button'); b.textContent=item.label;
   b.addEventListener('click',()=>{const r=engine.treat(id);$('#treatmentResponse').textContent=r.message;engine.setPhase('treatment');});
@@ -45,9 +50,8 @@ $('#talkForm').addEventListener('submit',e=>{
   e.preventDefault();
   const input=$('#talkInput'); const q=input.value.trim(); if(!q)return;
   appendLine('learner-line','You: '+q);
-  const lower=q.toLowerCase();
-  const match=scenario.interview.find(row=>row.keys.some(k=>lower.includes(k)));
-  appendLine('patient-line','Patient: “'+(match?match.answer:'I’m sorry, I’m having trouble talking. Can you ask me one thing at a time?')+'”');
+  const reply=engine.conversationFact(q);
+  appendLine('patient-line','Patient: “'+reply.answer+'”');
   input.value=''; engine.setPhase('patient-contact');
 });
 function appendLine(cls,text){const d=document.createElement('div');d.className=cls;d.textContent=text;$('#conversation').appendChild(d);$('#conversation').scrollTop=$('#conversation').scrollHeight;}
@@ -58,6 +62,15 @@ $('#handoffBtn').addEventListener('click',()=>{engine.setHandoff($('#handoffText
 $('#pcrBtn').addEventListener('click',()=>{engine.setPCR($('#pcrText').value);engine.setPhase('documentation');});
 $('#restartBtn').addEventListener('click',()=>{if(confirm('Restart with a clean patient state?')){monitored.clear();$('#handoffText').value='';$('#pcrText').value='';$('#conversation').innerHTML='<div class="patient-line">Patient: “I can’t catch my breath.”</div>';engine.reset();engine.startClock();}});
 $('#endBtn').addEventListener('click',()=>showGrade(engine.end()));
+$('#debriefAnswerBtn').addEventListener('click',()=>{
+  const answer=$('#debriefAnswer').value.trim();
+  if(!answer){$('#debriefCoach').textContent='Explain what you noticed and why it mattered.';return;}
+  const terms=['mental','status','air','movement','fatigue','tiring','speech','work of breathing','worsen'];
+  const hits=terms.filter(t=>answer.toLowerCase().includes(t));
+  $('#debriefCoach').textContent=hits.length>=2
+    ? 'Your explanation connects the respiratory rate to the rest of the patient presentation. A falling rate can represent fatigue when air movement, speech, work of breathing, or mental status are worsening.'
+    : 'Go one step deeper: do not interpret respiratory rate by itself. Compare it with air movement, work of breathing, speech, oxygenation, and mental status to decide whether the patient is improving or tiring.';
+});
 $('#closeDebrief').addEventListener('click',()=>{$('#debrief').hidden=true;});
 
 let currentVideo='';
