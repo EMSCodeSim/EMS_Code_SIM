@@ -168,6 +168,29 @@
       ]
     },
 
+    roleKnowledge: {
+      facts: {
+        dispatch_complaint:{label:'Difficulty breathing at Riverside Park',initial:['dispatcher']},
+        inhaler_multiple:{label:'Patient used rescue inhaler multiple times without relief',initial:['firefighter'],source:'friend'},
+        fire_initial_spo2:{label:'Fire obtained initial room-air SpO₂ of 89%',initial:['firefighter'],source:'firefighter'},
+        prior_hospitalizations:{label:'Two prior asthma hospitalizations; no prior intubation',initial:[],source:'patient'},
+        manual_bp:{label:'Current manual blood pressure',initial:[],source:'skill'},
+        manual_pulse:{label:'Current manual pulse',initial:[],source:'skill'}
+      },
+      transferRules:{requiresCommunication:true,learnerRoleOnly:true}
+    },
+    closedLoop: {
+      assignmentTimeoutSec:20,
+      reportTimeoutSec:30,
+      requiredSequence:['assignment','acknowledgement','completion','report','leader_acknowledgement'],
+      consequences:{
+        vagueAssignmentDelaySec:15,
+        missingAcknowledgementDelaySec:10,
+        unreportedFinding:'Finding remains known only to the role that obtained it.',
+        badMeasurement:'The reported measurement, not the hidden true value, is available to the team until repeated.'
+      }
+    },
+
     teamPerformance: {
       dimensions: ['communication', 'delegation', 'closed_loop', 'situational_awareness', 'information_transfer', 'role_execution'],
       communicationEvents: [
