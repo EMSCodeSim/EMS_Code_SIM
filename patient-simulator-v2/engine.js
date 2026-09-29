@@ -20,6 +20,8 @@
         phase: 'dispatch',
         clinical: clone(scenario.initialState),
         discovered: {},
+        sceneFindings: {},
+        contacts: [],
         treatments: [],
         partnerTasks: [],
         reassessments: 0,
@@ -137,6 +139,25 @@
       return { ok: true, message: treatment.patientResponse };
     }
 
+    function inspectScene(id) {
+      const finding = scenario.sceneFindings && scenario.sceneFindings[id];
+      if (!finding) return null;
+      state.sceneFindings[id] = clone(finding);
+      event('scene', finding.label + ': ' + finding.value, { id });
+      return clone(finding);
+    }
+
+    function askContact(contactId, query) {
+      const contact = scenario.sceneContacts && scenario.sceneContacts[contactId];
+      if (!contact) return { answer: 'No response.', matched: false };
+      const lower = String(query || '').toLowerCase();
+      const match = (contact.facts || []).find(row => row.keys.some(k => lower.includes(k)));
+      const answer = match ? match.answer : contact.fallback;
+      state.contacts.push({ contactId, t: state.elapsedSec, query: String(query || ''), matched: !!match });
+      event('scene-contact', 'Spoke with ' + contact.label, { contactId, query: String(query || ''), matched: !!match });
+      return { answer, matched: !!match, label: contact.label };
+    }
+
     function delegate(taskId) {
       const task = scenario.partnerTasks && scenario.partnerTasks[taskId];
       if (!task) return { ok: false, message: 'Unknown partner task.' };
@@ -154,23 +175,6 @@
       const answer = match ? match.answer : scenario.conversationFallback;
       event('conversation', 'Patient interview question', { query: String(query || ''), matched: !!match });
       return { answer, matched: !!match };
-    }
-
-    function delegate(taskId) {
-      const task = scenario.partnerTasks && scenario.partnerTasks[taskId];
-      if (!task) return { ok: false, message: 'Unknown partner task.' };
-      const record = { id: taskId, t: state.elapsedSec, label: task.label };
-      state.partnerTasks.push(record);
-      event('partner', 'Delegated: ' + task.label, record);
-      if (task.reveals) task.reveals.forEach(id => monitor(id));
-      return { ok: true, message: task.response };
-    }
-
-    function conversationFact(query) {
-      const lower = String(query || '').toLowerCase();
-      const match = (scenario.interview || []).find(row => row.keys.some(k => lower.includes(k)));
-      event('conversation', 'Patient interview question', { query: String(query || ''), matched: !!match });
-      return { answer: match ? match.answer : scenario.conversationFallback, matched: !!match };
     }
 
     function reassess() {
@@ -237,7 +241,7 @@
 
     return {
       subscribe(fn) { listeners.add(fn); fn(getState()); return () => listeners.delete(fn); },
-      getState, startClock, stopClock, tick, setPhase, assess, monitor, treat, delegate, conversationFact, reassess,
+      getState, startClock, stopClock, tick, setPhase, inspectScene, askContact, assess, monitor, treat, delegate, conversationFact, reassess,
       setTransport, setHandoff, setPCR, grade, reset, end
     };
   }
