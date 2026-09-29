@@ -77,6 +77,9 @@ test('Crew roles define distinct responsibilities and team communication', () =>
   assert.ok(scenario.simulatedCrew.tasks.full_vitals.durationSec > 0);
   assert.ok(scenario.simulatedCrew.tasks.full_vitals.assignedTo.includes('emt_partner'));
   assert.match(scenario.simulatedCrew.tasks.full_vitals.result, /HR 126/);
+  assert.ok(scenario.simulatedCrew.behavior.deterioration.severeSpo2 <= 90);
+  assert.ok(scenario.simulatedCrew.behavior.anticipation.some(item => item.id === 'airway_ready'));
+  assert.ok(scenario.simulatedCrew.behavior.clarification.vagueTerms.includes('stuff'));
 });
 
 test('Scene experience defines visual targets, clues, and independent contacts', () => {
