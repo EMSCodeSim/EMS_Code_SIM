@@ -60,6 +60,48 @@
       defaultReply: 'I\'m having a hard time talking. What do you need to know?'
     },
 
+    crewRoles: {
+      dispatcher: {
+        label: 'Dispatcher',
+        summary: 'Manage the 911 call, gather critical information, assign resources, and transmit useful updates.',
+        objectives: ['Confirm location and callback information', 'Determine consciousness and breathing status', 'Identify respiratory history or inhaler use', 'Dispatch appropriate resources', 'Relay meaningful updates to responding crews'],
+        availableActions: ['caller_interview', 'dispatch_resources', 'radio_update'],
+        startingInformation: ['911 caller reports a woman having difficulty breathing in a public park.']
+      },
+      lead_emt: {
+        label: 'Lead EMT',
+        summary: 'Lead patient care, delegate tasks, make treatment and transport decisions, and coordinate the team.',
+        objectives: ['Establish scene and patient priorities', 'Delegate specific tasks', 'Assess and treat the patient', 'Use closed-loop communication', 'Coordinate transport and handoff'],
+        availableActions: ['scene', 'patient', 'assess', 'treat', 'delegate', 'transport', 'handoff', 'pcr'],
+        startingInformation: ['Dispatch reports respiratory distress at Riverside Park. Fire is on scene.']
+      },
+      emt_partner: {
+        label: 'EMT Partner',
+        summary: 'Perform assigned tasks, anticipate crew needs, report findings, and speak up about important changes.',
+        objectives: ['Complete assigned assessments promptly', 'Report findings clearly', 'Prepare appropriate equipment', 'Recognize deterioration', 'Confirm important instructions'],
+        availableActions: ['scene', 'patient', 'assess', 'treat', 'equipment', 'report'],
+        startingInformation: ['You are responding with the lead EMT to a respiratory distress call.']
+      },
+      firefighter: {
+        label: 'Firefighter / First Responder',
+        summary: 'Perform scene size-up and initial patient contact, gather early findings, begin appropriate basic care, and transfer information to EMS.',
+        objectives: ['Confirm scene safety', 'Make initial patient contact', 'Obtain useful initial findings', 'Gather focused history', 'Give EMS a concise transfer report'],
+        availableActions: ['scene', 'patient', 'assess', 'basic_care', 'transfer_report'],
+        startingInformation: ['You arrive before the ambulance for a reported breathing problem in the park.']
+      }
+    },
+    teamPerformance: {
+      dimensions: ['communication', 'delegation', 'closed_loop', 'situational_awareness', 'information_transfer', 'role_execution'],
+      communicationEvents: [
+        { id: 'specific_assignment', label: 'Specific task assignment' },
+        { id: 'acknowledgement', label: 'Assignment acknowledged' },
+        { id: 'finding_report', label: 'Important finding reported' },
+        { id: 'readback', label: 'Critical information confirmed' },
+        { id: 'escalation', label: 'Concern appropriately escalated' },
+        { id: 'transfer', label: 'Information transferred between teams' }
+      ]
+    },
+
     sceneExperience: {
       targets: {
         patient: { label: 'Patient', kind: 'dynamic-video' },
