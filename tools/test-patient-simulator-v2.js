@@ -80,6 +80,8 @@ test('Crew roles define distinct responsibilities and team communication', () =>
   assert.ok(scenario.simulatedCrew.behavior.deterioration.severeSpo2 <= 90);
   assert.ok(scenario.simulatedCrew.behavior.anticipation.some(item => item.id === 'airway_ready'));
   assert.ok(scenario.simulatedCrew.behavior.clarification.vagueTerms.includes('stuff'));
+  assert.equal(scenario.simulatedCrew.tasks.blood_pressure.simulator, 'blood_pressure');
+  assert.equal(scenario.simulatedCrew.tasks.pulse.simulator, 'pulse');
 });
 
 test('Scene experience defines visual targets, clues, and independent contacts', () => {
@@ -416,6 +418,8 @@ test('V2 route files exist (desktop/mobile shell)', () => {
   assert.ok(html.includes('data-panel="crew"'));
   assert.ok(html.includes('psv2CrewTask'));
   assert.ok(html.includes('psv2AssignTask'));
+  assert.ok(html.includes('psv2CuffPressure'));
+  assert.ok(html.includes('psv2PulseTap'));
   assert.ok(html.includes('viewport'));
   assert.ok(css.includes('@media (max-width: 720px)'));
   assert.ok(css.includes('@media (max-width: 1100px)'));
