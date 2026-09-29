@@ -46,7 +46,8 @@
 
   <section class="workspace card">
     <div class="tabs" role="tablist">
-      <button class="tab active" data-tab="talk">Talk</button>
+      <button class="tab active" data-tab="scene">Scene</button>
+      <button class="tab" data-tab="talk">Patient</button>
       <button class="tab" data-tab="assess">Assess</button>
       <button class="tab" data-tab="partner">Partner</button>
       <button class="tab" data-tab="treat">Treat</button>
@@ -55,7 +56,23 @@
       <button class="tab" data-tab="pcr">PCR</button>
     </div>
 
-    <div class="panel active" data-panel="talk">
+    <div class="panel active" data-panel="scene">
+      <h3>Manage the scene</h3>
+      <p class="muted">Choose where to focus. Visual media, scene clues, and conversations are separate sources of information.</p>
+      <div id="sceneTargets" class="scene-targets"></div>
+      <div class="scene-focus">
+        <div id="sceneMedia" class="scene-media"><div class="scene-placeholder">Select a person or the environment.</div></div>
+        <div>
+          <h3 id="sceneFocusTitle">Scene</h3>
+          <div id="sceneClueButtons" class="action-grid"></div>
+          <div id="sceneFinding" class="result-box">Look around or speak with someone on scene.</div>
+          <form id="contactForm" class="inline-form" hidden><input id="contactInput" autocomplete="off" placeholder="Ask a question…"><button>Ask</button></form>
+          <div id="contactConversation" class="conversation compact"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" data-panel="talk">
       <h3>Talk to the patient</h3>
       <div id="conversation" class="conversation"><div class="patient-line">Patient: “I can’t catch my breath.”</div></div>
       <form id="talkForm" class="inline-form"><input id="talkInput" autocomplete="off" placeholder="Ask the patient a question…" required><button>Ask</button></form>
