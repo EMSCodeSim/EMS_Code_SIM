@@ -779,3 +779,12 @@ a { color: var(--psv2-cyan); }
 .psv2-scene-placeholder small{display:block;color:var(--psv2-muted);font-weight:400}
 .psv2-scene-info h3{margin-top:0}.psv2-scene-chat{max-height:180px;margin-top:10px}
 @media(max-width:720px){.psv2-scene-targets{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}.psv2-scene-targets button{flex:0 0 auto}.psv2-scene-workspace{grid-template-columns:1fr}.psv2-scene-media,.psv2-scene-media img,.psv2-scene-media video,.psv2-scene-placeholder{min-height:210px}}
+
+.psv2-role-select{margin:16px 0}.psv2-role-help{margin-top:-4px}
+.psv2-role-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}
+.psv2-role-card{appearance:none;text-align:left;border:1px solid var(--psv2-line-strong);background:#102338;color:#eaf6ff;border-radius:12px;padding:13px;cursor:pointer}
+.psv2-role-card strong,.psv2-role-card span{display:block}.psv2-role-card span{margin-top:5px;color:var(--psv2-muted);font-size:.82rem;line-height:1.35}
+.psv2-role-card[aria-pressed="true"]{outline:2px solid #3ec6e0;background:#15314b}
+.psv2-role-badge{border:1px solid var(--psv2-line-strong);border-radius:999px;padding:6px 10px;color:#bcefff;font-size:.78rem;font-weight:700}
+.psv2-objectives{display:grid;gap:7px;margin-bottom:16px}.psv2-objective{padding:9px 10px;border:1px solid rgba(140,190,220,.18);border-radius:9px;background:rgba(10,28,44,.65)}
+@media(max-width:720px){.psv2-role-cards{grid-template-columns:1fr}.psv2-role-badge{order:3;width:100%;text-align:center}}
