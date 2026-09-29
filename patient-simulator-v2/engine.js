@@ -156,6 +156,23 @@
       return { answer, matched: !!match };
     }
 
+    function delegate(taskId) {
+      const task = scenario.partnerTasks && scenario.partnerTasks[taskId];
+      if (!task) return { ok: false, message: 'Unknown partner task.' };
+      const record = { id: taskId, t: state.elapsedSec, label: task.label };
+      state.partnerTasks.push(record);
+      event('partner', 'Delegated: ' + task.label, record);
+      if (task.reveals) task.reveals.forEach(id => monitor(id));
+      return { ok: true, message: task.response };
+    }
+
+    function conversationFact(query) {
+      const lower = String(query || '').toLowerCase();
+      const match = (scenario.interview || []).find(row => row.keys.some(k => lower.includes(k)));
+      event('conversation', 'Patient interview question', { query: String(query || ''), matched: !!match });
+      return { answer: match ? match.answer : scenario.conversationFallback, matched: !!match };
+    }
+
     function reassess() {
       state.reassessments += 1;
       event('reassessment', 'Patient reassessed after intervention');
