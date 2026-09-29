@@ -51,6 +51,8 @@
   let pulseTimer = null;
   let pulseRemaining = 0;
   let genericSkillStep = 0;
+  const roleKnowledge = {};
+  const closedLoopTasks = [];
 
   const $ = (id) => document.getElementById(id);
 
@@ -361,6 +363,44 @@
   }
 
 
+
+  function resetRoleKnowledge() {
+    Object.keys(roleKnowledge).forEach(k=>delete roleKnowledge[k]);
+    const roles = session.scenario.crewRoles || {};
+    Object.keys(roles).forEach(id=>roleKnowledge[id]=new Map());
+    Object.entries(session.scenario.roleKnowledge?.facts || {}).forEach(([factId,fact])=>{
+      (fact.initial || []).forEach(roleId=>roleKnowledge[roleId]?.set(factId,{value:fact.label,source:fact.source||'initial',at:0}));
+    });
+  }
+
+  function learnFact(roleId, factId, value, source='discovered') {
+    if (!roleKnowledge[roleId]) roleKnowledge[roleId]=new Map();
+    roleKnowledge[roleId].set(factId,{value,source,at:session.patient.getFullState().elapsedTime});
+    renderRoleKnowledge();
+  }
+
+  function transferFact(fromRole,toRole,factId) {
+    const known=roleKnowledge[fromRole]?.get(factId);
+    if (!known) return false;
+    learnFact(toRole,factId,known.value,'communicated by '+fromRole);
+    pushCrewEvent(fromRole,'Information transferred',known.value,{type:'information_transfer',toRole,factId});
+    return true;
+  }
+
+  function renderRoleKnowledge() {
+    if (!session || !$('psv2RoleKnowledge')) return;
+    const facts=[...(roleKnowledge[selectedRole]?.entries() || [])];
+    $('psv2RoleKnowledge').innerHTML=facts.length?facts.map(([id,f])=>'<div class="psv2-objective" data-fact="'+escapeHtml(id)+'">✓ '+escapeHtml(f.value)+'</div>').join(''):'<div class="psv2-objective">No additional facts have been communicated to this role yet.</div>';
+    $('psv2ClosedLoopTasks').innerHTML=closedLoopTasks.length?closedLoopTasks.map(t=>'<div class="psv2-objective"><strong>'+escapeHtml(t.label)+'</strong> · '+escapeHtml(t.status.replaceAll('_',' '))+'</div>').join(''):'<div class="psv2-objective">No delegated tasks yet.</div>';
+  }
+
+  function updateClosedLoop(taskId,status,result='') {
+    const task=closedLoopTasks.find(t=>t.id===taskId);
+    if (!task) return;
+    task.status=status; if(result) task.result=result;
+    renderRoleKnowledge();
+  }
+
   function renderFireCommand() {
     if (!session) return;
     const panel = $('psv2FireCommand');
@@ -476,11 +516,15 @@
 
   function completeSkillTask(resultText, measured) {
     if (!session || !activeSkillTask) return;
-    const { taskId, assignee } = activeSkillTask;
+    const { taskId, assignee, loopId } = activeSkillTask;
     const roles = session.scenario.crewRoles;
     $('psv2CrewTaskStatus').innerHTML = '<strong>' + escapeHtml(roles[assignee].label) + ':</strong> ' + escapeHtml(resultText);
     appendCrewMessage(assignee, resultText);
-    pushCrewEvent(assignee, 'Crew skill completed', resultText, {type:'skill',taskId,measured});
+    pushCrewEvent(assignee, 'Crew skill completed', resultText, {type:'skill',taskId,measured,loopId});
+    const factId = taskId === 'blood_pressure' ? 'manual_bp' : taskId === 'pulse' ? 'manual_pulse' : taskId;
+    learnFact(assignee,factId,resultText,'skill');
+    if (assignee !== selectedRole) transferFact(assignee,selectedRole,factId);
+    updateClosedLoop(loopId,'reported',resultText);
     closeSkillSimulator();
   }
 
@@ -545,12 +589,16 @@
     const roles = session.scenario.crewRoles;
     const status = $('psv2CrewTaskStatus');
     const startAt = session.patient.getFullState().elapsedTime;
+    const loopId = taskId+'-'+startAt+'-'+assignee;
+    closedLoopTasks.push({id:loopId,taskId,label:task.label,from:selectedRole,to:assignee,status:'acknowledged',assignedAt:startAt});
     status.innerHTML = '<strong>' + escapeHtml(roles[assignee].label) + ':</strong> Copy. ' + escapeHtml(task.label) + '.';
     const clinical = session.patient.snapshotClinical();
-    session.timeline.push({timestamp:startAt,eventType:'crew',action:'Assignment acknowledged',result:roles[assignee].label + ' accepted: ' + task.label,clinicalStateBefore:clinical,clinicalStateAfter:clinical,metadata:{taskId,assignee,status:'assigned'}});
+    session.timeline.push({timestamp:startAt,eventType:'crew',action:'Assignment acknowledged',result:roles[assignee].label + ' accepted: ' + task.label,clinicalStateBefore:clinical,clinicalStateAfter:clinical,metadata:{taskId,assignee,status:'acknowledged',loopId}});
     renderTimeline();
     if (task.simulator) {
+      activeSkillTask = { ...(activeSkillTask||{}), loopId };
       launchSkillSimulator(taskId, assignee, task);
+      if (activeSkillTask) activeSkillTask.loopId=loopId;
       return;
     }
     const timer = setTimeout(() => {
@@ -558,7 +606,8 @@
       if (!session) return;
       const nowClinical = session.patient.snapshotClinical();
       status.innerHTML = '<strong>' + escapeHtml(roles[assignee].label) + ':</strong> ' + escapeHtml(task.result);
-      session.timeline.push({timestamp:session.patient.getFullState().elapsedTime,eventType:'crew',action:'Crew task completed',result:task.result,clinicalStateBefore:nowClinical,clinicalStateAfter:nowClinical,metadata:{taskId,assignee,status:'completed',reveals:task.reveals}});
+      session.timeline.push({timestamp:session.patient.getFullState().elapsedTime,eventType:'crew',action:'Crew task completed',result:task.result,clinicalStateBefore:nowClinical,clinicalStateAfter:nowClinical,metadata:{taskId,assignee,status:'reported',reveals:task.reveals,loopId}});
+      updateClosedLoop(loopId,'reported',task.result);
       renderTimeline();
     }, Math.max(1000, task.durationSec * 1000));
     crewTaskTimers.add(timer);
@@ -573,6 +622,14 @@
     const roles = session.scenario.crewRoles;
     const event = { from: selectedRole, to: targetId, type, message, timestamp: session.patient.getFullState().elapsedTime };
     crewEvents.push(event);
+    if (type === 'finding_report') {
+      const sourceFacts=[...(roleKnowledge[selectedRole]?.keys() || [])];
+      if (sourceFacts.length) transferFact(selectedRole,targetId,sourceFacts[sourceFacts.length-1]);
+    }
+    if (type === 'acknowledgement') {
+      const pending=[...closedLoopTasks].reverse().find(t=>t.to===selectedRole && t.status==='reported');
+      if (pending) updateClosedLoop(pending.id,'closed_loop_complete');
+    }
     const needsClarification = maybeClarifyCrewMessage(targetId, message);
     const clinical = session.patient.snapshotClinical();
     session.timeline.push({ timestamp:event.timestamp,eventType:'crew',action:roles[selectedRole].label + ' → ' + roles[targetId].label,result:message,clinicalStateBefore:clinical,clinicalStateAfter:clinical,metadata:{crew:event} });
@@ -699,6 +756,8 @@
     if ($('psv2DebriefForm')) $('psv2DebriefForm').hidden = false;
 
     session = window.PSV2.Session.startNewSession('adult-asthma');
+    closedLoopTasks.length=0;
+    resetRoleKnowledge();
     $('psv2DispatchText').textContent = session.scenario.dispatch.text;
     $('psv2StartOverlay').hidden = true;
 
@@ -709,6 +768,7 @@
     renderChat();
     buildScene();
     renderCrewWorkspace();
+    renderRoleKnowledge();
     refreshAll();
 
     // Natural call flow helpers on start
