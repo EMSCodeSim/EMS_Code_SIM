@@ -205,12 +205,12 @@
 
     sceneExperience: {
       targets: {
-        patient: { label: 'Patient', kind: 'dynamic-video', inspectionSrc: '/patient-simulator-v2/assets/patient-distress.jpg' },
-        environment: { label: 'Bench / Belongings', kind: 'still', src: '/patient-simulator-v2/assets/bench-belongings.jpg', alt: 'Park bench with patient belongings visible' },
-        backpack: { label: 'Backpack / Inhaler', kind: 'still', src: '/patient-simulator-v2/assets/backpack-inhaler.jpg', alt: 'Open backpack with rescue inhaler visible' },
-        access: { label: 'Scene / Access', kind: 'still', src: '/patient-simulator-v2/assets/scene-access.jpg', alt: 'Park access route between patient area and responding units' },
-        ambulance: { label: 'Ambulance / Resources', kind: 'still', src: '/patient-simulator-v2/assets/ambulance-resources.jpg', alt: 'Ambulance and stretcher positioned near the park' },
-        fire: { label: 'Fire Crew', kind: 'still', src: '/patient-simulator-v2/assets/fire-crew.jpg', alt: 'Fire crew already on scene' },
+        patient: { label: 'Patient', kind: 'dynamic-video' },
+        environment: { label: 'Bench / Belongings', kind: 'still', src: '', alt: 'Park bench with patient belongings visible' },
+        backpack: { label: 'Backpack / Inhaler', kind: 'still', src: '', alt: 'Open backpack with rescue inhaler visible' },
+        access: { label: 'Scene / Access', kind: 'still', src: '', alt: 'Park access route between patient area and responding units' },
+        ambulance: { label: 'Ambulance / Resources', kind: 'still', src: '', alt: 'Ambulance and stretcher positioned near the park' },
+        fire: { label: 'Fire Crew', kind: 'still', src: '', alt: 'Fire crew already on scene' },
         bystander: { label: 'Friend', kind: 'still', src: '', alt: 'Friend who was with the patient' },
         partner: { label: 'Partner', kind: 'still', src: '', alt: 'EMS partner' }
       },
