@@ -15,6 +15,9 @@ assert(scenario.videos.improved.endsWith('asthma-improved.mp4'),'improved asset 
 const sim=engine.createEngine(scenario);
 assert(Object.keys(sim.getState().discovered).length===0,'findings must start hidden');
 sim.assess('airway'); assert(sim.getState().scoreFlags.airway,'airway assessment should record');
+const interview=sim.conversationFact('Have you used your inhaler?'); assert(interview.matched && /inhaler/i.test(interview.answer),'conversation should answer from locked scenario facts');
+const unknown=sim.conversationFact('What is your favorite movie?'); assert(!unknown.matched,'unknown conversation should not invent clinical facts');
+const delegated=sim.delegate('monitor'); assert(delegated.ok && sim.getState().partnerTasks.length===1,'partner delegation should be recorded');
 sim.tick(100); assert(sim.getState().clinical.videoState==='worsening','untreated patient should worsen');
 sim.treat('albuterol'); sim.tick(30); assert(sim.getState().clinical.videoState==='improved','effective treatment should switch visual state');
 sim.reassess(); assert(sim.getState().scoreFlags.reassessmentAfterTreatment,'reassessment should be tracked');
@@ -22,7 +25,7 @@ sim.setTransport({destination:'ED',priority:'Emergent'});
 sim.setHandoff('24-year-old female with severe asthma, hypoxic, treated with albuterol, improving, ETA five minutes.');
 sim.setPCR('Responded for a 24-year-old female with acute respiratory distress. Airway patent, tachypneic with wheezing and hypoxia. Albuterol administered with improvement. Repeat vitals and lung sounds obtained. Transported emergent to ED.');
 const g=sim.grade(); assert(g.total>0&&g.possible===100,'grading should be deterministic out of 100');
-sim.reset(); const reset=sim.getState(); assert(reset.elapsedSec===0&&reset.treatments.length===0&&Object.keys(reset.discovered).length===0,'reset must clear all patient state');
+sim.reset(); const reset=sim.getState(); assert(reset.elapsedSec===0&&reset.treatments.length===0&&reset.partnerTasks.length===0&&Object.keys(reset.discovered).length===0,'reset must clear all patient state');
 const html=fs.readFileSync(path.join(root,'patient-simulator-v2','index.html'),'utf8');
 assert(!html.includes('visual-patient'),'V2 must not load legacy visual-patient code');
 assert(html.includes('/patient-simulator-v2/engine.js'),'V2 must use isolated engine');
