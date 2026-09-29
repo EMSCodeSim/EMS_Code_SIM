@@ -206,14 +206,14 @@
     sceneExperience: {
       targets: {
         patient: { label: 'Patient', kind: 'dynamic-video' },
-        environment: { label: 'Scene', kind: 'still', src: '', alt: 'Riverside Park scene surrounding the patient' },
+        environment: { label: 'Scene / Bench', kind: 'still', src: '/patient-simulator-v2/assets/bench-scene-overview.jpg', alt: 'Park bench and surrounding scene with the patient belongings visible' },
         fire: { label: 'Fire Crew', kind: 'still', src: '', alt: 'Fire crew already on scene' },
         bystander: { label: 'Friend', kind: 'still', src: '', alt: 'Friend who was with the patient' },
         partner: { label: 'Partner', kind: 'still', src: '', alt: 'EMS partner' }
       },
       clues: [
         { id: 'position', target: 'patient', label: 'Observe patient position', finding: 'Patient is seated upright, leaning forward, with visible increased work of breathing.' },
-        { id: 'inhaler', target: 'environment', label: 'Inspect the bench', finding: 'A rescue inhaler is visible beside the patient on the bench.' },
+        { id: 'inhaler', target: 'environment', label: 'Inspect the bench', finding: 'The bench holds an open backpack, rescue inhaler, water bottle, keys, and a phone. The inhaler is immediately relevant to the respiratory complaint.' },
         { id: 'environment', target: 'environment', label: 'Look around the scene', finding: 'The patient is outdoors near a grassy field. Conditions are dusty and windy.' }
       ],
       contacts: {
