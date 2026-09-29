@@ -109,7 +109,13 @@
           response: 'Copy, but what specific task do you want me to handle?'
         }
       },
+      skillTasks: {
+        blood_pressure: { label:'Manual blood pressure', role:['emt_partner','firefighter'], simulator:'blood_pressure', resultKey:'bloodPressure' },
+        pulse: { label:'Manual pulse', role:['emt_partner','firefighter'], simulator:'pulse', resultKey:'heartRate' }
+      },
       tasks: {
+        blood_pressure: { label:'Obtain manual blood pressure', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'blood_pressure', result:'Manual blood pressure obtained.', reveals:['bloodPressure'] },
+        pulse: { label:'Obtain manual pulse', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'pulse', result:'Manual pulse obtained.', reveals:['heartRate'] },
         full_vitals: { label: 'Obtain full vital signs', assignedTo: ['emt_partner','firefighter'], durationSec: 35, result: 'Vitals obtained: HR 126, RR 32, BP 148/92, SpO₂ 88% on room air.', reveals: ['heartRate','respiratoryRate','bloodPressure','spo2'] },
         monitor: { label: 'Place patient on monitor', assignedTo: ['emt_partner'], durationSec: 25, result: 'Monitor attached. Initial displayed HR is 126 and SpO₂ is 88%.', reveals: ['heartRate','spo2'] },
         neb_setup: { label: 'Prepare nebulizer treatment', assignedTo: ['emt_partner','firefighter'], durationSec: 20, result: 'Nebulizer equipment is assembled and ready for medication.', reveals: [] },
