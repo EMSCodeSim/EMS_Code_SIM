@@ -40,6 +40,7 @@
   let currentVideoUrl = '';
   let reassessMode = false;
   let activeDebrief = null;
+  let activeSceneTarget = 'environment';
 
   const $ = (id) => document.getElementById(id);
 
@@ -274,6 +275,64 @@
     return fields;
   }
 
+
+  function renderScene(targetId = 'environment') {
+    if (!session || !session.scenario.sceneExperience) return;
+    activeSceneTarget = targetId;
+    const scene = session.scenario.sceneExperience;
+    const target = scene.targets[targetId];
+    if (!target) return;
+    $('psv2SceneTitle').textContent = target.label;
+    const media = $('psv2SceneMedia');
+    media.innerHTML = '';
+    if (target.kind === 'dynamic-video') {
+      const videoCfg = session.getVideo();
+      const video = document.createElement('video');
+      video.src = videoCfg.url; video.autoplay = true; video.muted = true; video.loop = true; video.playsInline = true;
+      media.appendChild(video);
+    } else if (target.src) {
+      if (target.kind === 'video') {
+        const video = document.createElement('video');
+        video.src = target.src; video.autoplay = true; video.muted = true; video.loop = true; video.playsInline = true;
+        media.appendChild(video);
+      } else {
+        const img = document.createElement('img'); img.src = target.src; img.alt = target.alt || target.label; media.appendChild(img);
+      }
+    } else {
+      media.innerHTML = '<div class="psv2-scene-placeholder">' + escapeHtml(target.label) + '<small>Visual media slot</small></div>';
+    }
+    $('psv2SceneTargets').querySelectorAll('[data-scene-target]').forEach(btn => btn.setAttribute('aria-pressed', String(btn.dataset.sceneTarget === targetId)));
+    const clues = scene.clues.filter(clue => clue.target === targetId);
+    $('psv2SceneClues').innerHTML = clues.map(clue => '<button type="button" class="psv2-btn" data-scene-clue="' + escapeHtml(clue.id) + '">' + escapeHtml(clue.label) + '</button>').join('');
+    const contact = scene.contacts[targetId];
+    $('psv2ContactForm').hidden = !contact;
+    $('psv2ContactLog').innerHTML = '';
+    $('psv2SceneFinding').textContent = clues.length ? 'Inspect the visual scene for useful information.' : (contact ? 'Ask this person what they know.' : 'Observe the patient.');
+  }
+
+  function buildScene() {
+    if (!session || !session.scenario.sceneExperience) return;
+    const targets = session.scenario.sceneExperience.targets;
+    $('psv2SceneTargets').innerHTML = Object.entries(targets).map(([id, target]) =>
+      '<button type="button" class="psv2-chip" data-scene-target="' + escapeHtml(id) + '">' + escapeHtml(target.label) + '</button>'
+    ).join('');
+    renderScene('environment');
+  }
+
+  function recordSceneEvent(action, result, metadata = {}) {
+    const clinical = session.patient.snapshotClinical();
+    session.timeline.push({
+      timestamp: session.patient.getFullState().elapsedTime,
+      eventType: 'scene',
+      action,
+      result,
+      clinicalStateBefore: clinical,
+      clinicalStateAfter: clinical,
+      metadata
+    });
+    renderTimeline();
+  }
+
   function partnerAssist() {
     if (!session) return;
     session.timeline.push({
@@ -332,11 +391,12 @@
     renderTransportDestinations();
     renderPcrFields();
     renderChat();
+    buildScene();
     refreshAll();
 
     // Natural call flow helpers on start
     session.startClock(1000, 1);
-    openTab('talk');
+    openTab('scene');
 
     session.subscribe((evt) => {
       if (evt.type === 'tick' || evt.type === 'physiology') {
@@ -468,6 +528,7 @@
       const btn = e.target.closest('button[data-action]');
       if (!btn || !session) return;
       const action = btn.dataset.action;
+      if (action === 'scene') openTab('scene');
       if (action === 'talk') openTab('talk');
       if (action === 'assess') openTab('assess');
       if (action === 'vitals') {
@@ -513,6 +574,38 @@
       }
       return null;
     }
+
+    $('psv2SceneTargets').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-scene-target]');
+      if (!btn || !session) return;
+      renderScene(btn.dataset.sceneTarget);
+    });
+
+    $('psv2SceneClues').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-scene-clue]');
+      if (!btn || !session) return;
+      const clue = session.scenario.sceneExperience.clues.find(item => item.id === btn.dataset.sceneClue);
+      if (!clue) return;
+      $('psv2SceneFinding').textContent = clue.finding;
+      recordSceneEvent('Scene observation: ' + clue.label, clue.finding, { clueId: clue.id, target: clue.target });
+    });
+
+    $('psv2ContactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!session) return;
+      const input = $('psv2ContactInput');
+      const question = input.value.trim();
+      if (!question) return;
+      const contact = session.scenario.sceneExperience.contacts[activeSceneTarget];
+      if (!contact) return;
+      const lower = question.toLowerCase();
+      const fact = contact.facts.find(row => row.keys.some(key => lower.includes(key)));
+      const answer = fact ? fact.answer : contact.fallback;
+      const log = $('psv2ContactLog');
+      log.insertAdjacentHTML('beforeend', '<div class="psv2-msg learner"><span class="who">You</span>' + escapeHtml(question) + '</div><div class="psv2-msg patient"><span class="who">' + escapeHtml(session.scenario.sceneExperience.targets[activeSceneTarget].label) + '</span>' + escapeHtml(answer) + '</div>');
+      input.value = '';
+      recordSceneEvent('Questioned ' + session.scenario.sceneExperience.targets[activeSceneTarget].label, answer, { target: activeSceneTarget, matched: Boolean(fact) });
+    });
 
     $('psv2ChatForm').addEventListener('submit', (e) => {
       e.preventDefault();

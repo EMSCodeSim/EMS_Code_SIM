@@ -66,6 +66,17 @@ test('1. Scenario loads with correct initial hidden state', () => {
   session.destroy();
 });
 
+test('Scene experience defines visual targets, clues, and independent contacts', () => {
+  assert.ok(scenario.sceneExperience);
+  assert.strictEqual(scenario.sceneExperience.targets.patient.kind, 'dynamic-video');
+  assert.ok(scenario.sceneExperience.targets.environment);
+  assert.ok(scenario.sceneExperience.targets.fire);
+  assert.ok(scenario.sceneExperience.targets.bystander);
+  assert.ok(scenario.sceneExperience.targets.partner);
+  assert.ok(scenario.sceneExperience.clues.some(c => c.id === 'inhaler'));
+  assert.ok(scenario.sceneExperience.contacts.fire.facts.some(f => /89%/.test(f.answer)));
+});
+
 test('2. Assessments reveal only requested information', () => {
   const session = Session.createSession(scenario, deps);
   assert.deepStrictEqual(session.assessment.getRevealed(), {});
@@ -383,6 +394,8 @@ test('V2 route files exist (desktop/mobile shell)', () => {
   assert.ok(html.includes('psv2-actionbar'));
   assert.ok(html.includes('Talk to Patient') || html.includes('data-action="talk"'));
   assert.ok(html.includes('psv2Video'));
+  assert.ok(html.includes('psv2SceneTargets'));
+  assert.ok(html.includes('data-panel="scene"'));
   assert.ok(html.includes('viewport'));
   assert.ok(css.includes('@media (max-width: 720px)'));
   assert.ok(css.includes('@media (max-width: 1100px)'));
