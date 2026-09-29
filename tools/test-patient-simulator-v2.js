@@ -84,6 +84,10 @@ test('Crew roles define distinct responsibilities and team communication', () =>
   assert.ok(scenario.fireSceneManagement.resources.some(r => r.id === 'ems_unit'));
   assert.ok(scenario.fireSceneManagement.hospitalStatus.length >= 2);
   assert.ok(scenario.fireSceneManagement.fireActions.some(a => a.id === 'clear_egress'));
+  assert.ok(scenario.roleKnowledge.facts.fire_initial_spo2.initial.includes('firefighter'));
+  assert.equal(scenario.roleKnowledge.transferRules.requiresCommunication, true);
+  assert.deepEqual(scenario.closedLoop.requiredSequence, ['assignment','acknowledgement','completion','report','leader_acknowledgement']);
+  assert.equal(scenario.closedLoop.consequences.badMeasurement.includes('reported measurement'), true);
   assert.equal(scenario.simulatedCrew.tasks.blood_pressure.simulator, 'blood_pressure');
   assert.equal(scenario.simulatedCrew.tasks.pulse.simulator, 'pulse');
   ['respiratory_rate','spo2','lung_sounds','glucose','ecg','oxygen_setup','nebulizer_setup'].forEach(id => assert.ok(scenario.simulatedCrew.tasks[id]?.simulator));
@@ -429,6 +433,8 @@ test('V2 route files exist (desktop/mobile shell)', () => {
   assert.ok(html.includes('psv2GenericSkillChoices'));
   assert.ok(html.includes('psv2FireCommand'));
   assert.ok(html.includes('psv2HospitalStatus'));
+  assert.ok(html.includes('psv2RoleKnowledge'));
+  assert.ok(html.includes('psv2ClosedLoopTasks'));
   assert.ok(html.includes('viewport'));
   assert.ok(css.includes('@media (max-width: 720px)'));
   assert.ok(css.includes('@media (max-width: 1100px)'));
