@@ -43,6 +43,7 @@
   let activeSceneTarget = 'environment';
   let selectedRole = 'lead_emt';
   const crewEvents = [];
+  const crewTaskTimers = new Set();
 
   const $ = (id) => document.getElementById(id);
 
@@ -306,8 +307,38 @@
     $('psv2CrewRoleSummary').innerHTML = '<strong>' + escapeHtml(role.label) + '</strong><br>' + escapeHtml(role.summary);
     $('psv2CrewObjectives').innerHTML = role.objectives.map(item => '<div class="psv2-objective">○ ' + escapeHtml(item) + '</div>').join('');
     $('psv2CrewTarget').innerHTML = Object.entries(roles).filter(([id]) => id !== selectedRole).map(([id, r]) => '<option value="' + escapeHtml(id) + '">' + escapeHtml(r.label) + '</option>').join('');
+    const tasks = session.scenario.simulatedCrew?.tasks || {};
+    $('psv2CrewTask').innerHTML = Object.entries(tasks)
+      .filter(([,task]) => task.assignedTo.some(id => id !== selectedRole))
+      .map(([id,task]) => '<option value="' + escapeHtml(id) + '">' + escapeHtml(task.label) + '</option>').join('');
     $('psv2CrewEventType').innerHTML = session.scenario.teamPerformance.communicationEvents.map(item => '<option value="' + escapeHtml(item.id) + '">' + escapeHtml(item.label) + '</option>').join('');
     $('psv2CrewLog').innerHTML = '';
+  }
+
+
+  function assignSimulatedCrewTask() {
+    if (!session || !selectedRole) return;
+    const taskId = $('psv2CrewTask').value;
+    const task = session.scenario.simulatedCrew?.tasks?.[taskId];
+    if (!task) return;
+    const assignee = task.assignedTo.find(id => id !== selectedRole);
+    if (!assignee) return;
+    const roles = session.scenario.crewRoles;
+    const status = $('psv2CrewTaskStatus');
+    const startAt = session.patient.getFullState().elapsedTime;
+    status.innerHTML = '<strong>' + escapeHtml(roles[assignee].label) + ':</strong> Copy. ' + escapeHtml(task.label) + '.';
+    const clinical = session.patient.snapshotClinical();
+    session.timeline.push({timestamp:startAt,eventType:'crew',action:'Assignment acknowledged',result:roles[assignee].label + ' accepted: ' + task.label,clinicalStateBefore:clinical,clinicalStateAfter:clinical,metadata:{taskId,assignee,status:'assigned'}});
+    renderTimeline();
+    const timer = setTimeout(() => {
+      crewTaskTimers.delete(timer);
+      if (!session) return;
+      const nowClinical = session.patient.snapshotClinical();
+      status.innerHTML = '<strong>' + escapeHtml(roles[assignee].label) + ':</strong> ' + escapeHtml(task.result);
+      session.timeline.push({timestamp:session.patient.getFullState().elapsedTime,eventType:'crew',action:'Crew task completed',result:task.result,clinicalStateBefore:nowClinical,clinicalStateAfter:nowClinical,metadata:{taskId,assignee,status:'completed',reveals:task.reveals}});
+      renderTimeline();
+    }, Math.max(1000, task.durationSec * 1000));
+    crewTaskTimers.add(timer);
   }
 
   function recordCrewCommunication() {
@@ -426,6 +457,7 @@
 
   function startSimulation() {
     if (session) {
+      crewTaskTimers.forEach(timer => clearTimeout(timer)); crewTaskTimers.clear();
       session.destroy();
       session = null;
     }
@@ -537,6 +569,7 @@
       const btn=e.target.closest('[data-role]'); if(btn) selectRole(btn.dataset.role);
     });
     $('psv2CrewSend').addEventListener('click', recordCrewCommunication);
+    $('psv2AssignTask').addEventListener('click', assignSimulatedCrewTask);
     $('psv2StartBtn').addEventListener('click', () => {
       beginCallFlow();
     });
