@@ -205,16 +205,23 @@
 
     sceneExperience: {
       targets: {
-        patient: { label: 'Patient', kind: 'dynamic-video' },
-        environment: { label: 'Scene / Bench', kind: 'still', src: '/patient-simulator-v2/assets/bench-scene-overview.jpg', alt: 'Park bench and surrounding scene with the patient belongings visible' },
-        fire: { label: 'Fire Crew', kind: 'still', src: '', alt: 'Fire crew already on scene' },
+        patient: { label: 'Patient', kind: 'dynamic-video', inspectionSrc: '/patient-simulator-v2/assets/patient-distress.jpg' },
+        environment: { label: 'Bench / Belongings', kind: 'still', src: '/patient-simulator-v2/assets/bench-belongings.jpg', alt: 'Park bench with patient belongings visible' },
+        backpack: { label: 'Backpack / Inhaler', kind: 'still', src: '/patient-simulator-v2/assets/backpack-inhaler.jpg', alt: 'Open backpack with rescue inhaler visible' },
+        access: { label: 'Scene / Access', kind: 'still', src: '/patient-simulator-v2/assets/scene-access.jpg', alt: 'Park access route between patient area and responding units' },
+        ambulance: { label: 'Ambulance / Resources', kind: 'still', src: '/patient-simulator-v2/assets/ambulance-resources.jpg', alt: 'Ambulance and stretcher positioned near the park' },
+        fire: { label: 'Fire Crew', kind: 'still', src: '/patient-simulator-v2/assets/fire-crew.jpg', alt: 'Fire crew already on scene' },
         bystander: { label: 'Friend', kind: 'still', src: '', alt: 'Friend who was with the patient' },
         partner: { label: 'Partner', kind: 'still', src: '', alt: 'EMS partner' }
       },
       clues: [
         { id: 'position', target: 'patient', label: 'Observe patient position', finding: 'Patient is seated upright, leaning forward, with visible increased work of breathing.' },
         { id: 'inhaler', target: 'environment', label: 'Inspect the bench', finding: 'The bench holds an open backpack, rescue inhaler, water bottle, keys, and a phone. The inhaler is immediately relevant to the respiratory complaint.' },
-        { id: 'environment', target: 'environment', label: 'Look around the scene', finding: 'The patient is outdoors near a grassy field. Conditions are dusty and windy.' }
+        { id: 'backpack', target: 'environment', label: 'Inspect the backpack', finding: 'The backpack is open. A rescue inhaler is visible inside.' },
+        { id: 'inhaler_closeup', target: 'backpack', label: 'Look closely at the inhaler', finding: 'A blue albuterol rescue inhaler is visible in the open backpack.' },
+        { id: 'access_route', target: 'access', label: 'Inspect ambulance access', finding: 'A paved route connects the patient area to the ambulance, but bystanders and responders can obstruct the egress path if it is not managed.' },
+        { id: 'ambulance_resources', target: 'ambulance', label: 'Inspect incoming resources', finding: 'The transport ambulance is positioned nearby with the rear compartment open and stretcher available.' },
+        { id: 'environment', target: 'access', label: 'Look around the scene', finding: 'The patient is outdoors near a grassy field. Conditions are dusty and windy.' }
       ],
       contacts: {
         fire: {
