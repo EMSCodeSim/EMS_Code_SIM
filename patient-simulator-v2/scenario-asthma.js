@@ -26,6 +26,36 @@
     },
     progression: { worsenAtSec: 90, criticalAtSec: 240 },
     treatmentEffects: { albuterol: { onsetSec: 25 } },
+    sceneMedia: {
+      patient: { label: 'Maya', type: 'dynamic-video' },
+      scene: { label: 'Scene', type: 'still', src: '', alt: 'Public park scene around the patient' },
+      fire: { label: 'Fire Crew', type: 'still', src: '', alt: 'Fire crew on scene' },
+      bystander: { label: 'Friend', type: 'still', src: '', alt: 'Friend who was walking with the patient' },
+      partner: { label: 'Partner', type: 'still', src: '', alt: 'EMS partner' }
+    },
+    sceneFindings: {
+      position: { label: 'Patient position', value: 'Maya is seated upright and leaning forward while breathing.', mediaTarget: 'patient' },
+      inhaler: { label: 'Object on bench', value: 'A rescue inhaler is visible beside Maya.', mediaTarget: 'scene' },
+      environment: { label: 'Environment', value: 'The patient is outdoors near a grassy area.', mediaTarget: 'scene' }
+    },
+    sceneContacts: {
+      fire: { label: 'Fire Crew', mediaTarget: 'fire', fallback: 'We do not have anything else yet.', facts: [
+        { keys:['find','found','arrival','before'], answer:'We found her seated upright and very short of breath. She has worsened since we arrived.' },
+        { keys:['vital','spo2','sat'], answer:'Our initial oxygen saturation was 89 percent on room air.' },
+        { keys:['treatment','give','done'], answer:'We have not administered medication.' },
+        { keys:['history','asthma'], answer:'She told us she has asthma and had already tried her inhaler.' }
+      ]},
+      bystander: { label: 'Friend', mediaTarget: 'bystander', fallback: 'I do not know anything else.', facts: [
+        { keys:['happen','start','before'], answer:'We were walking near the field when she said her chest felt tight and stopped.' },
+        { keys:['inhaler','medicine'], answer:'I saw her use her inhaler several times, but her breathing kept getting worse.' },
+        { keys:['normal','sick'], answer:'She seemed completely normal before this started.' }
+      ]},
+      partner: { label: 'Partner', mediaTarget: 'partner', fallback: 'Nothing else to report yet.', facts: [
+        { keys:['think','impression','see'], answer:'Her work of breathing concerns me most right now.' },
+        { keys:['equipment','ready'], answer:'The monitor, oxygen equipment, nebulizer setup, and airway bag are available.' },
+        { keys:['transport','stretcher'], answer:'I can get the stretcher and start preparing for transport.' }
+      ]}
+    },
     assessments: {
       general: { label: 'General appearance', value: 'Young adult seated upright, anxious, visibly increased work of breathing.' },
       airway: { label: 'Airway', value: 'Patent. Patient can phonate but only in short phrases.' },
