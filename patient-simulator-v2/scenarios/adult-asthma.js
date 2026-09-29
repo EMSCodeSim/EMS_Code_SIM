@@ -60,6 +60,48 @@
       defaultReply: 'I\'m having a hard time talking. What do you need to know?'
     },
 
+    sceneExperience: {
+      targets: {
+        patient: { label: 'Patient', kind: 'dynamic-video' },
+        environment: { label: 'Scene', kind: 'still', src: '', alt: 'Riverside Park scene surrounding the patient' },
+        fire: { label: 'Fire Crew', kind: 'still', src: '', alt: 'Fire crew already on scene' },
+        bystander: { label: 'Friend', kind: 'still', src: '', alt: 'Friend who was with the patient' },
+        partner: { label: 'Partner', kind: 'still', src: '', alt: 'EMS partner' }
+      },
+      clues: [
+        { id: 'position', target: 'patient', label: 'Observe patient position', finding: 'Patient is seated upright, leaning forward, with visible increased work of breathing.' },
+        { id: 'inhaler', target: 'environment', label: 'Inspect the bench', finding: 'A rescue inhaler is visible beside the patient on the bench.' },
+        { id: 'environment', target: 'environment', label: 'Look around the scene', finding: 'The patient is outdoors near a grassy field. Conditions are dusty and windy.' }
+      ],
+      contacts: {
+        fire: {
+          fallback: 'Fire crew: That is all we have so far.',
+          facts: [
+            { keys: ['find','found','arrival','before'], answer: 'Fire crew: We found her seated upright and very short of breath. She has worsened since we arrived.' },
+            { keys: ['vital','spo2','sat','oxygen'], answer: 'Fire crew: Our initial oxygen saturation was 89% on room air.' },
+            { keys: ['treatment','give','done'], answer: 'Fire crew: We have not administered medication.' },
+            { keys: ['history','asthma','inhaler'], answer: 'Fire crew: She told us she has asthma and had already tried her inhaler.' }
+          ]
+        },
+        bystander: {
+          fallback: 'Friend: I do not know anything else.',
+          facts: [
+            { keys: ['happen','start','before','onset'], answer: 'Friend: We were walking near the field when she suddenly said her chest felt tight and stopped.' },
+            { keys: ['inhaler','medicine','medication'], answer: 'Friend: I saw her use the inhaler several times, but her breathing kept getting worse.' },
+            { keys: ['normal','sick','baseline'], answer: 'Friend: She seemed completely normal before this started.' }
+          ]
+        },
+        partner: {
+          fallback: 'Partner: Nothing else to report yet.',
+          facts: [
+            { keys: ['think','impression','see'], answer: 'Partner: Her work of breathing concerns me most right now.' },
+            { keys: ['equipment','ready'], answer: 'Partner: Monitor, oxygen, nebulizer setup, and airway bag are ready.' },
+            { keys: ['transport','stretcher'], answer: 'Partner: I can get the stretcher and start preparing for transport.' }
+          ]
+        }
+      }
+    },
+
     initialState: {
       airway: 'patent',
       bronchospasmSeverity: 0.62,
