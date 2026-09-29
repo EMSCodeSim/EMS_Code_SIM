@@ -90,6 +90,17 @@
         startingInformation: ['You arrive before the ambulance for a reported breathing problem in the park.']
       }
     },
+    simulatedCrew: {
+      tasks: {
+        full_vitals: { label: 'Obtain full vital signs', assignedTo: ['emt_partner','firefighter'], durationSec: 35, result: 'Vitals obtained: HR 126, RR 32, BP 148/92, SpO₂ 88% on room air.', reveals: ['heartRate','respiratoryRate','bloodPressure','spo2'] },
+        monitor: { label: 'Place patient on monitor', assignedTo: ['emt_partner'], durationSec: 25, result: 'Monitor attached. Initial displayed HR is 126 and SpO₂ is 88%.', reveals: ['heartRate','spo2'] },
+        neb_setup: { label: 'Prepare nebulizer treatment', assignedTo: ['emt_partner','firefighter'], durationSec: 20, result: 'Nebulizer equipment is assembled and ready for medication.', reveals: [] },
+        oxygen: { label: 'Apply oxygen', assignedTo: ['emt_partner','firefighter'], durationSec: 15, result: 'Oxygen is applied and the patient remains under observation.', reveals: [] },
+        stretcher: { label: 'Prepare stretcher for transport', assignedTo: ['emt_partner','firefighter'], durationSec: 40, result: 'Stretcher is positioned and ready for patient movement.', reveals: [] },
+        fire_report: { label: 'Get first-responder report', assignedTo: ['firefighter'], durationSec: 8, result: 'Fire reports the patient was found upright and very short of breath; initial room-air SpO₂ was 89%; no medication was given by fire.', reveals: ['fireInitialSpo2'] }
+      }
+    },
+
     teamPerformance: {
       dimensions: ['communication', 'delegation', 'closed_loop', 'situational_awareness', 'information_transfer', 'role_execution'],
       communicationEvents: [
