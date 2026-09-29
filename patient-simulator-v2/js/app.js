@@ -360,6 +360,31 @@
     return true;
   }
 
+
+  function renderFireCommand() {
+    if (!session) return;
+    const panel = $('psv2FireCommand');
+    if (!panel) return;
+    panel.hidden = selectedRole !== 'firefighter';
+    if (panel.hidden) return;
+    const cfg = session.scenario.fireSceneManagement;
+    $('psv2FirePriorities').innerHTML = cfg.hazards.map(h=>'<div class="psv2-objective">⚠ '+escapeHtml(h.label)+'</div>').join('');
+    $('psv2FireActions').innerHTML = cfg.fireActions.map(a=>'<button type="button" class="psv2-list-btn" data-fire-action="'+escapeHtml(a.id)+'">'+escapeHtml(a.label)+'</button>').join('');
+    $('psv2FireResources').innerHTML = cfg.resources.map(r=>'<div class="psv2-objective"><strong>'+escapeHtml(r.label)+'</strong> · '+escapeHtml(r.status)+(r.etaMin ? ' · ETA '+r.etaMin+' min' : '')+'</div>').join('');
+    $('psv2HospitalStatus').innerHTML = cfg.hospitalStatus.map(h=>'<div class="psv2-objective"><strong>'+escapeHtml(h.label)+'</strong> · '+escapeHtml(h.status)+' · ~'+h.minutes+' min · '+escapeHtml(h.capability)+'</div>').join('');
+  }
+
+  function performFireAction(actionId) {
+    if (!session || selectedRole !== 'firefighter') return;
+    const cfg = session.scenario.fireSceneManagement;
+    const action = cfg.fireActions.find(a=>a.id===actionId);
+    if (!action) return;
+    $('psv2FireSceneStatus').textContent = action.result;
+    const button = document.querySelector('[data-fire-action="'+actionId+'"]');
+    if (button) { button.disabled=true; button.textContent='✓ '+action.label; }
+    pushCrewEvent('firefighter','Scene management: '+action.label,action.result,{type:'scene_management',actionId});
+  }
+
   function renderCrewWorkspace() {
     if (!session || !selectedRole) return;
     const roles = session.scenario.crewRoles;
@@ -374,6 +399,7 @@
       .map(([id,task]) => '<option value="' + escapeHtml(id) + '">' + escapeHtml(task.label) + '</option>').join('');
     $('psv2CrewEventType').innerHTML = session.scenario.teamPerformance.communicationEvents.map(item => '<option value="' + escapeHtml(item.id) + '">' + escapeHtml(item.label) + '</option>').join('');
     $('psv2CrewLog').innerHTML = '';
+    renderFireCommand();
   }
 
 
@@ -780,6 +806,9 @@
     $('psv2PulseStart').addEventListener('click', startPulseCount);
     $('psv2PulseTap').addEventListener('click', () => { pulseCount += 1; $('psv2PulseStatus').textContent = pulseRemaining + ' seconds remaining · ' + pulseCount + ' beats counted'; });
     $('psv2PulseSubmit').addEventListener('click', submitPulse);
+    $('psv2FireActions').addEventListener('click', (e) => {
+      const btn=e.target.closest('[data-fire-action]'); if(btn) performFireAction(btn.dataset.fireAction);
+    });
     $('psv2GenericSkillChoices').addEventListener('click', (e) => {
       const btn=e.target.closest('[data-generic-step]'); if(btn) doGenericSkillStep(Number(btn.dataset.genericStep));
     });
