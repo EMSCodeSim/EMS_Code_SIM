@@ -41,6 +41,8 @@
   let reassessMode = false;
   let activeDebrief = null;
   let activeSceneTarget = 'environment';
+  let selectedRole = null;
+  const crewEvents = [];
 
   const $ = (id) => document.getElementById(id);
 
@@ -276,6 +278,53 @@
   }
 
 
+
+  function renderRoleSelector() {
+    const roles = window.PSV2.Scenarios.adultAsthma.crewRoles || {};
+    $('psv2RoleCards').innerHTML = Object.entries(roles).map(([id, role]) =>
+      '<button type="button" class="psv2-role-card" data-role="' + escapeHtml(id) + '"><strong>' + escapeHtml(role.label) + '</strong><span>' + escapeHtml(role.summary) + '</span></button>'
+    ).join('');
+  }
+
+  function selectRole(roleId) {
+    const role = window.PSV2.Scenarios.adultAsthma.crewRoles?.[roleId];
+    if (!role) return;
+    selectedRole = roleId;
+    document.querySelectorAll('[data-role]').forEach(btn => btn.setAttribute('aria-pressed', String(btn.dataset.role === roleId)));
+    $('psv2RoleBrief').hidden = false;
+    $('psv2RoleBrief').innerHTML = '<strong>' + escapeHtml(role.label) + '</strong><br>' + escapeHtml(role.summary) + '<br><small>Starting information: ' + escapeHtml(role.startingInformation.join(' ')) + '</small>';
+    $('psv2StartBtn').disabled = false;
+    $('psv2StartBtn').textContent = 'Start as ' + role.label;
+  }
+
+  function renderCrewWorkspace() {
+    if (!session || !selectedRole) return;
+    const roles = session.scenario.crewRoles;
+    const role = roles[selectedRole];
+    $('psv2RoleBadge').textContent = role.label;
+    $('psv2CrewRoleSummary').innerHTML = '<strong>' + escapeHtml(role.label) + '</strong><br>' + escapeHtml(role.summary);
+    $('psv2CrewObjectives').innerHTML = role.objectives.map(item => '<div class="psv2-objective">○ ' + escapeHtml(item) + '</div>').join('');
+    $('psv2CrewTarget').innerHTML = Object.entries(roles).filter(([id]) => id !== selectedRole).map(([id, r]) => '<option value="' + escapeHtml(id) + '">' + escapeHtml(r.label) + '</option>').join('');
+    $('psv2CrewEventType').innerHTML = session.scenario.teamPerformance.communicationEvents.map(item => '<option value="' + escapeHtml(item.id) + '">' + escapeHtml(item.label) + '</option>').join('');
+    $('psv2CrewLog').innerHTML = '';
+  }
+
+  function recordCrewCommunication() {
+    if (!session || !selectedRole) return;
+    const message = $('psv2CrewMessage').value.trim();
+    if (!message) return;
+    const targetId = $('psv2CrewTarget').value;
+    const type = $('psv2CrewEventType').value;
+    const roles = session.scenario.crewRoles;
+    const event = { from: selectedRole, to: targetId, type, message, timestamp: session.patient.getFullState().elapsedTime };
+    crewEvents.push(event);
+    const clinical = session.patient.snapshotClinical();
+    session.timeline.push({ timestamp:event.timestamp,eventType:'crew',action:roles[selectedRole].label + ' → ' + roles[targetId].label,result:message,clinicalStateBefore:clinical,clinicalStateAfter:clinical,metadata:{crew:event} });
+    $('psv2CrewLog').insertAdjacentHTML('beforeend','<div class="psv2-msg learner"><span class="who">' + escapeHtml(roles[selectedRole].label + ' → ' + roles[targetId].label) + '</span>' + escapeHtml(message) + '</div>');
+    $('psv2CrewMessage').value='';
+    renderTimeline();
+  }
+
   function renderScene(targetId = 'environment') {
     if (!session || !session.scenario.sceneExperience) return;
     activeSceneTarget = targetId;
@@ -357,13 +406,20 @@
   }
 
   function beginCallFlow() {
+    if (!selectedRole) return;
     startSimulation();
     // Learner arrives through a natural call timeline without a rigid wizard.
-    session.markEnroute();
-    session.advanceTime(40);
-    session.markArrived();
-    session.advanceTime(15);
-    session.markPatientContact();
+    if (selectedRole === 'dispatcher') {
+      session.setStage('Dispatch');
+    } else {
+      session.markEnroute();
+      session.advanceTime(selectedRole === 'firefighter' ? 25 : 40);
+      session.markArrived();
+      if (selectedRole !== 'emt_partner') {
+        session.advanceTime(15);
+        session.markPatientContact();
+      }
+    }
     refreshAll();
   }
 
@@ -392,6 +448,7 @@
     renderPcrFields();
     renderChat();
     buildScene();
+    renderCrewWorkspace();
     refreshAll();
 
     // Natural call flow helpers on start
@@ -475,6 +532,10 @@
   }
 
   function wireEvents() {
+    $('psv2RoleCards').addEventListener('click', (e) => {
+      const btn=e.target.closest('[data-role]'); if(btn) selectRole(btn.dataset.role);
+    });
+    $('psv2CrewSend').addEventListener('click', recordCrewCommunication);
     $('psv2StartBtn').addEventListener('click', () => {
       beginCallFlow();
     });
@@ -529,6 +590,7 @@
       if (!btn || !session) return;
       const action = btn.dataset.action;
       if (action === 'scene') openTab('scene');
+      if (action === 'crew') openTab('crew');
       if (action === 'talk') openTab('talk');
       if (action === 'assess') openTab('assess');
       if (action === 'vitals') {
@@ -822,6 +884,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    renderRoleSelector();
     wireEvents();
     renderWorkflow('Dispatch');
     // Prebuild empty monitor
