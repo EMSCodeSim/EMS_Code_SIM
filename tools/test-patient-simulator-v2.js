@@ -74,6 +74,9 @@ test('Crew roles define distinct responsibilities and team communication', () =>
   assert.ok(scenario.crewRoles.firefighter.availableActions.includes('transfer_report'));
   assert.ok(scenario.teamPerformance.dimensions.includes('closed_loop'));
   assert.ok(scenario.teamPerformance.communicationEvents.some(e => e.id === 'finding_report'));
+  assert.ok(scenario.simulatedCrew.tasks.full_vitals.durationSec > 0);
+  assert.ok(scenario.simulatedCrew.tasks.full_vitals.assignedTo.includes('emt_partner'));
+  assert.match(scenario.simulatedCrew.tasks.full_vitals.result, /HR 126/);
 });
 
 test('Scene experience defines visual targets, clues, and independent contacts', () => {
@@ -408,6 +411,8 @@ test('V2 route files exist (desktop/mobile shell)', () => {
   assert.ok(html.includes('data-panel="scene"'));
   assert.ok(html.includes('psv2RoleCards'));
   assert.ok(html.includes('data-panel="crew"'));
+  assert.ok(html.includes('psv2CrewTask'));
+  assert.ok(html.includes('psv2AssignTask'));
   assert.ok(html.includes('viewport'));
   assert.ok(css.includes('@media (max-width: 720px)'));
   assert.ok(css.includes('@media (max-width: 1100px)'));
