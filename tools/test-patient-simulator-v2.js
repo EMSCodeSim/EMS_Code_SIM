@@ -66,6 +66,16 @@ test('1. Scenario loads with correct initial hidden state', () => {
   session.destroy();
 });
 
+test('Crew roles define distinct responsibilities and team communication', () => {
+  assert.deepStrictEqual(Object.keys(scenario.crewRoles).sort(), ['dispatcher','emt_partner','firefighter','lead_emt'].sort());
+  assert.ok(scenario.crewRoles.dispatcher.availableActions.includes('dispatch_resources'));
+  assert.ok(scenario.crewRoles.lead_emt.availableActions.includes('delegate'));
+  assert.ok(scenario.crewRoles.emt_partner.availableActions.includes('report'));
+  assert.ok(scenario.crewRoles.firefighter.availableActions.includes('transfer_report'));
+  assert.ok(scenario.teamPerformance.dimensions.includes('closed_loop'));
+  assert.ok(scenario.teamPerformance.communicationEvents.some(e => e.id === 'finding_report'));
+});
+
 test('Scene experience defines visual targets, clues, and independent contacts', () => {
   assert.ok(scenario.sceneExperience);
   assert.strictEqual(scenario.sceneExperience.targets.patient.kind, 'dynamic-video');
@@ -396,6 +406,8 @@ test('V2 route files exist (desktop/mobile shell)', () => {
   assert.ok(html.includes('psv2Video'));
   assert.ok(html.includes('psv2SceneTargets'));
   assert.ok(html.includes('data-panel="scene"'));
+  assert.ok(html.includes('psv2RoleCards'));
+  assert.ok(html.includes('data-panel="crew"'));
   assert.ok(html.includes('viewport'));
   assert.ok(css.includes('@media (max-width: 720px)'));
   assert.ok(css.includes('@media (max-width: 1100px)'));
