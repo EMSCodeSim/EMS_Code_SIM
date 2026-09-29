@@ -7,7 +7,7 @@
   <meta name="description" content="EMSCodeSim Patient Simulator V2 — realistic start-to-finish EMS call simulation with deterministic clinical engine and AI-assisted conversation/debrief.">
   <meta name="robots" content="noindex">
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/patient-simulator-v2/css/patient-simulator-v2.css?v=2.0.5">
+  <link rel="stylesheet" href="/patient-simulator-v2/css/patient-simulator-v2.css?v=2.1.0">
 </head>
 <body class="psv2-body">
   <div class="psv2-app" id="psv2App">
@@ -20,6 +20,7 @@
         </span>
       </a>
       <div class="psv2-top-meta">
+        <div class="psv2-role-badge" id="psv2RoleBadge">Role not selected</div>
         <div class="psv2-clock" id="psv2Clock" aria-live="polite">00:00</div>
         <button class="psv2-btn" type="button" id="psv2PauseBtn">Pause</button>
         <button class="psv2-btn" type="button" id="psv2RestartBtn">Restart</button>
@@ -68,6 +69,7 @@
         <div class="psv2-tabs" role="tablist" id="psv2ToolTabs">
           <button type="button" role="tab" aria-selected="true" data-tab="scene">Scene</button>
           <button type="button" role="tab" aria-selected="false" data-tab="talk">Patient</button>
+          <button type="button" role="tab" aria-selected="false" data-tab="crew">Crew</button>
           <button type="button" role="tab" aria-selected="false" data-tab="assess">Assess</button>
           <button type="button" role="tab" aria-selected="false" data-tab="treat">Treat</button>
           <button type="button" role="tab" aria-selected="false" data-tab="transport">Transport</button>
@@ -104,6 +106,18 @@
                 <button class="psv2-btn primary" type="submit">Send</button>
               </form>
             </div>
+          </div>
+
+          <div class="psv2-tab-panel" data-panel="crew" hidden>
+            <div id="psv2CrewRoleSummary" class="psv2-finding"></div>
+            <h3>Your objectives</h3>
+            <div id="psv2CrewObjectives" class="psv2-objectives"></div>
+            <h3>Team communication</h3>
+            <div class="psv2-field"><label for="psv2CrewTarget">Communicate with</label><select id="psv2CrewTarget"></select></div>
+            <div class="psv2-field"><label for="psv2CrewMessage">Message / assignment / report</label><textarea id="psv2CrewMessage" rows="3" placeholder="Example: Partner, get a full set of vitals and place her on the monitor."></textarea></div>
+            <div class="psv2-field"><label for="psv2CrewEventType">Communication type</label><select id="psv2CrewEventType"></select></div>
+            <button class="psv2-btn primary" type="button" id="psv2CrewSend">Communicate</button>
+            <div class="psv2-chat-log psv2-scene-chat" id="psv2CrewLog"></div>
           </div>
 
           <div class="psv2-tab-panel" data-panel="assess" hidden>
@@ -207,6 +221,7 @@
       <div class="psv2-actionbar" id="psv2ActionBar" role="toolbar" aria-label="Primary actions">
         <button type="button" data-action="scene">Scene</button>
         <button type="button" data-action="talk">Talk to Patient</button>
+        <button type="button" data-action="crew">Crew</button>
         <button type="button" data-action="assess">Assess</button>
         <button type="button" data-action="vitals">Vitals / Monitor</button>
         <button type="button" data-action="treat">Treat</button>
@@ -224,24 +239,30 @@
       <h2>Adult Asthma / Respiratory Distress</h2>
       <p>Run a complete EMS call from dispatch through debrief. The clinical engine controls physiology; conversation and debrief may use AI phrasing without inventing facts.</p>
       <p><strong style="color:#3ec6e0">Scenario:</strong> 28-year-old female, difficulty breathing in a public park.</p>
+      <div class="psv2-role-select">
+        <h3>Choose your position</h3>
+        <p class="psv2-role-help">The same call unfolds differently depending on your responsibilities and the information available to you.</p>
+        <div id="psv2RoleCards" class="psv2-role-cards"></div>
+        <div id="psv2RoleBrief" class="psv2-finding" hidden></div>
+      </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
-        <button class="psv2-btn primary" type="button" id="psv2StartBtn">Start simulation</button>
+        <button class="psv2-btn primary" type="button" id="psv2StartBtn" disabled>Select a position to start</button>
       </div>
       <p style="margin-top:14px;font-size:.78rem;color:var(--psv2-muted)">Rollback: <a href="/vitals/visual-patient.html?case=asthma&amp;training=assessment&amp;reset=1" style="color:var(--psv2-muted)">open legacy simulator</a></p>
     </div>
   </div>
 
-  <script src="/patient-simulator-v2/js/engines/event-timeline.js?v=2.0.5"></script>
-  <script src="/patient-simulator-v2/js/engines/patient-state-engine.js?v=2.0.5"></script>
-  <script src="/patient-simulator-v2/js/engines/video-state-controller.js?v=2.0.5"></script>
-  <script src="/patient-simulator-v2/js/engines/assessment-engine.js?v=2.0.5"></script>
-  <script src="/patient-simulator-v2/js/engines/treatment-engine.js?v=2.0.5"></script>
-  <script src="/patient-simulator-v2/js/engines/conversation-engine.js?v=2.0.5"></script>
-  <script src="/patient-simulator-v2/js/engines/grading-engine.js?v=2.0.5"></script>
-  <script src="/patient-simulator-v2/js/engines/pcr-engine.js?v=2.0.5"></script>
-  <script src="/patient-simulator-v2/js/engines/debrief-engine.js?v=2.0.5"></script>
-  <script src="/patient-simulator-v2/js/engines/session.js?v=2.0.5"></script>
-  <script src="/patient-simulator-v2/scenarios/adult-asthma.js?v=2.0.5"></script>
-  <script src="/patient-simulator-v2/js/app.js?v=2.0.5"></script>
+  <script src="/patient-simulator-v2/js/engines/event-timeline.js?v=2.1.0"></script>
+  <script src="/patient-simulator-v2/js/engines/patient-state-engine.js?v=2.1.0"></script>
+  <script src="/patient-simulator-v2/js/engines/video-state-controller.js?v=2.1.0"></script>
+  <script src="/patient-simulator-v2/js/engines/assessment-engine.js?v=2.1.0"></script>
+  <script src="/patient-simulator-v2/js/engines/treatment-engine.js?v=2.1.0"></script>
+  <script src="/patient-simulator-v2/js/engines/conversation-engine.js?v=2.1.0"></script>
+  <script src="/patient-simulator-v2/js/engines/grading-engine.js?v=2.1.0"></script>
+  <script src="/patient-simulator-v2/js/engines/pcr-engine.js?v=2.1.0"></script>
+  <script src="/patient-simulator-v2/js/engines/debrief-engine.js?v=2.1.0"></script>
+  <script src="/patient-simulator-v2/js/engines/session.js?v=2.1.0"></script>
+  <script src="/patient-simulator-v2/scenarios/adult-asthma.js?v=2.1.0"></script>
+  <script src="/patient-simulator-v2/js/app.js?v=2.1.0"></script>
 </body>
 </html>
