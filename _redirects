@@ -1,15 +1,19 @@
-# Patient Simulator V2 (clean architecture)
+# Patient Simulator V2 — single public patient simulation
 /patient-simulator-v2               /patient-simulator-v2/index.html         200
 /patient-simulator-v2/              /patient-simulator-v2/index.html         200
 
-# Canonical patient scenario page (legacy simulator retained for rollback)
-/scenario-launcher.html              /vitals/scenario-launcher.html           301!
-/scenario-launcher                   /vitals/scenario-launcher.html           301!
-/visual-patient.html                /vitals/visual-patient.html              301!
-/visual-patient                     /vitals/visual-patient.html              301!
-/assessment-workspace.html          /vitals/visual-patient.html              301!
-/patient-simulator-legacy           /vitals/visual-patient.html              302!
-/patient-simulator-legacy/          /vitals/visual-patient.html              302!
+# Retire all old scenario entry points from public use
+/scenario-launcher.html             /patient-simulator-v2/                   301!
+/scenario-launcher                  /patient-simulator-v2/                   301!
+/visual-patient.html                /patient-simulator-v2/                   301!
+/visual-patient                     /patient-simulator-v2/                   301!
+/assessment-workspace.html          /patient-simulator-v2/                   301!
+/patient-simulator-legacy           /patient-simulator-v2/                   301!
+/patient-simulator-legacy/          /patient-simulator-v2/                   301!
+/vitals/scenario-launcher.html      /patient-simulator-v2/                   301!
+/vitals/visual-patient.html         /patient-simulator-v2/                   301!
+/medical-scenario-simulator         /patient-simulator-v2/                   301!
+/med_sim.html                       /patient-simulator-v2/                   301!
 
 # Clean, human-readable tool URLs
 /blood-pressure-simulator        /vitals/bp.html                            301
@@ -20,12 +24,10 @@
 /pulse-trainer                   /vitals/pulse.html                         301
 /pulse-oximeter-trainer          /vitals/pulse-ox.html                      301
 /blood-glucose-trainer           /vitals/bgl.html                           301
-/pupil-simulator                 /vitals/pupil.html                         301
-/loc-orientation-simulator       /vitals/aao.html                           301
-/rule-of-nines                   /vitals/nines.html                         301
-/apgar-simulator                 /APGAR/                                    301
-/medical-scenario-simulator      /vitals/scenario-launcher.html             302!
-/med_sim.html                    /vitals/scenario-launcher.html             302!
+/pupil-simulator                 /vitals/pupil.html                          301
+/loc-orientation-simulator       /vitals/aao.html                            301
+/rule-of-nines                   /vitals/nines.html                          301
+/apgar-simulator                 /APGAR/                                     301
 
 # Extensionless internal support
 /vitals/bp /vitals/bp.html 301
@@ -65,26 +67,23 @@
 /emt-recertification /ems-recertification.html 301
 /paramedic-recertification /ems-recertification.html 301
 /nremt-recertification /ems-recertification.html 301
-
 /ems-training-tools /ems-training-tools.html 301
 /emt-practice-tools /ems-training-tools.html 301
 /ems-simulators /ems-training-tools.html 301
 /search /search.html 301
-# EMSCodeSim Daily Quiz aliases
-/daily-quiz                         /quiz/                              301
-/emt-quiz                           /quiz/emt_quiz.html                 301
-/paramedic-quiz                     /quiz/paramedic_quiz.html           301
-/ems-daily-fact                     /quiz/ems_fact.html                 301
-/medword                            /quiz/medword.html                  301
-/daily-home-medication              /quiz/home_med.html                 301
-/emt_quiz.html                      /quiz/emt_quiz.html                 301
-/paramedic_quiz.html                /quiz/paramedic_quiz.html           301
-/ems_fact.html                      /quiz/ems_fact.html                 301
-/home_med.html                      /quiz/home_med.html                 301
-/medword.html                       /quiz/medword.html                  301
-/daily_sim.html                     /quiz/daily_sim.html                301
-/daily_beat.html                    /quiz/daily_beat.html               301
-
+/daily-quiz /quiz/ 301
+/emt-quiz /quiz/emt_quiz.html 301
+/paramedic-quiz /quiz/paramedic_quiz.html 301
+/ems-daily-fact /quiz/ems_fact.html 301
+/medword /quiz/medword.html 301
+/daily-home-medication /quiz/home_med.html 301
+/emt_quiz.html /quiz/emt_quiz.html 301
+/paramedic_quiz.html /quiz/paramedic_quiz.html 301
+/ems_fact.html /quiz/ems_fact.html 301
+/home_med.html /quiz/home_med.html 301
+/medword.html /quiz/medword.html 301
+/daily_sim.html /quiz/daily_sim.html 301
+/daily_beat.html /quiz/daily_beat.html 301
 /about /about.html 301
 /editorial-standards /about.html 301
 /emt-prep/module-1 /emt-prep/module-1-emt-school-expectations.html 301
@@ -93,24 +92,16 @@
 /emt-prep/module-4 /emt-prep/module-4-vital-signs.html 301
 /emt-prep/module-5 /emt-prep/module-5-patient-assessment.html 301
 /emt-prep/module-6 /emt-prep/module-6-student-habits.html 301
-
 /calcPrivacy.html /privacy.html 301
-
-# EMT flashcard trainer aliases
 /emt-flashcards /emt-flashcards.html 301
 /ems-flashcards /emt-flashcards.html 301
 /medical-terminology-flashcards /emt-flashcards.html 301
 /emt-equipment-flashcards /emt-flashcards.html 301
-
 /pre-emt-equipment /pre-emt-equipment.html 200
-
 /ems-progress-tracker /ems-progress-tracker.html 301
 /ems-skill-tracker /ems-progress-tracker.html 301
-
 /offline-ems-reference /offline-ems-reference.html 200
 /ems-reference /offline-ems-reference.html 301
-
-# New EMT frequently asked questions
 /new-emt-questions /new-emt-questions.html 200
 /new-emt-first-shift /new-emt-first-shift.html 200
 /emt-ride-along-guide /emt-ride-along-guide.html 200
@@ -118,41 +109,25 @@
 /ift-vs-911-first-emt-job /ift-vs-911-first-emt-job.html 200
 /new-emt-skills-to-master /new-emt-skills-to-master.html 200
 /new-emt-mistakes-confidence /new-emt-mistakes-confidence.html 200
-
-# PCR narrative coach
 /pcr-narrative-coach /pcr-narrative-coach.html 200
 /pcr-report-writer /pcr-narrative-coach.html 301
 /ems-narrative-builder /pcr-narrative-coach.html 301
-
-# EMS career pathway planner
 /ems-career-planner /ems-career-planner.html 200
 /ems-certification-tracker /ems-career-planner.html 301
 /ems-career-roadmap /ems-career-planner.html 301
 /career-hub /ems-career-planner.html 301
 /career-hub.html /ems-career-planner.html 301
-
 /emt-prep/module-1-understanding-ems /emt-prep/module-1-understanding-ems.html 200
-
 /emt-prep/module-2-emt-school-expectations /emt-prep/module-2-emt-school-expectations.html 200
-
 /emt-prep/module-3-medical-terminology /emt-prep/module-3-medical-terminology.html 200
-
 /emt-prep/module-4-anatomy-physiology /emt-prep/module-4-anatomy-physiology.html 200
-
 /emt-prep/module-5-vital-signs /emt-prep/module-5-vital-signs.html 200
-
 /emt-prep/module-6-patient-assessment /emt-prep/module-6-patient-assessment.html 200
-
 /emt-prep/module-7-abc-foundations /emt-prep/module-7-abc-foundations.html 200
-
 /emt-prep/module-8-equipment-orientation /emt-prep/module-8-equipment-orientation.html 200
-
 /emt-prep/module-9-communication-professionalism /emt-prep/module-9-communication-professionalism.html 200
-
 /emt-prep/module-10-study-testing /emt-prep/module-10-study-testing.html 200
-
 /emt-prep/module-11-physical-emotional-readiness /emt-prep/module-11-physical-emotional-readiness.html 200
-
 /emt-prep/module-12-enrollment-costs /emt-prep/module-12-enrollment-costs.html 200
 /emt-prep/practice-center /emt-prep/practice-center.html 200
 /emt-prep/resource-library /emt-prep/resource-library.html 200

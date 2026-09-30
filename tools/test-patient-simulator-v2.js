@@ -66,6 +66,38 @@ test('1. Scenario loads with correct initial hidden state', () => {
   session.destroy();
 });
 
+test('Crew roles define distinct responsibilities and team communication', () => {
+  assert.deepStrictEqual(Object.keys(scenario.crewRoles).sort(), ['dispatcher','emt_partner','firefighter','lead_emt'].sort());
+  assert.ok(scenario.crewRoles.dispatcher.availableActions.includes('dispatch_resources'));
+  assert.ok(scenario.crewRoles.lead_emt.availableActions.includes('delegate'));
+  assert.ok(scenario.crewRoles.emt_partner.availableActions.includes('report'));
+  assert.ok(scenario.crewRoles.firefighter.availableActions.includes('transfer_report'));
+  assert.ok(scenario.teamPerformance.dimensions.includes('closed_loop'));
+  assert.ok(scenario.teamPerformance.communicationEvents.some(e => e.id === 'finding_report'));
+  assert.ok(scenario.simulatedCrew.tasks.full_vitals.durationSec > 0);
+  assert.ok(scenario.simulatedCrew.tasks.full_vitals.assignedTo.includes('emt_partner'));
+  assert.match(scenario.simulatedCrew.tasks.full_vitals.result, /HR 126/);
+  assert.ok(scenario.simulatedCrew.behavior.deterioration.severeSpo2 <= 90);
+  assert.ok(scenario.simulatedCrew.behavior.anticipation.some(item => item.id === 'airway_ready'));
+  assert.ok(scenario.simulatedCrew.behavior.clarification.vagueTerms.includes('stuff'));
+  assert.ok(scenario.fireSceneManagement.hazards.some(h => h.id === 'crowd'));
+  assert.ok(scenario.fireSceneManagement.resources.some(r => r.id === 'ems_unit'));
+  assert.ok(scenario.fireSceneManagement.hospitalStatus.length >= 2);
+  assert.ok(scenario.fireSceneManagement.fireActions.some(a => a.id === 'clear_egress'));
+  assert.ok(scenario.roleKnowledge.facts.fire_initial_spo2.initial.includes('firefighter'));
+  assert.strictEqual(scenario.sceneExperience.targets.environment.src, '');
+  assert.strictEqual(scenario.sceneExperience.targets.backpack.src, '');
+  assert.strictEqual(scenario.sceneExperience.targets.access.src, '');
+  assert.strictEqual(scenario.sceneExperience.targets.ambulance.src, '');
+  assert.ok(scenario.sceneExperience.clues.find(c => c.id === 'inhaler').finding.includes('open backpack'));
+  assert.equal(scenario.roleKnowledge.transferRules.requiresCommunication, true);
+  assert.deepEqual(scenario.closedLoop.requiredSequence, ['assignment','acknowledgement','completion','report','leader_acknowledgement']);
+  assert.equal(scenario.closedLoop.consequences.badMeasurement.includes('reported measurement'), true);
+  assert.equal(scenario.simulatedCrew.tasks.blood_pressure.simulator, 'blood_pressure');
+  assert.equal(scenario.simulatedCrew.tasks.pulse.simulator, 'pulse');
+  ['respiratory_rate','spo2','lung_sounds','glucose','ecg','oxygen_setup','nebulizer_setup'].forEach(id => assert.ok(scenario.simulatedCrew.tasks[id]?.simulator));
+});
+
 test('Scene experience defines visual targets, clues, and independent contacts', () => {
   assert.ok(scenario.sceneExperience);
   assert.strictEqual(scenario.sceneExperience.targets.patient.kind, 'dynamic-video');
@@ -396,6 +428,18 @@ test('V2 route files exist (desktop/mobile shell)', () => {
   assert.ok(html.includes('psv2Video'));
   assert.ok(html.includes('psv2SceneTargets'));
   assert.ok(html.includes('data-panel="scene"'));
+  assert.ok(html.includes('psv2RoleCards'));
+  assert.ok(html.includes('data-panel="crew"'));
+  assert.ok(html.includes('psv2CrewTask'));
+  assert.ok(html.includes('psv2AssignTask'));
+  assert.ok(html.includes('psv2CuffPressure'));
+  assert.ok(html.includes('psv2PulseTap'));
+  assert.ok(html.includes('psv2GenericSkillSim'));
+  assert.ok(html.includes('psv2GenericSkillChoices'));
+  assert.ok(html.includes('psv2FireCommand'));
+  assert.ok(html.includes('psv2HospitalStatus'));
+  assert.ok(html.includes('psv2RoleKnowledge'));
+  assert.ok(html.includes('psv2ClosedLoopTasks'));
   assert.ok(html.includes('viewport'));
   assert.ok(css.includes('@media (max-width: 720px)'));
   assert.ok(css.includes('@media (max-width: 1100px)'));

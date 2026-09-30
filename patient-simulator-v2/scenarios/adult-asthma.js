@@ -60,18 +60,168 @@
       defaultReply: 'I\'m having a hard time talking. What do you need to know?'
     },
 
+    crewRoles: {
+      dispatcher: {
+        label: 'Dispatcher',
+        summary: 'Manage the 911 call, gather critical information, assign resources, and transmit useful updates.',
+        objectives: ['Confirm location and callback information', 'Determine consciousness and breathing status', 'Identify respiratory history or inhaler use', 'Dispatch appropriate resources', 'Relay meaningful updates to responding crews'],
+        availableActions: ['caller_interview', 'dispatch_resources', 'radio_update'],
+        startingInformation: ['911 caller reports a woman having difficulty breathing in a public park.']
+      },
+      lead_emt: {
+        label: 'Lead EMT',
+        summary: 'Lead patient care, delegate tasks, make treatment and transport decisions, and coordinate the team.',
+        objectives: ['Establish scene and patient priorities', 'Delegate specific tasks', 'Assess and treat the patient', 'Use closed-loop communication', 'Coordinate transport and handoff'],
+        availableActions: ['scene', 'patient', 'assess', 'treat', 'delegate', 'transport', 'handoff', 'pcr'],
+        startingInformation: ['Dispatch reports respiratory distress at Riverside Park. Fire is on scene.']
+      },
+      emt_partner: {
+        label: 'EMT Partner',
+        summary: 'Perform assigned tasks, anticipate crew needs, report findings, and speak up about important changes.',
+        objectives: ['Complete assigned assessments promptly', 'Report findings clearly', 'Prepare appropriate equipment', 'Recognize deterioration', 'Confirm important instructions'],
+        availableActions: ['scene', 'patient', 'assess', 'treat', 'equipment', 'report'],
+        startingInformation: ['You are responding with the lead EMT to a respiratory distress call.']
+      },
+      firefighter: {
+        label: 'Firefighter / First Responder',
+        summary: 'Perform scene size-up and initial patient contact, gather early findings, begin appropriate basic care, and transfer information to EMS.',
+        objectives: ['Confirm scene safety', 'Make initial patient contact', 'Obtain useful initial findings', 'Gather focused history', 'Give EMS a concise transfer report'],
+        availableActions: ['scene', 'patient', 'assess', 'basic_care', 'transfer_report'],
+        startingInformation: ['You arrive before the ambulance for a reported breathing problem in the park.']
+      }
+    },
+    simulatedCrew: {
+      behavior: {
+        escalationCooldownSec: 45,
+        deterioration: {
+          severeSpo2: 90,
+          severeRespiratoryRate: 32,
+          severeFatigue: 0.55,
+          partnerMessage: 'Her work of breathing is getting worse. SpO₂ is {spo2}% and respirations are {rr}. We need to reassess our plan.',
+          firefighterMessage: 'She looks more tired than when we first got here. Do you want us to get the stretcher moving?'
+        },
+        anticipation: [
+          { id:'airway_ready', when:'respiratory_distress', role:'emt_partner', message:'I have the airway bag and BVM within reach if she tires out.' },
+          { id:'transport_ready', when:'persistent_hypoxia', role:'firefighter', message:'I can get the stretcher positioned and clear the path to the ambulance.' }
+        ],
+        clarification: {
+          vagueTerms: ['stuff','things','help','get ready','do something','take care of it'],
+          response: 'Copy, but what specific task do you want me to handle?'
+        }
+      },
+      skillTasks: {
+        blood_pressure: { label:'Manual blood pressure', role:['emt_partner','firefighter'], simulator:'blood_pressure', resultKey:'bloodPressure' },
+        pulse: { label:'Manual pulse', role:['emt_partner','firefighter'], simulator:'pulse', resultKey:'heartRate' },
+        respiratory_rate: { label:'Count respirations', role:['emt_partner','firefighter'], simulator:'respiratory_rate', resultKey:'respiratoryRate' },
+        spo2: { label:'Obtain pulse oximetry', role:['emt_partner','firefighter'], simulator:'spo2', resultKey:'spo2' },
+        lung_sounds: { label:'Auscultate lung sounds', role:['emt_partner','firefighter'], simulator:'lung_sounds', resultKey:'lungSounds' },
+        glucose: { label:'Check blood glucose', role:['emt_partner','firefighter'], simulator:'glucose', resultKey:'glucose' },
+        ecg: { label:'Place ECG electrodes', role:['emt_partner'], simulator:'ecg', resultKey:'ecg' },
+        oxygen_setup: { label:'Set up oxygen', role:['emt_partner','firefighter'], simulator:'oxygen_setup', resultKey:'oxygen' },
+        nebulizer_setup: { label:'Assemble nebulizer', role:['emt_partner','firefighter'], simulator:'nebulizer_setup', resultKey:'nebulizer' }
+      },
+      tasks: {
+        blood_pressure: { label:'Obtain manual blood pressure', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'blood_pressure', result:'Manual blood pressure obtained.', reveals:['bloodPressure'] },
+        pulse: { label:'Obtain manual pulse', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'pulse', result:'Manual pulse obtained.', reveals:['heartRate'] },
+        respiratory_rate: { label:'Count respiratory rate', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'respiratory_rate', result:'Respiratory rate counted.', reveals:['respiratoryRate'] },
+        spo2: { label:'Obtain pulse oximetry', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'spo2', result:'Pulse oximetry obtained.', reveals:['spo2'] },
+        lung_sounds: { label:'Auscultate lung sounds', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'lung_sounds', result:'Lung sounds assessed.', reveals:['lungSounds'] },
+        glucose: { label:'Check blood glucose', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'glucose', result:'Blood glucose checked.', reveals:['glucose'] },
+        ecg: { label:'Place ECG electrodes', assignedTo:['emt_partner'], durationSec:0, simulator:'ecg', result:'ECG electrodes placed.', reveals:['heartRate'] },
+        oxygen_setup: { label:'Set up oxygen delivery', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'oxygen_setup', result:'Oxygen delivery system prepared.', reveals:[] },
+        nebulizer_setup: { label:'Assemble nebulizer', assignedTo:['emt_partner','firefighter'], durationSec:0, simulator:'nebulizer_setup', result:'Nebulizer assembled.', reveals:[] },
+        full_vitals: { label: 'Obtain full vital signs', assignedTo: ['emt_partner','firefighter'], durationSec: 35, result: 'Vitals obtained: HR 126, RR 32, BP 148/92, SpO₂ 88% on room air.', reveals: ['heartRate','respiratoryRate','bloodPressure','spo2'] },
+        monitor: { label: 'Place patient on monitor', assignedTo: ['emt_partner'], durationSec: 25, result: 'Monitor attached. Initial displayed HR is 126 and SpO₂ is 88%.', reveals: ['heartRate','spo2'] },
+        neb_setup: { label: 'Prepare nebulizer treatment', assignedTo: ['emt_partner','firefighter'], durationSec: 20, result: 'Nebulizer equipment is assembled and ready for medication.', reveals: [] },
+        oxygen: { label: 'Apply oxygen', assignedTo: ['emt_partner','firefighter'], durationSec: 15, result: 'Oxygen is applied and the patient remains under observation.', reveals: [] },
+        stretcher: { label: 'Prepare stretcher for transport', assignedTo: ['emt_partner','firefighter'], durationSec: 40, result: 'Stretcher is positioned and ready for patient movement.', reveals: [] },
+        fire_report: { label: 'Get first-responder report', assignedTo: ['firefighter'], durationSec: 8, result: 'Fire reports the patient was found upright and very short of breath; initial room-air SpO₂ was 89%; no medication was given by fire.', reveals: ['fireInitialSpo2'] }
+      }
+    },
+
+    fireSceneManagement: {
+      hazards: [
+        {id:'traffic',label:'Vehicle/pedestrian movement near the park access',action:'Establish a safe working area and keep the access lane clear.'},
+        {id:'crowd',label:'Bystanders gathering around the patient',action:'Move bystanders back while identifying one useful historian.'},
+        {id:'egress',label:'Narrow pedestrian path between patient and ambulance access',action:'Identify and maintain a clear stretcher egress route.'}
+      ],
+      bystanders: [
+        {id:'friend',label:'Friend with patient',use:'Historian',fact:'She has asthma, used her inhaler several times, and has been getting worse.'},
+        {id:'onlookers',label:'Curious onlookers',use:'Crowd control',fact:'They have no useful clinical information and are crowding the patient.'}
+      ],
+      resources: [
+        {id:'ems_unit',label:'Transport ambulance',etaMin:4,status:'responding'},
+        {id:'engine',label:'Engine company',etaMin:0,status:'on scene'},
+        {id:'supervisor',label:'EMS supervisor',etaMin:8,status:'available on request'},
+        {id:'additional_ambulance',label:'Additional ambulance',etaMin:10,status:'available on request'}
+      ],
+      hospitalStatus: [
+        {id:'community',label:'Community Hospital',minutes:8,status:'Open',capability:'Emergency department'},
+        {id:'regional',label:'Regional Medical Center',minutes:14,status:'Open',capability:'Higher-acuity emergency department'}
+      ],
+      fireActions: [
+        {id:'secure_scene',label:'Secure working area',result:'Working area established and access lane protected.'},
+        {id:'manage_bystanders',label:'Manage bystanders',result:'Onlookers moved back; friend retained as historian.'},
+        {id:'clear_egress',label:'Clear stretcher egress',result:'Path from patient to ambulance access is clear.'},
+        {id:'resource_check',label:'Check incoming resources',result:'Current unit status and ETAs reviewed.'},
+        {id:'hospital_check',label:'Check hospital status',result:'Hospital status and estimated transport times reviewed.'}
+      ]
+    },
+
+    roleKnowledge: {
+      facts: {
+        dispatch_complaint:{label:'Difficulty breathing at Riverside Park',initial:['dispatcher']},
+        inhaler_multiple:{label:'Patient used rescue inhaler multiple times without relief',initial:['firefighter'],source:'friend'},
+        fire_initial_spo2:{label:'Fire obtained initial room-air SpO₂ of 89%',initial:['firefighter'],source:'firefighter'},
+        prior_hospitalizations:{label:'Two prior asthma hospitalizations; no prior intubation',initial:[],source:'patient'},
+        manual_bp:{label:'Current manual blood pressure',initial:[],source:'skill'},
+        manual_pulse:{label:'Current manual pulse',initial:[],source:'skill'}
+      },
+      transferRules:{requiresCommunication:true,learnerRoleOnly:true}
+    },
+    closedLoop: {
+      assignmentTimeoutSec:20,
+      reportTimeoutSec:30,
+      requiredSequence:['assignment','acknowledgement','completion','report','leader_acknowledgement'],
+      consequences:{
+        vagueAssignmentDelaySec:15,
+        missingAcknowledgementDelaySec:10,
+        unreportedFinding:'Finding remains known only to the role that obtained it.',
+        badMeasurement:'The reported measurement, not the hidden true value, is available to the team until repeated.'
+      }
+    },
+
+    teamPerformance: {
+      dimensions: ['communication', 'delegation', 'closed_loop', 'situational_awareness', 'information_transfer', 'role_execution'],
+      communicationEvents: [
+        { id: 'specific_assignment', label: 'Specific task assignment' },
+        { id: 'acknowledgement', label: 'Assignment acknowledged' },
+        { id: 'finding_report', label: 'Important finding reported' },
+        { id: 'readback', label: 'Critical information confirmed' },
+        { id: 'escalation', label: 'Concern appropriately escalated' },
+        { id: 'transfer', label: 'Information transferred between teams' }
+      ]
+    },
+
     sceneExperience: {
       targets: {
         patient: { label: 'Patient', kind: 'dynamic-video' },
-        environment: { label: 'Scene', kind: 'still', src: '', alt: 'Riverside Park scene surrounding the patient' },
+        environment: { label: 'Bench / Belongings', kind: 'still', src: '', alt: 'Park bench with patient belongings visible' },
+        backpack: { label: 'Backpack / Inhaler', kind: 'still', src: '', alt: 'Open backpack with rescue inhaler visible' },
+        access: { label: 'Scene / Access', kind: 'still', src: '', alt: 'Park access route between patient area and responding units' },
+        ambulance: { label: 'Ambulance / Resources', kind: 'still', src: '', alt: 'Ambulance and stretcher positioned near the park' },
         fire: { label: 'Fire Crew', kind: 'still', src: '', alt: 'Fire crew already on scene' },
         bystander: { label: 'Friend', kind: 'still', src: '', alt: 'Friend who was with the patient' },
         partner: { label: 'Partner', kind: 'still', src: '', alt: 'EMS partner' }
       },
       clues: [
         { id: 'position', target: 'patient', label: 'Observe patient position', finding: 'Patient is seated upright, leaning forward, with visible increased work of breathing.' },
-        { id: 'inhaler', target: 'environment', label: 'Inspect the bench', finding: 'A rescue inhaler is visible beside the patient on the bench.' },
-        { id: 'environment', target: 'environment', label: 'Look around the scene', finding: 'The patient is outdoors near a grassy field. Conditions are dusty and windy.' }
+        { id: 'inhaler', target: 'environment', label: 'Inspect the bench', finding: 'The bench holds an open backpack, rescue inhaler, water bottle, keys, and a phone. The inhaler is immediately relevant to the respiratory complaint.' },
+        { id: 'backpack', target: 'environment', label: 'Inspect the backpack', finding: 'The backpack is open. A rescue inhaler is visible inside.' },
+        { id: 'inhaler_closeup', target: 'backpack', label: 'Look closely at the inhaler', finding: 'A blue albuterol rescue inhaler is visible in the open backpack.' },
+        { id: 'access_route', target: 'access', label: 'Inspect ambulance access', finding: 'A paved route connects the patient area to the ambulance, but bystanders and responders can obstruct the egress path if it is not managed.' },
+        { id: 'ambulance_resources', target: 'ambulance', label: 'Inspect incoming resources', finding: 'The transport ambulance is positioned nearby with the rear compartment open and stretcher available.' },
+        { id: 'environment', target: 'access', label: 'Look around the scene', finding: 'The patient is outdoors near a grassy field. Conditions are dusty and windy.' }
       ],
       contacts: {
         fire: {
