@@ -1,0 +1,177 @@
+(function(){
+  'use strict';
+  window.EMS_DRILLS = [
+    {
+      id:'EMS-DRILL-RESP-001',
+      title:'Respiratory Distress: The Patient Is Getting Tired',
+      category:'Airway / Respiratory',
+      level:'EMT to Paramedic',
+      duration:'45–60 min',
+      participants:'1–6',
+      status:'ready',
+      summary:'Recognize the transition from respiratory distress to respiratory failure and reassess whether treatment is actually working.',
+      goal:'Build assessment-driven respiratory decision making. Learners should not use SpO₂ alone to judge severity and must recognize decreasing effort, fatigue, altered mentation, poor air movement, and other signs of impending respiratory failure.',
+      resources:['Respiratory-rate simulator','Pulse oximeter simulator','Breath-sound simulator','Blood pressure and pulse trainers','Connected asthma patient scenario','Oxygen/BVM/nebulizer/CPAP equipment when run in person','PCR Narrative Coach'],
+      dispatch:'Adult with shortness of breath at a public park. Patient is seated upright and visibly working to breathe.',
+      startingState:['RR 26/min with increased work of breathing','SpO₂ 92% on room air','Tachycardia','Diffuse wheezing','Speaks in short sentences'],
+      progression:['If assessment and treatment are delayed, respiratory effort increases.','Later, respiratory rate and sound intensity may decrease because the patient is tiring—not improving.','Effective ventilation/appropriate treatment improves speech, work of breathing, oxygenation, and overall appearance.'],
+      criticalActions:['Complete airway/breathing assessment','Identify severity using the full clinical picture','Initiate appropriate protocol-based respiratory support','Reassess after each intervention','Recognize deterioration toward respiratory failure','Make an appropriate transport/escalation decision','Communicate a concise handoff'],
+      evaluation:['Assessment completeness','Recognition of severity','Treatment sequencing','Reassessment quality','Recognition of fatigue/failure','Transport priority','Communication'],
+      outcome:'Learner recognizes worsening respiratory failure early, treats immediate physiologic threats within local scope/protocol, and demonstrates reassessment based on patient response.',
+      debrief:['What finding made you most concerned about respiratory failure?','Did any single number distract you from the overall patient picture?','What changed after treatment?','What would trigger assisted ventilation or higher-level care in your protocol?'],
+      links:[
+        ['Breath Sounds','/vitals/breath-sound-simulator.html'],
+        ['SpO₂','/vitals/pulse-ox.html'],
+        ['Respiratory Rate','/vitals/respiratory-rate.html'],
+        ['Scenario Launcher','/vitals/scenario-launcher.html'],
+        ['PCR Narrative Coach','/pcr-narrative-coach.html']
+      ]
+    },
+    {
+      id:'EMS-DRILL-CARDIAC-001',
+      title:'High-Performance Cardiac Arrest',
+      category:'Cardiac / Resuscitation',
+      level:'EMR to Paramedic',
+      duration:'30–45 min',
+      participants:'4–6',
+      status:'ready',
+      summary:'Train the resuscitation team—not just the algorithm—with role clarity, minimal interruptions, closed-loop communication, and structured reassessment.',
+      goal:'Improve team performance during adult cardiac arrest by emphasizing role assignment, CPR quality, defibrillation readiness, communication, compressor rotation, and post-ROSC transition.',
+      resources:['CPR manikin','AED/monitor','BVM and airway supplies','Timer/metronome or feedback device','Role cards','Optional department radios','Scenario/debrief tools'],
+      dispatch:'Witnessed collapse at a community facility. Bystander CPR is in progress when the crew arrives.',
+      startingState:['Adult unresponsive and pulseless','CPR in progress','Initial rhythm available after monitor/AED placement','Family/bystanders present'],
+      progression:['Introduce compressor fatigue.','Add an airway or equipment problem.','Change rhythm at a planned pulse check.','If ROSC occurs, require immediate post-ROSC organization and reassessment.'],
+      criticalActions:['Immediate role assignment','High-quality CPR with minimized interruptions','Prompt defibrillation when indicated','Closed-loop communication','Planned compressor rotation','Appropriate airway/ventilation strategy','Recognition and management of ROSC'],
+      evaluation:['Hands-off time','Time to first rhythm analysis/defibrillation','Role clarity','Closed-loop communication','CPR coach/team-leader effectiveness','Reassessment and ROSC transition'],
+      outcome:'Crew performs a coordinated resuscitation with clear roles, effective communication, minimal unnecessary pauses, and an organized transition if the patient condition changes.',
+      debrief:['Where did pauses occur and were they necessary?','Were roles clear before the first major decision point?','What communication failed or had to be repeated?','How did the team recognize and respond to ROSC?'],
+      links:[
+        ['Scenario Launcher','/vitals/scenario-launcher.html'],
+        ['BLS Boot Camp','/skills-session'],
+        ['Full Call Debrief','/vitals/scenario-debrief.html']
+      ]
+    },
+    {
+      id:'EMS-DRILL-NEURO-001',
+      title:'Stroke: Last Known Well',
+      category:'Neurologic',
+      level:'EMT to Paramedic',
+      duration:'30–45 min',
+      participants:'1–4',
+      status:'ready',
+      summary:'Recognize stroke, identify last-known-well accurately, check for mimics, and communicate time-critical findings.',
+      goal:'Train a structured neurologic assessment that captures onset/last-known-well, focal deficits, glucose, relevant medications, severity findings, and destination/notification needs under local protocol.',
+      resources:['Stroke assessment trainer','Pupil/gaze simulator','Blood glucose simulator','BP simulator','History interview/scenario tools','Radio report practice'],
+      dispatch:'Older adult reported as confused and “not acting right.” Family is present but gives an imprecise timeline unless asked targeted questions.',
+      startingState:['Facial asymmetry or speech abnormality','Unilateral arm weakness','Possible gaze abnormality','Elevated blood pressure','Last-known-well not volunteered initially'],
+      progression:['Learner must obtain the timeline from family.','One variation includes abnormal glucose to test recognition of a possible mimic.','Delayed recognition reduces time available for definitive stroke care.'],
+      criticalActions:['Perform structured stroke screen','Check blood glucose','Establish last-known-well','Identify relevant anticoagulant/medication history','Assess severity findings','Choose appropriate destination/notification per local protocol','Give concise prearrival report'],
+      evaluation:['Stroke screen completion','Glucose obtained','Timeline accuracy','Pertinent medication/history collection','Destination decision','Prearrival communication'],
+      outcome:'Learner identifies a time-sensitive neurologic emergency and communicates the information needed by the receiving stroke system.',
+      debrief:['What question established the true last-known-well?','What findings made stroke more or less likely?','What mimic did you consider?','What information did the hospital need before arrival?'],
+      links:[
+        ['Stroke Trainer','/vitals/stroke.html'],
+        ['Pupil & Gaze','/vitals/pupil.html'],
+        ['Blood Glucose','/vitals/bgl.html'],
+        ['Scenario Launcher','/vitals/scenario-launcher.html']
+      ]
+    },
+    {
+      id:'EMS-DRILL-PEDS-001',
+      title:'Pediatric Respiratory Distress',
+      category:'Pediatrics',
+      level:'EMT to Paramedic',
+      duration:'40–50 min',
+      participants:'1–4',
+      status:'ready',
+      summary:'Build comfort with pediatric respiratory assessment, equipment sizing, deterioration recognition, and weight-based decision making.',
+      goal:'Provide repeated exposure to pediatric respiratory emergencies so learners can use a systematic approach instead of becoming task-fixated or overwhelmed.',
+      resources:['Pediatric patient image/video','Respiratory-rate and SpO₂ simulators','Pediatric BVM/oxygen equipment','Length-based reference if used locally','Medication calculation practice when appropriate','Scenario/debrief tools'],
+      dispatch:'Three-year-old with worsening breathing difficulty. Parent reports the child has become less interactive during the last hour.',
+      startingState:['Tachypnea and increased work of breathing','Abnormal breath sounds','Low-normal or reduced SpO₂','Child initially anxious/interactive'],
+      progression:['Child becomes quieter and less interactive if deterioration continues.','Quiet behavior must not be mistaken for improvement.','Appropriate support improves work of breathing and mental status.'],
+      criticalActions:['Use a pediatric-focused initial impression','Assess airway and work of breathing','Choose age/size-appropriate equipment','Obtain/estimate weight appropriately','Recognize compensation versus failure','Treat and reassess','Communicate changes to parent/team'],
+      evaluation:['Systematic pediatric assessment','Equipment selection','Recognition of deterioration','Weight/dose process when applicable','Reassessment','Family/team communication'],
+      outcome:'Learner demonstrates a calm, structured pediatric assessment and recognizes when decreased activity reflects worsening respiratory status.',
+      debrief:['What pediatric finding worried you most?','How did you choose equipment size?','When did the child move from distress toward failure?','What did reassessment show after treatment?'],
+      links:[
+        ['Respiratory Rate','/vitals/respiratory-rate.html'],
+        ['SpO₂','/vitals/pulse-ox.html'],
+        ['Breath Sounds','/vitals/breath-sound-simulator.html'],
+        ['Scenario Launcher','/vitals/scenario-launcher.html']
+      ]
+    },
+    {
+      id:'EMS-DRILL-TOX-001',
+      title:'Opioid Overdose: Airway Before Medication',
+      category:'Toxicology',
+      level:'EMR to Paramedic',
+      duration:'25–35 min',
+      participants:'1–4',
+      status:'ready',
+      summary:'Prevent naloxone tunnel vision by making ventilation and immediate physiologic threats the first priority.',
+      goal:'Teach providers to recognize opioid-associated respiratory depression while maintaining an airway/ventilation-first approach and using naloxone as one component of care.',
+      resources:['Airway/BVM equipment','Pulse oximeter simulator','Respiratory-rate simulator','Medication trainer','Scenario/debrief tools'],
+      dispatch:'Unresponsive person found in a bedroom. Drug paraphernalia may be visible, but the diagnosis is not stated.',
+      startingState:['RR 4/min and shallow','Cyanotic appearance','Pulse present','Pinpoint pupils','Poor responsiveness'],
+      progression:['Naloxone without effective ventilation produces delayed physiologic improvement.','Effective ventilation improves oxygenation while medication takes effect.','Patient may awaken agitated, requiring scene awareness and communication.'],
+      criticalActions:['Assess airway and breathing','Begin effective ventilation when indicated','Use oxygen appropriately','Administer naloxone per local protocol','Reassess ventilation and mental status','Prepare for recurrence/agitation/transport'],
+      evaluation:['Airway priority','Ventilation timing/effectiveness','Medication use','Reassessment','Scene safety after awakening','Transport planning'],
+      outcome:'Learner treats hypoventilation immediately and avoids substituting a medication for airway and ventilation management.',
+      debrief:['What was the immediate life threat?','What changed before naloxone took full effect?','How would you manage recurrent respiratory depression?','What safety considerations change after awakening?'],
+      links:[
+        ['Medication Trainer','/vitals/meds.html'],
+        ['SpO₂','/vitals/pulse-ox.html'],
+        ['Respiratory Rate','/vitals/respiratory-rate.html'],
+        ['Scenario Launcher','/vitals/scenario-launcher.html']
+      ]
+    },
+    {
+      id:'EMS-DRILL-COMM-001',
+      title:'Radio Report & Hospital Handoff',
+      category:'Operations / Communication',
+      level:'All EMS levels',
+      duration:'20–30 min',
+      participants:'1–4',
+      status:'ready',
+      summary:'Turn a complex call into a concise radio report and a complete bedside handoff without dumping every detail chronologically.',
+      goal:'Improve prioritization, structured communication, call-outs/check-backs, and transfer of clinically important information.',
+      resources:['Completed EMSCodeSim scenario or instructor case packet','Timer','Radio or simulated radio','Handoff rubric','PCR Narrative Coach optional'],
+      dispatch:'Learner receives a completed patient record containing both important and distracting information.',
+      startingState:['25+ available facts','Only a subset is necessary for prearrival notification','Receiving facility asks one follow-up question'],
+      progression:['Round 1: 30-second prearrival report.','Round 2: receiving clinician asks a targeted question.','Round 3: 60-second bedside handoff with transfer-of-care confirmation.'],
+      criticalActions:['State patient context and chief concern','Report key assessment findings','Include relevant history only','State treatments and response','Provide ETA/needs','Answer follow-up clearly','Confirm transfer of responsibility'],
+      evaluation:['Clinical prioritization','Organization','Brevity without omission','Accuracy','Closed-loop response','Transfer-of-care clarity'],
+      outcome:'Learner communicates the patient story in a useful, prioritized format and confirms that responsibility and critical information were transferred.',
+      debrief:['What information did you intentionally leave out?','What was essential for the hospital to know before arrival?','Did your report change after the follow-up question?','Was transfer of care explicitly completed?'],
+      links:[
+        ['Scenario Launcher','/vitals/scenario-launcher.html'],
+        ['Patient Record','/vitals/patient-record.html'],
+        ['PCR Narrative Coach','/pcr-narrative-coach.html'],
+        ['Narrative Writing Lab','/narrative-writing-lab.html']
+      ]
+    }
+  ];
+
+  window.EMS_DRILL_BACKLOG = [
+    ['EMS-DRILL-AIRWAY-002','BVM & Respiratory Failure','Airway / Respiratory'],
+    ['EMS-DRILL-ALLERGY-001','Anaphylaxis: Airway, Perfusion & Epinephrine','Airway / Respiratory'],
+    ['EMS-DRILL-AIRWAY-003','Airway Decision Making','Airway / Respiratory'],
+    ['EMS-DRILL-CARDIAC-002','ACS / Chest Pain','Cardiac / Resuscitation'],
+    ['EMS-DRILL-CARDIAC-003','ROSC: The Call Is Not Over','Cardiac / Resuscitation'],
+    ['EMS-DRILL-CARDIAC-004','Peri-Arrest / Dysrhythmia Recognition','Cardiac / Resuscitation'],
+    ['EMS-DRILL-MED-001','Diabetic Emergency','Medical'],
+    ['EMS-DRILL-MED-002','Sepsis: “Just Weak”','Medical'],
+    ['EMS-DRILL-TRAUMA-001','Major Hemorrhage','Trauma'],
+    ['EMS-DRILL-TRAUMA-002','Multisystem Trauma','Trauma'],
+    ['EMS-DRILL-TRAUMA-003','Chest Trauma','Trauma'],
+    ['EMS-DRILL-TRAUMA-004','Head Injury & Neuro Change','Trauma'],
+    ['EMS-DRILL-PEDS-002','Pediatric Seizure','Pediatrics'],
+    ['EMS-DRILL-PEDS-003','Pediatric Cardiac Arrest','Pediatrics'],
+    ['EMS-DRILL-OB-001','Emergency Childbirth','OB'],
+    ['EMS-DRILL-BEHAV-001','Behavioral Crisis & Verbal De-escalation','Behavioral'],
+    ['EMS-DRILL-OPS-001','MCI: First Unit on Scene','Operations / Communication'],
+    ['EMS-DRILL-THINK-001','Something Does Not Fit: Clinical Judgment','Clinical Reasoning'],
+    ['EMS-DRILL-PCR-001','Could Someone Reconstruct Your Call?','Documentation']
+  ];
+})();
