@@ -6,6 +6,18 @@
 <script defer="" src="/scripts/engagement-loop.js"></script>
 <script defer="" src="/scripts/ems-intent-nav.js"></script>
 </head><body>
+<section id="roadmapCompanion" hidden style="max-width:1120px;margin:18px auto 0;padding:18px 20px;border:1px solid #c9d7e2;border-left:5px solid #0a7a5a;border-radius:10px;background:#fff">
+  <div style="font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#085887">Responder Roadmap Companion</div>
+  <h1 style="margin:.35rem 0 .5rem">Practice what your Roadmap says is next</h1>
+  <p id="roadmapFocus" style="margin:.25rem 0">Your Roadmap context has been carried here.</p>
+  <p style="margin:.5rem 0 0;color:#5a6f80">Understand → Practice → Simulate → return to Responder Roadmap to record what you did. EMSCodeSim provides learning and practice; it does not mark an official requirement complete.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
+    <a href="/emt-prep.html">Learn</a>
+    <a href="/vitals/scenario-launcher.html">Run a patient</a>
+    <a href="/ems-drills.html">Department drills</a>
+    <a href="/nremt-cognitive-prep.html">NREMT prep</a>
+  </div>
+</section>
 <a class="skip-link" href="#main">Skip to main content</a>
 <header class="site-header">
 <nav aria-label="Primary navigation" class="nav-wrap">
@@ -61,4 +73,7 @@
 <div><h3>Start &amp; Prepare</h3><a href="/explore-ems.html">Explore EMS</a><a href="/emt-school-finder.html">EMT School Finder</a><a href="/emt-program-cost.html">Program Cost Help</a><a href="/emt-prep.html">Free EMT Prep Program</a><a href="/emt-school-success.html">Student Success</a></div>
 <div><h3>Practice &amp; Career</h3><a href="/#daily-practice">Today’s 5-Minute Practice</a><a href="/ems-training-tools.html">Training Tools</a><a href="/emt-flashcards.html">EMT Flashcards</a><a href="/quiz/">Daily Quiz</a><a href="/ems-career-growth.html">Career Paths &amp; Pay</a><a href="/ems-recertification.html">Recertification</a></div>
 <div><h3>About &amp; Support</h3><a href="/ems-wellness.html">EMS Wellness</a><a href="/ems-retirement.html">Retirement Planning</a><a href="/ems-resources.html">Trusted Resources</a><a href="/about.html">About EMSCodeSim</a><a href="/privacy.html">Privacy Choices</a></div>
-</div><div class="footer-bottom">EMSCodeSim provides educational information and simulation practice. It does not replace an approved EMS course, local protocol, medical direction, certification authority, or professional financial, legal, or health advice.</div></footer><script defer="" src="/training-tools.js"></script><script defer="" src="/career.js"></script><script defer src="/skills-session-mode.js?v=2"></script></body></html>
+</div><div class="footer-bottom">EMSCodeSim provides educational information and simulation practice. It does not replace an approved EMS course, local protocol, medical direction, certification authority, or professional financial, legal, or health advice.</div></footer><script defer="" src="/training-tools.js"></script><script defer="" src="/career.js"></script><script defer src="/skills-session-mode.js?v=2"></script><script>
+(()=>{const p=new URLSearchParams(location.search);if(p.get('source')!=='roadmap')return;const box=document.getElementById('roadmapCompanion');if(!box)return;box.hidden=false;const topic=(p.get('topic')||p.get('task')||p.get('requirement')||'').replace(/[_-]+/g,' ').trim();const cert=(p.get('cert')||p.get('qualification')||'').replace(/[_-]+/g,' ').trim();const focus=[cert,topic].filter(Boolean).join(' · ');document.getElementById('roadmapFocus').textContent=focus?'Roadmap focus: '+focus:'Choose the training tool that best matches your current Roadmap step.';if(topic){const input=document.querySelector('input[type="search"], input[placeholder*="blood pressure"]');if(input){input.value=topic;input.dispatchEvent(new Event('input',{bubbles:true}));}}})();
+</script>
+</body></html>
