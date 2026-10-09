@@ -9,6 +9,7 @@ const html = fs.readFileSync(path.join(root, 'critical-thinking-lab.html'), 'utf
 const client = fs.readFileSync(path.join(root, 'critical-thinking-lab.js'), 'utf8');
 const styles = fs.readFileSync(path.join(root, 'styles', 'critical-thinking-lab.css'), 'utf8');
 const coach = fs.readFileSync(path.join(root, 'netlify', 'functions', 'critical-thinking-coach.js'), 'utf8');
+const sessions = fs.readFileSync(path.join(root, 'netlify', 'functions', 'critical-thinking-sessions.js'), 'utf8');
 const scenarios = JSON.parse(fs.readFileSync(path.join(root, 'netlify', 'functions', 'data', 'narrative-lab-scenarios.json'), 'utf8'));
 
 for (const id of ['startPanel', 'workPanel', 'debriefPanel', 'caseSelect', 'decisionForm', 'decisionTrail', 'aiDebrief']) {
@@ -16,6 +17,9 @@ for (const id of ['startPanel', 'workPanel', 'debriefPanel', 'caseSelect', 'deci
 }
 assert.ok(client.includes("fetch('/data/narrative-lab-scenarios.json'"), 'Lab must load the current published scenario catalog');
 assert.ok(client.includes("/.netlify/functions/critical-thinking-coach"), 'Lab must request server-side AI feedback');
+assert.ok(client.includes("/.netlify/functions/critical-thinking-sessions"), 'Lab must connect optional cloud sessions to the server');
+assert.ok(html.includes('id="createRoomBtn"') && html.includes('id="joinRoomBtn"'), 'Learners must be able to create or join cloud sessions');
+assert.ok(html.includes('Anyone with the link can view and update its decision trail'), 'The page must explain that room links are bearer access');
 assert.ok(client.includes("localStorage.setItem(STORAGE_KEY"), 'Learner progress must persist between visits on the same device');
 assert.ok(client.includes("data-mode=\"group\"" ) || html.includes('data-mode="group"'), 'Lab must support team discussion mode');
 assert.ok(html.includes('your recorded decisions are sent to an AI service'), 'The page must disclose that decisions are sent for AI feedback');
@@ -27,7 +31,10 @@ assert.ok(coach.includes('Do not provide patient-care instructions'), 'AI coach 
 assert.ok(coach.includes('recorded decisions are the only evidence of what the learner did'), 'AI coach must not credit actions the learner did not record');
 assert.ok(!coach.includes('care:input.scenario.care') && !coach.includes('disposition:input.scenario.disposition'), 'AI coach must not receive unperformed scenario care or disposition');
 assert.ok(coach.includes('requestBuckets') && coach.includes('Too many debrief requests'), 'AI endpoint must be rate limited');
+assert.ok(sessions.includes("await import('@netlify/database')"), 'Session API must use the attached Netlify database');
+assert.ok(sessions.includes('createHash(\'sha256\')') && sessions.includes('randomBytes(24)'), 'Database must store hashed, high-entropy room credentials');
+assert.ok(sessions.includes('readDecisions(body.decisions)'), 'Session writes must validate recorded learner decisions');
 assert.ok(scenarios.length >= 5, 'Lab must have multiple scenarios to choose from');
 for (const scenario of scenarios) for (const field of ['id','title','dispatch','scene','history','findings','vitals','response','care','disposition']) assert.ok(scenario[field], `${scenario.id} is missing ${field}`);
 
-console.log(`Clinical Judgment Lab verified: ${scenarios.length} curated cases, solo and team modes, device-local progress, and guarded AI debrief.`);
+console.log(`Clinical Judgment Lab verified: ${scenarios.length} curated cases, solo and group modes, device and cloud sessions, and guarded AI debrief.`);

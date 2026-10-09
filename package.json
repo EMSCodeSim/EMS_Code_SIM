@@ -11,7 +11,7 @@
     "build:public": "node tools/build-public.js",
     "build:functions": "node tools/prepare-functions.js",
     "verify:dist": "node tools/validate-site.js --root dist --deployment",
-    "build": "npm run clean:retired && npm run validate && npm run test:skills-session && npm run test:narrative-lab && npm run test:critical-thinking-lab && npm run verify:scenario-contracts && npm run test:scenario-deployment && npm run test:scenario-definitions && npm run test:scenario-images && npm run test:scenario-reasoning && npm run test:daily-protocol && npm run test:scenario-modes && npm run test:learning-loop && npm run test:scenario-selection && npm run test:rapid-primary && npm run test:vitals-tab && npm run test:patient-interview && npm run test:ai-question-layer && npm run test:ai-debrief-coach && npm run test:treatment-workflow && npm run test:treatment-decision && npm run test:targeted-reassessment && npm run test:crash-recovery && npm run test:full-call-debrief && npm run test:scenario-grading && npm run test:persistence && npm run test:care-log && npm run test:scenario-phases && npm run test:scenario-history && npm run test:condition-engine && npm run test:patient-simulator-v2 && npm run build:public && npm run build:functions && npm run verify:dist",
+    "build": "npm run clean:retired && npm run validate && npm run test:skills-session && npm run test:narrative-lab && npm run test:critical-thinking-lab && npm run test:critical-thinking-sessions && npm run verify:scenario-contracts && npm run test:scenario-deployment && npm run test:scenario-definitions && npm run test:scenario-images && npm run test:scenario-reasoning && npm run test:daily-protocol && npm run test:scenario-modes && npm run test:learning-loop && npm run test:scenario-selection && npm run test:rapid-primary && npm run test:vitals-tab && npm run test:patient-interview && npm run test:ai-question-layer && npm run test:ai-debrief-coach && npm run test:treatment-workflow && npm run test:treatment-decision && npm run test:targeted-reassessment && npm run test:crash-recovery && npm run test:full-call-debrief && npm run test:scenario-grading && npm run test:persistence && npm run test:care-log && npm run test:scenario-phases && npm run test:scenario-history && npm run test:condition-engine && npm run test:patient-simulator-v2 && npm run build:public && npm run build:functions && npm run verify:dist",
     "serve:dist": "node tools/serve-dist.js",
     "test:interaction": "npm run build && playwright test",
     "test:interaction:headed": "npm run build && playwright test --headed",
@@ -47,7 +47,11 @@
     "test:scenario-images": "node tools/test-scenario-image-assets.js",
     "test:narrative-lab": "node tools/test-narrative-lab.js",
     "test:skills-session": "node tools/test-skills-session-hub.js",
-    "test:critical-thinking-lab": "node tools/test-critical-thinking-lab.js"
+    "test:critical-thinking-lab": "node tools/test-critical-thinking-lab.js",
+    "test:critical-thinking-sessions": "node tools/test-critical-thinking-sessions.js"
+  },
+  "dependencies": {
+    "@netlify/database": "^2.0.1"
   },
   "engines": {
     "node": ">=18 <23"
@@ -55,5 +59,8 @@
   "devDependencies": {
     "@playwright/test": "^1.54.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@netlify/database": "^2.0.1"
+  }
 }

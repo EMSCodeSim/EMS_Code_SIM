@@ -2,7 +2,7 @@
   'use strict';
 
   const STORAGE_KEY = 'emscode_critical_thinking_lab_v1';
-  const state = { scenarios: [], mode: 'solo', scenario: null, level: 'EMT', team: [], index: 0, decisions: [] };
+  const state = { scenarios: [], mode: 'solo', scenario: null, level: 'EMT', team: [], index: 0, decisions: [], roomToken: null, roomSession: null, dirty: false, pollTimer: null };
   const $ = selector => document.querySelector(selector);
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[char]));
   const stages = [
@@ -15,7 +15,7 @@
   const el = {
     modeButtons:[...document.querySelectorAll('[data-mode]')], groupSetup:$('#groupSetup'), teamNames:$('#teamNames'), level:$('#levelSelect'), scenario:$('#caseSelect'), begin:$('#beginBtn'), status:$('#libraryStatus'),
     start:$('#startPanel'), work:$('#workPanel'), debrief:$('#debriefPanel'), meta:$('#caseMeta'), title:$('#scenarioTitle'), dispatch:$('#scenarioDispatch'), phase:$('#phaseLabel'), count:$('#phaseCount'), fill:$('#progressFill'), facts:$('#currentFacts'), roles:$('#groupRoles'), promptTitle:$('#promptTitle'), help:$('#promptHelp'), decision:$('#decisionText'), reasoning:$('#reasoningText'), form:$('#decisionForm'), next:$('#nextBtn'), save:$('#saveStatus'), trail:$('#decisionTrail'),
-    debriefLabel:$('#debriefModeLabel'), summary:$('#debriefSummary'), ai:$('#aiDebrief'),
+    debriefLabel:$('#debriefModeLabel'), summary:$('#debriefSummary'), ai:$('#aiDebrief'), createRoom:$('#createRoomBtn'), roomCode:$('#roomCode'), joinRoom:$('#joinRoomBtn'), roomStatus:$('#roomStatus'), roomShare:$('#roomShare'), roomShareUrl:$('#roomShareUrl'), copyRoom:$('#copyRoomBtn'),
   };
 
   function setMode(mode) {
@@ -41,8 +41,88 @@
   function saveProgress() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ scenarioId:state.scenario.id, level:state.level, mode:state.mode, team:state.team, index:state.index, decisions:state.decisions, savedAt:new Date().toISOString() }));
-      el.save.textContent = 'Progress saved on this device.';
+      el.save.textContent = state.roomToken ? 'Saving to this device and online session…' : 'Progress saved on this device.';
     } catch (_) { el.save.textContent = 'Could not save on this device. Keep this tab open.'; }
+    if (state.roomToken) saveRoomProgress().catch(() => { el.save.textContent = 'Device copy saved; online sync needs a retry.'; });
+  }
+
+  async function saveRoomProgress() {
+    if (!state.roomToken || !state.scenario) return;
+    const response = await fetch('/.netlify/functions/critical-thinking-sessions', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'save',token:state.roomToken,currentStage:state.index,decisions:state.decisions.map(item => ({action:item.action,reasoning:item.reasoning}))})
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.error || 'Online session sync failed.');
+    el.save.textContent = 'Progress saved on this device and online session.';
+  }
+
+  function displayRoomLink(token) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('room', token);
+    el.roomShareUrl.value = url.toString();
+    el.roomShare.hidden = false;
+    el.roomCode.value = token;
+    history.replaceState(null, '', url.toString());
+  }
+
+  function tokenFromInput(value) {
+    const raw = String(value || '').trim();
+    try { return new URL(raw).searchParams.get('room') || raw; } catch (_) { return raw; }
+  }
+
+  async function createRoom() {
+    const scenarioId = el.scenario.value;
+    if (!state.scenarios.some(item => item.id === scenarioId)) {
+      el.roomStatus.textContent = 'Choose a scenario before creating an online session.';
+      el.scenario.focus();
+      return;
+    }
+    el.createRoom.disabled = true;
+    el.roomStatus.textContent = 'Creating your private online session…';
+    try {
+      const response = await fetch('/.netlify/functions/critical-thinking-sessions', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'create',scenarioId,level:el.level.value,mode:state.mode})
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.token) throw new Error(payload.error || 'Could not create an online session.');
+      state.roomToken = payload.token;
+      state.roomSession = {currentStage:0,decisions:[]};
+      displayRoomLink(payload.token);
+      el.roomStatus.textContent = `Online session created. Its private link expires in ${payload.expiresInDays} days.`;
+      beginRun();
+    } catch (error) {
+      el.roomStatus.textContent = error.message || 'Online session storage is temporarily unavailable.';
+    } finally { el.createRoom.disabled = false; }
+  }
+
+  async function joinRoom(tokenValue = el.roomCode.value) {
+    const token = tokenFromInput(tokenValue);
+    if (!/^[a-f0-9]{48}$/.test(token)) { el.roomStatus.textContent = 'Paste a valid room code or private session link.'; return; }
+    el.joinRoom.disabled = true;
+    el.roomStatus.textContent = 'Loading the shared session…';
+    try {
+      const response = await fetch(`/.netlify/functions/critical-thinking-sessions?token=${encodeURIComponent(token)}`, {cache:'no-store'});
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.session) throw new Error(payload.error || 'Could not load this online session.');
+      const session = payload.session;
+      const scenario = state.scenarios.find(item => item.id === session.scenarioId);
+      if (!scenario) throw new Error('The case linked to this session is no longer in the scenario library.');
+      state.roomToken = token;
+      state.roomSession = session;
+      state.level = session.level;
+      el.level.value = session.level;
+      setMode(session.mode);
+      populateScenarios();
+      el.scenario.value = scenario.id;
+      state.team = [];
+      displayRoomLink(token);
+      el.roomStatus.textContent = `Joined the ${session.mode === 'group' ? 'group' : 'solo'} session. Shared progress is saved online for 30 days.`;
+      beginRun();
+    } catch (error) {
+      el.roomStatus.textContent = error.message || 'Could not load this online session.';
+    } finally { el.joinRoom.disabled = false; }
   }
 
   function beginRun() {
@@ -52,14 +132,16 @@
     state.scenario = scenario;
     state.level = el.level.value;
     state.team = state.mode === 'group' ? el.teamNames.value.split(',').map(value => value.trim()).filter(Boolean).slice(0,8) : [];
-    const saved = loadProgress(id);
-    state.index = saved ? Math.min(saved.index || 0, stages.length - 1) : 0;
-    state.decisions = saved ? saved.decisions : [];
+    const saved = state.roomToken ? state.roomSession : loadProgress(id);
+    state.index = saved ? Math.min(saved.currentStage ?? saved.index ?? 0, stages.length - 1) : 0;
+    state.decisions = saved && Array.isArray(saved.decisions) ? saved.decisions : [];
     el.start.classList.add('hidden'); el.debrief.classList.add('hidden'); el.work.classList.remove('hidden');
     el.meta.textContent = `${scenario.category} · ${state.level} · ${state.mode === 'group' ? 'Group discussion' : 'Solo practice'}`;
     el.title.textContent = scenario.title;
     el.dispatch.textContent = scenario.dispatch;
+    state.dirty = false;
     renderStage();
+    startRoomPolling();
     el.work.scrollIntoView({behavior:'smooth',block:'start'});
   }
 
@@ -72,7 +154,7 @@
     el.trail.innerHTML = state.decisions.map((item,index) => `<li><strong>${esc(stages[index].title)}:</strong> ${esc(item.action)}</li>`).join('');
   }
 
-  function renderStage() {
+  function renderStage(options = {}) {
     const stage = stages[state.index];
     const existing = state.decisions[state.index];
     el.phase.textContent = stage.title;
@@ -88,10 +170,33 @@
     el.roles.hidden = state.mode !== 'group';
     el.roles.innerHTML = state.mode === 'group' ? `<strong>${role ? `Decision lead: ${esc(role)}` : 'Choose a team member to lead this decision.'}</strong><span>Invite the rest of the team to name the clues they noticed and what could change their plan.</span>` : '';
     renderTrail();
-    saveProgress();
+    if (!options.skipSave) saveProgress();
   }
 
-  function recordDecision(event) {
+  function startRoomPolling() {
+    if (state.pollTimer) window.clearInterval(state.pollTimer);
+    if (!state.roomToken) return;
+    state.pollTimer = window.setInterval(async () => {
+      if (!state.scenario || state.dirty || el.work.classList.contains('hidden')) return;
+      try {
+        const response = await fetch(`/.netlify/functions/critical-thinking-sessions?token=${encodeURIComponent(state.roomToken)}`, {cache:'no-store'});
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok || !payload.session) return;
+        const session = payload.session;
+        const decisions = Array.isArray(session.decisions) ? session.decisions.map(item => ({action:item.action,reasoning:item.reasoning,role:''})) : [];
+        if (session.scenarioId !== state.scenario.id) return;
+        if (session.currentStage === state.index && JSON.stringify(decisions) === JSON.stringify(state.decisions.map(item => ({action:item.action,reasoning:item.reasoning,role:''})))) return;
+        state.roomSession = session;
+        state.index = Math.min(session.currentStage, stages.length - 1);
+        state.decisions = decisions;
+        state.dirty = false;
+        renderStage({skipSave:true});
+        el.save.textContent = 'Shared room update received.';
+      } catch (_) {}
+    }, 7000);
+  }
+
+  async function recordDecision(event) {
     event.preventDefault();
     const action = el.decision.value.trim();
     const reasoning = el.reasoning.value.trim();
@@ -101,8 +206,11 @@
       return;
     }
     state.decisions[state.index] = { action, reasoning, role:state.team.length ? state.team[state.index % state.team.length] : '' };
+    state.dirty = false;
     if (state.index < stages.length - 1) { state.index += 1; renderStage(); return; }
-    saveProgress(); finishRun();
+    saveProgress();
+    if (state.roomToken) { try { await saveRoomProgress(); } catch (_) {} }
+    finishRun();
   }
 
   function renderDebrief(payload) {
@@ -132,7 +240,11 @@
 
   function resetRun() {
     try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
-    state.scenario = null; state.index = 0; state.decisions = [];
+    if (state.pollTimer) window.clearInterval(state.pollTimer);
+    state.pollTimer = null;
+    state.scenario = null; state.index = 0; state.decisions = []; state.roomToken = null; state.roomSession = null;
+    el.roomShare.hidden = true;
+    const url = new URL(window.location.href); url.searchParams.delete('room'); history.replaceState(null, '', url.toString());
     el.work.classList.add('hidden'); el.debrief.classList.add('hidden'); el.start.classList.remove('hidden');
     window.scrollTo({top:0,behavior:'smooth'});
   }
@@ -141,16 +253,26 @@
   el.level.addEventListener('change', populateScenarios);
   el.begin.addEventListener('click', beginRun);
   el.form.addEventListener('submit', recordDecision);
+  el.decision.addEventListener('input', () => { state.dirty = true; });
+  el.reasoning.addEventListener('input', () => { state.dirty = true; });
   $('#changeRun').addEventListener('click', resetRun);
   $('#newRunBtn').addEventListener('click', resetRun);
   $('#mobileMenu').addEventListener('change', event => { if (event.target.value) location.href = event.target.value; });
+  el.createRoom.addEventListener('click', createRoom);
+  el.joinRoom.addEventListener('click', () => joinRoom());
+  el.copyRoom.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(el.roomShareUrl.value); el.roomStatus.textContent = 'Private session link copied. Anyone with it can access this session.'; }
+    catch (_) { el.roomShareUrl.focus(); el.roomShareUrl.select(); el.roomStatus.textContent = 'Select and copy the private session link to share it.'; }
+  });
 
   fetch('/data/narrative-lab-scenarios.json', {cache:'no-cache'})
     .then(response => { if (!response.ok) throw new Error('Scenario library could not be loaded.'); return response.json(); })
     .then(scenarios => {
       state.scenarios = Array.isArray(scenarios) ? scenarios.filter(item => item?.id && item?.dispatch && item?.scene) : [];
       populateScenarios();
-      el.status.textContent = `${state.scenarios.length} current fictional cases loaded. Your practice notes stay on this device.`;
+      el.status.textContent = `${state.scenarios.length} current fictional cases loaded. Practice can stay on this device or use an optional online session.`;
+      const linkedRoom = new URLSearchParams(window.location.search).get('room');
+      if (linkedRoom) { el.roomCode.value = linkedRoom; joinRoom(linkedRoom); }
     })
     .catch(() => { el.status.textContent = 'The scenario library could not be loaded. Please refresh and try again.'; el.begin.disabled = true; });
 })();
