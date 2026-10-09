@@ -7,6 +7,7 @@ const path = require('path');
 const root = path.resolve(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'critical-thinking-lab.html'), 'utf8');
 const client = fs.readFileSync(path.join(root, 'critical-thinking-lab.js'), 'utf8');
+const styles = fs.readFileSync(path.join(root, 'styles', 'critical-thinking-lab.css'), 'utf8');
 const coach = fs.readFileSync(path.join(root, 'netlify', 'functions', 'critical-thinking-coach.js'), 'utf8');
 const scenarios = JSON.parse(fs.readFileSync(path.join(root, 'netlify', 'functions', 'data', 'narrative-lab-scenarios.json'), 'utf8'));
 
@@ -18,6 +19,7 @@ assert.ok(client.includes("/.netlify/functions/critical-thinking-coach"), 'Lab m
 assert.ok(client.includes("localStorage.setItem(STORAGE_KEY"), 'Learner progress must persist between visits on the same device');
 assert.ok(client.includes("data-mode=\"group\"" ) || html.includes('data-mode="group"'), 'Lab must support team discussion mode');
 assert.ok(html.includes('your recorded decisions are sent to an AI service'), 'The page must disclose that decisions are sent for AI feedback');
+assert.ok(styles.includes('.hidden,[hidden]{display:none!important}') && styles.includes('scroll-margin-top:92px'), 'Lab styles must preserve hidden panels and avoid sticky-nav overlap');
 assert.ok(coach.includes("require('./data/narrative-lab-scenarios.json')"), 'AI coach must use the canonical case data');
 assert.ok(coach.includes('store:false'), 'AI requests must not be stored by the model provider');
 assert.ok(coach.includes('possibleIdentifier(raw)'), 'AI endpoint must reject likely patient identifiers');
