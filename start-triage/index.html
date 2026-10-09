@@ -39,7 +39,7 @@ const actions=document.createElement("div");actions.className="actions";box.appe
 function finding(key,label,value){actions.append(action(label,()=>{p.seen.add(key);render()}));if(p.seen.has(key))para(value)}
 finding("breathing","Check respirations",p.breathing?"Respirations: "+p.rr+"/min":p.airway?"After airway repositioning: "+(p.airwayBreathing?"Breathing "+p.rr+"/min":"Still apneic"):"No spontaneous respirations observed.");
 if(!p.breathing){actions.append(action("Reposition airway",()=>{p.airway=true;p.seen.add("breathing");render()}))}
-if(p.breathing||p.airway&&p.airwayBreathing){finding("perfusion","Check radial pulse / refill",p.perfusion>2?"Capillary refill greater than 2 seconds":"Capillary refill "+p.perfusion+" second(s), radial pulse present");finding("commands","Assess simple commands",p.commands?"Follows simple commands":"Does not follow simple commands")}
+if(p.breathing){finding("perfusion","Check radial pulse / refill",p.perfusion>2?"Capillary refill greater than 2 seconds; radial pulse absent":"Capillary refill "+p.perfusion+" second(s), radial pulse present");finding("commands","Assess simple commands",p.commands?"Follows simple commands":"Does not follow simple commands")}
 const label=document.createElement("h3");label.textContent="Assign triage tag";box.append(label);
 const tags=document.createElement("div");tags.className="tags";box.append(tags);
 for(const [tag,name] of [["red","Red · Immediate"],["yellow","Yellow · Delayed"],["green","Green · Minor"],["black","Black · Deceased"]]){const b=action(name,()=>{p.tag=tag;render()});b.className=tag;tags.append(b)}
