@@ -5,8 +5,11 @@ const fs = require('fs');
 const path = require('path');
 const { tokenPattern, tokenHash, readDecisions } = require('../netlify/functions/critical-thinking-sessions')._test;
 
-const migrationPath = path.join(__dirname, '../netlify/database/migrations/20261009160000_create_critical_thinking_sessions.sql');
+const migrationPath = path.join(__dirname, '../db/migrations/20261009160000_create_critical_thinking_sessions.sql');
 const migration = fs.readFileSync(migrationPath, 'utf8');
+const cleanup = fs.readFileSync(path.join(__dirname, '../netlify/functions/critical-thinking-session-cleanup.js'), 'utf8');
+const sessions = fs.readFileSync(path.join(__dirname, '../netlify/functions/critical-thinking-sessions.js'), 'utf8');
+const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'));
 
 assert(tokenPattern.test('a'.repeat(48)), 'room tokens must use the 48-character opaque format');
 assert(!tokenPattern.test('a'.repeat(47)), 'short room tokens must be rejected');
@@ -22,5 +25,10 @@ assert.throws(() => readDecisions(Array.from({length:6}, () => ({action:'Check t
 assert.match(migration, /token_hash text PRIMARY KEY/);
 assert.match(migration, /expires_at timestamptz NOT NULL DEFAULT now\(\) \+ interval '30 days'/);
 assert.match(migration, /CHECK \(mode IN \('solo', 'group'\)\)/);
+assert.match(cleanup, /schedule: '@daily'/);
+assert.match(cleanup, /WHERE expires_at <= now\(\)/);
+assert.match(sessions, /@neondatabase\/serverless/);
+assert.strictEqual(packageJson.dependencies['@neondatabase/serverless'], '^1.2.0');
+assert.strictEqual(packageJson.dependencies['@netlify/database'], undefined, 'Use only the Neon backend for session storage');
 
 process.stdout.write('Critical thinking database session contracts passed.\n');
