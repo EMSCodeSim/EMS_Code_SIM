@@ -1,0 +1,21 @@
+name: START Triage MVP tests
+on:
+  push:
+    branches: [feature/start-triage-mvp]
+  pull_request:
+    paths:
+      - 'start-triage/**'
+      - 'tests/start-triage-rules.test.js'
+      - '.github/workflows/start-triage-tests.yml'
+jobs:
+  rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run START clinical rules tests
+        run: node --test tests/start-triage-rules.test.js
+      - name: Verify script syntax
+        run: node --check start-triage/rules.js
