@@ -50,9 +50,6 @@
     "test:critical-thinking-lab": "node tools/test-critical-thinking-lab.js",
     "test:critical-thinking-sessions": "node tools/test-critical-thinking-sessions.js"
   },
-  "dependencies": {
-    "@netlify/database": "^2.0.1"
-  },
   "engines": {
     "node": ">=18 <23"
   },
@@ -61,6 +58,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@netlify/database": "^2.0.1"
+    "@neondatabase/serverless": "^1.2.0"
   }
 }
