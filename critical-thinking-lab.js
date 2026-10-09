@@ -2,7 +2,7 @@
   'use strict';
 
   const STORAGE_KEY = 'emscode_critical_thinking_lab_v1';
-  const state = { scenarios: [], mode: 'solo', scenario: null, level: 'EMT', team: [], index: 0, decisions: [], roomToken: null, roomSession: null, dirty: false, pollTimer: null };
+  const state = { scenarios: [], mode: 'solo', scenario: null, level: 'EMT', team: [], index: 0, decisions: [], roomToken: null, roomSession: null, dirty: false, roomSavePending: 0, pollTimer: null };
   const $ = selector => document.querySelector(selector);
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[char]));
   const stages = [
@@ -48,13 +48,16 @@
 
   async function saveRoomProgress() {
     if (!state.roomToken || !state.scenario) return;
-    const response = await fetch('/.netlify/functions/critical-thinking-sessions', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'save',token:state.roomToken,currentStage:state.index,decisions:state.decisions.map(item => ({action:item.action,reasoning:item.reasoning}))})
-    });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(payload.error || 'Online session sync failed.');
-    el.save.textContent = 'Progress saved on this device and online session.';
+    state.roomSavePending += 1;
+    try {
+      const response = await fetch('/.netlify/functions/critical-thinking-sessions', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'save',token:state.roomToken,currentStage:state.index,decisions:state.decisions.map(item => ({action:item.action,reasoning:item.reasoning}))})
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || 'Online session sync failed.');
+      el.save.textContent = 'Progress saved on this device and online session.';
+    } finally { state.roomSavePending = Math.max(0, state.roomSavePending - 1); }
   }
 
   function displayRoomLink(token) {
@@ -177,7 +180,7 @@
     if (state.pollTimer) window.clearInterval(state.pollTimer);
     if (!state.roomToken) return;
     state.pollTimer = window.setInterval(async () => {
-      if (!state.scenario || state.dirty || el.work.classList.contains('hidden')) return;
+      if (!state.scenario || state.dirty || state.roomSavePending || el.work.classList.contains('hidden')) return;
       try {
         const response = await fetch(`/.netlify/functions/critical-thinking-sessions?token=${encodeURIComponent(state.roomToken)}`, {cache:'no-store'});
         const payload = await response.json().catch(() => ({}));
