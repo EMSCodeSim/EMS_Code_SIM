@@ -22,6 +22,8 @@ assert.ok(coach.includes("require('./data/narrative-lab-scenarios.json')"), 'AI 
 assert.ok(coach.includes('store:false'), 'AI requests must not be stored by the model provider');
 assert.ok(coach.includes('possibleIdentifier(raw)'), 'AI endpoint must reject likely patient identifiers');
 assert.ok(coach.includes('Do not provide patient-care instructions'), 'AI coach must stay in formative reflection scope');
+assert.ok(coach.includes('recorded decisions are the only evidence of what the learner did'), 'AI coach must not credit actions the learner did not record');
+assert.ok(!coach.includes('care:input.scenario.care') && !coach.includes('disposition:input.scenario.disposition'), 'AI coach must not receive unperformed scenario care or disposition');
 assert.ok(coach.includes('requestBuckets') && coach.includes('Too many debrief requests'), 'AI endpoint must be rate limited');
 assert.ok(scenarios.length >= 5, 'Lab must have multiple scenarios to choose from');
 for (const scenario of scenarios) for (const field of ['id','title','dispatch','scene','history','findings','vitals','response','care','disposition']) assert.ok(scenario[field], `${scenario.id} is missing ${field}`);
