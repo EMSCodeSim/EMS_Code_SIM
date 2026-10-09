@@ -46,7 +46,9 @@ function sanitize(body){
 function validate(result){
   if(!result||typeof result.summary!=='string'||!result.summary.trim()||typeof result.reflectionQuestion!=='string'||!result.reflectionQuestion.trim())throw new Error('Incomplete coaching response.');
   if(!Array.isArray(result.rubric)||result.rubric.length!==rubricLabels.length||!Array.isArray(result.strengths)||result.strengths.length>4||!Array.isArray(result.opportunities)||result.opportunities.length>4)throw new Error('Invalid coaching response.');
-  for(let index=0;index<rubricLabels.length;index++){const item=result.rubric[index];if(item.label!==rubricLabels[index]||!Number.isInteger(item.score)||item.score<0||item.score>4||!String(item.feedback||'').trim())throw new Error('Invalid coaching rubric.');}
+  const labels=new Set();
+  for(const item of result.rubric){if(!rubricLabels.includes(item.label)||labels.has(item.label)||!Number.isInteger(item.score)||item.score<0||item.score>4||!String(item.feedback||'').trim())throw new Error('Invalid coaching rubric.');labels.add(item.label);}
+  result.rubric.sort((left,right)=>rubricLabels.indexOf(left.label)-rubricLabels.indexOf(right.label));
   return result;
 }
 

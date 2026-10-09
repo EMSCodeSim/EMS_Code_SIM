@@ -17,6 +17,7 @@ assert.ok(client.includes("fetch('/data/narrative-lab-scenarios.json'"), 'Lab mu
 assert.ok(client.includes("/.netlify/functions/critical-thinking-coach"), 'Lab must request server-side AI feedback');
 assert.ok(client.includes("localStorage.setItem(STORAGE_KEY"), 'Learner progress must persist between visits on the same device');
 assert.ok(client.includes("data-mode=\"group\"" ) || html.includes('data-mode="group"'), 'Lab must support team discussion mode');
+assert.ok(html.includes('your recorded decisions are sent to an AI service'), 'The page must disclose that decisions are sent for AI feedback');
 assert.ok(coach.includes("require('./data/narrative-lab-scenarios.json')"), 'AI coach must use the canonical case data');
 assert.ok(coach.includes('store:false'), 'AI requests must not be stored by the model provider');
 assert.ok(coach.includes('possibleIdentifier(raw)'), 'AI endpoint must reject likely patient identifiers');
