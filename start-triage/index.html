@@ -10,6 +10,7 @@
 <section class="panel" id="encounter" aria-live="polite"><h2>Select a patient to begin</h2><p>Patient information remains hidden until assessed. Assess scene safety and give ambulatory instructions before tagging.</p><div class="actions"><button id="scene">Confirm scene safety</button><button id="walk">Direct walking patients to collection area</button></div></section>
 <section class="panel hidden" id="review" aria-live="polite"></section>
 </main><footer>Educational simulation only. Confirm local MCI protocols and clinical review before instructional deployment. Adult START is distinct from JumpSTART.</footer>
+<script src="./rules.js"></script>
 <script>
 "use strict";
 const definitions=[
@@ -45,8 +46,8 @@ const tags=document.createElement("div");tags.className="tags";box.append(tags);
 for(const [tag,name] of [["red","Red · Immediate"],["yellow","Yellow · Delayed"],["green","Green · Minor"],["black","Black · Deceased"]]){const b=action(name,()=>{p.tag=tag;render()});b.className=tag;tags.append(b)}
 if(p.tag)para("Current tag: "+p.tag.toUpperCase()+". You may reassess or change this tag before finishing.");
 }
-function finish(){finished=true;clearInterval(timer);$("encounter").classList.add("hidden");$("review").classList.remove("hidden");$("finish").disabled=true;render();const box=$("review");box.replaceChildren();const h=document.createElement("h2");h.textContent="Scenario debrief";box.append(h);const correct=patients.filter(p=>p.tag===p.expected).length;const summary=document.createElement("p");summary.textContent=correct+" of 6 correctly tagged · "+time()+" elapsed";box.append(summary);
-patients.forEach(p=>{const line=document.createElement("p");line.textContent="Patient "+p.id+": "+(p.tag||"NOT TAGGED")+" / expected "+p.expected.toUpperCase()+(p.id===2&&!p.airway?" · Airway repositioning missed":"");box.append(line)});
+function finish(){finished=true;clearInterval(timer);$("encounter").classList.add("hidden");$("review").classList.remove("hidden");$("finish").disabled=true;render();const box=$("review");box.replaceChildren();const h=document.createElement("h2");h.textContent="Scenario debrief";box.append(h);const expectedFor=p=>StartTriageRules.classify({walks:p.walk,breathing:p.breathing,airwayRepositioned:true,breathesAfterAirway:p.airwayBreathing,respiratoryRate:p.rr,radialPulse:p.perfusion<=2,followsCommands:p.commands});const correct=patients.filter(p=>p.tag===expectedFor(p)).length;const summary=document.createElement("p");summary.textContent=correct+" of 6 correctly tagged · "+time()+" elapsed";box.append(summary);
+patients.forEach(p=>{const line=document.createElement("p");line.textContent="Patient "+p.id+": "+(p.tag||"NOT TAGGED")+" / expected "+expectedFor(p).toUpperCase()+(p.id===2&&!p.airway?" · Airway repositioning missed":"");box.append(line)});
 const note=document.createElement("p");note.className="feedback";note.textContent="Practice score only. Review sequencing, scene safety, and protocol-specific decisions with an instructor. No official competency sign-off is generated.";box.append(note);box.append(action("Try again",reset))}
 $("reset").onclick=reset;$("finish").onclick=finish;reset();timer=setInterval(()=>{if(!finished)$("clock").textContent=time()},1000);
 </script></body></html>
