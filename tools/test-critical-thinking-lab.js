@@ -31,7 +31,7 @@ assert.ok(coach.includes('Do not provide patient-care instructions'), 'AI coach 
 assert.ok(coach.includes('recorded decisions are the only evidence of what the learner did'), 'AI coach must not credit actions the learner did not record');
 assert.ok(!coach.includes('care:input.scenario.care') && !coach.includes('disposition:input.scenario.disposition'), 'AI coach must not receive unperformed scenario care or disposition');
 assert.ok(coach.includes('requestBuckets') && coach.includes('Too many debrief requests'), 'AI endpoint must be rate limited');
-assert.ok(sessions.includes("await import('@netlify/database')"), 'Session API must use the attached Netlify database');
+assert.ok(sessions.includes("await import('@neondatabase/serverless')"), 'Session API must use the attached Neon database');
 assert.ok(sessions.includes('createHash(\'sha256\')') && sessions.includes('randomBytes(24)'), 'Database must store hashed, high-entropy room credentials');
 assert.ok(sessions.includes('readDecisions(body.decisions)'), 'Session writes must validate recorded learner decisions');
 assert.ok(scenarios.length >= 5, 'Lab must have multiple scenarios to choose from');
