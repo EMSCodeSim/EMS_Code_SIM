@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>EMS Clinical Judgment Lab | EMSCodeSim</title>
+  <meta name="description" content="Practice EMS clinical judgment alone or with a team. Work through a changing patient scenario, explain your decisions, and get an AI-guided debrief.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://emscodesim.com/critical-thinking-lab.html">
+  <meta name="theme-color" content="#071426">
+  <link rel="icon" href="/favicon.png" type="image/png">
+  <link rel="stylesheet" href="/styles/career-hub.css">
+  <link rel="stylesheet" href="/styles/responsive.css">
+  <link rel="stylesheet" href="/styles/site-enhancements.css">
+  <link rel="stylesheet" href="/styles/critical-thinking-lab.css">
+  <script defer src="/privacy-controls.js"></script>
+  <script defer src="/critical-thinking-lab.js"></script>
+</head>
+<body class="ct-lab-page">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header"><nav class="nav-wrap" aria-label="Primary navigation">
+    <a class="brand" href="/"><img src="/ems-logo.png" alt="EMSCodeSim" width="42" height="42"><span>EMSCodeSim<small>EMS Career &amp; Training Hub</small></span></a>
+    <div class="main-nav"><a href="/">Home</a><a href="/ems-training-tools.html" aria-current="page">Practice</a><a href="/vitals/scenario-launcher.html">Simulate</a><a href="/ems-drills.html">Drills</a></div>
+    <label class="mobile-menu-wrap"><span>Menu</span><select class="mobile-menu" id="mobileMenu" aria-label="Navigate EMSCodeSim"><option value="">Menu</option><option value="/">Home</option><option value="/ems-training-tools.html">Practice</option><option value="/vitals/scenario-launcher.html">Simulate</option><option value="/ems-drills.html">Drills</option></select></label>
+  </nav></header>
+
+  <section class="ct-hero"><div class="ct-hero-inner"><p class="ct-eyebrow">EMS CLINICAL JUDGMENT LAB</p><h1>Practice the thinking behind the call.</h1><p>Work through a changing EMS case, explain what you notice and what you would do next, then review how your decisions developed. Practice solo or run the same case as a team discussion.</p><div class="ct-hero-tags"><span>11 curated cases</span><span>Solo or group</span><span>AI-guided debrief</span></div></div></section>
+
+  <main id="main" class="ct-shell">
+    <section class="ct-notice" aria-label="Training notice"><strong>Fictional training only.</strong><span>Use your program’s current materials and local protocols for patient care. AI feedback is educational, may be imperfect, and does not replace instructor review or clinical direction. Do not enter real patient information.</span></section>
+    <section class="ct-start-card" id="startPanel" aria-labelledby="startTitle">
+      <div><p class="ct-eyebrow">SET UP A PRACTICE RUN</p><h2 id="startTitle">Choose how you’ll work through the case</h2><p>Group mode is designed for one shared screen with an instructor or facilitator. Each person can take a role and explain the team’s reasoning out loud.</p></div>
+      <div class="ct-mode-grid" role="group" aria-label="Practice mode">
+        <button type="button" class="ct-mode active" data-mode="solo"><span class="ct-mode-icon" aria-hidden="true">1</span><strong>Solo practice</strong><small>Make and save your own decisions.</small></button>
+        <button type="button" class="ct-mode" data-mode="group"><span class="ct-mode-icon" aria-hidden="true">G</span><strong>Group discussion</strong><small>Assign roles and record the team’s reasoning.</small></button>
+      </div>
+      <div class="ct-setup-row"><label for="levelSelect">Learner level<select id="levelSelect"><option value="Beginner">Beginner</option><option value="EMT" selected>EMT</option><option value="Paramedic">Paramedic</option></select></label><label for="caseSelect">Scenario<select id="caseSelect"><option value="">Loading scenario library…</option></select></label><button id="beginBtn" class="ct-button primary" type="button" disabled>Start practice</button></div>
+      <div class="ct-group-setup" id="groupSetup" hidden><label for="teamNames">Team members or roles <span>Optional</span><input id="teamNames" maxlength="160" placeholder="Example: Lead, partner, observer"></label><p>Enter names or roles separated by commas. The facilitator can assign one person to each decision.</p></div>
+      <p id="libraryStatus" class="ct-status" role="status">Loading the current scenario library…</p>
+    </section>
+
+    <section id="workPanel" class="ct-work hidden" aria-labelledby="scenarioTitle">
+      <div class="ct-work-top"><div><p id="caseMeta" class="ct-eyebrow"></p><h2 id="scenarioTitle"></h2><p id="scenarioDispatch" class="ct-dispatch"></p></div><button type="button" id="changeRun" class="ct-text-button">Change case</button></div>
+      <div class="ct-progress"><div class="ct-progress-top"><span id="phaseLabel">Decision 1</span><span id="phaseCount">1 of 6</span></div><div class="ct-progress-track"><span id="progressFill"></span></div></div>
+      <div class="ct-stage-grid"><article class="ct-reveal-card"><p class="ct-eyebrow">WHAT YOU KNOW NOW</p><div id="currentFacts" class="ct-facts"></div><div id="groupRoles" class="ct-role-list" hidden></div></article>
+        <form id="decisionForm" class="ct-decision-card"><p class="ct-eyebrow">PAUSE · NOTICE · DECIDE</p><h3 id="promptTitle"></h3><p id="promptHelp" class="ct-prompt-help"></p><label for="decisionText">What is your priority and next action?</label><textarea id="decisionText" maxlength="1600" rows="4" placeholder="State what you would do next."></textarea><label for="reasoningText">What information supports that choice? What are you still unsure about?</label><textarea id="reasoningText" maxlength="1600" rows="4" placeholder="Explain the clues you noticed, what you still need to know, and what could change your plan."></textarea><div class="ct-decision-actions"><span id="saveStatus" role="status">Progress saves on this device.</span><button id="nextBtn" class="ct-button primary" type="submit">Record decision</button></div></form>
+      </div>
+      <div class="ct-history"><h3>Decision trail</h3><ol id="decisionTrail"></ol></div>
+    </section>
+
+    <section id="debriefPanel" class="ct-debrief hidden" aria-labelledby="debriefTitle"><div class="ct-debrief-heading"><div><p class="ct-eyebrow">CALL COMPLETE</p><h2 id="debriefTitle">Review your decision trail</h2><p id="debriefModeLabel"></p></div><button id="newRunBtn" class="ct-button secondary" type="button">Start another case</button></div><div id="debriefSummary" class="ct-debrief-summary"></div><div id="aiDebrief" class="ct-ai-debrief"><div class="ct-ai-loading" id="aiLoading"><span class="ct-spinner" aria-hidden="true"></span><span>Preparing your AI-guided debrief…</span></div></div><p class="ct-disclaimer">AI feedback uses the fictional case facts and your recorded responses. It is an educational reflection aid, not a protocol source or clinical evaluation.</p></section>
+
+    <aside class="ct-footer-note"><strong>Designed for reflection:</strong> recognize important cues, set priorities, explain your reasoning, reassess, and adapt when new information appears.</aside>
+  </main>
+</body>
+</html>
