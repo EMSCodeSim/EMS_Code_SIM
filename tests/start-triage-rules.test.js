@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {test}=require('node:test');
+const {classify}=require('../start-triage/rules.js');
+test('walking patient is green',()=>assert.equal(classify({walks:true}),'green'));
+test('apneic patient requires airway repositioning',()=>assert.equal(classify({walks:false,breathing:false} ),null));
+test('breathes after airway opening is red',()=>assert.equal(classify({walks:false,breathing:false,airwayRepositioned:true,breathesAfterAirway:true}),'red'));
+test('still apneic after airway opening is black',()=>assert.equal(classify({walks:false,breathing:false,airwayRepositioned:true,breathesAfterAirway:false}),'black'));
+test('respiratory rate above 30 is red',()=>assert.equal(classify({walks:false,breathing:true,respiratoryRate:31}),'red'));
+test('respiratory rate 30 alone does not require red',()=>assert.equal(classify({walks:false,breathing:true,respiratoryRate:30,radialPulse:true,followsCommands:true}),'yellow'));
+test('absent radial pulse is red',()=>assert.equal(classify({walks:false,breathing:true,respiratoryRate:20,radialPulse:false,followsCommands:true}),'red'));
+test('delayed refill is red',()=>assert.equal(classify({walks:false,breathing:true,respiratoryRate:20,capillaryRefillSeconds:3,followsCommands:true}),'red'));
+test('cannot follow commands is red',()=>assert.equal(classify({walks:false,breathing:true,respiratoryRate:20,radialPulse:true,followsCommands:false}),'red'));
+test('nonambulatory stable patient is yellow',()=>assert.equal(classify({walks:false,breathing:true,respiratoryRate:20,radialPulse:true,followsCommands:true}),'yellow'));
+test('missing observations cannot be assumed normal',()=>assert.equal(classify({walks:false,breathing:true,respiratoryRate:20}),null));
