@@ -53,8 +53,10 @@ function readDecisions(value) {
 }
 
 async function database() {
-  const { getDatabase } = await import('@netlify/database');
-  return getDatabase();
+  const connectionString = globalThis.Netlify?.env?.get?.('EMSCODESIM_DATABASE_URL') || process.env.EMSCODESIM_DATABASE_URL;
+  if (!connectionString) throw new Error('EMSCodeSim database connection is not configured.');
+  const { neon } = await import('@neondatabase/serverless');
+  return neon(connectionString);
 }
 
 function sessionView(row) {
@@ -74,11 +76,11 @@ exports.handler = async event => {
   if (rateLimited(event)) return response(429, { error: 'Too many session requests. Wait one minute and try again.' });
 
   try {
-    const db = await database();
+    const sql = await database();
     if (event.httpMethod === 'GET') {
       const token = String(event.queryStringParameters?.token || '');
       if (!tokenPattern.test(token)) return response(400, { error: 'Enter a valid room link or code.' });
-      const rows = await db.sql`SELECT scenario_id, learner_level, mode, current_stage, decisions, updated_at, expires_at FROM critical_thinking_sessions WHERE token_hash = ${tokenHash(token)} AND expires_at > now() LIMIT 1`;
+      const rows = await sql`SELECT scenario_id, learner_level, mode, current_stage, decisions, updated_at, expires_at FROM critical_thinking_sessions WHERE token_hash = ${tokenHash(token)} AND expires_at > now() LIMIT 1`;
       if (!rows.length) return response(404, { error: 'This room was not found or has expired.' });
       return response(200, { session: sessionView(rows[0]) });
     }
@@ -94,8 +96,8 @@ exports.handler = async event => {
       if (!['Beginner', 'EMT', 'Paramedic'].includes(body.level)) return response(400, { error: 'Choose a valid learner level.' });
       if (!['solo', 'group'].includes(body.mode)) return response(400, { error: 'Choose solo or group practice.' });
       const token = randomBytes(24).toString('hex');
-      await db.sql`DELETE FROM critical_thinking_sessions WHERE expires_at <= now()`;
-      await db.sql`INSERT INTO critical_thinking_sessions (token_hash, scenario_id, learner_level, mode) VALUES (${tokenHash(token)}, ${scenario.id}, ${body.level}, ${body.mode})`;
+      await sql`DELETE FROM critical_thinking_sessions WHERE expires_at <= now()`;
+      await sql`INSERT INTO critical_thinking_sessions (token_hash, scenario_id, learner_level, mode) VALUES (${tokenHash(token)}, ${scenario.id}, ${body.level}, ${body.mode})`;
       return response(201, { token, expiresInDays: 30 });
     }
 
@@ -105,7 +107,7 @@ exports.handler = async event => {
       const currentStage = Number(body.currentStage);
       if (!Number.isInteger(currentStage) || currentStage < 0 || currentStage > 4) return response(400, { error: 'The current stage is invalid.' });
       const decisions = readDecisions(body.decisions);
-      const updated = await db.sql`UPDATE critical_thinking_sessions SET current_stage = ${currentStage}, decisions = ${JSON.stringify(decisions)}::jsonb, updated_at = now() WHERE token_hash = ${tokenHash(token)} AND expires_at > now() RETURNING updated_at, expires_at`;
+      const updated = await sql`UPDATE critical_thinking_sessions SET current_stage = ${currentStage}, decisions = ${JSON.stringify(decisions)}::jsonb, updated_at = now() WHERE token_hash = ${tokenHash(token)} AND expires_at > now() RETURNING updated_at, expires_at`;
       if (!updated.length) return response(404, { error: 'This room was not found or has expired.' });
       return response(200, { saved: true, updatedAt: updated[0].updated_at, expiresAt: updated[0].expires_at });
     }
