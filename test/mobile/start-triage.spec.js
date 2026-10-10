@@ -75,9 +75,10 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await expect(page.getByRole('button', { name: 'Move up' })).toBeHidden();
   await page.getByRole('button', { name: 'Use joystick' }).click();
   await expect(guide).toBeHidden();
-  await expect(page.locator('#encounter')).toBeVisible();
+  await expect(page.locator('#encounter')).toBeHidden();
   await expect(page.getByRole('button', { name: 'Finish & review' })).toBeEnabled();
-  await expect(page.getByRole('button', { name: 'Direct walking patients to collection area' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Direct walking patients to collection area' })).toHaveCount(0);
+  await expect(page.getByText('Give an ambulatory sorting instruction to everyone who can walk.')).toHaveCount(0);
   await expect(page.getByText('First verify the simulated scene is safe.')).toBeHidden();
   await expect(page.getByRole('button', { name: 'Move up' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Move left' })).toBeVisible();
@@ -91,8 +92,7 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
     await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
   }
 
-  await tap(page.getByRole('button', { name: 'Direct walking patients to collection area' }));
-  // First-person encounters require walking within range of the patient.
+  // Starting movement completes setup; the encounter panel appears only after a patient is selected.
   const approach = page.locator('#approach');
   await expect(approach).toBeDisabled();
   for (let step = 0; step < 4; step++) await tap(page.getByRole('button', { name: 'Move up' }));
@@ -134,8 +134,9 @@ test('GPS start hides the guide and opens the game', async ({ page }) => {
   await expect(page.locator('#encounter')).toBeHidden();
   await page.getByRole('button', { name: 'Start GPS walking' }).click();
   await expect(page.locator('#startGuide')).toBeHidden();
-  await expect(page.locator('#encounter')).toBeVisible();
+  await expect(page.locator('#encounter')).toBeHidden();
   await expect(page.getByRole('button', { name: 'Finish & review' })).toBeEnabled();
-  await expect(page.getByRole('button', { name: 'Direct walking patients to collection area' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Direct walking patients to collection area' })).toHaveCount(0);
+  await expect(page.getByText('Give an ambulatory sorting instruction to everyone who can walk.')).toHaveCount(0);
   await expect(page.getByText('First verify the simulated scene is safe.')).toBeHidden();
 });
