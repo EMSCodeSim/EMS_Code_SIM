@@ -57,11 +57,15 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   expect(viewport.scrollWidth).toBeLessThanOrEqual(viewport.width);
   await expect(page.getByRole('heading', { name: 'START Triage' })).toBeVisible();
 
+  const gpsStart = page.getByRole('button', { name: 'Start GPS walking' });
+  await expect(gpsStart).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Move up' })).toBeHidden();
+  await page.getByRole('button', { name: 'Use joystick' }).click();
   await expect(page.getByRole('button', { name: 'Move up' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Move left' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Move right' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Move down' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Move closer to assess' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Move closer to encounter' })).toBeDisabled();
 
   async function tap(locator) {
     await locator.evaluate(element => element.scrollIntoView({ block: 'center' }));
@@ -99,5 +103,7 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await tap(retry);
   await expect(page.getByRole('button', { name: 'Confirm scene safety' })).toBeVisible();
   await expect(page.getByText('0 / 7 tagged')).toBeVisible();
+  await expect(gpsStart).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Move up' })).toBeHidden();
   expect(pageErrors).toEqual([]);
 });
