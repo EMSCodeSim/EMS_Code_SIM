@@ -101,6 +101,7 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await tap(approach);
   await expect(page.getByRole('heading', { name: 'Patient 2' })).toBeVisible();
   await expect(guide).toBeHidden();
+  expect(await page.locator('#encounter').evaluate(element => element.parentElement.id)).toBe('map');
 
   const redTag = page.getByRole('button', { name: 'Red · Immediate' });
   await expect(redTag).toBeDisabled();
@@ -110,6 +111,8 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await expect(page.getByText('After airway repositioning: Breathing 8/min')).toBeVisible();
   await expect(redTag).toBeEnabled();
   await tap(redTag);
+  await expect(page.locator('#encounter')).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Check respirations' })).toBeHidden();
 
   await expect(page.getByText('1 / 7 tagged')).toBeVisible();
   await tap(page.getByRole('button', { name: 'Finish & review' }));
@@ -126,7 +129,7 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   expect(pageErrors).toEqual([]);
 });
 
-test('GPS start hides the guide and opens the game', async ({ page }) => {
+test('GPS start hides the guide and stays inside a 25 m by 25 m area', async ({ page }) => {
   await page.goto(baseUrl, { waitUntil: 'load' });
   await page.context().grantPermissions(['geolocation']);
   await page.context().setGeolocation({ latitude: 39.7392, longitude: -104.9903, accuracy: 5 });
@@ -139,4 +142,12 @@ test('GPS start hides the guide and opens the game', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Direct walking patients to collection area' })).toHaveCount(0);
   await expect(page.getByText('Give an ambulatory sorting instruction to everyone who can walk.')).toHaveCount(0);
   await expect(page.getByText('First verify the simulated scene is safe.')).toBeHidden();
+  await expect(page.locator('#gpsStatus')).toContainText('GPS ready · 25 m × 25 m scene area');
+  for (const northing of [8, 16, 24]) {
+    await page.evaluate(({ latitude, longitude }) => {
+      updateGps({ coords: { latitude, longitude, accuracy: 5 } });
+    }, { latitude: 39.7392 + northing / 111320, longitude: -104.9903 });
+  }
+  const northEdge = await page.evaluate(() => player.y);
+  expect(northEdge).toBe(5);
 });
