@@ -110,6 +110,16 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   });
   expect(refreshIntervals.some(interval => interval < 80)).toBe(true);
 
+  // Reset the test responder and lock Patient 2 so this flow can exercise the apnea/airway branch.
+  await page.evaluate(() => {
+    player = { x: 50, y: 50, heading: 0 };
+    activeTargetId = 2;
+    arrivedPatientId = null;
+    targetClosestDistance = Infinity;
+    targetPassed = false;
+    render();
+  });
+
   async function tap(locator) {
     await locator.evaluate(element => element.scrollIntoView({ block: 'center' }));
     const box = await locator.boundingBox();
