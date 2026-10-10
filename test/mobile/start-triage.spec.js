@@ -49,6 +49,7 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
 
   const viewport = await page.evaluate(() => ({
     width: document.documentElement.clientWidth,
+    height: document.documentElement.clientHeight,
     scrollWidth: document.documentElement.scrollWidth
   }));
   expect(viewport.width).toBeGreaterThan(320);
@@ -64,7 +65,7 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   }));
   expect(markerBoxes.every(box =>
     box.width >= 44 && box.height >= 44 &&
-    box.right <= viewport.width && box.bottom <= document.documentElement.clientHeight
+    box.right <= viewport.width && box.bottom <= viewport.height
   )).toBe(true);
 
   async function tap(locator) {
