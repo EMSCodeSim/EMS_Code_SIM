@@ -68,6 +68,7 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   )).toBe(true);
 
   async function tap(locator) {
+    await locator.evaluate(element => element.scrollIntoView({ block: 'center' }));
     const box = await locator.boundingBox();
     expect(box).not.toBeNull();
     await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
