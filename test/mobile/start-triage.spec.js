@@ -58,7 +58,7 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await expect(page.getByRole('heading', { name: 'START Triage' })).toBeVisible();
 
   const markers = page.locator('.patient');
-  await expect(markers).toHaveCount(6);
+  await expect(markers).toHaveCount(7);
   const markerBoxes = await markers.evaluateAll(elements => elements.map(element => {
     const box = element.getBoundingClientRect();
     return { width: box.width, height: box.height, right: box.right, bottom: box.bottom };
