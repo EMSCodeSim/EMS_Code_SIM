@@ -149,7 +149,7 @@ function detailedPatientArtwork(p){
   art=art.replace(/(<g class="patient-chest">)/g,'$1<path d="M25 40 Q55 34 85 44" fill="none" stroke="#fff" stroke-opacity=".09" stroke-width="3"/>');
   return art.replace('</svg>','</svg>');
 }
-\nconst triageColors={red:"#e53f49",yellow:"#f0c443",green:"#43b878",black:"#323940"};
+const triageColors={red:"#e53f49",yellow:"#f0c443",green:"#43b878",black:"#323940"};
 function patientArtwork(p){
 const closed=p.id===5||(!p.breathing&&p.id===2),injury=p.injury;
 const eyes=closed?'<path d="M43 31h8M61 31h8" class="outline" style="stroke-width:2.2"/>':'<circle cx="47" cy="31" r="2.2" fill="#172b35"/><circle cx="65" cy="31" r="2.2" fill="#172b35"/>';
