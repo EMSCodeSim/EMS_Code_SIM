@@ -13,3 +13,4 @@ test('delayed refill is red',()=>assert.equal(classify({walks:false,breathing:tr
 test('cannot follow commands is red',()=>assert.equal(classify({walks:false,breathing:true,respiratoryRate:20,radialPulse:true,followsCommands:false}),'red'));
 test('nonambulatory stable patient is yellow',()=>assert.equal(classify({walks:false,breathing:true,respiratoryRate:20,radialPulse:true,followsCommands:true}),'yellow'));
 test('missing observations cannot be assumed normal',()=>assert.equal(classify({walks:false,breathing:true,respiratoryRate:20}),null));
+test('abnormal perfusion is red when respirations and commands are otherwise reassuring',()=>assert.equal(classify({walks:false,breathing:true,respiratoryRate:24,radialPulse:true,capillaryRefillSeconds:3,followsCommands:true}),'red'));
