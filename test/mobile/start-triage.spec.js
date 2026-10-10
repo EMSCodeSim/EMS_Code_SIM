@@ -58,14 +58,17 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await expect(page.getByRole('heading', { name: 'START Triage' })).toBeVisible();
   await expect(page.locator('#encounter')).toBeHidden();
   await expect(page.getByRole('button', { name: 'Confirm scene safety' })).toBeHidden();
-  await expect(page.getByRole('button', { name: 'Finish & review' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Finish & review' })).toBeHidden();
 
   const gpsStart = page.getByRole('button', { name: 'Start GPS walking' });
   await expect(gpsStart).toBeVisible();
   const guide = page.locator('#startGuide');
   await expect(guide).toBeVisible();
   await expect(guide).toContainText('Confirm the scene is safe');
-  await expect(guide).toContainText('walk toward a patient');
+  await expect(guide).toContainText('move toward a patient to assess');
+  await expect(guide.getByRole('button', { name: 'Start GPS walking' })).toBeVisible();
+  await expect(guide.getByRole('button', { name: 'Use joystick' })).toBeVisible();
+  await expect(guide.locator('.gps-note')).toContainText('25 m × 25 m');
   const guideOffset = await page.evaluate(() => {
     const guideBox = document.querySelector('#startGuide').getBoundingClientRect();
     const sceneBox = document.querySelector('#map').getBoundingClientRect();
@@ -75,6 +78,9 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await expect(page.getByRole('button', { name: 'Move up' })).toBeHidden();
   await page.getByRole('button', { name: 'Use joystick' }).click();
   await expect(guide).toBeHidden();
+  await expect(page.locator('body')).toHaveClass(/game-active/);
+  await expect(page.locator('.navigation-hud .nav-key')).toBeHidden();
+  await expect(page.locator('.game-hint')).toBeHidden();
   await expect(page.locator('#encounter')).toBeHidden();
   await expect(page.getByRole('button', { name: 'Finish & review' })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Direct walking patients to collection area' })).toHaveCount(0);
@@ -142,7 +148,7 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await tap(retry);
   await expect(guide).toBeVisible();
   await expect(page.locator('#encounter')).toBeHidden();
-  await expect(page.getByText('0 / 7 tagged')).toBeVisible();
+  await expect(page.getByText('0 / 7 tagged')).toBeHidden();
   await expect(gpsStart).toBeVisible();
   await expect(page.getByRole('button', { name: 'Move up' })).toBeHidden();
   expect(pageErrors).toEqual([]);
