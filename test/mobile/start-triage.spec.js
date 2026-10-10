@@ -148,7 +148,7 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await tap(retry);
   await expect(guide).toBeVisible();
   await expect(page.locator('#encounter')).toBeHidden();
-  await expect(page.getByText('0 / 7 tagged')).toBeVisible();
+  await expect(page.getByText('0 / 7 tagged')).toBeHidden();
   await expect(gpsStart).toBeVisible();
   await expect(page.getByRole('button', { name: 'Move up' })).toBeHidden();
   expect(pageErrors).toEqual([]);
