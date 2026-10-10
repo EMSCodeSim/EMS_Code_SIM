@@ -1,11 +1,15 @@
 name: START Triage MVP tests
 on:
   push:
-    branches: [feature/start-triage-mvp]
+    branches: [main, feature/start-triage-mvp]
   pull_request:
     paths:
       - 'start-triage/**'
       - 'tests/start-triage-rules.test.js'
+      - 'test/mobile/start-triage.spec.js'
+      - 'playwright.start-triage.config.js'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/start-triage-tests.yml'
 jobs:
   rules:
@@ -15,7 +19,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
       - name: Run START clinical rules tests
         run: node --test tests/start-triage-rules.test.js
       - name: Verify script syntax
         run: node --check start-triage/rules.js
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run Pixel 5 mobile interaction test
+        run: npx playwright test --config=playwright.start-triage.config.js
