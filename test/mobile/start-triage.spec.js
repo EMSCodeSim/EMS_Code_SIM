@@ -58,7 +58,7 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await expect(page.getByRole('heading', { name: 'START Triage' })).toBeVisible();
   await expect(page.locator('#encounter')).toBeHidden();
   await expect(page.getByRole('button', { name: 'Confirm scene safety' })).toBeHidden();
-  await expect(page.getByRole('button', { name: 'Finish & review' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Finish & review' })).toBeHidden();
 
   const gpsStart = page.getByRole('button', { name: 'Start GPS walking' });
   await expect(gpsStart).toBeVisible();
