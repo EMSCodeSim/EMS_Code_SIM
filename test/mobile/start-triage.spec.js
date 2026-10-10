@@ -85,8 +85,10 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
 
   await tap(page.getByRole('button', { name: 'Confirm scene safety' }));
   await expect(page.locator('#guideSafety')).toHaveClass(/done/);
-  await expect(page.locator('#guideGps')).toHaveClass(/done/);
+  await expect(page.locator('#guideWalk')).toHaveClass(/active/);
   await tap(page.getByRole('button', { name: 'Direct walking patients to collection area' }));
+  await expect(page.locator('#guideWalk')).toHaveClass(/done/);
+  await expect(page.locator('#guideGps')).toHaveClass(/active/);
   // First-person encounters require walking within range of the patient.
   const approach = page.locator('#approach');
   await expect(approach).toBeDisabled();
