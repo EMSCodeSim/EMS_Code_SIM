@@ -56,6 +56,9 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   expect(viewport.width).toBeLessThanOrEqual(430);
   expect(viewport.scrollWidth).toBeLessThanOrEqual(viewport.width);
   await expect(page.getByRole('heading', { name: 'START Triage' })).toBeVisible();
+  await expect(page.locator('#encounter')).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Confirm scene safety' })).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Finish & review' })).toBeDisabled();
 
   const gpsStart = page.getByRole('button', { name: 'Start GPS walking' });
   await expect(gpsStart).toBeVisible();
@@ -71,6 +74,11 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   expect(guideOffset).toBeLessThanOrEqual(2);
   await expect(page.getByRole('button', { name: 'Move up' })).toBeHidden();
   await page.getByRole('button', { name: 'Use joystick' }).click();
+  await expect(guide).toBeHidden();
+  await expect(page.locator('#encounter')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Finish & review' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Direct walking patients to collection area' })).toBeVisible();
+  await expect(page.getByText('First verify the simulated scene is safe.')).toBeHidden();
   await expect(page.getByRole('button', { name: 'Move up' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Move left' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Move right' })).toBeVisible();
@@ -83,12 +91,7 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
     await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
   }
 
-  await tap(page.getByRole('button', { name: 'Confirm scene safety' }));
-  await expect(page.locator('#guideSafety')).toHaveClass(/done/);
-  await expect(page.locator('#guideWalk')).toHaveClass(/active/);
   await tap(page.getByRole('button', { name: 'Direct walking patients to collection area' }));
-  await expect(page.locator('#guideWalk')).toHaveClass(/done/);
-  await expect(page.locator('#guideGps')).toHaveClass(/active/);
   // First-person encounters require walking within range of the patient.
   const approach = page.locator('#approach');
   await expect(approach).toBeDisabled();
@@ -115,9 +118,24 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   const retry = page.getByRole('button', { name: 'Try again' });
   await expect(retry).toBeVisible();
   await tap(retry);
-  await expect(page.getByRole('button', { name: 'Confirm scene safety' })).toBeVisible();
+  await expect(guide).toBeVisible();
+  await expect(page.locator('#encounter')).toBeHidden();
   await expect(page.getByText('0 / 7 tagged')).toBeVisible();
   await expect(gpsStart).toBeVisible();
   await expect(page.getByRole('button', { name: 'Move up' })).toBeHidden();
   expect(pageErrors).toEqual([]);
+});
+
+test('GPS start hides the guide and opens the game', async ({ page }) => {
+  await page.goto(baseUrl, { waitUntil: 'load' });
+  await page.context().grantPermissions(['geolocation']);
+  await page.context().setGeolocation({ latitude: 39.7392, longitude: -104.9903, accuracy: 5 });
+  await expect(page.locator('#startGuide')).toBeVisible();
+  await expect(page.locator('#encounter')).toBeHidden();
+  await page.getByRole('button', { name: 'Start GPS walking' }).click();
+  await expect(page.locator('#startGuide')).toBeHidden();
+  await expect(page.locator('#encounter')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Finish & review' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Direct walking patients to collection area' })).toBeVisible();
+  await expect(page.getByText('First verify the simulated scene is safe.')).toBeHidden();
 });
