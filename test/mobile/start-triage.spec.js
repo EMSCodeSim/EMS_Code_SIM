@@ -233,6 +233,8 @@ test('patients grow with depth and dominate the scene at assessment range', asyn
 
   const perspective = await page.evaluate(() => {
     activeTargetId = 2;
+    gpsMode = true;
+    gpsAccuracy = 5;
     player = { x: 48, y: 95, heading: 0 };
     render();
     const patientAtDistance = () => Array.from(document.querySelectorAll('.patient'))
