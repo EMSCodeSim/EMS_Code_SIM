@@ -258,3 +258,32 @@ test('patients grow with depth and dominate the scene at assessment range', asyn
   expect(perspective.nearClass).toBe(true);
   expect(perspective.nearTop).toBeGreaterThan(70);
 });
+
+test('patients use distinct illustrated artwork, poses, injuries, and breathing states', async ({ page }) => {
+  await page.goto(baseUrl, { waitUntil: 'load' });
+  await page.getByRole('button', { name: 'Use joystick' }).click();
+
+  const artwork = await page.evaluate(() => patients.map(patient => {
+    player = { x: patient.x, y: patient.y + 10, heading: 0 };
+    render();
+    const marker = Array.from(document.querySelectorAll('.patient'))
+      .find(element => element.getAttribute('aria-label')?.startsWith(`Patient ${patient.id},`));
+    return {
+      id: patient.id,
+      pose: marker?.dataset.pose,
+      shirt: marker?.style.getPropertyValue('--shirt'),
+      breathing: marker?.classList.contains('breathing'),
+      rapid: marker?.dataset.rapid,
+      svg: Boolean(marker?.querySelector('svg.patient-art')),
+      injury: Boolean(marker?.querySelector('.injury-mark'))
+    };
+  }));
+
+  expect(artwork).toHaveLength(7);
+  expect(artwork.every(patient => patient.svg)).toBe(true);
+  expect(new Set(artwork.map(patient => patient.shirt)).size).toBe(7);
+  expect(artwork.find(patient => patient.id === 1)).toMatchObject({ pose: 'sitting', injury: true });
+  expect(artwork.find(patient => patient.id === 3)).toMatchObject({ pose: 'lying', rapid: 'true', breathing: true });
+  expect(artwork.find(patient => patient.id === 5)).toMatchObject({ pose: 'lying', breathing: false });
+  expect(artwork.find(patient => patient.id === 6)).toMatchObject({ pose: 'kneeling', injury: true });
+});
