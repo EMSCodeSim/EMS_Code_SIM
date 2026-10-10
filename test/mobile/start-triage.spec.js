@@ -59,6 +59,16 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
 
   const gpsStart = page.getByRole('button', { name: 'Start GPS walking' });
   await expect(gpsStart).toBeVisible();
+  const guide = page.locator('#startGuide');
+  await expect(guide).toBeVisible();
+  await expect(guide).toContainText('Confirm the scene is safe');
+  await expect(guide).toContainText('walk toward a patient');
+  const guideOffset = await page.evaluate(() => {
+    const guideBox = document.querySelector('#startGuide').getBoundingClientRect();
+    const sceneBox = document.querySelector('#map').getBoundingClientRect();
+    return Math.abs((guideBox.left + guideBox.width / 2) - (sceneBox.left + sceneBox.width / 2));
+  });
+  expect(guideOffset).toBeLessThanOrEqual(2);
   await expect(page.getByRole('button', { name: 'Move up' })).toBeHidden();
   await page.getByRole('button', { name: 'Use joystick' }).click();
   await expect(page.getByRole('button', { name: 'Move up' })).toBeVisible();
@@ -74,7 +84,11 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   }
 
   await tap(page.getByRole('button', { name: 'Confirm scene safety' }));
+  await expect(page.locator('#guideSafety')).toHaveClass(/done/);
+  await expect(page.locator('#guideWalk')).toHaveClass(/active/);
   await tap(page.getByRole('button', { name: 'Direct walking patients to collection area' }));
+  await expect(page.locator('#guideWalk')).toHaveClass(/done/);
+  await expect(page.locator('#guideGps')).toHaveClass(/active/);
   // First-person encounters require walking within range of the patient.
   const approach = page.locator('#approach');
   await expect(approach).toBeDisabled();
@@ -83,6 +97,7 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await expect(approach).toHaveText('Assess Patient 2');
   await tap(approach);
   await expect(page.getByRole('heading', { name: 'Patient 2' })).toBeVisible();
+  await expect(guide).toBeHidden();
 
   const redTag = page.getByRole('button', { name: 'Red · Immediate' });
   await expect(redTag).toBeDisabled();
