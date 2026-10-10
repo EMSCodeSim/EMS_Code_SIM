@@ -226,3 +226,35 @@ test('GPS targeting keeps patients fixed and uses an arrival buffer', async ({ p
   });
   expect(states).toEqual({ entered: true, retained: true, exited: true });
 });
+
+test('patients grow with depth and dominate the scene at assessment range', async ({ page }) => {
+  await page.goto(baseUrl, { waitUntil: 'load' });
+  await page.getByRole('button', { name: 'Use joystick' }).click();
+
+  const perspective = await page.evaluate(() => {
+    activeTargetId = 2;
+    gpsMode = true;
+    gpsAccuracy = 5;
+    player = { x: 48, y: 95, heading: 0 };
+    render();
+    const patientAtDistance = () => Array.from(document.querySelectorAll('.patient'))
+      .find(element => element.getAttribute('aria-label')?.startsWith('Patient 2,'));
+    const far = patientAtDistance();
+    const farScale = Number.parseFloat(far.style.getPropertyValue('--scale'));
+
+    player.y = 23 + GPS_INTERACT_METERS * GPS_SCALE - .5;
+    render();
+    const near = patientAtDistance();
+    return {
+      farScale,
+      nearScale: Number.parseFloat(near.style.getPropertyValue('--scale')),
+      nearClass: near.classList.contains('patient-near'),
+      nearTop: Number.parseFloat(near.style.top)
+    };
+  });
+
+  expect(perspective.nearScale).toBeGreaterThanOrEqual(2.5);
+  expect(perspective.nearScale).toBeGreaterThan(perspective.farScale * 2);
+  expect(perspective.nearClass).toBe(true);
+  expect(perspective.nearTop).toBeGreaterThan(70);
+});
