@@ -85,6 +85,25 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await expect(page.getByRole('button', { name: 'Move right' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Move down' })).toBeVisible();
 
+  await page.evaluate(() => {
+    window.__sceneRefreshTimes = [];
+    window.__sceneRefreshObserver = new MutationObserver(records => {
+      if (records.some(record => Array.from(record.removedNodes).some(node => node.classList?.contains('patient')))) {
+        window.__sceneRefreshTimes.push(performance.now());
+      }
+    });
+    window.__sceneRefreshObserver.observe(document.querySelector('#map'), { childList: true });
+  });
+  const heldDown = page.getByRole('button', { name: 'Move down' });
+  await heldDown.dispatchEvent('pointerdown', { button: 0, pointerId: 19, pointerType: 'touch' });
+  await page.waitForTimeout(260);
+  await heldDown.dispatchEvent('pointerup', { button: 0, pointerId: 19, pointerType: 'touch' });
+  const refreshIntervals = await page.evaluate(() => {
+    window.__sceneRefreshObserver.disconnect();
+    return window.__sceneRefreshTimes.slice(1).map((time, index) => time - window.__sceneRefreshTimes[index]);
+  });
+  expect(refreshIntervals.some(interval => interval < 80)).toBe(true);
+
   async function tap(locator) {
     await locator.evaluate(element => element.scrollIntoView({ block: 'center' }));
     const box = await locator.boundingBox();
@@ -95,7 +114,7 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   // Starting movement completes setup; the encounter panel appears only after a patient is selected.
   const approach = page.locator('#approach');
   await expect(approach).toBeDisabled();
-  for (let step = 0; step < 4; step++) await tap(page.getByRole('button', { name: 'Move up' }));
+  for (let step = 0; step < 8; step++) await tap(page.getByRole('button', { name: 'Move up' }));
   await expect(approach).toBeEnabled();
   await expect(approach).toHaveText('Assess Patient 2');
   await tap(approach);
