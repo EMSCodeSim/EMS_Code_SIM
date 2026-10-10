@@ -57,16 +57,11 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   expect(viewport.scrollWidth).toBeLessThanOrEqual(viewport.width);
   await expect(page.getByRole('heading', { name: 'START Triage' })).toBeVisible();
 
-  const markers = page.locator('.patient');
-  await expect(markers).toHaveCount(7);
-  const markerBoxes = await markers.evaluateAll(elements => elements.map(element => {
-    const box = element.getBoundingClientRect();
-    return { width: box.width, height: box.height, right: box.right, bottom: box.bottom };
-  }));
-  expect(markerBoxes.every(box =>
-    box.width >= 44 && box.height >= 44 &&
-    box.right <= viewport.width && box.bottom <= viewport.height
-  )).toBe(true);
+  await expect(page.getByRole('button', { name: 'Move up' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Move left' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Move right' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Move down' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Move closer to encounter' })).toBeDisabled();
 
   async function tap(locator) {
     await locator.evaluate(element => element.scrollIntoView({ block: 'center' }));
@@ -77,7 +72,14 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
 
   await tap(page.getByRole('button', { name: 'Confirm scene safety' }));
   await tap(page.getByRole('button', { name: 'Direct walking patients to collection area' }));
-  await tap(page.getByRole('button', { name: 'Patient 2 untriaged' }));
+  // First-person encounters require walking within range of the patient.
+  const approach = page.locator('#approach');
+  await expect(approach).toBeDisabled();
+  for (let step = 0; step < 4; step++) await tap(page.getByRole('button', { name: 'Move up' }));
+  await expect(approach).toBeEnabled();
+  await expect(approach).toHaveText('Encounter Patient 2');
+  await tap(approach);
+  await expect(page.getByRole('heading', { name: 'Patient 2' })).toBeVisible();
 
   const redTag = page.getByRole('button', { name: 'Red · Immediate' });
   await expect(redTag).toBeDisabled();
