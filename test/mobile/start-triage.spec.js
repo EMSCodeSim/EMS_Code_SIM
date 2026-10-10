@@ -110,6 +110,16 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   });
   expect(refreshIntervals.some(interval => interval < 80)).toBe(true);
 
+  // Reset the test responder and lock Patient 2 so this flow can exercise the apnea/airway branch.
+  await page.evaluate(() => {
+    player = { x: 50, y: 50, heading: 0 };
+    activeTargetId = 2;
+    arrivedPatientId = null;
+    targetClosestDistance = Infinity;
+    targetPassed = false;
+    render();
+  });
+
   async function tap(locator) {
     await locator.evaluate(element => element.scrollIntoView({ block: 'center' }));
     const box = await locator.boundingBox();
@@ -138,6 +148,9 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await tap(redTag);
   await expect(page.locator('#encounter')).toBeHidden();
   await expect(page.getByRole('button', { name: 'Check respirations' })).toBeHidden();
+  await expect(page.locator('#targetGuidance')).toContainText('Patient 1');
+  await expect(page.locator('#approach')).toHaveText('Move closer to Patient 1');
+  await expect(page.locator('#approach')).toBeDisabled();
 
   await expect(page.getByText('1 / 7 tagged')).toBeVisible();
   await tap(page.getByRole('button', { name: 'Finish & review' }));
@@ -175,4 +188,41 @@ test('GPS start hides the guide and stays inside a 25 m by 25 m area', async ({ 
   }
   const northEdge = await page.evaluate(() => player.y);
   expect(northEdge).toBe(5);
+});
+
+test('GPS targeting keeps patients fixed and uses an arrival buffer', async ({ page }) => {
+  await page.goto(baseUrl, { waitUntil: 'load' });
+  await page.context().grantPermissions(['geolocation']);
+  await page.context().setGeolocation({ latitude: 39.7392, longitude: -104.9903, accuracy: 5 });
+  await page.getByRole('button', { name: 'Start GPS walking' }).click();
+  await expect(page.locator('#gpsStatus')).toContainText('GPS ready');
+
+  const patientLocations = await page.evaluate(() => patients.map(({ id, x, y }) => ({ id, x, y })));
+  for (const offset of [1.5, -1, 2]) {
+    await page.evaluate(({ latitude, longitude }) => {
+      updateGps({ coords: { latitude, longitude, accuracy: 5 } });
+    }, { latitude: 39.7392 + offset / 111320, longitude: -104.9903 });
+  }
+  expect(await page.evaluate(() => patients.map(({ id, x, y }) => ({ id, x, y })))).toEqual(patientLocations);
+
+  const states = await page.evaluate(() => {
+    activeTargetId = 2;
+    arrivedPatientId = null;
+    targetClosestDistance = Infinity;
+    player.x = 48;
+    player.y = 23 + GPS_INTERACT_METERS * GPS_SCALE - .5;
+    updateTargetProgress();
+    render();
+    const entered = !document.querySelector('#approach').disabled;
+    player.y = 23 + 7.5 * GPS_SCALE;
+    updateTargetProgress();
+    render();
+    const retained = !document.querySelector('#approach').disabled;
+    player.y = 23 + 10 * GPS_SCALE;
+    updateTargetProgress();
+    render();
+    const exited = document.querySelector('#approach').disabled;
+    return { entered, retained, exited };
+  });
+  expect(states).toEqual({ entered: true, retained: true, exited: true });
 });
