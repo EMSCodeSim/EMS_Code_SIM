@@ -88,7 +88,7 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await expect(redTag).toBeEnabled();
   await tap(redTag);
 
-  await expect(page.getByText('1 / 6 tagged')).toBeVisible();
+  await expect(page.getByText('1 / 7 tagged')).toBeVisible();
   await tap(page.getByRole('button', { name: 'Finish & review' }));
   await expect(page.getByRole('heading', { name: 'Scenario debrief' })).toBeVisible();
   await expect(page.getByText('Patient 2: red / expected RED')).toBeVisible();
@@ -96,6 +96,6 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await expect(retry).toBeVisible();
   await tap(retry);
   await expect(page.getByRole('button', { name: 'Confirm scene safety' })).toBeVisible();
-  await expect(page.getByText('0 / 6 tagged')).toBeVisible();
+  await expect(page.getByText('0 / 7 tagged')).toBeVisible();
   expect(pageErrors).toEqual([]);
 });
