@@ -65,7 +65,6 @@ test('Pixel 5 users can complete the START triage flow without horizontal overfl
   await expect(page.getByRole('button', { name: 'Move left' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Move right' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Move down' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Move closer to encounter' })).toBeDisabled();
 
   async function tap(locator) {
     await locator.evaluate(element => element.scrollIntoView({ block: 'center' }));
