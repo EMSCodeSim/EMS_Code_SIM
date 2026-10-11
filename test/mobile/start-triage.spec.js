@@ -198,6 +198,28 @@ test('GPS start hides the guide and stays inside a 25 m by 25 m area', async ({ 
   expect(northEdge).toBeLessThan(50);
 });
 
+test('GPS ignores low-confidence fixes and smooths small position changes', async ({ page }) => {
+  await page.goto(baseUrl, { waitUntil: 'load' });
+  await page.context().grantPermissions(['geolocation']);
+  await page.context().setGeolocation({ latitude: 39.7392, longitude: -104.9903, accuracy: 5 });
+  await page.getByRole('button', { name: 'Start GPS walking' }).click();
+  await expect(page.locator('#gpsStatus')).toContainText('GPS ready');
+
+  const start = await page.evaluate(() => ({ x: player.x, y: player.y, origin: { ...gpsOrigin } }));
+  await page.evaluate(() => updateGps({ coords: { latitude: 39.7392 + 20 / 111320, longitude: -104.9903, accuracy: 35 } }));
+  expect(await page.evaluate(() => ({ x: player.x, y: player.y, origin: gpsOrigin }))).toEqual({ x: start.x, y: start.y, origin: start.origin });
+  await expect(page.locator('#gpsStatus')).toContainText('waiting for better signal');
+
+  await page.evaluate(() => updateGps({ coords: { latitude: 39.7392 + 1 / 111320, longitude: -104.9903, accuracy: 5 } }));
+  const tinyMove = await page.evaluate(() => Math.hypot(player.x - 50, player.y - 50) / GPS_SCALE);
+  expect(tinyMove).toBeLessThan(1);
+
+  const beforeJump = await page.evaluate(() => ({ x: player.x, y: player.y }));
+  await page.evaluate(() => updateGps({ coords: { latitude: 39.7392 + 30 / 111320, longitude: -104.9903, accuracy: 5 } }));
+  expect(await page.evaluate(() => ({ x: player.x, y: player.y }))).toEqual(beforeJump);
+  await expect(page.locator('#gpsStatus')).toContainText('GPS jump ignored');
+});
+
 test('GPS targeting keeps patients fixed and uses an arrival buffer', async ({ page }) => {
   await page.goto(baseUrl, { waitUntil: 'load' });
   await page.context().grantPermissions(['geolocation']);
@@ -233,6 +255,20 @@ test('GPS targeting keeps patients fixed and uses an arrival buffer', async ({ p
     return { entered, retained, exited };
   });
   expect(states).toEqual({ entered: true, retained: true, exited: true });
+});
+
+test('all five patients start ahead of the responder with Patient 1 as the first approach', async ({ page }) => {
+  await page.goto(baseUrl, { waitUntil: 'load' });
+  const layout = await page.evaluate(() => ({
+    patients: patients.map(patient => ({ id: patient.id, y: patient.y, bearing: bearing(patient) })),
+    target: chooseTarget()?.id,
+    inRange: Boolean(nearestInRange())
+  }));
+
+  expect(layout.patients).toHaveLength(5);
+  expect(layout.patients.every(patient => patient.y < 50 && Math.abs(patient.bearing) < 65)).toBe(true);
+  expect(layout.target).toBe(1);
+  expect(layout.inRange).toBe(false);
 });
 
 test('patients grow with depth and dominate the scene at assessment range', async ({ page }) => {
