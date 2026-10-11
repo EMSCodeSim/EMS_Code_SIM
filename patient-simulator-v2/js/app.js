@@ -303,7 +303,7 @@
     selectedRole = roleId;
     document.querySelectorAll('[data-role]').forEach(btn => btn.setAttribute('aria-pressed', String(btn.dataset.role === roleId)));
     $('psv2RoleBrief').hidden = false;
-    $('psv2RoleBrief').innerHTML = '<strong>' + escapeHtml(role.label) + '</strong><br>' + escapeHtml(role.summary) + '<br><small>Starting information: ' + escapeHtml(role.startingInformation.join(' ')) + '</small>';
+    $('psv2RoleBrief').innerHTML = '<strong>' + escapeHtml(role.label) + '</strong><br>' + escapeHtml(role.summary) + '<br><small>Starting information: ' + escapeHtml(roleId !== 'dispatcher' && roleDispatchBrief() ? roleDispatchBrief() : role.startingInformation.join(' ')) + '</small>';
     $('psv2StartBtn').disabled = false;
     $('psv2StartBtn').textContent = 'Start as ' + role.label;
   }
@@ -720,6 +720,29 @@
   }
 
 
+  const DISPATCH_HANDOFF_KEY = 'psv2.adult-asthma.dispatch-handoff.v1';
+  function loadDispatchHandoff() {
+    try {
+      const data=JSON.parse(localStorage.getItem(DISPATCH_HANDOFF_KEY)||'null');
+      return data?.scenario==='adult-asthma' && Array.isArray(data.updates) ? data : null;
+    } catch { return null; }
+  }
+  function saveDispatchHandoff(state) {
+    try {
+      const details=[];
+      if(state.address)details.push('Riverside Park, south pavilion');
+      if(state.conscious)details.push('Patient awake, speaking in short sentences');
+      if(state.breathing)details.push('Abnormal breathing with wheezing');
+      if(state.history)details.push('Asthma history; rescue inhaler reported empty');
+      const data={scenario:'adult-asthma',createdAt:new Date().toISOString(),dispatched:state.dispatched,priority:$('psv2CadPriority').value,units:Object.keys(state.unitStatus),details,updates:state.callerUpdated?['Caller reports worsening fatigue and difficulty speaking']:[]};
+      localStorage.setItem(DISPATCH_HANDOFF_KEY,JSON.stringify(data));
+    } catch { /* Local storage unavailable; scenario remains playable. */ }
+  }
+  function roleDispatchBrief() {
+    const handoff=loadDispatchHandoff();
+    if(!handoff?.dispatched)return null;
+    return 'DISPATCH HANDOFF (previous dispatcher run): '+handoff.details.join('; ')+'. Assigned: '+handoff.units.join(', ')+'. Priority: '+handoff.priority+'. '+handoff.updates.join('; ');
+  }
   function startDispatcherConsole() {
     const cad = $('psv2DispatcherConsole');
     if (!cad) return;
@@ -728,11 +751,11 @@
     $('psv2ActionBar').hidden = true;
     const s = {address:false,callback:false,conscious:false,breathing:false,history:false,dispatched:false,updated:false,closed:false,penalties:[],unitStatus:{},callerUpdated:false,unitTimes:{},radioCount:0,incidentStart:Date.now()};
     const qs = [
-      ['address','Verify exact incident address','1840 Westfield Drive'],
+      ['address','Verify exact incident address','Riverside Park, south pavilion'],
       ['callback','Verify callback number','555-0104'],
-      ['conscious','Ask if patient is conscious','Yes, but struggling to speak'],
+      ['conscious','Ask if patient is conscious','Yes, speaking in short sentences'],
       ['breathing','Ask if breathing normally','No, rapid breathing and wheezing'],
-      ['history','Ask about medical history','History of asthma; inhaler empty']
+      ['history','Ask about medical history','History of asthma; rescue inhaler empty']
     ];
     const record = msg => {
       $('psv2CadLog').textContent += new Date().toLocaleTimeString() + ' — ' + msg + '\n';
@@ -745,13 +768,13 @@
       $('psv2CadActions').innerHTML='';
       qs.filter(q=>!s[q[0]]).forEach(q=>{
         const b=document.createElement('button');b.className='psv2-btn';b.textContent=q[1];
-        b.onclick=()=>{s[q[0]]=true;$('psv2CadCaller').textContent='Caller: '+q[2];record(q[1]+': '+q[2]);render()};
+        b.onclick=()=>{s[q[0]]=true;$('psv2CadCaller').textContent='Caller: '+q[2];record(q[1]+': '+q[2]);saveDispatchHandoff(s);render()};
         $('psv2CadActions').appendChild(b);
       });
-      if(s.dispatched&&!s.callerUpdated){const b=document.createElement('button');b.className='psv2-btn';b.textContent='Request caller update';b.onclick=()=>{s.callerUpdated=true;record('Caller reports worsening fatigue and difficulty speaking');render()};$('psv2CadActions').append(b)}
+      if(s.dispatched&&!s.callerUpdated){const b=document.createElement('button');b.className='psv2-btn';b.textContent='Request caller update';b.onclick=()=>{s.callerUpdated=true;record('Caller reports worsening fatigue and difficulty speaking');saveDispatchHandoff(s);render()};$('psv2CadActions').append(b)}
       Object.entries(s.unitStatus).forEach(([unit,status])=>{if(status==='Available')return;const steps=['Dispatched','En route','On scene','Transporting','At hospital','Available'];const b=document.createElement('button');b.className='psv2-btn';b.textContent=unit+': '+status+' → '+steps[steps.indexOf(status)+1];b.onclick=()=>{const next=steps[steps.indexOf(status)+1];if(unit==='Engine 2'&&next==='Transporting'){s.unitStatus[unit]='Available';record(unit+' cleared scene and returned available');}else{s.unitStatus[unit]=next;record(unit+' reports '+next);}s.unitTimes[unit+'|'+s.unitStatus[unit]]=new Date().toLocaleTimeString();s.updated=true;render()};$('psv2CadActions').append(b)});
       $('psv2CadUpdate').textContent=s.radioCount?'Request next radio update':'Request first radio update';
-      $('psv2CadFacts').textContent='Address: '+(s.address?'1840 Westfield Drive':'Unverified')+' · Callback: '+(s.callback?'Verified':'Pending')+' · Conscious: '+(s.conscious?'Yes':'Unknown')+' · Breathing: '+(s.breathing?'Abnormal':'Unknown');
+      $('psv2CadFacts').textContent='Address: '+(s.address?'Riverside Park, south pavilion':'Unverified')+' · Callback: '+(s.callback?'Verified':'Pending')+' · Conscious: '+(s.conscious?'Yes':'Unknown')+' · Breathing: '+(s.breathing?'Abnormal':'Unknown');
       $('psv2CadDispatch').disabled=s.dispatched||s.closed;
       $('psv2CadUpdate').disabled=!s.dispatched||s.closed;
       $('psv2CadClose').disabled=!s.dispatched||s.closed;
@@ -767,6 +790,7 @@
       record('Dispatched '+$('psv2CadResources').selectedOptions[0].text+' · '+$('psv2CadPriority').value);
       Object.keys(s.unitStatus).forEach(u=>s.unitTimes[u+'|Dispatched']=new Date().toLocaleTimeString());
       record('Dispatch transmitted. Awaiting unit acknowledgements.');
+      saveDispatchHandoff(s);
       render();
     };
     $('psv2CadUpdate').onclick=()=>{
@@ -844,7 +868,7 @@ function beginCallFlow() {
     session = window.PSV2.Session.startNewSession('adult-asthma');
     closedLoopTasks.length=0;
     resetRoleKnowledge();
-    $('psv2DispatchText').textContent = session.scenario.dispatch.text;
+    $('psv2DispatchText').textContent = selectedRole !== 'dispatcher' && roleDispatchBrief() ? roleDispatchBrief() : session.scenario.dispatch.text;
     $('psv2StartOverlay').hidden = true;
 
     renderAssessments();
