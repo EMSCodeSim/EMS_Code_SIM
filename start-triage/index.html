@@ -155,10 +155,11 @@
 .map.camera-view .patient .patient-ground-shadow{bottom:0;width:90%;height:16px;background:#000a;filter:blur(7px);opacity:.85}
 .map.camera-view .patient[data-pose="lying"] .patient-ground-shadow{width:110%;height:22px}
 .map.camera-view .patient .patient-art{filter:drop-shadow(0 3px 2px #0009)}
+.map.camera-view.ground-calibrating{outline:3px dashed #ffd36a;outline-offset:-4px;cursor:crosshair}.map.camera-view.ground-calibrating::after{content:"Tap the ground where a nearby patient should touch";position:absolute;left:6%;right:6%;bottom:12%;z-index:220;text-align:center;background:#071b27d9;color:white;border-radius:10px;padding:12px;pointer-events:none}.map.camera-view .patient.patient-near .patient-ground-shadow{background:#000b;filter:blur(10px)}
 </style></head><body>
 <header><div><h1>START Triage</h1><small>EMS Code Sim · Training prototype</small></div><a href="/" style="color:#9fe2f4">Home</a></header>
 <main><section class="toolbar"><div class="stats"><span class="stat" id="clock">00:00</span><span class="stat" id="progress">0 / 5 tagged</span></div><div><button id="reset">Restart</button> <button id="finish" class="primary">Finish & review</button></div></section>
-<div class="view-choice" role="group" aria-label="Scene background"><strong>View:</strong><button type="button" id="virtualView" aria-pressed="true">Virtual scene</button><button type="button" id="cameraView" aria-pressed="false">Live camera</button><span class="camera-status" id="cameraStatus" role="status"></span></div>
+<div class="view-choice" role="group" aria-label="Scene background"><strong>View:</strong><button type="button" id="virtualView" aria-pressed="true">Virtual scene</button><button type="button" id="cameraView" aria-pressed="false">Live camera</button><button type="button" id="calibrateGround" hidden>Set ground level</button><span class="camera-status" id="cameraStatus" role="status"></span></div>
 <div class="map" id="map" aria-label="First-person virtual incident scene with five patients"><video id="cameraFeed" class="camera-feed" autoplay muted playsinline hidden aria-hidden="true"></video><div class="horizon" aria-hidden="true"></div><div class="scene-midground" aria-hidden="true"></div><div class="ground" aria-hidden="true"></div><div class="scene-road" aria-hidden="true"></div><div class="depth-vignette" aria-hidden="true"></div><span class="crosshair" aria-hidden="true">+</span><div class="scene-target-cue" id="sceneTargetCue" aria-live="polite" hidden><span class="scene-target-arrow" id="sceneTargetArrow" aria-hidden="true">▲</span><span id="sceneTargetText"></span></div><section class="start-guide" id="startGuide" aria-label="Start triage"><h2>Ready to triage?</h2><ol><li id="guideSafety" class="active">Confirm the scene is safe</li><li id="guideWalk">Direct walking patients to the collection area</li><li id="guideGps">Choose a mode, then move toward a patient to assess</li></ol><div class="gps-controls"><button id="gpsToggle" class="primary" type="button">Start GPS walking</button><button id="modeToggle" type="button">Use joystick</button><span id="gpsStatus" class="gps-status" role="status">GPS selected · outdoors only</span></div><p class="gps-note">GPS is for open, safe outdoor areas. The scene is bounded to 25 m × 25 m. Use the joystick indoors or if GPS is inaccurate.</p></section><div class="navigation-hud" aria-label="Nearby patient direction radar"><strong>Patient radar</strong><div class="nav-compass" id="navCompass"><span class="nav-center">▲</span></div><div class="nav-readout" id="navReadout">5 patients remaining</div><div class="nav-key">Top = forward · dots = patients</div></div><section class="panel hidden assessment-panel" id="encounter" aria-live="polite"></section></div>
 <section class="game-controls" aria-label="Responder movement controls"><div class="dpad hidden" id="movementController" aria-label="Directional pad"><button class="up" data-move="up" aria-label="Move up">▲</button><button class="left" data-move="left" aria-label="Move left">◀</button><button class="down" data-move="down" aria-label="Move down">▼</button><button class="right" data-move="right" aria-label="Move right">▶</button></div><div class="game-hud"><p class="target-guidance" id="targetGuidance" role="status">Choose a movement mode to begin.</p><button id="approach" class="approach" disabled>Move closer to encounter</button><button id="recenterGps" class="gps-recenter hidden" type="button">Recenter GPS</button> <strong id="level">Responder · Level 1</strong><p class="game-hint" id="gameMessage" role="status">Secure the scene, then explore the incident.</p><div class="xp-track" role="progressbar" aria-label="Experience to next level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="xpTrack"><div class="xp-fill" id="xpFill"></div></div><small id="xpLabel">0 XP · 0 / 100 to next level</small></div></section>
 <section class="panel hidden" id="review" aria-live="polite"></section>
@@ -230,12 +231,12 @@ const landmarkElements=new Map();
 const $=id=>document.getElementById(id);
 
 /* Camera starts only after a deliberate tap; no audio track or Bluetooth API is requested. */
-let cameraStream=null,cameraRequestId=0,cameraTilt=null,cameraTiltListener=null,cameraTiltPermission="unknown";
+let cameraStream=null,cameraRequestId=0,cameraTilt=null,cameraTiltListener=null,cameraTiltPermission="unknown",groundOffset=0,groundCalibrating=false;
 function updateCameraTilt(e){if(!cameraStream||!Number.isFinite(e.beta))return;const next=Math.max(-85,Math.min(85,e.beta));cameraTilt=cameraTilt===null?next:cameraTilt*.82+next*.18;render();}
 async function startCameraTilt(){if(cameraTiltListener)return;try{if(typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function"&&cameraTiltPermission==="unknown"){cameraTiltPermission=await DeviceOrientationEvent.requestPermission();}if(cameraTiltPermission==="denied")return;cameraTiltListener=updateCameraTilt;window.addEventListener("deviceorientation",cameraTiltListener);}catch(_){cameraTiltPermission="denied";}}
 function stopCameraTilt(){if(cameraTiltListener)window.removeEventListener("deviceorientation",cameraTiltListener);cameraTiltListener=null;cameraTilt=null;}
 function stopSceneCamera(){
- ++cameraRequestId;stopCameraTilt();
+ ++cameraRequestId;stopCameraTilt();groundCalibrating=false;$("map").classList.remove("ground-calibrating");$("calibrateGround").hidden=true;
  const video=$("cameraFeed");
  if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}
  video.pause();video.srcObject=null;video.hidden=true;
@@ -258,10 +259,10 @@ async function setSceneView(mode){
    void tiltStart;
    const video=$("cameraFeed");
    video.srcObject=stream;video.hidden=false;
-   $("map").classList.add("camera-view");
+   $("map").classList.add("camera-view");$("calibrateGround").hidden=false;
    $("virtualView").setAttribute("aria-pressed","false");
    $("cameraView").setAttribute("aria-pressed","true");
-   $("cameraStatus").textContent="Camera on · ground-anchored overlay (approximate). Stay in a safe area.";render();
+   $("cameraStatus").textContent="Camera on · tap Set ground level to align patients with the ground.";render();
    // Do not await video.play(): iOS can suspend this promise until video is visible.
    video.play().catch(()=>{if(requestId===cameraRequestId){stopSceneCamera();$("cameraStatus").textContent="Camera preview unavailable; Virtual scene restored.";}});
    stream.getVideoTracks().forEach(track=>track.addEventListener("ended",()=>{if(cameraStream===stream){stopSceneCamera();$("cameraStatus").textContent="Camera ended; Virtual scene restored.";}}));
@@ -273,6 +274,8 @@ async function setSceneView(mode){
 }
 $("virtualView").addEventListener("click",()=>setSceneView("virtual"));
 $("cameraView").addEventListener("click",()=>setSceneView("camera"));
+$("calibrateGround").addEventListener("click",()=>{if(!cameraStream)return;groundCalibrating=true;$("map").classList.add("ground-calibrating");$("cameraStatus").textContent="Tap the visible ground in the camera view.";});
+$("map").addEventListener("click",event=>{if(!groundCalibrating||!cameraStream)return;if(event.target.closest("button"))return;const rect=$("map").getBoundingClientRect();const y=(event.clientY-rect.top)/rect.height*100;const baseline=cameraGroundTop(0)-groundOffset;groundOffset=Math.max(-35,Math.min(35,y-baseline));groundCalibrating=false;$("map").classList.remove("ground-calibrating");$("cameraStatus").textContent="Ground level set · approximate camera placement.";render();});
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&cameraStream)stopSceneCamera();});
 window.addEventListener("pagehide",stopSceneCamera);
 
@@ -302,7 +305,7 @@ function nearestInRange(){const nearby=patients.filter(p=>!p.tag&&patientInRange
 function directionName(angle){const side=angle<0?"left":"right",a=Math.abs(angle);if(a<=22)return "ahead";if(a<=67)return "ahead-"+side;if(a<=112)return side;if(a<=157)return "behind-"+side;return "behind"}
 function targetGuidance(target,near){if(!target)return "All patients tagged.";const meters=Math.max(0,Math.round(distance(target)/GPS_SCALE));if(near)return "Patient "+target.id+" reached — assess patient";if(targetPassed)return "Patient "+target.id+" · "+meters+" m · turn around";return "Patient "+target.id+" · "+meters+" m · "+directionName(bearing(target))}
 function patientPerspectiveScale(distanceUnits){const meters=distanceUnits/GPS_SCALE;if(meters<=GPS_INTERACT_METERS)return Math.min(3.2,2.7+(GPS_INTERACT_METERS-meters)*.17);return Math.max(.25,2.7*Math.exp(-(meters-GPS_INTERACT_METERS)/3.5))}
-function cameraGroundTop(distanceUnits){const meters=Math.max(0,distanceUnits/GPS_SCALE);const horizon=51;const near=94;const base=horizon+(near-horizon)/(1+meters/5.5);if(cameraTilt===null)return base;/* Approximate pitch compensation: level phone ~ beta 90, downward tilt moves ground points upward. */const pitchOffset=Math.max(-28,Math.min(28,(cameraTilt-70)*.48));return Math.max(5,Math.min(98,base+pitchOffset));}
+function cameraGroundTop(distanceUnits){const meters=Math.max(0,distanceUnits/GPS_SCALE);const horizon=51;const near=94;const base=horizon+(near-horizon)/(1+meters/5.5);if(cameraTilt===null)return Math.max(5,Math.min(98,base+groundOffset));/* Approximate pitch compensation: level phone ~ beta 90, downward tilt moves ground points upward. */const pitchOffset=Math.max(-28,Math.min(28,(cameraTilt-70)*.48));return Math.max(5,Math.min(98,base+pitchOffset+groundOffset));}
 function patientScreenTop(distanceUnits){const meters=distanceUnits/GPS_SCALE;return Math.min(96,54+Math.max(0,30-meters)*.95+Math.max(0,8-meters)*3)}
 function updateSceneParallax(map){if(!map)return;const width=map.clientWidth||400,yaw=player.heading*Math.PI/180,turn=-Math.sin(yaw)*width*.16,lateral=(50-player.x)*width*.002,forward=(50-player.y)*.55;map.style.setProperty("--scene-far-pan",(turn*.52+lateral*.5).toFixed(1)+"px");map.style.setProperty("--scene-mid-pan",(turn*.78+lateral*.85).toFixed(1)+"px");map.style.setProperty("--scene-ground-pan",(turn*.88+lateral).toFixed(1)+"px");map.style.setProperty("--scene-near-pan",(turn*1.18+lateral*1.25).toFixed(1)+"px");map.style.setProperty("--scene-far-forward",(forward*.14).toFixed(1)+"px");map.style.setProperty("--scene-ground-forward",forward.toFixed(1)+"px");map.style.setProperty("--scene-pan",(turn*.52+lateral*.5).toFixed(1)+"px")}
 function encounter(p){if(finished||!sceneSafe||!ambulatory||!patientInRange(p))return;selected=p.id;render();}
