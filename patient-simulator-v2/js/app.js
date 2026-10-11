@@ -726,7 +726,7 @@
     cad.hidden = false;
     document.querySelectorAll('.psv2-main > .psv2-panel').forEach(el => el.hidden = true);
     $('psv2ActionBar').hidden = true;
-    const s = {address:false,callback:false,conscious:false,breathing:false,history:false,dispatched:false,updated:false,closed:false,penalties:[],unitStatus:{},callerUpdated:false};
+    const s = {address:false,callback:false,conscious:false,breathing:false,history:false,dispatched:false,updated:false,closed:false,penalties:[],unitStatus:{},callerUpdated:false,unitTimes:{},radioCount:0,incidentStart:Date.now()};
     const qs = [
       ['address','Verify exact incident address','1840 Westfield Drive'],
       ['callback','Verify callback number','555-0104'],
@@ -735,7 +735,7 @@
       ['history','Ask about medical history','History of asthma; inhaler empty']
     ];
     const record = msg => {
-      $('psv2CadLog').textContent += formatClock(session?.patient?.getFullState()?.elapsedTime || 0) + ' — ' + msg + '\\n';
+      $('psv2CadLog').textContent += new Date().toLocaleTimeString() + ' — ' + msg + '\n';
       if(session?.timeline && session?.patient){
         const clinical=session.patient.snapshotClinical();
         session.timeline.push({timestamp:session.patient.getFullState().elapsedTime,eventType:'dispatch',action:msg,result:msg,clinicalStateBefore:clinical,clinicalStateAfter:clinical,metadata:{roleId:'dispatcher'}});
@@ -749,7 +749,8 @@
         $('psv2CadActions').appendChild(b);
       });
       if(s.dispatched&&!s.callerUpdated){const b=document.createElement('button');b.className='psv2-btn';b.textContent='Request caller update';b.onclick=()=>{s.callerUpdated=true;record('Caller reports worsening fatigue and difficulty speaking');render()};$('psv2CadActions').append(b)}
-      Object.entries(s.unitStatus).forEach(([unit,status])=>{if(status==='Available')return;const steps=['Dispatched','En route','On scene','Transporting','At hospital','Available'];const b=document.createElement('button');b.className='psv2-btn';b.textContent=unit+': '+status+' → '+steps[steps.indexOf(status)+1];b.onclick=()=>{s.unitStatus[unit]=steps[steps.indexOf(status)+1];s.updated=true;record(unit+' status: '+s.unitStatus[unit]);render()};$('psv2CadActions').append(b)});
+      Object.entries(s.unitStatus).forEach(([unit,status])=>{if(status==='Available')return;const steps=['Dispatched','En route','On scene','Transporting','At hospital','Available'];const b=document.createElement('button');b.className='psv2-btn';b.textContent=unit+': '+status+' → '+steps[steps.indexOf(status)+1];b.onclick=()=>{s.unitStatus[unit]=steps[steps.indexOf(status)+1];s.unitTimes[unit+'|'+s.unitStatus[unit]]=new Date().toLocaleTimeString();s.updated=true;record(unit+' reports '+s.unitStatus[unit]);render()};$('psv2CadActions').append(b)});
+      $('psv2CadUpdate').textContent=s.radioCount?'Request next radio update':'Request first radio update';
       $('psv2CadFacts').textContent='Address: '+(s.address?'1840 Westfield Drive':'Unverified')+' · Callback: '+(s.callback?'Verified':'Pending')+' · Conscious: '+(s.conscious?'Yes':'Unknown')+' · Breathing: '+(s.breathing?'Abnormal':'Unknown');
       $('psv2CadDispatch').disabled=s.dispatched||s.closed;
       $('psv2CadUpdate').disabled=!s.dispatched||s.closed;
@@ -764,18 +765,24 @@
       if($('psv2CadResources').value==='engine')s.penalties.push('Ambulance not assigned');
       if($('psv2CadPriority').value==='routine')s.penalties.push('Inappropriate routine response priority');
       record('Dispatched '+$('psv2CadResources').selectedOptions[0].text+' · '+$('psv2CadPriority').value);
-      record('Assigned units acknowledge and respond');
+      Object.keys(s.unitStatus).forEach(u=>s.unitTimes[u+'|Dispatched']=new Date().toLocaleTimeString());
+      record('Dispatch transmitted. Awaiting unit acknowledgements.');
       render();
     };
-    $('psv2CadUpdate').onclick=()=>{s.updated=true;record('Medic 4 reports on scene; patient contact established');render()};
+    $('psv2CadUpdate').onclick=()=>{s.updated=true;s.radioCount++;const messages=['Medic 4 acknowledges dispatch and reports en route.','Engine 2 reports en route; no additional hazards reported.','First arriving crew reports on scene; patient contact pending.','Medic 4 reports patient in respiratory distress; preparing transport.','Medic 4 reports destination hospital notified.'];record('RADIO: '+messages[Math.min(s.radioCount-1,messages.length-1)]);render()};
     $('psv2CadClose').onclick=()=>{
       if(Object.values(s.unitStatus).some(v=>v!=='Available')){record('Cannot close until all units are available');return}
       s.closed=true;
       if(!s.updated)s.penalties.push('Missing responding-unit status update');
       const count=qs.filter(q=>s[q[0]]).length;
+      if(!s.callerUpdated)s.penalties.push('No follow-up caller update');
+      if(!s.radioCount)s.penalties.push('No radio traffic documented');
       const score=Math.max(0,100-(5-count)*10-s.penalties.length*15);
       $('psv2CadScore').textContent='Dispatch training score: '+score+'/100. '+(s.penalties.join('; ')||'No major flags')+'. Educational simulation, not certified EMD protocol scoring.';
-      record('Incident closed');render();
+      record('Incident closed');
+      const summary=Object.entries(s.unitTimes).map(([key,time])=>key.replace('|',' — ')+': '+time).join(' · ');
+      $('psv2CadScore').textContent+=' Unit timestamps: '+summary;
+      render();
     };
     record('911 call received: caller reports severe difficulty breathing');
     render();
