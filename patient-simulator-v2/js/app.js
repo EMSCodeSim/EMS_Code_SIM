@@ -749,7 +749,7 @@
         $('psv2CadActions').appendChild(b);
       });
       if(s.dispatched&&!s.callerUpdated){const b=document.createElement('button');b.className='psv2-btn';b.textContent='Request caller update';b.onclick=()=>{s.callerUpdated=true;record('Caller reports worsening fatigue and difficulty speaking');render()};$('psv2CadActions').append(b)}
-      Object.entries(s.unitStatus).forEach(([unit,status])=>{if(status==='Available')return;const steps=['Dispatched','En route','On scene','Transporting','At hospital','Available'];const b=document.createElement('button');b.className='psv2-btn';b.textContent=unit+': '+status+' → '+steps[steps.indexOf(status)+1];b.onclick=()=>{s.unitStatus[unit]=steps[steps.indexOf(status)+1];s.unitTimes[unit+'|'+s.unitStatus[unit]]=new Date().toLocaleTimeString();s.updated=true;record(unit+' reports '+s.unitStatus[unit]);render()};$('psv2CadActions').append(b)});
+      Object.entries(s.unitStatus).forEach(([unit,status])=>{if(status==='Available')return;const steps=['Dispatched','En route','On scene','Transporting','At hospital','Available'];const b=document.createElement('button');b.className='psv2-btn';b.textContent=unit+': '+status+' → '+steps[steps.indexOf(status)+1];b.onclick=()=>{const next=steps[steps.indexOf(status)+1];if(unit==='Engine 2'&&next==='Transporting'){s.unitStatus[unit]='Available';record(unit+' cleared scene and returned available');}else{s.unitStatus[unit]=next;record(unit+' reports '+next);}s.unitTimes[unit+'|'+s.unitStatus[unit]]=new Date().toLocaleTimeString();s.updated=true;render()};$('psv2CadActions').append(b)});
       $('psv2CadUpdate').textContent=s.radioCount?'Request next radio update':'Request first radio update';
       $('psv2CadFacts').textContent='Address: '+(s.address?'1840 Westfield Drive':'Unverified')+' · Callback: '+(s.callback?'Verified':'Pending')+' · Conscious: '+(s.conscious?'Yes':'Unknown')+' · Breathing: '+(s.breathing?'Abnormal':'Unknown');
       $('psv2CadDispatch').disabled=s.dispatched||s.closed;
@@ -769,7 +769,24 @@
       record('Dispatch transmitted. Awaiting unit acknowledgements.');
       render();
     };
-    $('psv2CadUpdate').onclick=()=>{s.updated=true;s.radioCount++;const messages=['Medic 4 acknowledges dispatch and reports en route.','Engine 2 reports en route; no additional hazards reported.','First arriving crew reports on scene; patient contact pending.','Medic 4 reports patient in respiratory distress; preparing transport.','Medic 4 reports destination hospital notified.'];record('RADIO: '+messages[Math.min(s.radioCount-1,messages.length-1)]);render()};
+    $('psv2CadUpdate').onclick=()=>{
+      const statuses=Object.entries(s.unitStatus);
+      const onScene=statuses.filter(([,v])=>v==='On scene').map(([u])=>u);
+      const transporting=statuses.filter(([,v])=>v==='Transporting').map(([u])=>u);
+      const atHospital=statuses.filter(([,v])=>v==='At hospital').map(([u])=>u);
+      const enroute=statuses.filter(([,v])=>v==='En route').map(([u])=>u);
+      const dispatched=statuses.filter(([,v])=>v==='Dispatched').map(([u])=>u);
+      let msg='';
+      if(atHospital.length)msg=atHospital.join(', ')+' reports hospital handoff underway; awaiting available status.';
+      else if(transporting.length)msg=transporting.join(', ')+' confirms transport in progress and requests hospital notification.';
+      else if(onScene.length)msg=onScene.join(', ')+' reports patient contact; respiratory distress confirmed, evaluating transport.';
+      else if(enroute.length)msg=enroute.join(', ')+' reports en route; responding to verified incident address.';
+      else if(dispatched.length)msg=dispatched.join(', ')+' acknowledges dispatch; awaiting en-route status.';
+      else msg='No active units. Incident may be closed after documentation.';
+      s.updated=true;s.radioCount++;
+      record('RADIO: '+msg);
+      render();
+    };
     $('psv2CadClose').onclick=()=>{
       if(Object.values(s.unitStatus).some(v=>v!=='Available')){record('Cannot close until all units are available');return}
       s.closed=true;
