@@ -164,33 +164,6 @@
 <script>
 "use strict";
 
-// Camera is visual-only: existing GPS, compass, proximity, and START logic stay authoritative.
-let cameraStream=null;
-async function setSceneView(mode){
- const video=$("cameraFeed"),status=$("cameraStatus");
- if(mode!=="camera"){
-   if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}
-   video.pause();video.srcObject=null;video.hidden=true;$("map").classList.remove("camera-view");
-   $("virtualView").setAttribute("aria-pressed","true");$("cameraView").setAttribute("aria-pressed","false");
-   status.textContent="";return;
- }
- if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-   status.textContent="Camera unavailable in this browser.";return;
- }
- try{
-   const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:"environment"}}});
-   cameraStream=stream;video.srcObject=stream;video.hidden=false;
-   await video.play();$("map").classList.add("camera-view");
-   $("virtualView").setAttribute("aria-pressed","false");$("cameraView").setAttribute("aria-pressed","true");
-   status.textContent="Camera overlay • approximate positioning; use in a safe area.";
-   stream.getVideoTracks().forEach(track=>track.addEventListener("ended",()=>{if(cameraStream===stream)setSceneView("virtual");},{once:true}));
- }catch(e){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}video.srcObject=null;video.hidden=true;status.textContent="Camera permission denied or unavailable. Virtual scene remains active.";}
-}
-$("virtualView").addEventListener("click",()=>setSceneView("virtual"));
-$("cameraView").addEventListener("click",()=>setSceneView("camera"));
-document.addEventListener("visibilitychange",()=>{if(document.hidden&&cameraStream)setSceneView("virtual");});
-window.addEventListener("pagehide",()=>{if(cameraStream)cameraStream.getTracks().forEach(t=>t.stop());});
-
 const definitions=[
 {id:1,x:36,y:32,description:"Adult sitting upright, alert, holding arm",pose:"sitting",injury:true,walk:true,breathing:true,rr:20,perfusion:1,commands:true,expected:"green"},
 {id:2,x:48,y:23,description:"Adult supine, motionless",pose:"lying",injury:false,walk:false,breathing:false,airwayBreathing:true,rr:8,perfusion:2,commands:false,expected:"red"},
@@ -252,6 +225,34 @@ const landmarkArtByLabel={"Damaged vehicle":"/start-triage/assets/damaged-car.we
 const landmarkArtPreloads=Object.values(landmarkArtByLabel).map(src=>{const image=new Image();image.decoding="async";image.fetchPriority="low";image.src=src;return image});
 const landmarkElements=new Map();
 const $=id=>document.getElementById(id);
+// Camera is visual-only: existing GPS, compass, proximity, and START logic stay authoritative.
+let cameraStream=null;
+async function setSceneView(mode){
+ const video=$("cameraFeed"),status=$("cameraStatus");
+ if(mode!=="camera"){
+   if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}
+   video.pause();video.srcObject=null;video.hidden=true;$("map").classList.remove("camera-view");
+   $("virtualView").setAttribute("aria-pressed","true");$("cameraView").setAttribute("aria-pressed","false");
+   status.textContent="";return;
+ }
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+   status.textContent="Camera unavailable in this browser.";return;
+ }
+ try{
+   const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:"environment"}}});
+   cameraStream=stream;video.srcObject=stream;video.hidden=false;
+   await video.play();$("map").classList.add("camera-view");
+   $("virtualView").setAttribute("aria-pressed","false");$("cameraView").setAttribute("aria-pressed","true");
+   status.textContent="Camera overlay • approximate positioning; use in a safe area.";
+   stream.getVideoTracks().forEach(track=>track.addEventListener("ended",()=>{if(cameraStream===stream)setSceneView("virtual");},{once:true}));
+ }catch(e){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}video.srcObject=null;video.hidden=true;status.textContent="Camera permission denied or unavailable. Virtual scene remains active.";}
+}
+$("virtualView").addEventListener("click",()=>setSceneView("virtual"));
+$("cameraView").addEventListener("click",()=>setSceneView("camera"));
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&cameraStream)setSceneView("virtual");});
+window.addEventListener("pagehide",()=>{if(cameraStream)cameraStream.getTracks().forEach(t=>t.stop());});
+
+
 function reset(){if(typeof stopMovement==="function")stopMovement();if(typeof stopGps==="function")stopGps(false);setMovementMode("gps","GPS selected");player={x:50,y:50,heading:0};xp=0;awarded=new Set();patients=definitions.map(p=>({...p,seen:new Set(),airway:false,tag:null}));selected=null;activeTargetId=null;arrivedPatientId=null;targetClosestDistance=Infinity;targetPassed=false;started=0;gameStarted=false;sceneSafe=false;ambulatory=false;finished=false;$("review").classList.add("hidden");$("finish").disabled=true;render();}
 function startGame(){if(gameStarted)return;gameStarted=true;sceneSafe=true;ambulatory=true;started=Date.now();$("finish").disabled=false;render();}
 function time(){const s=gameStarted?Math.floor((Date.now()-started)/1000):0;return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
