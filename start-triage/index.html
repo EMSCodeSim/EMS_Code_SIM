@@ -114,6 +114,12 @@
 .assessment-patient-art .patient-photo,.assessment-patient-art .patient-art-fallback{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:100%;height:100%;object-fit:contain;object-position:center bottom}
 .assessment-patient-art .patient-ground-shadow{width:56%;height:10px;bottom:0}
 @media(max-width:700px){.assessment-patient-art{width:min(100%,210px);height:98px;margin:0 auto 4px}}
+
+/* Soft 3D roadside scene backdrop; all interactive GPS and patient layers remain above it. */
+.map{background:#60745a url("/start-triage/assets/scene-background.webp") center 54%/cover no-repeat;box-shadow:inset 0 0 0 5px #173b31}
+.horizon{background:linear-gradient(180deg,#102f3f18 0 42%,#1e342811 100%),url("/start-triage/assets/scene-background.webp") center 54%/cover no-repeat}
+.horizon:before,.horizon:after,.scene-road{display:none}
+.ground{background:linear-gradient(180deg,#1d332c08,#15261618);clip-path:none}
 </style></head><body>
 <header><div><h1>START Triage</h1><small>EMS Code Sim · Training prototype</small></div><a href="/" style="color:#9fe2f4">Home</a></header>
 <main><section class="toolbar"><div class="stats"><span class="stat" id="clock">00:00</span><span class="stat" id="progress">0 / 5 tagged</span></div><div><button id="reset">Restart</button> <button id="finish" class="primary">Finish & review</button></div></section>
