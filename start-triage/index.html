@@ -149,16 +149,48 @@
 .ground:before{inset:0;background:repeating-linear-gradient(176deg,transparent 0 26px,#f1efcf14 27px 29px,transparent 30px 54px);opacity:.42;mask-image:linear-gradient(180deg,transparent 0,#000 27%);transform:translate3d(var(--scene-ground-pan,0px),var(--scene-ground-forward,0px),0)}
 .ground:after{height:32%;bottom:-3%;background:repeating-linear-gradient(104deg,transparent 0 13px,#1d3e2a36 14px 16px,transparent 17px 25px),repeating-linear-gradient(78deg,transparent 0 21px,#e3dbad22 22px 24px,transparent 25px 36px);opacity:.48;mask-image:linear-gradient(180deg,transparent,#000 35%);transform:translate3d(var(--scene-near-pan,0px),var(--scene-ground-forward,0px),0)}
 @media(prefers-reduced-motion:reduce){.horizon,.scene-midground,.ground:before,.ground:after{transition:none}}
+
+/* Optional live rear-camera backdrop; scene controls and patients remain above video. */
+.map.camera-view{background:#17252b!important}.map.camera-view .horizon,.map.camera-view .scene-midground,.map.camera-view .ground,.map.camera-view .scene-road{opacity:0!important}.camera-feed{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none}.view-choice{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:8px 0}.view-choice button[aria-pressed="true"]{border-color:#8ce3f5;background:#006d85}.camera-status{font-size:.76rem;color:#d9e8ee}
 </style></head><body>
 <header><div><h1>START Triage</h1><small>EMS Code Sim · Training prototype</small></div><a href="/" style="color:#9fe2f4">Home</a></header>
 <main><section class="toolbar"><div class="stats"><span class="stat" id="clock">00:00</span><span class="stat" id="progress">0 / 5 tagged</span></div><div><button id="reset">Restart</button> <button id="finish" class="primary">Finish & review</button></div></section>
-<div class="map" id="map" aria-label="First-person virtual incident scene with five patients"><div class="horizon" aria-hidden="true"></div><div class="scene-midground" aria-hidden="true"></div><div class="ground" aria-hidden="true"></div><div class="scene-road" aria-hidden="true"></div><div class="depth-vignette" aria-hidden="true"></div><span class="crosshair" aria-hidden="true">+</span><div class="scene-target-cue" id="sceneTargetCue" aria-live="polite" hidden><span class="scene-target-arrow" id="sceneTargetArrow" aria-hidden="true">▲</span><span id="sceneTargetText"></span></div><section class="start-guide" id="startGuide" aria-label="Start triage"><h2>Ready to triage?</h2><ol><li id="guideSafety" class="active">Confirm the scene is safe</li><li id="guideWalk">Direct walking patients to the collection area</li><li id="guideGps">Choose a mode, then move toward a patient to assess</li></ol><div class="gps-controls"><button id="gpsToggle" class="primary" type="button">Start GPS walking</button><button id="modeToggle" type="button">Use joystick</button><span id="gpsStatus" class="gps-status" role="status">GPS selected · outdoors only</span></div><p class="gps-note">GPS is for open, safe outdoor areas. The scene is bounded to 25 m × 25 m. Use the joystick indoors or if GPS is inaccurate.</p></section><div class="navigation-hud" aria-label="Nearby patient direction radar"><strong>Patient radar</strong><div class="nav-compass" id="navCompass"><span class="nav-center">▲</span></div><div class="nav-readout" id="navReadout">5 patients remaining</div><div class="nav-key">Top = forward · dots = patients</div></div><section class="panel hidden assessment-panel" id="encounter" aria-live="polite"></section></div>
+<div class="view-choice" role="group" aria-label="Scene background"><strong>View:</strong><button type="button" id="virtualView" aria-pressed="true">Virtual scene</button><button type="button" id="cameraView" aria-pressed="false">Live camera</button><span class="camera-status" id="cameraStatus" role="status"></span></div>
+<div class="map" id="map" aria-label="First-person virtual incident scene with five patients"><video id="cameraFeed" class="camera-feed" autoplay muted playsinline hidden aria-hidden="true"></video><div class="horizon" aria-hidden="true"></div><div class="scene-midground" aria-hidden="true"></div><div class="ground" aria-hidden="true"></div><div class="scene-road" aria-hidden="true"></div><div class="depth-vignette" aria-hidden="true"></div><span class="crosshair" aria-hidden="true">+</span><div class="scene-target-cue" id="sceneTargetCue" aria-live="polite" hidden><span class="scene-target-arrow" id="sceneTargetArrow" aria-hidden="true">▲</span><span id="sceneTargetText"></span></div><section class="start-guide" id="startGuide" aria-label="Start triage"><h2>Ready to triage?</h2><ol><li id="guideSafety" class="active">Confirm the scene is safe</li><li id="guideWalk">Direct walking patients to the collection area</li><li id="guideGps">Choose a mode, then move toward a patient to assess</li></ol><div class="gps-controls"><button id="gpsToggle" class="primary" type="button">Start GPS walking</button><button id="modeToggle" type="button">Use joystick</button><span id="gpsStatus" class="gps-status" role="status">GPS selected · outdoors only</span></div><p class="gps-note">GPS is for open, safe outdoor areas. The scene is bounded to 25 m × 25 m. Use the joystick indoors or if GPS is inaccurate.</p></section><div class="navigation-hud" aria-label="Nearby patient direction radar"><strong>Patient radar</strong><div class="nav-compass" id="navCompass"><span class="nav-center">▲</span></div><div class="nav-readout" id="navReadout">5 patients remaining</div><div class="nav-key">Top = forward · dots = patients</div></div><section class="panel hidden assessment-panel" id="encounter" aria-live="polite"></section></div>
 <section class="game-controls" aria-label="Responder movement controls"><div class="dpad hidden" id="movementController" aria-label="Directional pad"><button class="up" data-move="up" aria-label="Move up">▲</button><button class="left" data-move="left" aria-label="Move left">◀</button><button class="down" data-move="down" aria-label="Move down">▼</button><button class="right" data-move="right" aria-label="Move right">▶</button></div><div class="game-hud"><p class="target-guidance" id="targetGuidance" role="status">Choose a movement mode to begin.</p><button id="approach" class="approach" disabled>Move closer to encounter</button><button id="recenterGps" class="gps-recenter hidden" type="button">Recenter GPS</button> <strong id="level">Responder · Level 1</strong><p class="game-hint" id="gameMessage" role="status">Secure the scene, then explore the incident.</p><div class="xp-track" role="progressbar" aria-label="Experience to next level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="xpTrack"><div class="xp-fill" id="xpFill"></div></div><small id="xpLabel">0 XP · 0 / 100 to next level</small></div></section>
 <section class="panel hidden" id="review" aria-live="polite"></section>
 </main><footer>Educational simulation only. Confirm local MCI protocols and clinical review before instructional deployment. Adult START is distinct from JumpSTART.</footer>
 <script src="./rules.js"></script>
 <script>
 "use strict";
+
+// Camera is visual-only: existing GPS, compass, proximity, and START logic stay authoritative.
+let cameraStream=null;
+async function setSceneView(mode){
+ const video=$("cameraFeed"),status=$("cameraStatus");
+ if(mode!=="camera"){
+   if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}
+   video.pause();video.srcObject=null;video.hidden=true;$("map").classList.remove("camera-view");
+   $("virtualView").setAttribute("aria-pressed","true");$("cameraView").setAttribute("aria-pressed","false");
+   status.textContent="";return;
+ }
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+   status.textContent="Camera unavailable in this browser.";return;
+ }
+ try{
+   const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:"environment"}}});
+   cameraStream=stream;video.srcObject=stream;video.hidden=false;
+   await video.play();$("map").classList.add("camera-view");
+   $("virtualView").setAttribute("aria-pressed","false");$("cameraView").setAttribute("aria-pressed","true");
+   status.textContent="Camera overlay • approximate positioning; use in a safe area.";
+   stream.getVideoTracks().forEach(track=>track.addEventListener("ended",()=>{if(cameraStream===stream)setSceneView("virtual");},{once:true}));
+ }catch(e){if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}video.srcObject=null;video.hidden=true;status.textContent="Camera permission denied or unavailable. Virtual scene remains active.";}
+}
+$("virtualView").addEventListener("click",()=>setSceneView("virtual"));
+$("cameraView").addEventListener("click",()=>setSceneView("camera"));
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&cameraStream)setSceneView("virtual");});
+window.addEventListener("pagehide",()=>{if(cameraStream)cameraStream.getTracks().forEach(t=>t.stop());});
+
 const definitions=[
 {id:1,x:36,y:32,description:"Adult sitting upright, alert, holding arm",pose:"sitting",injury:true,walk:true,breathing:true,rr:20,perfusion:1,commands:true,expected:"green"},
 {id:2,x:48,y:23,description:"Adult supine, motionless",pose:"lying",injury:false,walk:false,breathing:false,airwayBreathing:true,rr:8,perfusion:2,commands:false,expected:"red"},
