@@ -719,12 +719,68 @@
     return params.get('autostart') === '1' || params.get('start') === '1';
   }
 
-  function beginCallFlow() {
+
+  function startDispatcherConsole() {
+    const cad = $('psv2DispatcherConsole');
+    if (!cad) return;
+    cad.hidden = false;
+    document.querySelectorAll('.psv2-main > .psv2-panel').forEach(el => el.hidden = true);
+    $('psv2ActionBar').hidden = true;
+    const s = {address:false,callback:false,conscious:false,breathing:false,history:false,dispatched:false,updated:false,closed:false,penalties:[]};
+    const qs = [
+      ['address','Verify exact incident address','1840 Westfield Drive'],
+      ['callback','Verify callback number','555-0104'],
+      ['conscious','Ask if patient is conscious','Yes, but struggling to speak'],
+      ['breathing','Ask if breathing normally','No, rapid breathing and wheezing'],
+      ['history','Ask about medical history','History of asthma; inhaler empty']
+    ];
+    const record = msg => {
+      $('psv2CadLog').textContent += formatClock(session?.patient?.getFullState()?.elapsedTime || 0) + ' — ' + msg + '\\n';
+      if(session?.timeline && session?.patient){
+        const clinical=session.patient.snapshotClinical();
+        session.timeline.push({timestamp:session.patient.getFullState().elapsedTime,eventType:'dispatch',action:msg,result:msg,clinicalStateBefore:clinical,clinicalStateAfter:clinical,metadata:{roleId:'dispatcher'}});
+      }
+    };
+    const render = () => {
+      $('psv2CadActions').innerHTML='';
+      qs.filter(q=>!s[q[0]]).forEach(q=>{
+        const b=document.createElement('button');b.className='psv2-btn';b.textContent=q[1];
+        b.onclick=()=>{s[q[0]]=true;$('psv2CadCaller').textContent='Caller: '+q[2];record(q[1]+': '+q[2]);render()};
+        $('psv2CadActions').appendChild(b);
+      });
+      $('psv2CadFacts').textContent='Address: '+(s.address?'1840 Westfield Drive':'Unverified')+' · Callback: '+(s.callback?'Verified':'Pending')+' · Conscious: '+(s.conscious?'Yes':'Unknown')+' · Breathing: '+(s.breathing?'Abnormal':'Unknown');
+      $('psv2CadDispatch').disabled=s.dispatched||s.closed;
+      $('psv2CadUpdate').disabled=!s.dispatched||s.closed;
+      $('psv2CadClose').disabled=!s.dispatched||s.closed;
+    };
+    $('psv2CadDispatch').onclick=()=>{
+      if(!s.address){record('Location verification required before dispatch');return;}
+      s.dispatched=true;
+      if(!s.breathing)s.penalties.push('Breathing not verified');
+      if($('psv2CadResources').value==='engine')s.penalties.push('Ambulance not assigned');
+      if($('psv2CadPriority').value==='routine')s.penalties.push('Inappropriate routine response priority');
+      record('Dispatched '+$('psv2CadResources').selectedOptions[0].text+' · '+$('psv2CadPriority').value);
+      record('Assigned units acknowledge and respond');
+      render();
+    };
+    $('psv2CadUpdate').onclick=()=>{s.updated=true;record('Medic 4 reports on scene; patient contact established');render()};
+    $('psv2CadClose').onclick=()=>{
+      s.closed=true;
+      if(!s.updated)s.penalties.push('Missing responding-unit status update');
+      const count=qs.filter(q=>s[q[0]]).length;
+      const score=Math.max(0,100-(5-count)*10-s.penalties.length*15);
+      $('psv2CadScore').textContent='Dispatch training score: '+score+'/100. '+(s.penalties.join('; ')||'No major flags')+'. Educational simulation, not certified EMD protocol scoring.';
+      record('Incident closed');render();
+    };
+    record('911 call received: caller reports severe difficulty breathing');
+    render();
+  }
+\n  function beginCallFlow() {
     if (!selectedRole) return;
     startSimulation();
     // Learner arrives through a natural call timeline without a rigid wizard.
     if (selectedRole === 'dispatcher') {
-      session.setStage('Dispatch');
+      session.setStage('Dispatch');\n      startDispatcherConsole();
     } else {
       session.markEnroute();
       session.advanceTime(selectedRole === 'firefighter' ? 25 : 40);
