@@ -739,9 +739,9 @@
     } catch { /* Local storage unavailable; scenario remains playable. */ }
   }
   function roleDispatchBrief() {
-    const handoff=loadDispatchHandoff();
-    if(!handoff?.dispatched)return null;
-    return 'DISPATCH HANDOFF (previous dispatcher run): '+handoff.details.join('; ')+'. Assigned: '+handoff.units.join(', ')+'. Priority: '+handoff.priority+'. '+handoff.updates.join('; ');
+    // Single-player: each role starts with its own scenario-defined knowledge.
+    // Previous dispatcher playthroughs must not leak into a fresh role session.
+    return null;
   }
   function startDispatcherConsole() {
     const cad = $('psv2DispatcherConsole');
@@ -768,10 +768,10 @@
       $('psv2CadActions').innerHTML='';
       qs.filter(q=>!s[q[0]]).forEach(q=>{
         const b=document.createElement('button');b.className='psv2-btn';b.textContent=q[1];
-        b.onclick=()=>{s[q[0]]=true;$('psv2CadCaller').textContent='Caller: '+q[2];record(q[1]+': '+q[2]);saveDispatchHandoff(s);render()};
+        b.onclick=()=>{s[q[0]]=true;$('psv2CadCaller').textContent='Caller: '+q[2];record(q[1]+': '+q[2]);render()};
         $('psv2CadActions').appendChild(b);
       });
-      if(s.dispatched&&!s.callerUpdated){const b=document.createElement('button');b.className='psv2-btn';b.textContent='Request caller update';b.onclick=()=>{s.callerUpdated=true;record('Caller reports worsening fatigue and difficulty speaking');saveDispatchHandoff(s);render()};$('psv2CadActions').append(b)}
+      if(s.dispatched&&!s.callerUpdated){const b=document.createElement('button');b.className='psv2-btn';b.textContent='Request caller update';b.onclick=()=>{s.callerUpdated=true;record('Caller reports worsening fatigue and difficulty speaking');render()};$('psv2CadActions').append(b)}
       Object.entries(s.unitStatus).forEach(([unit,status])=>{if(status==='Available')return;const steps=['Dispatched','En route','On scene','Transporting','At hospital','Available'];const b=document.createElement('button');b.className='psv2-btn';b.textContent=unit+': '+status+' → '+steps[steps.indexOf(status)+1];b.onclick=()=>{const next=steps[steps.indexOf(status)+1];if(unit==='Engine 2'&&next==='Transporting'){s.unitStatus[unit]='Available';record(unit+' cleared scene and returned available');}else{s.unitStatus[unit]=next;record(unit+' reports '+next);}s.unitTimes[unit+'|'+s.unitStatus[unit]]=new Date().toLocaleTimeString();s.updated=true;render()};$('psv2CadActions').append(b)});
       $('psv2CadUpdate').textContent=s.radioCount?'Request next radio update':'Request first radio update';
       $('psv2CadFacts').textContent='Address: '+(s.address?'Riverside Park, south pavilion':'Unverified')+' · Callback: '+(s.callback?'Verified':'Pending')+' · Conscious: '+(s.conscious?'Yes':'Unknown')+' · Breathing: '+(s.breathing?'Abnormal':'Unknown');
@@ -790,7 +790,7 @@
       record('Dispatched '+$('psv2CadResources').selectedOptions[0].text+' · '+$('psv2CadPriority').value);
       Object.keys(s.unitStatus).forEach(u=>s.unitTimes[u+'|Dispatched']=new Date().toLocaleTimeString());
       record('Dispatch transmitted. Awaiting unit acknowledgements.');
-      saveDispatchHandoff(s);
+
       render();
     };
     $('psv2CadUpdate').onclick=()=>{
