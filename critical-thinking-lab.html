@@ -35,7 +35,14 @@
         <button type="button" class="ct-mode" data-mode="group"><span class="ct-mode-icon" aria-hidden="true">G</span><strong>Group discussion</strong><small>Assign roles and record the team’s reasoning.</small></button>
       </div>
       <div class="ct-setup-row"><label for="levelSelect">Learner level<select id="levelSelect"><option value="Beginner">Beginner</option><option value="EMT" selected>EMT</option><option value="Paramedic">Paramedic</option></select></label><label for="caseSelect">Scenario<select id="caseSelect"><option value="">Loading scenario library…</option></select></label><button id="beginBtn" class="ct-button primary" type="button" disabled>Start practice</button></div>
-      <div class="ct-group-setup" id="groupSetup" hidden><label for="teamNames">Team members or roles <span>Optional</span><input id="teamNames" maxlength="160" placeholder="Example: Lead, partner, observer"></label><p>Enter names or roles separated by commas. The facilitator can assign one person to each decision.</p></div>
+      <div class="ct-group-setup" id="groupSetup" hidden><label for="teamNames">Team members or roles <span>Optional</span><input id="teamNames" maxlength="160" placeholder="Example: Lead, partner, observer"></label><p>Enter names or roles separated by commas. The facilitator can assign one person to each decision. Names stay on this device.</p></div>
+      <section class="ct-cloud-room" aria-labelledby="cloudRoomTitle">
+        <h3 id="cloudRoomTitle">Save or join an online session</h3>
+        <p>Create a private link to resume from another device or share a group session. Anyone with the link can view and update its decision trail. For a group, have one facilitator record the team’s agreed decisions. Sessions expire after 30 days. Use fictional training details only.</p>
+        <div class="ct-room-actions"><button id="createRoomBtn" class="ct-button secondary" type="button">Create online session</button><label for="roomCode">Join with a room code or link<input id="roomCode" autocomplete="off" inputmode="text" maxlength="256" placeholder="Paste a room code or link"></label><button id="joinRoomBtn" class="ct-button secondary" type="button">Join session</button></div>
+        <div id="roomShare" class="ct-room-share" hidden><label for="roomShareUrl">Private session link<input id="roomShareUrl" readonly></label><button id="copyRoomBtn" class="ct-button secondary" type="button">Copy link</button></div>
+        <p id="roomStatus" class="ct-status" role="status">Online saving is optional. Device-only practice continues to work.</p>
+      </section>
       <p id="libraryStatus" class="ct-status" role="status">Loading the current scenario library…</p>
     </section>
 
