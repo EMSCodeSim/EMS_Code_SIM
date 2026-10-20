@@ -18,7 +18,22 @@ function validateClassCompletion(value) {
     throw new Error('Complete all 10 written test questions.');
   }
   const correct = value.quizAnswers.reduce((sum, answer, index) => sum + (answer === classCompletionAnswers[index] ? 1 : 0), 0);
+  if (correct < 8) throw new Error('You need at least 80% on the written test to finish the class.');
   return { submissionKey: value.submissionKey, learnerName, correct, score: correct * 10 };
+}
+
+function validateClassFinish(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid class completion data.');
+  const learnerName = String(value.learnerName || '').trim().replace(/\s+/g, ' ');
+  if (learnerName.length < 2 || learnerName.length > 120 || /[\u0000-\u001f\u007f]/.test(learnerName)) throw new Error('Enter a valid learner name.');
+  if (value.consent !== true || value.version !== 'ems-report-writing-class-v1') throw new Error('Class completion consent or version is invalid.');
+  if (value.classMaterialComplete !== true || value.guidedNarrativeComplete !== true || value.aiNarrativeComplete !== true) throw new Error('Complete the class material and both narrative steps before finishing.');
+  if (!Number.isInteger(value.aiNarrativeScore) || value.aiNarrativeScore < 0 || value.aiNarrativeScore > 100) throw new Error('Complete an AI-graded narrative before finishing.');
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value.submissionKey || ''))) throw new Error('Invalid class completion key.');
+  if (!Array.isArray(value.quizAnswers) || value.quizAnswers.length !== classCompletionAnswers.length || value.quizAnswers.some(answer => !Number.isInteger(answer) || answer < 0 || answer > 3)) throw new Error('Complete all 10 written test questions.');
+  const correct = value.quizAnswers.reduce((sum, answer, index) => sum + (answer === classCompletionAnswers[index] ? 1 : 0), 0);
+  if (correct < 8) throw new Error('You need at least 80% on the written test to finish the class.');
+  return { submissionKey: value.submissionKey, learnerName, correct, score: correct * 10, aiScore: value.aiNarrativeScore };
 }
 
 async function saveClassCompletion(completion, aiScore) {
@@ -148,6 +163,18 @@ exports.handler = async event => {
   let body;
   try { body = JSON.parse(event.body || '{}'); } catch (_) { return response(400, { error: 'Invalid request.' }); }
   if (body.website) return response(400, { error: 'Invalid request.' });
+  if (body.action === 'completeClass') {
+    let completion;
+    try { completion = validateClassFinish(body.classCompletion); }
+    catch (error) { return response(400, { error: error.message }); }
+    try {
+      await saveClassCompletion(completion, completion.aiScore);
+      return response(200, { courseCompletionSaved: true, writtenTestScore: completion.score, aiNarrativeScore: completion.aiScore });
+    } catch (error) {
+      console.error('Class completion could not be saved:', error.message);
+      return response(503, { error: 'The class record could not be saved. Please try again.' });
+    }
+  }
   let classCompletion = null;
   if (body.classCompletion !== undefined && body.classCompletion !== null) {
     try { classCompletion = validateClassCompletion(body.classCompletion); }
