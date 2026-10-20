@@ -33,6 +33,16 @@
     status.className = 'rw-callout ' + kind;
     status.hidden = false;
   }
+  function showFinish(message, kind = 'info') {
+    const finishStatus = $('#finishClassStatus');
+    if (finishStatus) {
+      finishStatus.textContent = message;
+      finishStatus.className = 'rw-callout ' + kind;
+      finishStatus.hidden = false;
+    } else {
+      show(message, kind);
+    }
+  }
   function setLockedLink(selector, href, text, unlocked) {
     const link = document.querySelector(selector);
     if (!link) return;
@@ -225,12 +235,10 @@
       p.classFinished = true;
       p.classFinishedAt = new Date().toISOString();
       if (!writeProgress(p)) throw new Error('The roster saved the class record, but this browser could not save the finished status.');
-      show('Class finished. Your completion and scores were recorded.', 'success');
-      const finishStatus = $('#finishClassStatus');
-      if (finishStatus) finishStatus.textContent = 'Finished and recorded.';
+      showFinish('Class finished. Your completion and scores were recorded.', 'success');
       render();
     } catch (error) {
-      show(error.message || 'Could not finish class. Check your connection and try again.', 'error');
+      showFinish(error.message || 'Could not finish class. Check your connection and try again.', 'error');
       finishButton.disabled = false;
       finishButton.textContent = 'Finish class';
     }
