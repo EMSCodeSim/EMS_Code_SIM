@@ -58,8 +58,7 @@ exports.handler = async event => {
   try {
     const sql = neon(databaseUrl);
     const rows = await sql`SELECT learner_name, written_test_score, ai_narrative_score, completed_at
-      FROM public.ems_report_class_completions
-      WHERE class_version = 'ems-report-writing-class-v1'
+      FROM public.ems_report_class_roster_view
       ORDER BY completed_at DESC
       LIMIT 501`;
     return response(200, {
