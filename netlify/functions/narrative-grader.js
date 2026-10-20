@@ -38,7 +38,6 @@ function verifyClassProof(proof) {
   const learnerName = String(value.learnerName || '').trim().replace(/\s+/g, ' ');
   if (learnerName.length < 2 || learnerName.length > 120 || /[\u0000-\u001f\u007f]/.test(learnerName)) throw new Error('The AI grade could not be verified.');
   if (!Number.isInteger(value.aiScore) || value.aiScore < 0 || value.aiScore > 100) throw new Error('The AI grade could not be verified.');
-  if (!Number.isFinite(value.issuedAt) || Date.now() - value.issuedAt > 30 * 24 * 60 * 60 * 1000 || value.issuedAt > Date.now() + 60_000) throw new Error('The AI grade expired. Submit the class completion within 30 days of the AI grade.');
   return { submissionKey: value.submissionKey, learnerName, aiScore: value.aiScore };
 }
 
