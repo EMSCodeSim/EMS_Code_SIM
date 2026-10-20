@@ -35,17 +35,17 @@ function verifyClassProof(proof) {
   let value;
   try { value = JSON.parse(Buffer.from(data, 'base64url').toString('utf8')); } catch (_) { throw new Error('The AI grade could not be verified.'); }
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value.submissionKey || ''))) throw new Error('The AI grade could not be verified.');
-  const learnerName = String(value.learnerName || '').trim().replace(/\\s+/g, ' ');
-  if (learnerName.length < 2 || learnerName.length > 120 || /[\\u0000-\\u001f\\u007f]/.test(learnerName)) throw new Error('The AI grade could not be verified.');
+  const learnerName = String(value.learnerName || '').trim().replace(/\s+/g, ' ');
+  if (learnerName.length < 2 || learnerName.length > 120 || /[\u0000-\u001f\u007f]/.test(learnerName)) throw new Error('The AI grade could not be verified.');
   if (!Number.isInteger(value.aiScore) || value.aiScore < 0 || value.aiScore > 100) throw new Error('The AI grade could not be verified.');
-  if (!Number.isFinite(value.issuedAt) || Date.now() - value.issuedAt > 24 * 60 * 60 * 1000 || value.issuedAt > Date.now() + 60_000) throw new Error('The AI grade expired. Complete the class within 24 hours of the AI grade.');
+  if (!Number.isFinite(value.issuedAt) || Date.now() - value.issuedAt > 30 * 24 * 60 * 60 * 1000 || value.issuedAt > Date.now() + 60_000) throw new Error('The AI grade expired. Submit the class completion within 30 days of the AI grade.');
   return { submissionKey: value.submissionKey, learnerName, aiScore: value.aiScore };
 }
 
 function validateClassPractice(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid class practice data.');
-  const learnerName = String(value.learnerName || '').trim().replace(/\\s+/g, ' ');
-  if (learnerName.length < 2 || learnerName.length > 120 || /[\\u0000-\\u001f\\u007f]/.test(learnerName)) throw new Error('Enter a valid learner name.');
+  const learnerName = String(value.learnerName || '').trim().replace(/\s+/g, ' ');
+  if (learnerName.length < 2 || learnerName.length > 120 || /[\u0000-\u001f\u007f]/.test(learnerName)) throw new Error('Enter a valid learner name.');
   if (value.consent !== true || value.version !== 'ems-report-writing-class-v1') throw new Error('Class completion consent or version is invalid.');
   if (value.started !== true || value.classMaterialComplete !== true || value.guidedNarrativeComplete !== true) throw new Error('Complete steps 1–3 before the required AI-graded narrative.');
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value.submissionKey || ''))) throw new Error('Invalid class completion key.');
