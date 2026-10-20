@@ -45,6 +45,12 @@
     mark('#progress-guide', guide, guide ? 'A guided narrative has been generated.' : 'Use the guided PCR template and generate a narrative.');
     mark('#progress-test', test, test ? 'Written test score: ' + p.writtenTestScore + '%.' : 'Answer all 10 content questions.');
     mark('#progress-ai', ai, ai ? 'First AI grade: ' + p.aiNarrativeScore + '/100. Extra narratives are optional.' : 'Submit a fictional narrative for a grade. More practice narratives are optional.');
+    const aiLink = document.querySelector('#progress-ai a');
+    const aiUnlocked = complete && guide && test && !ai;
+    aiLink.href = (aiUnlocked || ai) ? '/narrative-writing-lab.html' : '#courseProgress';
+    aiLink.textContent = ai ? 'Practice another narrative (optional) →' : aiUnlocked ? 'Start required AI grade →' : 'Locked until steps 1–3 are complete';
+    aiLink.setAttribute('aria-disabled', String(!aiUnlocked && !ai));
+    aiLink.classList.toggle('locked', !aiUnlocked && !ai);
     startForm.elements.learnerName.value = complete ? p.learnerName : '';
     if (complete) {
       startForm.elements.learnerName.readOnly = true;
@@ -64,7 +70,7 @@
       progressSummary.textContent = 'Start class to begin tracking your required steps.';
     }
   }
-  startForm.addEventListener('submit', event => {
+  document.querySelector('#progress-ai a')?.addEventListener('click', event => {\n    const p = readProgress();\n    if (!p?.started || !p.guidedNarrativeComplete || !p.writtenTestComplete) { event.preventDefault(); progressSummary.textContent = 'Complete steps 1, 2, and 3 before the required AI-graded narrative.'; }\n  });\n  startForm.addEventListener('submit', event => {
     event.preventDefault();
     const name = String(startForm.elements.learnerName.value || '').trim().replace(/\s+/g, ' ');
     if (name.length < 2 || name.length > 120) { $('#startClassStatus').textContent = 'Enter a name between 2 and 120 characters.'; return; }
