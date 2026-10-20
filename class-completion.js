@@ -70,7 +70,13 @@
       progressSummary.textContent = 'Start class to begin tracking your required steps.';
     }
   }
-  document.querySelector('#progress-ai a')?.addEventListener('click', event => {\n    const p = readProgress();\n    if (!p?.started || !p.guidedNarrativeComplete || !p.writtenTestComplete) { event.preventDefault(); progressSummary.textContent = 'Complete steps 1, 2, and 3 before the required AI-graded narrative.'; }\n  });\n  startForm.addEventListener('submit', event => {
+  document.querySelector('#progress-ai a')?.addEventListener('click', event => {
+    const p = readProgress();
+    if (!p?.started || !p.guidedNarrativeComplete || !p.writtenTestComplete) {
+      event.preventDefault();
+      progressSummary.textContent = 'Complete steps 1, 2, and 3 before the required AI-graded narrative.';
+    }
+  });\n  startForm.addEventListener('submit', event => {
     event.preventDefault();
     const name = String(startForm.elements.learnerName.value || '').trim().replace(/\s+/g, ' ');
     if (name.length < 2 || name.length > 120) { $('#startClassStatus').textContent = 'Enter a name between 2 and 120 characters.'; return; }
