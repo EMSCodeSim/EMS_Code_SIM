@@ -42,95 +42,102 @@
     "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A 26-year-old male has open femur fractures and is pulseless after a motorcycle crash. What should you do first?",
+    "question": "A motorcycle crash patient is unresponsive, apneic, and pulseless. There is massive active bleeding from an open thigh injury. You have a partner and hemorrhage-control supplies. Which immediate coordinated action is most appropriate?",
     "choices": [
-      "Start CPR and apply a tourniquet",
-      "Apply splints before initiating CPR",
-      "Perform a focused trauma assessment",
-      "Transport without interventions"
+      "Have one rescuer control catastrophic hemorrhage while the other begins indicated resuscitation and requests rapid trauma transport",
+      "Start compressions and defer hemorrhage control until return of spontaneous circulation",
+      "Spend two minutes performing a complete head-to-toe examination before interventions",
+      "Splint the fracture first to reduce pain and then reassess the pulse"
     ],
-    "answer": "Start CPR and apply a tourniquet",
-    "reason": "Life-threatening bleeding and cardiac arrest require simultaneous resuscitative actions.",
+    "answer": "Have one rescuer control catastrophic hemorrhage while the other begins indicated resuscitation and requests rapid trauma transport",
+    "reason": "Traumatic arrest requires a coordinated approach to immediately reversible causes, especially catastrophic hemorrhage, alongside indicated resuscitation under local trauma protocols.",
     "subtopic": "Bleeding and Shock",
-    "topic": "Trauma"
+    "topic": "Trauma",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "During hazmat response, you see a placard with skull and crossbones and the number 6. What does this indicate?",
+    "question": "At a warehouse, a worker is unconscious near a damaged container displaying a class 6 skull-and-crossbones placard. Your crew is staged outside the hot zone. What is the best next action?",
     "choices": [
-      "Poisonous material",
-      "Flammable gas",
-      "Corrosive liquid",
-      "Radioactive substance"
+      "Remain outside the hazard zone, identify the substance through incident resources, and request appropriately equipped hazmat personnel",
+      "Enter with standard EMS gloves and an N95 mask to begin assessment",
+      "Move the patient to your ambulance before establishing contamination controls",
+      "Assume the placard refers to a corrosive and begin water irrigation inside the hot zone"
     ],
-    "answer": "Poisonous material",
-    "reason": "Class 6 placards with a skull and crossbones represent toxic substances.",
+    "answer": "Remain outside the hazard zone, identify the substance through incident resources, and request appropriately equipped hazmat personnel",
+    "reason": "A class 6 toxic-substance hazard requires scene isolation, identification and properly trained responders with suitable PPE; EMS crews should not enter an uncontrolled hot zone.",
     "subtopic": "Hazmat Awareness",
-    "topic": "EMS Operations"
+    "topic": "EMS Operations",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A 22-year-old woman is in active labor with crowning visible. What is your next immediate action?",
+    "question": "A term pregnant patient has contractions every 90 seconds. During assessment you see the fetal head crowning. Maternal vital signs are stable and the ambulance is 15 minutes from the hospital. What is the best plan?",
     "choices": [
-      "Prepare for imminent delivery",
-      "Insert a gloved hand for breech rotation",
-      "Transport immediately with lights and sirens",
-      "Administer oxygen and delay delivery"
+      "Prepare for imminent delivery in a safe location and arrange neonatal resuscitation readiness",
+      "Load and drive immediately because hospital delivery is always preferable",
+      "Attempt to delay the birth by applying pressure to the presenting head",
+      "Perform a vaginal examination to estimate cervical dilation before deciding"
     ],
-    "answer": "Prepare for imminent delivery",
-    "reason": "Visible crowning indicates that birth is imminent and should occur on scene with proper preparation.",
+    "answer": "Prepare for imminent delivery in a safe location and arrange neonatal resuscitation readiness",
+    "reason": "Crowning suggests birth is imminent. Prepare for safe delivery and newborn assessment rather than delay or attempt to prevent birth.",
     "subtopic": "Obstetrics",
-    "topic": "Special Populations"
+    "topic": "Special Populations",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A patient presents after diving into a shallow pool and complains of neck pain. Vitals are stable. What should you do first?",
+    "question": "After a shallow-water dive, an alert adult reports midline neck pain and tingling in both hands. Breathing is adequate and the scene is safe. What is the best immediate approach?",
     "choices": [
-      "Manually stabilize the spine",
-      "Apply high-flow oxygen",
-      "Log roll onto long spine board",
-      "Ask the patient to walk to the stretcher"
+      "Maintain manual spinal motion restriction while assessing ABCs and neurologic findings",
+      "Apply a rigid collar and skip reassessment because the patient is alert",
+      "Ask the patient to rotate their neck to determine whether the pain is muscular",
+      "Move the patient to a long board before checking airway and breathing"
     ],
-    "answer": "Manually stabilize the spine",
-    "reason": "Manual stabilization is the first step in suspected spinal injury, even before assessment or oxygen.",
+    "answer": "Maintain manual spinal motion restriction while assessing ABCs and neurologic findings",
+    "reason": "A high-risk mechanism with neurologic symptoms warrants minimizing spinal movement while maintaining primary assessment priorities.",
     "subtopic": "Spinal Trauma",
-    "topic": "Trauma"
+    "topic": "Trauma",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "You arrive to find an adult patient gasping and cyanotic with inspiratory stridor after a bee sting. What should you do first?",
+    "question": "Minutes after a bee sting, an adult develops stridor, wheezing, diffuse hives and hypotension. The patient has a pulse but is deteriorating. Which intervention should not be delayed?",
     "choices": [
-      "Administer epinephrine IM",
-      "Apply a non-rebreather mask",
-      "Initiate chest compressions",
-      "Place the patient in Trendelenburg"
+      "Give intramuscular epinephrine promptly while supporting airway, oxygenation and perfusion",
+      "Administer nebulized bronchodilator first and reassess before epinephrine",
+      "Start an IV fluid bolus and withhold epinephrine until blood pressure responds",
+      "Administer an antihistamine and observe for ten minutes"
     ],
-    "answer": "Administer epinephrine IM",
-    "reason": "This is anaphylaxis with airway involvement. Epinephrine is life-saving and must be given immediately.",
+    "answer": "Give intramuscular epinephrine promptly while supporting airway, oxygenation and perfusion",
+    "reason": "Anaphylaxis with airway compromise and hypotension requires prompt IM epinephrine alongside resuscitative support; adjuncts do not replace it.",
     "subtopic": "Respiratory Distress",
-    "topic": "Airway Management, Respiration & Ventilation"
+    "topic": "Airway Management, Respiration & Ventilation",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A trauma patient has a weak radial pulse, altered mental status, and pale, cool skin. What does this indicate?",
+    "question": "Following a fall, an adult is pale and cool with a rapid weak radial pulse, altered mentation, and blood pressure 82/48. What interpretation best guides immediate care?",
     "choices": [
-      "Compensated shock",
-      "Normal perfusion",
-      "Spinal cord injury",
-      "Hypothermia"
+      "Decompensated shock with inadequate tissue perfusion requiring urgent treatment and transport",
+      "Compensated shock because the radial pulse is still palpable",
+      "Isolated anxiety because tachycardia and confusion commonly occur together",
+      "Neurogenic shock because every trauma patient with hypotension has spinal injury"
     ],
-    "answer": "Compensated shock",
-    "reason": "These signs point to early hypoperfusion, when the body is still maintaining blood pressure.",
+    "answer": "Decompensated shock with inadequate tissue perfusion requiring urgent treatment and transport",
+    "reason": "Hypotension together with altered mentation and poor peripheral perfusion indicates decompensated shock, not compensated shock.",
     "subtopic": "Bleeding and Shock",
-    "topic": "Trauma"
+    "topic": "Trauma",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A 54-year-old male is complaining of crushing substernal chest pain radiating to his left arm. He is diaphoretic and short of breath. What is the most appropriate initial treatment?",
+    "question": "A 54-year-old with crushing chest discomfort is diaphoretic and short of breath. SpO₂ is 97% on room air, BP 138/86, and there is no aspirin allergy or active bleeding. Which initial treatment plan is most appropriate?",
     "choices": [
-      "Administer aspirin and provide oxygen",
-      "Begin CPR immediately",
-      "Apply a cervical collar",
-      "Perform rapid extrication"
+      "Obtain a 12-lead ECG, give chewable aspirin per protocol, monitor and arrange prompt transport without routine oxygen",
+      "Give high-flow oxygen to every suspected ACS patient regardless of oxygen saturation",
+      "Administer nitroglycerin before obtaining blood pressure or assessing contraindications",
+      "Delay transport until serial ECGs prove an infarction"
     ],
-    "answer": "Administer aspirin and provide oxygen",
-    "reason": "The presentation suggests an acute coronary syndrome. Aspirin reduces clot formation and oxygen addresses hypoxia, making this the correct initial treatment.",
+    "answer": "Obtain a 12-lead ECG, give chewable aspirin per protocol, monitor and arrange prompt transport without routine oxygen",
+    "reason": "Suspected ACS calls for rapid ECG, aspirin when appropriate and transport. Routine supplemental oxygen is not indicated solely for chest pain when oxygenation is normal.",
     "subtopic": "Cardiac Emergencies",
-    "topic": "Cardiovascular"
+    "topic": "Cardiovascular",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
     "question": "A 25-year-old male is found unconscious after a suspected opioid overdose. Respirations are 6/min and shallow. What is the most appropriate first action?",
@@ -159,17 +166,18 @@
     "topic": "Special Populations"
   },
   {
-    "question": "A 70-year-old female complains of dizziness and has a heart rate of 38 bpm. Blood pressure is 84/60. What is the best next step?",
+    "question": "A 70-year-old with dizziness has sinus bradycardia at 38/min, BP 84/60, and cool skin. Oxygenation is adequate and IV access is established. What is the best management strategy?",
     "choices": [
-      "Begin transcutaneous pacing",
-      "Administer nitroglycerin",
-      "Have the patient walk to the stretcher",
-      "Apply a cold pack to the neck"
+      "Begin the symptomatic bradycardia algorithm, give atropine when appropriate and prepare immediate transcutaneous pacing if ineffective or instability persists",
+      "Observe without intervention because sinus bradycardia is usually benign",
+      "Give nitroglycerin to improve coronary blood flow before treating the rate",
+      "Use synchronized cardioversion as first-line therapy for the slow rhythm"
     ],
-    "answer": "Begin transcutaneous pacing",
-    "reason": "Bradycardia with hypotension and symptoms indicates unstable bradycardia, for which pacing is the treatment of choice.",
+    "answer": "Begin the symptomatic bradycardia algorithm, give atropine when appropriate and prepare immediate transcutaneous pacing if ineffective or instability persists",
+    "reason": "Hypotension and hypoperfusion with bradycardia require urgent ACLS-based management; atropine and pacing decisions depend on clinical context and response.",
     "subtopic": "Cardiac Emergencies",
-    "topic": "Cardiovascular"
+    "topic": "Cardiovascular",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
     "question": "A 19-year-old female has been assaulted and complains of lower abdominal pain with vaginal bleeding. What is your priority?",
@@ -185,17 +193,18 @@
     "topic": "Medical Emergencies"
   },
   {
-    "question": "A 34-year-old diabetic patient is confused and combative. Blood glucose reads 35 mg/dL. What is the most appropriate action?",
+    "question": "A diabetic adult is confused and intermittently combative with glucose 35 mg/dL. They cannot follow swallowing commands reliably. IV access is available. Which intervention is best?",
     "choices": [
-      "Administer oral glucose if able",
-      "Apply a cardiac monitor",
-      "Begin cooling measures",
-      "Transport without treatment"
+      "Treat hypoglycemia with protocol-directed IV dextrose while monitoring airway and reassessing glucose and mentation",
+      "Give oral glucose because the patient is awake between episodes of agitation",
+      "Wait until the patient is cooperative enough to drink juice",
+      "Administer insulin to correct the abnormal glucose reading"
     ],
-    "answer": "Administer oral glucose if able",
-    "reason": "A glucose of 35 indicates hypoglycemia. If the patient can protect their airway, oral glucose is appropriate.",
+    "answer": "Treat hypoglycemia with protocol-directed IV dextrose while monitoring airway and reassessing glucose and mentation",
+    "reason": "Severe symptomatic hypoglycemia requires prompt glucose replacement by a safe route. Unreliable swallowing makes oral glucose unsafe.",
     "subtopic": "Endocrine",
-    "topic": "Medical Emergencies"
+    "topic": "Medical Emergencies",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
     "question": "You arrive on scene where multiple patients are involved in a building collapse. What is your first action?",
