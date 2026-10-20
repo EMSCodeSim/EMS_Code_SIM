@@ -8,8 +8,8 @@ const classCompletionAnswers = [0, 2, 0, 1, 1, 2, 0, 1, 2, 2];
 
 function validateClassCompletion(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid class completion data.');
-  const learnerName = String(value.learnerName || '').trim().replace(/\\s+/g, ' ');
-  if (learnerName.length < 2 || learnerName.length > 120 || /[\\u0000-\\u001f\\u007f]/.test(learnerName)) throw new Error('Enter a valid learner name.');
+  const learnerName = String(value.learnerName || '').trim().replace(/\s+/g, ' ');
+  if (learnerName.length < 2 || learnerName.length > 120 || /[\u0000-\u001f\u007f]/.test(learnerName)) throw new Error('Enter a valid learner name.');
   if (value.consent !== true || value.version !== 'ems-report-writing-class-v1') throw new Error('Class completion consent or version is invalid.');
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value.submissionKey || ''))) throw new Error('Invalid class completion key.');
   if (!Array.isArray(value.quizAnswers) || value.quizAnswers.length !== classCompletionAnswers.length ||
