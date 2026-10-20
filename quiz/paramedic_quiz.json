@@ -140,30 +140,32 @@
     "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A 25-year-old male is found unconscious after a suspected opioid overdose. Respirations are 6/min and shallow. What is the most appropriate first action?",
+    "question": "An unconscious 25-year-old has respirations of 6/min with minimal chest rise and a palpable carotid pulse. Opioid exposure is suspected. Which action should take priority?",
     "choices": [
-      "Insert an OPA and ventilate with a BVM",
-      "Administer naloxone IM",
-      "Apply a non-rebreather mask",
-      "Place the patient in the recovery position"
+      "Open and maintain the airway, provide effective BVM ventilation, and administer naloxone as appropriate",
+      "Give intranasal naloxone and wait for a response before assisting breaths",
+      "Apply a nonrebreather mask without assessing chest rise",
+      "Begin compressions despite a confirmed pulse and inadequate breathing"
     ],
-    "answer": "Insert an OPA and ventilate with a BVM",
-    "reason": "The priority is airway and ventilation. Reversing the opioid is important, but airway support comes first when respirations are inadequate.",
+    "answer": "Open and maintain the airway, provide effective BVM ventilation, and administer naloxone as appropriate",
+    "reason": "Ventilation is the immediate priority when breathing is inadequate; naloxone may reverse opioid effects but does not replace respiratory support.",
     "subtopic": "Toxicology",
-    "topic": "Medical Emergencies"
+    "topic": "Medical Emergencies",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A 3-year-old child presents with inspiratory stridor, a barking cough, and mild fever. What condition is most likely?",
+    "question": "A 3-year-old has a barking cough, hoarse voice, inspiratory stridor when upset, low-grade fever, and no drooling. Which assessment best fits the presentation?",
     "choices": [
-      "Croup",
-      "Asthma",
-      "Epiglottitis",
-      "Foreign body aspiration"
+      "Viral croup with upper-airway narrowing; keep the child calm and assess work of breathing",
+      "Epiglottitis because any inspiratory stridor with fever is diagnostic",
+      "Lower-airway asthma because wheezing and stridor are interchangeable",
+      "Foreign-body obstruction because the symptoms developed over two days"
     ],
-    "answer": "Croup",
-    "reason": "Croup presents with stridor, a seal-like cough, and is common in toddlers. Epiglottitis typically involves high fever and drooling.",
+    "answer": "Viral croup with upper-airway narrowing; keep the child calm and assess work of breathing",
+    "reason": "Barking cough, hoarseness and stridor with a viral prodrome support croup. Assess severity and avoid upsetting the child.",
     "subtopic": "Pediatrics",
-    "topic": "Special Populations"
+    "topic": "Special Populations",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
     "question": "A 70-year-old with dizziness has sinus bradycardia at 38/min, BP 84/60, and cool skin. Oxygenation is adequate and IV access is established. What is the best management strategy?",
@@ -180,17 +182,18 @@
     "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A 19-year-old female has been assaulted and complains of lower abdominal pain with vaginal bleeding. What is your priority?",
+    "question": "A 19-year-old reports assault, abdominal pain and vaginal bleeding. She is pale, tachycardic and dizzy when sitting upright. Which approach is most appropriate?",
     "choices": [
-      "Treat for shock and transport",
-      "Question her about the assailant",
-      "Administer oxygen and notify police",
-      "Apply a cervical collar and long board"
+      "Prioritize ABCs and possible hemorrhagic shock, provide trauma-informed care, and arrange prompt appropriate transport",
+      "Focus first on a detailed account of the assailant before assessment",
+      "Delay transport until police complete their interview",
+      "Assume the bleeding is menstrual because there is no external abdominal wound"
     ],
-    "answer": "Treat for shock and transport",
-    "reason": "Bleeding and trauma may indicate internal injury. Rapid transport and shock management take priority over legal aspects.",
+    "answer": "Prioritize ABCs and possible hemorrhagic shock, provide trauma-informed care, and arrange prompt appropriate transport",
+    "reason": "Hemodynamic compromise and abdominal/pelvic symptoms raise concern for significant injury. Respect privacy, consent, and trauma-informed assessment while treating life threats.",
     "subtopic": "Gynecological",
-    "topic": "Medical Emergencies"
+    "topic": "Medical Emergencies",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
     "question": "A diabetic adult is confused and intermittently combative with glucose 35 mg/dL. They cannot follow swallowing commands reliably. IV access is available. Which intervention is best?",
