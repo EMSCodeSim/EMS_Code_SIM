@@ -23,7 +23,7 @@
 <form id="courseStartForm" class="rw-start-form">
 <label class="rw-name-field" for="learnerName"><b>Start class: enter your name</b><input id="learnerName" name="learnerName" type="text" autocomplete="name" maxlength="120" required placeholder="Enter your name"></label>
 
-<button class="rw-button primary" id="startClassBtn" type="submit">Start class</button>
+<label class="rw-consent"><input type="checkbox" name="completionConsent" required><span>I understand my name and course scores will be stored for class completion tracking.</span></label>\n<button class="rw-button primary" id="startClassBtn" type="submit">Start class</button>
 <span id="startClassStatus" aria-live="polite"></span>
 </form>
 <ol class="rw-progress-steps" aria-label="Required class steps">
@@ -120,7 +120,7 @@
 <fieldset class="rw-test-question"><legend>8. Which narrative best supports medical necessity?</legend><label><input type="radio" name="q8" value="0" required><span>A generic statement that the patient was evaluated and transported.</span></label><label><input type="radio" name="q8" value="1" required><span>A fact-based link between the complaint, findings, care, monitoring, disposition, and handoff.</span></label><label><input type="radio" name="q8" value="2" required><span>A protocol number without the encounter details.</span></label><label><input type="radio" name="q8" value="3" required><span>A list of all possible treatments, whether performed or not.</span></label></fieldset>
 <fieldset class="rw-test-question"><legend>9. Which refusal documentation is most complete?</legend><label><input type="radio" name="q9" value="0" required><span>“Patient refused,” with no further detail.</span></label><label><input type="radio" name="q9" value="1" required><span>A patient signature only.</span></label><label><input type="radio" name="q9" value="2" required><span>Capacity and risks, care offered/declined, physician authorization or applicable Medical Director-approved standing order, and required signatures or why unavailable.</span></label><label><input type="radio" name="q9" value="3" required><span>A protocol number without the refusal discussion or authorization details.</span></label></fieldset>
 <fieldset class="rw-test-question"><legend>10. If AI feedback suggests a fact that is not in the fictional scenario, what should the learner do?</legend><label><input type="radio" name="q10" value="0" required><span>Add it because the grader recommended it.</span></label><label><input type="radio" name="q10" value="1" required><span>Assume it was implied.</span></label><label><input type="radio" name="q10" value="2" required><span>Leave it out unless the scenario supports it; ask an instructor if needed.</span></label><label><input type="radio" name="q10" value="3" required><span>Change the scenario to fit the suggestion.</span></label></fieldset></div>
-<label class="rw-consent"><input type="checkbox" name="completionConsent" required><span>I understand my name and course scores will be stored for class completion tracking.</span></label>
+
 <button class="rw-button primary" id="prepareCompletionBtn" type="submit">Submit written test</button>
 <p id="classWrittenResult" class="rw-callout" hidden aria-live="polite"></p>
 <div id="classCompletionStatus" class="rw-callout" hidden aria-live="polite"></div>
