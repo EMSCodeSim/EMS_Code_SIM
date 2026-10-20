@@ -17,7 +17,9 @@ CREATE INDEX ems_report_class_completions_completed_at_idx
 CREATE INDEX ems_report_class_completions_learner_name_idx
   ON ems_report_class_completions (lower(learner_name));
 
--- The site writer role can add records but cannot read or change learner results.
-GRANT CONNECT ON DATABASE neondb TO ems_class_writer;
-GRANT USAGE ON SCHEMA public TO ems_class_writer;
-GRANT INSERT ON TABLE ems_report_class_completions TO ems_class_writer;
+-- Create ems_completion_insert as a SQL-created LOGIN role and set its password
+-- outside source control. Do not create it with the Neon Console/API, which grants
+-- the managed neon_superuser role.
+GRANT CONNECT ON DATABASE neondb TO ems_completion_insert;
+GRANT USAGE ON SCHEMA public TO ems_completion_insert;
+GRANT INSERT ON TABLE ems_report_class_completions TO ems_completion_insert;
