@@ -188,6 +188,21 @@ exports.handler = async event => {
   let body;
   try { body = JSON.parse(event.body || '{}'); } catch (_) { return response(400, { error: 'Invalid request.' }); }
   if (body.website) return response(400, { error: 'Invalid request.' });
+  // Temporary read-only deployment diagnostic; remove after production connection verification.
+  if (body.action === 'diagnoseClassDatabase') {
+    if (rateLimited(event, 'class-db-diagnostic', 2)) return response(429, { error: 'Too many diagnostic requests.' });
+    try {
+      const databaseUrl = env('EMS_REPORT_CLASS_DATABASE_URL');
+      if (!databaseUrl) return response(200, { databaseConfigured: false, connected: false });
+      const sql = neon(databaseUrl);
+      const [status] = await sql\`SELECT current_user AS role, current_database() AS database, has_table_privilege(current_user, 'public.ems_report_class_completions', 'INSERT') AS can_insert\`;
+      return response(200, { databaseConfigured: true, connected: true, ...status });
+    } catch (error) {
+      const message = String(error?.message || '').toLowerCase();
+      const category = /password authentication|authentication failed/.test(message) ? 'authentication' : /getaddrinfo|enotfound|name or service/.test(message) ? 'dns' : /timeout|timed out/.test(message) ? 'timeout' : /ssl|tls|channel binding/.test(message) ? 'tls' : 'database_request';
+      return response(200, { databaseConfigured: Boolean(env('EMS_REPORT_CLASS_DATABASE_URL')), connected: false, errorCategory: category });
+    }
+  }
   if (body.action === 'completeClass') {
     if (rateLimited(event, 'completion', 8)) return response(429, { error: 'Too many completion attempts. Wait one minute and try again.' });
     let completion;
