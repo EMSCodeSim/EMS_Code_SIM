@@ -55,7 +55,7 @@
       item.classList.toggle('complete', done);
       const state = item.querySelector('.rw-step-status');
       if (state) state.textContent = done ? 'Complete' : 'Not complete';
-      const detailNode = item.querySelector('span:last-of-type');
+      const detailNode = item.querySelector('span:nth-of-type(2)');
       if (detailNode && detail) detailNode.textContent = detail;
     };
     mark('#progress-start', started, started ? 'Name entered: ' + p.learnerName : 'Enter your name.');
@@ -64,7 +64,7 @@
     mark('#progress-ai', ai, ai ? 'First AI grade: ' + p.aiNarrativeScore + '/100. Extra narratives are optional.' : 'Submit a fictional narrative for one grade.');
     mark('#progress-test', test, test ? 'Passed with ' + p.writtenTestScore + '% (' + p.writtenTestCorrect + ' of 10).' : p?.writtenTestScore != null ? 'Most recent score: ' + p.writtenTestScore + '%. At least 80% is required.' : 'Earn at least 8 correct answers (80%).');
     mark('#progress-finish', finished, finished ? 'Class finished and completion recorded.' : 'Finish after passing the written test.');
-    setLockedLink('#progress-guide a', '/pcr-narrative-coach.html', 'Open PCR Narrative Coach →', started && material && !guide);
+    setLockedLink('#progress-guide a', '/pcr-narrative-coach.html', guide ? 'Practice another guided narrative (optional) →' : 'Open PCR Narrative Coach →', started && material);
     setLockedLink('#progress-ai a', '/narrative-writing-lab.html', ai ? 'Practice another narrative (optional) →' : 'Open AI Narrative Writing Lab →', started && material && guide);
     setLockedLink('#progress-test a', '#course-completion', 'Go to written test →', started && material && guide && ai);
     startForm.elements.learnerName.value = started ? p.learnerName : '';
