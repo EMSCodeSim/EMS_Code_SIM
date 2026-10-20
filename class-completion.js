@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const STORAGE_KEY = 'emscode_report_class_completion_pending_v1';
-  const ANSWER_KEY = [1, 2, 0, 3, 1, 2, 0, 1, 3, 2];
+  const ANSWER_KEY = [0, 2, 0, 1, 1, 2, 0, 1, 2, 2];
   const form = document.querySelector('#classCompletionForm');
   if (!form) return;
   const status = document.querySelector('#classCompletionStatus');
