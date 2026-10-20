@@ -6,22 +6,6 @@ const scenarios = require('./data/narrative-lab-scenarios.json');
 const requestBuckets = new Map();
 const classCompletionAnswers = [0, 2, 0, 1, 1, 2, 0, 1, 2, 2];
 
-function validateClassCompletion(value) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid class completion data.');
-  const learnerName = String(value.learnerName || '').trim().replace(/\s+/g, ' ');
-  if (learnerName.length < 2 || learnerName.length > 120 || /[\u0000-\u001f\u007f]/.test(learnerName)) throw new Error('Enter a valid learner name.');
-  if (value.consent !== true || value.version !== 'ems-report-writing-class-v1') throw new Error('Class completion consent or version is invalid.');
-  if (value.guidedNarrativeComplete !== true) throw new Error('Complete a guided narrative before finishing the class.');
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value.submissionKey || ''))) throw new Error('Invalid class completion key.');
-  if (!Array.isArray(value.quizAnswers) || value.quizAnswers.length !== classCompletionAnswers.length ||
-      value.quizAnswers.some(answer => !Number.isInteger(answer) || answer < 0 || answer > 3)) {
-    throw new Error('Complete all 10 written test questions.');
-  }
-  const correct = value.quizAnswers.reduce((sum, answer, index) => sum + (answer === classCompletionAnswers[index] ? 1 : 0), 0);
-  if (correct < 8) throw new Error('You need at least 80% on the written test to finish the class.');
-  return { submissionKey: value.submissionKey, learnerName, correct, score: correct * 10 };
-}
-
 function validateClassFinish(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid class completion data.');
   const learnerName = String(value.learnerName || '').trim().replace(/\s+/g, ' ');
@@ -43,7 +27,14 @@ async function saveClassCompletion(completion, aiScore) {
   await sql`INSERT INTO ems_report_class_completions
     (submission_key, learner_name, written_test_correct, written_test_total, written_test_score, ai_narrative_score, class_version)
     VALUES (${completion.submissionKey}::uuid, ${completion.learnerName}, ${completion.correct}, 10, ${completion.score}, ${aiScore}, 'ems-report-writing-class-v1')
-    ON CONFLICT (submission_key) DO NOTHING`;
+    ON CONFLICT (submission_key) DO UPDATE SET
+      learner_name = EXCLUDED.learner_name,
+      written_test_correct = EXCLUDED.written_test_correct,
+      written_test_total = EXCLUDED.written_test_total,
+      written_test_score = EXCLUDED.written_test_score,
+      ai_narrative_score = EXCLUDED.ai_narrative_score,
+      class_version = EXCLUDED.class_version,
+      completed_at = NOW()`;
 }
 
 const categoryDefinitions = [
@@ -175,11 +166,7 @@ exports.handler = async event => {
       return response(503, { error: 'The class record could not be saved. Please try again.' });
     }
   }
-  let classCompletion = null;
-  if (body.classCompletion !== undefined && body.classCompletion !== null) {
-    try { classCompletion = validateClassCompletion(body.classCompletion); }
-    catch (error) { return response(400, { error: error.message }); }
-  }
+  if (body.classCompletion !== undefined && body.classCompletion !== null) return response(400, { error: 'Finish the class from the course checklist to save the completion record.' });
   const narrative = String(body.narrative || '').trim();
   const scenario = scenarios.find(item => item.id === body.scenarioId);
   const format = ['chronological', 'chart', 'soap'].includes(body.format) ? body.format : 'chronological';
@@ -216,18 +203,6 @@ Return concise, actionable feedback. Empty arrays are allowed when no issue exis
     const output = extractOutputText(aiResult);
     if (!output) throw new Error('The AI grader returned no feedback.');
     const graded = validateResult(JSON.parse(output));
-    if (classCompletion) {
-      graded.courseCompletionAttempted = true;
-      graded.writtenTestScore = classCompletion.score;
-      graded.aiNarrativeScore = graded.totalScore;
-      try {
-        await saveClassCompletion(classCompletion, graded.totalScore);
-        graded.courseCompletionSaved = true;
-      } catch (_) {
-        console.error('Narrative grader could not save a class completion record.');
-        graded.courseCompletionSaved = false;
-      }
-    }
     return response(200, graded);
   } catch (error) {
     console.error('Narrative grader:', error.message);
