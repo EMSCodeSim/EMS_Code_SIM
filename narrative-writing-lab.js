@@ -15,7 +15,7 @@
     caseTitle: document.querySelector('#caseTitle'), caseFacts: document.querySelector('#caseFacts'), beginnerGuide: document.querySelector('#beginnerGuide'),
     format: document.querySelector('#formatSelect'), formatGuide: document.querySelector('#formatGuide'), narrative: document.querySelector('#narrativeText'),
     wordCount: document.querySelector('#wordCount'), draftStatus: document.querySelector('#draftStatus'), preflight: document.querySelector('#preflight'),
-    grade: document.querySelector('#gradeBtn'), grading: document.querySelector('#gradingState'), feedback: document.querySelector('#feedback')
+    grade: document.querySelector('#gradeBtn'), grading: document.querySelector('#gradingState'), feedback: document.querySelector('#feedback'), completionStatus: document.querySelector('#courseCompletionStatus')
   };
 
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
@@ -120,7 +120,11 @@
     try {
       const response = await fetch('/.netlify/functions/narrative-grader', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scenarioId: state.selected.id, format: el.format.value, level: state.level, narrative: el.narrative.value.trim(), website: '' })
+        body: JSON.stringify({
+          scenarioId: state.selected.id, format: el.format.value, level: state.level,
+          narrative: el.narrative.value.trim(), website: '',
+          classCompletion: (() => { try { return JSON.parse(localStorage.getItem('emscode_report_class_completion_pending_v1') || 'null'); } catch (_) { return null; } })()
+        })
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || 'The AI grader is unavailable right now.');
@@ -142,6 +146,20 @@
   function renderFeedback(result) {
     document.querySelector('#totalScore').textContent = result.totalScore;
     document.querySelector('#summaryText').textContent = result.summary;
+    if (el.completionStatus) {
+      el.completionStatus.classList.add('hidden');
+      el.completionStatus.classList.remove('success', 'error');
+      if (result.courseCompletionSaved) {
+        el.completionStatus.textContent = 'Class completion recorded. Written test: ' + result.writtenTestScore + '% · AI narrative: ' + result.aiNarrativeScore + '/100.';
+        el.completionStatus.classList.remove('hidden');
+        el.completionStatus.classList.add('success');
+        try { localStorage.removeItem('emscode_report_class_completion_pending_v1'); } catch (_) {}
+      } else if (result.courseCompletionAttempted) {
+        el.completionStatus.textContent = 'Your AI grade is ready, but the class completion record could not be saved. Check your connection and submit the narrative again from the class completion flow.';
+        el.completionStatus.classList.remove('hidden');
+        el.completionStatus.classList.add('error');
+      }
+    }
     const comparison = state.priorScore == null ? '' : result.totalScore > state.priorScore ? ` · Up ${result.totalScore - state.priorScore} points` : result.totalScore < state.priorScore ? ` · Down ${state.priorScore - result.totalScore} points` : ' · Same score';
     document.querySelector('#attemptBadge').textContent = `Attempt ${state.attempt}${comparison}`;
     const categories = Array.isArray(result.categories) ? result.categories : [];
