@@ -70,199 +70,214 @@
     "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What must be obtained before providing care to a conscious adult?",
+    "question": "An alert adult with a painful ankle injury understands your assessment and agrees to splinting but declines transport. What should the EMT do before proceeding?",
     "choices": [
-      "Parental consent",
-      "Expressed denial",
-      "Implied consent",
-      "Informed consent"
+      "Confirm informed consent for assessment and treatment and address the refusal of transport separately",
+      "Assume consent for all care because the patient called 911",
+      "Have a family member consent even though the adult has capacity",
+      "Refuse to provide any care unless the patient agrees to transport"
     ],
-    "answer": "Informed consent",
+    "answer": "Confirm informed consent for assessment and treatment and address the refusal of transport separately",
     "topic": "EMS Operations",
     "subtopic": "Legal & Ethics",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
+    "reason": "Consent to treatment and transport are separate decisions. A capable adult may accept some care and refuse other care.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which of the following is an example of implied consent?",
+    "question": "An unconscious adult with severe injuries has no family present and requires immediate airway support. What permits emergency treatment?",
     "choices": [
-      "Child with parent present",
-      "Refusing care after being informed",
-      "Signing a waiver",
-      "Unconscious trauma patient"
+      "Implied consent when the patient cannot decide and delaying care threatens life",
+      "Express consent inferred from a bystander's request",
+      "Written consent that must be obtained before lifesaving care",
+      "A police officer's permission regardless of patient capacity"
     ],
-    "answer": "Unconscious trauma patient",
+    "answer": "Implied consent when the patient cannot decide and delaying care threatens life",
     "topic": "Trauma",
     "subtopic": "Legal & Ethics",
-    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma."
+    "reason": "Emergency implied consent can apply when an incapacitated patient needs urgent care and no authorized decision-maker is available.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is the term for unlawful touching of a patient without consent?",
+    "question": "An alert adult refuses a blood glucose check and withdraws their hand. The EMT performs the test anyway without legal justification. What legal concern is most directly raised?",
     "choices": [
-      "Battery",
-      "Assault",
-      "Negligence",
-      "Abandonment"
+      "Battery from nonconsensual physical contact",
+      "Abandonment because care was provided",
+      "Defamation because the patient disagreed",
+      "Negligent documentation because no blood pressure was recorded"
     ],
-    "answer": "Battery",
+    "answer": "Battery from nonconsensual physical contact",
     "topic": "EMS Operations",
     "subtopic": "Legal & Ethics",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
+    "reason": "Unconsented physical contact can constitute battery. Capacity, emergency exceptions and local law matter.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What should you do if a patient refuses care?",
+    "question": "An adult with possible ACS refuses transport but appears capable of understanding risks. What is the most appropriate response?",
     "choices": [
-      "Leave immediately",
-      "Call police",
-      "Force treatment",
-      "Explain risks and document refusal"
+      "Explain the risks and alternatives, assess capacity, consult as required and document the informed refusal",
+      "Tell the patient that signing a refusal eliminates all medical risk",
+      "Ask law enforcement to force transport because ACS is possible",
+      "Leave without discussing warning signs because the patient refused"
     ],
-    "answer": "Explain risks and document refusal",
+    "answer": "Explain the risks and alternatives, assess capacity, consult as required and document the informed refusal",
     "topic": "EMS Operations",
     "subtopic": "Legal & Ethics",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
+    "reason": "A valid refusal requires decision-making capacity, informed discussion, appropriate documentation and policy compliance.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is the legal term for terminating care without transfer?",
+    "question": "After beginning treatment of an unstable patient, an EMT must leave the scene for another call. Which action best avoids patient abandonment?",
     "choices": [
-      "Malpractice",
-      "Negligence",
-      "Battery",
-      "Abandonment"
+      "Transfer care to an appropriately qualified provider with a clear handoff before departing",
+      "Tell a bystander to watch the patient until another ambulance arrives",
+      "Leave a written note with the patient's vital signs",
+      "Call dispatch to say the patient is still on scene and depart immediately"
     ],
-    "answer": "Abandonment",
+    "answer": "Transfer care to an appropriately qualified provider with a clear handoff before departing",
     "topic": "EMS Operations",
     "subtopic": "Legal & Ethics",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
+    "reason": "Once care begins, it must continue until an appropriate transfer, authorized termination, or other lawful disposition.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which organ is responsible for pumping blood throughout the body?",
+    "question": "A patient with chest discomfort has cool skin, confusion and a weak radial pulse. Which physiological failure best explains these findings?",
     "choices": [
-      "Lungs",
-      "Heart",
-      "Liver",
-      "Kidney"
+      "Inadequate cardiac output leading to reduced tissue perfusion",
+      "Increased pulmonary diffusion without circulatory change",
+      "Increased hepatic filtration causing low oxygen saturation",
+      "Isolated gastric motility reduction causing altered mentation"
     ],
-    "answer": "Heart",
+    "answer": "Inadequate cardiac output leading to reduced tissue perfusion",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "The heart must provide adequate forward flow to perfuse organs. Weak pulses and altered mentation suggest poor circulation.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which body system includes the brain and spinal cord?",
+    "question": "A patient with head trauma develops new unilateral weakness and confusion. Which organ system is most directly implicated by these findings?",
     "choices": [
-      "Digestive system",
-      "Respiratory system",
-      "Nervous system",
-      "Endocrine system"
+      "Central nervous system involving the brain and spinal cord",
+      "Gastrointestinal system involving the stomach and intestines",
+      "Endocrine system involving hormone release only",
+      "Urinary system involving renal filtration"
     ],
-    "answer": "Nervous system",
+    "answer": "Central nervous system involving the brain and spinal cord",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Focal neurologic deficits and altered mentation suggest central nervous system involvement.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which system is responsible for gas exchange?",
+    "question": "An adult has severe pneumonia with alveoli filled by inflammatory fluid. Which process is most directly impaired?",
     "choices": [
-      "Urinary system",
-      "Respiratory system",
-      "Nervous system",
-      "Digestive system"
+      "Diffusion of oxygen and carbon dioxide across the alveolar-capillary membrane",
+      "Transport of blood from the left ventricle to the aorta",
+      "Electrical conduction from the sinoatrial node",
+      "Production of red blood cells in the bone marrow"
     ],
-    "answer": "Respiratory system",
+    "answer": "Diffusion of oxygen and carbon dioxide across the alveolar-capillary membrane",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Alveolar fluid interferes with pulmonary gas exchange.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which organ is part of the digestive system?",
+    "question": "A patient has repeated vomiting and abdominal pain but adequate breathing. Which additional history is most directly relevant to a possible gastrointestinal source?",
     "choices": [
-      "Heart",
-      "Trachea",
-      "Stomach",
-      "Larynx"
+      "Recent meals, bowel changes and blood in vomit or stool",
+      "Previous ankle sprains and exercise tolerance",
+      "Whether the patient has ever worn a cervical collar",
+      "The number of dental fillings completed this year"
     ],
-    "answer": "Stomach",
+    "answer": "Recent meals, bowel changes and blood in vomit or stool",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Focused GI history helps characterize abdominal complaints, while life threats and vital signs remain priorities.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which bones protect the brain?",
+    "question": "Following a head injury, a patient develops worsening headache, vomiting and reduced alertness. Which structure is directly threatened by an expanding intracranial bleed?",
     "choices": [
-      "Spinal vertebrae",
-      "Pelvis",
-      "Ribs",
-      "Cranial bones"
+      "Brain within the rigid cranial vault",
+      "Lungs within the thoracic cavity",
+      "Kidneys within the retroperitoneum",
+      "Liver beneath the right costal margin"
     ],
-    "answer": "Cranial bones",
+    "answer": "Brain within the rigid cranial vault",
     "topic": "Trauma",
     "subtopic": "Trauma Care",
-    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma."
+    "reason": "Bleeding within the skull can increase intracranial pressure and compromise brain tissue.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is the function of alveoli in the lungs?",
+    "question": "A patient with diffuse pneumonia has low SpO₂ despite supplemental oxygen. Which normal function is most directly compromised?",
     "choices": [
-      "Sound production",
-      "Protect against infection",
-      "Gas exchange",
-      "Air filtration"
+      "Alveolar gas exchange between air and pulmonary capillary blood",
+      "Generation of speech by the vocal cords",
+      "Production of digestive enzymes by the pancreas",
+      "Storage of blood in the spleen"
     ],
-    "answer": "Gas exchange",
+    "answer": "Alveolar gas exchange between air and pulmonary capillary blood",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
+    "reason": "Inflamed or fluid-filled alveoli reduce effective gas exchange and can cause hypoxemia.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What vessel carries oxygenated blood from the lungs to the heart?",
+    "question": "A patient has severe left ventricular dysfunction with pulmonary congestion. Which vessel normally returns freshly oxygenated blood from the lungs to the left atrium?",
     "choices": [
-      "Pulmonary vein",
-      "Vena cava",
-      "Aorta",
-      "Pulmonary artery"
+      "Pulmonary veins",
+      "Pulmonary arteries",
+      "Superior vena cava",
+      "Aorta"
     ],
-    "answer": "Pulmonary vein",
+    "answer": "Pulmonary veins",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Pulmonary veins carry oxygenated blood from the lungs to the left atrium.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which part of the heart pumps blood to the body?",
+    "question": "An adult has extensive damage to the left ventricle after an infarction. Which circulatory function is most directly affected?",
     "choices": [
-      "Left atrium",
-      "Right atrium",
-      "Right ventricle",
-      "Left ventricle"
+      "Pumping oxygenated blood into the systemic circulation",
+      "Returning deoxygenated blood to the right atrium",
+      "Pumping blood directly from the right atrium to the lungs",
+      "Delivering venous blood from the lungs to the right ventricle"
     ],
-    "answer": "Left ventricle",
+    "answer": "Pumping oxygenated blood into the systemic circulation",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "The left ventricle generates pressure for systemic circulation.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which blood cells help fight infection?",
+    "question": "A patient undergoing chemotherapy has fever and a very low white blood cell count. Which function is most impaired?",
     "choices": [
-      "Red blood cells",
-      "Platelets",
-      "Plasma",
-      "White blood cells"
+      "Immune defense against infection",
+      "Platelet-mediated clot formation only",
+      "Hemoglobin-mediated oxygen carriage only",
+      "Plasma volume regulation by the kidneys only"
     ],
-    "answer": "White blood cells",
+    "answer": "Immune defense against infection",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
+    "reason": "White blood cells are central to immune defense; neutropenia increases infection risk.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which structure prevents food from entering the airway?",
+    "question": "An unconscious patient vomits while lying supine. Which action best addresses the immediate airway threat?",
     "choices": [
-      "Larynx",
-      "Trachea",
-      "Epiglottis",
-      "Esophagus"
+      "Turn or position appropriately with spinal precautions as indicated and suction the airway",
+      "Insert an oral airway without clearing visible vomit",
+      "Apply oxygen and wait for the gag reflex to return",
+      "Continue obtaining history before repositioning"
     ],
-    "answer": "Epiglottis",
+    "answer": "Turn or position appropriately with spinal precautions as indicated and suction the airway",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Airway Management",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Vomitus threatens airway patency and aspiration. Position and suction promptly while protecting the spine when indicated.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
     "question": "The prefix 'tachy-' means:",
