@@ -188,6 +188,19 @@ exports.handler = async event => {
   let body;
   try { body = JSON.parse(event.body || '{}'); } catch (_) { return response(400, { error: 'Invalid request.' }); }
   if (body.website) return response(400, { error: 'Invalid request.' });
+  if (body.action === 'completeClass') {
+    if (rateLimited(event, 'completion', 8)) return response(429, { error: 'Too many completion attempts. Wait one minute and try again.' });
+    let completion;
+    try { completion = validateClassFinish(body.classCompletion); }
+    catch (error) { return response(400, { error: error.message }); }
+    try {
+      await saveClassCompletion(completion, completion.aiScore);
+      return response(200, { courseCompletionSaved: true, writtenTestScore: completion.score, aiNarrativeScore: completion.aiScore });
+    } catch (error) {
+      console.error('Class completion could not be saved:', error.message);
+      return response(503, { error: 'The class record could not be saved. Please try again.' });
+    }
+  }
   if (rateLimited(event, 'grade', 8)) return response(429, { error: 'Too many grading requests. Wait one minute and try again.' });
   let classPractice = null;
   if (body.classPractice !== undefined && body.classPractice !== null) {
