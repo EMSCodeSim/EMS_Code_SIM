@@ -1,42 +1,45 @@
 [
   {
-    "question": "A 36-year-old female presents with right-sided weakness, slurred speech, and facial droop that started 30 minutes ago. Her blood glucose is 98 mg/dL. What is the most appropriate next action?",
+    "question": "A 36-year-old develops facial droop, aphasia, and right arm weakness 30 minutes ago. Glucose is 98 mg/dL, BP 176/94, and airway is patent. Which action best supports time-sensitive care?",
     "choices": [
-      "Transport to a stroke center immediately",
-      "Administer oral glucose",
-      "Give aspirin 324 mg",
-      "Perform spinal immobilization"
+      "Perform a validated stroke assessment, establish last-known-well, and activate an appropriate stroke destination pathway",
+      "Give aspirin after a negative glucose screen and then transport to the closest emergency department",
+      "Lower the blood pressure before initiating transport because hypertension is the likely cause",
+      "Complete a comprehensive neurologic examination on scene before contacting a stroke center"
     ],
-    "answer": "Transport to a stroke center immediately",
-    "reason": "The patient is within the window for stroke intervention and has a normal glucose. Rapid transport is key.",
+    "answer": "Perform a validated stroke assessment, establish last-known-well, and activate an appropriate stroke destination pathway",
+    "reason": "Suspected acute stroke requires rapid recognition, last-known-well documentation, appropriate destination and pre-notification. Avoid unnecessary scene delays and empiric aspirin.",
     "subtopic": "Stroke",
-    "topic": "Medical Emergencies"
+    "topic": "Medical Emergencies",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A 50-year-old male has circumferential burns to his chest and is struggling to breathe. Breath sounds are decreased bilaterally. What is your most immediate concern?",
+    "question": "A patient with deep circumferential chest burns has increasing respiratory effort, reduced chest excursion, and bilateral breath sounds. What finding most directly explains the worsening ventilation?",
     "choices": [
-      "Impaired chest wall expansion",
-      "Hypoglycemia from burn stress",
-      "Cardiac tamponade",
-      "Tension pneumothorax"
+      "Restricted chest wall compliance from tightening burned tissue",
+      "Progressive airway edema causing upper-airway obstruction",
+      "A tension pneumothorax causing unilateral ventilation failure",
+      "Carbon monoxide exposure causing falsely normal pulse oximetry"
     ],
-    "answer": "Impaired chest wall expansion",
-    "reason": "Circumferential chest burns can restrict breathing due to tightening of skin and tissue.",
+    "answer": "Restricted chest wall compliance from tightening burned tissue",
+    "reason": "Circumferential full-thickness chest burns can limit expansion mechanically. Airway injury and toxic inhalation are important concurrent considerations, but reduced excursion with bilateral sounds supports chest wall restriction.",
     "subtopic": "Burns",
-    "topic": "Trauma"
+    "topic": "Trauma",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A combative patient is threatening bystanders and screaming unintelligibly. Vitals are normal. What is the safest initial management?",
+    "question": "A combative patient is pacing and threatening staff in a crowded room. No immediately reversible medical cause has yet been excluded. What is the best initial approach?",
     "choices": [
-      "Ensure scene safety and wait for law enforcement",
-      "Physically restrain the patient immediately",
-      "Administer haloperidol without consent",
-      "Attempt to reason with the patient alone"
+      "Withdraw to safety, request resources, use calm verbal de-escalation from a safe distance, and assess for medical causes when feasible",
+      "Move close to establish rapport while a partner prepares restraints",
+      "Administer a sedative immediately without attempting to establish a safe scene",
+      "Assume a primary psychiatric cause because the patient is yelling and pacing"
     ],
-    "answer": "Ensure scene safety and wait for law enforcement",
-    "reason": "Scene safety is the top priority, especially with behavioral emergencies involving potential violence.",
+    "answer": "Withdraw to safety, request resources, use calm verbal de-escalation from a safe distance, and assess for medical causes when feasible",
+    "reason": "Scene safety and de-escalation precede hands-on assessment when threatened. Consider medical causes of agitation and follow local restraint/sedation protocols if escalation becomes necessary.",
     "subtopic": "Behavioral/Psychiatric",
-    "topic": "Medical Emergencies"
+    "topic": "Medical Emergencies",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
     "question": "A 26-year-old male has open femur fractures and is pulseless after a motorcycle crash. What should you do first?",
@@ -116,7 +119,6 @@
     "subtopic": "Bleeding and Shock",
     "topic": "Trauma"
   },
-  
   {
     "question": "A 54-year-old male is complaining of crushing substernal chest pain radiating to his left arm. He is diaphoretic and short of breath. What is the most appropriate initial treatment?",
     "choices": [
@@ -234,7 +236,6 @@
     "subtopic": "Toxicology",
     "topic": "Medical Emergencies"
   },
-
   {
     "topic": "Cardiovascular",
     "question": "What is the primary purpose of administering aspirin to a patient experiencing chest pain?",
@@ -377,11 +378,11 @@
     "choices": [
       "0.5 g IV over 10 min",
       "1 g IV push",
-      "2 g IV diluted over 2\u20135 minutes",
+      "2 g IV diluted over 2–5 minutes",
       "4 g IM"
     ],
-    "answer": "2 g IV diluted over 2\u20135 minutes",
-    "reason": "Magnesium 2 g IV over 2\u20135 minutes is the ACLS-recommended dose for torsades."
+    "answer": "2 g IV diluted over 2–5 minutes",
+    "reason": "Magnesium 2 g IV over 2–5 minutes is the ACLS-recommended dose for torsades."
   },
   {
     "question": "Which of the following conditions is most associated with a pulsus paradoxus and muffled heart sounds?",
@@ -447,6 +448,6 @@
       "Hyperthermia"
     ],
     "answer": "Hypoventilation due to loss of hypoxic drive",
-    "reason": "COPD patients rely partially on hypoxic respiratory drive; high-flow O\u2082 can reduce their respiratory effort."
+    "reason": "COPD patients rely partially on hypoxic respiratory drive; high-flow O₂ can reduce their respiratory effort."
   }
 ]
