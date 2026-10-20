@@ -1,68 +1,73 @@
 [
   {
-    "question": "What is the primary role of the EMT in an EMS system?",
+    "question": "An EMT arrives to find a 68-year-old patient sitting upright, speaking in two-word sentences. Respirations are 30/min with visible accessory muscle use, SpO₂ 89%, and a strong radial pulse. Which action is the best immediate priority?",
     "choices": [
-      "Provide basic emergency medical care",
-      "Diagnose medical conditions",
-      "Perform advanced airway procedures",
-      "Prescribe medications"
+      "Assess breathing adequacy and initiate appropriate respiratory support while obtaining further findings",
+      "Obtain a detailed history of previous respiratory admissions before intervening",
+      "Apply a nonrebreather mask and defer further assessment until arrival at the hospital",
+      "Position the patient supine to improve blood pressure before assessing ventilation"
     ],
-    "answer": "Provide basic emergency medical care",
+    "answer": "Assess breathing adequacy and initiate appropriate respiratory support while obtaining further findings",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Marked work of breathing requires immediate assessment of ventilation and oxygenation. Oxygen may be indicated, but a device choice alone cannot replace evaluation of breathing adequacy.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is an example of off-line medical direction?",
+    "question": "An EMT is treating a patient under an approved standing order for oral glucose. The patient is awake but has difficulty swallowing. Which action is most appropriate?",
     "choices": [
-      "Direct supervision",
-      "Real-time orders by radio",
-      "Standing orders",
-      "Calling the medical director"
+      "Withhold oral glucose, protect the airway, and request appropriate additional care",
+      "Give a smaller amount of oral glucose because the patient is awake",
+      "Contact medical control before addressing an immediate airway concern",
+      "Give oral glucose slowly while the partner prepares transport"
     ],
-    "answer": "Standing orders",
+    "answer": "Withhold oral glucose, protect the airway, and request appropriate additional care",
     "topic": "EMS Operations",
     "subtopic": "EMS Systems",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
+    "reason": "Standing orders do not override contraindications. Impaired swallowing increases aspiration risk; manage airway concerns and seek treatment within local scope.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which level of EMS provider can perform advanced airway management?",
+    "question": "An EMT is assisting a paramedic with a patient whose breathing has become slow and shallow. SpO₂ is 84% despite supplemental oxygen. Which observation most strongly supports assisted ventilation?",
     "choices": [
-      "Paramedic",
-      "AEMT",
-      "EMT",
-      "EMR"
+      "Inadequate respiratory depth with declining mental status",
+      "Persistent low SpO₂ despite a well-positioned oxygen mask",
+      "A history of COPD with a respiratory rate of 20/min",
+      "Anxiety with normal chest rise and normal mentation"
     ],
-    "answer": "Paramedic",
+    "answer": "Inadequate respiratory depth with declining mental status",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Airway Management",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Inadequate tidal volume and declining consciousness indicate ventilatory failure. Pulse oximetry helps evaluate oxygenation but does not alone determine ventilation adequacy.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What does CQI stand for in EMS systems?",
+    "question": "During a quality review, an agency finds repeated delays in recognizing respiratory failure. Which improvement best measures whether a new training program works?",
     "choices": [
-      "Continuous Quality Improvement",
-      "Clinical Quantitative Index",
-      "Certified Quality Initiative",
-      "Continuous Quantitative Instruction"
+      "Compare documented recognition and intervention times before and after training",
+      "Count how many employees attended the training sessions",
+      "Measure satisfaction with the instructor immediately after class",
+      "Track how many pages of respiratory material were distributed"
     ],
-    "answer": "Continuous Quality Improvement",
+    "answer": "Compare documented recognition and intervention times before and after training",
     "topic": "EMS Operations",
     "subtopic": "EMS Systems",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
+    "reason": "Quality improvement should evaluate patient-care process measures relevant to the identified failure, not attendance or satisfaction alone.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Who provides on-line medical direction?",
+    "question": "A patient with chest discomfort is alert and oriented, understands the risks, and declines transport. There is no immediate threat to decision-making capacity. What is the EMT's best next step?",
     "choices": [
-      "EMT partner",
-      "Physician via radio or phone",
-      "Medical assistant",
-      "Dispatch center"
+      "Assess and document decision-making capacity, explain risks, involve medical direction as indicated, and honor an informed refusal",
+      "Transport the patient against their wishes because chest pain can be life threatening",
+      "Have a family member sign a refusal without discussing risks with the patient",
+      "Leave immediately after obtaining a signature without further assessment"
     ],
-    "answer": "Physician via radio or phone",
+    "answer": "Assess and document decision-making capacity, explain risks, involve medical direction as indicated, and honor an informed refusal",
     "topic": "EMS Operations",
     "subtopic": "EMS Systems",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
+    "reason": "A capable adult may refuse care. An informed refusal requires assessment, risk discussion, appropriate consultation, documentation, and following local policy.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
     "question": "What must be obtained before providing care to a conscious adult?",
@@ -205,7 +210,7 @@
     "answer": "Gas exchange",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "What vessel carries oxygenated blood from the lungs to the heart?",
@@ -244,7 +249,7 @@
     "answer": "White blood cells",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which structure prevents food from entering the airway?",
@@ -270,7 +275,7 @@
     "answer": "Fast",
     "topic": "Medical Emergencies",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "The suffix '-itis' refers to:",
@@ -283,7 +288,7 @@
     "answer": "Inflammation",
     "topic": "Medical Emergencies",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "The term 'hypoglycemia' means:",
@@ -309,7 +314,7 @@
     "answer": "Slow",
     "topic": "Medical Emergencies",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "The root word 'cardio' refers to:",
@@ -413,7 +418,7 @@
     "answer": "Speak clearly and slowly",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which age group is most likely to underreport pain?",
@@ -426,17 +431,17 @@
     "answer": "Geriatric patients",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which is a normal heart rate for a neonate?",
     "choices": [
-      "60\u2013100 bpm",
-      "160\u2013200 bpm",
-      "120\u2013160 bpm",
-      "100\u2013120 bpm"
+      "60–100 bpm",
+      "160–200 bpm",
+      "120–160 bpm",
+      "100–120 bpm"
     ],
-    "answer": "120\u2013160 bpm",
+    "answer": "120–160 bpm",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
     "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
@@ -452,7 +457,7 @@
     "answer": "Geriatrics",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which action represents EMS involvement in public health?",
@@ -465,7 +470,7 @@
     "answer": "Providing vaccinations at community events",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "What is one goal of community paramedicine?",
@@ -491,7 +496,7 @@
     "answer": "Improves public health planning",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "How can EMS help during a disease outbreak?",
@@ -517,7 +522,7 @@
     "answer": "Prevention and wellness",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which medication is commonly administered for hypoglycemia?",
@@ -530,7 +535,7 @@
     "answer": "Oral glucose",
     "topic": "Medical Emergencies",
     "subtopic": "Endocrine",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which medication is used for anaphylaxis?",
@@ -543,7 +548,7 @@
     "answer": "Epinephrine auto-injector",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which medication dilates the coronary arteries?",
@@ -556,7 +561,7 @@
     "answer": "Nitroglycerin",
     "topic": "Medical Emergencies",
     "subtopic": "Endocrine",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which medication reverses opioid overdose?",
@@ -569,7 +574,7 @@
     "answer": "Naloxone",
     "topic": "Medical Emergencies",
     "subtopic": "Endocrine",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which medication is indicated for chest pain of suspected cardiac origin?",
@@ -676,7 +681,7 @@
     "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
   },
   {
-    "question": "Which mnemonic helps assess a patient\u2019s chief complaint?",
+    "question": "Which mnemonic helps assess a patient’s chief complaint?",
     "choices": [
       "SAMPLE",
       "DCAP-BTLS",
@@ -686,7 +691,7 @@
     "answer": "OPQRST",
     "topic": "Medical Emergencies",
     "subtopic": "Neurologic",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "What does the 'L' in SAMPLE stand for?",
@@ -782,12 +787,12 @@
   {
     "question": "What is the compression rate for adult CPR?",
     "choices": [
-      "80\u2013100",
-      "60\u201380",
-      "100\u2013120 compressions per minute",
-      "120\u2013140"
+      "80–100",
+      "60–80",
+      "100–120 compressions per minute",
+      "120–140"
     ],
-    "answer": "100\u2013120 compressions per minute",
+    "answer": "100–120 compressions per minute",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
     "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
@@ -803,7 +808,7 @@
     "answer": "At least 2 inches",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "When should the AED be applied to a pulseless patient?",
@@ -949,14 +954,14 @@
     "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
   },
   {
-    "question": "How should an EMT assess a child\u2019s airway?",
+    "question": "How should an EMT assess a child’s airway?",
     "choices": [
       "Hyperextend the neck",
       "Insert an OPA immediately",
       "Use a jaw thrust on all pediatric patients",
-      "Use a head tilt\u2013chin lift unless trauma suspected"
+      "Use a head tilt–chin lift unless trauma suspected"
     ],
-    "answer": "Use a head tilt\u2013chin lift unless trauma suspected",
+    "answer": "Use a head tilt–chin lift unless trauma suspected",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Airway Management",
     "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
@@ -985,7 +990,7 @@
     "answer": "Sort patients by severity",
     "topic": "Medical Emergencies",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "What color tag is assigned to patients who are deceased in triage?",
@@ -998,7 +1003,7 @@
     "answer": "Black",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which of the following best describes the role of the EMT at a crime scene?",
@@ -1040,7 +1045,7 @@
     "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
   },
   {
-    "question": "A 56-year-old male with a history of angina is complaining of chest discomfort. His vital signs are BP 124/82, HR 96, RR 18, and SpO\u2082 95%. What should you do first?",
+    "question": "A 56-year-old male with a history of angina is complaining of chest discomfort. His vital signs are BP 124/82, HR 96, RR 18, and SpO₂ 95%. What should you do first?",
     "choices": [
       "Administer nitroglycerin",
       "Apply oxygen via non-rebreather",
@@ -1057,10 +1062,10 @@
     "choices": [
       "Begin chest compressions",
       "Deliver oxygen via nasal cannula",
-      "Ventilate with BVM at 10\u201312/min",
+      "Ventilate with BVM at 10–12/min",
       "Wait for ALS before intervening"
     ],
-    "answer": "Ventilate with BVM at 10\u201312/min",
+    "answer": "Ventilate with BVM at 10–12/min",
     "reason": "Inadequate respiratory rate requires immediate assisted ventilations with a bag-valve mask (BVM).",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory"
@@ -1180,7 +1185,7 @@
     "answer": "Sublingual",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which condition is a contraindication to assisting with nitroglycerin?",
@@ -1284,7 +1289,7 @@
     "answer": "When signs of severe allergic reaction are present",
     "topic": "Medical Emergencies",
     "subtopic": "Respiratory",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "What is the most common route of administration for EMTs giving epinephrine?",
@@ -1297,7 +1302,7 @@
     "answer": "Intramuscular (auto-injector)",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "What is a possible side effect of epinephrine?",
@@ -1360,7 +1365,7 @@
       "Never; EMTs do not ventilate"
     ],
     "answer": "When breathing becomes inadequate or the patient becomes too tired to maintain effort",
-    "reason": "Assisted ventilation is indicated for inadequate rate, depth, or declining respiratory effort\u2014not only extreme SpO2 values.",
+    "reason": "Assisted ventilation is indicated for inadequate rate, depth, or declining respiratory effort—not only extreme SpO2 values.",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Ventilation"
   },
@@ -1380,13 +1385,13 @@
   {
     "question": "What is the preferred ventilation rate for an adult with a pulse who needs BVM support?",
     "choices": [
-      "1 breath every 5\u20136 seconds",
+      "1 breath every 5–6 seconds",
       "30 compressions to 2 breaths",
       "1 breath every 1 second",
       "10 breaths then a pause"
     ],
-    "answer": "1 breath every 5\u20136 seconds",
-    "reason": "Adults with a pulse are ventilated about 10\u201312 breaths per minute to avoid hyperventilation.",
+    "answer": "1 breath every 5–6 seconds",
+    "reason": "Adults with a pulse are ventilated about 10–12 breaths per minute to avoid hyperventilation.",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Ventilation"
   },
@@ -1679,13 +1684,13 @@
   {
     "question": "During CPR, the compression rate for adults should be:",
     "choices": [
-      "60\u201380/min",
-      "100\u2013120/min",
+      "60–80/min",
+      "100–120/min",
       "40/min",
-      "150\u2013180/min"
+      "150–180/min"
     ],
-    "answer": "100\u2013120/min",
-    "reason": "Current resuscitation guidance targets 100\u2013120 compressions per minute.",
+    "answer": "100–120/min",
+    "reason": "Current resuscitation guidance targets 100–120 compressions per minute.",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies"
   },
@@ -1802,7 +1807,7 @@
       "All medical patients regardless of mechanism"
     ],
     "answer": "Mechanism and findings suggest possible spinal injury, or the patient is unreliable with significant trauma",
-    "reason": "Spinal precautions are based on mechanism, exam findings, and patient reliability\u2014not automatic for every call.",
+    "reason": "Spinal precautions are based on mechanism, exam findings, and patient reliability—not automatic for every call.",
     "topic": "Trauma",
     "subtopic": "Trauma Care"
   },
@@ -2036,7 +2041,7 @@
       "Family wants advice"
     ],
     "answer": "Sudden altered mental status with abnormal vitals or glucose",
-    "reason": "Many 'psychiatric' presentations are medical until proven otherwise\u2014check glucose, oxygen, and other causes.",
+    "reason": "Many 'psychiatric' presentations are medical until proven otherwise—check glucose, oxygen, and other causes.",
     "topic": "Medical Emergencies",
     "subtopic": "Behavioral/Psychiatric"
   },
@@ -2166,7 +2171,7 @@
       "Need to delay transport for hours"
     ],
     "answer": "Imminent delivery",
-    "reason": "Visible crowning means the baby\u2019s head is at the vaginal opening and delivery is imminent.",
+    "reason": "Visible crowning means the baby’s head is at the vaginal opening and delivery is imminent.",
     "topic": "Obstetrics & Gynecology",
     "subtopic": "Obstetrics"
   },
@@ -2474,7 +2479,7 @@
     "choices": [
       "Do not provide any comfort care",
       "Do not perform resuscitative efforts if the patient is in arrest, while still providing appropriate supportive care per the order",
-      "Ignore the patient\u2019s wishes",
+      "Ignore the patient’s wishes",
       "Always intubate"
     ],
     "answer": "Do not perform resuscitative efforts if the patient is in arrest, while still providing appropriate supportive care per the order",
