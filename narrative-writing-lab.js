@@ -122,8 +122,7 @@
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           scenarioId: state.selected.id, format: el.format.value, level: state.level,
-          narrative: el.narrative.value.trim(), website: '',
-          classCompletion: (() => { try { const p = JSON.parse(localStorage.getItem('emscode_report_class_progress_v1') || 'null'); return p?.started && p.guidedNarrativeComplete && p.writtenTestComplete && !p.aiNarrativeComplete ? JSON.parse(localStorage.getItem('emscode_report_class_completion_pending_v1') || 'null') : null; } catch (_) { return null; } })()
+          narrative: el.narrative.value.trim(), website: ''
         })
       });
       const payload = await response.json().catch(() => ({}));
@@ -149,16 +148,18 @@
     if (el.completionStatus) {
       el.completionStatus.classList.add('hidden');
       el.completionStatus.classList.remove('success', 'error');
-      if (result.courseCompletionSaved) {
-        el.completionStatus.textContent = 'Class completion recorded. Written test: ' + result.writtenTestScore + '% · AI narrative: ' + result.aiNarrativeScore + '/100.';
-        el.completionStatus.classList.remove('hidden');
-        el.completionStatus.classList.add('success');
-        try { localStorage.removeItem('emscode_report_class_completion_pending_v1'); const key = 'emscode_report_class_progress_v1'; const p = JSON.parse(localStorage.getItem(key) || 'null'); if (p) { p.aiNarrativeComplete = true; p.aiNarrativeScore = result.aiNarrativeScore; localStorage.setItem(key, JSON.stringify(p)); } } catch (_) {}
-      } else if (result.courseCompletionAttempted) {
-        el.completionStatus.textContent = 'Your AI grade is ready, but the class completion record could not be saved. Check your connection and submit the narrative again from the class completion flow.';
-        el.completionStatus.classList.remove('hidden');
-        el.completionStatus.classList.add('error');
-      }
+      try {
+        const key = 'emscode_report_class_progress_v1';
+        const p = JSON.parse(localStorage.getItem(key) || 'null');
+        if (p?.started && p.classMaterialComplete && p.guidedNarrativeComplete && !p.aiNarrativeComplete) {
+          p.aiNarrativeComplete = true;
+          p.aiNarrativeScore = result.totalScore;
+          localStorage.setItem(key, JSON.stringify(p));
+          el.completionStatus.textContent = 'Required AI-graded narrative complete. Return to the class page for the written test and final step.';
+          el.completionStatus.classList.remove('hidden');
+          el.completionStatus.classList.add('success');
+        }
+      } catch (_) {}
     }
     const comparison = state.priorScore == null ? '' : result.totalScore > state.priorScore ? ` · Up ${result.totalScore - state.priorScore} points` : result.totalScore < state.priorScore ? ` · Down ${state.priorScore - result.totalScore} points` : ' · Same score';
     document.querySelector('#attemptBadge').textContent = `Attempt ${state.attempt}${comparison}`;
