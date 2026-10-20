@@ -123,13 +123,13 @@ function clientAddress(event) {
   return String(event.headers?.['x-nf-client-connection-ip'] || event.headers?.['x-forwarded-for'] || 'unknown').split(',')[0].trim();
 }
 
-function rateLimited(event) {
-  const key = clientAddress(event);
+function rateLimited(event, action = 'grade', limit = 8) {
+  const key = action + ':' + clientAddress(event);
   const now = Date.now();
   const recent = (requestBuckets.get(key) || []).filter(timestamp => now - timestamp < 60_000);
   recent.push(now);
   requestBuckets.set(key, recent);
-  return recent.length > 8;
+  return recent.length > limit;
 }
 
 function possibleIdentifier(text) {
@@ -192,11 +192,11 @@ function validateResult(result) {
 exports.handler = async event => {
   if (event.httpMethod === 'OPTIONS') return response(204, {});
   if (event.httpMethod !== 'POST') return response(405, { error: 'Method not allowed.' }, { Allow: 'POST, OPTIONS' });
-  if (rateLimited(event)) return response(429, { error: 'Too many grading requests. Wait one minute and try again.' });
   let body;
   try { body = JSON.parse(event.body || '{}'); } catch (_) { return response(400, { error: 'Invalid request.' }); }
   if (body.website) return response(400, { error: 'Invalid request.' });
   if (body.action === 'completeClass') {
+    if (rateLimited(event, 'completion', 8)) return response(429, { error: 'Too many completion attempts. Wait one minute and try again.' });
     let completion;
     try { completion = validateClassFinish(body.classCompletion); }
     catch (error) { return response(400, { error: error.message }); }
@@ -208,6 +208,7 @@ exports.handler = async event => {
       return response(503, { error: 'The class record could not be saved. Please try again.' });
     }
   }
+  if (rateLimited(event, 'grade', 8)) return response(429, { error: 'Too many grading requests. Wait one minute and try again.' });
   let classPractice = null;
   if (body.classPractice !== undefined && body.classPractice !== null) {
     try { classPractice = validateClassPractice(body.classPractice); }
