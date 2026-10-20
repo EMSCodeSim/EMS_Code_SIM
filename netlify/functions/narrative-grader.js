@@ -11,6 +11,7 @@ function validateClassCompletion(value) {
   const learnerName = String(value.learnerName || '').trim().replace(/\s+/g, ' ');
   if (learnerName.length < 2 || learnerName.length > 120 || /[\u0000-\u001f\u007f]/.test(learnerName)) throw new Error('Enter a valid learner name.');
   if (value.consent !== true || value.version !== 'ems-report-writing-class-v1') throw new Error('Class completion consent or version is invalid.');
+  if (value.guidedNarrativeComplete !== true) throw new Error('Complete a guided narrative before finishing the class.');
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value.submissionKey || ''))) throw new Error('Invalid class completion key.');
   if (!Array.isArray(value.quizAnswers) || value.quizAnswers.length !== classCompletionAnswers.length ||
       value.quizAnswers.some(answer => !Number.isInteger(answer) || answer < 0 || answer > 3)) {
