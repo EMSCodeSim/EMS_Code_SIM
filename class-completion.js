@@ -210,6 +210,7 @@
             guidedNarrativeComplete: p.guidedNarrativeComplete,
             aiNarrativeComplete: p.aiNarrativeComplete,
             aiNarrativeScore: p.aiNarrativeScore,
+            aiCompletionProof: p.aiCompletionProof,
             quizAnswers: p.quizAnswers
           }
         })
