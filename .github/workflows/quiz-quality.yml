@@ -1,0 +1,27 @@
+name: Quiz question bank validation
+on:
+  pull_request:
+    paths:
+      - 'quiz/emt_quiz.json'
+      - 'quiz/paramedic_quiz.json'
+      - 'tools/audit-quiz-quality.js'
+      - '.github/workflows/quiz-quality.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'quiz/emt_quiz.json'
+      - 'quiz/paramedic_quiz.json'
+      - 'tools/audit-quiz-quality.js'
+      - '.github/workflows/quiz-quality.yml'
+jobs:
+  validate-quiz-bank:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check quiz bank structure and editorial flags
+        run: node tools/audit-quiz-quality.js
