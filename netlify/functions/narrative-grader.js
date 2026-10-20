@@ -1,8 +1,34 @@
 'use strict';
 
 const https = require('https');
+const { neon } = require('@neondatabase/serverless');
 const scenarios = require('./data/narrative-lab-scenarios.json');
 const requestBuckets = new Map();
+const classCompletionAnswers = [0, 2, 0, 1, 1, 2, 0, 1, 2, 2];
+
+function validateClassCompletion(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid class completion data.');
+  const learnerName = String(value.learnerName || '').trim().replace(/\\s+/g, ' ');
+  if (learnerName.length < 2 || learnerName.length > 120 || /[\\u0000-\\u001f\\u007f]/.test(learnerName)) throw new Error('Enter a valid learner name.');
+  if (value.consent !== true || value.version !== 'ems-report-writing-class-v1') throw new Error('Class completion consent or version is invalid.');
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(value.submissionKey || ''))) throw new Error('Invalid class completion key.');
+  if (!Array.isArray(value.quizAnswers) || value.quizAnswers.length !== classCompletionAnswers.length ||
+      value.quizAnswers.some(answer => !Number.isInteger(answer) || answer < 0 || answer > 3)) {
+    throw new Error('Complete all 10 written test questions.');
+  }
+  const correct = value.quizAnswers.reduce((sum, answer, index) => sum + (answer === classCompletionAnswers[index] ? 1 : 0), 0);
+  return { submissionKey: value.submissionKey, learnerName, correct, score: correct * 10 };
+}
+
+async function saveClassCompletion(completion, aiScore) {
+  const databaseUrl = env('EMS_REPORT_CLASS_DATABASE_URL');
+  if (!databaseUrl) throw new Error('Database is not configured.');
+  const sql = neon(databaseUrl);
+  await sql`INSERT INTO ems_report_class_completions
+    (submission_key, learner_name, written_test_correct, written_test_total, written_test_score, ai_narrative_score, class_version)
+    VALUES (${completion.submissionKey}::uuid, ${completion.learnerName}, ${completion.correct}, 10, ${completion.score}, ${aiScore}, 'ems-report-writing-class-v1')
+    ON CONFLICT (submission_key) DO NOTHING`;
+}
 
 const categoryDefinitions = [
   ['completeness', 20], ['clinical accuracy', 20], ['organization', 12], ['objectivity', 12],
@@ -121,6 +147,11 @@ exports.handler = async event => {
   let body;
   try { body = JSON.parse(event.body || '{}'); } catch (_) { return response(400, { error: 'Invalid request.' }); }
   if (body.website) return response(400, { error: 'Invalid request.' });
+  let classCompletion = null;
+  if (body.classCompletion !== undefined && body.classCompletion !== null) {
+    try { classCompletion = validateClassCompletion(body.classCompletion); }
+    catch (error) { return response(400, { error: error.message }); }
+  }
   const narrative = String(body.narrative || '').trim();
   const scenario = scenarios.find(item => item.id === body.scenarioId);
   const format = ['chronological', 'chart', 'soap'].includes(body.format) ? body.format : 'chronological';
@@ -155,7 +186,20 @@ Return concise, actionable feedback. Empty arrays are allowed when no issue exis
     });
     const output = extractOutputText(aiResult);
     if (!output) throw new Error('The AI grader returned no feedback.');
-    return response(200, validateResult(JSON.parse(output)));
+    const graded = validateResult(JSON.parse(output));
+    if (classCompletion) {
+      graded.courseCompletionAttempted = true;
+      graded.writtenTestScore = classCompletion.score;
+      graded.aiNarrativeScore = graded.totalScore;
+      try {
+        await saveClassCompletion(classCompletion, graded.totalScore);
+        graded.courseCompletionSaved = true;
+      } catch (_) {
+        console.error('Narrative grader could not save a class completion record.');
+        graded.courseCompletionSaved = false;
+      }
+    }
+    return response(200, graded);
   } catch (error) {
     console.error('Narrative grader:', error.message);
     return response(502, { error: 'The AI grader could not complete this review. Please try again.' });
