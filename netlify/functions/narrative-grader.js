@@ -69,7 +69,7 @@ async function saveClassCompletion(completion, aiScore) {
   await sql`INSERT INTO ems_report_class_completions
     (submission_key, learner_name, written_test_correct, written_test_total, written_test_score, ai_narrative_score, class_version)
     VALUES (${completion.submissionKey}::uuid, ${completion.learnerName}, ${completion.correct}, 10, ${completion.score}, ${aiScore}, 'ems-report-writing-class-v1')
-    ON CONFLICT (submission_key) DO NOTHING`;
+    ON CONFLICT DO NOTHING`;
 }
 
 const categoryDefinitions = [
@@ -188,34 +188,6 @@ exports.handler = async event => {
   let body;
   try { body = JSON.parse(event.body || '{}'); } catch (_) { return response(400, { error: 'Invalid request.' }); }
   if (body.website) return response(400, { error: 'Invalid request.' });
-  // Temporary read-only deployment diagnostic; remove after production connection verification.
-  if (body.action === 'diagnoseClassDatabase') {
-    if (rateLimited(event, 'class-db-diagnostic', 2)) return response(429, { error: 'Too many diagnostic requests.' });
-    try {
-      const databaseUrl = env('EMS_REPORT_CLASS_DATABASE_URL');
-      if (!databaseUrl) return response(200, { databaseConfigured: false, connected: false });
-      const sql = neon(databaseUrl);
-      const [status] = await sql\`SELECT current_user AS role, current_database() AS database, has_table_privilege(current_user, 'public.ems_report_class_completions', 'INSERT') AS can_insert\`;
-      return response(200, { databaseConfigured: true, connected: true, ...status });
-    } catch (error) {
-      const message = String(error?.message || '').toLowerCase();
-      const category = /password authentication|authentication failed/.test(message) ? 'authentication' : /getaddrinfo|enotfound|name or service/.test(message) ? 'dns' : /timeout|timed out/.test(message) ? 'timeout' : /ssl|tls|channel binding/.test(message) ? 'tls' : 'database_request';
-      return response(200, { databaseConfigured: Boolean(env('EMS_REPORT_CLASS_DATABASE_URL')), connected: false, errorCategory: category });
-    }
-  }
-  if (body.action === 'completeClass') {
-    if (rateLimited(event, 'completion', 8)) return response(429, { error: 'Too many completion attempts. Wait one minute and try again.' });
-    let completion;
-    try { completion = validateClassFinish(body.classCompletion); }
-    catch (error) { return response(400, { error: error.message }); }
-    try {
-      await saveClassCompletion(completion, completion.aiScore);
-      return response(200, { courseCompletionSaved: true, writtenTestScore: completion.score, aiNarrativeScore: completion.aiScore });
-    } catch (error) {
-      console.error('Class completion could not be saved:', error.message);
-      return response(503, { error: 'The class record could not be saved. Please try again.' });
-    }
-  }
   if (rateLimited(event, 'grade', 8)) return response(429, { error: 'Too many grading requests. Wait one minute and try again.' });
   let classPractice = null;
   if (body.classPractice !== undefined && body.classPractice !== null) {
