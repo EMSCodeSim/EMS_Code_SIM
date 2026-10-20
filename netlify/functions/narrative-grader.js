@@ -174,6 +174,7 @@ At ${level} level, be encouraging but specific. Respect the learner's requested 
 Quote no more than short excerpts from the learner. The example narrative must use only scenario facts, must not add exact medication doses unless supplied, and must not claim a test or reassessment that is absent.
 Return concise, actionable feedback. Empty arrays are allowed when no issue exists.`;
 
+  // Keep learner name and course-completion answers out of the AI service payload.
   const input = JSON.stringify({ scenario, learner: { level, format, narrative } });
   try {
     const aiResult = await callOpenAI(apiKey, baseUrl, {
