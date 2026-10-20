@@ -43,10 +43,15 @@
   }
   function render() {
     const p = readProgress();
+    if (p?.aiNarrativeComplete && !p.aiCompletionProof) {
+      p.aiNarrativeComplete = false;
+      delete p.aiNarrativeScore;
+      writeProgress(p);
+    }
     const started = !!p?.started;
     const material = !!p?.classMaterialComplete;
     const guide = !!p?.guidedNarrativeComplete;
-    const ai = !!p?.aiNarrativeComplete;
+    const ai = !!p?.aiNarrativeComplete && !!p?.aiCompletionProof;
     const test = !!p?.writtenTestComplete && Number(p?.writtenTestScore) >= 80;
     const finished = !!p?.classFinished;
     const mark = (id, done, detail) => {
