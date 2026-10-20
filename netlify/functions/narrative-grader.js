@@ -69,14 +69,7 @@ async function saveClassCompletion(completion, aiScore) {
   await sql`INSERT INTO ems_report_class_completions
     (submission_key, learner_name, written_test_correct, written_test_total, written_test_score, ai_narrative_score, class_version)
     VALUES (${completion.submissionKey}::uuid, ${completion.learnerName}, ${completion.correct}, 10, ${completion.score}, ${aiScore}, 'ems-report-writing-class-v1')
-    ON CONFLICT (submission_key) DO UPDATE SET
-      learner_name = EXCLUDED.learner_name,
-      written_test_correct = EXCLUDED.written_test_correct,
-      written_test_total = EXCLUDED.written_test_total,
-      written_test_score = EXCLUDED.written_test_score,
-      ai_narrative_score = EXCLUDED.ai_narrative_score,
-      class_version = EXCLUDED.class_version,
-      completed_at = NOW()`;
+    ON CONFLICT (submission_key) DO NOTHING`;
 }
 
 const categoryDefinitions = [
