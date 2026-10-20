@@ -40,3 +40,4 @@
 .rw-progress-summary{margin:13px 0 0;padding:11px 13px;border-radius:8px;background:#eef6fb;color:#28475f;font-weight:700}
 @media(max-width:900px){.rw-progress-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.rw-start-form{grid-template-columns:1fr 1fr}}
 @media(max-width:620px){.rw-progress-panel{padding:16px}.rw-progress-steps,.rw-start-form{grid-template-columns:1fr}.rw-start-form .rw-consent{height:auto}.rw-progress-step{min-height:0}.rw-progress-step>a{margin-top:4px}}
+\n.rw-admin-link{margin:22px 0 0;padding-top:15px;border-top:1px solid var(--rw-line)}.rw-admin-link a{color:#075d93;font-weight:800}\n
