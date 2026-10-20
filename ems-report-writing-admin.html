@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Class Completion Roster | EMSCodeSim</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="/styles/career-hub.css"><link rel="stylesheet" href="/styles/responsive.css"><link rel="stylesheet" href="/styles/ems-report-writing-class.css?v=3"><link rel="stylesheet" href="/styles/class-roster-admin.css">
+</head>
+<body class="report-writing-class roster-admin">
+<a class="skip-link" href="#main">Skip to roster</a>
+<header class="site-header"><nav class="nav-wrap" aria-label="Primary navigation"><a class="brand" href="/"><img src="/ems-logo.png" alt="" width="42" height="42"><span>EMSCodeSim<small>Class administration</small></span></a><div class="main-nav"><a href="/ems-report-writing-class.html">Report Writing Class</a></div></nav></header>
+<main id="main" class="rw-shell">
+<section class="rw-hero roster-hero"><div class="rw-hero-inner"><p class="rw-kicker">Department administrator</p><h1>Class completion roster</h1><p>View and print learners who completed all required class steps.</p><div class="rw-actions"><a class="rw-button light" href="/ems-report-writing-class.html">← Return to class</a></div></div></section>
+<section class="rw-alert roster-privacy"><strong>Restricted roster</strong><p>This page contains learner names and scores. Keep the roster and printed copies limited to authorized department staff.</p></section>
+<section class="rw-section roster-access">
+<div class="rw-heading"><span>1</span><div><p class="rw-eyebrow">Authorized access</p><h2>Enter the administrator access key</h2></div></div>
+<form id="rosterAccessForm" class="rw-start-form">
+<label class="rw-name-field" for="adminKey"><b>Administrator access key</b><input id="adminKey" type="password" autocomplete="off" required></label>
+<button id="loadRosterBtn" class="rw-button primary" type="submit">View roster</button>
+<button id="signOutBtn" class="rw-button light" type="button" disabled>Sign out</button>
+<p id="rosterStatus" class="roster-status" role="status" aria-live="polite">Enter your access key to load the roster.</p>
+</form>
+</section>
+<section id="rosterView" class="rw-section roster-view" hidden>
+<div class="roster-heading-row"><div><p class="rw-eyebrow">Completed learners</p><h2>EMS Report Writing Class</h2><p id="rosterCount" class="roster-count"></p></div><div class="roster-actions"><button id="refreshRosterBtn" class="rw-button light" type="button">Refresh</button><button id="downloadRosterBtn" class="rw-button light" type="button">Download CSV</button><button id="printRosterBtn" class="rw-button primary" type="button">Print roster</button></div></div>
+<div id="rosterEmpty" class="rw-callout" hidden>No completed learners yet.</div>
+<div class="rw-table-scroll"><table id="rosterTable" class="rw-table"><thead><tr><th>Learner name</th><th>Written test</th><th>AI narrative</th><th>Completed</th></tr></thead><tbody id="rosterRows"></tbody></table></div>
+<p id="rosterLimitNote" class="roster-note" hidden>Showing the 500 most recent completions. Download or print this roster as needed.</p>
+<p class="roster-print-footer">EMSCodeSim · EMS Report Writing Class · Completion roster</p>
+</section>
+</main>
+<footer class="site-footer"><div class="footer-bottom">For authorized class tracking only. Store and handle printed records according to department policy.</div></footer>
+<script defer src="/class-roster-admin.js?v=1"></script>
+</body></html>
