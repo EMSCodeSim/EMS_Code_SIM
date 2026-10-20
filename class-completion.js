@@ -76,7 +76,8 @@
       event.preventDefault();
       progressSummary.textContent = 'Complete steps 1, 2, and 3 before the required AI-graded narrative.';
     }
-  });\n  startForm.addEventListener('submit', event => {
+  });
+  startForm.addEventListener('submit', event => {
     event.preventDefault();
     const name = String(startForm.elements.learnerName.value || '').trim().replace(/\s+/g, ' ');
     if (name.length < 2 || name.length > 120) { $('#startClassStatus').textContent = 'Enter a name between 2 and 120 characters.'; return; }
