@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const PROGRESS_KEY = 'emscode_report_class_progress_v1';
-  const PENDING_KEY = 'emscode_report_class_completion_pending_v1';
+  const VERSION = 'ems-report-writing-class-v1';
   const ANSWER_KEY = [0, 2, 0, 1, 1, 2, 0, 1, 2, 2];
   const startForm = document.querySelector('#courseStartForm');
   const testForm = document.querySelector('#classCompletionForm');
@@ -11,6 +11,7 @@
   const result = $('#classWrittenResult');
   const button = $('#prepareCompletionBtn');
   const progressSummary = $('#courseProgressSummary');
+  const finishButton = $('#finishClassBtn');
 
   function readProgress() {
     try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) || 'null'); } catch (_) { return null; }
@@ -27,86 +28,210 @@
     const hex = [...bytes].map(value => value.toString(16).padStart(2, '0')).join('');
     return hex.slice(0, 8) + '-' + hex.slice(8, 12) + '-' + hex.slice(12, 16) + '-' + hex.slice(16, 20) + '-' + hex.slice(20);
   }
-  function show(message, kind = 'info') { status.textContent = message; status.className = 'rw-callout ' + kind; status.hidden = false; }
+  function show(message, kind = 'info') {
+    status.textContent = message;
+    status.className = 'rw-callout ' + kind;
+    status.hidden = false;
+  }
+  function setLockedLink(selector, href, text, unlocked) {
+    const link = document.querySelector(selector);
+    if (!link) return;
+    link.href = unlocked ? href : '#courseProgress';
+    link.textContent = unlocked ? text : 'Locked until earlier steps are complete';
+    link.setAttribute('aria-disabled', String(!unlocked));
+    link.classList.toggle('locked', !unlocked);
+  }
   function render() {
     const p = readProgress();
-    const complete = !!p?.started;
+    const started = !!p?.started;
+    const material = !!p?.classMaterialComplete;
     const guide = !!p?.guidedNarrativeComplete;
-    const test = !!p?.writtenTestComplete;
     const ai = !!p?.aiNarrativeComplete;
+    const test = !!p?.writtenTestComplete && Number(p?.writtenTestScore) >= 80;
+    const finished = !!p?.classFinished;
     const mark = (id, done, detail) => {
       const item = document.querySelector(id);
+      if (!item) return;
       item.classList.toggle('complete', done);
-      item.querySelector('.rw-step-status').textContent = done ? 'Complete' : 'Not complete';
+      const state = item.querySelector('.rw-step-status');
+      if (state) state.textContent = done ? 'Complete' : 'Not complete';
       const detailNode = item.querySelector('span:last-of-type');
       if (detailNode && detail) detailNode.textContent = detail;
     };
-    mark('#progress-start', complete, complete ? 'Name entered: ' + p.learnerName : 'Enter your name.');
+    mark('#progress-start', started, started ? 'Name entered: ' + p.learnerName : 'Enter your name.');
+    mark('#progress-material', material, material ? 'Class information marked as read.' : 'Review the class information, then mark it complete.');
     mark('#progress-guide', guide, guide ? 'A guided narrative has been generated.' : 'Use the guided PCR template and generate a narrative.');
-    mark('#progress-test', test, test ? 'Written test score: ' + p.writtenTestScore + '%.' : 'Answer all 10 content questions.');
-    mark('#progress-ai', ai, ai ? 'First AI grade: ' + p.aiNarrativeScore + '/100. Extra narratives are optional.' : 'Submit a fictional narrative for a grade. More practice narratives are optional.');
-    const aiLink = document.querySelector('#progress-ai a');
-    const aiUnlocked = complete && guide && test && !ai;
-    aiLink.href = (aiUnlocked || ai) ? '/narrative-writing-lab.html' : '#courseProgress';
-    aiLink.textContent = ai ? 'Practice another narrative (optional) →' : aiUnlocked ? 'Start required AI grade →' : 'Locked until steps 1–3 are complete';
-    aiLink.setAttribute('aria-disabled', String(!aiUnlocked && !ai));
-    aiLink.classList.toggle('locked', !aiUnlocked && !ai);
-    startForm.elements.learnerName.value = complete ? p.learnerName : '';
-    if (complete) {
-      startForm.elements.learnerName.readOnly = true;
-      startForm.elements.completionConsent.checked = true;
-      startForm.elements.completionConsent.disabled = true;
-      $('#startClassBtn').textContent = 'Class started';
-      progressSummary.textContent = ai ? 'All required steps are complete. You may keep practicing with additional narratives.' :
-        'Progress saved in this browser. ' + [!guide && 'complete the guided narrative', !test && 'complete the written test', !ai && 'submit one AI-graded narrative'].filter(Boolean).join(', then ');
-      if (test) {
-        result.hidden = false;
-        result.textContent = 'Written test score: ' + p.writtenTestScore + '% (' + p.writtenTestCorrect + ' of 10).';
-        button.textContent = 'Written test complete';
-      }
+    mark('#progress-ai', ai, ai ? 'First AI grade: ' + p.aiNarrativeScore + '/100. Extra narratives are optional.' : 'Submit a fictional narrative for one grade.');
+    mark('#progress-test', test, test ? 'Passed with ' + p.writtenTestScore + '% (' + p.writtenTestCorrect + ' of 10).' : p?.writtenTestScore != null ? 'Most recent score: ' + p.writtenTestScore + '%. At least 80% is required.' : 'Earn at least 8 correct answers (80%).');
+    mark('#progress-finish', finished, finished ? 'Class finished and completion recorded.' : 'Finish after passing the written test.');
+    setLockedLink('#progress-guide a', '/pcr-narrative-coach.html', 'Open PCR Narrative Coach →', started && material && !guide);
+    setLockedLink('#progress-ai a', '/narrative-writing-lab.html', ai ? 'Practice another narrative (optional) →' : 'Open AI Narrative Writing Lab →', started && material && guide);
+    setLockedLink('#progress-test a', '#course-completion', 'Go to written test →', started && material && guide && ai);
+    startForm.elements.learnerName.value = started ? p.learnerName : '';
+    startForm.elements.learnerName.readOnly = started;
+    startForm.elements.completionConsent.checked = started ? true : startForm.elements.completionConsent.checked;
+    startForm.elements.completionConsent.disabled = started;
+    $('#startClassBtn').textContent = started ? 'Class started' : 'Start class';
+    const canFinish = started && material && guide && ai && test && !finished;
+    if (finishButton) {
+      finishButton.disabled = !canFinish;
+      finishButton.textContent = finished ? 'Class finished' : 'Finish class';
+    }
+    if (test) {
+      result.hidden = false;
+      result.className = 'rw-callout success';
+      result.textContent = 'Passed: ' + p.writtenTestScore + '% (' + p.writtenTestCorrect + ' of 10).';
+      button.textContent = 'Written test passed';
+      button.disabled = true;
+    } else if (p?.writtenTestScore != null) {
+      result.hidden = false;
+      result.className = 'rw-callout error';
+      result.textContent = 'Score: ' + p.writtenTestScore + '% (' + (p.writtenTestCorrect || 0) + ' of 10). You need at least 80% to pass. Review the class material and try again.';
+      button.textContent = 'Retake written test';
+      button.disabled = false;
+    }
+    if (started) {
+      progressSummary.textContent = finished ? 'All class requirements are complete.' :
+        'Progress saved in this browser. ' + [
+          !material && 'read the class material',
+          !guide && 'complete a guided narrative',
+          !ai && 'complete one AI-graded narrative',
+          !test && 'pass the written test with at least 80%',
+          !finished && material && guide && ai && test && 'select Finish class'
+        ].filter(Boolean).join(', then ') + '.';
     } else {
-      startForm.elements.learnerName.readOnly = false;
-      startForm.elements.completionConsent.disabled = false;
-      progressSummary.textContent = 'Start class to begin tracking your required steps.';
+      progressSummary.textContent = 'Start class and enter your name to begin the checklist.';
     }
   }
-  document.querySelector('#progress-ai a')?.addEventListener('click', event => {
+
+  $('#markMaterialRead')?.addEventListener('click', () => {
     const p = readProgress();
-    if (!p?.started || !p.guidedNarrativeComplete || !p.writtenTestComplete) {
-      event.preventDefault();
-      progressSummary.textContent = 'Complete steps 1, 2, and 3 before the required AI-graded narrative.';
+    if (!p?.started) {
+      $('#materialReadStatus').textContent = 'Start class and enter your name before marking the material complete.';
+      return;
     }
+    p.classMaterialComplete = true;
+    if (!writeProgress(p)) {
+      $('#materialReadStatus').textContent = 'Progress could not be saved in this browser.';
+      return;
+    }
+    $('#materialReadStatus').textContent = 'Class material marked complete. The guided narrative is now available.';
+    render();
+    $('#progress-guide').scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
+
   startForm.addEventListener('submit', event => {
     event.preventDefault();
     const name = String(startForm.elements.learnerName.value || '').trim().replace(/\s+/g, ' ');
-    if (name.length < 2 || name.length > 120) { $('#startClassStatus').textContent = 'Enter a name between 2 and 120 characters.'; return; }
-    if (!startForm.elements.completionConsent.checked) { $('#startClassStatus').textContent = 'Check the box to confirm score tracking.'; return; }
-    const p = readProgress() || { version: 'ems-report-writing-class-v1', submissionKey: makeKey(), guidedNarrativeComplete: false, writtenTestComplete: false, aiNarrativeComplete: false };
-    p.started = true; p.learnerName = name; p.consent = true;
-    if (!writeProgress(p)) { $('#startClassStatus').textContent = 'This browser could not save progress. Enable local storage and try again.'; return; }
-    $('#startClassStatus').textContent = 'Class started. Your checklist is ready.';
+    if (name.length < 2 || name.length > 120) {
+      $('#startClassStatus').textContent = 'Enter a name between 2 and 120 characters.';
+      return;
+    }
+    if (!startForm.elements.completionConsent.checked) {
+      $('#startClassStatus').textContent = 'Check the box to confirm score tracking.';
+      return;
+    }
+    const p = readProgress() || { version: VERSION, submissionKey: makeKey(), guidedNarrativeComplete: false, aiNarrativeComplete: false, writtenTestComplete: false };
+    p.version = VERSION;
+    if (!p.submissionKey) p.submissionKey = makeKey();
+    p.started = true;
+    p.learnerName = name;
+    p.consent = true;
+    if (!writeProgress(p)) {
+      $('#startClassStatus').textContent = 'This browser could not save progress. Enable local storage and try again.';
+      return;
+    }
+    $('#startClassStatus').textContent = 'Class started. Review the material to unlock step 3.';
     render();
   });
+
   testForm.addEventListener('submit', event => {
     event.preventDefault();
     const p = readProgress();
-    if (!p?.started) { show('Start the class and enter your name before taking the written test.', 'error'); $('#courseProgress').scrollIntoView({ behavior: 'smooth' }); return; }
-    if (!p.guidedNarrativeComplete) { show('Complete and generate a narrative in the PCR Narrative Coach before taking the written test.', 'error'); return; }
+    if (!p?.started || !p.classMaterialComplete || !p.guidedNarrativeComplete || !p.aiNarrativeComplete) {
+      show('Complete steps 1–4 before taking the written test.', 'error');
+      $('#courseProgress').scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    if (p.writtenTestComplete && Number(p.writtenTestScore) >= 80) {
+      show('You have already passed the written test.', 'success');
+      return;
+    }
     const answers = [];
     for (let i = 0; i < ANSWER_KEY.length; i += 1) {
       const selected = testForm.querySelector('input[name="q' + (i + 1) + '"]:checked');
-      if (!selected) { show('Answer all 10 questions before continuing. Question ' + (i + 1) + ' is unanswered.', 'error'); testForm.querySelector('input[name="q' + (i + 1) + '"]')?.focus(); return; }
+      if (!selected) {
+        show('Answer all 10 questions before continuing. Question ' + (i + 1) + ' is unanswered.', 'error');
+        testForm.querySelector('input[name="q' + (i + 1) + '"]')?.focus();
+        return;
+      }
       answers.push(Number(selected.value));
     }
     const correct = answers.reduce((sum, answer, index) => sum + (answer === ANSWER_KEY[index] ? 1 : 0), 0);
-    p.quizAnswers = answers; p.writtenTestComplete = true; p.writtenTestScore = correct * 10; p.writtenTestCorrect = correct;
-    if (!writeProgress(p)) { show('This browser could not save your test result. Enable local storage, then try again.', 'error'); return; }
-    const completion = { version: p.version, submissionKey: p.submissionKey, learnerName: p.learnerName, quizAnswers: answers, consent: p.consent, guidedNarrativeComplete: true };
-    try { localStorage.setItem(PENDING_KEY, JSON.stringify(completion)); } catch (_) { show('Your result could not be saved in this browser. Enable local storage and try again.', 'error'); return; }
-    show('Written test complete: ' + (correct * 10) + '% (' + correct + ' of 10). Continue to the AI Narrative Writing Lab for one required grade. Additional narratives are optional.', 'success');
+    p.writtenTestScore = correct * 10;
+    p.writtenTestCorrect = correct;
+    p.writtenTestComplete = correct >= 8;
+    p.writtenTestPassed = correct >= 8;
+    if (correct >= 8) p.quizAnswers = answers;
+    if (!writeProgress(p)) {
+      show('This browser could not save your test result. Enable local storage, then try again.', 'error');
+      return;
+    }
+    if (correct < 8) {
+      show('You scored ' + (correct * 10) + '% (' + correct + ' of 10). You need at least 80% to pass. Review the class material and retake the test.', 'error');
+      render();
+      return;
+    }
+    show('You passed with ' + (correct * 10) + '% (' + correct + ' of 10). Select Finish class in the checklist to record completion.', 'success');
     render();
-    $('#openNarrativeLab').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    $('#progress-finish').scrollIntoView({ behavior: 'smooth', block: 'center' });
   });
+
+  finishButton?.addEventListener('click', async () => {
+    const p = readProgress();
+    if (!p?.started || !p.consent || !p.classMaterialComplete || !p.guidedNarrativeComplete || !p.aiNarrativeComplete || !p.writtenTestComplete || Number(p.writtenTestScore) < 80) {
+      show('Complete every step and pass the test with at least 80% before finishing.', 'error');
+      return;
+    }
+    finishButton.disabled = true;
+    finishButton.textContent = 'Saving completion…';
+    try {
+      const response = await fetch('/.netlify/functions/narrative-grader', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'completeClass',
+          classCompletion: {
+            version: p.version,
+            submissionKey: p.submissionKey,
+            learnerName: p.learnerName,
+            consent: p.consent,
+            classMaterialComplete: p.classMaterialComplete,
+            guidedNarrativeComplete: p.guidedNarrativeComplete,
+            aiNarrativeComplete: p.aiNarrativeComplete,
+            aiNarrativeScore: p.aiNarrativeScore,
+            quizAnswers: p.quizAnswers
+          }
+        })
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.courseCompletionSaved) throw new Error(payload.error || 'The class record could not be saved.');
+      p.classFinished = true;
+      p.classFinishedAt = new Date().toISOString();
+      if (!writeProgress(p)) throw new Error('The roster saved the class record, but this browser could not save the finished status.');
+      show('Class finished. Your completion and scores were recorded.', 'success');
+      const finishStatus = $('#finishClassStatus');
+      if (finishStatus) finishStatus.textContent = 'Finished and recorded.';
+      render();
+    } catch (error) {
+      show(error.message || 'Could not finish class. Check your connection and try again.', 'error');
+      finishButton.disabled = false;
+      finishButton.textContent = 'Finish class';
+    }
+  });
+
   render();
+  window.addEventListener('pageshow', render);
+  window.addEventListener('focus', render);
+  window.addEventListener('storage', render);
 })();
