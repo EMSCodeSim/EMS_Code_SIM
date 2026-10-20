@@ -122,7 +122,16 @@
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           scenarioId: state.selected.id, format: el.format.value, level: state.level,
-          narrative: el.narrative.value.trim(), website: ''
+          narrative: el.narrative.value.trim(), website: '',
+          classPractice: (() => {
+            try {
+              const p = JSON.parse(localStorage.getItem('emscode_report_class_progress_v1') || 'null');
+              return p?.started && p.consent && p.classMaterialComplete && p.guidedNarrativeComplete && !p.aiNarrativeComplete ? {
+                version: p.version, submissionKey: p.submissionKey, learnerName: p.learnerName, consent: p.consent,
+                started: p.started, classMaterialComplete: p.classMaterialComplete, guidedNarrativeComplete: p.guidedNarrativeComplete
+              } : null;
+            } catch (_) { return null; }
+          })()
         })
       });
       const payload = await response.json().catch(() => ({}));
@@ -151,9 +160,10 @@
       try {
         const key = 'emscode_report_class_progress_v1';
         const p = JSON.parse(localStorage.getItem(key) || 'null');
-        if (p?.started && p.classMaterialComplete && p.guidedNarrativeComplete && !p.aiNarrativeComplete) {
+        if (p?.started && p.classMaterialComplete && p.guidedNarrativeComplete && !p.aiNarrativeComplete && result.classCompletionProof) {
           p.aiNarrativeComplete = true;
           p.aiNarrativeScore = result.totalScore;
+          p.aiCompletionProof = result.classCompletionProof;
           localStorage.setItem(key, JSON.stringify(p));
           el.completionStatus.textContent = 'Required AI-graded narrative complete. Return to the class page for the written test and final step.';
           el.completionStatus.classList.remove('hidden');
