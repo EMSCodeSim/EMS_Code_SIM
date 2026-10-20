@@ -207,256 +207,283 @@
     "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "You arrive on scene where multiple patients are involved in a building collapse. What is your first action?",
+    "question": "At a partial building collapse, several people call for help from inside a damaged structure. Dust is still falling and a gas odor is present. Your ambulance is first on scene. What is the best initial action?",
     "choices": [
-      "Ensure scene safety",
-      "Start triaging patients",
-      "Call for a second ambulance",
-      "Begin CPR on a pulseless patient"
+      "Establish a safe staging position, request fire/hazmat resources, and initiate incident command",
+      "Enter the nearest doorway to identify the most critical patient",
+      "Begin triage in the collapse zone while your partner requests another ambulance",
+      "Move the ambulance close to the structure to shorten carry distances"
     ],
-    "answer": "Ensure scene safety",
-    "reason": "Scene safety always comes first. Entering an unsafe environment risks additional casualties.",
+    "answer": "Establish a safe staging position, request fire/hazmat resources, and initiate incident command",
+    "reason": "Unstable structures and potential gas hazards require scene control and appropriate rescue resources before entry.",
     "subtopic": "Scene Size-Up",
-    "topic": "Patient Assessment"
+    "topic": "Patient Assessment",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A patient involved in a motorcycle crash presents with paradoxical chest wall movement. What is your most immediate concern?",
+    "question": "A motorcyclist has paradoxical movement of a lateral chest segment, RR 34/min, SpO₂ 87%, and increasing fatigue. Which management priority is most appropriate?",
     "choices": [
-      "Flail chest and impaired ventilation",
-      "Spinal cord injury",
-      "Hypovolemia",
-      "Airway obstruction from tongue"
+      "Support oxygenation and ventilation as indicated while evaluating for associated thoracic injuries",
+      "Bind the unstable chest segment tightly to prevent movement",
+      "Assume the chest injury is isolated and focus on splinting extremities",
+      "Defer ventilatory support until a chest radiograph confirms flail chest"
     ],
-    "answer": "Flail chest and impaired ventilation",
-    "reason": "Paradoxical movement indicates flail chest, which compromises ventilation and requires stabilization and oxygen support.",
+    "answer": "Support oxygenation and ventilation as indicated while evaluating for associated thoracic injuries",
+    "reason": "A flail segment can impair ventilation and coexist with pulmonary contusion or pneumothorax. Support breathing and reassess for deterioration.",
     "subtopic": "Chest Trauma",
-    "topic": "Trauma"
+    "topic": "Trauma",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A patient presents with pinpoint pupils, bradypnea, and hypotension. Which medication is most likely involved?",
+    "question": "An unresponsive adult has pinpoint pupils and respirations of 5/min. A pulse is present. Drug paraphernalia is nearby. Which action is most important initially?",
     "choices": [
-      "Heroin",
-      "Cocaine",
-      "Atropine",
-      "Aspirin"
+      "Provide effective assisted ventilation and administer naloxone as appropriate",
+      "Give naloxone and wait for awakening before addressing breathing",
+      "Apply nasal oxygen only because the pulse is present",
+      "Assume an opioid cause and omit glucose and other assessments"
     ],
-    "answer": "Heroin",
-    "reason": "Heroin and other opioids cause miosis (pinpoint pupils), respiratory depression, and hypotension.",
+    "answer": "Provide effective assisted ventilation and administer naloxone as appropriate",
+    "reason": "In suspected opioid toxicity with respiratory depression, ventilatory support is immediately lifesaving; naloxone is an adjunct, and other causes remain possible.",
     "subtopic": "Toxicology",
-    "topic": "Medical Emergencies"
+    "topic": "Medical Emergencies",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
     "topic": "Cardiovascular",
-    "question": "What is the primary purpose of administering aspirin to a patient experiencing chest pain?",
+    "question": "An adult with suspected ACS asks why the crew recommends chewable aspirin despite ongoing pain. Which explanation is most accurate?",
     "choices": [
-      "To relieve pain",
-      "To reduce inflammation",
-      "To inhibit platelet aggregation",
-      "To dilate the coronary arteries"
+      "It reduces platelet aggregation and may limit further coronary thrombus formation",
+      "It rapidly dissolves an existing coronary clot",
+      "It primarily relieves pain by dilating coronary arteries",
+      "It immediately converts ischemic cardiac tissue back to normal"
     ],
-    "answer": "To inhibit platelet aggregation",
-    "explanation": "Aspirin inhibits platelet aggregation, which reduces the risk of clot formation in coronary arteries during an acute coronary syndrome."
+    "answer": "It reduces platelet aggregation and may limit further coronary thrombus formation",
+    "explanation": "Aspirin inhibits platelet aggregation, which reduces the risk of clot formation in coronary arteries during an acute coronary syndrome.",
+    "reason": "Aspirin inhibits platelet aggregation. It is not a thrombolytic, nitrate, or immediate reversal of ischemic injury.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
     "topic": "Cardiovascular",
-    "question": "What is the contraindication for giving aspirin to a patient with chest pain?",
+    "question": "A patient with suspected ACS reports a recent upper gastrointestinal bleed with ongoing black stools. They deny aspirin allergy. Which action is best?",
     "choices": [
-      "History of diabetes",
-      "Recent surgery",
-      "Active gastrointestinal bleeding",
-      "Mild hypertension"
+      "Withhold aspirin pending protocol/medical-direction guidance because active bleeding is a major concern",
+      "Give aspirin because only allergy matters in ACS",
+      "Give a larger aspirin dose to overcome possible poor absorption",
+      "Replace aspirin with ibuprofen because it has the same antiplatelet benefit"
     ],
-    "answer": "Active gastrointestinal bleeding",
-    "explanation": "Aspirin can worsen bleeding, and is contraindicated in patients with active GI bleeding due to its antiplatelet effects."
+    "answer": "Withhold aspirin pending protocol/medical-direction guidance because active bleeding is a major concern",
+    "explanation": "Aspirin can worsen bleeding, and is contraindicated in patients with active GI bleeding due to its antiplatelet effects.",
+    "reason": "Active gastrointestinal bleeding is an important contraindication/precaution. Follow local protocols and medical direction.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
     "topic": "Cardiovascular",
-    "question": "What is the typical dose of aspirin given to a patient with suspected acute coronary syndrome?",
+    "question": "A patient with suspected ACS has no aspirin allergy or bleeding history and can safely chew and swallow. Which aspirin plan is most appropriate?",
     "choices": [
-      "81 mg",
-      "324 mg",
-      "500 mg",
-      "650 mg"
+      "Give the locally protocol-approved chewable aspirin dose, commonly 162–325 mg",
+      "Give 81 mg only because larger doses are always contraindicated",
+      "Give 650 mg because faster platelet inhibition requires twice the standard dose",
+      "Administer aspirin intravenously to bypass the gastrointestinal tract"
     ],
-    "answer": "324 mg",
-    "explanation": "The usual field dose is 324 mg, administered as four 81 mg baby aspirin tablets chewed by the patient."
+    "answer": "Give the locally protocol-approved chewable aspirin dose, commonly 162–325 mg",
+    "explanation": "The usual field dose is 324 mg, administered as four 81 mg baby aspirin tablets chewed by the patient.",
+    "reason": "Common ACS guidance supports chewable aspirin in the 162–325 mg range when appropriate; follow local dosing protocols.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
     "topic": "Cardiovascular",
-    "question": "Which of the following is a common side effect of aspirin administration?",
+    "question": "A patient has taken large repeated doses of aspirin over several days and now reports tinnitus, nausea, and rapid breathing. What is the best interpretation?",
     "choices": [
-      "Shortness of breath",
-      "Ringing in the ears",
-      "Seizures",
-      "Numbness"
+      "Consider salicylate toxicity and prioritize assessment, supportive care, and poison-center/medical consultation",
+      "Assume the tinnitus is unrelated because aspirin does not affect hearing",
+      "Give another aspirin dose to treat possible ACS",
+      "Treat the rapid breathing as anxiety without evaluating acid-base disturbance"
     ],
-    "answer": "Ringing in the ears",
-    "explanation": "Tinnitus (ringing in the ears) is a known side effect of salicylates like aspirin, especially in higher doses."
+    "answer": "Consider salicylate toxicity and prioritize assessment, supportive care, and poison-center/medical consultation",
+    "explanation": "Tinnitus (ringing in the ears) is a known side effect of salicylates like aspirin, especially in higher doses.",
+    "reason": "Tinnitus, gastrointestinal symptoms, and tachypnea after excess aspirin raise concern for salicylate toxicity.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
     "topic": "Cardiovascular",
-    "question": "What is the proper route of administration for aspirin in the prehospital setting?",
+    "question": "A patient with suspected ACS is alert, can swallow, and has no aspirin contraindication. Which method best provides the intended early antiplatelet effect?",
     "choices": [
-      "Sublingual",
-      "Intravenous",
-      "Oral, chewed",
-      "Intramuscular"
+      "Have the patient chew the appropriate oral aspirin dose",
+      "Place an intact tablet under the tongue",
+      "Give aspirin by intramuscular injection",
+      "Wait until hospital arrival because aspirin works only after IV administration"
     ],
-    "answer": "Oral, chewed",
-    "explanation": "Aspirin should be given orally and chewed for faster absorption in the setting of suspected cardiac events."
+    "answer": "Have the patient chew the appropriate oral aspirin dose",
+    "explanation": "Aspirin should be given orally and chewed for faster absorption in the setting of suspected cardiac events.",
+    "reason": "Chewed oral aspirin is standard for early suspected ACS treatment when not contraindicated.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is the primary mechanism of action of adenosine in treating supraventricular tachycardia (SVT)?",
+    "question": "A stable patient has a regular narrow-complex tachycardia consistent with AV-node-dependent SVT. Adenosine is considered after appropriate initial measures. What is its principal electrophysiologic effect?",
     "choices": [
-      "Beta-adrenergic blockade",
-      "Inhibition of calcium channels",
-      "Slowing conduction through the AV node",
-      "Prolongation of QT interval"
+      "Transiently slows or blocks conduction through the AV node",
+      "Directly increases ventricular contractility by stimulating beta receptors",
+      "Selectively blocks sodium channels in ventricular myocardium",
+      "Produces sustained anticoagulation to prevent atrial thrombus"
     ],
-    "answer": "Slowing conduction through the AV node",
-    "reason": "Adenosine temporarily blocks AV node conduction, which often breaks reentrant tachycardias like SVT."
+    "answer": "Transiently slows or blocks conduction through the AV node",
+    "reason": "Adenosine transiently blocks AV nodal conduction and can terminate AV-node-dependent reentry; rhythm selection and contraindications matter.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A 58-year-old with atrial fibrillation suddenly becomes hypotensive with altered mental status. What is the immediate intervention?",
+    "question": "A patient with rapid atrial fibrillation at 180/min becomes confused, cool, and hypotensive at 72/44. The pulse is present. What is the priority?",
     "choices": [
-      "Amiodarone 150 mg IV over 10 minutes",
-      "Synchronized cardioversion",
-      "Administer aspirin",
-      "Defibrillation"
+      "Prepare urgent synchronized cardioversion with supportive care and sedation when feasible",
+      "Give a slow antiarrhythmic infusion and delay electrical treatment until it finishes",
+      "Use unsynchronized defibrillation despite an organized rhythm with a pulse",
+      "Give aspirin and reassess in fifteen minutes"
     ],
-    "answer": "Synchronized cardioversion",
-    "reason": "Unstable atrial fibrillation (hypotension, AMS) requires synchronized cardioversion per ACLS protocol."
+    "answer": "Prepare urgent synchronized cardioversion with supportive care and sedation when feasible",
+    "reason": "Hemodynamic instability attributable to a tachyarrhythmia with a pulse warrants prompt synchronized cardioversion.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which of the following is a contraindication for nitroglycerin administration in chest pain?",
+    "question": "A patient with suspected ACS has BP 118/76 and reports taking sildenafil earlier that evening. What is the safest approach to nitroglycerin?",
     "choices": [
-      "Tachycardia",
-      "BP 110/70 mmHg",
-      "Use of sildenafil within 24 hours",
-      "History of diabetes"
+      "Withhold nitroglycerin due to recent PDE-5 inhibitor use and continue appropriate ACS care",
+      "Give one reduced nitroglycerin dose because systolic pressure exceeds 100",
+      "Give nitroglycerin after aspirin because aspirin prevents hypotension",
+      "Administer nitroglycerin only if the heart rate exceeds 100/min"
     ],
-    "answer": "Use of sildenafil within 24 hours",
-    "reason": "Phosphodiesterase inhibitors combined with nitro can cause life-threatening hypotension."
+    "answer": "Withhold nitroglycerin due to recent PDE-5 inhibitor use and continue appropriate ACS care",
+    "reason": "Recent PDE-5 inhibitor use can cause dangerous hypotension with nitrates; timing and local protocols must be checked.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is the correct initial dose of ketamine for sedation in a violent patient (IM route)?",
+    "question": "A severely agitated adult poses an immediate threat after de-escalation fails. The team has secured the scene and a sedation protocol permits ketamine. What is the best medication safety approach?",
     "choices": [
-      "0.1 mg/kg",
-      "1 mg/kg",
-      "4 mg/kg",
-      "10 mg/kg"
+      "Use the indication- and route-specific local dosing protocol with continuous airway and cardiorespiratory monitoring",
+      "Use the same ketamine dose for analgesia and dissociative sedation regardless of route",
+      "Give a fixed dose without estimating weight or checking concentration",
+      "Delay airway equipment preparation until after the sedative takes effect"
     ],
-    "answer": "4 mg/kg",
-    "reason": "IM ketamine for sedation is commonly dosed at 4 mg/kg for rapid control of agitation."
+    "answer": "Use the indication- and route-specific local dosing protocol with continuous airway and cardiorespiratory monitoring",
+    "reason": "Sedation dosing depends on indication, route and protocol; airway readiness and monitoring are essential.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A patient with CHF is given furosemide. What is the most concerning side effect to monitor for prehospital?",
+    "question": "A patient receiving loop-diuretic therapy develops muscle weakness and frequent ventricular ectopy. Which treatment-related electrolyte disturbance is especially concerning?",
     "choices": [
-      "Tinnitus",
-      "Hypokalemia",
-      "Seizures",
-      "Hyperglycemia"
+      "Hypokalemia from renal potassium loss",
+      "Hyperkalemia from potassium retention",
+      "Hypercalcemia from calcium supplementation",
+      "Hypernatremia caused by direct sodium infusion"
     ],
-    "answer": "Hypokalemia",
-    "reason": "Furosemide is a loop diuretic and can cause electrolyte imbalances, particularly hypokalemia."
+    "answer": "Hypokalemia from renal potassium loss",
+    "reason": "Loop diuretics can cause potassium depletion, which increases dysrhythmia risk. Other abnormalities may coexist.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which medication is most appropriate to manage a stable patient with ventricular ectopy and a history of myocardial infarction?",
+    "question": "A stable adult has occasional premature ventricular complexes after an old MI. They deny chest pain, perfusion is normal, and there is no sustained tachyarrhythmia. What is the best approach?",
     "choices": [
-      "Epinephrine",
-      "Amiodarone",
-      "Atropine",
-      "Lidocaine"
+      "Assess reversible causes, obtain ECG monitoring, and avoid routine antiarrhythmics for isolated ectopy",
+      "Give amiodarone immediately because any PVC after MI requires suppression",
+      "Administer epinephrine to increase coronary perfusion",
+      "Perform synchronized cardioversion for isolated premature beats"
     ],
-    "answer": "Amiodarone",
-    "reason": "Amiodarone is preferred for ventricular arrhythmias, especially in post-MI patients."
+    "answer": "Assess reversible causes, obtain ECG monitoring, and avoid routine antiarrhythmics for isolated ectopy",
+    "reason": "Isolated PVCs in a stable patient do not automatically warrant antiarrhythmics; evaluate clinical context and reversible triggers.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which of the following best explains the effect of glucagon in beta blocker overdose?",
+    "question": "A patient with suspected severe beta-blocker toxicity has bradycardia and hypotension despite initial supportive care. Why might glucagon be considered under toxicology guidance?",
     "choices": [
-      "Increases acetylcholine release",
-      "Enhances insulin sensitivity",
-      "Stimulates cAMP independently of beta receptors",
-      "Blocks calcium influx"
+      "It can increase intracellular cAMP through a pathway independent of beta-adrenergic receptors",
+      "It irreversibly displaces the beta blocker from its receptor",
+      "It directly neutralizes circulating beta-blocker molecules",
+      "It inhibits platelet aggregation and restores coronary flow"
     ],
-    "answer": "Stimulates cAMP independently of beta receptors",
-    "reason": "Glucagon activates cAMP without using beta-adrenergic receptors, restoring cardiac contractility."
+    "answer": "It can increase intracellular cAMP through a pathway independent of beta-adrenergic receptors",
+    "reason": "Glucagon activates adenylate cyclase through its own receptor, independent of beta-adrenergic receptors; specialist consultation and protocol guidance are important.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is the correct prehospital dose of magnesium sulfate for torsades de pointes in an adult patient?",
+    "question": "An adult has polymorphic ventricular tachycardia with twisting QRS morphology and a prolonged QT interval. Which medication is commonly considered for torsades de pointes?",
     "choices": [
-      "0.5 g IV over 10 min",
-      "1 g IV push",
-      "2 g IV diluted over 2–5 minutes",
-      "4 g IM"
+      "Magnesium sulfate under the appropriate arrest or perfusing-rhythm protocol",
+      "Adenosine as first-line therapy for all wide-complex rhythms",
+      "Atropine because the underlying rate is fast",
+      "Nitroglycerin to shorten ventricular repolarization"
     ],
-    "answer": "2 g IV diluted over 2–5 minutes",
-    "reason": "Magnesium 2 g IV over 2–5 minutes is the ACLS-recommended dose for torsades."
+    "answer": "Magnesium sulfate under the appropriate arrest or perfusing-rhythm protocol",
+    "reason": "Magnesium is commonly used for torsades; exact dosing and delivery depend on whether a pulse is present and local protocol.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which of the following conditions is most associated with a pulsus paradoxus and muffled heart sounds?",
+    "question": "After penetrating chest trauma, a patient is hypotensive with jugular venous distension, muffled heart sounds, and no clear unilateral breath-sound reduction. Which diagnosis should be strongly considered?",
     "choices": [
-      "Tension pneumothorax",
-      "Pulmonary embolism",
       "Cardiac tamponade",
-      "Aortic dissection"
+      "Isolated pulmonary contusion",
+      "Simple rib fracture",
+      "Uncomplicated vasovagal syncope"
     ],
     "answer": "Cardiac tamponade",
-    "reason": "Tamponade causes fluid compression around the heart, resulting in decreased stroke volume and pulsus paradoxus."
+    "reason": "The presentation raises concern for obstructive shock from tamponade, though findings may be incomplete and other causes require assessment.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What ECG finding is most indicative of hyperkalemia?",
+    "question": "A dialysis patient who missed treatment is weak and bradycardic. The ECG shows tall narrow-based T waves and QRS widening. Which cause is most concerning?",
     "choices": [
-      "Peaked T waves",
-      "Shortened PR interval",
-      "U waves",
-      "ST depression"
+      "Hyperkalemia requiring immediate protocol-directed stabilization and treatment",
+      "Hypokalemia because peaked T waves indicate potassium depletion",
+      "Hypocalcemia as the only possible cause of a wide QRS",
+      "Acute anxiety causing a benign ECG variant"
     ],
-    "answer": "Peaked T waves",
-    "reason": "Peaked T waves are the earliest and most classic ECG sign of elevated serum potassium."
+    "answer": "Hyperkalemia requiring immediate protocol-directed stabilization and treatment",
+    "reason": "Missed dialysis and characteristic ECG changes strongly suggest life-threatening hyperkalemia; do not delay appropriate treatment.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is the appropriate dose of epinephrine for adult anaphylaxis via IM route?",
+    "question": "An adult develops hypotension, wheezing, and urticaria after a medication injection. Which medication is first-line for anaphylaxis?",
     "choices": [
-      "0.3 mg of 1:1,000",
-      "1 mg of 1:10,000",
-      "0.1 mg of 1:1,000",
-      "0.5 mg of 1:10,000"
+      "Intramuscular epinephrine at the adult dose specified by current protocol",
+      "Intravenous diphenhydramine as sole initial treatment",
+      "Nebulized albuterol alone because wheezing is present",
+      "Intramuscular corticosteroid before epinephrine"
     ],
-    "answer": "0.3 mg of 1:1,000",
-    "reason": "The standard adult dose is 0.3 mg IM using a 1:1,000 concentration."
+    "answer": "Intramuscular epinephrine at the adult dose specified by current protocol",
+    "reason": "IM epinephrine is first-line in anaphylaxis; supportive airway and circulatory care are also essential.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A patient is postictal after a tonic-clonic seizure. What drug should be administered if seizures continue?",
+    "question": "An adult has another generalized convulsive seizure lasting several minutes without regaining consciousness between events. What is the best medication strategy?",
     "choices": [
-      "Epinephrine",
-      "Midazolam",
-      "Naloxone",
-      "Diazoxide"
+      "Administer a protocol-approved benzodiazepine promptly while supporting airway and glucose assessment",
+      "Wait for spontaneous recovery because repeated seizures are not time-sensitive",
+      "Administer naloxone solely because the patient is unresponsive",
+      "Give aspirin to reduce cerebral inflammation"
     ],
-    "answer": "Midazolam",
-    "reason": "Benzodiazepines like midazolam are the treatment of choice for status epilepticus."
+    "answer": "Administer a protocol-approved benzodiazepine promptly while supporting airway and glucose assessment",
+    "reason": "Ongoing or recurrent seizures without recovery require prompt seizure management; benzodiazepines are first-line under appropriate protocols.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which medication is used to reverse the effects of benzodiazepines?",
+    "question": "A patient is somnolent after a reported benzodiazepine ingestion, but also has a seizure disorder and possible mixed overdose. What is the safest general approach?",
     "choices": [
-      "Naloxone",
-      "Romazicon (Flumazenil)",
-      "Atropine",
-      "Fomepizole"
+      "Support airway and ventilation and seek toxicology guidance rather than routinely administering flumazenil",
+      "Give flumazenil immediately to every patient with suspected benzodiazepine exposure",
+      "Give naloxone as a specific benzodiazepine antidote",
+      "Withhold all supportive care until a urine drug screen is available"
     ],
-    "answer": "Romazicon (Flumazenil)",
-    "reason": "Flumazenil is a benzodiazepine antagonist, used in very selective cases due to seizure risk."
+    "answer": "Support airway and ventilation and seek toxicology guidance rather than routinely administering flumazenil",
+    "reason": "Flumazenil can precipitate seizures, particularly with chronic use or mixed overdoses. Supportive care is generally central.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "A patient with COPD is given too much oxygen. What complication are you most concerned about?",
+    "question": "A patient with COPD exacerbation is receiving oxygen and is now somnolent with inadequate respiratory effort. Which statement best guides management?",
     "choices": [
-      "Cardiac ischemia",
-      "Seizures",
-      "Hypoventilation due to loss of hypoxic drive",
-      "Hyperthermia"
+      "Assess ventilation and possible hypercapnia, titrate oxygen appropriately, and assist ventilation when indicated",
+      "Stop all oxygen because COPD patients rely entirely on hypoxic drive",
+      "Continue increasing oxygen without checking breathing adequacy",
+      "Assume that normal SpO₂ excludes ventilatory failure"
     ],
-    "answer": "Hypoventilation due to loss of hypoxic drive",
-    "reason": "COPD patients rely partially on hypoxic respiratory drive; high-flow O₂ can reduce their respiratory effort."
+    "answer": "Assess ventilation and possible hypercapnia, titrate oxygen appropriately, and assist ventilation when indicated",
+    "reason": "COPD-related hypercapnia is multifactorial; oxygenation and ventilation must be assessed separately. Do not withhold needed oxygen or ventilatory support.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   }
 ]
