@@ -64,12 +64,16 @@
     const ai = !!p?.aiNarrativeComplete && !!p?.aiCompletionProof;
     const test = !!p?.writtenTestComplete && Number(p?.writtenTestScore) >= 80;
     const finished = !!p?.classFinished;
+    const currentStepId = finished ? '' : !started ? '#progress-start' : !material ? '#progress-material' : !guide ? '#progress-guide' : !ai ? '#progress-ai' : !test ? '#progress-test' : '#progress-finish';
     const mark = (id, done, detail) => {
       const item = document.querySelector(id);
       if (!item) return;
       item.classList.toggle('complete', done);
+      const current = id === currentStepId;
+      item.classList.toggle('current', current);
+      if (current) item.setAttribute('aria-current', 'step'); else item.removeAttribute('aria-current');
       const state = item.querySelector('.rw-step-status');
-      if (state) state.textContent = done ? 'Complete' : 'Not complete';
+      if (state) state.textContent = done ? 'Complete' : current ? 'Next up' : 'Not complete';
       const detailNode = item.querySelector('span:nth-of-type(2)');
       if (detailNode && detail) detailNode.textContent = detail;
     };
@@ -79,6 +83,31 @@
     mark('#progress-ai', ai, ai ? 'First AI grade: ' + p.aiNarrativeScore + '/100. Extra narratives are optional.' : 'Submit a fictional narrative for one grade.');
     mark('#progress-test', test, test ? 'Passed with ' + p.writtenTestScore + '% (' + p.writtenTestCorrect + ' of 10).' : p?.writtenTestScore != null ? 'Most recent score: ' + p.writtenTestScore + '%. At least 80% is required.' : 'Earn at least 8 correct answers (80%).');
     mark('#progress-finish', finished, finished ? 'Class finished and completion recorded.' : 'Finish after passing the written test.');
+    const nextAction = $('#courseNextAction');
+    if (nextAction) {
+      const steps = [
+        { id: '#progress-start', number: '1', title: 'Start class', description: 'Enter your name and confirm score tracking.', href: '#courseStartForm', text: 'Go to name and consent' },
+        { id: '#progress-material', number: '2', title: 'Read the class material', description: 'Review the lesson, then mark it complete at the end of the material.', href: '#classMaterial', text: 'Read class material' },
+        { id: '#progress-guide', number: '3', title: 'Complete one guided narrative', description: 'Use a fictional case in the guided template. Return here using the checklist link on that page.', href: '/pcr-narrative-coach.html', text: 'Open guided narrative' },
+        { id: '#progress-ai', number: '4', title: 'Complete one AI-graded narrative', description: 'Submit one fictional narrative for a grade. Return here using the checklist link on that page.', href: '/narrative-writing-lab.html', text: 'Open AI narrative lab' },
+        { id: '#progress-test', number: '5', title: 'Pass the written test', description: 'Answer all 10 questions and get at least 8 correct (80%).', href: '#course-completion', text: 'Go to written test' },
+        { id: '#progress-finish', number: '6', title: 'Finish class', description: 'All required steps are done. Select Finish class below to save your completion record.', href: '#progress-finish', text: 'Go to Finish class' }
+      ];
+      const step = steps.find(item => item.id === currentStepId);
+      nextAction.classList.toggle('complete', finished);
+      $('#courseNextNumber').textContent = finished ? '✓' : step.number;
+      $('#courseNextLabel').textContent = finished ? 'Course complete' : 'Next required step · ' + step.number + ' of 6';
+      $('#courseNextTitle').textContent = finished ? 'You finished the class' : step.title;
+      $('#courseNextDescription').textContent = finished ? 'Your completion record was submitted to the department roster.' : step.description;
+      const link = $('#courseNextLink');
+      if (finished) {
+        link.hidden = true;
+      } else {
+        link.hidden = false;
+        link.href = step.href;
+        link.textContent = step.text;
+      }
+    }
     setLockedLink('#progress-guide a', '/pcr-narrative-coach.html', guide ? 'Practice another guided narrative (optional) →' : 'Open PCR Narrative Coach →', started && material);
     setLockedLink('#progress-ai a', '/narrative-writing-lab.html', ai ? 'Practice another narrative (optional) →' : 'Open AI Narrative Writing Lab →', started && material && guide);
     setLockedLink('#progress-test a', '#course-completion', 'Go to written test →', started && material && guide && ai);
@@ -105,18 +134,11 @@
       button.textContent = 'Retake written test';
       button.disabled = false;
     }
-    if (started) {
-      progressSummary.textContent = finished ? 'All class requirements are complete.' :
-        'Progress saved in this browser. ' + [
-          !material && 'read the class material',
-          !guide && 'complete a guided narrative',
-          !ai && 'complete one AI-graded narrative',
-          !test && 'pass the written test with at least 80%',
-          !finished && material && guide && ai && test && 'select Finish class'
-        ].filter(Boolean).join(', then ') + '.';
-    } else {
-      progressSummary.textContent = 'Start class and enter your name to begin the checklist.';
-    }
+    progressSummary.textContent = finished
+      ? 'All six required steps are complete. Your class completion was recorded.'
+      : started
+        ? 'Follow the “Next required step” above. Use the checklist to see which steps are complete.'
+        : 'Start class with your name and consent to begin the checklist.';
   }
 
   $('#markMaterialRead')?.addEventListener('click', () => {
