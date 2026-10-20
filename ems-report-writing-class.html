@@ -17,7 +17,21 @@
 <section class="rw-hero"><div class="rw-hero-inner"><p class="rw-kicker">EMS documentation · 45–55 minutes</p><h1>Write a report that tells the call clearly.</h1><p>Learn what belongs in a strong patient care report, how to protect patient information, and how common narrative formats organize the same facts. Then practice with EMSCodeSim’s current templates and fictional-case AI grader.</p><div class="rw-actions"><a class="rw-button primary" href="#class">Start the class</a><a class="rw-button light" href="/ems-training-tools.html">Browse practice tools</a></div><div class="rw-tags"><span>EMT and Paramedic</span><span>Practical examples</span><span>Fictional practice only</span></div></div></section>
 <main id="main" class="rw-shell">
 <section class="rw-alert"><strong>Practice only — not for field use.</strong><p>Use fictional scenarios in this class and linked tools. Do not enter, paste, or upload a real patient report or patient-identifying information. The Narrative Coach may save drafts in this browser; the AI Writing Lab sends submitted text to an AI service for feedback. Use your agency-approved ePCR and field documentation process for actual calls.</p></section>
-<section id="class" class="rw-section"><p class="rw-eyebrow">By the end, you can</p><h2>Build a clear, factual narrative</h2><div class="rw-grid four">
+<section id="courseProgress" class="rw-progress-panel" aria-labelledby="progressHeading">
+<div class="rw-heading"><span>✓</span><div><p class="rw-eyebrow">Your course checklist</p><h2 id="progressHeading">Track your progress</h2></div></div>
+<p class="rw-progress-intro">Complete the four required steps below. Your progress stays in this browser. The class record is saved after your first successful AI narrative grade.</p>
+<form id="courseStartForm" class="rw-start-form">
+<label class="rw-name-field" for="learnerName"><b>Start class: enter your name</b><input id="learnerName" name="learnerName" type="text" autocomplete="name" maxlength="120" required placeholder="Enter your name"></label>
+
+<button class="rw-button primary" id="startClassBtn" type="submit">Start class</button>
+<span id="startClassStatus" aria-live="polite"></span>
+</form>
+<ol class="rw-progress-steps" aria-label="Required class steps">
+<li id="progress-start" class="rw-progress-step"><span class="rw-step-status">Not started</span><b>1. Start class</b><span>Enter your name.</span></li>
+<li id="progress-guide" class="rw-progress-step"><span class="rw-step-status">Not started</span><b>2. Complete a guide narrative</b><span>Use the guided PCR template and generate a narrative.</span><a href="/pcr-narrative-coach.html">Open PCR Narrative Coach →</a></li>
+<li id="progress-test" class="rw-progress-step"><span class="rw-step-status">Not started</span><b>3. Complete the written test</b><span>Answer all 10 content questions.</span><a href="#course-completion">Go to written test →</a></li>
+<li id="progress-ai" class="rw-progress-step"><span class="rw-step-status">Not started</span><b>4. Complete one AI-graded narrative</b><span>Submit a fictional narrative for a grade. More practice narratives are optional.</span><a href="/narrative-writing-lab.html">Open AI Narrative Writing Lab →</a></li>
+</ol><p id="courseProgressSummary" class="rw-progress-summary" aria-live="polite">Start class to begin tracking your required steps.</p></section>\n<section id="class" class="rw-section"><p class="rw-eyebrow">By the end, you can</p><h2>Build a clear, factual narrative</h2><div class="rw-grid four">
 <article class="rw-card"><b>01</b><h3>Explain the purpose</h3><p>Connect documentation to handoff, continuity of care, accountability, quality review, and useful EMS data.</p></article>
 <article class="rw-card"><b>02</b><h3>Separate facts</h3><p>Distinguish what the patient said, what others reported, what you observed, what you assessed, and what you did.</p></article>
 <article class="rw-card"><b>03</b><h3>Choose a structure</h3><p>Compare chronological, CHART, SOAP, and DCHART while following your agency’s approved style.</p></article>
@@ -93,9 +107,9 @@
 <details><summary>Which report format is automatically the most accurate?</summary><p><b>Answer:</b> None. Choose a format accepted by your agency and ensure facts are complete, objective, correctly attributed, and consistent.</p></details>
 </div></section>
 <section class="rw-section" id="course-completion"><div class="rw-heading"><span>✓</span><div><p class="rw-eyebrow">Written test and completion record</p><h2>Record your class completion</h2></div></div>
-<p>Answer all 10 questions and enter your name. Then submit one fictional narrative to the AI grader. After grading, EMSCodeSim records your name, written-test score, AI narrative score, and completion time in Neon so course staff can track completions. No email or narrative text is stored in the completion record. Your narrative is still sent to the AI service for grading as described above; never use real patient information.</p>
+<p>Complete the 10 content questions after starting the class and generating a guided narrative. Your score will appear here. Then submit one fictional narrative for AI grading to finish the required steps. EMSCodeSim records your name, written-test score, first AI narrative score, and completion time. No email or narrative text is stored in the completion record. Never use real patient information.</p>
 <form id="classCompletionForm" class="rw-completion-form">
-<label class="rw-name-field" for="learnerName"><b>Name</b><input id="learnerName" name="learnerName" type="text" autocomplete="name" maxlength="120" required placeholder="Enter your name"></label>
+
 <div class="rw-test-grid"><fieldset class="rw-test-question"><legend>1. When the patient tells the crew how symptoms began, how should that detail be written?</legend><label><input type="radio" name="q1" value="0" required><span>State it as a patient-reported statement.</span></label><label><input type="radio" name="q1" value="1" required><span>Write it as a confirmed crew observation.</span></label><label><input type="radio" name="q1" value="2" required><span>Convert it into a diagnosis.</span></label><label><input type="radio" name="q1" value="3" required><span>Leave out the source because it is obvious.</span></label></fieldset>
 <fieldset class="rw-test-question"><legend>2. The patient denies dizziness, but the crew did not assess gait. Which statement is accurate?</legend><label><input type="radio" name="q2" value="0" required><span>Patient is stable and ambulatory.</span></label><label><input type="radio" name="q2" value="1" required><span>Gait is normal.</span></label><label><input type="radio" name="q2" value="2" required><span>Patient denies dizziness; gait was not assessed.</span></label><label><input type="radio" name="q2" value="3" required><span>No neurologic concerns.</span></label></fieldset>
 <fieldset class="rw-test-question"><legend>3. When should a narrative include a protocol title or number?</legend><label><input type="radio" name="q3" value="0" required><span>When local policy requires it or it helps explain care, using the current local title and number.</span></label><label><input type="radio" name="q3" value="1" required><span>Every report must list every protocol available.</span></label><label><input type="radio" name="q3" value="2" required><span>Only when care deviated from protocol.</span></label><label><input type="radio" name="q3" value="3" required><span>Never; protocol numbers do not belong in ePCRs.</span></label></fieldset>
@@ -111,10 +125,10 @@
 <p id="classWrittenResult" class="rw-callout" hidden aria-live="polite"></p>
 <div id="classCompletionStatus" class="rw-callout" hidden aria-live="polite"></div>
 </form>
-<p>After the written test, write and submit your fictional capstone narrative. The AI narrative score is recorded when the grader returns its first successful grade for this course attempt.</p>
+<p>The AI narrative step is required once. You can submit more narratives for practice; they do not change your course completion record.</p>
 <a id="openNarrativeLab" class="rw-button light" href="/narrative-writing-lab.html">Continue to AI narrative grading →</a>
 </section>
 <section class="rw-finish"><p class="rw-eyebrow">Ready to practice?</p><h2>Build one report, grade one report, revise one report.</h2><p>Start with a fictional case and focus on one improvement at a time.</p><div class="rw-actions"><a class="rw-button primary" href="/pcr-narrative-coach.html">Start with a template</a><a class="rw-button light" href="/narrative-writing-lab.html">Practice with AI feedback</a></div></section>
 </main>
 <footer class="site-footer"><div class="footer-bottom">EMSCodeSim provides educational information and simulation practice. This class is not for field use and does not replace agency ePCR requirements, medical direction, local protocols, or documentation policy.</div></footer>
-<script defer src="/class-completion.js?v=1"></script><script defer src="/skills-session-mode.js?v=2"></script></body></html>
+<script defer src="/class-completion.js?v=2"></script><script defer src="/skills-session-mode.js?v=2"></script></body></html>
