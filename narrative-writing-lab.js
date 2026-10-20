@@ -123,7 +123,7 @@
         body: JSON.stringify({
           scenarioId: state.selected.id, format: el.format.value, level: state.level,
           narrative: el.narrative.value.trim(), website: '',
-          classCompletion: (() => { try { return JSON.parse(localStorage.getItem('emscode_report_class_completion_pending_v1') || 'null'); } catch (_) { return null; } })()
+          classCompletion: (() => { try { const p = JSON.parse(localStorage.getItem('emscode_report_class_progress_v1') || 'null'); return p?.started && p.guidedNarrativeComplete && p.writtenTestComplete && !p.aiNarrativeComplete ? JSON.parse(localStorage.getItem('emscode_report_class_completion_pending_v1') || 'null') : null; } catch (_) { return null; } })()
         })
       });
       const payload = await response.json().catch(() => ({}));
@@ -153,7 +153,7 @@
         el.completionStatus.textContent = 'Class completion recorded. Written test: ' + result.writtenTestScore + '% · AI narrative: ' + result.aiNarrativeScore + '/100.';
         el.completionStatus.classList.remove('hidden');
         el.completionStatus.classList.add('success');
-        try { localStorage.removeItem('emscode_report_class_completion_pending_v1'); } catch (_) {}
+        try { localStorage.removeItem('emscode_report_class_completion_pending_v1'); const key = 'emscode_report_class_progress_v1'; const p = JSON.parse(localStorage.getItem(key) || 'null'); if (p) { p.aiNarrativeComplete = true; p.aiNarrativeScore = result.aiNarrativeScore; localStorage.setItem(key, JSON.stringify(p)); } } catch (_) {}
       } else if (result.courseCompletionAttempted) {
         el.completionStatus.textContent = 'Your AI grade is ready, but the class completion record could not be saved. Check your connection and submit the narrative again from the class completion flow.';
         el.completionStatus.classList.remove('hidden');
