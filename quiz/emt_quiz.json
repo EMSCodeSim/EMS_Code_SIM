@@ -280,264 +280,284 @@
     "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "The prefix 'tachy-' means:",
+    "question": "An adult has a pulse of 132/min, fever, and dry mucous membranes. The monitor displays sinus tachycardia. What does the term tachycardia describe?",
     "choices": [
-      "Slow",
-      "Large",
-      "Pain",
-      "Fast"
+      "An abnormally rapid heart rate",
+      "An abnormally slow heart rate",
+      "An irregular rhythm without a measurable rate",
+      "A weak pulse despite a normal heart rate"
     ],
-    "answer": "Fast",
+    "answer": "An abnormally rapid heart rate",
     "topic": "Medical Emergencies",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
+    "reason": "Tachycardia refers to an elevated heart rate; assess the underlying cause and perfusion rather than treating the number alone.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "The suffix '-itis' refers to:",
+    "question": "A patient with an inflamed appendix has right lower-quadrant pain and fever. What does the suffix -itis indicate in appendicitis?",
     "choices": [
-      "Condition",
-      "Pain",
-      "Infection",
-      "Inflammation"
+      "Inflammation of the named structure",
+      "Complete loss of blood supply to the named structure",
+      "Surgical removal of the named structure",
+      "A benign tumor arising from the named structure"
     ],
-    "answer": "Inflammation",
+    "answer": "Inflammation of the named structure",
     "topic": "Medical Emergencies",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
+    "reason": "The suffix -itis indicates inflammation; the clinical cause and urgency still require assessment.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "The term 'hypoglycemia' means:",
+    "question": "A confused patient with diabetes has a glucose reading of 42 mg/dL. Which term most accurately describes the finding?",
     "choices": [
-      "High calcium",
-      "Low blood sugar",
-      "Low oxygen",
-      "High blood sugar"
+      "Hypoglycemia",
+      "Hyperglycemia",
+      "Hypoxemia",
+      "Hypotension"
     ],
-    "answer": "Low blood sugar",
+    "answer": "Hypoglycemia",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Hypoglycemia means low blood glucose. Determine whether the patient can safely swallow before choosing a treatment route.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "The prefix 'brady-' means:",
+    "question": "A patient has a regular pulse of 42/min and reports dizziness. What does the prefix brady- describe?",
     "choices": [
-      "Below",
-      "Fast",
-      "Slow",
-      "Above"
+      "An abnormally slow rate",
+      "An abnormally rapid rate",
+      "An irregular electrical rhythm",
+      "A complete absence of circulation"
     ],
-    "answer": "Slow",
+    "answer": "An abnormally slow rate",
     "topic": "Medical Emergencies",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
+    "reason": "Brady- means slow; symptoms and perfusion determine the urgency of bradycardia.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "The root word 'cardio' refers to:",
+    "question": "A patient is evaluated for cardiogenic shock after a large myocardial infarction. Which organ does the root cardi/o identify?",
     "choices": [
-      "Heart",
-      "Brain",
-      "Liver",
-      "Lungs"
+      "The heart",
+      "The lungs",
+      "The brain",
+      "The kidneys"
     ],
-    "answer": "Heart",
+    "answer": "The heart",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Cardi/o refers to the heart. Cardiogenic shock results from inadequate cardiac pump function.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which of the following is a common early sign of shock?",
+    "question": "A patient with vomiting and poor oral intake has cool skin, delayed capillary refill, and pulse 124/min; BP remains 112/74. Which finding supports early shock?",
     "choices": [
-      "Hypertension",
-      "Flushed skin",
-      "Bradycardia",
-      "Tachycardia"
+      "Tachycardia with other signs of impaired perfusion",
+      "Normal systolic pressure alone excluding shock",
+      "Warm dry skin and slow pulse",
+      "An isolated complaint of thirst with normal perfusion"
     ],
-    "answer": "Tachycardia",
+    "answer": "Tachycardia with other signs of impaired perfusion",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Bleeding & Shock",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Tachycardia and peripheral hypoperfusion may precede hypotension; normal blood pressure does not exclude shock.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What type of shock results from fluid loss?",
+    "question": "An older adult has repeated diarrhea, dizziness, dry mucous membranes, and a weak rapid pulse. Which shock mechanism is most likely?",
     "choices": [
-      "Obstructive shock",
-      "Distributive shock",
-      "Cardiogenic shock",
-      "Hypovolemic shock"
+      "Loss of circulating fluid volume",
+      "Primary failure of myocardial contractility",
+      "Mechanical obstruction to cardiac filling",
+      "Loss of vascular tone after spinal injury"
     ],
-    "answer": "Hypovolemic shock",
+    "answer": "Loss of circulating fluid volume",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Bleeding & Shock",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Severe gastrointestinal fluid losses can reduce preload and cause hypovolemic shock.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which condition is most likely to lead to cardiogenic shock?",
+    "question": "A patient with crushing chest pain develops hypotension, pulmonary crackles, and cool clammy skin. Which cause of shock is most concerning?",
     "choices": [
-      "Asthma",
-      "Seizure",
-      "Heart attack",
-      "Stroke"
+      "Acute myocardial pump failure",
+      "An isolated allergic skin reaction",
+      "Uncomplicated dehydration without cardiac disease",
+      "Spinal cord injury with vasodilation"
     ],
-    "answer": "Heart attack",
+    "answer": "Acute myocardial pump failure",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Bleeding & Shock",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Myocardial ischemia can reduce ventricular contractility, producing cardiogenic shock and pulmonary congestion.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is a late sign of shock?",
+    "question": "A trauma patient becomes confused, pale, and hypotensive after an initially normal blood pressure. What does the new hypotension suggest?",
     "choices": [
-      "Drop in blood pressure",
-      "Pale skin",
-      "Anxiety",
-      "Increased pulse"
+      "Worsening decompensated shock",
+      "Successful compensation for blood loss",
+      "Normal adaptation to pain",
+      "Resolution of peripheral vasoconstriction"
     ],
-    "answer": "Drop in blood pressure",
+    "answer": "Worsening decompensated shock",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Bleeding & Shock",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Hypotension after progressive hypoperfusion is a late and concerning sign of shock.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which organ is most sensitive to inadequate perfusion?",
+    "question": "A hypotensive patient becomes acutely confused and cannot follow commands. Which interpretation best explains the change?",
     "choices": [
-      "Brain",
-      "Skin",
-      "Stomach",
-      "Liver"
+      "Reduced cerebral perfusion",
+      "Improved cerebral oxygen delivery",
+      "Isolated loss of gastric blood flow",
+      "Normal age-related memory change"
     ],
-    "answer": "Brain",
+    "answer": "Reduced cerebral perfusion",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "The brain is highly sensitive to inadequate oxygen and perfusion; altered mentation is a concerning shock finding.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which age group is most likely to have separation anxiety during assessment?",
+    "question": "A frightened 2-year-old clings to a parent and cries when an EMT approaches. What is the best assessment strategy?",
     "choices": [
-      "Toddlers",
-      "Adolescents",
-      "Adults",
-      "Neonates"
+      "Allow the caregiver to remain close and begin with less invasive observation",
+      "Separate the child from the caregiver to improve cooperation",
+      "Begin with painful procedures to finish quickly",
+      "Ask the toddler to complete a written symptom questionnaire"
     ],
-    "answer": "Toddlers",
+    "answer": "Allow the caregiver to remain close and begin with less invasive observation",
     "topic": "Obstetrics & Gynecology",
     "subtopic": "Patient Assessment",
-    "reason": "Support mother and newborn priorities: airway, breathing, circulation, and safe delivery/care steps."
+    "reason": "Toddlers commonly experience separation anxiety. Caregiver involvement and observation can reduce distress.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "How should you communicate with an elderly patient who is hard of hearing?",
+    "question": "An older patient with hearing impairment repeatedly answers questions incorrectly despite being alert. What should the EMT do?",
     "choices": [
-      "Speak clearly and slowly",
-      "Raise your voice and speak quickly",
-      "Use medical jargon",
-      "Ignore their hearing difficulty"
+      "Face the patient, reduce background noise, speak clearly, and confirm understanding",
+      "Shout rapidly from behind the patient",
+      "Assume confusion and skip the history",
+      "Speak only to family without first addressing the patient"
     ],
-    "answer": "Speak clearly and slowly",
+    "answer": "Face the patient, reduce background noise, speak clearly, and confirm understanding",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
+    "reason": "Adapt communication to hearing needs while preserving autonomy and checking comprehension.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which age group is most likely to underreport pain?",
+    "question": "An older adult denies significant pain despite a fall, but has guarding and focal hip tenderness. Which approach is most appropriate?",
     "choices": [
-      "Geriatric patients",
-      "Teens",
-      "Infants",
-      "Adults"
+      "Assess objective findings and function rather than relying on the pain rating alone",
+      "Exclude fracture because the patient denies severe pain",
+      "Ask the patient to walk without assistance to prove the hip is intact",
+      "Avoid repeat assessment because pain is subjective"
     ],
-    "answer": "Geriatric patients",
+    "answer": "Assess objective findings and function rather than relying on the pain rating alone",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
+    "reason": "Pain reporting varies; objective findings and mechanism can indicate serious injury despite a low pain score.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which is a normal heart rate for a neonate?",
+    "question": "A newborn is breathing spontaneously, pink centrally, and has a heart rate of 145/min. How should the EMT interpret the heart rate?",
     "choices": [
-      "60–100 bpm",
-      "160–200 bpm",
-      "120–160 bpm",
-      "100–120 bpm"
+      "Within the expected newborn range",
+      "Severe bradycardia requiring compressions",
+      "A rate diagnostic of supraventricular tachycardia",
+      "Cardiac arrest despite a palpable pulse"
     ],
-    "answer": "120–160 bpm",
+    "answer": "Within the expected newborn range",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "A newborn heart rate around 145/min is generally expected; evaluate respirations, tone, color and overall condition.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which age group commonly presents with nonspecific symptoms in serious illness?",
+    "question": "An older adult with a urinary infection presents with weakness and new confusion but no reported fever. What is the best interpretation?",
     "choices": [
-      "Adults",
-      "Geriatrics",
-      "Teens",
-      "Infants"
+      "Serious illness may present atypically in older adults",
+      "Absence of fever excludes infection",
+      "Confusion is always baseline in older adults",
+      "Weakness without chest pain excludes systemic illness"
     ],
-    "answer": "Geriatrics",
+    "answer": "Serious illness may present atypically in older adults",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
+    "reason": "Older adults can have nonspecific or atypical presentations; new altered mental status warrants evaluation.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which action represents EMS involvement in public health?",
+    "question": "A community EMS program identifies many preventable admissions among patients who cannot access primary care. Which intervention best reflects a public-health role?",
     "choices": [
-      "Waiting for hospital orders",
-      "Treating only emergency calls",
-      "Providing vaccinations at community events",
-      "Filing insurance claims"
+      "Coordinate outreach, prevention and appropriate referral within program scope",
+      "Restrict care to emergency transports only",
+      "Avoid collecting follow-up outcomes",
+      "Replace all physician care with unsupervised EMS treatment"
     ],
-    "answer": "Providing vaccinations at community events",
+    "answer": "Coordinate outreach, prevention and appropriate referral within program scope",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
+    "reason": "Public-health EMS activities may include prevention, outreach, referral and care coordination within authorized programs.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is one goal of community paramedicine?",
+    "question": "A patient with repeated CHF admissions struggles to obtain medications and follow-up visits. Which community-paramedicine goal best fits this problem?",
     "choices": [
-      "Transport all patients",
-      "Increase 911 calls",
-      "Focus only on trauma",
-      "Prevent hospital readmissions"
+      "Improve access, self-management and follow-up to reduce avoidable readmissions",
+      "Require transport to the emergency department for every home visit",
+      "Replace prescribed medication plans with EMS-selected drugs",
+      "Avoid communicating with the patient's care team"
     ],
-    "answer": "Prevent hospital readmissions",
+    "answer": "Improve access, self-management and follow-up to reduce avoidable readmissions",
     "topic": "Trauma",
     "subtopic": "Trauma Care",
-    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma."
+    "reason": "Community paramedicine can support care coordination and reduce avoidable utilization within local program scope.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which is a benefit of EMS data collection?",
+    "question": "An agency notices increased heat illness calls during a summer event. Which use of EMS data best supports prevention?",
     "choices": [
-      "Eliminates all errors",
-      "Improves public health planning",
-      "Reduces scene time",
-      "Shortens hospital stays"
+      "Analyze call patterns and share aggregate trends with public-health partners",
+      "Delete repeat-call records to make rates appear lower",
+      "Use only the total ambulance mileage as a measure of illness",
+      "Avoid reporting trends until every individual patient consents to public release"
     ],
-    "answer": "Improves public health planning",
+    "answer": "Analyze call patterns and share aggregate trends with public-health partners",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
+    "reason": "Aggregate surveillance data can inform prevention planning while protecting patient privacy.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "How can EMS help during a disease outbreak?",
+    "question": "During a respiratory disease outbreak, a patient reports fever and cough at a crowded shelter. Which EMS response best protects patients and responders?",
     "choices": [
-      "Assist with screening and education",
-      "Treat only trauma",
-      "Transport without PPE",
-      "Avoid public interaction"
+      "Use appropriate infection-control precautions, assess the patient, and coordinate public-health guidance",
+      "Skip PPE because the patient has no confirmed diagnosis",
+      "Transport every shelter resident regardless of symptoms",
+      "Withhold assessment until laboratory confirmation is available"
     ],
-    "answer": "Assist with screening and education",
+    "answer": "Use appropriate infection-control precautions, assess the patient, and coordinate public-health guidance",
     "topic": "Trauma",
     "subtopic": "Trauma Care",
-    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma."
+    "reason": "Infection prevention, appropriate clinical assessment and public-health coordination help limit transmission.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What does public health emphasize?",
+    "question": "A city reports a rise in preventable drowning incidents. Which EMS-supported strategy most directly addresses the population-level risk?",
     "choices": [
-      "Prevention and wellness",
-      "Private treatment",
-      "Emergency only",
-      "Long-term care"
+      "Partner on water-safety education and prevention outreach",
+      "Focus exclusively on resuscitation after drowning occurs",
+      "Avoid community messaging because prevention is outside emergency care",
+      "Increase documentation length without examining incident patterns"
     ],
-    "answer": "Prevention and wellness",
+    "answer": "Partner on water-safety education and prevention outreach",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
+    "reason": "Public health emphasizes prevention and risk reduction in addition to emergency response.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
     "question": "Which medication is commonly administered for hypoglycemia?",
