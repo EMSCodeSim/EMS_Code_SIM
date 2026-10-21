@@ -1218,7 +1218,7 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "An adult with suspected acute coronary syndrome has no contraindications to aspirin. Which listed total dose matches a commonly used adult EMT protocol? Verify local dosing requirements.",
+    "question": "A patient with suspected acute coronary syndrome is alert and has no aspirin contraindications. Under a protocol allowing 162–325 mg of chewable aspirin, which option is an appropriate total dose?",
     "choices": [
       "81 mg total",
       "325 mg total",
@@ -1228,7 +1228,7 @@
     "answer": "325 mg total",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "reason": "Many ACS protocols use 162–325 mg of chewable, non-enteric-coated aspirin when indicated. Follow local protocols and medical direction.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1484,7 +1484,7 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "An adult with a pulse is apneic and requires BVM ventilations. Which listed ventilation rate is appropriate for adult respiratory arrest?",
+    "question": "An adult with a pulse is apneic and requires BVM ventilations. Which listed rate is closest to the recommended adult rescue-breathing rate?",
     "choices": [
       "1 breath every 5–6 seconds",
       "30 compressions to 2 breaths",
@@ -1492,7 +1492,7 @@
       "10 breaths then a pause"
     ],
     "answer": "1 breath every 5–6 seconds",
-    "reason": "Adults with a pulse are ventilated about 10–12 breaths per minute to avoid hyperventilation.",
+    "reason": "For an adult with a pulse but inadequate breathing, deliver approximately one breath every 6 seconds (10/min), enough for visible chest rise; avoid hyperventilation.",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Ventilation",
     "difficulty": "clinical-judgment-draft"
@@ -1848,7 +1848,7 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient has life-threatening bleeding from a leg wound, and pressure is ineffective or impractical. Where should a tourniquet be applied according to training?",
+    "question": "A patient has immediately life-threatening bleeding from a leg wound. Which listed tourniquet placement is most appropriate?",
     "choices": [
       "Directly over a joint",
       "High and tight on the limb proximal to severe extremity bleeding when direct pressure fails or is impractical",
@@ -1856,7 +1856,7 @@
       "Only after hospital arrival"
     ],
     "answer": "High and tight on the limb proximal to severe extremity bleeding when direct pressure fails or is impractical",
-    "reason": "Tourniquets stop life-threatening extremity hemorrhage when pressure dressings are insufficient.",
+    "reason": "Apply a commercial tourniquet proximal to life-threatening extremity bleeding, avoiding joints, and tighten until bleeding stops. When the wound is not identifiable or tactical circumstances require, high-and-tight placement may be used according to training.",
     "topic": "Trauma",
     "subtopic": "Bleeding & Shock",
     "difficulty": "clinical-judgment-draft"
@@ -1904,7 +1904,7 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient has an open chest wound with air movement through the defect. Which dressing approach is appropriate under local protocol?",
+    "question": "A patient has an open chest wound with air movement through the defect. Which listed dressing approach may be used under local protocol?",
     "choices": [
       "Pack the wound tightly with dry gauze only",
       "Apply an occlusive dressing sealed on three sides or per protocol",
@@ -1912,7 +1912,7 @@
       "Elevate the legs only"
     ],
     "answer": "Apply an occlusive dressing sealed on three sides or per protocol",
-    "reason": "An occlusive dressing helps restore chest-wall integrity while allowing escape of increasing pressure if tension develops.",
+    "reason": "Use a vented chest seal when available and consistent with protocol; monitor for tension physiology. A three-sided occlusive dressing is an older protocol-dependent alternative, not the preferred universal method.",
     "topic": "Trauma",
     "subtopic": "Trauma Care",
     "difficulty": "clinical-judgment-draft"
@@ -2422,7 +2422,7 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A newborn remains apneic after drying and stimulation. What airway and breathing intervention should follow?",
+    "question": "A newborn remains apneic after warming, drying, and stimulation. Which listed intervention best addresses the immediate problem?",
     "choices": [
       "Chest compressions first always",
       "Positioning and clearing the airway, then ventilating as indicated",
@@ -2430,7 +2430,7 @@
       "Immediate umbilical catheterization by EMT"
     ],
     "answer": "Positioning and clearing the airway, then ventilating as indicated",
-    "reason": "Newborn resuscitation prioritizes airway and breathing support before compressions.",
+    "reason": "Provide prompt positive-pressure ventilation for apnea or gasping after initial steps. Position the airway; suction only when secretions obstruct ventilation rather than routinely delaying ventilation.",
     "topic": "Obstetrics & Gynecology",
     "subtopic": "Obstetrics",
     "difficulty": "clinical-judgment-draft"
