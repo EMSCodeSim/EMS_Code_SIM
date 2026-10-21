@@ -11,7 +11,7 @@
     "reason": "Suspected acute stroke requires rapid recognition, last-known-well documentation, appropriate destination and pre-notification. Avoid unnecessary scene delays and empiric aspirin.",
     "subtopic": "Stroke",
     "topic": "Medical Emergencies",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "A patient with deep circumferential chest burns has increasing respiratory effort, reduced chest excursion, and bilateral breath sounds. What finding most directly explains the worsening ventilation?",
@@ -25,7 +25,7 @@
     "reason": "Circumferential full-thickness chest burns can limit expansion mechanically. Airway injury and toxic inhalation are important concurrent considerations, but reduced excursion with bilateral sounds supports chest wall restriction.",
     "subtopic": "Burns",
     "topic": "Trauma",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "A combative patient is pacing and threatening staff in a crowded room. No immediately reversible medical cause has yet been excluded. What is the best initial approach?",
@@ -39,7 +39,7 @@
     "reason": "Scene safety and de-escalation precede hands-on assessment when threatened. Consider medical causes of agitation and follow local restraint/sedation protocols if escalation becomes necessary.",
     "subtopic": "Behavioral/Psychiatric",
     "topic": "Medical Emergencies",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "A motorcycle crash patient is unresponsive, apneic, and pulseless. There is massive active bleeding from an open thigh injury. You have a partner and hemorrhage-control supplies. Which immediate coordinated action is most appropriate?",
@@ -53,7 +53,7 @@
     "reason": "Traumatic arrest requires a coordinated approach to immediately reversible causes, especially catastrophic hemorrhage, alongside indicated resuscitation under local trauma protocols.",
     "subtopic": "Bleeding and Shock",
     "topic": "Trauma",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "At a warehouse, a worker is unconscious near a damaged container displaying a class 6 skull-and-crossbones placard. Your crew is staged outside the hot zone. What is the best next action?",
@@ -67,7 +67,7 @@
     "reason": "A class 6 toxic-substance hazard requires scene isolation, identification and properly trained responders with suitable PPE; EMS crews should not enter an uncontrolled hot zone.",
     "subtopic": "Hazmat Awareness",
     "topic": "EMS Operations",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "A term pregnant patient has contractions every 90 seconds. During assessment you see the fetal head crowning. Maternal vital signs are stable and the ambulance is 15 minutes from the hospital. What is the best plan?",
@@ -81,7 +81,7 @@
     "reason": "Crowning suggests birth is imminent. Prepare for safe delivery and newborn assessment rather than delay or attempt to prevent birth.",
     "subtopic": "Obstetrics",
     "topic": "Special Populations",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "After a shallow-water dive, an alert adult reports midline neck pain and tingling in both hands. Breathing is adequate and the scene is safe. What is the best immediate approach?",
@@ -95,7 +95,7 @@
     "reason": "A high-risk mechanism with neurologic symptoms warrants minimizing spinal movement while maintaining primary assessment priorities.",
     "subtopic": "Spinal Trauma",
     "topic": "Trauma",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "Minutes after a bee sting, an adult develops stridor, wheezing, diffuse hives and hypotension. The patient has a pulse but is deteriorating. Which intervention should not be delayed?",
@@ -109,7 +109,7 @@
     "reason": "Anaphylaxis with airway compromise and hypotension requires prompt IM epinephrine alongside resuscitative support; adjuncts do not replace it.",
     "subtopic": "Respiratory Distress",
     "topic": "Airway Management, Respiration & Ventilation",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "Following a fall, an adult is pale and cool with a rapid weak radial pulse, altered mentation, and blood pressure 82/48. What interpretation best guides immediate care?",
@@ -123,7 +123,7 @@
     "reason": "Hypotension together with altered mentation and poor peripheral perfusion indicates decompensated shock, not compensated shock.",
     "subtopic": "Bleeding and Shock",
     "topic": "Trauma",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "A 54-year-old with crushing chest discomfort is diaphoretic and short of breath. SpO₂ is 97% on room air, BP 138/86, and there is no aspirin allergy or active bleeding. Which initial treatment plan is most appropriate?",
@@ -137,7 +137,7 @@
     "reason": "Suspected ACS calls for rapid ECG, aspirin when appropriate and transport. Routine supplemental oxygen is not indicated solely for chest pain when oxygenation is normal.",
     "subtopic": "Cardiac Emergencies",
     "topic": "Cardiovascular",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "An unconscious 25-year-old has respirations of 6/min with minimal chest rise and a palpable carotid pulse. Opioid exposure is suspected. Which action should take priority?",
@@ -151,7 +151,7 @@
     "reason": "Ventilation is the immediate priority when breathing is inadequate; naloxone may reverse opioid effects but does not replace respiratory support.",
     "subtopic": "Toxicology",
     "topic": "Medical Emergencies",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "A 3-year-old has a barking cough, hoarse voice, inspiratory stridor when upset, low-grade fever, and no drooling. Which assessment best fits the presentation?",
@@ -165,7 +165,7 @@
     "reason": "Barking cough, hoarseness and stridor with a viral prodrome support croup. Assess severity and avoid upsetting the child.",
     "subtopic": "Pediatrics",
     "topic": "Special Populations",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "A 70-year-old with dizziness has sinus bradycardia at 38/min, BP 84/60, and cool skin. Oxygenation is adequate and IV access is established. What is the best management strategy?",
@@ -179,7 +179,7 @@
     "reason": "Hypotension and hypoperfusion with bradycardia require urgent ACLS-based management; atropine and pacing decisions depend on clinical context and response.",
     "subtopic": "Cardiac Emergencies",
     "topic": "Cardiovascular",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "A 19-year-old reports assault, abdominal pain and vaginal bleeding. She is pale, tachycardic and dizzy when sitting upright. Which approach is most appropriate?",
@@ -193,7 +193,7 @@
     "reason": "Hemodynamic compromise and abdominal/pelvic symptoms raise concern for significant injury. Respect privacy, consent, and trauma-informed assessment while treating life threats.",
     "subtopic": "Gynecological",
     "topic": "Medical Emergencies",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "A diabetic adult is confused and intermittently combative with glucose 35 mg/dL. They cannot follow swallowing commands reliably. IV access is available. Which intervention is best?",
@@ -207,7 +207,7 @@
     "reason": "Severe symptomatic hypoglycemia requires prompt glucose replacement by a safe route. Unreliable swallowing makes oral glucose unsafe.",
     "subtopic": "Endocrine",
     "topic": "Medical Emergencies",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "At a partial building collapse, several people call for help from inside a damaged structure. Dust is still falling and a gas odor is present. Your ambulance is first on scene. What is the best initial action?",
@@ -221,7 +221,7 @@
     "reason": "Unstable structures and potential gas hazards require scene control and appropriate rescue resources before entry.",
     "subtopic": "Scene Size-Up",
     "topic": "Patient Assessment",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "A motorcyclist has paradoxical movement of a lateral chest segment, RR 34/min, SpO₂ 87%, and increasing fatigue. Which management priority is most appropriate?",
@@ -235,7 +235,7 @@
     "reason": "A flail segment can impair ventilation and coexist with pulmonary contusion or pneumothorax. Support breathing and reassess for deterioration.",
     "subtopic": "Chest Trauma",
     "topic": "Trauma",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "An unresponsive adult has pinpoint pupils and respirations of 5/min. A pulse is present. Drug paraphernalia is nearby. Which action is most important initially?",
@@ -249,7 +249,7 @@
     "reason": "In suspected opioid toxicity with respiratory depression, ventilatory support is immediately lifesaving; naloxone is an adjunct, and other causes remain possible.",
     "subtopic": "Toxicology",
     "topic": "Medical Emergencies",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "topic": "Cardiovascular",
@@ -263,7 +263,7 @@
     "answer": "It reduces platelet aggregation and may limit further coronary thrombus formation",
     "explanation": "Aspirin inhibits platelet aggregation, which reduces the risk of clot formation in coronary arteries during an acute coronary syndrome.",
     "reason": "Aspirin inhibits platelet aggregation. It is not a thrombolytic, nitrate, or immediate reversal of ischemic injury.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "topic": "Cardiovascular",
@@ -277,7 +277,7 @@
     "answer": "Withhold aspirin pending protocol/medical-direction guidance because active bleeding is a major concern",
     "explanation": "Aspirin can worsen bleeding, and is contraindicated in patients with active GI bleeding due to its antiplatelet effects.",
     "reason": "Active gastrointestinal bleeding is an important contraindication/precaution. Follow local protocols and medical direction.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "topic": "Cardiovascular",
@@ -291,7 +291,7 @@
     "answer": "Give the locally protocol-approved chewable aspirin dose, commonly 162–325 mg",
     "explanation": "The usual field dose is 324 mg, administered as four 81 mg baby aspirin tablets chewed by the patient.",
     "reason": "Common ACS guidance supports chewable aspirin in the 162–325 mg range when appropriate; follow local dosing protocols.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "topic": "Cardiovascular",
@@ -305,7 +305,7 @@
     "answer": "Consider salicylate toxicity and prioritize assessment, supportive care, and poison-center/medical consultation",
     "explanation": "Tinnitus (ringing in the ears) is a known side effect of salicylates like aspirin, especially in higher doses.",
     "reason": "Tinnitus, gastrointestinal symptoms, and tachypnea after excess aspirin raise concern for salicylate toxicity.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "topic": "Cardiovascular",
@@ -319,7 +319,7 @@
     "answer": "Have the patient chew the appropriate oral aspirin dose",
     "explanation": "Aspirin should be given orally and chewed for faster absorption in the setting of suspected cardiac events.",
     "reason": "Chewed oral aspirin is standard for early suspected ACS treatment when not contraindicated.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "A stable patient has a regular narrow-complex tachycardia consistent with AV-node-dependent SVT. Adenosine is considered after appropriate initial measures. What is its principal electrophysiologic effect?",
@@ -331,7 +331,8 @@
     ],
     "answer": "Transiently slows or blocks conduction through the AV node",
     "reason": "Adenosine transiently blocks AV nodal conduction and can terminate AV-node-dependent reentry; rhythm selection and contraindications matter.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft",
+    "topic": "Cardiovascular"
   },
   {
     "question": "A patient with rapid atrial fibrillation at 180/min becomes confused, cool, and hypotensive at 72/44. The pulse is present. What is the priority?",
@@ -343,7 +344,8 @@
     ],
     "answer": "Prepare urgent synchronized cardioversion with supportive care and sedation when feasible",
     "reason": "Hemodynamic instability attributable to a tachyarrhythmia with a pulse warrants prompt synchronized cardioversion.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft",
+    "topic": "Cardiovascular"
   },
   {
     "question": "A patient with suspected ACS has BP 118/76 and reports taking sildenafil earlier that evening. What is the safest approach to nitroglycerin?",
@@ -355,7 +357,8 @@
     ],
     "answer": "Withhold nitroglycerin due to recent PDE-5 inhibitor use and continue appropriate ACS care",
     "reason": "Recent PDE-5 inhibitor use can cause dangerous hypotension with nitrates; timing and local protocols must be checked.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft",
+    "topic": "Cardiovascular"
   },
   {
     "question": "A severely agitated adult poses an immediate threat after de-escalation fails. The team has secured the scene and a sedation protocol permits ketamine. What is the best medication safety approach?",
@@ -367,7 +370,8 @@
     ],
     "answer": "Use the indication- and route-specific local dosing protocol with continuous airway and cardiorespiratory monitoring",
     "reason": "Sedation dosing depends on indication, route and protocol; airway readiness and monitoring are essential.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft",
+    "topic": "Cardiovascular"
   },
   {
     "question": "A patient receiving loop-diuretic therapy develops muscle weakness and frequent ventricular ectopy. Which treatment-related electrolyte disturbance is especially concerning?",
@@ -379,7 +383,8 @@
     ],
     "answer": "Hypokalemia from renal potassium loss",
     "reason": "Loop diuretics can cause potassium depletion, which increases dysrhythmia risk. Other abnormalities may coexist.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft",
+    "topic": "Cardiovascular"
   },
   {
     "question": "A stable adult has occasional premature ventricular complexes after an old MI. They deny chest pain, perfusion is normal, and there is no sustained tachyarrhythmia. What is the best approach?",
@@ -391,7 +396,8 @@
     ],
     "answer": "Assess reversible causes, obtain ECG monitoring, and avoid routine antiarrhythmics for isolated ectopy",
     "reason": "Isolated PVCs in a stable patient do not automatically warrant antiarrhythmics; evaluate clinical context and reversible triggers.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft",
+    "topic": "Cardiovascular"
   },
   {
     "question": "A patient with suspected severe beta-blocker toxicity has bradycardia and hypotension despite initial supportive care. Why might glucagon be considered under toxicology guidance?",
@@ -403,7 +409,8 @@
     ],
     "answer": "It can increase intracellular cAMP through a pathway independent of beta-adrenergic receptors",
     "reason": "Glucagon activates adenylate cyclase through its own receptor, independent of beta-adrenergic receptors; specialist consultation and protocol guidance are important.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft",
+    "topic": "Cardiovascular"
   },
   {
     "question": "An adult has polymorphic ventricular tachycardia with twisting QRS morphology and a prolonged QT interval. Which medication is commonly considered for torsades de pointes?",
@@ -415,7 +422,8 @@
     ],
     "answer": "Magnesium sulfate under the appropriate arrest or perfusing-rhythm protocol",
     "reason": "Magnesium is commonly used for torsades; exact dosing and delivery depend on whether a pulse is present and local protocol.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft",
+    "topic": "Cardiovascular"
   },
   {
     "question": "After penetrating chest trauma, a patient is hypotensive with jugular venous distension, muffled heart sounds, and no clear unilateral breath-sound reduction. Which diagnosis should be strongly considered?",
@@ -427,7 +435,8 @@
     ],
     "answer": "Cardiac tamponade",
     "reason": "The presentation raises concern for obstructive shock from tamponade, though findings may be incomplete and other causes require assessment.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft",
+    "topic": "Cardiovascular"
   },
   {
     "question": "A dialysis patient who missed treatment is weak and bradycardic. The ECG shows tall narrow-based T waves and QRS widening. Which cause is most concerning?",
@@ -439,7 +448,8 @@
     ],
     "answer": "Hyperkalemia requiring immediate protocol-directed stabilization and treatment",
     "reason": "Missed dialysis and characteristic ECG changes strongly suggest life-threatening hyperkalemia; do not delay appropriate treatment.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft",
+    "topic": "Cardiovascular"
   },
   {
     "question": "An adult develops hypotension, wheezing, and urticaria after a medication injection. Which medication is first-line for anaphylaxis?",
@@ -451,7 +461,8 @@
     ],
     "answer": "Intramuscular epinephrine at the adult dose specified by current protocol",
     "reason": "IM epinephrine is first-line in anaphylaxis; supportive airway and circulatory care are also essential.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft",
+    "topic": "Cardiovascular"
   },
   {
     "question": "An adult has another generalized convulsive seizure lasting several minutes without regaining consciousness between events. What is the best medication strategy?",
@@ -463,7 +474,8 @@
     ],
     "answer": "Administer a protocol-approved benzodiazepine promptly while supporting airway and glucose assessment",
     "reason": "Ongoing or recurrent seizures without recovery require prompt seizure management; benzodiazepines are first-line under appropriate protocols.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft",
+    "topic": "Cardiovascular"
   },
   {
     "question": "A patient is somnolent after a reported benzodiazepine ingestion, but also has a seizure disorder and possible mixed overdose. What is the safest general approach?",
@@ -475,7 +487,8 @@
     ],
     "answer": "Support airway and ventilation and seek toxicology guidance rather than routinely administering flumazenil",
     "reason": "Flumazenil can precipitate seizures, particularly with chronic use or mixed overdoses. Supportive care is generally central.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft",
+    "topic": "Cardiovascular"
   },
   {
     "question": "A patient with COPD exacerbation is receiving oxygen and is now somnolent with inadequate respiratory effort. Which statement best guides management?",
@@ -487,6 +500,7 @@
     ],
     "answer": "Assess ventilation and possible hypercapnia, titrate oxygen appropriately, and assist ventilation when indicated",
     "reason": "COPD-related hypercapnia is multifactorial; oxygenation and ventilation must be assessed separately. Do not withhold needed oxygen or ventilatory support.",
-    "difficulty": "clinical-judgment-reviewed-draft"
+    "difficulty": "clinical-judgment-draft",
+    "topic": "Cardiovascular"
   }
 ]
