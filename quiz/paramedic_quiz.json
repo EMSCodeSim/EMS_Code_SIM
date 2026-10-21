@@ -371,7 +371,7 @@
     "answer": "Use the indication- and route-specific local dosing protocol with continuous airway and cardiorespiratory monitoring",
     "reason": "Sedation dosing depends on indication, route and protocol; airway readiness and monitoring are essential.",
     "difficulty": "clinical-judgment-draft",
-    "topic": "Cardiovascular"
+    "topic": "Medical Emergencies"
   },
   {
     "question": "A patient receiving loop-diuretic therapy develops muscle weakness and frequent ventricular ectopy. Which treatment-related electrolyte disturbance is especially concerning?",
@@ -410,7 +410,7 @@
     "answer": "It can increase intracellular cAMP through a pathway independent of beta-adrenergic receptors",
     "reason": "Glucagon activates adenylate cyclase through its own receptor, independent of beta-adrenergic receptors; specialist consultation and protocol guidance are important.",
     "difficulty": "clinical-judgment-draft",
-    "topic": "Cardiovascular"
+    "topic": "Medical Emergencies"
   },
   {
     "question": "An adult has polymorphic ventricular tachycardia with twisting QRS morphology and a prolonged QT interval. Which medication is commonly considered for torsades de pointes?",
@@ -436,7 +436,7 @@
     "answer": "Cardiac tamponade",
     "reason": "The presentation raises concern for obstructive shock from tamponade, though findings may be incomplete and other causes require assessment.",
     "difficulty": "clinical-judgment-draft",
-    "topic": "Cardiovascular"
+    "topic": "Trauma"
   },
   {
     "question": "A dialysis patient who missed treatment is weak and bradycardic. The ECG shows tall narrow-based T waves and QRS widening. Which cause is most concerning?",
@@ -449,7 +449,7 @@
     "answer": "Hyperkalemia requiring immediate protocol-directed stabilization and treatment",
     "reason": "Missed dialysis and characteristic ECG changes strongly suggest life-threatening hyperkalemia; do not delay appropriate treatment.",
     "difficulty": "clinical-judgment-draft",
-    "topic": "Cardiovascular"
+    "topic": "Medical Emergencies"
   },
   {
     "question": "An adult develops hypotension, wheezing, and urticaria after a medication injection. Which medication is first-line for anaphylaxis?",
@@ -462,7 +462,7 @@
     "answer": "Intramuscular epinephrine at the adult dose specified by current protocol",
     "reason": "IM epinephrine is first-line in anaphylaxis; supportive airway and circulatory care are also essential.",
     "difficulty": "clinical-judgment-draft",
-    "topic": "Cardiovascular"
+    "topic": "Medical Emergencies"
   },
   {
     "question": "An adult has another generalized convulsive seizure lasting several minutes without regaining consciousness between events. What is the best medication strategy?",
@@ -475,7 +475,7 @@
     "answer": "Administer a protocol-approved benzodiazepine promptly while supporting airway and glucose assessment",
     "reason": "Ongoing or recurrent seizures without recovery require prompt seizure management; benzodiazepines are first-line under appropriate protocols.",
     "difficulty": "clinical-judgment-draft",
-    "topic": "Cardiovascular"
+    "topic": "Medical Emergencies"
   },
   {
     "question": "A patient is somnolent after a reported benzodiazepine ingestion, but also has a seizure disorder and possible mixed overdose. What is the safest general approach?",
@@ -488,7 +488,7 @@
     "answer": "Support airway and ventilation and seek toxicology guidance rather than routinely administering flumazenil",
     "reason": "Flumazenil can precipitate seizures, particularly with chronic use or mixed overdoses. Supportive care is generally central.",
     "difficulty": "clinical-judgment-draft",
-    "topic": "Cardiovascular"
+    "topic": "Medical Emergencies"
   },
   {
     "question": "A patient with COPD exacerbation is receiving oxygen and is now somnolent with inadequate respiratory effort. Which statement best guides management?",
@@ -501,6 +501,6 @@
     "answer": "Assess ventilation and possible hypercapnia, titrate oxygen appropriately, and assist ventilation when indicated",
     "reason": "COPD-related hypercapnia is multifactorial; oxygenation and ventilation must be assessed separately. Do not withhold needed oxygen or ventilatory support.",
     "difficulty": "clinical-judgment-draft",
-    "topic": "Cardiovascular"
+    "topic": "Airway Management, Respiration & Ventilation"
   }
 ]
