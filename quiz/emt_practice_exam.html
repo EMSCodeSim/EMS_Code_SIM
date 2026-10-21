@@ -227,7 +227,7 @@
     $('questionBox').innerHTML = `
       <div class="question-kicker"><span>Question ${index + 1}</span><span>${esc(q.subtopic || q.topic)}</span></div>
       <div class="question-text">${esc(q.question)}</div>
-      ${window.EMSCodeSimClinicalArt?.artwork(q.topic) || ""}
+      ${window.EMSCodeSimClinicalArt?.artwork(q.topic,q.question) || ""}
       <div class="choices">
         ${q.choices.map((choice, i) => `
           <label class="choice">
