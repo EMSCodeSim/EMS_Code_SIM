@@ -10,7 +10,8 @@ const designs={
  'EMS Operations':'<rect x="24" y="59" width="152" height="92" rx="15"/><path d="M51 59V43h98v16M100 79v52M75 105h50"/><circle cx="54" cy="152" r="11"/><circle cx="146" cy="152" r="11"/>'
 };
 function artwork(topic){
- const shape=designs[topic];if(!shape)return '';
+ const mapped={'Cardiovascular':'Cardiology & Resuscitation','Patient Assessment':'EMS Operations'}[topic] || topic;
+ const shape=designs[mapped];if(!shape)return '';
  const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="'+topic.replace(/&/g,'&amp;')+' themed illustration" fill="none" stroke="#6bd3ed" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">'+shape+'</svg>';
  return '<div class="clinical-art" aria-label="Topic illustration"><div class="clinical-art-icon">'+svg+'</div><div><strong>'+topic.replace(/&/g,'&amp;')+'</strong><small>Topic illustration · not a patient finding</small></div></div>';
 }
