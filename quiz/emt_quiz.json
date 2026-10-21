@@ -1120,7 +1120,7 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A 56-year-old male with a history of angina is complaining of chest discomfort. His vital signs are BP 124/82, HR 96, RR 18, and SpO₂ 95%. What should you do first?",
+    "question": "A 56-year-old with a history of angina reports chest discomfort. BP is 124/82, HR 96, RR 18, and SpO₂ 95%. After ruling out immediate life threats, what additional assessment action is most appropriate?",
     "choices": [
       "Administer nitroglycerin",
       "Apply oxygen via non-rebreather",
@@ -1130,10 +1130,11 @@
     "answer": "Obtain a detailed SAMPLE history",
     "reason": "The patient is stable and has a normal oxygen saturation. The first step should be assessment and history gathering before administering medications.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Respiratory"
+    "subtopic": "Respiratory",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "You arrive to find a 67-year-old man slumped over the wheel of his car. He is unresponsive, breathing at 8 breaths per minute, and has a carotid pulse. What should you do?",
+    "question": "An unresponsive 67-year-old has a carotid pulse but only eight ineffective breaths per minute. What immediate intervention addresses the life threat?",
     "choices": [
       "Begin chest compressions",
       "Deliver oxygen via nasal cannula",
@@ -1143,10 +1144,11 @@
     "answer": "Ventilate with BVM at 10–12/min",
     "reason": "Inadequate respiratory rate requires immediate assisted ventilations with a bag-valve mask (BVM).",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Respiratory"
+    "subtopic": "Respiratory",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Which of the following findings most clearly indicates that a patient is in compensated shock?",
+    "question": "A patient after a high-speed collision is alert but restless with cool skin and tachycardia; blood pressure is normal. Which finding pattern suggests compensated shock?",
     "choices": [
       "Slow capillary refill and bradycardia",
       "Cool skin, restlessness, and tachycardia",
@@ -1156,10 +1158,11 @@
     "answer": "Cool skin, restlessness, and tachycardia",
     "reason": "These are signs that the body is still compensating to maintain perfusion despite the onset of shock.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Bleeding & Shock"
+    "subtopic": "Bleeding & Shock",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A construction worker falls from a ladder and is found lying supine. He is conscious and complaining of back pain. What is your first priority?",
+    "question": "A construction worker falls from a ladder and reports back pain. While assessing for life threats, which action is appropriate to limit further spinal movement?",
     "choices": [
       "Log-roll the patient onto the stretcher",
       "Assess vital signs",
@@ -1169,10 +1172,11 @@
     "answer": "Manually stabilize the cervical spine",
     "reason": "In trauma with suspected spinal injury, immediate manual stabilization of the spine is critical to prevent further injury.",
     "topic": "Trauma",
-    "subtopic": "Trauma Care"
+    "subtopic": "Trauma Care",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Which of the following is the most appropriate action when assisting ventilations with a BVM in an adult patient?",
+    "question": "While ventilating an apneic adult with a BVM, the chest is barely rising despite adequate oxygen supply. Which mask technique can improve the seal?",
     "choices": [
       "Ventilate once every 3 seconds",
       "Deliver large tidal volumes to ensure chest rise",
@@ -1182,10 +1186,11 @@
     "answer": "Ensure a tight mask seal with two hands",
     "reason": "A good seal is essential for effective ventilation and delivery of oxygen.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Respiratory"
+    "subtopic": "Respiratory",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "What is the primary reason EMTs administer aspirin to a patient with chest pain?",
+    "question": "A patient with suspected acute coronary syndrome asks why aspirin is recommended. Which therapeutic action explains its use?",
     "choices": [
       "To lower blood pressure",
       "To relieve pain",
@@ -1195,10 +1200,11 @@
     "answer": "To inhibit blood clotting",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Which of the following is a contraindication for aspirin administration?",
+    "question": "A patient with suspected cardiac chest pain reports a prior severe reaction to aspirin. Which finding would make aspirin inappropriate?",
     "choices": [
       "Chest discomfort",
       "Known allergy to aspirin",
@@ -1208,10 +1214,11 @@
     "answer": "Known allergy to aspirin",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "What is the typical dose of aspirin administered by EMTs for chest pain?",
+    "question": "An adult with suspected acute coronary syndrome has no contraindications to aspirin. Which listed total dose matches a commonly used adult EMT protocol? Verify local dosing requirements.",
     "choices": [
       "81 mg total",
       "325 mg total",
@@ -1221,10 +1228,11 @@
     "answer": "325 mg total",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Aspirin is most beneficial during a suspected heart attack because it:",
+    "question": "During suspected acute coronary syndrome, an EMT explains why aspirin is useful even though it does not directly relieve pain. What does it help prevent?",
     "choices": [
       "Relaxes chest muscles",
       "Improves oxygen delivery",
@@ -1234,10 +1242,11 @@
     "answer": "Prevents clot growth",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Under what condition can an EMT assist a patient with nitroglycerin?",
+    "question": "A patient with prescribed nitroglycerin requests help for familiar angina. Which listed condition supports assisting under a protocol that requires a systolic pressure above 100 mmHg?",
     "choices": [
       "The patient has chest trauma",
       "The patient has a prescription and systolic BP > 100 mmHg",
@@ -1247,10 +1256,11 @@
     "answer": "The patient has a prescription and systolic BP > 100 mmHg",
     "topic": "Trauma",
     "subtopic": "Trauma Care",
-    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma."
+    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "What is the typical route of nitroglycerin administration?",
+    "question": "A patient with prescribed nitroglycerin is instructed to place a tablet under the tongue. What route is this?",
     "choices": [
       "Intramuscular",
       "Oral",
@@ -1260,10 +1270,11 @@
     "answer": "Sublingual",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Which condition is a contraindication to assisting with nitroglycerin?",
+    "question": "An adult with chest pain reports recent use of a medication for erectile dysfunction. Which finding should prompt withholding nitroglycerin pending protocol/medical-direction review?",
     "choices": [
       "Chest pain radiating to the jaw",
       "Use of erectile dysfunction medications within 48 hours",
@@ -1273,10 +1284,11 @@
     "answer": "Use of erectile dysfunction medications within 48 hours",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "How does nitroglycerin help patients with chest pain?",
+    "question": "A patient with angina asks what prescribed nitroglycerin does. Which explanation best describes its vascular effect?",
     "choices": [
       "It increases heart rate",
       "It decreases respiratory rate",
@@ -1286,10 +1298,11 @@
     "answer": "It dilates blood vessels to improve blood flow",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "What is the primary action of albuterol when used for a respiratory emergency?",
+    "question": "An asthmatic patient uses a prescribed albuterol inhaler and reports improved airflow. Which mechanism best explains the benefit?",
     "choices": [
       "Reduces mucus secretion",
       "Suppresses cough reflex",
@@ -1299,10 +1312,11 @@
     "answer": "Dilates the bronchioles",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Which patient condition is an indication for albuterol use?",
+    "question": "A patient with wheezing and shortness of breath has a history of asthma and a prescribed inhaler. Which condition is an indication for albuterol?",
     "choices": [
       "Chest trauma",
       "Wheezing and shortness of breath",
@@ -1312,10 +1326,11 @@
     "answer": "Wheezing and shortness of breath",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "What is a common side effect of albuterol?",
+    "question": "After using albuterol, a patient reports tremor and a faster pulse but easier breathing. Which side-effect pattern is expected?",
     "choices": [
       "Slow heart rate",
       "Drowsiness",
@@ -1325,10 +1340,11 @@
     "answer": "Shakiness and increased heart rate",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "EMTs may assist with albuterol if:",
+    "question": "A wheezing patient requests help using an inhaler. Under a protocol permitting assistance with the patient's prescribed medication, which circumstance meets that requirement?",
     "choices": [
       "The patient is unresponsive",
       "They have verbal orders from medical control",
@@ -1338,10 +1354,11 @@
     "answer": "The patient has their own prescribed inhaler",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Airway, Respiration",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "What is the main effect of epinephrine during anaphylaxis?",
+    "question": "A patient has anaphylaxis with airway swelling and hypotension. Which effect of epinephrine contributes to reversing the emergency?",
     "choices": [
       "Promotes digestion",
       "Constricts airways",
@@ -1351,10 +1368,11 @@
     "answer": "Relaxes smooth muscles and opens airways",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "When should epinephrine be administered by EMTs?",
+    "question": "A patient develops airway swelling, wheezing, and poor perfusion after eating a known allergen. When is epinephrine indicated?",
     "choices": [
       "For mild allergic reactions",
       "Only after contacting the ER",
@@ -1364,10 +1382,11 @@
     "answer": "When signs of severe allergic reaction are present",
     "topic": "Medical Emergencies",
     "subtopic": "Respiratory",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "What is the most common route of administration for EMTs giving epinephrine?",
+    "question": "An EMT prepares an approved epinephrine auto-injector for a patient with anaphylaxis. Which route is used?",
     "choices": [
       "Oral",
       "Intranasal",
@@ -1377,7 +1396,8 @@
     "answer": "Intramuscular (auto-injector)",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "What is a possible side effect of epinephrine?",
