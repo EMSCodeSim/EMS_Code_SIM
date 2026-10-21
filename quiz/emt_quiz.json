@@ -1218,17 +1218,17 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient with suspected acute coronary syndrome is alert and has no aspirin contraindications. Under a protocol allowing 162–325 mg of chewable aspirin, which option is an appropriate total dose?",
+    "question": "A 58-year-old with suspected ACS has no aspirin allergy or active bleeding and can chew medication. Your protocol permits 162–325 mg of aspirin. Which dose is within that range?",
     "choices": [
       "81 mg total",
-      "325 mg total",
-      "400 mg total",
+      "324 mg total",
+      "650 mg total",
       "1,000 mg total"
     ],
-    "answer": "325 mg total",
+    "answer": "324 mg total",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
-    "reason": "Many ACS protocols use 162–325 mg of chewable, non-enteric-coated aspirin when indicated. Follow local protocols and medical direction.",
+    "reason": "Four 81-mg chewable tablets total 324 mg, within a common 162–325 mg ACS protocol range. Follow local protocols.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1484,15 +1484,15 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "An adult with a pulse is apneic and requires BVM ventilations. Which listed rate is closest to the recommended adult rescue-breathing rate?",
+    "question": "An adult has a pulse but is not breathing. You begin rescue breathing with a BVM. Which rate is appropriate?",
     "choices": [
-      "1 breath every 5–6 seconds",
-      "30 compressions to 2 breaths",
-      "1 breath every 1 second",
-      "10 breaths then a pause"
+      "About 1 breath every 6 seconds",
+      "About 1 breath every 2 seconds",
+      "One breath after every 30 chest compressions despite a pulse",
+      "One breath every 15 seconds"
     ],
-    "answer": "1 breath every 5–6 seconds",
-    "reason": "For an adult with a pulse but inadequate breathing, deliver approximately one breath every 6 seconds (10/min), enough for visible chest rise; avoid hyperventilation.",
+    "answer": "About 1 breath every 6 seconds",
+    "reason": "Adult rescue breathing with a pulse is approximately 10 breaths per minute (one every 6 seconds), with visible chest rise and reassessment.",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Ventilation",
     "difficulty": "clinical-judgment-draft"
@@ -1848,15 +1848,15 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient has immediately life-threatening bleeding from a leg wound. Which listed tourniquet placement is most appropriate?",
+    "question": "A patient has life-threatening bleeding from the mid-thigh. The wound is clearly visible and accessible. Where should a commercial tourniquet generally be placed?",
     "choices": [
-      "Directly over a joint",
-      "High and tight on the limb proximal to severe extremity bleeding when direct pressure fails or is impractical",
-      "On the neck for facial bleeding",
-      "Only after hospital arrival"
+      "Two to three inches proximal to the wound, not over a joint",
+      "Directly over the knee joint",
+      "Distal to the wound near the ankle",
+      "Around the pelvis"
     ],
-    "answer": "High and tight on the limb proximal to severe extremity bleeding when direct pressure fails or is impractical",
-    "reason": "Apply a commercial tourniquet proximal to life-threatening extremity bleeding, avoiding joints, and tighten until bleeding stops. When the wound is not identifiable or tactical circumstances require, high-and-tight placement may be used according to training.",
+    "answer": "Two to three inches proximal to the wound, not over a joint",
+    "reason": "Place a commercial tourniquet proximal to the wound, typically 2–3 inches above it and not over a joint, tightening until hemorrhage stops. High-and-tight placement is used in certain circumstances.",
     "topic": "Trauma",
     "subtopic": "Bleeding & Shock",
     "difficulty": "clinical-judgment-draft"
@@ -1904,15 +1904,15 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient has an open chest wound with air movement through the defect. Which listed dressing approach may be used under local protocol?",
+    "question": "A patient has a penetrating open chest wound and a vented chest seal is available. Which approach is most appropriate?",
     "choices": [
-      "Pack the wound tightly with dry gauze only",
-      "Apply an occlusive dressing sealed on three sides or per protocol",
-      "Perform abdominal thrusts",
-      "Elevate the legs only"
+      "Apply a vented chest seal and monitor closely for worsening breathing or tension physiology",
+      "Pack the defect tightly with dry gauze and leave it open",
+      "Apply an airtight nonvented seal and never reassess it",
+      "Perform abdominal thrusts to expel trapped air"
     ],
-    "answer": "Apply an occlusive dressing sealed on three sides or per protocol",
-    "reason": "Use a vented chest seal when available and consistent with protocol; monitor for tension physiology. A three-sided occlusive dressing is an older protocol-dependent alternative, not the preferred universal method.",
+    "answer": "Apply a vented chest seal and monitor closely for worsening breathing or tension physiology",
+    "reason": "A vented chest seal is generally preferred for an open chest wound when available. Reassess for tension pneumothorax and follow protocol for seal management.",
     "topic": "Trauma",
     "subtopic": "Trauma Care",
     "difficulty": "clinical-judgment-draft"
@@ -2422,15 +2422,15 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A newborn remains apneic after warming, drying, and stimulation. Which listed intervention best addresses the immediate problem?",
+    "question": "A newborn remains apneic after initial warming, drying, positioning, and stimulation. What is the next priority?",
     "choices": [
-      "Chest compressions first always",
-      "Positioning and clearing the airway, then ventilating as indicated",
-      "Feeding",
-      "Immediate umbilical catheterization by EMT"
+      "Begin positive-pressure ventilation promptly",
+      "Begin chest compressions before assessing the heart rate or ventilating",
+      "Provide oral glucose before breathing support",
+      "Suction deeply for a full minute regardless of obstruction"
     ],
-    "answer": "Positioning and clearing the airway, then ventilating as indicated",
-    "reason": "Provide prompt positive-pressure ventilation for apnea or gasping after initial steps. Position the airway; suction only when secretions obstruct ventilation rather than routinely delaying ventilation.",
+    "answer": "Begin positive-pressure ventilation promptly",
+    "reason": "Apnea or gasping after initial newborn steps calls for prompt positive-pressure ventilation; suction only for suspected obstruction.",
     "topic": "Obstetrics & Gynecology",
     "subtopic": "Obstetrics",
     "difficulty": "clinical-judgment-draft"
