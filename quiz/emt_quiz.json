@@ -570,7 +570,7 @@
     "answer": "Oral glucose",
     "topic": "Medical Emergencies",
     "subtopic": "Endocrine",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response.",
+    "reason": "Oral glucose is appropriate for hypoglycemia only when the patient can safely swallow and protect their airway.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -584,7 +584,7 @@
     "answer": "Epinephrine auto-injector",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response.",
+    "reason": "Anaphylaxis with respiratory compromise or hypotension calls for prompt intramuscular epinephrine, including an authorized auto-injector.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -598,7 +598,7 @@
     "answer": "Nitroglycerin",
     "topic": "Medical Emergencies",
     "subtopic": "Endocrine",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response.",
+    "reason": "Nitroglycerin produces vasodilation and can relieve ischemic chest discomfort; assess blood pressure and contraindications first.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -654,7 +654,7 @@
     "answer": "Jaw-thrust maneuver",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Airway Management",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "Jaw thrust can open the airway while limiting cervical movement when spinal injury is suspected; airway patency still takes priority.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -710,7 +710,7 @@
     "answer": "Pain",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Neurologic",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "reason": "AVPU uses P for a response to painful stimulus when the patient does not respond to voice.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -724,7 +724,7 @@
     "answer": "Form general impression",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "reason": "A general impression quickly identifies apparent illness severity and immediate threats before a detailed history.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -738,7 +738,7 @@
     "answer": "OPQRST",
     "topic": "Medical Emergencies",
     "subtopic": "Neurologic",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response.",
+    "reason": "OPQRST characterizes onset, provocation, quality, radiation, severity, and timing of a symptom.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -752,7 +752,7 @@
     "answer": "Last oral intake",
     "topic": "Trauma",
     "subtopic": "Patient Assessment",
-    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma.",
+    "reason": "SAMPLE includes last oral intake, which can inform abdominal and metabolic assessment.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -766,7 +766,7 @@
     "answer": "Performing a focused physical exam",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "A focused physical examination is part of secondary assessment after immediate life threats are addressed.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -780,7 +780,7 @@
     "answer": "Asthma",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "Asthma commonly produces reversible lower-airway narrowing, wheezing and prolonged expiration.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -794,7 +794,7 @@
     "answer": "Myocardial infarction",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Respiratory",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "reason": "Pressure-like chest discomfort with diaphoresis and nausea raises concern for myocardial infarction; obtain appropriate assessment and transport.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -808,7 +808,7 @@
     "answer": "Pulmonary edema",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "reason": "Left-sided heart failure can cause pulmonary congestion and edema, producing crackles and respiratory distress.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -822,7 +822,7 @@
     "answer": "Symptoms resolve within 24 hours",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "reason": "Transient focal neurologic deficits may represent TIA even if resolved; the historical 24-hour definition does not exclude tissue injury, and urgent stroke evaluation is needed.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -836,7 +836,7 @@
     "answer": "Bronchospasm",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Endocrine",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "Albuterol is a beta-2 agonist used to treat bronchospasm, not every cause of dyspnea.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -920,7 +920,7 @@
     "answer": "Apply direct pressure",
     "topic": "Trauma",
     "subtopic": "Bleeding & Shock",
-    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma.",
+    "reason": "Direct pressure is a first-line intervention for external bleeding when a tourniquet is not immediately indicated.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -934,7 +934,7 @@
     "answer": "Bright red and spurting",
     "topic": "Trauma",
     "subtopic": "Bleeding & Shock",
-    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma.",
+    "reason": "Bright-red spurting blood may suggest arterial bleeding, but color alone is unreliable; assess severity and control hemorrhage.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -948,7 +948,7 @@
     "answer": "Partial-thickness",
     "topic": "Trauma",
     "subtopic": "Trauma Care",
-    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma.",
+    "reason": "Moist, painful blistering is characteristic of a partial-thickness burn.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -962,7 +962,7 @@
     "answer": "Rigid, distended abdomen",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Bleeding & Shock",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "A rigid or distended abdomen after trauma can suggest internal bleeding or peritoneal injury.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -976,7 +976,7 @@
     "answer": "Tourniquet",
     "topic": "Trauma",
     "subtopic": "Bleeding & Shock",
-    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma.",
+    "reason": "Life-threatening extremity hemorrhage warrants prompt tourniquet use when indicated; place proximal to the wound and avoid joints.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1004,7 +1004,7 @@
     "answer": "Appearance, Pulse, Grimace, Activity, Respirations",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Airway Management",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "APGAR evaluates Appearance, Pulse, Grimace, Activity, and Respirations at standard newborn assessment intervals.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1018,7 +1018,7 @@
     "answer": "Respiratory failure",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "Pediatric arrest often follows progressive respiratory failure or shock, emphasizing early oxygenation and ventilation.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1032,7 +1032,7 @@
     "answer": "Use a head tilt–chin lift unless trauma suspected",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Airway Management",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "Head tilt–chin lift opens the airway when trauma is not suspected; avoid excessive extension in infants.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1046,7 +1046,7 @@
     "answer": "Nasal flaring",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "Nasal flaring reflects increased work of breathing in infants and young children.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1060,7 +1060,7 @@
     "answer": "Sort patients by severity",
     "topic": "Medical Emergencies",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response.",
+    "reason": "START is a rapid adult mass-casualty triage method for sorting patients by immediate care priority.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1074,7 +1074,7 @@
     "answer": "Black",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response.",
+    "reason": "Black is the conventional START tag for deceased/expectant patients according to the applicable algorithm and local policy.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1312,7 +1312,7 @@
     "answer": "Dilates the bronchioles",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "Albuterol stimulates beta-2 receptors to relax bronchial smooth muscle and improve airflow.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1326,7 +1326,7 @@
     "answer": "Wheezing and shortness of breath",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "Albuterol is indicated for bronchospasm with wheezing and dyspnea when authorized by protocol.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1340,7 +1340,7 @@
     "answer": "Shakiness and increased heart rate",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "reason": "Tremor and tachycardia are common beta-agonist adverse effects after albuterol.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1354,7 +1354,7 @@
     "answer": "The patient has their own prescribed inhaler",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Airway, Respiration",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "Assistance with a patient's prescribed inhaler depends on local scope and protocol; assess indication and contraindications.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1410,7 +1410,7 @@
     "answer": "Anxiety and rapid heartbeat",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "reason": "Epinephrine may produce anxiety, palpitations and tachycardia through adrenergic stimulation.",
     "difficulty": "clinical-judgment-draft"
   },
   {
