@@ -2,7 +2,7 @@
   'use strict';
   const PROGRESS_KEY = 'emscode_report_class_progress_v1';
   const VERSION = 'ems-report-writing-class-v1';
-  const ANSWER_KEY = [0, 2, 0, 1, 1, 2, 0, 1, 2, 2];
+  const ANSWER_KEY = [0, 2, 0, 1, 1, 2, 0, 1, 2, 1];
   const startForm = document.querySelector('#courseStartForm');
   const testForm = document.querySelector('#classCompletionForm');
   if (!startForm || !testForm) return;
