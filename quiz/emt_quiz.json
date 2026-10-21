@@ -1400,7 +1400,7 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "What is a possible side effect of epinephrine?",
+    "question": "After an epinephrine auto-injector is used for anaphylaxis, a patient reports palpitations and feels anxious. Which reaction is a recognized medication effect?",
     "choices": [
       "Bradycardia",
       "Low blood pressure",
@@ -1410,10 +1410,11 @@
     "answer": "Anxiety and rapid heartbeat",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient is unresponsive with snoring respirations after an overdose. What is the first airway action?",
+    "question": "An unresponsive patient has snoring respirations after a suspected overdose. No trauma is suspected. What immediate action can relieve tongue-related airway obstruction?",
     "choices": [
       "Insert an OPA and ventilate",
       "Open the airway with a head-tilt chin-lift if no trauma is suspected",
@@ -1423,10 +1424,11 @@
     "answer": "Open the airway with a head-tilt chin-lift if no trauma is suspected",
     "reason": "An open airway is required before adjuncts or ventilation. Snoring suggests tongue obstruction that often improves with manual airway opening.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Airway Management"
+    "subtopic": "Airway Management",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Which breath sound is most concerning for upper-airway obstruction?",
+    "question": "An adult with difficulty breathing has a harsh high-pitched sound during inspiration heard over the neck. Which sound suggests upper-airway narrowing?",
     "choices": [
       "Wheezing",
       "Crackles",
@@ -1436,10 +1438,11 @@
     "answer": "Stridor",
     "reason": "Stridor is a high-pitched sound from upper-airway narrowing and can signal imminent airway failure.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Respiratory"
+    "subtopic": "Respiratory",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "An adult with respiratory distress has SpO2 88% on room air and speaks in short sentences. What oxygen approach is most appropriate initially?",
+    "question": "A patient is alert but in respiratory distress, speaks in short phrases, and has an SpO₂ of 88% on room air. Which initial oxygen strategy is appropriate while you reassess breathing?",
     "choices": [
       "No oxygen until ALS arrives",
       "High-flow oxygen by non-rebreather if tolerated",
@@ -1449,10 +1452,11 @@
     "answer": "High-flow oxygen by non-rebreather if tolerated",
     "reason": "Significant hypoxia with work of breathing warrants high-concentration oxygen while you reassess and prepare for escalation.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Oxygenation"
+    "subtopic": "Oxygenation",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "When should an EMT switch from a non-rebreather to assisted ventilation with a BVM?",
+    "question": "A patient on a non-rebreather becomes exhausted, has shallow respirations, and is less responsive. What change in management is needed?",
     "choices": [
       "When the patient complains of dry mouth",
       "When breathing becomes inadequate or the patient becomes too tired to maintain effort",
@@ -1462,10 +1466,11 @@
     "answer": "When breathing becomes inadequate or the patient becomes too tired to maintain effort",
     "reason": "Assisted ventilation is indicated for inadequate rate, depth, or declining respiratory effort—not only extreme SpO2 values.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Ventilation"
+    "subtopic": "Ventilation",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A conscious choking adult can cough forcefully. What should you do?",
+    "question": "A conscious adult with a food obstruction is coughing forcefully and moving air. What should you do while assessing for deterioration?",
     "choices": [
       "Perform abdominal thrusts immediately",
       "Encourage coughing and monitor closely",
@@ -1475,10 +1480,11 @@
     "answer": "Encourage coughing and monitor closely",
     "reason": "A strong cough means the airway is still partially open. Intervene with thrusts only if the obstruction becomes severe.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Airway Management"
+    "subtopic": "Airway Management",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "What is the preferred ventilation rate for an adult with a pulse who needs BVM support?",
+    "question": "An adult with a pulse is apneic and requires BVM ventilations. Which listed ventilation rate is appropriate for adult respiratory arrest?",
     "choices": [
       "1 breath every 5–6 seconds",
       "30 compressions to 2 breaths",
@@ -1488,10 +1494,11 @@
     "answer": "1 breath every 5–6 seconds",
     "reason": "Adults with a pulse are ventilated about 10–12 breaths per minute to avoid hyperventilation.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Ventilation"
+    "subtopic": "Ventilation",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient with asthma has silent lung sounds and decreasing responsiveness. What does this most likely indicate?",
+    "question": "A patient with asthma initially wheezes but now has barely audible breath sounds and decreasing responsiveness. What does this change indicate?",
     "choices": [
       "Mild bronchospasm improving",
       "Impending respiratory failure with poor air movement",
@@ -1501,10 +1508,11 @@
     "answer": "Impending respiratory failure with poor air movement",
     "reason": "Quiet or silent lungs with fatigue and declining mental status suggest dangerous air trapping and failing ventilation.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Respiratory"
+    "subtopic": "Respiratory",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Which finding best indicates inadequate breathing?",
+    "question": "A patient has shallow breathing, blue lips, and worsening confusion. Which conclusion best fits the assessment?",
     "choices": [
       "Respiratory rate of 16 with clear speech",
       "Shallow respirations with cyanosis and altered mentation",
@@ -1514,10 +1522,11 @@
     "answer": "Shallow respirations with cyanosis and altered mentation",
     "reason": "Rate alone is not enough; depth, work of breathing, color, and mental status determine adequacy.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Respiratory"
+    "subtopic": "Respiratory",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "An OPA should be used only when:",
+    "question": "An unconscious patient without a gag reflex needs an airway adjunct during BVM support. Under which condition is an OPA appropriate?",
     "choices": [
       "The patient is conscious and gagging",
       "The patient is unresponsive without a gag reflex",
@@ -1527,10 +1536,11 @@
     "answer": "The patient is unresponsive without a gag reflex",
     "reason": "An OPA can cause vomiting or laryngospasm if the gag reflex is intact.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Airway Management"
+    "subtopic": "Airway Management",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "What is the primary purpose of suctioning the airway?",
+    "question": "During airway management, vomit pools in the mouth and interferes with ventilation. Why should suction be used?",
     "choices": [
       "To give medications",
       "To remove blood, vomit, or secretions that obstruct airflow",
@@ -1540,10 +1550,11 @@
     "answer": "To remove blood, vomit, or secretions that obstruct airflow",
     "reason": "Suction clears material that prevents effective ventilation and oxygenation.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Airway Management"
+    "subtopic": "Airway Management",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A pediatric patient with croup has stridor at rest. What is the EMT priority?",
+    "question": "A toddler with a barking cough has stridor at rest and becomes more distressed when handled. What is the best immediate EMT approach?",
     "choices": [
       "Force the child to lie flat",
       "Keep the child calm, support airway/breathing, and arrange prompt transport",
@@ -1553,10 +1564,11 @@
     "answer": "Keep the child calm, support airway/breathing, and arrange prompt transport",
     "reason": "Agitation can worsen upper-airway obstruction. Supportive care and timely transport are key.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Pediatrics"
+    "subtopic": "Pediatrics",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Which oxygen device delivers the highest oxygen concentration when used correctly?",
+    "question": "A spontaneously breathing patient needs a high inspired oxygen concentration and can tolerate a face mask. Which listed device is appropriate?",
     "choices": [
       "Nasal cannula",
       "Simple face mask at 4 L/min",
@@ -1566,10 +1578,11 @@
     "answer": "Non-rebreather mask with reservoir filled",
     "reason": "A properly flowing non-rebreather with a filled reservoir provides high FiO2 for hypoxic patients who are breathing adequately.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Oxygenation"
+    "subtopic": "Oxygenation",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Crackles (rales) are most often associated with:",
+    "question": "An older patient with dyspnea has fine crackling sounds at the lung bases. What process can produce these findings?",
     "choices": [
       "Upper airway foreign body",
       "Fluid in the smaller airways or alveoli",
@@ -1579,10 +1592,11 @@
     "answer": "Fluid in the smaller airways or alveoli",
     "reason": "Crackles commonly occur with pulmonary edema or other fluid-related lower-airway findings.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Respiratory"
+    "subtopic": "Respiratory",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient with COPD is hypoxic and confused. What is the best initial EMT approach?",
+    "question": "A confused patient with COPD has low oxygen saturation. Which action best balances correction of hypoxia and reassessment?",
     "choices": [
       "Withhold all oxygen permanently",
       "Provide oxygen to correct hypoxia while monitoring closely",
@@ -1592,10 +1606,11 @@
     "answer": "Provide oxygen to correct hypoxia while monitoring closely",
     "reason": "Hypoxia is more immediately dangerous than theoretical CO2 retention concerns; titrate and reassess.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Oxygenation"
+    "subtopic": "Oxygenation",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "What does cyanosis most directly suggest?",
+    "question": "A severely ill patient has bluish discoloration around the lips. What physiologic problem should this finding raise concern for?",
     "choices": [
       "High blood sugar",
       "Poor oxygenation",
@@ -1605,10 +1620,11 @@
     "answer": "Poor oxygenation",
     "reason": "Cyanosis is a late sign of inadequate oxygenation and warrants immediate airway/breathing assessment.",
     "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Oxygenation"
+    "subtopic": "Oxygenation",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "An adult is unresponsive, apneic, and pulseless. What is the first action after confirming cardiac arrest?",
+    "question": "An adult is unresponsive, apneic, and pulseless. After recognizing cardiac arrest, what should the team initiate?",
     "choices": [
       "Obtain a full SAMPLE history",
       "Begin high-quality CPR and apply an AED as soon as available",
@@ -1618,10 +1634,11 @@
     "answer": "Begin high-quality CPR and apply an AED as soon as available",
     "reason": "Immediate compressions and early defibrillation are the highest-yield interventions in cardiac arrest.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies"
+    "subtopic": "Cardiac Emergencies",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Where should AED pads be placed on an adult?",
+    "question": "An AED arrives during CPR for an adult. Where should the two standard anterolateral pads be placed?",
     "choices": [
       "Both pads on the abdomen",
       "One pad on the upper right chest and one on the lower left lateral chest",
@@ -1631,10 +1648,11 @@
     "answer": "One pad on the upper right chest and one on the lower left lateral chest",
     "reason": "Anterior-lateral pad placement allows the shock current to travel through the heart.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies"
+    "subtopic": "Cardiac Emergencies",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient with chest pain is pale, diaphoretic, and hypotensive. What does this suggest?",
+    "question": "A patient with chest discomfort becomes pale and diaphoretic with a falling blood pressure. What serious condition is possible?",
     "choices": [
       "Stable angina only",
       "Possible cardiogenic shock or significant cardiac emergency",
@@ -1644,10 +1662,11 @@
     "answer": "Possible cardiogenic shock or significant cardiac emergency",
     "reason": "Chest pain with poor perfusion signs indicates a high-acuity cardiac event needing urgent support and transport.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies"
+    "subtopic": "Cardiac Emergencies",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "What is the correct compression depth for an adult in CPR?",
+    "question": "During adult CPR, a rescuer is compressing the chest only 2 cm. What depth target should the team correct toward?",
     "choices": [
       "About 1 inch",
       "At least 2 inches (5 cm)",
@@ -1657,10 +1676,11 @@
     "answer": "At least 2 inches (5 cm)",
     "reason": "Adult compressions should be at least 2 inches deep with full chest recoil between compressions.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies"
+    "subtopic": "Cardiac Emergencies",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Aspirin is given in suspected ACS primarily to:",
+    "question": "A patient with suspected acute coronary syndrome is given aspirin under protocol. Which pharmacologic effect is the reason?",
     "choices": [
       "Lower blood pressure immediately",
       "Reduce platelet aggregation",
@@ -1670,10 +1690,11 @@
     "answer": "Reduce platelet aggregation",
     "reason": "Aspirin inhibits platelets and can limit clot progression in acute coronary syndromes when indicated by protocol.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies"
+    "subtopic": "Cardiac Emergencies",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Nitroglycerin is generally withheld when:",
+    "question": "A patient with prescribed nitroglycerin is hypotensive and reports recent PDE-5 inhibitor use. Why should it generally be withheld?",
     "choices": [
       "The patient has chest pain",
       "The patient has used a PDE-5 inhibitor recently or is hypotensive",
@@ -1683,10 +1704,11 @@
     "answer": "The patient has used a PDE-5 inhibitor recently or is hypotensive",
     "reason": "Nitroglycerin can cause dangerous hypotension, especially with recent erectile-dysfunction medication use or low BP.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies"
+    "subtopic": "Cardiac Emergencies",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "What is the most important quality metric during CPR?",
+    "question": "A CPR team pauses for lengthy pulse checks between compression cycles. Which quality measure should be improved?",
     "choices": [
       "Long pauses for pulse checks",
       "Minimizing interruptions in chest compressions",
@@ -1696,10 +1718,11 @@
     "answer": "Minimizing interruptions in chest compressions",
     "reason": "Coronary and cerebral perfusion depend on continuous high-quality compressions.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies"
+    "subtopic": "Cardiac Emergencies",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient with suspected ACS should be transported:",
+    "question": "A patient has persistent chest pressure concerning for acute coronary syndrome but is currently alert and perfusing. What transport approach is most appropriate?",
     "choices": [
       "Non-emergently after a full meal",
       "Promptly to an appropriate facility capable of managing cardiac emergencies",
@@ -1709,10 +1732,11 @@
     "answer": "Promptly to an appropriate facility capable of managing cardiac emergencies",
     "reason": "Time-sensitive cardiac care requires rapid transport to the right destination.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies"
+    "subtopic": "Cardiac Emergencies",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Which vital-sign pattern is most consistent with compensated shock?",
+    "question": "An injured patient is anxious, tachycardic, and cool to touch despite a normal blood pressure. Which pattern suggests compensated shock?",
     "choices": [
       "Normal pulse and flushed skin",
       "Tachycardia with cool, pale skin and anxiety",
@@ -1722,10 +1746,11 @@
     "answer": "Tachycardia with cool, pale skin and anxiety",
     "reason": "Early shock often shows compensatory tachycardia and peripheral vasoconstriction before blood pressure collapses.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Bleeding & Shock"
+    "subtopic": "Bleeding & Shock",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "The purpose of allowing full chest recoil in CPR is to:",
+    "question": "A rescuer leans on the chest between compressions. Why is complete recoil important?",
     "choices": [
       "Make compressions harder",
       "Allow the heart to refill with blood",
@@ -1735,10 +1760,11 @@
     "answer": "Allow the heart to refill with blood",
     "reason": "Incomplete recoil reduces venous return and decreases the effectiveness of the next compression.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies"
+    "subtopic": "Cardiac Emergencies",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "An AED advises 'no shock.' What should you do next?",
+    "question": "An AED analyzes a pulseless patient and states 'no shock advised.' What should rescuers do immediately?",
     "choices": [
       "Stop all care",
       "Resume CPR immediately starting with compressions",
@@ -1748,10 +1774,11 @@
     "answer": "Resume CPR immediately starting with compressions",
     "reason": "A non-shockable rhythm still requires continuous CPR until ROSC or other protocol endpoints.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies"
+    "subtopic": "Cardiac Emergencies",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Which finding is a classic sign of right-sided heart failure?",
+    "question": "A patient with leg swelling, distended neck veins, and abdominal fluid retention has heart failure. Which side of the heart is classically associated with these systemic findings?",
     "choices": [
       "Wheezing only",
       "Peripheral edema and JVD",
@@ -1761,10 +1788,11 @@
     "answer": "Peripheral edema and JVD",
     "reason": "Right-sided failure commonly backs blood into the systemic venous system, causing edema and jugular venous distention.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies"
+    "subtopic": "Cardiac Emergencies",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "Left-sided heart failure most often produces:",
+    "question": "A patient with worsening left-sided heart failure has severe dyspnea and crackles. Which complication best explains the breathing difficulty?",
     "choices": [
       "Isolated ankle swelling only",
       "Pulmonary edema with dyspnea and crackles",
@@ -1774,10 +1802,11 @@
     "answer": "Pulmonary edema with dyspnea and crackles",
     "reason": "Left-sided failure increases pressure into the lungs, causing respiratory distress and crackles.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies"
+    "subtopic": "Cardiac Emergencies",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "During CPR, the compression rate for adults should be:",
+    "question": "During adult CPR, the compression rate is 75 per minute. What target rate should the rescuer use?",
     "choices": [
       "60–80/min",
       "100–120/min",
@@ -1787,10 +1816,11 @@
     "answer": "100–120/min",
     "reason": "Current resuscitation guidance targets 100–120 compressions per minute.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies"
+    "subtopic": "Cardiac Emergencies",
+    "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient with chest pain becomes unresponsive and pulseless while you are obtaining history. What do you do?",
+    "question": "While being interviewed for chest pain, a patient suddenly collapses and has no pulse. What is the immediate priority?",
     "choices": [
       "Finish the SAMPLE history first",
       "Begin CPR and attach the AED immediately",
@@ -1800,7 +1830,8 @@
     "answer": "Begin CPR and attach the AED immediately",
     "reason": "Cardiac arrest supersedes history gathering; start resuscitation at once.",
     "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies"
+    "subtopic": "Cardiac Emergencies",
+    "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "What is the first priority for a patient with severe external bleeding?",
