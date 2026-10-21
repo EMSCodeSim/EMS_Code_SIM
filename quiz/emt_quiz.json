@@ -812,17 +812,17 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient had sudden one-sided weakness and speech difficulty that resolved before EMS arrival. Which description is consistent with a possible TIA?",
+    "question": "A patient had sudden one-sided weakness and speech difficulty that resolved before EMS arrival. Which finding best supports a possible transient ischemic attack requiring urgent stroke evaluation?",
     "choices": [
-      "Severe headache and vomiting",
-      "Chest pain and diaphoresis",
-      "Symptoms resolve within 24 hours",
-      "Persistent right-side weakness"
+      "A brief episode of focal neurologic deficits that has now resolved",
+      "Only generalized fatigue after physical exertion",
+      "Isolated chest discomfort with no neurologic symptoms",
+      "A chronic unchanged speech difficulty present for years"
     ],
-    "answer": "Symptoms resolve within 24 hours",
-    "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies",
-    "reason": "Transient focal neurologic deficits may represent TIA even if resolved; the historical 24-hour definition does not exclude tissue injury, and urgent stroke evaluation is needed.",
+    "answer": "A brief episode of focal neurologic deficits that has now resolved",
+    "topic": "Medical Emergencies",
+    "subtopic": "Stroke & Neurologic Emergencies",
+    "reason": "Transient focal neurologic symptoms can indicate TIA or stroke even after they resolve. Record last known well, assess glucose and use the appropriate stroke pathway; symptom duration alone does not reliably distinguish TIA from infarction.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1274,17 +1274,17 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "An adult with chest pain reports recent use of a medication for erectile dysfunction. Which finding should prompt withholding nitroglycerin pending protocol/medical-direction review?",
+    "question": "A patient with chest pain asks for prescribed nitroglycerin and reports taking sildenafil earlier today. What is the safest next step?",
     "choices": [
-      "Chest pain radiating to the jaw",
-      "Use of erectile dysfunction medications within 48 hours",
-      "History of angina",
-      "Mild headache"
+      "Withhold nitroglycerin and follow local PDE-5 inhibitor precautions and medical direction",
+      "Give nitroglycerin because the patient has chest pain",
+      "Give nitroglycerin after aspirin regardless of medication history",
+      "Ignore the sildenafil history if the initial blood pressure is normal"
     ],
-    "answer": "Use of erectile dysfunction medications within 48 hours",
+    "answer": "Withhold nitroglycerin and follow local PDE-5 inhibitor precautions and medical direction",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
-    "reason": "PDE-5 inhibitors can interact with nitrates and cause severe hypotension; exact avoidance intervals depend on the drug and protocol.",
+    "reason": "Nitrates after recent sildenafil can cause profound hypotension. Avoidance windows vary by PDE-5 agent; follow current local protocols and medical direction.",
     "difficulty": "clinical-judgment-draft"
   },
   {
