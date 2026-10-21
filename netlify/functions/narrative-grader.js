@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const { neon } = require('@neondatabase/serverless');
 const scenarios = require('./data/narrative-lab-scenarios.json');
 const requestBuckets = new Map();
-const classCompletionAnswers = [0, 2, 0, 1, 1, 2, 0, 1, 2, 2];
+const classCompletionAnswers = [0, 2, 0, 1, 1, 2, 0, 1, 2, 1];
 
 function completionSecret() {
   return env('EMS_REPORT_CLASS_DATABASE_URL') || env('OPENAI_API_KEY') || '';
