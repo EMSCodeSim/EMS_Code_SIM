@@ -81,6 +81,8 @@
 <link href="/styles/site-enhancements.css" rel="stylesheet"/>
 <script defer="" src="/privacy-controls.js"></script>
 <script defer="" src="/scripts/engagement-loop.js"></script>
+<link rel="stylesheet" href="/quiz/clinical-art.css"/>
+<script defer src="/quiz/clinical-art.js"></script>
 </head>
 <body>
 <a class="skip-link" href="#quiz-container">Skip to quiz</a>
@@ -208,6 +210,7 @@
         div.innerHTML = `
           <div class="question-kicker"><span>Question ${idx + 1}</span><span>Paramedic practice</span></div>
           <div class="question-text">${escapeHtml(q.question)}</div>
+          ${window.EMSCodeSimClinicalArt?.artwork(q.topic) || ""}
           <div class="choices">
             ${q.choices.map((choice, i) => `
               <label class="choice" id="q${idx}a${i}">
