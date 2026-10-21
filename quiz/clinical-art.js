@@ -13,10 +13,10 @@ const designs={
 function caseVisual(question){
  const q=String(question||'').toLowerCase();
  let label='',detail='',drawing='';
- if(q.includes('missed treatment')&&q.includes('qrs widening')){
+ if((q.includes('missed treatment')&&q.includes('qrs widening')) || q.includes('ecg finding is most indicative of hyperkalemia')){
   label='ECG pattern interpretation';detail='Schematic tracing showing tall, narrow T waves and widened QRS complexes. Not a calibrated ECG.';
   drawing='<path d="M8 100h25l9-5 7 5 13-3 8-28 12 54 12-23 10 0 14-51 15 51h19l9-6 8 6 12-3 8-27 12 53 12-23 10 0 14-51 15 51h12" fill="none" stroke="#1b96a9" stroke-width="4" stroke-linejoin="round"/>';
- }else if(q.includes('paradoxical movement')&&q.includes('chest')){
+ }else if(q.includes('paradoxical chest wall movement') || (q.includes('paradoxical movement')&&q.includes('chest'))){
   label='Chest wall movement';detail='Simplified chest wall diagram highlighting an unstable segment. Not an assessment substitute.';
   drawing='<path d="M70 15Q46 25 45 53L31 151Q100 182 169 151L155 53Q154 25 130 15" fill="none" stroke="#4785bb" stroke-width="5"/><path d="M100 18v143M47 64Q100 92 153 64M40 93Q100 120 160 93M35 123Q100 148 165 123" fill="none" stroke="#8fb1d0" stroke-width="4"/><path d="M115 79l35-8 8 38-35 8z" fill="#f4b6a0" stroke="#c35c45" stroke-width="4"/><path d="M139 58v-20m0 0-8 8m8-8 8 8" stroke="#c35c45" stroke-width="4" fill="none"/>';
  }else if(q.includes('circumferential chest burns')){
