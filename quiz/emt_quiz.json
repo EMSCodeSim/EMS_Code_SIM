@@ -1,523 +1,563 @@
 [
   {
-    "question": "What is the primary role of the EMT in an EMS system?",
+    "question": "An EMT arrives to find a 68-year-old patient sitting upright, speaking in two-word sentences. Respirations are 30/min with visible accessory muscle use, SpO₂ 89%, and a strong radial pulse. Which action is the best immediate priority?",
     "choices": [
-      "Provide basic emergency medical care",
-      "Diagnose medical conditions",
-      "Perform advanced airway procedures",
-      "Prescribe medications"
+      "Assess breathing adequacy and initiate appropriate respiratory support while obtaining further findings",
+      "Obtain a detailed history of previous respiratory admissions before intervening",
+      "Apply a nonrebreather mask and defer further assessment until arrival at the hospital",
+      "Position the patient supine to improve blood pressure before assessing ventilation"
     ],
-    "answer": "Provide basic emergency medical care",
+    "answer": "Assess breathing adequacy and initiate appropriate respiratory support while obtaining further findings",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Marked work of breathing requires immediate assessment of ventilation and oxygenation. Oxygen may be indicated, but a device choice alone cannot replace evaluation of breathing adequacy.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is an example of off-line medical direction?",
+    "question": "An EMT is treating a patient under an approved standing order for oral glucose. The patient is awake but has difficulty swallowing. Which action is most appropriate?",
     "choices": [
-      "Direct supervision",
-      "Real-time orders by radio",
-      "Standing orders",
-      "Calling the medical director"
+      "Withhold oral glucose, protect the airway, and request appropriate additional care",
+      "Give a smaller amount of oral glucose because the patient is awake",
+      "Contact medical control before addressing an immediate airway concern",
+      "Give oral glucose slowly while the partner prepares transport"
     ],
-    "answer": "Standing orders",
+    "answer": "Withhold oral glucose, protect the airway, and request appropriate additional care",
     "topic": "EMS Operations",
     "subtopic": "EMS Systems",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
+    "reason": "Standing orders do not override contraindications. Impaired swallowing increases aspiration risk; manage airway concerns and seek treatment within local scope.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which level of EMS provider can perform advanced airway management?",
+    "question": "An EMT is assisting a paramedic with a patient whose breathing has become slow and shallow. SpO₂ is 84% despite supplemental oxygen. Which observation most strongly supports assisted ventilation?",
     "choices": [
-      "Paramedic",
-      "AEMT",
-      "EMT",
-      "EMR"
+      "Inadequate respiratory depth with declining mental status",
+      "Persistent low SpO₂ despite a well-positioned oxygen mask",
+      "A history of COPD with a respiratory rate of 20/min",
+      "Anxiety with normal chest rise and normal mentation"
     ],
-    "answer": "Paramedic",
+    "answer": "Inadequate respiratory depth with declining mental status",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Airway Management",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Inadequate tidal volume and declining consciousness indicate ventilatory failure. Pulse oximetry helps evaluate oxygenation but does not alone determine ventilation adequacy.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What does CQI stand for in EMS systems?",
+    "question": "During a quality review, an agency finds repeated delays in recognizing respiratory failure. Which improvement best measures whether a new training program works?",
     "choices": [
-      "Continuous Quality Improvement",
-      "Clinical Quantitative Index",
-      "Certified Quality Initiative",
-      "Continuous Quantitative Instruction"
+      "Compare documented recognition and intervention times before and after training",
+      "Count how many employees attended the training sessions",
+      "Measure satisfaction with the instructor immediately after class",
+      "Track how many pages of respiratory material were distributed"
     ],
-    "answer": "Continuous Quality Improvement",
+    "answer": "Compare documented recognition and intervention times before and after training",
     "topic": "EMS Operations",
     "subtopic": "EMS Systems",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
+    "reason": "Quality improvement should evaluate patient-care process measures relevant to the identified failure, not attendance or satisfaction alone.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Who provides on-line medical direction?",
+    "question": "A patient with chest discomfort is alert and oriented, understands the risks, and declines transport. There is no immediate threat to decision-making capacity. What is the EMT's best next step?",
     "choices": [
-      "EMT partner",
-      "Physician via radio or phone",
-      "Medical assistant",
-      "Dispatch center"
+      "Assess and document decision-making capacity, explain risks, involve medical direction as indicated, and honor an informed refusal",
+      "Transport the patient against their wishes because chest pain can be life threatening",
+      "Have a family member sign a refusal without discussing risks with the patient",
+      "Leave immediately after obtaining a signature without further assessment"
     ],
-    "answer": "Physician via radio or phone",
+    "answer": "Assess and document decision-making capacity, explain risks, involve medical direction as indicated, and honor an informed refusal",
     "topic": "EMS Operations",
     "subtopic": "EMS Systems",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
+    "reason": "A capable adult may refuse care. An informed refusal requires assessment, risk discussion, appropriate consultation, documentation, and following local policy.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What must be obtained before providing care to a conscious adult?",
+    "question": "An alert adult with a painful ankle injury understands your assessment and agrees to splinting but declines transport. What should the EMT do before proceeding?",
     "choices": [
-      "Parental consent",
-      "Expressed denial",
-      "Implied consent",
-      "Informed consent"
+      "Confirm informed consent for assessment and treatment and address the refusal of transport separately",
+      "Assume consent for all care because the patient called 911",
+      "Have a family member consent even though the adult has capacity",
+      "Refuse to provide any care unless the patient agrees to transport"
     ],
-    "answer": "Informed consent",
+    "answer": "Confirm informed consent for assessment and treatment and address the refusal of transport separately",
     "topic": "EMS Operations",
     "subtopic": "Legal & Ethics",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
+    "reason": "Consent to treatment and transport are separate decisions. A capable adult may accept some care and refuse other care.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which of the following is an example of implied consent?",
+    "question": "An unconscious adult with severe injuries has no family present and requires immediate airway support. What permits emergency treatment?",
     "choices": [
-      "Child with parent present",
-      "Refusing care after being informed",
-      "Signing a waiver",
-      "Unconscious trauma patient"
+      "Implied consent when the patient cannot decide and delaying care threatens life",
+      "Express consent inferred from a bystander's request",
+      "Written consent that must be obtained before lifesaving care",
+      "A police officer's permission regardless of patient capacity"
     ],
-    "answer": "Unconscious trauma patient",
+    "answer": "Implied consent when the patient cannot decide and delaying care threatens life",
     "topic": "Trauma",
     "subtopic": "Legal & Ethics",
-    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma."
+    "reason": "Emergency implied consent can apply when an incapacitated patient needs urgent care and no authorized decision-maker is available.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is the term for unlawful touching of a patient without consent?",
+    "question": "An alert adult refuses a blood glucose check and withdraws their hand. The EMT performs the test anyway without legal justification. What legal concern is most directly raised?",
     "choices": [
-      "Battery",
-      "Assault",
-      "Negligence",
-      "Abandonment"
+      "Battery from nonconsensual physical contact",
+      "Abandonment because care was provided",
+      "Defamation because the patient disagreed",
+      "Negligent documentation because no blood pressure was recorded"
     ],
-    "answer": "Battery",
+    "answer": "Battery from nonconsensual physical contact",
     "topic": "EMS Operations",
     "subtopic": "Legal & Ethics",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
+    "reason": "Unconsented physical contact can constitute battery. Capacity, emergency exceptions and local law matter.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What should you do if a patient refuses care?",
+    "question": "An adult with possible ACS refuses transport but appears capable of understanding risks. What is the most appropriate response?",
     "choices": [
-      "Leave immediately",
-      "Call police",
-      "Force treatment",
-      "Explain risks and document refusal"
+      "Explain the risks and alternatives, assess capacity, consult as required and document the informed refusal",
+      "Tell the patient that signing a refusal eliminates all medical risk",
+      "Ask law enforcement to force transport because ACS is possible",
+      "Leave without discussing warning signs because the patient refused"
     ],
-    "answer": "Explain risks and document refusal",
+    "answer": "Explain the risks and alternatives, assess capacity, consult as required and document the informed refusal",
     "topic": "EMS Operations",
     "subtopic": "Legal & Ethics",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
+    "reason": "A valid refusal requires decision-making capacity, informed discussion, appropriate documentation and policy compliance.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is the legal term for terminating care without transfer?",
+    "question": "After beginning treatment of an unstable patient, an EMT must leave the scene for another call. Which action best avoids patient abandonment?",
     "choices": [
-      "Malpractice",
-      "Negligence",
-      "Battery",
-      "Abandonment"
+      "Transfer care to an appropriately qualified provider with a clear handoff before departing",
+      "Tell a bystander to watch the patient until another ambulance arrives",
+      "Leave a written note with the patient's vital signs",
+      "Call dispatch to say the patient is still on scene and depart immediately"
     ],
-    "answer": "Abandonment",
+    "answer": "Transfer care to an appropriately qualified provider with a clear handoff before departing",
     "topic": "EMS Operations",
     "subtopic": "Legal & Ethics",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
+    "reason": "Once care begins, it must continue until an appropriate transfer, authorized termination, or other lawful disposition.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which organ is responsible for pumping blood throughout the body?",
+    "question": "A patient with chest discomfort has cool skin, confusion and a weak radial pulse. Which physiological failure best explains these findings?",
     "choices": [
-      "Lungs",
-      "Heart",
-      "Liver",
-      "Kidney"
+      "Inadequate cardiac output leading to reduced tissue perfusion",
+      "Increased pulmonary diffusion without circulatory change",
+      "Increased hepatic filtration causing low oxygen saturation",
+      "Isolated gastric motility reduction causing altered mentation"
     ],
-    "answer": "Heart",
+    "answer": "Inadequate cardiac output leading to reduced tissue perfusion",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "The heart must provide adequate forward flow to perfuse organs. Weak pulses and altered mentation suggest poor circulation.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which body system includes the brain and spinal cord?",
+    "question": "A patient with head trauma develops new unilateral weakness and confusion. Which organ system is most directly implicated by these findings?",
     "choices": [
-      "Digestive system",
-      "Respiratory system",
-      "Nervous system",
-      "Endocrine system"
+      "Central nervous system involving the brain and spinal cord",
+      "Gastrointestinal system involving the stomach and intestines",
+      "Endocrine system involving hormone release only",
+      "Urinary system involving renal filtration"
     ],
-    "answer": "Nervous system",
+    "answer": "Central nervous system involving the brain and spinal cord",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Focal neurologic deficits and altered mentation suggest central nervous system involvement.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which system is responsible for gas exchange?",
+    "question": "An adult has severe pneumonia with alveoli filled by inflammatory fluid. Which process is most directly impaired?",
     "choices": [
-      "Urinary system",
-      "Respiratory system",
-      "Nervous system",
-      "Digestive system"
+      "Diffusion of oxygen and carbon dioxide across the alveolar-capillary membrane",
+      "Transport of blood from the left ventricle to the aorta",
+      "Electrical conduction from the sinoatrial node",
+      "Production of red blood cells in the bone marrow"
     ],
-    "answer": "Respiratory system",
+    "answer": "Diffusion of oxygen and carbon dioxide across the alveolar-capillary membrane",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Alveolar fluid interferes with pulmonary gas exchange.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which organ is part of the digestive system?",
+    "question": "A patient has repeated vomiting and abdominal pain but adequate breathing. Which additional history is most directly relevant to a possible gastrointestinal source?",
     "choices": [
-      "Heart",
-      "Trachea",
-      "Stomach",
-      "Larynx"
+      "Recent meals, bowel changes and blood in vomit or stool",
+      "Previous ankle sprains and exercise tolerance",
+      "Whether the patient has ever worn a cervical collar",
+      "The number of dental fillings completed this year"
     ],
-    "answer": "Stomach",
+    "answer": "Recent meals, bowel changes and blood in vomit or stool",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Focused GI history helps characterize abdominal complaints, while life threats and vital signs remain priorities.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which bones protect the brain?",
+    "question": "Following a head injury, a patient develops worsening headache, vomiting and reduced alertness. Which structure is directly threatened by an expanding intracranial bleed?",
     "choices": [
-      "Spinal vertebrae",
-      "Pelvis",
-      "Ribs",
-      "Cranial bones"
+      "Brain within the rigid cranial vault",
+      "Lungs within the thoracic cavity",
+      "Kidneys within the retroperitoneum",
+      "Liver beneath the right costal margin"
     ],
-    "answer": "Cranial bones",
+    "answer": "Brain within the rigid cranial vault",
     "topic": "Trauma",
     "subtopic": "Trauma Care",
-    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma."
+    "reason": "Bleeding within the skull can increase intracranial pressure and compromise brain tissue.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is the function of alveoli in the lungs?",
+    "question": "A patient with diffuse pneumonia has low SpO₂ despite supplemental oxygen. Which normal function is most directly compromised?",
     "choices": [
-      "Sound production",
-      "Protect against infection",
-      "Gas exchange",
-      "Air filtration"
+      "Alveolar gas exchange between air and pulmonary capillary blood",
+      "Generation of speech by the vocal cords",
+      "Production of digestive enzymes by the pancreas",
+      "Storage of blood in the spleen"
     ],
-    "answer": "Gas exchange",
+    "answer": "Alveolar gas exchange between air and pulmonary capillary blood",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Inflamed or fluid-filled alveoli reduce effective gas exchange and can cause hypoxemia.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What vessel carries oxygenated blood from the lungs to the heart?",
+    "question": "A patient has severe left ventricular dysfunction with pulmonary congestion. Which vessel normally returns freshly oxygenated blood from the lungs to the left atrium?",
     "choices": [
-      "Pulmonary vein",
-      "Vena cava",
-      "Aorta",
-      "Pulmonary artery"
+      "Pulmonary veins",
+      "Pulmonary arteries",
+      "Superior vena cava",
+      "Aorta"
     ],
-    "answer": "Pulmonary vein",
+    "answer": "Pulmonary veins",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Pulmonary veins carry oxygenated blood from the lungs to the left atrium.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which part of the heart pumps blood to the body?",
+    "question": "An adult has extensive damage to the left ventricle after an infarction. Which circulatory function is most directly affected?",
     "choices": [
-      "Left atrium",
-      "Right atrium",
-      "Right ventricle",
-      "Left ventricle"
+      "Pumping oxygenated blood into the systemic circulation",
+      "Returning deoxygenated blood to the right atrium",
+      "Pumping blood directly from the right atrium to the lungs",
+      "Delivering venous blood from the lungs to the right ventricle"
     ],
-    "answer": "Left ventricle",
+    "answer": "Pumping oxygenated blood into the systemic circulation",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "The left ventricle generates pressure for systemic circulation.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which blood cells help fight infection?",
+    "question": "A patient undergoing chemotherapy has fever and a very low white blood cell count. Which function is most impaired?",
     "choices": [
-      "Red blood cells",
-      "Platelets",
-      "Plasma",
-      "White blood cells"
+      "Immune defense against infection",
+      "Platelet-mediated clot formation only",
+      "Hemoglobin-mediated oxygen carriage only",
+      "Plasma volume regulation by the kidneys only"
     ],
-    "answer": "White blood cells",
+    "answer": "Immune defense against infection",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "White blood cells are central to immune defense; neutropenia increases infection risk.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which structure prevents food from entering the airway?",
+    "question": "An unconscious patient vomits while lying supine. Which action best addresses the immediate airway threat?",
     "choices": [
-      "Larynx",
-      "Trachea",
-      "Epiglottis",
-      "Esophagus"
+      "Turn or position appropriately with spinal precautions as indicated and suction the airway",
+      "Insert an oral airway without clearing visible vomit",
+      "Apply oxygen and wait for the gag reflex to return",
+      "Continue obtaining history before repositioning"
     ],
-    "answer": "Epiglottis",
+    "answer": "Turn or position appropriately with spinal precautions as indicated and suction the airway",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Airway Management",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Vomitus threatens airway patency and aspiration. Position and suction promptly while protecting the spine when indicated.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "The prefix 'tachy-' means:",
+    "question": "An adult has a pulse of 132/min, fever, and dry mucous membranes. The monitor displays sinus tachycardia. What does the term tachycardia describe?",
     "choices": [
-      "Slow",
-      "Large",
-      "Pain",
-      "Fast"
+      "An abnormally rapid heart rate",
+      "An abnormally slow heart rate",
+      "An irregular rhythm without a measurable rate",
+      "A weak pulse despite a normal heart rate"
     ],
-    "answer": "Fast",
+    "answer": "An abnormally rapid heart rate",
     "topic": "Medical Emergencies",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Tachycardia refers to an elevated heart rate; assess the underlying cause and perfusion rather than treating the number alone.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "The suffix '-itis' refers to:",
+    "question": "A patient with an inflamed appendix has right lower-quadrant pain and fever. What does the suffix -itis indicate in appendicitis?",
     "choices": [
-      "Condition",
-      "Pain",
-      "Infection",
-      "Inflammation"
+      "Inflammation of the named structure",
+      "Complete loss of blood supply to the named structure",
+      "Surgical removal of the named structure",
+      "A benign tumor arising from the named structure"
     ],
-    "answer": "Inflammation",
+    "answer": "Inflammation of the named structure",
     "topic": "Medical Emergencies",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "The suffix -itis indicates inflammation; the clinical cause and urgency still require assessment.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "The term 'hypoglycemia' means:",
+    "question": "A confused patient with diabetes has a glucose reading of 42 mg/dL. Which term most accurately describes the finding?",
     "choices": [
-      "High calcium",
-      "Low blood sugar",
-      "Low oxygen",
-      "High blood sugar"
+      "Hypoglycemia",
+      "Hyperglycemia",
+      "Hypoxemia",
+      "Hypotension"
     ],
-    "answer": "Low blood sugar",
+    "answer": "Hypoglycemia",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
+    "reason": "Hypoglycemia means low blood glucose. Determine whether the patient can safely swallow before choosing a treatment route.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "The prefix 'brady-' means:",
+    "question": "A patient has a regular pulse of 42/min and reports dizziness. What does the prefix brady- describe?",
     "choices": [
-      "Below",
-      "Fast",
-      "Slow",
-      "Above"
+      "An abnormally slow rate",
+      "An abnormally rapid rate",
+      "An irregular electrical rhythm",
+      "A complete absence of circulation"
     ],
-    "answer": "Slow",
+    "answer": "An abnormally slow rate",
     "topic": "Medical Emergencies",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Brady- means slow; symptoms and perfusion determine the urgency of bradycardia.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "The root word 'cardio' refers to:",
+    "question": "A patient is evaluated for cardiogenic shock after a large myocardial infarction. Which organ does the root cardi/o identify?",
     "choices": [
-      "Heart",
-      "Brain",
-      "Liver",
-      "Lungs"
+      "The heart",
+      "The lungs",
+      "The brain",
+      "The kidneys"
     ],
-    "answer": "Heart",
+    "answer": "The heart",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Cardi/o refers to the heart. Cardiogenic shock results from inadequate cardiac pump function.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which of the following is a common early sign of shock?",
+    "question": "A patient with vomiting and poor oral intake has cool skin, delayed capillary refill, and pulse 124/min; BP remains 112/74. Which finding supports early shock?",
     "choices": [
-      "Hypertension",
-      "Flushed skin",
-      "Bradycardia",
-      "Tachycardia"
+      "Tachycardia with other signs of impaired perfusion",
+      "Normal systolic pressure alone excluding shock",
+      "Warm dry skin and slow pulse",
+      "An isolated complaint of thirst with normal perfusion"
     ],
-    "answer": "Tachycardia",
+    "answer": "Tachycardia with other signs of impaired perfusion",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Bleeding & Shock",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Tachycardia and peripheral hypoperfusion may precede hypotension; normal blood pressure does not exclude shock.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What type of shock results from fluid loss?",
+    "question": "An older adult has repeated diarrhea, dizziness, dry mucous membranes, and a weak rapid pulse. Which shock mechanism is most likely?",
     "choices": [
-      "Obstructive shock",
-      "Distributive shock",
-      "Cardiogenic shock",
-      "Hypovolemic shock"
+      "Loss of circulating fluid volume",
+      "Primary failure of myocardial contractility",
+      "Mechanical obstruction to cardiac filling",
+      "Loss of vascular tone after spinal injury"
     ],
-    "answer": "Hypovolemic shock",
+    "answer": "Loss of circulating fluid volume",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Bleeding & Shock",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Severe gastrointestinal fluid losses can reduce preload and cause hypovolemic shock.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which condition is most likely to lead to cardiogenic shock?",
+    "question": "A patient with crushing chest pain develops hypotension, pulmonary crackles, and cool clammy skin. Which cause of shock is most concerning?",
     "choices": [
-      "Asthma",
-      "Seizure",
-      "Heart attack",
-      "Stroke"
+      "Acute myocardial pump failure",
+      "An isolated allergic skin reaction",
+      "Uncomplicated dehydration without cardiac disease",
+      "Spinal cord injury with vasodilation"
     ],
-    "answer": "Heart attack",
+    "answer": "Acute myocardial pump failure",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Bleeding & Shock",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Myocardial ischemia can reduce ventricular contractility, producing cardiogenic shock and pulmonary congestion.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is a late sign of shock?",
+    "question": "A trauma patient becomes confused, pale, and hypotensive after an initially normal blood pressure. What does the new hypotension suggest?",
     "choices": [
-      "Drop in blood pressure",
-      "Pale skin",
-      "Anxiety",
-      "Increased pulse"
+      "Worsening decompensated shock",
+      "Successful compensation for blood loss",
+      "Normal adaptation to pain",
+      "Resolution of peripheral vasoconstriction"
     ],
-    "answer": "Drop in blood pressure",
+    "answer": "Worsening decompensated shock",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Bleeding & Shock",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "Hypotension after progressive hypoperfusion is a late and concerning sign of shock.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which organ is most sensitive to inadequate perfusion?",
+    "question": "A hypotensive patient becomes acutely confused and cannot follow commands. Which interpretation best explains the change?",
     "choices": [
-      "Brain",
-      "Skin",
-      "Stomach",
-      "Liver"
+      "Reduced cerebral perfusion",
+      "Improved cerebral oxygen delivery",
+      "Isolated loss of gastric blood flow",
+      "Normal age-related memory change"
     ],
-    "answer": "Brain",
+    "answer": "Reduced cerebral perfusion",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "The brain is highly sensitive to inadequate oxygen and perfusion; altered mentation is a concerning shock finding.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which age group is most likely to have separation anxiety during assessment?",
+    "question": "A frightened 2-year-old clings to a parent and cries when an EMT approaches. What is the best assessment strategy?",
     "choices": [
-      "Toddlers",
-      "Adolescents",
-      "Adults",
-      "Neonates"
+      "Allow the caregiver to remain close and begin with less invasive observation",
+      "Separate the child from the caregiver to improve cooperation",
+      "Begin with painful procedures to finish quickly",
+      "Ask the toddler to complete a written symptom questionnaire"
     ],
-    "answer": "Toddlers",
+    "answer": "Allow the caregiver to remain close and begin with less invasive observation",
     "topic": "Obstetrics & Gynecology",
     "subtopic": "Patient Assessment",
-    "reason": "Support mother and newborn priorities: airway, breathing, circulation, and safe delivery/care steps."
+    "reason": "Toddlers commonly experience separation anxiety. Caregiver involvement and observation can reduce distress.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "How should you communicate with an elderly patient who is hard of hearing?",
+    "question": "An older patient with hearing impairment repeatedly answers questions incorrectly despite being alert. What should the EMT do?",
     "choices": [
-      "Speak clearly and slowly",
-      "Raise your voice and speak quickly",
-      "Use medical jargon",
-      "Ignore their hearing difficulty"
+      "Face the patient, reduce background noise, speak clearly, and confirm understanding",
+      "Shout rapidly from behind the patient",
+      "Assume confusion and skip the history",
+      "Speak only to family without first addressing the patient"
     ],
-    "answer": "Speak clearly and slowly",
+    "answer": "Face the patient, reduce background noise, speak clearly, and confirm understanding",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Adapt communication to hearing needs while preserving autonomy and checking comprehension.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which age group is most likely to underreport pain?",
+    "question": "An older adult denies significant pain despite a fall, but has guarding and focal hip tenderness. Which approach is most appropriate?",
     "choices": [
-      "Geriatric patients",
-      "Teens",
-      "Infants",
-      "Adults"
+      "Assess objective findings and function rather than relying on the pain rating alone",
+      "Exclude fracture because the patient denies severe pain",
+      "Ask the patient to walk without assistance to prove the hip is intact",
+      "Avoid repeat assessment because pain is subjective"
     ],
-    "answer": "Geriatric patients",
+    "answer": "Assess objective findings and function rather than relying on the pain rating alone",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Pain reporting varies; objective findings and mechanism can indicate serious injury despite a low pain score.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which is a normal heart rate for a neonate?",
+    "question": "A newborn is breathing spontaneously, pink centrally, and has a heart rate of 145/min. How should the EMT interpret the heart rate?",
     "choices": [
-      "60\u2013100 bpm",
-      "160\u2013200 bpm",
-      "120\u2013160 bpm",
-      "100\u2013120 bpm"
+      "Within the expected newborn range",
+      "Severe bradycardia requiring compressions",
+      "A rate diagnostic of supraventricular tachycardia",
+      "Cardiac arrest despite a palpable pulse"
     ],
-    "answer": "120\u2013160 bpm",
+    "answer": "Within the expected newborn range",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
+    "reason": "A newborn heart rate around 145/min is generally expected; evaluate respirations, tone, color and overall condition.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which age group commonly presents with nonspecific symptoms in serious illness?",
+    "question": "An older adult with a urinary infection presents with weakness and new confusion but no reported fever. What is the best interpretation?",
     "choices": [
-      "Adults",
-      "Geriatrics",
-      "Teens",
-      "Infants"
+      "Serious illness may present atypically in older adults",
+      "Absence of fever excludes infection",
+      "Confusion is always baseline in older adults",
+      "Weakness without chest pain excludes systemic illness"
     ],
-    "answer": "Geriatrics",
+    "answer": "Serious illness may present atypically in older adults",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Older adults can have nonspecific or atypical presentations; new altered mental status warrants evaluation.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which action represents EMS involvement in public health?",
+    "question": "A community EMS program identifies many preventable admissions among patients who cannot access primary care. Which intervention best reflects a public-health role?",
     "choices": [
-      "Waiting for hospital orders",
-      "Treating only emergency calls",
-      "Providing vaccinations at community events",
-      "Filing insurance claims"
+      "Coordinate outreach, prevention and appropriate referral within program scope",
+      "Restrict care to emergency transports only",
+      "Avoid collecting follow-up outcomes",
+      "Replace all physician care with unsupervised EMS treatment"
     ],
-    "answer": "Providing vaccinations at community events",
+    "answer": "Coordinate outreach, prevention and appropriate referral within program scope",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Public-health EMS activities may include prevention, outreach, referral and care coordination within authorized programs.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What is one goal of community paramedicine?",
+    "question": "A patient with repeated CHF admissions struggles to obtain medications and follow-up visits. Which community-paramedicine goal best fits this problem?",
     "choices": [
-      "Transport all patients",
-      "Increase 911 calls",
-      "Focus only on trauma",
-      "Prevent hospital readmissions"
+      "Improve access, self-management and follow-up to reduce avoidable readmissions",
+      "Require transport to the emergency department for every home visit",
+      "Replace prescribed medication plans with EMS-selected drugs",
+      "Avoid communicating with the patient's care team"
     ],
-    "answer": "Prevent hospital readmissions",
+    "answer": "Improve access, self-management and follow-up to reduce avoidable readmissions",
     "topic": "Trauma",
     "subtopic": "Trauma Care",
-    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma."
+    "reason": "Community paramedicine can support care coordination and reduce avoidable utilization within local program scope.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "Which is a benefit of EMS data collection?",
+    "question": "An agency notices increased heat illness calls during a summer event. Which use of EMS data best supports prevention?",
     "choices": [
-      "Eliminates all errors",
-      "Improves public health planning",
-      "Reduces scene time",
-      "Shortens hospital stays"
+      "Analyze call patterns and share aggregate trends with public-health partners",
+      "Delete repeat-call records to make rates appear lower",
+      "Use only the total ambulance mileage as a measure of illness",
+      "Avoid reporting trends until every individual patient consents to public release"
     ],
-    "answer": "Improves public health planning",
+    "answer": "Analyze call patterns and share aggregate trends with public-health partners",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Aggregate surveillance data can inform prevention planning while protecting patient privacy.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "How can EMS help during a disease outbreak?",
+    "question": "During a respiratory disease outbreak, a patient reports fever and cough at a crowded shelter. Which EMS response best protects patients and responders?",
     "choices": [
-      "Assist with screening and education",
-      "Treat only trauma",
-      "Transport without PPE",
-      "Avoid public interaction"
+      "Use appropriate infection-control precautions, assess the patient, and coordinate public-health guidance",
+      "Skip PPE because the patient has no confirmed diagnosis",
+      "Transport every shelter resident regardless of symptoms",
+      "Withhold assessment until laboratory confirmation is available"
     ],
-    "answer": "Assist with screening and education",
+    "answer": "Use appropriate infection-control precautions, assess the patient, and coordinate public-health guidance",
     "topic": "Trauma",
     "subtopic": "Trauma Care",
-    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma."
+    "reason": "Infection prevention, appropriate clinical assessment and public-health coordination help limit transmission.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
-    "question": "What does public health emphasize?",
+    "question": "A city reports a rise in preventable drowning incidents. Which EMS-supported strategy most directly addresses the population-level risk?",
     "choices": [
-      "Prevention and wellness",
-      "Private treatment",
-      "Emergency only",
-      "Long-term care"
+      "Partner on water-safety education and prevention outreach",
+      "Focus exclusively on resuscitation after drowning occurs",
+      "Avoid community messaging because prevention is outside emergency care",
+      "Increase documentation length without examining incident patterns"
     ],
-    "answer": "Prevention and wellness",
+    "answer": "Partner on water-safety education and prevention outreach",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Public health emphasizes prevention and risk reduction in addition to emergency response.",
+    "difficulty": "clinical-judgment-reviewed-draft"
   },
   {
     "question": "Which medication is commonly administered for hypoglycemia?",
@@ -530,7 +570,7 @@
     "answer": "Oral glucose",
     "topic": "Medical Emergencies",
     "subtopic": "Endocrine",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which medication is used for anaphylaxis?",
@@ -543,7 +583,7 @@
     "answer": "Epinephrine auto-injector",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which medication dilates the coronary arteries?",
@@ -556,7 +596,7 @@
     "answer": "Nitroglycerin",
     "topic": "Medical Emergencies",
     "subtopic": "Endocrine",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which medication reverses opioid overdose?",
@@ -569,7 +609,7 @@
     "answer": "Naloxone",
     "topic": "Medical Emergencies",
     "subtopic": "Endocrine",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which medication is indicated for chest pain of suspected cardiac origin?",
@@ -676,7 +716,7 @@
     "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
   },
   {
-    "question": "Which mnemonic helps assess a patient\u2019s chief complaint?",
+    "question": "Which mnemonic helps assess a patient’s chief complaint?",
     "choices": [
       "SAMPLE",
       "DCAP-BTLS",
@@ -686,7 +726,7 @@
     "answer": "OPQRST",
     "topic": "Medical Emergencies",
     "subtopic": "Neurologic",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "What does the 'L' in SAMPLE stand for?",
@@ -782,12 +822,12 @@
   {
     "question": "What is the compression rate for adult CPR?",
     "choices": [
-      "80\u2013100",
-      "60\u201380",
-      "100\u2013120 compressions per minute",
-      "120\u2013140"
+      "80–100",
+      "60–80",
+      "100–120 compressions per minute",
+      "120–140"
     ],
-    "answer": "100\u2013120 compressions per minute",
+    "answer": "100–120 compressions per minute",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
     "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care."
@@ -803,7 +843,7 @@
     "answer": "At least 2 inches",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "When should the AED be applied to a pulseless patient?",
@@ -949,14 +989,14 @@
     "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
   },
   {
-    "question": "How should an EMT assess a child\u2019s airway?",
+    "question": "How should an EMT assess a child’s airway?",
     "choices": [
       "Hyperextend the neck",
       "Insert an OPA immediately",
       "Use a jaw thrust on all pediatric patients",
-      "Use a head tilt\u2013chin lift unless trauma suspected"
+      "Use a head tilt–chin lift unless trauma suspected"
     ],
-    "answer": "Use a head tilt\u2013chin lift unless trauma suspected",
+    "answer": "Use a head tilt–chin lift unless trauma suspected",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Airway Management",
     "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation."
@@ -985,7 +1025,7 @@
     "answer": "Sort patients by severity",
     "topic": "Medical Emergencies",
     "subtopic": "Anatomy & Terminology",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "What color tag is assigned to patients who are deceased in triage?",
@@ -998,7 +1038,7 @@
     "answer": "Black",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which of the following best describes the role of the EMT at a crime scene?",
@@ -1040,7 +1080,7 @@
     "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction."
   },
   {
-    "question": "A 56-year-old male with a history of angina is complaining of chest discomfort. His vital signs are BP 124/82, HR 96, RR 18, and SpO\u2082 95%. What should you do first?",
+    "question": "A 56-year-old male with a history of angina is complaining of chest discomfort. His vital signs are BP 124/82, HR 96, RR 18, and SpO₂ 95%. What should you do first?",
     "choices": [
       "Administer nitroglycerin",
       "Apply oxygen via non-rebreather",
@@ -1057,10 +1097,10 @@
     "choices": [
       "Begin chest compressions",
       "Deliver oxygen via nasal cannula",
-      "Ventilate with BVM at 10\u201312/min",
+      "Ventilate with BVM at 10–12/min",
       "Wait for ALS before intervening"
     ],
-    "answer": "Ventilate with BVM at 10\u201312/min",
+    "answer": "Ventilate with BVM at 10–12/min",
     "reason": "Inadequate respiratory rate requires immediate assisted ventilations with a bag-valve mask (BVM).",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory"
@@ -1180,7 +1220,7 @@
     "answer": "Sublingual",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "Which condition is a contraindication to assisting with nitroglycerin?",
@@ -1284,7 +1324,7 @@
     "answer": "When signs of severe allergic reaction are present",
     "topic": "Medical Emergencies",
     "subtopic": "Respiratory",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "What is the most common route of administration for EMTs giving epinephrine?",
@@ -1297,7 +1337,7 @@
     "answer": "Intramuscular (auto-injector)",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient\u2019s response."
+    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response."
   },
   {
     "question": "What is a possible side effect of epinephrine?",
@@ -1360,7 +1400,7 @@
       "Never; EMTs do not ventilate"
     ],
     "answer": "When breathing becomes inadequate or the patient becomes too tired to maintain effort",
-    "reason": "Assisted ventilation is indicated for inadequate rate, depth, or declining respiratory effort\u2014not only extreme SpO2 values.",
+    "reason": "Assisted ventilation is indicated for inadequate rate, depth, or declining respiratory effort—not only extreme SpO2 values.",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Ventilation"
   },
@@ -1380,13 +1420,13 @@
   {
     "question": "What is the preferred ventilation rate for an adult with a pulse who needs BVM support?",
     "choices": [
-      "1 breath every 5\u20136 seconds",
+      "1 breath every 5–6 seconds",
       "30 compressions to 2 breaths",
       "1 breath every 1 second",
       "10 breaths then a pause"
     ],
-    "answer": "1 breath every 5\u20136 seconds",
-    "reason": "Adults with a pulse are ventilated about 10\u201312 breaths per minute to avoid hyperventilation.",
+    "answer": "1 breath every 5–6 seconds",
+    "reason": "Adults with a pulse are ventilated about 10–12 breaths per minute to avoid hyperventilation.",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Ventilation"
   },
@@ -1679,13 +1719,13 @@
   {
     "question": "During CPR, the compression rate for adults should be:",
     "choices": [
-      "60\u201380/min",
-      "100\u2013120/min",
+      "60–80/min",
+      "100–120/min",
       "40/min",
-      "150\u2013180/min"
+      "150–180/min"
     ],
-    "answer": "100\u2013120/min",
-    "reason": "Current resuscitation guidance targets 100\u2013120 compressions per minute.",
+    "answer": "100–120/min",
+    "reason": "Current resuscitation guidance targets 100–120 compressions per minute.",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies"
   },
@@ -1802,7 +1842,7 @@
       "All medical patients regardless of mechanism"
     ],
     "answer": "Mechanism and findings suggest possible spinal injury, or the patient is unreliable with significant trauma",
-    "reason": "Spinal precautions are based on mechanism, exam findings, and patient reliability\u2014not automatic for every call.",
+    "reason": "Spinal precautions are based on mechanism, exam findings, and patient reliability—not automatic for every call.",
     "topic": "Trauma",
     "subtopic": "Trauma Care"
   },
@@ -2036,7 +2076,7 @@
       "Family wants advice"
     ],
     "answer": "Sudden altered mental status with abnormal vitals or glucose",
-    "reason": "Many 'psychiatric' presentations are medical until proven otherwise\u2014check glucose, oxygen, and other causes.",
+    "reason": "Many 'psychiatric' presentations are medical until proven otherwise—check glucose, oxygen, and other causes.",
     "topic": "Medical Emergencies",
     "subtopic": "Behavioral/Psychiatric"
   },
@@ -2166,7 +2206,7 @@
       "Need to delay transport for hours"
     ],
     "answer": "Imminent delivery",
-    "reason": "Visible crowning means the baby\u2019s head is at the vaginal opening and delivery is imminent.",
+    "reason": "Visible crowning means the baby’s head is at the vaginal opening and delivery is imminent.",
     "topic": "Obstetrics & Gynecology",
     "subtopic": "Obstetrics"
   },
@@ -2474,7 +2514,7 @@
     "choices": [
       "Do not provide any comfort care",
       "Do not perform resuscitative efforts if the patient is in arrest, while still providing appropriate supportive care per the order",
-      "Ignore the patient\u2019s wishes",
+      "Ignore the patient’s wishes",
       "Always intubate"
     ],
     "answer": "Do not perform resuscitative efforts if the patient is in arrest, while still providing appropriate supportive care per the order",
