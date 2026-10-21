@@ -612,7 +612,7 @@
     "answer": "Naloxone",
     "topic": "Medical Emergencies",
     "subtopic": "Endocrine",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response.",
+    "reason": "Naloxone reverses opioid effects, but effective ventilation and airway support remain immediate priorities.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -626,7 +626,7 @@
     "answer": "Aspirin",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "reason": "Aspirin inhibits platelet aggregation in suspected acute coronary syndrome when no contraindication exists and local protocol permits.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -640,7 +640,7 @@
     "answer": "Oropharyngeal airway",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Airway Management",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "An oropharyngeal airway can help maintain patency in an unresponsive patient without a gag reflex; reassess ventilation.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -668,7 +668,7 @@
     "answer": "Bag-valve mask with reservoir",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "A BVM with reservoir and appropriate oxygen flow can provide positive-pressure breaths and high inspired oxygen.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -682,7 +682,7 @@
     "answer": "Remove secretions and prevent aspiration",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Airway Management",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "Suction clears obstructing vomit or secretions; position the patient to reduce aspiration risk.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -696,7 +696,7 @@
     "answer": "Visible chest rise and fall",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Airway, Respiration",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "Visible, appropriate chest rise is a practical sign of delivered ventilation, though continued clinical reassessment is necessary.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -850,7 +850,7 @@
     "answer": "100–120 compressions per minute",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "reason": "Current adult CPR targets 100–120 compressions per minute with minimal interruptions and full recoil.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -864,7 +864,7 @@
     "answer": "At least 2 inches",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response.",
+    "reason": "Adult compressions should be about 5–6 cm (2–2.4 inches) deep while avoiding excessive depth.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -878,7 +878,7 @@
     "answer": "As soon as it is available",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Airway Management",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "Apply an AED promptly once available while minimizing pauses in high-quality CPR.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -892,7 +892,7 @@
     "answer": "Ventricular fibrillation",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "reason": "Ventricular fibrillation and pulseless ventricular tachycardia are shockable; asystole is not.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -906,7 +906,7 @@
     "answer": "30:2",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Cardiac Emergencies",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "For adult CPR without an advanced airway, two rescuers use 30 compressions to 2 ventilations.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1200,7 +1200,7 @@
     "answer": "To inhibit blood clotting",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "reason": "Aspirin reduces platelet aggregation and can limit thrombus propagation; it is not primarily an analgesic for ACS.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1214,7 +1214,7 @@
     "answer": "Known allergy to aspirin",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "reason": "A known serious aspirin allergy is a contraindication; assess for other contraindications under protocol.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1242,7 +1242,7 @@
     "answer": "Prevents clot growth",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "Aspirin reduces platelet-mediated clot growth during suspected ACS but does not dissolve an established clot.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1256,7 +1256,7 @@
     "answer": "The patient has a prescription and systolic BP > 100 mmHg",
     "topic": "Trauma",
     "subtopic": "Trauma Care",
-    "reason": "Identify life threats early, control hemorrhage, support ABCs, and minimize scene delay for serious trauma.",
+    "reason": "Assistance with prescribed nitroglycerin requires protocol authorization, adequate blood pressure and screening for contraindications including PDE-5 inhibitors.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1270,7 +1270,7 @@
     "answer": "Sublingual",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response.",
+    "reason": "Sublingual medication is placed beneath the tongue for absorption through oral mucosa.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1284,7 +1284,7 @@
     "answer": "Use of erectile dysfunction medications within 48 hours",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "reason": "PDE-5 inhibitors can interact with nitrates and cause severe hypotension; exact avoidance intervals depend on the drug and protocol.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1298,7 +1298,7 @@
     "answer": "It dilates blood vessels to improve blood flow",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Respiratory",
-    "reason": "Airway and breathing threats take priority. Choose the option that best protects ventilation and oxygenation for this presentation.",
+    "reason": "Nitroglycerin is a vasodilator that lowers preload and myocardial oxygen demand; hypotension is an important risk.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1368,7 +1368,7 @@
     "answer": "Relaxes smooth muscles and opens airways",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiology",
-    "reason": "Follow ABCs and resuscitation priorities. Address immediate life threats and use protocol-directed cardiac care.",
+    "reason": "Epinephrine provides bronchodilation and vasoconstriction in anaphylaxis; intramuscular epinephrine is first-line.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1382,7 +1382,7 @@
     "answer": "When signs of severe allergic reaction are present",
     "topic": "Medical Emergencies",
     "subtopic": "Respiratory",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response.",
+    "reason": "Anaphylaxis with respiratory or circulatory compromise warrants prompt intramuscular epinephrine per protocol.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1396,7 +1396,7 @@
     "answer": "Intramuscular (auto-injector)",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
-    "reason": "Identify the reversible cause, protect the airway, treat per protocol, and reassess the patient’s response.",
+    "reason": "Auto-injectors deliver epinephrine intramuscularly, usually into the anterolateral thigh.",
     "difficulty": "clinical-judgment-draft"
   },
   {
