@@ -210,7 +210,7 @@
         div.innerHTML = `
           <div class="question-kicker"><span>Question ${idx + 1}</span><span>Paramedic practice</span></div>
           <div class="question-text">${escapeHtml(q.question)}</div>
-          ${window.EMSCodeSimClinicalArt?.artwork(q.topic) || ""}
+          ${window.EMSCodeSimClinicalArt?.artwork(q.topic,q.question) || ""}
           <div class="choices">
             ${q.choices.map((choice, i) => `
               <label class="choice" id="q${idx}a${i}">
