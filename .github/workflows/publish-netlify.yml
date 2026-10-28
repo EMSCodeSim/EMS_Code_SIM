@@ -1,0 +1,56 @@
+name: Publish EMSCodeSim to Netlify
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: emscodesim-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build, validate and publish production
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NETLIFY_SITE_ID: d7fa39ba-90b8-4212-a58e-ef300f12b695
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Check deployment credentials
+        run: |
+          if [ -z "$NETLIFY_AUTH_TOKEN" ]; then
+            echo "::error::NETLIFY_AUTH_TOKEN repository secret is missing. Create a Netlify personal access token and save it as a GitHub Actions repository secret."
+            exit 1
+          fi
+      - name: Install dependencies
+        run: npm ci
+      - name: Build and run all deployment checks
+        run: npm run build
+      - name: Check new article and sitemap in build output
+        run: |
+          test -s dist/ems-compact-privilege-to-practice-2026.html
+          grep -q 'ems-compact-privilege-to-practice-2026.html' dist/sitemap.xml
+      - name: Publish to existing Netlify production site
+        run: npx --yes netlify-cli@23 deploy --prod --dir=dist --functions=netlify-functions-dist --message="GitHub Actions production ${GITHUB_SHA}"
+      - name: Verify production article and sitemap
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5; do
+            if curl -fsSL --retry 2 https://emscodesim.com/ems-compact-privilege-to-practice-2026.html | grep -q 'Privilege to Practice' && curl -fsSL --retry 2 https://emscodesim.com/sitemap.xml | grep -q 'ems-compact-privilege-to-practice-2026.html'; then
+              echo "Production article and sitemap verified."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::Production verification failed."
+          exit 1
