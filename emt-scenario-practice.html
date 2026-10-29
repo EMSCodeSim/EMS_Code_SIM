@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Free EMT NREMT-Style Scenario Practice | EMSCodeSim</title>
+<meta name="description" content="Practice original, free EMT patient scenarios one decision at a time. Review scene safety, assessment, treatment, transport, and the reasoning behind each answer.">
+<link rel="canonical" href="https://emscodesim.com/emt-scenario-practice.html">
+<link rel="icon" href="/favicon.png" type="image/png">
+<meta name="theme-color" content="#081626">
+<link rel="stylesheet" href="/styles/career-hub.css">
+<link rel="stylesheet" href="/styles/responsive.css">
+<link rel="stylesheet" href="/styles/site-enhancements.css">
+<link rel="stylesheet" href="/styles/ems-design-system.css">
+<script defer src="/privacy-controls.js"></script>
+<script defer src="/scripts/ems-intent-nav.js"></script>
+<style>
+:root{--case-ink:#132638;--case-muted:#526779;--case-line:#d8e2eb;--case-surface:#f4f8fb;--case-blue:#087c98}
+.case-wrap{max-width:1100px;margin:0 auto;padding:28px 20px 64px;color:var(--case-ink)}
+.case-intro{max-width:790px;margin:0 auto 28px;text-align:center}
+.case-intro .eyebrow{color:var(--case-blue);font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:.78rem}
+.case-intro h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.05;margin:.55rem 0}
+.case-intro p{font-size:1.08rem;color:var(--case-muted);line-height:1.6}
+.case-note{background:#edf7fa;border:1px solid #c7e4eb;border-radius:12px;padding:14px 16px;text-align:left;font-size:.93rem}
+.case-layout{display:grid;grid-template-columns:minmax(250px,.8fr) minmax(0,1.5fr);gap:22px;align-items:start}
+.case-list,.practice-panel{background:#fff;border:1px solid var(--case-line);border-radius:16px;box-shadow:0 8px 26px #1530440d}
+.case-list{padding:18px}
+.case-list h2,.practice-panel h2{font-size:1.25rem;margin:.1rem 0 12px}
+.case-choice{display:block;width:100%;text-align:left;border:1px solid var(--case-line);background:#fff;border-radius:11px;padding:14px;margin:10px 0;color:var(--case-ink);cursor:pointer}
+.case-choice:hover,.case-choice:focus-visible{border-color:var(--case-blue);outline:3px solid #087c9822}
+.case-choice[aria-pressed=true]{border-color:var(--case-blue);background:#eff9fb}
+.case-choice strong,.case-choice span{display:block}
+.case-choice span{color:var(--case-muted);font-size:.86rem;margin-top:5px}
+.practice-panel{padding:clamp(18px,3vw,30px);min-height:460px}
+.practice-panel p{line-height:1.6}
+.case-start{display:grid;place-items:center;text-align:center;min-height:390px}
+.case-start p{max-width:580px;color:var(--case-muted)}
+.case-start button,.case-next,.case-restart{background:#086f89;color:#fff;border:0;border-radius:9px;padding:12px 18px;font-weight:800;font-size:1rem;cursor:pointer}
+.case-start button:hover,.case-next:hover,.case-restart:hover{background:#075b70}
+.case-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.case-tag{background:#edf3f7;border-radius:999px;padding:5px 10px;color:#405b6e;font-size:.78rem;font-weight:700}
+.case-progress{height:9px;background:#e7eef3;border-radius:20px;overflow:hidden;margin:14px 0 22px}
+.case-progress span{height:100%;display:block;background:#19a5a5;transition:width .2s ease}
+.case-question{font-size:1.2rem;font-weight:750;margin:12px 0 16px}
+.case-options{display:grid;gap:10px}
+.case-option{display:flex;gap:11px;align-items:flex-start;width:100%;text-align:left;background:#fff;color:var(--case-ink);border:1px solid var(--case-line);border-radius:10px;padding:13px;cursor:pointer;line-height:1.45}
+.case-option:hover:not(:disabled),.case-option:focus-visible{border-color:var(--case-blue);outline:3px solid #087c9822}
+.case-option:disabled{cursor:default}
+.case-option.correct{border-color:#13804c;background:#effaf4}
+.case-option.incorrect{border-color:#b84c42;background:#fff5f3}
+.case-option .letter{font-weight:900;color:#087c98;min-width:1.2em}
+.case-feedback{border-left:4px solid #087c98;background:var(--case-surface);padding:13px 15px;margin:16px 0;border-radius:0 9px 9px 0}
+.case-feedback strong{display:block;margin-bottom:4px}
+.case-feedback[data-result=correct]{border-color:#13804c}
+.case-feedback[data-result=incorrect]{border-color:#b84c42}
+.case-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px;color:var(--case-muted);font-size:.9rem}
+.case-footer button{margin-left:auto}
+.case-summary{background:var(--case-surface);border-radius:12px;padding:18px}
+.case-summary h3{margin-top:0}
+.case-links{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.case-links a{font-weight:700}
+.case-domain{font-size:.92rem;color:var(--case-muted)}
+@media(max-width:760px){.case-layout{grid-template-columns:1fr}.case-list{order:0}.practice-panel{order:1;min-height:360px}.case-choice{padding:12px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body class="ems-ds-page">
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header"><nav aria-label="Primary navigation" class="nav-wrap">
+<a class="brand" href="/"><picture><source srcset="/ems-logo.webp" type="image/webp"><img alt="EMSCodeSim logo" height="40" src="/ems-logo.png" width="40"></picture><span>EMSCodeSim<small>EMS Career &amp; Training Hub</small></span></a>
+<div class="main-nav ems-intent-nav"><a href="/emt-prep.html">Learn</a><a href="/ems-training-tools.html">Practice</a><a href="/patient-simulator-v2/">Simulate</a><a href="/ems-drills.html">Drills</a><a href="/nremt-cognitive-prep.html">NREMT</a></div>
+</nav></header>
+<section class="page-hero"><div class="page-hero-inner"><div class="breadcrumbs"><a href="/">Home</a> / <a href="/nremt-cognitive-prep.html">NREMT Prep</a> / Scenario Practice</div><p class="kicker">Free EMT practice · no account required</p><h1>Work the call. Choose the next move.</h1><p>Practice original EMT scenarios one decision at a time, then see why the best answer fits the patient and the moment.</p></div></section>
+<main id="main" class="case-wrap">
+<section class="case-intro" aria-label="About this practice">
+<p class="eyebrow">NREMT-style clinical decision practice</p>
+<p class="case-note"><strong>Original practice material:</strong> These cases are written for EMSCodeSim and are not National Registry exam questions. EMSCodeSim is not affiliated with or endorsed by the National Registry. Use your course materials and current local protocols for actual patient care.</p>
+</section>
+<div class="case-layout">
+<aside class="case-list" aria-labelledby="caseListTitle">
+<h2 id="caseListTitle">Choose a scenario</h2>
+<p class="case-domain">Each case includes scene information, assessment findings, decisions, and answer explanations.</p>
+<div id="caseChoices"></div>
+</aside>
+<section class="practice-panel" id="practicePanel" aria-live="polite" aria-atomic="true">
+<div class="case-start"><div><h2>Start with one case</h2><p>Select a patient scenario. You’ll get one question at a time and can review each explanation before moving on.</p><p>No score prediction or pass/fail label—just practice and feedback.</p></div></div>
+</section>
+</div>
+<nav class="case-links" aria-label="Related free practice">
+<a href="/nremt-cognitive-prep.html">NREMT study dashboard</a>
+<a href="/quiz/emt_practice_exam.html">Timed EMT practice exam</a>
+<a href="/ems-training-tools.html">All free EMS practice tools</a>
+<a href="https://www.nremt.org/Pages/Examinations/EMR-and-EMT-Certification-Examinations" target="_blank" rel="noopener noreferrer">Official EMT exam information ↗</a>
+</nav>
+</main>
+<footer class="site-footer"><div><strong>EMSCodeSim</strong><p>Free EMS career guidance and practice tools.</p><a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a></div></footer>
+<script>
+(() => {
+  "use strict";
+  const cases = [
+    {id:"breathing",title:"Severe breathing difficulty",focus:"Airway · Primary assessment · Treatment",intro:"You are sent to a public park for a 28-year-old with worsening shortness of breath. The scene is safe. The patient is sitting forward, breathing rapidly, and can speak only a few words at a time.",questions:[
+      {prompt:"Which finding should drive your immediate priority?",options:["The patient’s increased work of breathing and inability to speak full sentences","The exact time symptoms began","Whether the patient has a family history of asthma","The patient’s preferred hospital"],answer:0,why:"Work of breathing and limited speech signal significant respiratory distress. Begin the primary assessment and address airway and breathing before collecting a complete history."},
+      {prompt:"The patient is alert, has wheezing, and reports asthma with a prescribed rescue inhaler. What is the best next step?",options:["Assist with the prescribed inhaler as allowed by your protocol while supporting oxygenation and reassessing","Delay care until a complete SAMPLE history is recorded","Give the patient food and water to reduce anxiety","Have the patient walk to the ambulance"],answer:0,why:"Support breathing, use the patient’s prescribed medication when permitted by local protocol, and reassess the response. Do not let a detailed history delay care for respiratory distress."},
+      {prompt:"After treatment, the patient becomes quieter and more tired; wheezing is less audible. How should you interpret this change?",options:["The patient is definitely improving because the wheezing decreased","The patient may be tiring; reassess breathing and mental status and prepare for rapid escalation/transport","The patient no longer needs reassessment","The patient can now walk to the ambulance"],answer:1,why:"A quieter chest with increasing fatigue can mean worsening airflow, not improvement. Reassess respiratory effort, air movement, mental status, and oxygenation; escalate care and transport according to protocol."}
+    ]},
+    {id:"chest-pain",title:"Chest discomfort",focus:"Primary assessment · Treatment · Transport",intro:"A 61-year-old reports heavy central chest discomfort while doing yard work. The patient is pale and diaphoretic, alert, and breathing adequately. No trauma is reported.",questions:[
+      {prompt:"What should you do first after confirming the scene is safe?",options:["Begin a focused primary assessment, identify immediate threats, and obtain initial vital signs","Ask the patient to walk around to see if the pain changes","Spend several minutes collecting a complete medication list before assessing","Assume indigestion because the patient is alert"],answer:0,why:"Start with immediate life threats and a focused primary assessment. A complete history matters, but it follows initial stabilization and vital signs."},
+      {prompt:"The patient has no known aspirin allergy, no active bleeding, and can swallow. Which action is most appropriate?",options:["Consider aspirin according to your EMT scope and local protocol while continuing assessment and transport planning","Give another person’s nitroglycerin without checking authorization or contraindications","Wait at the scene until the discomfort completely stops","Withhold all care until an ECG is available"],answer:0,why:"For suspected cardiac chest discomfort, aspirin may be indicated when permitted and no contraindication is present. Follow local protocol, continue reassessment, and do not delay transport for symptom resolution."},
+      {prompt:"The patient says a prescribed nitroglycerin bottle is at home. What is the best response?",options:["Use someone else’s nitroglycerin because the symptoms sound cardiac","Do not delay transport to retrieve it; follow your local protocol and continue care","Tell the patient to drive home for it","Give a medication dose based only on the pain score"],answer:1,why:"Do not interrupt care or delay transport to retrieve medication. Medication assistance must follow scope, prescription requirements, contraindication checks, and local protocol."}
+    ]},
+    {id:"pediatric-seizure",title:"Child after a seizure",focus:"Primary assessment · Pediatric care · Transport",intro:"You arrive for a 5-year-old whose caregiver reports a brief seizure that stopped before you arrived. The child is drowsy, breathing spontaneously, and has no visible injury.",questions:[
+      {prompt:"What is the most appropriate immediate approach?",options:["Assess airway, breathing, and responsiveness; position to help protect the airway and have suction available","Place an object in the child’s mouth to prevent tongue biting","Restrain the child’s arms and legs","Give oral fluids while the child is drowsy"],answer:0,why:"After a seizure, assess ABCs and protect the airway while monitoring recovery. Never place objects in the mouth or restrain the patient; avoid oral intake until alert and able to swallow safely."},
+      {prompt:"The child remains drowsy but is breathing adequately. What information is most useful next?",options:["Seizure duration, recovery pattern, prior episodes, possible fever or illness, and relevant history while you continue reassessment","A detailed review of unrelated family history before checking vital signs","Whether the caregiver can drive the child to the hospital","A request that the child stand and walk"],answer:0,why:"Clarify the event and recovery while continuing vital signs and reassessment. Pediatric patients can change quickly; transport and further evaluation should follow protocol."},
+      {prompt:"The child becomes less responsive and breathing becomes irregular. What takes priority?",options:["Continue the history because the seizure has ended","Reassess and support airway and breathing immediately, request additional resources as needed, and transport promptly","Offer oral glucose while the child cannot follow commands","Wait for the caregiver to decide whether help is needed"],answer:1,why:"A change in responsiveness or breathing is an immediate threat. Return to the primary assessment, support ABCs, request resources, and expedite care."}
+    ]},
+    {id:"trauma-bleeding",title:"Fall with severe bleeding",focus:"Scene safety · Trauma · Transport",intro:"A worker fell from a ladder at a construction site. A coworker points out heavy bleeding from the patient’s lower leg. The crew confirms the ladder and nearby electrical hazard are secured.",questions:[
+      {prompt:"What is the best immediate action for the visible life-threatening bleeding?",options:["Apply firm direct pressure; use a tourniquet for severe extremity bleeding when indicated and allowed by protocol","Complete a head-to-toe exam before touching the wound","Remove any embedded object and probe the wound","Have the patient stand to assess leg strength"],answer:0,why:"Control life-threatening external bleeding promptly. Use direct pressure and, when indicated, an approved tourniquet according to training and protocol. Avoid probing or removing embedded objects."},
+      {prompt:"The patient is pale, anxious, and has a rapid weak pulse. What does this suggest?",options:["Possible shock; continue primary assessment, prevent heat loss, request resources, and plan rapid transport","A normal reaction that needs no reassessment","An isolated leg injury with no risk of deterioration","That fluids by mouth are the priority"],answer:0,why:"Pallor, anxiety, and a rapid weak pulse can indicate shock. Continue ABC assessment, manage bleeding, keep the patient warm, and prioritize rapid transport and reassessment."},
+      {prompt:"Bleeding is controlled. What should happen next?",options:["Reassess the patient and the bleeding control, perform an appropriate rapid trauma assessment, and transport without avoidable delay","Leave the tourniquet undocumented because bleeding stopped","Spend time splinting before checking for other life threats","Allow the patient to walk to the ambulance"],answer:0,why:"Reassess for ongoing bleeding and other injuries, document interventions and times as required, and avoid unnecessary scene delay for a potentially serious fall."}
+    ]},
+    {id:"low-glucose",title:"Confusion and low blood sugar",focus:"Primary assessment · Medical · Treatment",intro:"A 54-year-old with diabetes is confused and sweaty at home. The patient is awake, follows simple directions, and can swallow. A glucometer reading is low.",questions:[
+      {prompt:"What should you establish before giving anything by mouth?",options:["That the patient is alert enough to follow directions and can protect the airway and swallow","That the patient has eaten today","That a family member has signed a form","That the patient can stand without help"],answer:0,why:"Oral glucose is only appropriate when the patient can safely swallow and protect the airway, and when permitted by protocol. If that is not true, do not give oral intake."},
+      {prompt:"The patient can swallow safely and oral glucose is permitted by your protocol. What is an appropriate next step?",options:["Administer oral glucose according to protocol, then reassess mental status and glucose as directed","Give a large meal and leave once the patient feels better","Give oral glucose to every confused patient regardless of cause","Delay all assessment until after treatment"],answer:0,why:"Treat suspected hypoglycemia within your scope and protocol, then reassess the patient’s response. Continue evaluating for other causes and arrange transport as indicated."},
+      {prompt:"The patient becomes harder to arouse before treatment. What changes?",options:["Do not give oral glucose; prioritize airway and breathing support, request appropriate resources, and transport","Give oral glucose faster","Ask the patient to drink juice while lying flat","Wait to see if the patient wakes up"],answer:0,why:"A patient who cannot follow directions or swallow safely is at risk of aspiration. Withhold oral intake and manage ABCs, request resources, and transport according to protocol."}
+    ]}
+  ];
+  const choices=document.getElementById("caseChoices");
+  const panel=document.getElementById("practicePanel");
+  let active=null,step=0,score=0,answered=false;
+  const safe=(s)=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  function renderChoices(){
+    choices.innerHTML="";
+    cases.forEach(c=>{const b=document.createElement("button");b.className="case-choice";b.type="button";b.setAttribute("aria-pressed",String(active?.id===c.id));b.innerHTML="<strong>"+safe(c.title)+"</strong><span>"+safe(c.focus)+" · "+c.questions.length+" decisions</span>";b.addEventListener("click",()=>start(c));choices.appendChild(b);});
+  }
+  function start(c){
+    active=c;step=0;score=0;answered=false;renderChoices();
+    panel.innerHTML='<div class="case-meta"><span class="case-tag">'+safe(c.focus)+'</span><span class="case-tag">'+c.questions.length+' decisions</span></div><h2>'+safe(c.title)+'</h2><p>'+safe(c.intro)+'</p><p>Think through what matters now. Choose the single best next action.</p><button class="case-next" type="button" id="beginCase">Begin scenario</button>';
+    document.getElementById("beginCase").addEventListener("click",renderQuestion);
+  }
+  function renderQuestion(){
+    if(step>=active.questions.length){renderSummary();return;}
+    answered=false;
+    const q=active.questions[step],pct=Math.round(step/active.questions.length*100);
+    panel.innerHTML='<div class="case-meta"><span class="case-tag">'+safe(active.focus)+'</span><span class="case-tag">Decision '+(step+1)+' of '+active.questions.length+'</span></div><h2>'+safe(active.title)+'</h2><div class="case-progress" role="progressbar" aria-label="Scenario progress" aria-valuemin="0" aria-valuemax="'+active.questions.length+'" aria-valuenow="'+step+'"><span style="width:'+pct+'%"></span></div><p class="case-question">'+safe(q.prompt)+'</p><div class="case-options" id="options"></div><div id="feedback"></div><div class="case-footer"><span id="scoreLabel">Correct so far: '+score+' of '+step+'</span><button class="case-next" id="next" type="button" hidden>'+(step===active.questions.length-1?'See review':'Continue')+'</button></div>';
+    const opts=document.getElementById("options");
+    q.options.forEach((label,i)=>{const b=document.createElement("button");b.type="button";b.className="case-option";b.innerHTML='<span class="letter">'+String.fromCharCode(65+i)+'.</span><span>'+safe(label)+'</span>';b.addEventListener("click",()=>answer(i));opts.appendChild(b);});
+  }
+  function answer(selected){
+    if(answered)return;answered=true;
+    const q=active.questions[step],buttons=[...document.querySelectorAll(".case-option")],correct=selected===q.answer;
+    if(correct)score++;
+    buttons.forEach((b,i)=>{b.disabled=true;if(i===q.answer)b.classList.add("correct");if(i===selected&&!correct)b.classList.add("incorrect");});
+    const feedback=document.getElementById("feedback");
+    feedback.className="case-feedback";feedback.dataset.result=correct?"correct":"incorrect";
+    feedback.innerHTML="<strong>"+(correct?"That’s the best answer.":"Review this decision.")+"</strong>"+safe(q.why);
+    document.getElementById("scoreLabel").textContent="Correct so far: "+score+" of "+(step+1);
+    const next=document.getElementById("next");next.hidden=false;next.addEventListener("click",()=>{step++;renderQuestion();});
+  }
+  function renderSummary(){
+    const pct=Math.round(score/active.questions.length*100);
+    panel.innerHTML='<div class="case-meta"><span class="case-tag">Scenario complete</span><span class="case-tag">'+safe(active.focus)+'</span></div><h2>'+safe(active.title)+' · Review</h2><div class="case-summary"><h3>'+score+' of '+active.questions.length+' decisions correct</h3><p>Use the explanations as a study prompt. This practice score is not an exam score or a pass/fail prediction.</p><div class="case-progress" role="progressbar" aria-label="Correct decisions" aria-valuemin="0" aria-valuemax="'+active.questions.length+'" aria-valuenow="'+score+'"><span style="width:'+pct+'%"></span></div></div><h3>Key takeaways</h3><ol>'+active.questions.map(q=>'<li>'+safe(q.why)+'</li>').join("")+'</ol><button class="case-restart" id="again" type="button">Repeat this scenario</button>';
+    document.getElementById("again").addEventListener("click",()=>start(active));
+    panel.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  renderChoices();
+})();
+</script>
+</body>
+</html>
