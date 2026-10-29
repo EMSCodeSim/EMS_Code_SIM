@@ -47,7 +47,7 @@ must(mode.includes("params.get('mode') === 'bootcamp'") && mode.includes('bootca
 must(mode.includes('Back to ${bootcamp ? \'BLS Boot Camp\''), 'Boot Camp back-bar label is missing');
 
 must(netlify.includes('from = "/bls-bootcamp"') && netlify.includes('to = "/skills-session"'), '/bls-bootcamp alias is missing');
-must(home.includes('<span>BLS Boot Camp</span><strong>Assessment, vitals, full call, narrative →</strong>'), 'Homepage Boot Camp card copy is missing');
+must(home.includes('href="/skills-session"') && home.includes('<strong>BLS Boot Camp</strong><small>Assessment sections, vitals, full calls, and narrative</small>'), 'Homepage Boot Camp navigation and link are missing');
 must(home.includes('<strong>BLS Boot Camp</strong><small>Assessment sections, vitals, full calls, and narrative</small>'), 'Homepage desktop navigation label is missing');
 must(career.includes("new Option('BLS Boot Camp'"), 'Shared mobile navigation label is missing');
 
