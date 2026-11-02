@@ -183,7 +183,13 @@
     if(step>=active.questions.length){renderSummary();return;}
     answered=false;
     const q=active.questions[step],pct=Math.round(step/active.questions.length*100);
-    panel.innerHTML='<div class="case-meta"><span class="case-tag">'+safe(active.focus)+'</span><span class="case-tag">Decision '+(step+1)+' of '+active.questions.length+'</span></div><h2>'+safe(active.title)+'</h2><div class="case-progress" role="progressbar" aria-label="Scenario progress" aria-valuemin="0" aria-valuemax="'+active.questions.length+'" aria-valuenow="'+step+'"><span style="width:'+pct+'%"></span></div><p class="case-question">'+safe(q.prompt)+'</p><div class="case-options" id="options"></div><div id="feedback"></div><div class="case-footer"><span id="scoreLabel">Correct so far: '+score+' of '+step+'</span><button class="case-next" id="next" type="button" hidden>'+(step===active.questions.length-1?'See review':'Continue')+'</button></div>';
+    const breathingFindings=[
+      {phase:"Initial assessment",details:"Patient alert, seated upright, speaking in short phrases; increased work of breathing and audible wheezing. Prioritize airway and breathing assessment."},
+      {phase:"Treatment decision",details:"Patient remains alert with wheezing and reports a prescribed rescue inhaler. Support breathing and follow local protocols for medication assistance."},
+      {phase:"Reassessment",details:"Patient is becoming fatigued, speaking less, and has reduced audible wheezing. Less wheezing does not necessarily mean improvement; reassess air movement, respiratory effort, and mental status."}
+    ];
+    const finding=active.id==="breathing"?breathingFindings[step]:null;
+    panel.innerHTML='<div class="case-meta"><span class="case-tag">'+safe(active.focus)+'</span><span class="case-tag">Decision '+(step+1)+' of '+active.questions.length+'</span></div><h2>'+safe(active.title)+'</h2><div class="case-progress" role="progressbar" aria-label="Scenario progress" aria-valuemin="0" aria-valuemax="'+active.questions.length+'" aria-valuenow="'+step+'"><span style="width:'+pct+'%"></span></div>'+(finding?'<section class="case-summary" aria-label="Patient assessment update"><h3>'+safe(finding.phase)+'</h3><p>'+safe(finding.details)+'</p></section>':'')+'<p class="case-question">'+safe(q.prompt)+'</p><div class="case-options" id="options"></div><div id="feedback"></div><div class="case-footer"><span id="scoreLabel">Correct so far: '+score+' of '+step+'</span><button class="case-next" id="next" type="button" hidden>'+(step===active.questions.length-1?'See review':'Continue')+'</button></div>';
     const opts=document.getElementById("options");
     q.options.forEach((label,i)=>{const b=document.createElement("button");b.type="button";b.className="case-option";b.innerHTML='<span class="letter">'+String.fromCharCode(65+i)+'.</span><span>'+safe(label)+'</span>';b.addEventListener("click",()=>answer(i));opts.appendChild(b);});
   }
