@@ -138,6 +138,22 @@
   function start(c){
     active=c;step=0;score=0;answered=false;restartButton.hidden=false;renderChoices();
     panel.innerHTML='<div class="case-meta"><span class="case-tag">'+safe(c.focus)+'</span><span class="case-tag">'+c.questions.length+' decisions</span></div><h2>'+safe(c.title)+'</h2><p>'+safe(c.intro)+'</p><p>Think through what matters now. Choose the single best next action.</p><button class="case-next" type="button" id="beginCase">Begin scenario</button>';
+    if(c.id==="breathing"){
+      const interview=document.createElement("section");
+      interview.className="case-summary";
+      interview.setAttribute("aria-label","Patient interview practice");
+      interview.innerHTML='<h3>Patient interview: identify the finding</h3><p><strong>Patient:</strong> “My breathing started getting worse about an hour ago.”</p><p>Which assessment history element did the patient just provide?</p><div class="case-options" id="historyOptions"></div><p id="historyFeedback" role="status" aria-live="polite"></p>';
+      panel.insertBefore(interview,document.getElementById("beginCase"));
+      const responses=[["OPQRST — Onset",true],["SAMPLE — Allergies",false],["SAMPLE — Last oral intake",false]];
+      responses.forEach(([label,correct])=>{
+        const button=document.createElement("button");button.type="button";button.className="case-option";button.textContent=label;
+        button.addEventListener("click",()=>{
+          interview.querySelectorAll("button").forEach(b=>{b.disabled=true;});
+          document.getElementById("historyFeedback").textContent=correct?"Correct. The patient described when the symptom began (onset).":"This statement gives the time symptoms began, which is OPQRST onset.";
+        });
+        document.getElementById("historyOptions").appendChild(button);
+      });
+    }
     document.getElementById("beginCase").addEventListener("click",renderQuestion);
     panel.scrollIntoView({behavior:"smooth",block:"start"});
   }
