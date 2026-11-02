@@ -141,18 +141,40 @@
     if(c.id==="breathing"){
       const interview=document.createElement("section");
       interview.className="case-summary";
-      interview.setAttribute("aria-label","Patient interview practice");
-      interview.innerHTML='<h3>Patient interview: identify the finding</h3><p><strong>Patient:</strong> “My breathing started getting worse about an hour ago.”</p><p>Which assessment history element did the patient just provide?</p><div class="case-options" id="historyOptions"></div><p id="historyFeedback" role="status" aria-live="polite"></p>';
-      panel.insertBefore(interview,document.getElementById("beginCase"));
-      const responses=[["OPQRST — Onset",true],["SAMPLE — Allergies",false],["SAMPLE — Last oral intake",false]];
-      responses.forEach(([label,correct])=>{
-        const button=document.createElement("button");button.type="button";button.className="case-option";button.textContent=label;
-        button.addEventListener("click",()=>{
-          interview.querySelectorAll("button").forEach(b=>{b.disabled=true;});
-          document.getElementById("historyFeedback").textContent=correct?"Correct. The patient described when the symptom began (onset).":"This statement gives the time symptoms began, which is OPQRST onset.";
+      interview.setAttribute("aria-label","Patient history practice");
+      const history=[
+        {patient:"My breathing started getting worse about an hour ago.",question:"Which history element did the patient provide?",options:["OPQRST — Onset","SAMPLE — Allergies","SAMPLE — Last oral intake"],correct:0,why:"The patient described when the breathing difficulty began."},
+        {patient:"I have asthma, and I use a prescribed rescue inhaler.",question:"Which SAMPLE element identifies the inhaler?",options:["SAMPLE — Medications","OPQRST — Radiation","SAMPLE — Last oral intake"],correct:0,why:"A prescribed rescue inhaler belongs under Medications. Asthma is also pertinent medical history."},
+        {patient:"It feels tight in my chest, and moving around makes it worse.",question:"Which OPQRST element describes what worsens the symptom?",options:["OPQRST — Provocation","SAMPLE — Allergies","OPQRST — Time"],correct:0,why:"Movement worsening symptoms is a provoking factor. Chest tightness also helps describe quality."},
+        {patient:"I ate lunch about two hours ago.",question:"Which SAMPLE element did you just obtain?",options:["SAMPLE — Signs and symptoms","SAMPLE — Last oral intake","OPQRST — Severity"],correct:1,why:"The patient's most recent meal is Last oral intake."}
+      ];
+      let historyStep=0;
+      const begin=document.getElementById("beginCase");
+      begin.disabled=true;
+      begin.textContent="Complete patient interview to continue";
+      function renderHistory(){
+        const item=history[historyStep];
+        interview.innerHTML='<h3>Patient interview · '+(historyStep+1)+' of '+history.length+'</h3><p><strong>Patient:</strong> '+safe(item.patient)+'</p><p>'+safe(item.question)+'</p><div class="case-options" id="historyOptions"></div><p id="historyFeedback" role="status" aria-live="polite"></p>';
+        item.options.forEach((label,index)=>{
+          const button=document.createElement("button");button.type="button";button.className="case-option";button.textContent=label;
+          button.addEventListener("click",()=>{
+            interview.querySelectorAll("button").forEach(b=>{b.disabled=true;});
+            const correct=index===item.correct;
+            document.getElementById("historyFeedback").textContent=(correct?"Correct. ":"Review: ")+item.why;
+            const next=document.createElement("button");next.type="button";next.className="case-next";
+            next.textContent=historyStep===history.length-1?"Continue to clinical decisions":"Next patient statement";
+            next.addEventListener("click",()=>{
+              historyStep++;
+              if(historyStep<history.length){renderHistory();}
+              else{interview.innerHTML='<h3>History complete</h3><p>Continue to assessment and treatment decisions. In real care, address urgent airway and breathing needs without delaying for a complete history.</p>';begin.disabled=false;begin.textContent="Begin clinical decisions";begin.focus();}
+            });
+            interview.appendChild(next);
+          });
+          document.getElementById("historyOptions").appendChild(button);
         });
-        document.getElementById("historyOptions").appendChild(button);
-      });
+      }
+      panel.insertBefore(interview,begin);
+      renderHistory();
     }
     document.getElementById("beginCase").addEventListener("click",renderQuestion);
     panel.scrollIntoView({behavior:"smooth",block:"start"});
