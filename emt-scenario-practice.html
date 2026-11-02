@@ -60,7 +60,7 @@
 .case-links{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
 .case-links a{font-weight:700}
 .case-domain{font-size:.92rem;color:var(--case-muted)}
-@media(max-width:760px){.case-layout{grid-template-columns:1fr}.case-list{order:0}.practice-panel{order:1;min-height:360px}.case-choice{padding:12px}}
+.case-activity-nav{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0}.case-activity-nav a,.case-activity-nav button{display:inline-block;padding:11px 14px;border:1px solid var(--case-line);border-radius:9px;background:#fff;color:var(--case-ink);font:inherit;font-weight:700;text-decoration:none;cursor:pointer}.case-activity-nav button:focus-visible,.case-activity-nav a:focus-visible{outline:3px solid var(--case-blue);outline-offset:2px}@media(max-width:760px){.case-layout{grid-template-columns:1fr}.case-list{order:0}.practice-panel{order:1;min-height:360px}.case-choice{padding:12px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
@@ -72,7 +72,6 @@
 </nav></header>
 <section class="page-hero"><div class="page-hero-inner"><div class="breadcrumbs"><a href="/">Home</a> / <a href="/nremt-cognitive-prep.html">NREMT Prep</a> / Scenario Practice</div><p class="kicker">Free EMT practice · no account required</p><h1>Work the call. Choose the next move.</h1><p>Practice original EMT scenarios one decision at a time, then see why the best answer fits the patient and the moment.</p></div></section>
 <main id="main" class="case-wrap">
-<nav aria-label="Practice navigation" style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:18px"><a href="/ems-training-tools.html">← All training tools</a><a href="#caseListTitle">Choose another scenario</a></nav>
 <section class="case-intro" aria-label="About this practice">
 <p class="eyebrow">NREMT-style clinical decision practice</p>
 <p class="case-note"><strong>Original practice material:</strong> These cases are written for EMSCodeSim and are not National Registry exam questions. EMSCodeSim is not affiliated with or endorsed by the National Registry. Use your course materials and current local protocols for actual patient care.</p>
@@ -83,9 +82,9 @@
 <p class="case-domain">Each case includes scene information, assessment findings, decisions, and answer explanations.</p>
 <div id="caseChoices"></div>
 </aside>
-<section class="practice-panel" id="practicePanel" aria-live="polite" aria-atomic="true">
+<div><nav class="case-activity-nav" aria-label="Scenario controls"><a href="/ems-training-tools.html">← Training library</a><button type="button" id="changeScenario">Choose another case</button><button type="button" id="restartScenario" hidden>Restart case</button></nav><section class="practice-panel" id="practicePanel" aria-live="polite" aria-atomic="true">
 <div class="case-start"><div><h2>Start with one case</h2><p>Select a patient scenario. You’ll get one question at a time and can review each explanation before moving on.</p><p>No score prediction or pass/fail label—just practice and feedback.</p><p><strong>How it works:</strong> 1. Choose a case on this page. 2. Read the dispatch and patient findings. 3. Select a decision. 4. Review the explanation and continue through the call.</p></div></div>
-</section>
+</section></div>
 </div>
 <nav class="case-links" aria-label="Related free practice">
 <a href="/nremt-cognitive-prep.html">NREMT study dashboard</a>
@@ -133,16 +132,64 @@
     choices.innerHTML="";
     cases.forEach(c=>{const b=document.createElement("button");b.className="case-choice";b.type="button";b.setAttribute("aria-pressed",String(active?.id===c.id));b.innerHTML="<strong>"+safe(c.title)+"</strong><span>"+safe(c.focus)+" · "+c.questions.length+" decisions</span>";b.addEventListener("click",()=>start(c));choices.appendChild(b);});
   }
+  document.getElementById("changeScenario").addEventListener("click",()=>{document.getElementById("caseListTitle").scrollIntoView({behavior:"smooth",block:"start"});choices.querySelector("button")?.focus({preventScroll:true});});
+  const restartButton=document.getElementById("restartScenario");
+  restartButton.addEventListener("click",()=>{if(active&&window.confirm("Restart this scenario? Your current answers will be cleared."))start(active);});
   function start(c){
-    active=c;step=0;score=0;answered=false;renderChoices();
+    active=c;step=0;score=0;answered=false;restartButton.hidden=false;renderChoices();
     panel.innerHTML='<div class="case-meta"><span class="case-tag">'+safe(c.focus)+'</span><span class="case-tag">'+c.questions.length+' decisions</span></div><h2>'+safe(c.title)+'</h2><p>'+safe(c.intro)+'</p><p>Think through what matters now. Choose the single best next action.</p><button class="case-next" type="button" id="beginCase">Begin scenario</button>';
+    if(c.id==="breathing"){
+      const interview=document.createElement("section");
+      interview.className="case-summary";
+      interview.setAttribute("aria-label","Patient history practice");
+      const history=[
+        {patient:"My breathing started getting worse about an hour ago.",question:"Which history element did the patient provide?",options:["OPQRST — Onset","SAMPLE — Allergies","SAMPLE — Last oral intake"],correct:0,why:"The patient described when the breathing difficulty began."},
+        {patient:"I have asthma, and I use a prescribed rescue inhaler.",question:"Which SAMPLE element identifies the inhaler?",options:["SAMPLE — Medications","OPQRST — Radiation","SAMPLE — Last oral intake"],correct:0,why:"A prescribed rescue inhaler belongs under Medications. Asthma is also pertinent medical history."},
+        {patient:"It feels tight in my chest, and moving around makes it worse.",question:"Which OPQRST element describes what worsens the symptom?",options:["OPQRST — Provocation","SAMPLE — Allergies","OPQRST — Time"],correct:0,why:"Movement worsening symptoms is a provoking factor. Chest tightness also helps describe quality."},
+        {patient:"I ate lunch about two hours ago.",question:"Which SAMPLE element did you just obtain?",options:["SAMPLE — Signs and symptoms","SAMPLE — Last oral intake","OPQRST — Severity"],correct:1,why:"The patient's most recent meal is Last oral intake."}
+      ];
+      let historyStep=0;
+      const begin=document.getElementById("beginCase");
+      begin.disabled=true;
+      begin.textContent="Complete patient interview to continue";
+      function renderHistory(){
+        const item=history[historyStep];
+        interview.innerHTML='<h3>Patient interview · '+(historyStep+1)+' of '+history.length+'</h3><p><strong>Patient:</strong> '+safe(item.patient)+'</p><p>'+safe(item.question)+'</p><div class="case-options" id="historyOptions"></div><p id="historyFeedback" role="status" aria-live="polite"></p>';
+        item.options.forEach((label,index)=>{
+          const button=document.createElement("button");button.type="button";button.className="case-option";button.textContent=label;
+          button.addEventListener("click",()=>{
+            interview.querySelectorAll("button").forEach(b=>{b.disabled=true;});
+            const correct=index===item.correct;
+            document.getElementById("historyFeedback").textContent=(correct?"Correct. ":"Review: ")+item.why;
+            const next=document.createElement("button");next.type="button";next.className="case-next";
+            next.textContent=historyStep===history.length-1?"Continue to clinical decisions":"Next patient statement";
+            next.addEventListener("click",()=>{
+              historyStep++;
+              if(historyStep<history.length){renderHistory();}
+              else{interview.innerHTML='<h3>History complete</h3><p>Continue to assessment and treatment decisions. In real care, address urgent airway and breathing needs without delaying for a complete history.</p>';begin.disabled=false;begin.textContent="Begin clinical decisions";begin.focus();}
+            });
+            interview.appendChild(next);
+          });
+          document.getElementById("historyOptions").appendChild(button);
+        });
+      }
+      panel.insertBefore(interview,begin);
+      renderHistory();
+    }
     document.getElementById("beginCase").addEventListener("click",renderQuestion);
+    panel.scrollIntoView({behavior:"smooth",block:"start"});
   }
   function renderQuestion(){
     if(step>=active.questions.length){renderSummary();return;}
     answered=false;
     const q=active.questions[step],pct=Math.round(step/active.questions.length*100);
-    panel.innerHTML='<div class="case-meta"><span class="case-tag">'+safe(active.focus)+'</span><span class="case-tag">Decision '+(step+1)+' of '+active.questions.length+'</span></div><h2>'+safe(active.title)+'</h2><div class="case-progress" role="progressbar" aria-label="Scenario progress" aria-valuemin="0" aria-valuemax="'+active.questions.length+'" aria-valuenow="'+step+'"><span style="width:'+pct+'%"></span></div><p class="case-question">'+safe(q.prompt)+'</p><div class="case-options" id="options"></div><div id="feedback"></div><div class="case-footer"><span id="scoreLabel">Correct so far: '+score+' of '+step+'</span><button class="case-next" id="next" type="button" hidden>'+(step===active.questions.length-1?'See review':'Continue')+'</button></div>';
+    const breathingFindings=[
+      {phase:"Initial assessment",details:"Patient alert, seated upright, speaking in short phrases; increased work of breathing and audible wheezing. Prioritize airway and breathing assessment."},
+      {phase:"Treatment decision",details:"Patient remains alert with wheezing and reports a prescribed rescue inhaler. Support breathing and follow local protocols for medication assistance."},
+      {phase:"Reassessment",details:"Patient is becoming fatigued, speaking less, and has reduced audible wheezing. Less wheezing does not necessarily mean improvement; reassess air movement, respiratory effort, and mental status."}
+    ];
+    const finding=active.id==="breathing"?breathingFindings[step]:null;
+    panel.innerHTML='<div class="case-meta"><span class="case-tag">'+safe(active.focus)+'</span><span class="case-tag">Decision '+(step+1)+' of '+active.questions.length+'</span></div><h2>'+safe(active.title)+'</h2><div class="case-progress" role="progressbar" aria-label="Scenario progress" aria-valuemin="0" aria-valuemax="'+active.questions.length+'" aria-valuenow="'+step+'"><span style="width:'+pct+'%"></span></div>'+(finding?'<section class="case-summary" aria-label="Patient assessment update"><h3>'+safe(finding.phase)+'</h3><p>'+safe(finding.details)+'</p></section>':'')+'<p class="case-question">'+safe(q.prompt)+'</p><div class="case-options" id="options"></div><div id="feedback"></div><div class="case-footer"><span id="scoreLabel">Correct so far: '+score+' of '+step+'</span><button class="case-next" id="next" type="button" hidden>'+(step===active.questions.length-1?'See review':'Continue')+'</button></div>';
     const opts=document.getElementById("options");
     q.options.forEach((label,i)=>{const b=document.createElement("button");b.type="button";b.className="case-option";b.innerHTML='<span class="letter">'+String.fromCharCode(65+i)+'.</span><span>'+safe(label)+'</span>';b.addEventListener("click",()=>answer(i));opts.appendChild(b);});
   }
@@ -154,12 +201,25 @@
     const feedback=document.getElementById("feedback");
     feedback.className="case-feedback";feedback.dataset.result=correct?"correct":"incorrect";
     feedback.innerHTML="<strong>"+(correct?"That’s the best answer.":"Review this decision.")+"</strong>"+safe(q.why);
+    if(active.id==="breathing"){
+      const consequences=[
+        {best:"You immediately focus on respiratory effort and airway status. The patient remains in significant distress and needs ongoing support.",other:"While you gather lower-priority details, the patient continues struggling to speak. The immediate breathing problem still needs attention."},
+        {best:"You assist with the prescribed medication only as permitted by protocol, support oxygenation, and prepare to reassess. The patient still requires close monitoring.",other:"The patient's breathing difficulty remains unaddressed while care is delayed or an inappropriate action is attempted. Return to airway and breathing priorities."},
+        {best:"You recognize possible respiratory fatigue and prepare to escalate care and transport while reassessing ventilation and mental status.",other:"The quieter wheezing is misleading. The patient becomes less responsive to questions, prompting urgent reassessment and escalation."}
+      ];
+      const consequence=consequences[step];
+      const outcome=document.createElement("p");
+      outcome.className="case-summary";
+      outcome.setAttribute("role","status");
+      outcome.innerHTML="<strong>Patient response:</strong> "+safe(correct?consequence.best:consequence.other);
+      feedback.appendChild(outcome);
+    }
     document.getElementById("scoreLabel").textContent="Correct so far: "+score+" of "+(step+1);
-    const next=document.getElementById("next");next.hidden=false;next.addEventListener("click",()=>{step++;renderQuestion();});
+    const next=document.getElementById("next");next.hidden=false;next.addEventListener("click",()=>{step++;renderQuestion();panel.scrollIntoView({behavior:"smooth",block:"start"});});
   }
   function renderSummary(){
     const pct=Math.round(score/active.questions.length*100);
-    panel.innerHTML='<div class="case-meta"><span class="case-tag">Scenario complete</span><span class="case-tag">'+safe(active.focus)+'</span></div><h2>'+safe(active.title)+' · Review</h2><div class="case-summary"><h3>'+score+' of '+active.questions.length+' decisions correct</h3><p>Use the explanations as a study prompt. This practice score is not an exam score or a pass/fail prediction.</p><div class="case-progress" role="progressbar" aria-label="Correct decisions" aria-valuemin="0" aria-valuemax="'+active.questions.length+'" aria-valuenow="'+score+'"><span style="width:'+pct+'%"></span></div></div><h3>Key takeaways</h3><ol>'+active.questions.map(q=>'<li>'+safe(q.why)+'</li>').join("")+'</ol><button class="case-restart" id="again" type="button">Repeat this scenario</button>';
+    panel.innerHTML='<div class="case-meta"><span class="case-tag">Scenario complete</span><span class="case-tag">'+safe(active.focus)+'</span></div><h2>'+safe(active.title)+' · Review</h2><div class="case-summary"><h3>'+score+' of '+active.questions.length+' decisions correct</h3><p>Use the explanations as a study prompt. This practice score is not an exam score or a pass/fail prediction.</p><div class="case-progress" role="progressbar" aria-label="Correct decisions" aria-valuemin="0" aria-valuemax="'+active.questions.length+'" aria-valuenow="'+score+'"><span style="width:'+pct+'%"></span></div></div><h3>Key takeaways</h3><ol>'+active.questions.map(q=>'<li>'+safe(q.why)+'</li>').join("")+'</ol><button class="case-restart" id="again" type="button">Repeat this scenario</button><p><a href="/ems-training-tools.html">Return to all training tools</a></p>';
     document.getElementById("again").addEventListener("click",()=>start(active));
     panel.scrollIntoView({behavior:"smooth",block:"start"});
   }
