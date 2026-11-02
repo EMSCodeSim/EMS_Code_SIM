@@ -60,7 +60,7 @@
 .case-links{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
 .case-links a{font-weight:700}
 .case-domain{font-size:.92rem;color:var(--case-muted)}
-@media(max-width:760px){.case-layout{grid-template-columns:1fr}.case-list{order:0}.practice-panel{order:1;min-height:360px}.case-choice{padding:12px}}
+.case-activity-nav{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0}.case-activity-nav a,.case-activity-nav button{display:inline-block;padding:11px 14px;border:1px solid var(--case-line);border-radius:9px;background:#fff;color:var(--case-ink);font:inherit;font-weight:700;text-decoration:none;cursor:pointer}.case-activity-nav button:focus-visible,.case-activity-nav a:focus-visible{outline:3px solid var(--case-blue);outline-offset:2px}@media(max-width:760px){.case-layout{grid-template-columns:1fr}.case-list{order:0}.practice-panel{order:1;min-height:360px}.case-choice{padding:12px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
@@ -83,9 +83,9 @@
 <p class="case-domain">Each case includes scene information, assessment findings, decisions, and answer explanations.</p>
 <div id="caseChoices"></div>
 </aside>
-<section class="practice-panel" id="practicePanel" aria-live="polite" aria-atomic="true">
+<div><nav class="case-activity-nav" aria-label="Scenario controls"><a href="/ems-training-tools.html">← Training library</a><button type="button" id="changeScenario">Choose another case</button></nav><section class="practice-panel" id="practicePanel" aria-live="polite" aria-atomic="true">
 <div class="case-start"><div><h2>Start with one case</h2><p>Select a patient scenario. You’ll get one question at a time and can review each explanation before moving on.</p><p>No score prediction or pass/fail label—just practice and feedback.</p><p><strong>How it works:</strong> 1. Choose a case on this page. 2. Read the dispatch and patient findings. 3. Select a decision. 4. Review the explanation and continue through the call.</p></div></div>
-</section>
+</section></div>
 </div>
 <nav class="case-links" aria-label="Related free practice">
 <a href="/nremt-cognitive-prep.html">NREMT study dashboard</a>
@@ -133,10 +133,12 @@
     choices.innerHTML="";
     cases.forEach(c=>{const b=document.createElement("button");b.className="case-choice";b.type="button";b.setAttribute("aria-pressed",String(active?.id===c.id));b.innerHTML="<strong>"+safe(c.title)+"</strong><span>"+safe(c.focus)+" · "+c.questions.length+" decisions</span>";b.addEventListener("click",()=>start(c));choices.appendChild(b);});
   }
+  document.getElementById("changeScenario").addEventListener("click",()=>{document.getElementById("caseListTitle").scrollIntoView({behavior:"smooth",block:"start"});choices.querySelector("button")?.focus({preventScroll:true});});
   function start(c){
     active=c;step=0;score=0;answered=false;renderChoices();
     panel.innerHTML='<div class="case-meta"><span class="case-tag">'+safe(c.focus)+'</span><span class="case-tag">'+c.questions.length+' decisions</span></div><h2>'+safe(c.title)+'</h2><p>'+safe(c.intro)+'</p><p>Think through what matters now. Choose the single best next action.</p><button class="case-next" type="button" id="beginCase">Begin scenario</button>';
     document.getElementById("beginCase").addEventListener("click",renderQuestion);
+    panel.scrollIntoView({behavior:"smooth",block:"start"});
   }
   function renderQuestion(){
     if(step>=active.questions.length){renderSummary();return;}
