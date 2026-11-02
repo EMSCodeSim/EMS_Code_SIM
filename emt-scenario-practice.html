@@ -201,6 +201,19 @@
     const feedback=document.getElementById("feedback");
     feedback.className="case-feedback";feedback.dataset.result=correct?"correct":"incorrect";
     feedback.innerHTML="<strong>"+(correct?"That’s the best answer.":"Review this decision.")+"</strong>"+safe(q.why);
+    if(active.id==="breathing"){
+      const consequences=[
+        {best:"You immediately focus on respiratory effort and airway status. The patient remains in significant distress and needs ongoing support.",other:"While you gather lower-priority details, the patient continues struggling to speak. The immediate breathing problem still needs attention."},
+        {best:"You assist with the prescribed medication only as permitted by protocol, support oxygenation, and prepare to reassess. The patient still requires close monitoring.",other:"The patient's breathing difficulty remains unaddressed while care is delayed or an inappropriate action is attempted. Return to airway and breathing priorities."},
+        {best:"You recognize possible respiratory fatigue and prepare to escalate care and transport while reassessing ventilation and mental status.",other:"The quieter wheezing is misleading. The patient becomes less responsive to questions, prompting urgent reassessment and escalation."}
+      ];
+      const consequence=consequences[step];
+      const outcome=document.createElement("p");
+      outcome.className="case-summary";
+      outcome.setAttribute("role","status");
+      outcome.innerHTML="<strong>Patient response:</strong> "+safe(correct?consequence.best:consequence.other);
+      feedback.appendChild(outcome);
+    }
     document.getElementById("scoreLabel").textContent="Correct so far: "+score+" of "+(step+1);
     const next=document.getElementById("next");next.hidden=false;next.addEventListener("click",()=>{step++;renderQuestion();panel.scrollIntoView({behavior:"smooth",block:"start"});});
   }
