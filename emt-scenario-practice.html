@@ -126,7 +126,7 @@
   ];
   const choices=document.getElementById("caseChoices");
   const panel=document.getElementById("practicePanel");
-  let active=null,step=0,score=0,answered=false,respiratoryDelays=0;
+  let active=null,step=0,score=0,answered=false,respiratoryDelays=0,caseDelays=0;
   const safe=(s)=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   function renderChoices(){
     choices.innerHTML="";
@@ -136,7 +136,7 @@
   const restartButton=document.getElementById("restartScenario");
   restartButton.addEventListener("click",()=>{if(active&&window.confirm("Restart this scenario? Your current answers will be cleared."))start(active);});
   function start(c){
-    active=c;step=0;score=0;answered=false;respiratoryDelays=0;restartButton.hidden=false;renderChoices();
+    active=c;step=0;score=0;answered=false;respiratoryDelays=0;caseDelays=0;restartButton.hidden=false;renderChoices();
     panel.innerHTML='<div class="case-meta"><span class="case-tag">'+safe(c.focus)+'</span><span class="case-tag">'+c.questions.length+' decisions</span></div><h2>'+safe(c.title)+'</h2><p>'+safe(c.intro)+'</p><p>Think through what matters now. Choose the single best next action.</p><button class="case-next" type="button" id="beginCase">Begin scenario</button>';
     if(c.id==="breathing"){
       const interview=document.createElement("section");
@@ -192,7 +192,14 @@
       {phase:"Treatment decision",details:"Patient remains alert with wheezing and reports a prescribed rescue inhaler. Support breathing and follow local protocols for medication assistance."},
       {phase:"Reassessment",details:"Patient is becoming fatigued, speaking less, and has reduced audible wheezing. Less wheezing does not necessarily mean improvement; reassess air movement, respiratory effort, and mental status."}
     ];
-    const finding=active.id==="breathing"?{...breathingFindings[step]}:null;
+    const scenarioChanges={
+      "chest-pain":"The patient reports continuing chest discomfort and appears more anxious. Reassess ABCs, vital signs, and transport priorities.",
+      "pediatric-seizure":"The child remains drowsy and is less responsive to the caregiver. Reassess airway, breathing, and responsiveness promptly.",
+      "trauma-bleeding":"The patient appears increasingly pale and weak. Recheck hemorrhage control, perfusion, and other life threats.",
+      "low-glucose":"The patient is becoming less responsive. Reassess airway protection and swallowing ability; do not give oral intake unless safe."
+    };
+    const delayedFinding=step>0&&caseDelays>0?scenarioChanges[active.id]:null;
+    const finding=active.id==="breathing"?{...breathingFindings[step]}:delayedFinding?{phase:"Reassessment after delayed care",details:delayedFinding}:null;
     if(finding&&step>0&&respiratoryDelays>0){
       finding.details=step===1
         ?"Following delayed initial assessment, the patient is more anxious, speaking only a few words at a time, and working harder to breathe. Prioritize breathing support and reassess promptly."
@@ -206,6 +213,7 @@
     if(answered)return;answered=true;
     const q=active.questions[step],buttons=[...document.querySelectorAll(".case-option")],correct=selected===q.answer;
     if(correct)score++;
+    if(!correct)caseDelays++;
     if(active.id==="breathing"&&!correct)respiratoryDelays++;
     buttons.forEach((b,i)=>{b.disabled=true;if(i===q.answer)b.classList.add("correct");if(i===selected&&!correct)b.classList.add("incorrect");});
     const feedback=document.getElementById("feedback");
@@ -224,6 +232,13 @@
       outcome.className="case-summary";
       outcome.setAttribute("role","status");
       outcome.innerHTML="<strong>Patient response:</strong> "+safe(response+clinicalNote);
+      feedback.appendChild(outcome);
+    }
+    if(active.id!=="breathing"){
+      const outcome=document.createElement("p");
+      outcome.className="case-summary";
+      outcome.setAttribute("role","status");
+      outcome.innerHTML="<strong>Patient response:</strong> "+safe(correct?"You address the current priority. Continue monitoring and reassessing; the patient may still deteriorate.":"The priority remains unaddressed. The patient needs prompt reassessment and appropriate care; your next findings will reflect the delay.");
       feedback.appendChild(outcome);
     }
     document.getElementById("scoreLabel").textContent="Correct so far: "+score+" of "+(step+1);
