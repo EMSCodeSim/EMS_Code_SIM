@@ -150,8 +150,12 @@
       ];
       let historyStep=0;
       const begin=document.getElementById("beginCase");
-      begin.disabled=true;
-      begin.textContent="Complete patient interview to continue";
+      begin.disabled=false;
+      begin.textContent="Prioritize immediate assessment and care";
+      const urgency=document.createElement("p");
+      urgency.className="case-summary";
+      urgency.textContent="The patient is in respiratory distress. You can start immediate assessment and treatment decisions now, or practice the optional history interview first. Never delay urgent airway or breathing care to finish history questions.";
+      panel.insertBefore(urgency,interview);
       function renderHistory(){
         const item=history[historyStep];
         interview.innerHTML='<h3>Patient interview · '+(historyStep+1)+' of '+history.length+'</h3><p><strong>Patient:</strong> '+safe(item.patient)+'</p><p>'+safe(item.question)+'</p><div class="case-options" id="historyOptions"></div><p id="historyFeedback" role="status" aria-live="polite"></p>';
@@ -166,7 +170,7 @@
             next.addEventListener("click",()=>{
               historyStep++;
               if(historyStep<history.length){renderHistory();}
-              else{interview.innerHTML='<h3>History complete</h3><p>Continue to assessment and treatment decisions. In real care, address urgent airway and breathing needs without delaying for a complete history.</p>';begin.disabled=false;begin.textContent="Begin clinical decisions";begin.focus();}
+              else{interview.innerHTML='<h3>History complete</h3><p>You can now continue to clinical decisions. Urgent care should never be delayed to complete the interview.</p>';begin.textContent="Begin clinical decisions";begin.focus();}
             });
             interview.appendChild(next);
           });
