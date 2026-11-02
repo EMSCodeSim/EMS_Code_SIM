@@ -126,7 +126,7 @@
   ];
   const choices=document.getElementById("caseChoices");
   const panel=document.getElementById("practicePanel");
-  let active=null,step=0,score=0,answered=false;
+  let active=null,step=0,score=0,answered=false,respiratoryDelays=0;
   const safe=(s)=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   function renderChoices(){
     choices.innerHTML="";
@@ -136,7 +136,7 @@
   const restartButton=document.getElementById("restartScenario");
   restartButton.addEventListener("click",()=>{if(active&&window.confirm("Restart this scenario? Your current answers will be cleared."))start(active);});
   function start(c){
-    active=c;step=0;score=0;answered=false;restartButton.hidden=false;renderChoices();
+    active=c;step=0;score=0;answered=false;respiratoryDelays=0;restartButton.hidden=false;renderChoices();
     panel.innerHTML='<div class="case-meta"><span class="case-tag">'+safe(c.focus)+'</span><span class="case-tag">'+c.questions.length+' decisions</span></div><h2>'+safe(c.title)+'</h2><p>'+safe(c.intro)+'</p><p>Think through what matters now. Choose the single best next action.</p><button class="case-next" type="button" id="beginCase">Begin scenario</button>';
     if(c.id==="breathing"){
       const interview=document.createElement("section");
@@ -192,7 +192,12 @@
       {phase:"Treatment decision",details:"Patient remains alert with wheezing and reports a prescribed rescue inhaler. Support breathing and follow local protocols for medication assistance."},
       {phase:"Reassessment",details:"Patient is becoming fatigued, speaking less, and has reduced audible wheezing. Less wheezing does not necessarily mean improvement; reassess air movement, respiratory effort, and mental status."}
     ];
-    const finding=active.id==="breathing"?breathingFindings[step]:null;
+    const finding=active.id==="breathing"?{...breathingFindings[step]}:null;
+    if(finding&&step>0&&respiratoryDelays>0){
+      finding.details=step===1
+        ?"Following delayed initial assessment, the patient is more anxious, speaking only a few words at a time, and working harder to breathe. Prioritize breathing support and reassess promptly."
+        :"Following "+respiratoryDelays+" delayed or inappropriate decision(s), the patient is increasingly fatigued, responds slowly, and has diminished air movement. Reduced wheezing can signal worsening ventilation, not recovery. Escalate care and transport per protocol.";
+    }
     panel.innerHTML='<div class="case-meta"><span class="case-tag">'+safe(active.focus)+'</span><span class="case-tag">Decision '+(step+1)+' of '+active.questions.length+'</span></div><h2>'+safe(active.title)+'</h2><div class="case-progress" role="progressbar" aria-label="Scenario progress" aria-valuemin="0" aria-valuemax="'+active.questions.length+'" aria-valuenow="'+step+'"><span style="width:'+pct+'%"></span></div>'+(finding?'<section class="case-summary" aria-label="Patient assessment update"><h3>'+safe(finding.phase)+'</h3><p>'+safe(finding.details)+'</p></section>':'')+'<p class="case-question">'+safe(q.prompt)+'</p><div class="case-options" id="options"></div><div id="feedback"></div><div class="case-footer"><span id="scoreLabel">Correct so far: '+score+' of '+step+'</span><button class="case-next" id="next" type="button" hidden>'+(step===active.questions.length-1?'See review':'Continue')+'</button></div>';
     const opts=document.getElementById("options");
     q.options.forEach((label,i)=>{const b=document.createElement("button");b.type="button";b.className="case-option";b.innerHTML='<span class="letter">'+String.fromCharCode(65+i)+'.</span><span>'+safe(label)+'</span>';b.addEventListener("click",()=>answer(i));opts.appendChild(b);});
@@ -201,6 +206,7 @@
     if(answered)return;answered=true;
     const q=active.questions[step],buttons=[...document.querySelectorAll(".case-option")],correct=selected===q.answer;
     if(correct)score++;
+    if(active.id==="breathing"&&!correct)respiratoryDelays++;
     buttons.forEach((b,i)=>{b.disabled=true;if(i===q.answer)b.classList.add("correct");if(i===selected&&!correct)b.classList.add("incorrect");});
     const feedback=document.getElementById("feedback");
     feedback.className="case-feedback";feedback.dataset.result=correct?"correct":"incorrect";
@@ -212,10 +218,12 @@
         {best:"You recognize possible respiratory fatigue and prepare to escalate care and transport while reassessing ventilation and mental status.",other:"The quieter wheezing is misleading. The patient becomes less responsive to questions, prompting urgent reassessment and escalation."}
       ];
       const consequence=consequences[step];
+      const response=correct?consequence.best:consequence.other;
+      const clinicalNote=respiratoryDelays>0&&step<2?" Earlier delays will be reflected in the next assessment.":"";
       const outcome=document.createElement("p");
       outcome.className="case-summary";
       outcome.setAttribute("role","status");
-      outcome.innerHTML="<strong>Patient response:</strong> "+safe(correct?consequence.best:consequence.other);
+      outcome.innerHTML="<strong>Patient response:</strong> "+safe(response+clinicalNote);
       feedback.appendChild(outcome);
     }
     document.getElementById("scoreLabel").textContent="Correct so far: "+score+" of "+(step+1);
