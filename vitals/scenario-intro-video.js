@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = '2026.09.28.1';
+  const VERSION = '2026.09.28.2';
   const COVER = '/vitals/assets/breathing-problem-cover.webp';
   const VIDEOS = Object.freeze({
     intro: {
@@ -39,7 +39,7 @@
     style.textContent = `
       html body.asthma-video-only #clinicalReasoningBoard,
       html body.asthma-video-only #reasoningDiscoveryCue{display:none!important}
-      html body.asthma-video-only .patient-stage{position:relative;background:#071625!important}
+      html body.asthma-video-only .patient-stage{position:relative;background:#071625!important}\n      body.asthma-video-only .patient-stage:has(.scenario-intro-video-shell:not([hidden]))>#patientImage,\n      body.asthma-video-only .patient-stage:has(.scenario-intro-video-shell:not([hidden]))>#focusImage{visibility:hidden!important}
       body.asthma-video-only .bottom-nav.guide-locked button[data-panel="assessmentPanel"],
       body.asthma-video-only .bottom-nav.guide-locked button[data-panel="vitalsPanel"],
       body.asthma-video-only .bottom-nav.guide-locked button[data-panel="historyPanel"],
@@ -172,7 +172,6 @@
     if (source && source.getAttribute('src') !== config.url) { source.src=config.url; video.load(); }
     shell.hidden = false;
     shell.classList.remove('resting');
-    if (options.once) markSeen(state,current);
     window.clearTimeout(playbackFallbackTimer);
     // A slow or unsupported clip must never trap the learner behind the video.
     // Keep the visible Continue control available while giving mobile Safari
@@ -181,7 +180,7 @@
       if (!video || video.currentTime < 0.15) showPatient();
     }, 10000);
     try { if (video.readyState > 0) video.currentTime=0; } catch (_) {}
-    try { video.play().catch(showPatient); } catch (_) { showPatient(); }
+    try {\n      const attempt = video.play();\n      if (attempt && typeof attempt.then === 'function') {\n        attempt.then(() => { if (options.once) markSeen(state,current); }).catch(() => {\n          // Mobile Safari may require a user gesture. Keep the video stage visible\n          // so Replay can start the real patient clip instead of falling back to artwork.\n          window.clearTimeout(playbackFallbackTimer);\n          shell.hidden = false;\n        });\n      } else if (options.once) markSeen(state,current);\n    } catch (_) {\n      window.clearTimeout(playbackFallbackTimer);\n      shell.hidden = false;\n    }
     if (replayButton) replayButton.textContent = state === 'intro' ? 'Replay intro' : 'Replay patient update';
   }
 
