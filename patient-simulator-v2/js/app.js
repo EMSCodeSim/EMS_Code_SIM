@@ -102,7 +102,6 @@
     if (scenarioEnded) stage = 'Debrief';
     const guide = CALL_GUIDE[stage] || CALL_GUIDE.Scene;
     const index = STAGES.indexOf(stage);
-    $('psv2NextStep').hidden = !session;
     $('psv2NextStepProgress').textContent = index >= 0 ? `CALL GUIDE · STEP ${index + 1} OF ${STAGES.length}` : 'CALL GUIDE';
     $('psv2NextStepTitle').textContent = guide.title;
     $('psv2NextStepText').textContent = guide.text;
