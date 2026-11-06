@@ -2,7 +2,7 @@
 /patient-simulator-v2               /patient-simulator-v2/index.html         200
 /patient-simulator-v2/              /patient-simulator-v2/index.html         200
 
-# Retire all old scenario entry points from public use
+# Retire legacy simulator entry points while preserving the scenario selector
 /scenario-launcher.html             /patient-simulator-v2/                   301!
 /scenario-launcher                  /patient-simulator-v2/                   301!
 /visual-patient.html                /patient-simulator-v2/                   301!
@@ -10,7 +10,6 @@
 /assessment-workspace.html          /patient-simulator-v2/                   301!
 /patient-simulator-legacy           /patient-simulator-v2/                   301!
 /patient-simulator-legacy/          /patient-simulator-v2/                   301!
-/vitals/scenario-launcher.html      /patient-simulator-v2/                   301!
 /vitals/visual-patient.html         /patient-simulator-v2/                   301!
 /medical-scenario-simulator         /patient-simulator-v2/                   301!
 /med_sim.html                       /patient-simulator-v2/                   301!
