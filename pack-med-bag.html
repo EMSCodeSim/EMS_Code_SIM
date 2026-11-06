@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07172b">
+<meta name="description" content="Slide the gear into place in Pack the Med Bag, a playful EMS-themed sliding puzzle game.">
+<title>Pack the Med Bag! | EMSCodeSim</title>
+<style>
+:root{color-scheme:dark;--navy:#07172b;--navy2:#0d2542;--cyan:#54e9f0;--cream:#fff5d8;--yellow:#ffd546;--red:#ed303e;--ink:#102236}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 15%,#153a62 0,#091b31 43%,#061426 100%);color:#f6f7fa;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;display:flex;flex-direction:column;align-items:center}
+a{color:#9df5fa}
+.sitebar{width:100%;padding:14px max(18px,calc((100vw - 1020px)/2));display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ffffff18;background:#061426cc}
+.brand{font-weight:900;letter-spacing:.04em;color:white;text-decoration:none}
+.back{font-weight:750;text-decoration:none}
+main{width:min(100%,720px);padding:clamp(14px,3vw,26px) 14px 34px}
+h1{font-size:clamp(2rem,8vw,4rem);line-height:.96;text-align:center;margin:10px 0 18px;color:#fff;letter-spacing:-.055em;text-shadow:3px 4px 0 #d32231,7px 7px 0 #021124}
+h1 span{display:block;color:var(--yellow)}
+.hud{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:0 auto 14px}
+.stat{border:2px solid var(--cyan);border-radius:14px;background:#09203b;padding:8px 6px;text-align:center;box-shadow:0 4px 0 #03101e}
+.stat small{display:block;color:#b9d5e6;font-size:.68rem;font-weight:800;letter-spacing:.12em}
+.stat strong{display:block;color:var(--cream);font-size:clamp(1.25rem,5vw,1.8rem);font-variant-numeric:tabular-nums}
+.bag{position:relative;background:linear-gradient(145deg,#c91e32,#fa3e48 53%,#bb1729);border:5px solid #791522;border-radius:32px;padding:clamp(13px,4vw,27px);box-shadow:inset 0 0 0 3px #ff8080,0 13px 0 #04101d,0 22px 40px #0008}
+.bag:before{content:"";position:absolute;z-index:-1;left:18%;right:18%;height:29px;top:-18px;border:8px solid #d92b3b;border-bottom:0;border-radius:20px 20px 0 0}
+.bag:after{content:"";display:block;position:absolute;left:0;right:0;bottom:15px;height:13px;background:repeating-linear-gradient(90deg,#f1ec67 0 28px,#f4f0a9 28px 40px,#ed3540 40px 66px);opacity:.88;pointer-events:none}
+.bag-label{font-size:.7rem;letter-spacing:.23em;font-weight:950;text-align:center;color:#ffe2a7;margin:0 0 10px;text-transform:uppercase}
+.board{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(5px,1.35vw,10px);padding:clamp(7px,1.8vw,13px);border-radius:23px;background:linear-gradient(145deg,#102238,#071424);box-shadow:inset 0 5px 15px #000b,0 3px 0 #6f1220;touch-action:manipulation}
+.tile,.empty{aspect-ratio:1;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0}
+.tile{border:2px solid #fff0c6;background:linear-gradient(145deg,#fff8e6,#e6ddc5);color:var(--ink);box-shadow:0 4px 0 #82745a;cursor:pointer;transition:transform .12s,filter .12s,box-shadow .12s;padding:2px}
+.tile:nth-child(4n+2),.tile:nth-child(4n+3){background:linear-gradient(145deg,#9afaff,#4adce9);border-color:#d5ffff;box-shadow:0 4px 0 #087d94}
+.tile:hover{filter:brightness(1.08);transform:translateY(-2px)}
+.tile:active{transform:translateY(2px);box-shadow:0 1px 0 #82745a}
+.tile:focus-visible,.control:focus-visible{outline:3px solid white;outline-offset:3px}
+.tile .emoji{font-size:clamp(1.7rem,8vw,3.3rem);line-height:1.05;filter:drop-shadow(1px 2px 0 #24344655)}
+.tile .label{margin-top:4px;font-size:clamp(.48rem,2vw,.7rem);font-weight:950;line-height:1.05;text-align:center;max-width:100%;overflow-wrap:anywhere}
+.empty{border:2px dashed #61f1f4;background:#06132680;position:relative}
+.empty:after{content:"";width:28%;height:28%;border:2px solid #62e9eb77;border-radius:50%}
+.controls{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:9px;margin:18px 0 10px}
+.control{border:2px solid var(--cyan);border-radius:13px;background:#f8efcf;color:#102236;min-height:54px;font-weight:950;font-size:clamp(.84rem,3.5vw,1rem);cursor:pointer;box-shadow:0 5px 0 #03778e}
+.control:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.control.primary{background:var(--yellow);border-color:#fff0a8;box-shadow:0 5px 0 #b98108}
+.control:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.status{text-align:center;min-height:28px;color:#d9eff8;font-weight:700;margin:12px 0 8px}
+.best{text-align:center;color:#a8c8db;font-size:.85rem}
+details{margin-top:22px;background:#0b2139;border:1px solid #244867;border-radius:13px;padding:12px 14px;color:#c8dce9}
+summary{font-weight:800;cursor:pointer;color:#f5f8fb}
+#peekDialog{width:min(92vw,420px);border:2px solid var(--cyan);border-radius:20px;padding:20px;background:#0a1d33;color:white;box-shadow:0 20px 70px #000b}
+#peekDialog::backdrop{background:#020812c9}
+#peekDialog h2{margin:0 0 8px}
+.peek-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:14px 0}
+.peek-cell{aspect-ratio:1;display:grid;place-items:center;background:#eaf5e7;color:#132338;border-radius:8px;font-size:clamp(1.2rem,7vw,2rem)}
+.dialog-close{display:block;width:100%;margin-top:12px}
+footer{color:#8fa9bd;font-size:.76rem;text-align:center;margin:20px 0 0}
+@media(max-width:420px){.sitebar{padding:12px 14px}.hud{gap:6px}.stat{padding:7px 3px}.bag{border-radius:23px;padding:11px}.tile,.empty{border-radius:11px}.controls{gap:7px}.control{min-height:48px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="sitebar"><a class="brand" href="/">EMSCodeSim</a><a class="back" href="/ems-training-tools.html#ems-games">← EMS Games</a></header>
+<main>
+<h1>PACK THE <span>MED BAG!</span></h1>
+<section class="hud" aria-label="Game score">
+<div class="stat"><small>LEVEL</small><strong id="level">01</strong></div>
+<div class="stat"><small>MOVES</small><strong id="moves">0</strong></div>
+<div class="stat"><small>TIME</small><strong id="timer">00:00</strong></div>
+</section>
+<section class="bag" aria-label="Open med bag puzzle">
+<p class="bag-label">Slide the gear into place</p>
+<div class="board" id="board" role="group" aria-label="Sliding puzzle board"></div>
+</section>
+<div class="controls">
+<button class="control" id="peek" type="button">👀 Peek</button>
+<button class="control" id="shuffle" type="button">↻ Shuffle</button>
+<button class="control primary" id="next" type="button" disabled>Next Level →</button>
+</div>
+<p class="status" id="status" aria-live="polite">Slide a gear tile into the empty pocket.</p>
+<p class="best">⭐ Score <strong id="score">0</strong> &nbsp; · &nbsp; Best <strong id="best">—</strong></p>
+<details><summary>How to play</summary><p>Tap a gear tile next to the empty pocket to slide it. Put every piece back in its neat bag layout to finish the level. Fewer moves and a faster time mean a bigger score.</p></details>
+<footer>Just a little arcade fun from EMSCodeSim.</footer>
+</main>
+<dialog id="peekDialog" aria-labelledby="peekTitle">
+<h2 id="peekTitle">Packed bag layout</h2><p>Here’s the tidy layout for this level.</p>
+<div class="peek-grid" id="peekGrid"></div>
+<form method="dialog"><button class="control dialog-close">Back to puzzle</button></form>
+</dialog>
+<script>
+"use strict";
+const GEAR=[
+ {icon:"🩺",name:"Stethoscope"},{icon:"🩹",name:"Bandage"},{icon:"🧤",name:"Gloves"},{icon:"🔦",name:"Flashlight"},
+ {icon:"✂️",name:"Shears"},{icon:"🌡️",name:"Thermometer"},{icon:"🧻",name:"Gauze"},{icon:"😷",name:"Face mask"},
+ {icon:"🧴",name:"Wipes"},{icon:"🖊️",name:"Marker"},{icon:"📻",name:"Radio"},{icon:"🪢",name:"Tourniquet"},
+ {icon:"🩹",name:"Dressing"},{icon:"🛡️",name:"Face shield"},{icon:"🧰",name:"Tool pouch"}
+];
+const boardEl=document.getElementById("board"), movesEl=document.getElementById("moves"),timerEl=document.getElementById("timer"),levelEl=document.getElementById("level"),statusEl=document.getElementById("status"),scoreEl=document.getElementById("score"),bestEl=document.getElementById("best"),nextBtn=document.getElementById("next"),peekDialog=document.getElementById("peekDialog"),peekGrid=document.getElementById("peekGrid");
+let board=[],moves=0,level=1,seconds=0,timerId=null,started=false,finished=false,best=Number(localStorage.getItem("packMedBagBest")||0);
+function formatTime(value){return String(Math.floor(value/60)).padStart(2,"0")+":"+String(value%60).padStart(2,"0")}
+function solvedBoard(){return Array.from({length:16},(_,i)=>i===15?0:i+1)}
+function isSolved(){return board.every((value,index)=>value===(index===15?0:index+1))}
+function neighbors(index){const row=Math.floor(index/4),col=index%4,out=[];if(row>0)out.push(index-4);if(row<3)out.push(index+4);if(col>0)out.push(index-1);if(col<3)out.push(index+1);return out}
+function shuffleBoard(){board=solvedBoard();let blank=15,previous=-1;for(let i=0;i<120+level*12;i++){const options=neighbors(blank).filter(i=>i!==previous);const choice=options[Math.floor(Math.random()*options.length)];[board[blank],board[choice]]=[board[choice],board[blank]];previous=blank;blank=choice}if(isSolved())shuffleBoard();moves=0;seconds=0;started=false;finished=false;clearInterval(timerId);timerId=null;scoreEl.textContent="0";movesEl.textContent="0";timerEl.textContent="00:00";levelEl.textContent=String(level).padStart(2,"0");statusEl.textContent="Slide a gear tile into the empty pocket.";nextBtn.disabled=true;render()}
+function render(){boardEl.replaceChildren();board.forEach((piece,index)=>{if(piece===0){const empty=document.createElement("div");empty.className="empty";empty.setAttribute("aria-label","Empty pocket");boardEl.append(empty);return}const gear=GEAR[piece-1],button=document.createElement("button");button.type="button";button.className="tile";button.setAttribute("aria-label","Slide "+gear.name+" tile");button.innerHTML='<span class="emoji" aria-hidden="true">'+gear.icon+'</span><span class="label">'+gear.name+'</span>';button.addEventListener("click",()=>moveTile(index));boardEl.append(button)})}
+function beginClock(){if(started)return;started=true;timerId=setInterval(()=>{seconds++;timerEl.textContent=formatTime(seconds)},1000)}
+function moveTile(index){if(finished)return;const blank=board.indexOf(0);if(!neighbors(blank).includes(index))return;beginClock();[board[index],board[blank]]=[board[blank],board[index]];moves++;movesEl.textContent=String(moves);render();if(isSolved())win()}
+function win(){finished=true;clearInterval(timerId);timerId=null;const earned=Math.max(100,1500-moves*18-seconds*4);scoreEl.textContent=String(earned);statusEl.textContent="Bag packed! +" + earned + " points. Nice run!";nextBtn.disabled=false;if(earned>best){best=earned;localStorage.setItem("packMedBagBest",String(best));bestEl.textContent=String(best)}}
+function showPeek(){peekGrid.replaceChildren();GEAR.forEach(item=>{const cell=document.createElement("div");cell.className="peek-cell";cell.textContent=item.icon;cell.title=item.name;cell.setAttribute("aria-label",item.name);peekGrid.append(cell)});const last=document.createElement("div");last.className="peek-cell";last.textContent="";last.setAttribute("aria-label","Empty pocket");peekGrid.append(last);peekDialog.showModal()}
+document.getElementById("shuffle").addEventListener("click",shuffleBoard);document.getElementById("peek").addEventListener("click",showPeek);nextBtn.addEventListener("click",()=>{if(finished){level++;shuffleBoard()}});
+bestEl.textContent=best?String(best):"—";shuffleBoard();
+</script>
+</body>
+</html>
