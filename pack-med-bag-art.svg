@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="A packed red EMS medical bag with colorful emergency equipment">
+<defs>
+ <pattern id="checks" width="64" height="64" patternUnits="userSpaceOnUse"><rect width="64" height="64" fill="#0d2542"/><rect width="32" height="32" fill="#123152"/><rect x="32" y="32" width="32" height="32" fill="#123152"/></pattern>
+ <linearGradient id="bag" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ff4a53"/><stop offset=".55" stop-color="#e6293c"/><stop offset="1" stop-color="#a8162b"/></linearGradient>
+ <linearGradient id="liner" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#1e3145"/><stop offset="1" stop-color="#081521"/></linearGradient>
+ <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f9ffff"/><stop offset=".5" stop-color="#9eb6c8"/><stop offset="1" stop-color="#d9e7ef"/></linearGradient>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#020713" flood-opacity=".55"/></filter>
+</defs>
+<rect width="800" height="800" fill="url(#checks)"/>
+<circle cx="100" cy="105" r="4" fill="#55dfe9"/><circle cx="700" cy="110" r="5" fill="#ffd546"/><circle cx="76" cy="702" r="5" fill="#ffd546"/><circle cx="722" cy="680" r="4" fill="#55dfe9"/>
+<ellipse cx="400" cy="721" rx="328" ry="36" fill="#020a14" opacity=".52"/>
+<g filter="url(#shadow)">
+ <path d="M267 144V96c0-36 27-63 62-63h142c35 0 62 27 62 63v48h-48V99c0-10-7-17-17-17H332c-10 0-17 7-17 17v45z" fill="#bd1d31" stroke="#721427" stroke-width="15"/>
+ <path d="M278 136V99c0-29 22-51 51-51h142c29 0 51 22 51 51v37" fill="none" stroke="#ff7378" stroke-width="8"/>
+ <rect x="51" y="124" width="698" height="630" rx="64" fill="url(#bag)" stroke="#791522" stroke-width="18"/>
+ <rect x="69" y="141" width="662" height="596" rx="52" fill="none" stroke="#ff8a86" stroke-width="8" opacity=".8"/>
+ <path d="M66 230h42v86H66zm0 362h42v86H66zm626-362h42v86h-42zm0 362h42v86h-42z" fill="#eff05a"/>
+ <path d="M66 253h42v40H66zm0 362h42v40H66zm626-362h42v40h-42zm0 362h42v40h-42z" fill="#fff2ad"/>
+ <rect x="100" y="169" width="600" height="538" rx="38" fill="url(#liner)" stroke="#811b2c" stroke-width="10"/>
+ <rect x="116" y="185" width="568" height="506" rx="29" fill="none" stroke="#566273" stroke-width="5" stroke-dasharray="9 9"/>
+ <path d="M116 352h568M116 520h568M266 185v506M416 185v506M566 185v506" stroke="#31445a" stroke-width="7"/>
+ <path d="M119 357h562M119 525h562" stroke="#69788a" stroke-width="2" opacity=".5"/>
+ <!-- stethoscope -->
+ <path d="M157 218v46c0 39 27 63 53 63s53-24 53-63v-46" fill="none" stroke="#f23249" stroke-width="17" stroke-linecap="round"/>
+ <path d="M157 218v46c0 39 27 63 53 63s53-24 53-63v-46" fill="none" stroke="#ff99a0" stroke-width="4" stroke-linecap="round"/>
+ <circle cx="157" cy="214" r="16" fill="url(#steel)" stroke="#34465a" stroke-width="6"/><circle cx="263" cy="214" r="16" fill="url(#steel)" stroke="#34465a" stroke-width="6"/>
+ <path d="M210 327v21c0 18 14 31 31 31" fill="none" stroke="#f23249" stroke-width="14" stroke-linecap="round"/><circle cx="247" cy="379" r="21" fill="#96e7ed" stroke="#273d53" stroke-width="7"/><circle cx="247" cy="379" r="8" fill="#e7ffff"/>
+ <!-- bandage roll -->
+ <ellipse cx="340" cy="245" rx="48" ry="39" fill="#f3ddb2" stroke="#9e815e" stroke-width="7"/><ellipse cx="340" cy="245" rx="19" ry="15" fill="#fff5dc" stroke="#ad8d65" stroke-width="6"/>
+ <path d="M292 245v46c0 22 96 22 96 0v-46" fill="#e8cf9f" stroke="#9e815e" stroke-width="7"/><path d="M304 264h72" stroke="#c0a276" stroke-width="5"/>
+ <!-- gloves -->
+ <path d="M456 219c-1-17 22-21 27-3l7 31 6-43c3-18 25-16 26 2l1 35 9-31c6-18 26-11 22 7l-10 50c-5 30-25 44-53 38-24-5-37-21-37-44z" fill="#31c9e2" stroke="#096987" stroke-width="7" stroke-linejoin="round"/>
+ <path d="M486 285c-15 2-26-4-35-14l-20-22c-12-14 4-30 17-21l18 15" fill="#50e1ee" stroke="#096987" stroke-width="7" stroke-linejoin="round"/>
+ <!-- flashlight -->
+ <g transform="translate(593 222) rotate(35)"><rect x="-22" y="0" width="44" height="103" rx="14" fill="#facb36" stroke="#75531d" stroke-width="7"/><path d="M-28 7h56l10 25h-76z" fill="#f5f3d9" stroke="#75531d" stroke-width="7"/><rect x="-12" y="75" width="24" height="12" rx="5" fill="#263a4a"/></g>
+ <!-- shears -->
+ <circle cx="163" cy="407" r="22" fill="none" stroke="#ff5c65" stroke-width="10"/><circle cx="213" cy="407" r="22" fill="none" stroke="#ff5c65" stroke-width="10"/>
+ <path d="M178 419l62 73M198 419l-67 73" stroke="url(#steel)" stroke-width="13" stroke-linecap="round"/><circle cx="188" cy="421" r="9" fill="#263b52"/>
+ <!-- blood pressure cuff -->
+ <path d="M306 391h85v88c0 14-11 25-25 25h-35c-14 0-25-11-25-25z" fill="#287bc6" stroke="#123a6b" stroke-width="8"/><circle cx="349" cy="404" r="33" fill="#f4f0d9" stroke="#31465d" stroke-width="8"/><path d="M349 404l16-15m-16 15-16-11" stroke="#ee4651" stroke-width="5" stroke-linecap="round"/><circle cx="349" cy="404" r="5" fill="#23364c"/><path d="M375 473c40 20 28 47 2 48" fill="none" stroke="#101d2d" stroke-width="11"/>
+ <!-- thermometer -->
+ <rect x="464" y="389" width="43" height="117" rx="21" fill="#e9f4f2" stroke="#517386" stroke-width="7"/><rect x="477" y="415" width="17" height="58" rx="8" fill="#ef4550"/><circle cx="485" cy="487" r="17" fill="#ef4550" stroke="#a82737" stroke-width="5"/><path d="M507 410h18m-18 22h13m-13 22h18" stroke="#678495" stroke-width="4"/>
+ <!-- gauze pack -->
+ <path d="M574 393h83l20 20v80h-103z" fill="#f6f0dc" stroke="#aab4ba" stroke-width="7"/><path d="M574 413h103m-103 16h103m-103 16h103m-103 16h103" stroke="#ccd3d2" stroke-width="5"/><path d="M636 393v100" stroke="#d6d9d2" stroke-width="4"/>
+ <!-- radio -->
+ <rect x="140" y="556" width="104" height="117" rx="20" fill="#2b4a63" stroke="#101c2d" stroke-width="8"/><rect x="155" y="572" width="73" height="38" rx="6" fill="#9ef2e5"/><path d="M168 590h49m-41-9v18m13-18v18m13-18v18" stroke="#238b83" stroke-width="4"/><circle cx="163" cy="634" r="9" fill="#f4d64c"/><circle cx="193" cy="634" r="9" fill="#f4d64c"/><path d="M197 556l24-36" stroke="#dce9ec" stroke-width="6" stroke-linecap="round"/>
+ <!-- tape -->
+ <circle cx="340" cy="612" r="51" fill="#f4c739" stroke="#805d16" stroke-width="8"/><circle cx="340" cy="612" r="22" fill="#20374d" stroke="#fff1b1" stroke-width="7"/><path d="M378 629l28 28-22 20-31-27" fill="#f8da65" stroke="#805d16" stroke-width="7"/>
+ <!-- mask -->
+ <path d="M457 574q47-31 94 0v63q-47 34-94 0z" fill="#c2f2e7" stroke="#338c85" stroke-width="7"/><path d="M456 589l-26-11v58l27-11m96-36 27-11v58l-27-11" fill="none" stroke="#4aa69e" stroke-width="7"/><path d="M474 594h60m-60 17h60m-60 17h60" stroke="#79c5bd" stroke-width="5"/>
+ <!-- tool pouch -->
+ <rect x="587" y="559" width="79" height="111" rx="17" fill="#e79e30" stroke="#714b20" stroke-width="8"/><path d="M597 581h59M597 632h59" stroke="#ffd977" stroke-width="6"/><rect x="611" y="602" width="31" height="22" rx="4" fill="#27445d"/><path d="M613 552v-15c0-13 18-13 18 0v15" fill="none" stroke="#664625" stroke-width="8"/>
+ <path d="M103 713h594" stroke="#ff9395" stroke-width="8"/><rect x="311" y="710" width="178" height="48" rx="16" fill="#29394a" stroke="#111c29" stroke-width="7"/><path d="M338 733h124" stroke="#7d8995" stroke-width="7" stroke-dasharray="14 9"/>
+</g>
+</svg>
