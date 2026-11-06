@@ -56,7 +56,7 @@ footer{text-align:center;color:#8fa9bd;font-size:.76rem;margin:16px 0 0}
 <header class="sitebar"><a class="brand" href="/">EMSCodeSim</a><a class="back" href="/ems-training-tools.html#ems-games">← EMS Games</a></header>
 <main>
 <h1>OUTBREAK <span>SWEEP</span></h1>
-<p class="intro">Find the infected patients hidden on the grid. The numbers tell you how many are in the neighboring spaces.</p>
+<p class="intro">Find the infected patients hidden on the grid. The numbers show how many are nearby. Use Quarantine mode to flag a suspected patient location.</p>
 <section class="panel" aria-label="Outbreak Sweep game">
 <div class="topline">
 <label class="select-wrap" for="difficulty">ROUND
@@ -65,14 +65,14 @@ footer{text-align:center;color:#8fa9bd;font-size:.76rem;margin:16px 0 0}
 </div>
 <div class="stats" aria-label="Game status">
 <div class="stat"><small>INFECTED LEFT</small><strong id="left">16</strong></div>
-<div class="stat"><small>MARKED</small><strong id="marked">0</strong></div>
+<div class="stat"><small>QUARANTINED</small><strong id="marked">0</strong></div>
 <div class="stat"><small>TIME</small><strong id="timer">00:00</strong></div>
 </div>
-<div class="controls"><button class="button" id="mode" type="button" aria-pressed="false">🔎 Reveal mode · tap to mark</button></div>
+<div class="controls"><button class="button" id="mode" type="button" aria-pressed="false">🔎 Scan mode · tap to quarantine</button></div>
 <div class="board-wrap"><div id="board" class="board" role="group" aria-label="Patient grid"></div></div>
 <p id="status" class="status" aria-live="polite">Choose a space to start. Your first pick opens a safe area.</p>
 <p class="best">🏅 Best time: <strong id="best">—</strong></p>
-<details class="how"><summary>How to play</summary><p>Open every clear space and mark the infected spaces to win. Use the numbers to figure out which spaces are safe to open.</p></details>
+<details class="how"><summary>How to play</summary><p>Open every clear space and quarantine each infected patient to win. Use the numbers to find them. Switch to Quarantine mode to place a visible flag at a suspected location; tap the flag again to release it.</p></details>
 </section>
 <footer>A quick arcade puzzle from EMSCodeSim.</footer>
 </main>
@@ -96,8 +96,8 @@ function revealArea(start){const queue=[start],seen=new Set();while(queue.length
 function reveal(index){if(gameOver)return;const cell=cells[index];if(cell.flagged)return;if(cell.revealed){if(cell.count>0){const near=adjacent(index),flags=near.filter(i=>cells[i].flagged).length;if(flags===cell.count){const target=near.find(i=>!cells[i].revealed&&!cells[i].flagged&&cells[i].infected);if(target!==undefined){hit=target;lose();return}near.filter(i=>!cells[i].revealed&&!cells[i].flagged).forEach(i=>revealArea(i))}}render();checkWin();return}if(!placed)placeInfections(index);startClock();if(cell.infected){hit=index;lose();return}revealArea(index);render();checkWin()}
 function lose(){gameOver=true;clearInterval(timerId);timerId=null;cells.forEach(cell=>{if(cell.infected)cell.revealed=true});statusEl.className="status bad";statusEl.textContent="Exposure! An infected patient was in that space. Start a new game to play again.";render()}
 function checkWin(){if(gameOver||!placed)return;if(cells.every(cell=>cell.infected?cell.flagged:cell.revealed)){gameOver=true;clearInterval(timerId);timerId=null;statusEl.className="status good";statusEl.textContent="All infected patients marked and clear spaces opened. No exposure — nice sweep!";const previous=readBest(),current=seconds;if(!previous||current<Number(previous)){writeBest(String(current));bestEl.textContent=formatTime(current)}render()}}
-function render(){boardEl.replaceChildren();cells.forEach((cell,index)=>{const button=document.createElement("button");button.type="button";button.className="cell";button.setAttribute("aria-label","Patient space row "+(Math.floor(index/cols)+1)+", column "+(index%cols+1));if(cell.revealed){button.classList.add("open");button.disabled=true;if(cell.infected){button.classList.add("infected");if(index===hit)button.classList.add("hit");button.textContent="✹";button.setAttribute("aria-label","Infected patient revealed")}else if(cell.count){button.classList.add("n"+cell.count);button.textContent=String(cell.count);button.setAttribute("aria-label",cell.count+" infected patients nearby")}else{button.classList.add("empty");button.setAttribute("aria-label","Clear space")}}else if(cell.flagged){button.classList.add("flagged");button.textContent="⚑";button.setAttribute("aria-label","Marked patient space")}button.addEventListener("click",()=>{if(markMode)toggleFlag(index);else reveal(index)});boardEl.append(button)})}
-document.getElementById("newGame").addEventListener("click",setup);modeBtn.addEventListener("click",()=>{markMode=!markMode;modeBtn.setAttribute("aria-pressed",String(markMode));modeBtn.textContent=markMode?"⚑ Mark mode · tap to reveal":"🔎 Reveal mode · tap to mark";statusEl.textContent=markMode?"Tap spaces to mark or unmark them.":"Reveal mode. Find the clear spaces."});difficultyEl.addEventListener("change",setup);setup();
+function render(){boardEl.replaceChildren();cells.forEach((cell,index)=>{const button=document.createElement("button");button.type="button";button.className="cell";button.setAttribute("aria-label","Patient space row "+(Math.floor(index/cols)+1)+", column "+(index%cols+1));if(cell.revealed){button.classList.add("open");button.disabled=true;if(cell.infected){button.classList.add("infected");if(index===hit)button.classList.add("hit");button.textContent="✹";button.setAttribute("aria-label","Infected patient revealed")}else if(cell.count){button.classList.add("n"+cell.count);button.textContent=String(cell.count);button.setAttribute("aria-label",cell.count+" infected patients nearby")}else{button.classList.add("empty");button.setAttribute("aria-label","Clear space")}}else if(cell.flagged){button.classList.add("flagged");button.textContent="🚩";button.title="Quarantined patient location";button.setAttribute("aria-label","Quarantined patient location")}button.addEventListener("click",()=>{if(markMode)toggleFlag(index);else reveal(index)});boardEl.append(button)})}
+document.getElementById("newGame").addEventListener("click",setup);modeBtn.addEventListener("click",()=>{markMode=!markMode;modeBtn.setAttribute("aria-pressed",String(markMode));modeBtn.textContent=markMode?"🚩 Quarantine mode · tap to scan":"🔎 Reveal mode · tap to mark";statusEl.textContent=markMode?"Quarantine mode: tap a suspected location to flag or release it.":"Scan mode. Find the clear spaces."});difficultyEl.addEventListener("change",setup);setup();
 </script>
 </body>
 </html>
