@@ -9,6 +9,20 @@
     'Reassessment', 'Transport', 'Handoff', 'Documentation', 'Debrief'
   ];
 
+  const CALL_GUIDE = {
+    Dispatch: { title:'Start with the caller', text:'Confirm where help is needed, what is happening, and whether the patient is conscious and breathing normally. Then dispatch and update responding units.', tab:null, action:'Dispatch console' },
+    Enroute: { title:'Prepare before arrival', text:'Review the dispatch details, consider what equipment may be needed, and decide what information your team still needs.', tab:'crew', action:'Open team' },
+    Scene: { title:'Check the scene first', text:'Look for hazards, access problems, and useful bystanders. Then approach the patient and form an initial impression.', tab:'scene', action:'Open scene' },
+    'Patient Contact': { title:'Make patient contact', text:'Observe the patient, introduce yourself, identify the immediate concern, and address any obvious life threat before moving into a focused assessment.', tab:'scene', action:'Open scene' },
+    Assessment: { title:'Build your assessment', text:'Choose relevant assessment findings, obtain the vital signs you need, and ask focused questions. Connect each finding to the whole patient.', tab:'assess', action:'Open assessment' },
+    Treatment: { title:'Treat, then check the response', text:'Choose care that fits your training and the scenario. Reassess the patient after an intervention and follow your approved local protocol.', tab:'treat', action:'Open treatment' },
+    Reassessment: { title:'Reassess what changed', text:'Repeat the most important measurements and compare them with your earlier findings. Record whether the patient improved, stayed the same, or worsened.', tab:'assess', action:'Open reassessment' },
+    Transport: { title:'Plan transport and keep reassessing', text:'Choose a transport plan and destination appropriate to the scenario, communicate the plan, and continue monitoring the patient.', tab:'transport', action:'Open transport' },
+    Handoff: { title:'Give a focused handoff', text:'Summarize the chief concern, important findings, changes over time, care provided, and the patient’s response.', tab:'handoff', action:'Open handoff' },
+    Documentation: { title:'Complete the patient care report', text:'Document objective findings and the call in a clear sequence. Compare your report with the event timeline before submitting.', tab:'pcr', action:'Open PCR' },
+    Debrief: { title:'Review the call and choose one next step', text:'Look at your strengths and opportunities. Explain your reasoning, then choose one specific action to practice on the next run.', tab:'debrief', action:'Open debrief' }
+  };
+
   const MONITOR_CHANNELS = [
     { id: 'hr', label: 'HR', unit: 'bpm' },
     { id: 'spo2', label: 'SpO₂', unit: '%' },
@@ -37,6 +51,7 @@
   ];
 
   let session = null;
+  let scenarioEnded = false;
   let currentVideoUrl = '';
   let reassessMode = false;
   let activeDebrief = null;
@@ -81,6 +96,20 @@
       const done = i < idx;
       return `<button type="button" data-stage="${label}" ${current ? 'aria-current="step"' : ''} class="${done ? 'done' : ''}">${i + 1}. ${label}</button>`;
     }).join('');
+  }
+
+  function renderNextStep(stage) {
+    if (scenarioEnded) stage = 'Debrief';
+    const guide = CALL_GUIDE[stage] || CALL_GUIDE.Scene;
+    const index = STAGES.indexOf(stage);
+    $('psv2NextStep').hidden = !session;
+    $('psv2NextStepProgress').textContent = index >= 0 ? `CALL GUIDE · STEP ${index + 1} OF ${STAGES.length}` : 'CALL GUIDE';
+    $('psv2NextStepTitle').textContent = guide.title;
+    $('psv2NextStepText').textContent = guide.text;
+    const action = $('psv2NextStepAction');
+    action.textContent = guide.action;
+    action.dataset.panel = guide.tab || '';
+    action.hidden = !guide.tab;
   }
 
   function renderMonitorValues() {
@@ -145,6 +174,8 @@
     $('psv2VideoEyebrow').textContent = videoCfg.eyebrow || 'SCENE VIEW — LIVE PATIENT';
     $('psv2VideoCopy').textContent = videoCfg.copy || videoCfg.label || '';
     const el = $('psv2Video');
+    const fallback = $('psv2VideoFallback');
+    fallback.hidden = Boolean(videoCfg.url);
     if (videoCfg.url && videoCfg.url !== currentVideoUrl) {
       currentVideoUrl = videoCfg.url;
       el.src = videoCfg.url;
@@ -266,6 +297,7 @@
     const snap = session.getSnapshot();
     $('psv2Clock').textContent = formatClock(snap.elapsed);
     renderWorkflow(snap.stage);
+    renderNextStep(snap.stage);
     renderMonitor();
     updateVideo();
     renderTimeline();
@@ -662,7 +694,7 @@
         const img = document.createElement('img'); img.src = target.src; img.alt = target.alt || target.label; media.appendChild(img);
       }
     } else {
-      media.innerHTML = '<div class="psv2-scene-placeholder">' + escapeHtml(target.label) + '<small>Visual media slot</small></div>';
+      media.innerHTML = '<div class="psv2-scene-placeholder"><strong>' + escapeHtml(target.label) + '</strong><small>No scene image is available. Use the scene clues and written findings to continue.</small></div>';
     }
     $('psv2SceneTargets').querySelectorAll('[data-scene-target]').forEach(btn => btn.setAttribute('aria-pressed', String(btn.dataset.sceneTarget === targetId)));
     const clues = scene.clues.filter(clue => clue.target === targetId);
@@ -855,6 +887,7 @@ function beginCallFlow() {
       session = null;
     }
     currentVideoUrl = '';
+    scenarioEnded = false;
     crewAwareness.lastEscalationAt = -999; crewAwareness.anticipated.clear();
     activeDebrief = null;
     reassessMode = false;
@@ -894,6 +927,7 @@ function beginCallFlow() {
       }
       if (evt.type === 'stage') {
         renderWorkflow(evt.session.stage);
+        renderNextStep(evt.session.stage);
       }
       if (evt.type === 'assessment' || evt.type === 'treatment' || evt.type === 'conversation' || evt.type === 'transport' || evt.type === 'handoff' || evt.type === 'pcr') {
         renderTimeline();
@@ -1014,6 +1048,7 @@ function beginCallFlow() {
     $('psv2EndBtn').addEventListener('click', () => {
       if (!session) return;
       session.endScenario();
+      scenarioEnded = true;
       renderGrade(session.gradeResult);
       openTab('grade');
       refreshAll();
@@ -1049,6 +1084,17 @@ function beginCallFlow() {
       }
       if (action === 'partner') partnerAssist();
       if (action === 'transport') openTab('transport');
+    });
+
+    $('psv2NextStepAction').addEventListener('click', (e) => {
+      const panel = e.currentTarget.dataset.panel;
+      if (!panel) return;
+      openTab(panel);
+      document.querySelector(`[data-panel="${panel}"]`)?.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    });
+
+    $('psv2Video').addEventListener('error', () => {
+      $('psv2VideoFallback').hidden = false;
     });
 
     async function maybeAiPatientPhrasing(text, local) {

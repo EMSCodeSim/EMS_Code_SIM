@@ -15,11 +15,15 @@
   <a class="psv2-brand" href="/"><img src="/ems-logo.webp" alt="" width="34" height="34"><span class="psv2-brand-text"><strong>EMSCodeSim</strong><span>Patient Simulator · Educational use only</span></span></a>
   <div class="psv2-top-meta"><div class="psv2-role-badge" id="psv2RoleBadge">Role not selected</div><div class="psv2-clock" id="psv2Clock">00:00</div><button class="psv2-btn" id="psv2PauseBtn">Pause</button><button class="psv2-btn" id="psv2RestartBtn">Restart</button><button class="psv2-btn danger" id="psv2EndBtn">End</button></div>
 </header>
+<aside class="psv2-next-step" id="psv2NextStep" aria-live="polite" hidden>
+  <div class="psv2-next-step-copy"><span class="psv2-next-step-kicker" id="psv2NextStepProgress">CALL GUIDE</span><strong id="psv2NextStepTitle">Start with the scene</strong><p id="psv2NextStepText">Observe the surroundings and the patient before choosing your next action.</p></div>
+  <button class="psv2-btn primary" id="psv2NextStepAction" type="button">Open scene</button>
+</aside>
 <nav class="psv2-workflow psv2-engine-only" id="psv2Workflow" aria-label="Call workflow stages"></nav>
 <main class="psv2-main psv2-simple-main">\n<section id="psv2DispatcherConsole" hidden style="grid-column:1/-1;background:#123040;color:#eef5fa;padding:18px;border-radius:14px"><h2>911 Communications · CAD Console</h2><p id="psv2CadCaller">Incoming 911 call: “My husband cannot breathe!”</p><div id="psv2CadActions"></div><h3>Incident details</h3><p id="psv2CadFacts">Location unverified</p><label>Resources <select id="psv2CadResources"><option value="both">Medic 4 + Engine 2</option><option value="medic">Medic 4</option><option value="engine">Engine 2</option></select></label> <label>Priority <select id="psv2CadPriority"><option value="emergency">Emergency</option><option value="routine">Routine</option></select></label><p><button class="psv2-btn primary" id="psv2CadDispatch">Dispatch units</button> <button class="psv2-btn" id="psv2CadUpdate">Radio status update</button> <button class="psv2-btn" id="psv2CadClose">Close incident</button></p><h3>CAD event log</h3><div id="psv2CadLog" aria-live="polite" style="white-space:pre-wrap;max-height:240px;overflow:auto"></div><div id="psv2CadScore"></div></section>
   <section class="psv2-panel psv2-col-video psv2-primary-view" aria-label="Patient and scene">
     <div class="psv2-panel-hd"><h2>Patient / Scene</h2><small id="psv2VideoStateLabel">arrival</small></div>
-    <div class="psv2-video-shell"><video id="psv2Video" muted loop playsinline autoplay preload="auto"></video><div class="psv2-video-caption"><small id="psv2VideoEyebrow">SCENE VIEW</small><strong id="psv2VideoCopy">Observe the patient.</strong></div></div>
+    <div class="psv2-video-shell"><video id="psv2Video" muted loop playsinline autoplay preload="auto"></video><div class="psv2-video-empty" id="psv2VideoFallback" hidden><strong>Scene video unavailable</strong><span>Use the dispatch details and scene clues below to continue.</span></div><div class="psv2-video-caption"><small id="psv2VideoEyebrow">SCENE VIEW</small><strong id="psv2VideoCopy">Observe the patient.</strong></div></div>
     <div class="psv2-dispatch-card"><h3>Dispatch</h3><p id="psv2DispatchText">Loading scenario…</p></div>
   </section>
   <section class="psv2-panel psv2-col-monitor psv2-compact-monitor" aria-label="Patient monitor">
@@ -44,7 +48,7 @@
     </div>
   </section>
 </main>
-<div class="psv2-actionbar" id="psv2ActionBar" role="toolbar" aria-label="Primary simulation actions"><button data-action="assess">ASSESS</button><button data-action="talk">TALK</button><button data-action="crew">TEAM</button><button data-action="treat">TREAT</button><button data-action="transport">TRANSPORT</button></div>
+<div class="psv2-actionbar" id="psv2ActionBar" role="toolbar" aria-label="Primary simulation actions"><button data-action="assess">Assess</button><button data-action="talk">Talk</button><button data-action="crew">Team</button><button data-action="treat">Treat</button><button data-action="transport">Transport</button></div>
 <p class="psv2-disclaimer">Educational / training simulation only. Follow local protocols and medical direction.</p>
 </div>
 <div class="psv2-overlay" id="psv2StartOverlay"><div class="psv2-modal"><h2>Adult Asthma / Respiratory Distress</h2><p>Choose your role. The same call changes based on what your position can see, do, and communicate.</p><div class="psv2-role-select"><div id="psv2RoleCards" class="psv2-role-cards"></div><div id="psv2RoleBrief" class="psv2-finding" hidden></div></div><button class="psv2-btn primary" id="psv2StartBtn">Start as Lead EMT</button></div></div>

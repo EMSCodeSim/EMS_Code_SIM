@@ -10,3 +10,21 @@
 
 /* Mobile layout: reserve a dedicated viewport row for actions instead of overlapping content. */
 @media (max-width:720px){body.psv2-body{overflow:hidden}.psv2-app{height:100dvh;min-height:0;padding-bottom:0;grid-template-rows:auto minmax(0,1fr) auto}.psv2-main.psv2-simple-main{min-height:0;overflow-y:auto;overscroll-behavior:contain}.psv2-actionbar{position:relative;inset:auto;transform:none;z-index:2;grid-row:3}.psv2-disclaimer{display:none}}
+/* Guided call flow and resilient scene-media fallback */
+.psv2-app{grid-template-rows:auto auto minmax(0,1fr) auto auto}
+.psv2-next-step{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 16px;border-bottom:1px solid var(--psv2-line);background:linear-gradient(90deg,rgba(18,48,68,.95),rgba(8,22,34,.95))}
+.psv2-next-step[hidden]{display:none!important}
+.psv2-next-step-copy{min-width:0}
+.psv2-next-step-kicker{display:block;margin-bottom:3px;color:var(--psv2-cyan);font-size:.65rem;font-weight:800;letter-spacing:.1em}
+.psv2-next-step-copy strong{display:block;font-size:.95rem}
+.psv2-next-step-copy p{margin:3px 0 0;color:#c9dbe8;font-size:.8rem;line-height:1.4}
+.psv2-next-step-action{flex:none}
+.psv2-video-empty{position:absolute;inset:0;display:grid;align-content:center;justify-items:center;gap:7px;padding:24px;text-align:center;color:#e5eff7;background:radial-gradient(ellipse at 50% 40%,#172e40 0,#091724 65%,#050d14 100%)}
+.psv2-video-empty[hidden]{display:none!important}
+.psv2-video-empty strong{font-size:1rem}
+.psv2-video-empty span{max-width:34ch;color:#bdcdda;font-size:.83rem;line-height:1.45}
+.psv2-scene-placeholder{gap:8px;padding:18px}
+.psv2-scene-placeholder strong{font-size:1rem}
+.psv2-scene-placeholder small{max-width:40ch;font-size:.82rem;line-height:1.45}
+.psv2-actionbar button{text-transform:none}
+@media(max-width:720px){.psv2-app{grid-template-rows:auto auto minmax(0,1fr) auto}.psv2-next-step{align-items:flex-start;padding:9px 10px;gap:8px}.psv2-next-step-copy p{font-size:.74rem}.psv2-next-step .psv2-btn{min-height:38px;padding:6px 8px;font-size:.72rem}}
