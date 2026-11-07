@@ -10,11 +10,12 @@
   const path=location.pathname.replace(/\/index\.html$/,'/')||'/';
   const links=[
     ['Learn','/emt-prep.html', path.indexOf('emt-prep')>=0||path.indexOf('training.html')>=0||path.indexOf('medication')>=0||path.indexOf('trauma-training')>=0||path.indexOf('abc-training')>=0||path.indexOf('encyclopedia')>=0],
-    ['Practice','/ems-training-tools.html', path.indexOf('ems-training-tools')>=0||path.indexOf('/quiz')===0||path.indexOf('flashcards')>=0||path.indexOf('daily-protocol')>=0],
-    ['Simulate','/vitals/scenario-launcher.html', path.indexOf('/vitals/')===0||path.indexOf('scenario')>=0],
-    ['Drills','/ems-drills.html', path.indexOf('ems-drills')>=0||path.indexOf('skills-session')>=0],
-    ['NREMT','/nremt-cognitive-prep.html', path.indexOf('nremt')>=0||path.indexOf('practice_exam')>=0||path.indexOf('skill-sheets')>=0]
-
+    ['Practice','/vitals/', path.indexOf('ems-training-tools')>=0||path.indexOf('/quiz')===0||path.indexOf('flashcards')>=0||path.indexOf('daily-protocol')>=0||path.indexOf('/vitals/')===0],
+    ['Simulate','/vitals/scenario-launcher.html', path.indexOf('scenario')>=0],
+    ['Games','/ems-training-tools.html', path.indexOf('ems-training-tools')>=0||path.indexOf('medword')>=0||path.indexOf('start-triage')>=0||path.indexOf('pack-med-bag')>=0||path.indexOf('outbreak-sweep')>=0||path.indexOf('pram-run')>=0],
+    ['Career','/ems-career-growth.html', path.indexOf('ems-career')>=0||path.indexOf('ems-recertification')>=0||path.indexOf('ems-wellness')>=0||path.indexOf('ems-retirement')>=0||path.indexOf('ems-progress')>=0],
+    ['NREMT','/nremt-cognitive-prep.html', path.indexOf('nremt')>=0||path.indexOf('practice_exam')>=0||path.indexOf('skill-sheets')>=0],
+    ['Drills','/ems-drills.html', path.indexOf('ems-drills')>=0||path.indexOf('skills-session')>=0]
   ];
 
   const bar=document.createElement('div');
