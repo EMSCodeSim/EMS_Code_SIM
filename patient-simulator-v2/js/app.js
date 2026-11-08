@@ -152,12 +152,17 @@
     const host = $('psv2MonitorActions');
     if (host.dataset.signature === signature) return;
     host.dataset.signature = signature;
+    const standardChannels = ['hr', 'spo2', 'rr', 'bp'];
+    const standardConnected = standardChannels.every(id => channels[id]);
     host.innerHTML = [
+      `<button type="button" class="psv2-monitor-quick ${standardConnected ? 'on' : ''}" data-monitor="standard"><span>${standardConnected ? '✓' : '+'}</span><strong>${standardConnected ? 'Standard monitor connected' : 'Connect standard monitor'}</strong><small>${standardConnected ? 'HR · SpO₂ · RR · BP updating' : 'One tap adds HR, SpO₂, RR, and BP'}</small></button>`,
+      `<details class="psv2-monitor-more"><summary>Additional monitor channels</summary><div>`,
       ...MONITOR_CHANNELS.map(ch =>
-        `<button type="button" class="psv2-chip ${channels[ch.id] ? 'on' : ''}" data-monitor="${ch.id}">${channels[ch.id] ? '✓ ' : ''}Enable ${ch.label}</button>`
+        `<button type="button" class="psv2-chip ${channels[ch.id] ? 'on' : ''}" data-monitor="${ch.id}">${channels[ch.id] ? '✓ ' : ''}${ch.label}</button>`
       ),
       `<button type="button" class="psv2-chip ${channels.ecg ? 'on' : ''}" data-monitor="ecg">${channels.ecg ? '✓ ' : ''}ECG</button>`,
-      `<button type="button" class="psv2-chip ${channels.capno ? 'on' : ''}" data-monitor="capno">${channels.capno ? '✓ ' : ''}Capno</button>`
+      `<button type="button" class="psv2-chip ${channels.capno ? 'on' : ''}" data-monitor="capno">${channels.capno ? '✓ ' : ''}Capno</button>`,
+      `</div></details>`
     ].join('');
   }
 
@@ -720,6 +725,7 @@
     const target = scene.targets[targetId];
     if (!target) return;
     $('psv2SceneTitle').textContent = target.label;
+    const clues = scene.clues.filter(clue => clue.target === targetId);
     const media = $('psv2SceneMedia');
     media.innerHTML = '';
     if (target.kind === 'dynamic-video') {
@@ -736,10 +742,13 @@
         const img = document.createElement('img'); img.src = target.src; img.alt = target.alt || target.label; media.appendChild(img);
       }
     } else {
-      media.innerHTML = '<div class="psv2-scene-placeholder"><strong>' + escapeHtml(target.label) + '</strong><small>No scene image is available. Use the scene clues and written findings to continue.</small></div>';
+      const visualDescription = target.alt || ('Focused view of ' + target.label.toLowerCase());
+      const available = clues.length
+        ? clues.length + ' observation' + (clues.length === 1 ? '' : 's') + ' available below'
+        : (scene.contacts[targetId] ? 'Focused questions available below' : 'Use the written scene information');
+      media.innerHTML = '<div class="psv2-scene-placeholder"><span class="psv2-scene-placeholder-icon" aria-hidden="true">⌖</span><span class="psv2-scene-placeholder-kicker">FOCUSED SCENE VIEW</span><strong>' + escapeHtml(target.label) + '</strong><p>' + escapeHtml(visualDescription) + '</p><small>' + escapeHtml(available) + '</small></div>';
     }
     $('psv2SceneTargets').querySelectorAll('[data-scene-target]').forEach(btn => btn.setAttribute('aria-pressed', String(btn.dataset.sceneTarget === targetId)));
-    const clues = scene.clues.filter(clue => clue.target === targetId);
     $('psv2SceneClues').innerHTML = clues.map(clue => '<button type="button" class="psv2-btn" data-scene-clue="' + escapeHtml(clue.id) + '">' + escapeHtml(clue.label) + '</button>').join('');
     const contact = scene.contacts[targetId];
     $('psv2ContactForm').hidden = !contact;
@@ -750,10 +759,15 @@
   function buildScene() {
     if (!session || !session.scenario.sceneExperience) return;
     const targets = session.scenario.sceneExperience.targets;
-    $('psv2SceneTargets').innerHTML = Object.entries(targets).map(([id, target]) =>
-      '<button type="button" class="psv2-chip" data-scene-target="' + escapeHtml(id) + '">' + escapeHtml(target.label) + '</button>'
-    ).join('');
-    renderScene('environment');
+    const entries = Object.entries(targets);
+    const primaryIds = new Set(['patient', 'environment', 'backpack']);
+    const primary = entries.filter(([id]) => primaryIds.has(id));
+    const additional = entries.filter(([id]) => !primaryIds.has(id));
+    const button = ([id, target]) => '<button type="button" class="psv2-chip" data-scene-target="' + escapeHtml(id) + '">' + escapeHtml(target.label) + '</button>';
+    $('psv2SceneTargets').innerHTML =
+      '<div class="psv2-scene-primary">' + primary.map(button).join('') + '</div>' +
+      (additional.length ? '<details class="psv2-scene-more"><summary>More scene areas</summary><div>' + additional.map(button).join('') + '</div></details>' : '');
+    renderScene('patient');
   }
 
   function recordSceneEvent(action, result, metadata = {}) {
@@ -1272,7 +1286,13 @@ function beginCallFlow() {
     $('psv2MonitorActions').addEventListener('click', (e) => {
       const btn = e.target.closest('[data-monitor]');
       if (!btn || !session) return;
-      session.enableMonitor(btn.dataset.monitor);
+      if (btn.dataset.monitor === 'standard') {
+        ['hr', 'spo2', 'rr', 'bp'].forEach(channel => {
+          if (!session.getMonitorChannels()[channel]) session.enableMonitor(channel);
+        });
+      } else {
+        session.enableMonitor(btn.dataset.monitor);
+      }
       renderMonitor();
       renderTimeline();
     });
