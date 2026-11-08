@@ -320,6 +320,49 @@
 
 
 
+  function auditHandoff(report) {
+    const text = String(report || '');
+    const checks = [
+      ['patient age and sex', /\b\d{1,3}\b.*\b(?:female|male|woman|man)\b|\b(?:female|male|woman|man)\b.*\b\d{1,3}\b/i],
+      ['chief complaint', /breath|respir|asthma|wheez/i],
+      ['pertinent history', /history|asthma|inhaler|allerg/i],
+      ['current vital signs', /spo2|o2 sat|oxygen saturation|\brr\b|respiratory rate|\bhr\b|heart rate|blood pressure|\bbp\b/i],
+      ['treatments provided', /albuterol|ipratropium|oxygen|nebul|nrb|non.?rebreather|cpap/i],
+      ['response to treatment', /improv|wors|unchang|response|now|increased|decreased/i],
+      ['transport destination and ETA', /eta|minute|emergency department|hospital|medical center/i]
+    ];
+    const strengths = [];
+    const gaps = [];
+    checks.forEach(([label, pattern]) => (pattern.test(text) ? strengths : gaps).push(label));
+    return { strengths, gaps };
+  }
+
+  async function fetchAiLanguageCoach(coachingType, strengths, gaps) {
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = controller ? setTimeout(() => controller.abort(), 3200) : null;
+    try {
+      const res = await fetch('/api/patient-simulator-v2-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scenarioId: 'adult-asthma',
+          mode: 'coach',
+          coachingType,
+          strengths,
+          gaps
+        }),
+        signal: controller?.signal
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data?.reply || null;
+    } catch (_) {
+      return null;
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  }
+
   function renderRoleSelector() {
     const roles = window.PSV2.Scenarios.adultAsthma.crewRoles || {};
     $('psv2RoleCards').innerHTML = Object.entries(roles).map(([id, role]) =>
@@ -1274,26 +1317,32 @@ function beginCallFlow() {
       session.submitHandoff(report);
       const reply = $('psv2HandoffReply');
       reply.hidden = false;
-      reply.textContent = 'Receiving: Copy, Medic. We\'ll be ready for you. Continue care and complete your PCR after arrival.';
+      const localReceiving = 'Receiving: Copy, Medic. We\'ll be ready for you. Continue care and complete your PCR after arrival.';
+      reply.innerHTML = '<strong>Receiving</strong><br>' + escapeHtml(localReceiving) + '<br><br><strong>AI instructor</strong><br>Reviewing report…';
+      const audit = auditHandoff(report);
       const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-      const timer = controller ? setTimeout(() => controller.abort(), 1800) : null;
+      const timer = controller ? setTimeout(() => controller.abort(), 3200) : null;
+      let receiving = localReceiving;
+      let coaching = null;
       try {
-        const res = await fetch('/api/patient-simulator-v2-chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            scenarioId: 'adult-asthma',
-            mode: 'hospital',
-            report
-          }),
-          signal: controller?.signal
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.reply) reply.textContent = data.reply;
-        }
-      } catch (_) { /* local fallback already shown */ }
-      finally { if (timer) clearTimeout(timer); }
+        const [hospitalResult, coachResult] = await Promise.all([
+          fetch('/api/patient-simulator-v2-chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ scenarioId: 'adult-asthma', mode: 'hospital', report }),
+            signal: controller?.signal
+          }).then(async res => res.ok ? res.json() : null).catch(() => null),
+          fetchAiLanguageCoach('handoff', audit.strengths, audit.gaps)
+        ]);
+        if (hospitalResult?.reply) receiving = hospitalResult.reply;
+        coaching = coachResult;
+      } finally {
+        if (timer) clearTimeout(timer);
+      }
+      const localCoach = audit.gaps.length
+        ? 'Good start. Add ' + audit.gaps.slice(0, 2).join(' and ') + ' on the next report.'
+        : 'Strong report. The expected handoff elements were present.';
+      reply.innerHTML = '<strong>Receiving</strong><br>' + escapeHtml(receiving) + '<br><br><strong>AI instructor</strong><br>' + escapeHtml(coaching || localCoach);
       renderTimeline();
       refreshAll();
       openTab('pcr');
@@ -1323,16 +1372,25 @@ function beginCallFlow() {
       }
     });
 
-    $('psv2PcrSubmit').addEventListener('click', () => {
+    $('psv2PcrSubmit').addEventListener('click', async () => {
       if (!session) return;
       const fields = collectPcrFromForm();
       const submitted = session.submitPcr(fields);
       const box = $('psv2PcrResult');
       box.hidden = false;
       const d = submitted.comparison.discrepancies;
+      const matches = submitted.comparison.matches || [];
       box.innerHTML = d.length
+        ? `<strong>PCR submitted.</strong> Discrepancies:<br>${d.map(escapeHtml).join('<br>')}<br><br><em>AI instructor is reviewing the documentation…</em>`
+        : '<strong>PCR submitted.</strong> No major discrepancies detected vs timeline.<br><br><em>AI instructor is reviewing the documentation…</em>';
+      const coaching = await fetchAiLanguageCoach('documentation', matches, d);
+      const localCoach = d.length
+        ? 'Prioritize this correction: ' + d[0]
+        : 'The PCR captured the major timeline elements. Keep the narrative chronological and objective.';
+      box.innerHTML = (d.length
         ? `<strong>PCR submitted.</strong> Discrepancies:<br>${d.map(escapeHtml).join('<br>')}`
-        : '<strong>PCR submitted.</strong> No major discrepancies detected vs timeline.';
+        : '<strong>PCR submitted.</strong> No major discrepancies detected vs timeline.') +
+        '<br><br><strong>AI instructor</strong><br>' + escapeHtml(coaching || localCoach);
       renderTimeline();
       refreshAll();
       openTab('grade');
