@@ -127,7 +127,13 @@
         factKey: 'severityDescription',
         answer: () => {
           const clinical = patientEngine?.snapshotClinical?.() || {};
-          if (clinical.clinicalState === 'improving' || clinical.outcomeTrend === 'improving') {
+          // Patient speech and symptom report use the same live physiology that
+          // drives exam findings and monitor values.
+          if (clinical.speech === 'unable_to_speak') return '…can\'t… talk…';
+          if (clinical.speech === 'single_words') {
+            return facts.severePhrase || 'Worse... can\'t... get air...';
+          }
+          if (clinical.outcomeTrend === 'improving' || clinical.clinicalState === 'improving') {
             return facts.improvingPhrase || 'A little better — still tight, but I can talk more.';
           }
           if (clinical.clinicalState === 'severe' || clinical.clinicalState === 'impending_failure') {

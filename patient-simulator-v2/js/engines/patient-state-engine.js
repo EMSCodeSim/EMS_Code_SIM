@@ -61,7 +61,7 @@
   function vitalsFromPhysiology(state) {
     const severity = state.bronchospasmSeverity;
     const fatigue = state.respiratoryFatigue;
-    const o2Boost = state.oxygenSupport === 'nrb' ? 4 : state.oxygenSupport === 'nc' ? 2 : state.oxygenSupport === 'cpap' ? 5 : 0;
+    const o2Boost = state.oxygenSupport === 'nrb' ? 4 : state.oxygenSupport === 'nc' ? 2 : state.oxygenSupport === 'nebulizer' ? 3 : state.oxygenSupport === 'cpap' ? 5 : 0;
     const nebBoost = state.activeNebulizer ? 1 : 0;
 
     let rr;
@@ -269,7 +269,12 @@
       state.lastTreatmentAt = state.elapsedTime;
 
       if (treatment.category === 'oxygen' || /oxygen|nrb|nasal|cpap|bvm/i.test(treatment.id || '')) {
-        state.oxygenSupport = treatment.device || treatment.id;
+        const support = String(treatment.device || treatment.id || '').toLowerCase();
+        if (/nrb|non.?rebreather/.test(support)) state.oxygenSupport = 'nrb';
+        else if (/nasal|\bnc\b/.test(support)) state.oxygenSupport = 'nc';
+        else if (/cpap/.test(support)) state.oxygenSupport = 'cpap';
+        else if (/nebulizer|\bneb\b/.test(support)) state.oxygenSupport = 'nebulizer';
+        else state.oxygenSupport = support;
       }
       if (/nebulizer|neb/i.test(treatment.device || '') || /albuterol|ipratropium|duoneb/i.test(treatment.medication || '')) {
         state.activeNebulizer = true;
