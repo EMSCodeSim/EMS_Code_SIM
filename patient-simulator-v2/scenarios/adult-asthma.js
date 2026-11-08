@@ -56,6 +56,8 @@
       severityDescription: 'It\'s hard to breathe. I can only get a few words out at a time.',
       severePhrase: 'Worse... can\'t... get air...',
       improvingPhrase: 'A little better — still tight, but I can talk more.',
+      stabilizingPhrase: 'A little steadier, but my chest still feels tight and I am still short of breath.',
+      worseningPhrase: 'It feels harder to breathe now. I am getting tired.',
       chestPain: 'No chest pain — just tightness from not getting air.',
       fever: 'No fever. This came on pretty fast.',
       lastOralIntake: 'I had a sandwich about three hours ago.',

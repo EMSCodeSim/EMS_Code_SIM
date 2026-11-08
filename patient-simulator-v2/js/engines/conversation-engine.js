@@ -30,7 +30,7 @@
       },
       {
         id: 'chief',
-        patterns: ['what.s wrong', 'what happened', 'why did you call', 'chief', 'bothering', 'feeling'],
+        patterns: ['what.s wrong', 'what happened', 'why did you call', 'chief', 'bothering'],
         factKey: 'chiefComplaint',
         answer: () => `I can't catch my breath. ${facts.chiefComplaint ? `It's ${facts.chiefComplaint}.` : ''}`.trim(),
         discovery: 'chiefComplaint'
@@ -123,7 +123,7 @@
       },
       {
         id: 'severity_now',
-        patterns: ['how bad', 'scale', 'worse', 'better', 'compared'],
+        patterns: ['how bad', 'scale', 'worse', 'better', 'compared', 'how are you feeling', 'how do you feel', 'do you feel', 'feeling better', 'feel better'],
         factKey: 'severityDescription',
         answer: () => {
           const clinical = patientEngine?.snapshotClinical?.() || {};
@@ -135,6 +135,12 @@
           }
           if (clinical.outcomeTrend === 'improving' || clinical.clinicalState === 'improving') {
             return facts.improvingPhrase || 'A little better — still tight, but I can talk more.';
+          }
+          if (clinical.outcomeTrend === 'stabilizing') {
+            return facts.stabilizingPhrase || 'A little steadier, but I still feel tight and short of breath.';
+          }
+          if (clinical.outcomeTrend === 'deteriorating') {
+            return facts.worseningPhrase || 'It feels harder to breathe now. I’m getting tired.';
           }
           if (clinical.clinicalState === 'severe' || clinical.clinicalState === 'impending_failure') {
             return facts.severePhrase || 'Worse... can\'t... get air...';
