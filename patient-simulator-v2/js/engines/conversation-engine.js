@@ -23,7 +23,7 @@
     const FACT_RESPONSES = [
       {
         id: 'onset',
-        patterns: ['when did', 'how long', 'start', 'onset', 'began', 'happen'],
+        patterns: ['when did', 'how long', 'when this started', 'started', 'onset', 'began'],
         factKey: 'onset',
         answer: () => facts.onset || 'It started a little while ago.',
         discovery: 'onset'
@@ -50,7 +50,7 @@
       },
       {
         id: 'medications',
-        patterns: ['medication', 'meds', 'inhaler', 'what do you take', 'prescription'],
+        patterns: ['medication', 'meds', 'what do you take', 'prescription', 'which inhaler', 'what inhaler do'],
         factKey: 'medications',
         answer: () => {
           const meds = profile.medications || facts.medications || [];
@@ -61,6 +61,25 @@
           return base;
         },
         discovery: 'medications'
+      },
+      {
+        id: 'inhaler_use',
+        patterns: ['used your inhaler', 'use your inhaler', 'inhaler today', 'inhaler help', 'did it help', 'how many puffs', 'how many times', 'rescue inhaler'],
+        factKey: 'inhalerUse',
+        answer: () => {
+          const attempts = facts.inhalerAttempts ?? profile.inhalerAttempts;
+          const medication = (profile.medications || facts.medications || []).find(m => /albuterol/i.test(m)) || 'rescue inhaler';
+          if (attempts == null) return 'I tried my inhaler, but it has not helped much.';
+          return `I used my ${medication} about ${attempts} times today... it barely helped.`;
+        },
+        discovery: 'inhaler_use'
+      },
+      {
+        id: 'recent_steroid_use',
+        patterns: ['steroid', 'prednisone', 'prednisolone', 'dexamethasone'],
+        factKey: 'recentSteroidUse',
+        answer: () => facts.recentSteroidUse || 'I do not remember taking steroids for this episode.',
+        discovery: 'recent_steroid_use'
       },
       {
         id: 'allergies',
@@ -118,7 +137,7 @@
       },
       {
         id: 'fever',
-        patterns: ['fever', 'sick', 'infection', 'cold'],
+        patterns: ['fever', 'sick', 'infection', 'cold', 'recent illness', 'been ill', 'feel ill'],
         factKey: 'fever',
         answer: () => facts.fever || 'No fever. This came on pretty fast.',
         discovery: 'pertinent_negative_fever'
@@ -150,7 +169,9 @@
         return {
           reply: '…',
           matchedFact: null,
+          matchedFacts: [],
           discovery: null,
+          discoveries: [],
           source: 'local'
         };
       }
@@ -160,32 +181,56 @@
         return {
           reply: 'I don\'t know those numbers — you\'ll have to check me.',
           matchedFact: null,
+          matchedFacts: [],
           discovery: null,
+          discoveries: [],
           source: 'local',
           redirectedToAssessment: true
         };
       }
 
-      for (const entry of FACT_RESPONSES) {
-        if (includesAny(q, entry.patterns)) {
-          const reply = entry.answer();
-          return {
-            reply,
-            matchedFact: entry.factKey,
-            discovery: entry.discovery,
-            source: 'local',
-            factValue: facts[entry.factKey] ?? profile[entry.factKey] ?? null
-          };
-        }
+      const speech = patientEngine?.snapshotClinical?.()?.speech;
+      if (speech === 'unable_to_speak') {
+        return {
+          reply: '…can\'t… talk…',
+          matchedFact: null,
+          matchedFacts: [],
+          discovery: null,
+          discoveries: [],
+          source: 'local'
+        };
+      }
+
+      // Match every clearly requested fact so a compound question does not silently
+      // lose its second part. Limit single-word speech to one fact and keep answers short.
+      const matches = FACT_RESPONSES.filter(entry => includesAny(q, entry.patterns));
+      const selected = speech === 'single_words' ? matches.slice(0, 1) : matches.slice(0, 3);
+      if (selected.length) {
+        const replies = selected.map(entry => String(entry.answer() || '').trim()).filter(Boolean);
+        const reply = replies.length > 1 ? replies.join('... ') : (replies[0] || '');
+        const matchedFacts = selected.map(entry => entry.factKey);
+        const discoveries = selected.map(entry => entry.discovery).filter(Boolean);
+        return {
+          reply,
+          matchedFact: matchedFacts[0] || null,
+          matchedFacts,
+          discovery: discoveries[0] || null,
+          discoveries,
+          source: 'local',
+          factValue: matchedFacts.length === 1
+            ? (facts[matchedFacts[0]] ?? profile[matchedFacts[0]] ?? null)
+            : Object.fromEntries(matchedFacts.map(key => [key, facts[key] ?? profile[key] ?? null]))
+        };
       }
 
       // Vague fallback — does not dump full SAMPLE/OPQRST.
-      const speech = patientEngine?.snapshotClinical?.()?.speech;
-      if (speech === 'unable_to_speak' || speech === 'single_words') {
+      if (speech === 'single_words') {
         return {
-          reply: speech === 'unable_to_speak' ? '…air…' : 'Can\'t… talk…',
+          reply: 'Can\'t... talk...',
           matchedFact: 'speech_limit',
+          matchedFacts: ['speech_limit'],
           discovery: null,
+          discoveries: [],
           source: 'local'
         };
       }
@@ -193,7 +238,9 @@
       return {
         reply: facts.defaultReply || 'I\'m having a hard time talking. What do you need to know?',
         matchedFact: null,
+        matchedFacts: [],
         discovery: null,
+        discoveries: [],
         source: 'local'
       };
     }
@@ -213,36 +260,30 @@
       history.push({ role: 'learner', text: learnerText, at: elapsed });
       history.push({ role: 'patient', text: result.reply, at: elapsed, fact: result.matchedFact });
 
-      if (result.discovery && !discovered.has(result.discovery)) {
-        discovered.add(result.discovery);
-        timeline.push({
-          timestamp: elapsed,
-          eventType: 'conversation',
-          action: `History discovered: ${result.discovery}`,
-          result: result.reply,
-          clinicalStateBefore: patientEngine?.snapshotClinical?.() || null,
-          clinicalStateAfter: patientEngine?.snapshotClinical?.() || null,
-          metadata: {
-            discovery: result.discovery,
-            matchedFact: result.matchedFact,
-            learnerQuestion: learnerText
-          }
-        });
-      } else {
-        timeline.push({
-          timestamp: elapsed,
-          eventType: 'conversation',
-          action: 'Patient conversation',
-          result: result.reply,
-          clinicalStateBefore: patientEngine?.snapshotClinical?.() || null,
-          clinicalStateAfter: patientEngine?.snapshotClinical?.() || null,
-          metadata: {
-            matchedFact: result.matchedFact,
-            learnerQuestion: learnerText,
-            discovery: result.discovery
-          }
-        });
+      const newlyDiscovered = [];
+      for (const item of (result.discoveries || (result.discovery ? [result.discovery] : []))) {
+        if (!discovered.has(item)) {
+          discovered.add(item);
+          newlyDiscovered.push(item);
+        }
       }
+      timeline.push({
+        timestamp: elapsed,
+        eventType: 'conversation',
+        action: newlyDiscovered.length
+          ? `History discovered: ${newlyDiscovered.join(', ')}`
+          : 'Patient conversation',
+        result: result.reply,
+        clinicalStateBefore: patientEngine?.snapshotClinical?.() || null,
+        clinicalStateAfter: patientEngine?.snapshotClinical?.() || null,
+        metadata: {
+          discovery: newlyDiscovered[0] || result.discovery || null,
+          discoveries: newlyDiscovered,
+          matchedFact: result.matchedFact,
+          matchedFacts: result.matchedFacts || [],
+          learnerQuestion: learnerText
+        }
+      });
 
       return { ...result, discoveries: Array.from(discovered) };
     }
