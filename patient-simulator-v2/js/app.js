@@ -931,6 +931,9 @@ function beginCallFlow() {
       if (evt.type === 'assessment' || evt.type === 'treatment' || evt.type === 'conversation' || evt.type === 'transport' || evt.type === 'handoff' || evt.type === 'pcr') {
         renderTimeline();
       }
+      // Treatment nudges patient physiology immediately; refresh any active monitor
+      // channels in the same event turn instead of waiting for the next clock tick.
+      if (evt.type === 'treatment' || evt.type === 'monitor') renderMonitorValues();
       if (evt.type === 'conversation') renderChat();
       if (evt.type === 'monitor') renderMonitor();
     });
