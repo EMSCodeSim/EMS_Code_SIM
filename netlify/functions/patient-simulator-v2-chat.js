@@ -63,6 +63,38 @@ export default async (request, context) => {
 
   const mode = cleanText(body.mode, 20) || 'patient';
 
+  if (mode === 'coach') {
+    const coachingType = cleanText(body.coachingType, 30);
+    if (!['handoff', 'documentation'].includes(coachingType)) return json({ error: 'Unsupported coaching type.' }, 400);
+    const strengths = (Array.isArray(body.strengths) ? body.strengths : []).map(x => cleanText(x, 140)).filter(Boolean).slice(0, 6);
+    const gaps = (Array.isArray(body.gaps) ? body.gaps : []).map(x => cleanText(x, 180)).filter(Boolean).slice(0, 8);
+    const fallback = gaps.length
+      ? `Coach: Good start. On the next attempt, focus first on ${gaps[0].replace(/[.!]$/, '').toLowerCase()}.`
+      : `Coach: Strong ${coachingType === 'handoff' ? 'radio report' : 'documentation'} — the required elements were present and consistent with the scenario timeline.`;
+    const apiKey = Netlify.env.get('OPENAI_API_KEY');
+    if (!apiKey) return json({ source: 'fallback', reason: 'ai_not_configured', reply: fallback });
+    try {
+      const model = Netlify.env.get('EMSCODESIM_V2_CHAT_MODEL') || Netlify.env.get('OPENAI_NARRATIVE_MODEL') || 'gpt-4.1-mini';
+      const response = await fetch(OPENAI_URL, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model,
+          store: false,
+          instructions: `You are a concise EMS instructor coaching a learner's ${coachingType}. The supplied strengths and gaps are authoritative. Do not rescore, invent omissions, add clinical facts, or give protocol-specific treatment advice. Give one specific strength and one highest-priority improvement in no more than 55 words. If there are no gaps, reinforce the strongest element and say it was complete. Educational simulation only.`,
+          input: JSON.stringify({ strengths, gaps }),
+          max_output_tokens: 140
+        })
+      });
+      const payload = await response.json().catch(() => ({}));
+      const reply = cleanText(outputText(payload), 420);
+      if (!response.ok || !reply) return json({ source: 'fallback', reason: 'ai_unavailable', reply: fallback });
+      return json({ source: 'ai', reply });
+    } catch {
+      return json({ source: 'fallback', reason: 'ai_unavailable', reply: fallback });
+    }
+  }
+
   if (mode === 'hospital') {
     const report = cleanText(body.report, 2000);
     const fallback = hospitalFallback(report);
