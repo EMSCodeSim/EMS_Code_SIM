@@ -55,16 +55,25 @@
         answer: () => {
           const meds = profile.medications || facts.medications || [];
           if (!meds.length) return 'I don\'t take any medications regularly.';
-          const attempts = facts.inhalerAttempts ?? profile.inhalerAttempts;
-          const base = `I use ${meds.join(' and ')}.`;
-          if (attempts != null) return `${base} I already used my inhaler about ${attempts} times and it barely helped.`;
-          return base;
+          return `I use ${meds.join(' and ')}.`;
         },
         discovery: 'medications'
       },
       {
+        id: 'inhaler_puffs',
+        patterns: ['how many puffs', 'how much did you take from the inhaler'],
+        factKey: 'inhalerPuffCount',
+        answer: () => {
+          const attempts = facts.inhalerAttempts ?? profile.inhalerAttempts;
+          return attempts == null
+            ? 'I can\'t remember how many puffs I took.'
+            : `I can\'t remember how many puffs each time... I used it about ${attempts} times today.`;
+        },
+        discovery: 'inhaler_puff_count'
+      },
+      {
         id: 'inhaler_use',
-        patterns: ['used your inhaler', 'use your inhaler', 'inhaler today', 'inhaler help', 'did it help', 'how many puffs', 'how many times', 'rescue inhaler'],
+        patterns: ['used your inhaler', 'use your inhaler', 'inhaler today', 'inhaler help', 'did it help', 'how many times', 'rescue inhaler'],
         factKey: 'inhalerUse',
         answer: () => {
           const attempts = facts.inhalerAttempts ?? profile.inhalerAttempts;
