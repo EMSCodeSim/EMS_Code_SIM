@@ -36,6 +36,8 @@
       medications: ['albuterol inhaler'],
       allergies: 'NKDA',
       inhalerAttempts: 3,
+      inhalerUse: 'Used albuterol inhaler about 3 times today with minimal relief.',
+      recentSteroidUse: 'No systemic steroids taken for this episode; last use before this episode is unknown.',
       previousHospitalizations: 2,
       previousIntubation: false,
       anaphylaxis: false

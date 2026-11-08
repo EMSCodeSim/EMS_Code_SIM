@@ -1097,7 +1097,7 @@ function beginCallFlow() {
     });
 
     async function maybeAiPatientPhrasing(text, local) {
-      if (!local?.matchedFact) return null;
+      if (!local?.matchedFact || local.factValue == null || (local.matchedFacts?.length || 0) > 1) return null;
       const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
       const timer = controller ? setTimeout(() => controller.abort(), 1800) : null;
       try {
@@ -1169,15 +1169,17 @@ function beginCallFlow() {
       input.value = '';
 
       // Local fact engine answers immediately (never blocked by AI availability).
-      session.talkToPatient(text);
+      const responseSession = session;
+      responseSession.talkToPatient(text);
       renderChat();
       renderTimeline();
       refreshAll();
 
-      // Optional AI rephrase in background — does not delay or replace the recorded facts.
-      const local = session.conversation.answerFromFacts(text);
+      // Optional single-fact AI phrasing cannot replace a newer answer or a multi-fact reply.
+      const responseHistoryLength = responseSession.conversation.getHistory().length;
+      const local = responseSession.conversation.answerFromFacts(text);
       maybeAiPatientPhrasing(text, local).then((aiPhrasing) => {
-        if (!aiPhrasing || !session) return;
+        if (!aiPhrasing || session !== responseSession || responseSession.conversation.getHistory().length !== responseHistoryLength) return;
         // Surface phrasing hint only in UI chat bubble without inventing new facts.
         const log = $('psv2ChatLog');
         const last = log?.querySelector('.psv2-msg.patient:last-child');
