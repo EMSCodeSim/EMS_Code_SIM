@@ -1097,7 +1097,7 @@ function beginCallFlow() {
     });
 
     async function maybeAiPatientPhrasing(text, local) {
-      if (!local?.matchedFact || (local.matchedFacts?.length || 0) > 1) return null;
+      if (!local?.matchedFact || local.factValue == null || (local.matchedFacts?.length || 0) > 1) return null;
       const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
       const timer = controller ? setTimeout(() => controller.abort(), 1800) : null;
       try {
