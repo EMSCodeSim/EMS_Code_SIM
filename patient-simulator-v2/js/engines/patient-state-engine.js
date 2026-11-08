@@ -271,9 +271,9 @@
       if (treatment.category === 'oxygen' || /oxygen|nrb|nasal|cpap|bvm/i.test(treatment.id || '')) {
         const support = String(treatment.device || treatment.id || '').toLowerCase();
         if (/nrb|non.?rebreather/.test(support)) state.oxygenSupport = 'nrb';
-        else if (/nasal|\\bnc\\b/.test(support)) state.oxygenSupport = 'nc';
+        else if (/nasal|\bnc\b/.test(support)) state.oxygenSupport = 'nc';
         else if (/cpap/.test(support)) state.oxygenSupport = 'cpap';
-        else if (/nebulizer|\\bneb\\b/.test(support)) state.oxygenSupport = 'nebulizer';
+        else if (/nebulizer|\bneb\b/.test(support)) state.oxygenSupport = 'nebulizer';
         else state.oxygenSupport = support;
       }
       if (/nebulizer|neb/i.test(treatment.device || '') || /albuterol|ipratropium|duoneb/i.test(treatment.medication || '')) {
