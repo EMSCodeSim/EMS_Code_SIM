@@ -136,3 +136,19 @@
   function start(){normalizeBrand();installSharedStyles();enhanceFooter();applyHome();keepHeroScenarioFirst();setTimeout(()=>{normalizeBrand();enhanceFooter();applyHome();},100);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
+
+/* Lightweight entry point to the free weekly habit; no new account or record system. */
+(function(){
+  function addWeeklyPractice(){
+    if(!['/','/index.html'].includes(location.pathname)||document.getElementById('weeklyPracticeEntry'))return;
+    const section=document.createElement('section');
+    section.id='weeklyPracticeEntry';
+    section.setAttribute('aria-label','Weekly EMS practice');
+    section.style.cssText='max-width:1120px;margin:20px auto;padding:20px;border:1px solid #8ca9b8;border-radius:12px;background:#102a3b;color:#fff;display:flex;gap:18px;flex-wrap:wrap;align-items:center;justify-content:space-between';
+    section.innerHTML='<div><strong style="font-size:1.3rem">Your 3-day EMS practice week</strong><p style="margin:6px 0;color:#d2e7ed">Quick questions, one patient scenario, and an EMS game. Free, 5–10 minutes at a time.</p></div><a href="/weekly-ems-practice.html" style="background:#f0b429;color:#10202b;padding:13px 18px;border-radius:8px;font-weight:800;text-decoration:none;min-height:44px">Start weekly practice →</a>';
+    const hero=document.querySelector('.hero-home');
+    if(hero)hero.insertAdjacentElement('afterend',section);
+    section.querySelector('a').addEventListener('click',function(){if(Array.isArray(window.dataLayer))window.dataLayer.push({event:'ems_weekly_practice_click',source:'homepage'})});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addWeeklyPractice,{once:true});else addWeeklyPractice();
+})();
