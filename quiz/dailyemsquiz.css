@@ -66,3 +66,21 @@ h1{font-size:clamp(38px,7vw,74px);line-height:.95;letter-spacing:-.065em;margin:
 .quiz-breadcrumb{width:min(1120px,calc(100% - 32px));margin:18px auto 0;color:var(--muted);font-size:13px}
 .quiz-breadcrumb a{font-weight:800}
 @media(max-width:760px){.nav{align-items:flex-start}.nav-links{gap:4px}.nav-links a{padding:8px 9px;font-size:13px}.brand-text small{display:none}}
+
+/* Quiz-specific phone improvements: comfortable tap targets, wrapping labels,
+   and room for the sticky controls above the device safe area. */
+@media (max-width: 640px) {
+  .quiz-shell { padding: 20px 0 calc(76px + env(safe-area-inset-bottom)); }
+  .quiz-title-card, .score-card { padding: 16px; }
+  .question-box { padding: 14px; border-radius: 18px; scroll-margin-top: 16px; }
+  .question-kicker { flex-wrap: wrap; align-items: flex-start; font-size: 11px; }
+  .question-kicker span:last-child { margin-left: auto; text-align: right; }
+  .question-text { font-size: 17px; line-height: 1.5; }
+  .choice { min-height: 48px; padding: 13px 12px; align-items: center; line-height: 1.45; }
+  .choice input { width: 20px; height: 20px; flex: 0 0 20px; margin: 0 2px 0 0; }
+  .quiz-actions { bottom: env(safe-area-inset-bottom); padding: 10px; border-radius: 16px 16px 0 0; }
+  .quiz-actions > div:last-child { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px !important; }
+  .quiz-actions .btn { min-height: 48px; min-width: 0; padding: 10px 8px; }
+  .quiz-actions .result { font-size: 13px; line-height: 1.35; }
+  .explanation { font-size: 15px; }
+}

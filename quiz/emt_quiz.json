@@ -1,3 +1,6 @@
+Warning: truncated output (original token count: 32424)
+Total output lines: 2676
+
 [
   {
     "question": "An EMT arrives to find a 68-year-old patient sitting upright, speaking in two-word sentences. Respirations are 30/min with visible accessory muscle use, SpO₂ 89%, and a strong radial pulse. Which action is the best immediate priority?",
@@ -252,14 +255,14 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient undergoing chemotherapy has fever and a very low white blood cell count. Which function is most impaired?",
+    "question": "A patient receiving chemotherapy has a very low neutrophil count. Which function is most directly reduced?",
     "choices": [
-      "Immune defense against infection",
-      "Platelet-mediated clot formation only",
-      "Hemoglobin-mediated oxygen carriage only",
-      "Plasma volume regulation by the kidneys only"
+      "Defense against bacterial and fungal infection",
+      "Formation of a platelet plug at an injured vessel",
+      "Transport of oxygen from the lungs to body tissues",
+      "Transport of clotting proteins through the bloodstream"
     ],
-    "answer": "Immune defense against infection",
+    "answer": "Defense against bacterial and fungal infection",
     "topic": "Medical Emergencies",
     "subtopic": "Medical Emergencies",
     "reason": "White blood cells are central to immune defense; neutropenia increases infection risk.",
@@ -1080,43 +1083,43 @@
   {
     "question": "EMS is called to a possible assault where law enforcement has secured the scene. How should providers balance urgent care and evidence preservation?",
     "choices": [
-      "Take photos of the scene",
-      "Interview witnesses",
-      "Avoid disturbing evidence while providing care",
-      "Collect evidence for police"
+      "Provide necessary patient care while minimizing disturbance and notifying law enforcement about potential evidence",
+      "Delay time-sensitive care until forensic personnel approve scene access",
+      "Move items obstructing access and document any changes after transport",
+      "Interview witnesses in detail before beginning patient assessment"
     ],
-    "answer": "Avoid disturbing evidence while providing care",
+    "answer": "Provide necessary patient care while minimizing disturbance and notifying law enforcement about potential evidence",
     "topic": "EMS Operations",
     "subtopic": "Operations",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction.",
+    "reason": "Patient care remains the priority. When feasible, avoid unnecessary disturbance, document relevant observations, and coordinate evidence concerns with law enforcement.",
     "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "An ambulance approaches a red light while responding with warning devices. What driving responsibility remains?",
     "choices": [
-      "Follow all traffic laws with due regard",
-      "Drive at any speed",
-      "Ignore traffic signals",
-      "Pass on the shoulder at will"
+      "Provide necessary patient care while minimizing disturbance and notifying law enforcement about potential evidence",
+      "Delay time-sensitive care until forensic personnel approve scene access",
+      "Move items obstructing access and document any changes after transport",
+      "Interview witnesses in detail before beginning patient assessment"
     ],
-    "answer": "Follow all traffic laws with due regard",
+    "answer": "Provide necessary patient care while minimizing disturbance and notifying law enforcement about potential evidence",
     "topic": "EMS Operations",
     "subtopic": "Operations",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction.",
+    "reason": "Patient care remains the priority. When feasible, avoid unnecessary disturbance, document relevant observations, and coordinate evidence concerns with law enforcement.",
     "difficulty": "clinical-judgment-draft"
   },
   {
     "question": "Multiple agencies arrive at a bus crash with many patients. What is the main purpose of establishing incident command?",
     "choices": [
-      "Establish control and coordination",
-      "Perform surgery",
-      "Load all patients rapidly",
-      "Avoid documentation"
+      "Stop as required, slow, and proceed only when the intersection is clear and it is lawful to do so",
+      "Proceed at normal response speed because warning lights and siren require traffic to yield",
+      "Continue through the intersection if the siren has been audible for several seconds",
+      "Yield only when another vehicle has already entered the intersection"
     ],
-    "answer": "Establish control and coordination",
+    "answer": "Stop as required, slow, and proceed only when the intersection is clear and it is lawful to do so",
     "topic": "EMS Operations",
     "subtopic": "Patient Assessment",
-    "reason": "Follow legal, ethical, and system priorities: scene safety, consent, documentation, and appropriate medical direction.",
+    "reason": "Warning devices do not remove the duty to operate with due regard. Follow state law and agency policy, and do not enter an intersection until it is safe.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1221,214 +1224,7 @@
     "question": "A 58-year-old with suspected ACS has no aspirin allergy or active bleeding and can chew medication. Your protocol permits 162–325 mg of aspirin. Which dose is within that range?",
     "choices": [
       "81 mg total",
-      "324 mg total",
-      "650 mg total",
-      "1,000 mg total"
-    ],
-    "answer": "324 mg total",
-    "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies",
-    "reason": "Four 81-mg chewable tablets total 324 mg, within a common 162–325 mg ACS protocol range. Follow local protocols.",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "During suspected acute coronary syndrome, an EMT explains why aspirin is useful even though it does not directly relieve pain. What does it help prevent?",
-    "choices": [
-      "Relaxes chest muscles",
-      "Improves oxygen delivery",
-      "Prevents clot growth",
-      "Stops chest pain immediately"
-    ],
-    "answer": "Prevents clot growth",
-    "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Respiratory",
-    "reason": "Aspirin reduces platelet-mediated clot growth during suspected ACS but does not dissolve an established clot.",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "A patient with prescribed nitroglycerin requests help for familiar angina. Which listed condition supports assisting under a protocol that requires a systolic pressure above 100 mmHg?",
-    "choices": [
-      "The patient has chest trauma",
-      "The patient has a prescription and systolic BP > 100 mmHg",
-      "The patient is unconscious",
-      "The EMT carries nitroglycerin"
-    ],
-    "answer": "The patient has a prescription and systolic BP > 100 mmHg",
-    "topic": "Trauma",
-    "subtopic": "Trauma Care",
-    "reason": "Assistance with prescribed nitroglycerin requires protocol authorization, adequate blood pressure and screening for contraindications including PDE-5 inhibitors.",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "A patient with prescribed nitroglycerin is instructed to place a tablet under the tongue. What route is this?",
-    "choices": [
-      "Intramuscular",
-      "Oral",
-      "Sublingual",
-      "Intravenous"
-    ],
-    "answer": "Sublingual",
-    "topic": "Medical Emergencies",
-    "subtopic": "Medical Emergencies",
-    "reason": "Sublingual medication is placed beneath the tongue for absorption through oral mucosa.",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "A patient with chest pain asks for prescribed nitroglycerin and reports taking sildenafil earlier today. What is the safest next step?",
-    "choices": [
-      "Withhold nitroglycerin and follow local PDE-5 inhibitor precautions and medical direction",
-      "Give nitroglycerin because the patient has chest pain",
-      "Give nitroglycerin after aspirin regardless of medication history",
-      "Ignore the sildenafil history if the initial blood pressure is normal"
-    ],
-    "answer": "Withhold nitroglycerin and follow local PDE-5 inhibitor precautions and medical direction",
-    "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiac Emergencies",
-    "reason": "Nitrates after recent sildenafil can cause profound hypotension. Avoidance windows vary by PDE-5 agent; follow current local protocols and medical direction.",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "A patient with angina asks what prescribed nitroglycerin does. Which explanation best describes its vascular effect?",
-    "choices": [
-      "It increases heart rate",
-      "It decreases respiratory rate",
-      "It dilates blood vessels to improve blood flow",
-      "It constricts coronary arteries"
-    ],
-    "answer": "It dilates blood vessels to improve blood flow",
-    "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Respiratory",
-    "reason": "Nitroglycerin is a vasodilator that lowers preload and myocardial oxygen demand; hypotension is an important risk.",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "An asthmatic patient uses a prescribed albuterol inhaler and reports improved airflow. Which mechanism best explains the benefit?",
-    "choices": [
-      "Reduces mucus secretion",
-      "Suppresses cough reflex",
-      "Dilates the bronchioles",
-      "Decreases respiratory rate"
-    ],
-    "answer": "Dilates the bronchioles",
-    "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Respiratory",
-    "reason": "Albuterol stimulates beta-2 receptors to relax bronchial smooth muscle and improve airflow.",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "A patient with wheezing and shortness of breath has a history of asthma and a prescribed inhaler. Which condition is an indication for albuterol?",
-    "choices": [
-      "Chest trauma",
-      "Wheezing and shortness of breath",
-      "Bradycardia",
-      "Nasal congestion"
-    ],
-    "answer": "Wheezing and shortness of breath",
-    "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Respiratory",
-    "reason": "Albuterol is indicated for bronchospasm with wheezing and dyspnea when authorized by protocol.",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "After using albuterol, a patient reports tremor and a faster pulse but easier breathing. Which side-effect pattern is expected?",
-    "choices": [
-      "Slow heart rate",
-      "Drowsiness",
-      "Shakiness and increased heart rate",
-      "Low blood sugar"
-    ],
-    "answer": "Shakiness and increased heart rate",
-    "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiology",
-    "reason": "Tremor and tachycardia are common beta-agonist adverse effects after albuterol.",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "A wheezing patient requests help using an inhaler. Under a protocol permitting assistance with the patient's prescribed medication, which circumstance meets that requirement?",
-    "choices": [
-      "The patient is unresponsive",
-      "They have verbal orders from medical control",
-      "The patient has their own prescribed inhaler",
-      "They carry a department-issued inhaler"
-    ],
-    "answer": "The patient has their own prescribed inhaler",
-    "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Airway, Respiration",
-    "reason": "Assistance with a patient's prescribed inhaler depends on local scope and protocol; assess indication and contraindications.",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "A patient has anaphylaxis with airway swelling and hypotension. Which effect of epinephrine contributes to reversing the emergency?",
-    "choices": [
-      "Promotes digestion",
-      "Constricts airways",
-      "Relaxes smooth muscles and opens airways",
-      "Slows the heart rate"
-    ],
-    "answer": "Relaxes smooth muscles and opens airways",
-    "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiology",
-    "reason": "Epinephrine provides bronchodilation and vasoconstriction in anaphylaxis; intramuscular epinephrine is first-line.",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "A patient develops airway swelling, wheezing, and poor perfusion after eating a known allergen. When is epinephrine indicated?",
-    "choices": [
-      "For mild allergic reactions",
-      "Only after contacting the ER",
-      "When signs of severe allergic reaction are present",
-      "Only for patients with asthma"
-    ],
-    "answer": "When signs of severe allergic reaction are present",
-    "topic": "Medical Emergencies",
-    "subtopic": "Respiratory",
-    "reason": "Anaphylaxis with respiratory or circulatory compromise warrants prompt intramuscular epinephrine per protocol.",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "An EMT prepares an approved epinephrine auto-injector for a patient with anaphylaxis. Which route is used?",
-    "choices": [
-      "Oral",
-      "Intranasal",
-      "Intramuscular (auto-injector)",
-      "Sublingual"
-    ],
-    "answer": "Intramuscular (auto-injector)",
-    "topic": "Medical Emergencies",
-    "subtopic": "Medical Emergencies",
-    "reason": "Auto-injectors deliver epinephrine intramuscularly, usually into the anterolateral thigh.",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "After an epinephrine auto-injector is used for anaphylaxis, a patient reports palpitations and feels anxious. Which reaction is a recognized medication effect?",
-    "choices": [
-      "Bradycardia",
-      "Low blood pressure",
-      "Anxiety and rapid heartbeat",
-      "Sedation"
-    ],
-    "answer": "Anxiety and rapid heartbeat",
-    "topic": "Cardiology & Resuscitation",
-    "subtopic": "Cardiology",
-    "reason": "Epinephrine may produce anxiety, palpitations and tachycardia through adrenergic stimulation.",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "An unresponsive patient has snoring respirations after a suspected overdose. No trauma is suspected. What immediate action can relieve tongue-related airway obstruction?",
-    "choices": [
-      "Insert an OPA and ventilate",
-      "Open the airway with a head-tilt chin-lift if no trauma is suspected",
-      "Start chest compressions",
-      "Administer oral glucose"
-    ],
-    "answer": "Open the airway with a head-tilt chin-lift if no trauma is suspected",
-    "reason": "An open airway is required before adjuncts or ventilation. Snoring suggests tongue obstruction that often improves with manual airway opening.",
-    "topic": "Airway, Respiration & Ventilation",
-    "subtopic": "Airway Management",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "An adult with difficulty breathing has a harsh high-pitched sound during inspiration heard over the neck. Which sound suggests upper-airway narrowing?",
+      "324 mg to…2424 tokens truncated…iration heard over the neck. Which sound suggests upper-airway narrowing?",
     "choices": [
       "Wheezing",
       "Crackles",
@@ -1456,14 +1252,14 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient on a non-rebreather becomes exhausted, has shallow respirations, and is less responsive. What change in management is needed?",
+    "question": "A patient receiving oxygen by non-rebreather becomes exhausted, breathes shallowly, and is less responsive. Which change is most appropriate?",
     "choices": [
-      "When the patient complains of dry mouth",
-      "When breathing becomes inadequate or the patient becomes too tired to maintain effort",
-      "Only after SpO2 falls below 70%",
-      "Never; EMTs do not ventilate"
+      "Increase oxygen flow and reassess after transport begins",
+      "Assist ventilation with a BVM while continuing airway and oxygenation care",
+      "Change to a nasal cannula because the patient is tiring",
+      "Wait for a lower pulse-ox reading before changing treatment"
     ],
-    "answer": "When breathing becomes inadequate or the patient becomes too tired to maintain effort",
+    "answer": "Assist ventilation with a BVM while continuing airway and oxygenation care",
     "reason": "Assisted ventilation is indicated for inadequate rate, depth, or declining respiratory effort—not only extreme SpO2 values.",
     "topic": "Airway, Respiration & Ventilation",
     "subtopic": "Ventilation",
@@ -1722,15 +1518,15 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient has persistent chest pressure concerning for acute coronary syndrome but is currently alert and perfusing. What transport approach is most appropriate?",
+    "question": "A patient has persistent chest pressure concerning for acute coronary syndrome but is alert and perfusing. Which transport approach is most appropriate?",
     "choices": [
-      "Non-emergently after a full meal",
-      "Promptly to an appropriate facility capable of managing cardiac emergencies",
-      "Home for rest",
-      "Only after a complete physical therapy evaluation"
+      "Prompt transport with monitoring and early notification when indicated",
+      "Wait for serial ECG changes before arranging transport",
+      "Observe on scene until the pain resolves, then reassess transport need",
+      "Complete a detailed history and all routine procedures before beginning transport"
     ],
-    "answer": "Promptly to an appropriate facility capable of managing cardiac emergencies",
-    "reason": "Time-sensitive cardiac care requires rapid transport to the right destination.",
+    "answer": "Prompt transport with monitoring and early notification when indicated",
+    "reason": "Suspected acute coronary syndrome needs timely transport and ongoing monitoring. Avoid unnecessary scene delay; use destination and notification guidance from local protocol.",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
     "difficulty": "clinical-judgment-draft"
@@ -1778,14 +1574,14 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient with leg swelling, distended neck veins, and abdominal fluid retention has heart failure. Which side of the heart is classically associated with these systemic findings?",
+    "question": "A patient with heart failure has dependent edema, jugular venous distention, and abdominal fluid retention. Which side of the heart is classically associated with this pattern?",
     "choices": [
-      "Wheezing only",
-      "Peripheral edema and JVD",
-      "Hemoptysis only",
-      "Fever and rash"
+      "Left-sided heart failure",
+      "Right-sided heart failure",
+      "Isolated valvular disease without ventricular involvement",
+      "Pericardial inflammation without fluid overload"
     ],
-    "answer": "Peripheral edema and JVD",
+    "answer": "Right-sided heart failure",
     "reason": "Right-sided failure commonly backs blood into the systemic venous system, causing edema and jugular venous distention.",
     "topic": "Cardiology & Resuscitation",
     "subtopic": "Cardiac Emergencies",
@@ -1834,15 +1630,15 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A trauma patient has heavy external bleeding from an arm wound. What intervention should the team prioritize while assessing airway and breathing?",
+    "question": "A trauma patient has heavy external bleeding from an arm wound. While airway and breathing are being assessed, what is the best immediate hemorrhage-control action?",
     "choices": [
-      "Obtain a full set of vitals",
-      "Direct pressure and hemorrhage control",
-      "Detailed secondary survey",
-      "Long-board packaging first"
+      "Apply firm direct pressure and reassess whether bleeding stops",
+      "Apply oxygen and obtain a blood pressure before touching the wound",
+      "Elevate the arm and check distal pulses before controlling the bleeding",
+      "Place a pressure dressing loosely, then wait to see if bleeding slows"
     ],
-    "answer": "Direct pressure and hemorrhage control",
-    "reason": "Exsanguinating hemorrhage is an immediate life threat and may take priority even over traditional ABC order.",
+    "answer": "Apply firm direct pressure and reassess whether bleeding stops",
+    "reason": "Firm direct pressure is an immediate first measure for accessible external bleeding. Escalate to a tourniquet or other appropriate method if bleeding is severe or does not stop, following local protocol.",
     "topic": "Trauma",
     "subtopic": "Bleeding & Shock",
     "difficulty": "clinical-judgment-draft"
@@ -1934,12 +1730,12 @@
   {
     "question": "Following a fall, a patient has midline neck pain and neurologic symptoms. What findings support spinal motion restriction?",
     "choices": [
-      "Any patient with a headache",
-      "Mechanism and findings suggest possible spinal injury, or the patient is unreliable with significant trauma",
-      "The patient wants a soft collar for comfort only",
-      "All medical patients regardless of mechanism"
+      "A low-risk mechanism with no midline pain or neurologic symptoms",
+      "A concerning mechanism with midline pain or neurologic findings",
+      "A patient preference for a cervical collar without injury findings",
+      "A medical complaint with no trauma or spinal symptoms"
     ],
-    "answer": "Mechanism and findings suggest possible spinal injury, or the patient is unreliable with significant trauma",
+    "answer": "A concerning mechanism with midline pain or neurologic findings",
     "reason": "Spinal precautions are based on mechanism, exam findings, and patient reliability—not automatic for every call.",
     "topic": "Trauma",
     "subtopic": "Trauma Care",
@@ -2018,12 +1814,12 @@
   {
     "question": "A patient has a knife embedded in the chest and is breathing adequately. What should EMTs do with the object?",
     "choices": [
-      "Removed immediately on scene",
-      "Stabilized in place and left for hospital removal",
-      "Twisted to improve drainage",
-      "Covered only with an ice pack"
+      "Stabilized in place and left for removal at the hospital",
+      "Removed if it appears shallow and the patient is stable",
+      "Advanced slightly to improve the seal around the wound",
+      "Left unsecured while oxygen and transport are arranged"
     ],
-    "answer": "Stabilized in place and left for hospital removal",
+    "answer": "Stabilized in place and left for removal at the hospital",
     "reason": "Removing an impaled object can worsen bleeding or damage structures; stabilize unless it blocks the airway.",
     "topic": "Trauma",
     "subtopic": "Trauma Care",
@@ -2060,12 +1856,12 @@
   {
     "question": "A patient has sudden facial droop and arm weakness that began 35 minutes ago. What information and bedside checks should be prioritized for stroke evaluation?",
     "choices": [
-      "Only blood pressure",
-      "Last known well time, glucose check, and focal neurologic findings",
-      "Delayed transport for a complete physical therapy consult",
-      "Withholding oxygen always"
+      "Last-known-well time, blood glucose, and a validated stroke assessment",
+      "A detailed medication list before checking glucose or neurologic findings",
+      "A complete neurologic examination before notifying the receiving facility",
+      "A repeat blood pressure after waiting to see whether symptoms resolve"
     ],
-    "answer": "Last known well time, glucose check, and focal neurologic findings",
+    "answer": "Last-known-well time, blood glucose, and a validated stroke assessment",
     "reason": "Stroke care is time-critical; document onset/LKW, exclude hypoglycemia, and identify focal deficits.",
     "topic": "Medical Emergencies",
     "subtopic": "Neurologic",
@@ -2114,15 +1910,15 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "After exertion in high heat, a patient is confused with markedly elevated body temperature. Which diagnosis should be suspected?",
+    "question": "After exertion in high heat, a patient is confused and has a markedly elevated body temperature. Which condition is most likely?",
     "choices": [
-      "Cool clammy skin and normal mentation",
-      "Hot skin and altered mental status",
-      "Isolated ankle swelling",
-      "Mild thirst only"
+      "Exertional heat stroke",
+      "Heat exhaustion with preserved mental status",
+      "Exertional hyponatremia without significant hyperthermia",
+      "Hypoglycemia related to prolonged exertion"
     ],
-    "answer": "Hot skin and altered mental status",
-    "reason": "Heat stroke is a true emergency with CNS dysfunction and often hot skin; rapid cooling and transport are needed.",
+    "answer": "Exertional heat stroke",
+    "reason": "Central nervous system dysfunction with marked hyperthermia after heat exposure strongly suggests heat stroke. Begin rapid cooling and transport according to local protocol.",
     "topic": "Medical Emergencies",
     "subtopic": "Environmental",
     "difficulty": "clinical-judgment-draft"
@@ -2228,12 +2024,12 @@
   {
     "question": "A patient briefly loses consciousness and falls. After recovery, what additional evaluation is needed?",
     "choices": [
-      "Always assume it is harmless",
-      "Assess for serious causes, check glucose, and evaluate for trauma from the fall",
-      "Only take a blood pressure and leave",
-      "Force the patient to run in place"
+      "Assess for serious causes, check glucose, and evaluate for injuries from the fall",
+      "Obtain a single blood pressure and defer further assessment if it is normal",
+      "Consider syncope benign when the patient has recovered consciousness",
+      "Have the patient stand and walk before checking for injury"
     ],
-    "answer": "Assess for serious causes, check glucose, and evaluate for trauma from the fall",
+    "answer": "Assess for serious causes, check glucose, and evaluate for injuries from the fall",
     "reason": "Syncope can signal cardiac, neurologic, or metabolic emergencies and may cause secondary injury.",
     "topic": "Medical Emergencies",
     "subtopic": "Neurologic",
@@ -2254,28 +2050,28 @@
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient has several days of thirst, frequent urination, and progressive fatigue with elevated glucose. Which metabolic problem is suggested?",
+    "question": "A patient has several days of thirst, frequent urination, progressive fatigue, and elevated glucose. Which pattern best distinguishes this from a sudden hypoglycemic episode?",
     "choices": [
-      "Cool clammy skin and acute confusion only from low sugar",
-      "Frequent urination, thirst, and gradual altered mentation",
-      "Immediate recovery after one glucose tablet always",
-      "Stridor"
+      "Gradual onset with polyuria and polydipsia",
+      "Sudden sweating, tremor, and confusion after taking insulin",
+      "Rapid symptom improvement after oral glucose",
+      "Abrupt loss of consciousness without preceding symptoms"
     ],
-    "answer": "Frequent urination, thirst, and gradual altered mentation",
+    "answer": "Gradual onset with polyuria and polydipsia",
     "reason": "High glucose often develops more slowly with polyuria, polydipsia, and progressive mental-status change.",
     "topic": "Medical Emergencies",
     "subtopic": "Endocrine",
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient opens their eyes only when spoken to and otherwise does not respond. Which assessment scale categorizes alert, verbal, pain, and unresponsive states?",
+    "question": "A patient responds to voice but is not fully alert. Which rapid assessment scale uses the categories alert, verbal, pain, and unresponsive?",
     "choices": [
-      "Blood pressure categories",
-      "Level of responsiveness: Alert, Verbal, Pain, Unresponsive",
-      "Stroke scores only",
-      "Trauma triage categories only"
+      "Glasgow Coma Scale",
+      "AVPU responsiveness scale",
+      "Cincinnati Prehospital Stroke Scale",
+      "Revised Trauma Score"
     ],
-    "answer": "Level of responsiveness: Alert, Verbal, Pain, Unresponsive",
+    "answer": "AVPU responsiveness scale",
     "reason": "AVPU is a rapid consciousness scale used in primary assessment.",
     "topic": "Medical Emergencies",
     "subtopic": "Patient Assessment",
@@ -2284,12 +2080,12 @@
   {
     "question": "A patient with diabetes injected insulin but missed a meal and now feels shaky and confused. Which complication is most likely?",
     "choices": [
-      "Hyperglycemia",
-      "Hypoglycemia",
-      "Hypertension only",
-      "Dehydration only"
+      "Hyperglycemia from excess circulating glucose",
+      "Hypoglycemia from inadequate circulating glucose",
+      "A hypertensive emergency without a glucose problem",
+      "Dehydration as the only complication of missed food"
     ],
-    "answer": "Hypoglycemia",
+    "answer": "Hypoglycemia from inadequate circulating glucose",
     "reason": "Insulin without adequate glucose intake drives blood sugar dangerously low.",
     "topic": "Medical Emergencies",
     "subtopic": "Endocrine",
@@ -2298,26 +2094,26 @@
   {
     "question": "A suspected stroke patient has normal oxygen saturation and adequate ventilation. How should supplemental oxygen be considered?",
     "choices": [
-      "Withheld always",
-      "Provided based on hypoxia and local protocol while avoiding unnecessary hyperoxia",
-      "Given only by intubation",
-      "Delayed until CT"
+      "Provide oxygen to every stroke patient, even with normal oxygenation",
+      "Use oxygen when indicated for hypoxia and follow local protocol",
+      "Withhold oxygen even if the patient becomes hypoxic",
+      "Wait for brain imaging before correcting hypoxia"
     ],
-    "answer": "Provided based on hypoxia and local protocol while avoiding unnecessary hyperoxia",
+    "answer": "Use oxygen when indicated for hypoxia and follow local protocol",
     "reason": "Correct hypoxia, but do not routinely over-oxygenate without indication.",
     "topic": "Medical Emergencies",
     "subtopic": "Neurologic",
     "difficulty": "clinical-judgment-draft"
   },
   {
-    "question": "A patient becomes restless and anxious while oxygen saturation is falling. What early physiologic problem may explain the change?",
+    "question": "A patient's oxygen saturation is falling and ventilation is becoming less effective. Which early sign may appear before cyanosis?",
     "choices": [
-      "Restlessness and anxiety",
-      "Late fixed pupils only",
-      "Warm dry skin always",
-      "Bradycardia in adults as the first sign"
+      "Restlessness or anxiety",
+      "Cyanosis with a slow respiratory rate",
+      "Fixed, dilated pupils with absent respiratory effort",
+      "A normal mental status despite worsening ventilation"
     ],
-    "answer": "Restlessness and anxiety",
+    "answer": "Restlessness or anxiety",
     "reason": "Behavioral changes often appear before obvious cyanosis.",
     "topic": "Medical Emergencies",
     "subtopic": "Respiratory",
@@ -2326,12 +2122,12 @@
   {
     "question": "During a delivery, the fetal head becomes visible at the vaginal opening with each contraction. What does this indicate?",
     "choices": [
-      "False labor",
-      "Imminent delivery",
-      "Placenta previa only",
-      "Need to delay transport for hours"
+      "The second stage of labor with birth likely soon",
+      "Early labor with delivery unlikely for several hours",
+      "Placental separation before delivery",
+      "A reason to begin transport before preparing for birth"
     ],
-    "answer": "Imminent delivery",
+    "answer": "The second stage of labor with birth likely soon",
     "reason": "Visible crowning means the baby’s head is at the vaginal opening and delivery is imminent.",
     "topic": "Obstetrics & Gynecology",
     "subtopic": "Obstetrics",
@@ -2340,10 +2136,10 @@
   {
     "question": "A newborn is breathing effectively and crying immediately after birth. What routine initial care should be provided?",
     "choices": [
-      "Immediately separate mother and baby without drying",
       "Dry, warm, and stimulate the newborn while continuing maternal care",
-      "Ignore the mother",
-      "Cut the cord before assessing the baby always without clamping"
+      "Prioritize routine suctioning before drying and temperature support",
+      "Separate the newborn from the mother despite effective breathing",
+      "Delay warming until a full newborn examination is complete"
     ],
     "answer": "Dry, warm, and stimulate the newborn while continuing maternal care",
     "reason": "Warmth and stimulation support newborn transition; continue caring for both patients.",
@@ -2382,10 +2178,10 @@
   {
     "question": "After childbirth, a mother has heavy vaginal bleeding. Which action may be appropriate while arranging rapid transport under protocol?",
     "choices": [
-      "Packing the vagina tightly with gauze always",
       "Fundal massage and supportive care while arranging rapid transport per protocol",
-      "Giving the mother nothing and waiting silently",
-      "Having the mother walk immediately"
+      "Apply external pressure to the abdomen without assessing uterine tone",
+      "Delay transport until bleeding stops after rest",
+      "Encourage the patient to stand so blood loss can be measured"
     ],
     "answer": "Fundal massage and supportive care while arranging rapid transport per protocol",
     "reason": "Uterine atony is a common cause of postpartum hemorrhage; fundal massage helps the uterus contract.",
@@ -2522,12 +2318,12 @@
   {
     "question": "An EMT follows an approved standing order without calling a physician during the encounter. What kind of medical direction is this?",
     "choices": [
-      "Real-time radio orders only",
-      "Standing orders and protocols",
-      "Only hospital discharge papers",
-      "Patient family preferences alone"
+      "On-line medical direction from a physician during the call",
+      "Off-line medical direction through standing orders and protocols",
+      "A receiving facility's discharge instructions",
+      "A treatment decision made by family members"
     ],
-    "answer": "Standing orders and protocols",
+    "answer": "Off-line medical direction through standing orders and protocols",
     "reason": "Offline direction is written protocol authority used without real-time physician contact.",
     "topic": "EMS Operations",
     "subtopic": "EMS Systems",
@@ -2592,13 +2388,13 @@
   {
     "question": "An EMS agency reviews airway-management errors and provides feedback to improve care. What program function does this represent?",
     "choices": [
-      "Punish providers only",
-      "Improve system performance and patient care through review and feedback",
-      "Replace medical direction",
-      "Eliminate documentation"
+      "Use case review and feedback to improve care processes and monitor results",
+      "Use individual discipline as the main response to every error",
+      "Replace medical direction with peer review decisions",
+      "Stop collecting data once staff have completed refresher training"
     ],
-    "answer": "Improve system performance and patient care through review and feedback",
-    "reason": "CQI uses data and case review to strengthen care quality.",
+    "answer": "Use case review and feedback to improve care processes and monitor results",
+    "reason": "Continuous quality improvement uses case review, system-level analysis, feedback, and follow-up measures to strengthen patient care.",
     "topic": "EMS Operations",
     "subtopic": "EMS Systems",
     "difficulty": "clinical-judgment-draft"
@@ -2606,12 +2402,12 @@
   {
     "question": "During transfer of care, a receiving nurse asks what happened and how the patient responded to treatment. What should the EMT include?",
     "choices": [
-      "Use slang only",
-      "Provide a clear, organized summary of findings, treatments, and response",
-      "Omit vital signs",
-      "Speak only to bystanders"
+      "Provide an organized report of findings, care provided, and patient response",
+      "Give only the chief complaint and leave out reassessment findings",
+      "Read the written report without summarizing time-sensitive changes",
+      "Transfer the patient before identifying the receiving clinician"
     ],
-    "answer": "Provide a clear, organized summary of findings, treatments, and response",
+    "answer": "Provide an organized report of findings, care provided, and patient response",
     "reason": "Effective handoff transfers critical clinical information safely.",
     "topic": "EMS Operations",
     "subtopic": "Operations",
@@ -2662,12 +2458,12 @@
   {
     "question": "A patient in cardiac arrest has a valid do-not-resuscitate order. What does the order generally limit while still allowing appropriate supportive care?",
     "choices": [
-      "Do not provide any comfort care",
-      "Do not perform resuscitative efforts if the patient is in arrest, while still providing appropriate supportive care per the order",
-      "Ignore the patient’s wishes",
-      "Always intubate"
+      "Withhold CPR and other resuscitative measures covered by the valid order while continuing permitted supportive care",
+      "Withhold all assessment, comfort measures, and communication with family",
+      "Begin resuscitation until a family member arrives to confirm the order",
+      "Disregard the order if the arrest is witnessed by EMS"
     ],
-    "answer": "Do not perform resuscitative efforts if the patient is in arrest, while still providing appropriate supportive care per the order",
+    "answer": "Withhold CPR and other resuscitative measures covered by the valid order while continuing permitted supportive care",
     "reason": "Valid DNRs limit resuscitation but do not eliminate all care. Follow local verification rules.",
     "topic": "EMS Operations",
     "subtopic": "Legal & Ethics",

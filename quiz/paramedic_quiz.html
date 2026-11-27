@@ -185,14 +185,33 @@
       };
     }
 
+    // Balance answer positions in each daily set so there is no predictable
+    // correct-answer column, including when a saved set is reloaded.
+    function balanceAnswerPositions(questions) {
+      const positions = [0, 1, 2, 3, 0];
+      for (let i = positions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [positions[i], positions[j]] = [positions[j], positions[i]];
+      }
+      return questions.map((question, index) => {
+        const choices = [...question.choices];
+        const answerIndex = choices.indexOf(question.answer);
+        if (answerIndex < 0 || choices.length < 2) return question;
+        const [answer] = choices.splice(answerIndex, 1);
+        const target = positions[index % positions.length];
+        choices.splice(Math.min(target, choices.length), 0, answer);
+        return { ...question, choices };
+      });
+    }
+
     function loadSavedOrNewQuiz() {
       const today = getTodayKey();
       let saved = null;
       try { saved = JSON.parse(localStorage.getItem(storageKey)); } catch (_) { saved = null; }
       if (saved && saved.date === today && Array.isArray(saved.questions)) {
-        todaysQuestions = saved.questions.map(normalizeQuestion);
+        todaysQuestions = balanceAnswerPositions(saved.questions.map(normalizeQuestion));
       } else {
-        todaysQuestions = pickUniqueQuestions(5).map(normalizeQuestion);
+        todaysQuestions = balanceAnswerPositions(pickUniqueQuestions(5).map(normalizeQuestion));
         localStorage.setItem(storageKey, JSON.stringify({ date: today, questions: todaysQuestions }));
       }
       displayQuiz();
