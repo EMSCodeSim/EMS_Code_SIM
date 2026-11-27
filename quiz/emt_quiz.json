@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 32424)
-Total output lines: 2676
-
 [
   {
     "question": "An EMT arrives to find a 68-year-old patient sitting upright, speaking in two-word sentences. Respirations are 30/min with visible accessory muscle use, SpO₂ 89%, and a strong radial pulse. Which action is the best immediate priority?",
@@ -1097,20 +1094,6 @@ Total output lines: 2676
   {
     "question": "An ambulance approaches a red light while responding with warning devices. What driving responsibility remains?",
     "choices": [
-      "Provide necessary patient care while minimizing disturbance and notifying law enforcement about potential evidence",
-      "Delay time-sensitive care until forensic personnel approve scene access",
-      "Move items obstructing access and document any changes after transport",
-      "Interview witnesses in detail before beginning patient assessment"
-    ],
-    "answer": "Provide necessary patient care while minimizing disturbance and notifying law enforcement about potential evidence",
-    "topic": "EMS Operations",
-    "subtopic": "Operations",
-    "reason": "Patient care remains the priority. When feasible, avoid unnecessary disturbance, document relevant observations, and coordinate evidence concerns with law enforcement.",
-    "difficulty": "clinical-judgment-draft"
-  },
-  {
-    "question": "Multiple agencies arrive at a bus crash with many patients. What is the main purpose of establishing incident command?",
-    "choices": [
       "Stop as required, slow, and proceed only when the intersection is clear and it is lawful to do so",
       "Proceed at normal response speed because warning lights and siren require traffic to yield",
       "Continue through the intersection if the siren has been audible for several seconds",
@@ -1118,8 +1101,22 @@ Total output lines: 2676
     ],
     "answer": "Stop as required, slow, and proceed only when the intersection is clear and it is lawful to do so",
     "topic": "EMS Operations",
-    "subtopic": "Patient Assessment",
+    "subtopic": "Operations",
     "reason": "Warning devices do not remove the duty to operate with due regard. Follow state law and agency policy, and do not enter an intersection until it is safe.",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "Multiple agencies arrive at a bus crash with many patients. What is the main purpose of establishing incident command?",
+    "choices": [
+      "Create a common structure for command, communication, resources, and operational priorities",
+      "Give the first-arriving ambulance sole control of all public-safety agencies",
+      "Allow each agency to use separate objectives without coordinating resources",
+      "Replace triage and patient tracking with a single transport decision"
+    ],
+    "answer": "Create a common structure for command, communication, resources, and operational priorities",
+    "topic": "EMS Operations",
+    "subtopic": "Patient Assessment",
+    "reason": "Incident command establishes coordinated leadership, shared objectives, communication, and resource management across responding agencies.",
     "difficulty": "clinical-judgment-draft"
   },
   {
@@ -1224,7 +1221,214 @@ Total output lines: 2676
     "question": "A 58-year-old with suspected ACS has no aspirin allergy or active bleeding and can chew medication. Your protocol permits 162–325 mg of aspirin. Which dose is within that range?",
     "choices": [
       "81 mg total",
-      "324 mg to…2424 tokens truncated…iration heard over the neck. Which sound suggests upper-airway narrowing?",
+      "324 mg total",
+      "650 mg total",
+      "1,000 mg total"
+    ],
+    "answer": "324 mg total",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiac Emergencies",
+    "reason": "Four 81-mg chewable tablets total 324 mg, within a common 162–325 mg ACS protocol range. Follow local protocols.",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "During suspected acute coronary syndrome, an EMT explains why aspirin is useful even though it does not directly relieve pain. What does it help prevent?",
+    "choices": [
+      "Relaxes chest muscles",
+      "Improves oxygen delivery",
+      "Prevents clot growth",
+      "Stops chest pain immediately"
+    ],
+    "answer": "Prevents clot growth",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory",
+    "reason": "Aspirin reduces platelet-mediated clot growth during suspected ACS but does not dissolve an established clot.",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "A patient with prescribed nitroglycerin requests help for familiar angina. Which listed condition supports assisting under a protocol that requires a systolic pressure above 100 mmHg?",
+    "choices": [
+      "The patient has chest trauma",
+      "The patient has a prescription and systolic BP > 100 mmHg",
+      "The patient is unconscious",
+      "The EMT carries nitroglycerin"
+    ],
+    "answer": "The patient has a prescription and systolic BP > 100 mmHg",
+    "topic": "Trauma",
+    "subtopic": "Trauma Care",
+    "reason": "Assistance with prescribed nitroglycerin requires protocol authorization, adequate blood pressure and screening for contraindications including PDE-5 inhibitors.",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "A patient with prescribed nitroglycerin is instructed to place a tablet under the tongue. What route is this?",
+    "choices": [
+      "Intramuscular",
+      "Oral",
+      "Sublingual",
+      "Intravenous"
+    ],
+    "answer": "Sublingual",
+    "topic": "Medical Emergencies",
+    "subtopic": "Medical Emergencies",
+    "reason": "Sublingual medication is placed beneath the tongue for absorption through oral mucosa.",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "A patient with chest pain asks for prescribed nitroglycerin and reports taking sildenafil earlier today. What is the safest next step?",
+    "choices": [
+      "Withhold nitroglycerin and follow local PDE-5 inhibitor precautions and medical direction",
+      "Give nitroglycerin because the patient has chest pain",
+      "Give nitroglycerin after aspirin regardless of medication history",
+      "Ignore the sildenafil history if the initial blood pressure is normal"
+    ],
+    "answer": "Withhold nitroglycerin and follow local PDE-5 inhibitor precautions and medical direction",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiac Emergencies",
+    "reason": "Nitrates after recent sildenafil can cause profound hypotension. Avoidance windows vary by PDE-5 agent; follow current local protocols and medical direction.",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "A patient with angina asks what prescribed nitroglycerin does. Which explanation best describes its vascular effect?",
+    "choices": [
+      "It increases heart rate",
+      "It decreases respiratory rate",
+      "It dilates blood vessels to improve blood flow",
+      "It constricts coronary arteries"
+    ],
+    "answer": "It dilates blood vessels to improve blood flow",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory",
+    "reason": "Nitroglycerin is a vasodilator that lowers preload and myocardial oxygen demand; hypotension is an important risk.",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "An asthmatic patient uses a prescribed albuterol inhaler and reports improved airflow. Which mechanism best explains the benefit?",
+    "choices": [
+      "Reduces mucus secretion",
+      "Suppresses cough reflex",
+      "Dilates the bronchioles",
+      "Decreases respiratory rate"
+    ],
+    "answer": "Dilates the bronchioles",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory",
+    "reason": "Albuterol stimulates beta-2 receptors to relax bronchial smooth muscle and improve airflow.",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "A patient with wheezing and shortness of breath has a history of asthma and a prescribed inhaler. Which condition is an indication for albuterol?",
+    "choices": [
+      "Chest trauma",
+      "Wheezing and shortness of breath",
+      "Bradycardia",
+      "Nasal congestion"
+    ],
+    "answer": "Wheezing and shortness of breath",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Respiratory",
+    "reason": "Albuterol is indicated for bronchospasm with wheezing and dyspnea when authorized by protocol.",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "After using albuterol, a patient reports tremor and a faster pulse but easier breathing. Which side-effect pattern is expected?",
+    "choices": [
+      "Slow heart rate",
+      "Drowsiness",
+      "Shakiness and increased heart rate",
+      "Low blood sugar"
+    ],
+    "answer": "Shakiness and increased heart rate",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiology",
+    "reason": "Tremor and tachycardia are common beta-agonist adverse effects after albuterol.",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "A wheezing patient requests help using an inhaler. Under a protocol permitting assistance with the patient's prescribed medication, which circumstance meets that requirement?",
+    "choices": [
+      "The patient is unresponsive",
+      "They have verbal orders from medical control",
+      "The patient has their own prescribed inhaler",
+      "They carry a department-issued inhaler"
+    ],
+    "answer": "The patient has their own prescribed inhaler",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Airway, Respiration",
+    "reason": "Assistance with a patient's prescribed inhaler depends on local scope and protocol; assess indication and contraindications.",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "A patient has anaphylaxis with airway swelling and hypotension. Which effect of epinephrine contributes to reversing the emergency?",
+    "choices": [
+      "Promotes digestion",
+      "Constricts airways",
+      "Relaxes smooth muscles and opens airways",
+      "Slows the heart rate"
+    ],
+    "answer": "Relaxes smooth muscles and opens airways",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiology",
+    "reason": "Epinephrine provides bronchodilation and vasoconstriction in anaphylaxis; intramuscular epinephrine is first-line.",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "After eating a known allergen, a patient develops airway swelling, wheezing, and poor perfusion. Which finding makes prompt epinephrine especially important?",
+    "choices": [
+      "A small area of itching without other symptoms",
+      "Wheezing with hypotension after allergen exposure",
+      "Hives that are improving without breathing or circulation problems",
+      "A history of seasonal allergies without current symptoms"
+    ],
+    "answer": "Wheezing with hypotension after allergen exposure",
+    "topic": "Medical Emergencies",
+    "subtopic": "Respiratory",
+    "reason": "Anaphylaxis with respiratory or circulatory compromise warrants prompt intramuscular epinephrine per protocol.",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "An EMT prepares an approved epinephrine auto-injector for a patient with anaphylaxis. Which route is used?",
+    "choices": [
+      "Oral",
+      "Intranasal",
+      "Intramuscular (auto-injector)",
+      "Sublingual"
+    ],
+    "answer": "Intramuscular (auto-injector)",
+    "topic": "Medical Emergencies",
+    "subtopic": "Medical Emergencies",
+    "reason": "Auto-injectors deliver epinephrine intramuscularly, usually into the anterolateral thigh.",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "After an epinephrine auto-injector is used for anaphylaxis, a patient reports palpitations and feels anxious. Which reaction is a recognized medication effect?",
+    "choices": [
+      "Bradycardia",
+      "Low blood pressure",
+      "Anxiety and rapid heartbeat",
+      "Sedation"
+    ],
+    "answer": "Anxiety and rapid heartbeat",
+    "topic": "Cardiology & Resuscitation",
+    "subtopic": "Cardiology",
+    "reason": "Epinephrine may produce anxiety, palpitations and tachycardia through adrenergic stimulation.",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "An unresponsive patient has snoring respirations after a suspected overdose. No trauma is suspected. What immediate action can relieve tongue-related airway obstruction?",
+    "choices": [
+      "Insert an OPA and ventilate",
+      "Open the airway with a head-tilt chin-lift if no trauma is suspected",
+      "Start chest compressions",
+      "Administer oral glucose"
+    ],
+    "answer": "Open the airway with a head-tilt chin-lift if no trauma is suspected",
+    "reason": "An open airway is required before adjuncts or ventilation. Snoring suggests tongue obstruction that often improves with manual airway opening.",
+    "topic": "Airway, Respiration & Ventilation",
+    "subtopic": "Airway Management",
+    "difficulty": "clinical-judgment-draft"
+  },
+  {
+    "question": "An adult with difficulty breathing has a harsh high-pitched sound during inspiration heard over the neck. Which sound suggests upper-airway narrowing?",
     "choices": [
       "Wheezing",
       "Crackles",
